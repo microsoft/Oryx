@@ -619,8 +619,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringDoesNotExistInFileCheck($"{Constants.OryxAppType}=\"blazor-wasm\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringDoesNotExistInFileCheck($"{Constants.OryxAppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringDoesNotExistInFileCheck($"{Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -655,13 +654,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appName = "Blazor_Function_Sample";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            //var appOutputDir = "/tmp/blazor-wasm-output";
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --apptype blazor-wasm")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --apptype static-sites")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{Constants.OryxAppType}=\"blazor-wasm\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -701,7 +699,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir}/MessageFunction -o {appOutputDir} --apptype functions")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{Constants.OryxAppType}=\"functions\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{Constants.AppType}=\"functions\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act

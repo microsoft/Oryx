@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     internal class ProbeAndFindProjectFileProvider : IProjectFileProvider
     {
         private readonly ILogger<ProbeAndFindProjectFileProvider> _logger;
-        private readonly IOptions<BuildScriptGeneratorOptions> _options;
+        private readonly BuildScriptGeneratorOptions _options;
 
         // Since this service is registered as a singleton, we can cache the lookup of project file.
         private bool _probedForProjectFile;
@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IOptions<BuildScriptGeneratorOptions> options)
         {
             _logger = logger;
-            _options = options;
+            _options = options.Value;
         }
 
         public string GetRelativePathToProjectFile(RepositoryContext context)
@@ -102,34 +102,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // for example azurefunction and blazor both projects can reside
             // at the same repo, so more than 2 csprojs will be found. Now we will
             // look for --apptype value to determine which project needs to be built
-            string oryxAppTypeEnv = string.Empty;
-
             if (_options != null
-                && _options.Value != null
-                && _options.Value.OryxAppType != null)
+                && _options.AppType != null)
             {
-                oryxAppTypeEnv = _options.Value.OryxAppType;
-                _logger.LogInformation($"ProbeAndProjectFileProvider: {Constants.OryxAppType} is set to {oryxAppTypeEnv}");
+                _logger.LogInformation($"ProbeAndProjectFileProvider: {Constants.AppType} is set to {_options.AppType}");
 
-                if (functionProjectExists && oryxAppTypeEnv.ToLower().Contains("functions"))
+                if (functionProjectExists && _options.AppType.ToLower().Contains("functions"))
                 {
                     projectFile = GetProject(azureFunctionsProjects);
                 }
                 else if (blazorWasmProjectExists
-                    && (oryxAppTypeEnv.ToLower().Contains("static-sites")
-                    || oryxAppTypeEnv.ToLower().Contains("blazor-wasm")))
+                    && _options.AppType.ToLower().Contains("static-sites"))
                 {
                     projectFile = GetProject(azureBlazorWasmProjects);
                 }
                 else
                 {
-                    _logger.LogDebug($"Invalid value {oryxAppTypeEnv} for env:{Constants.OryxAppType}. Currently, supported values are 'functions', 'blazor-wasm', 'static-sites'");
+                    _logger.LogDebug($"Invalid value {_options.AppType} for env:{Constants.AppType}. Currently, supported values are 'functions', 'blazor-wasm', 'static-sites'");
                 }
             }
             else
             {
-                // If multiple project exists, webapp gets priority if appType is not set
-                // orderwise webapp then blazor-wasm and then functions
+                // If multiple project exists, and appType is not passed
+                // we detect them in following order
                 if (projectFile == null && webAppProjectExists)
                 {
                     projectFile = GetProject(webAppProjects);

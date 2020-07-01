@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string platformVersion = null,
             bool? shouldPackage = null,
             string[] requiredOsPackages = null,
-            string oryxAppType = null,
+            string appType = null,
             bool? scriptOnly = null,
             string[] properties = null)
         {
@@ -59,9 +59,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             options.RequiredOsPackages = requiredOsPackages;
 
-            if (!string.IsNullOrEmpty(oryxAppType))
+            if (!string.IsNullOrEmpty(appType))
             {
-                options.OryxAppType = oryxAppType;
+                options.AppType = appType;
             }
 
             if (scriptOnly.HasValue)

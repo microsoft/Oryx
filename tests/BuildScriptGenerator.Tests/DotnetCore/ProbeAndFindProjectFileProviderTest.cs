@@ -17,7 +17,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         {
         }
 
-        protected BuildScriptGeneratorOptions commonOptions = new BuildScriptGeneratorOptions();
         [Fact]
         public void GetRelativePathToProjectFile_ReturnsWebApp_WhenSourceRepoHasOtherValidProjectTypes()
         {
@@ -89,8 +88,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedRelativePath = Path.Combine("src", "AzureFunctionsApp1", "AzureFunctionsApp1.csproj");
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            commonOptions.OryxAppType = null;
-            var provider = GetProjectFileProvider();
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.AppType = null;
+            var provider = GetProjectFileProvider(null, commonOptions);
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -118,7 +118,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            commonOptions.OryxAppType = "functions";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.AppType = "functions";
             var provider = GetProjectFileProvider(null, commonOptions);
 
             // Act
@@ -153,7 +154,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
             var commonOptions = new BuildScriptGeneratorOptions();
-            commonOptions.OryxAppType = "blazor-wasm";
+            commonOptions.AppType = "static-sites";
             
             var provider = GetProjectFileProvider(null, commonOptions);
 
@@ -204,8 +205,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            
-            var provider = GetProjectFileProvider(null, commonOptions);
+            var provider = GetProjectFileProvider();
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);

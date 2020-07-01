@@ -13,6 +13,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public string ProjectFile { get; set; }
 
         public string Configuration { get; set; }
-
     }
 }

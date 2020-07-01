@@ -21,6 +21,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string False = "false";
 
         public const string TemporaryInstallationDirectoryRoot = "/tmp/oryx/platforms";
-        public const string OryxAppType = "apptype";
+        public const string AppType = "apptype";
     }
 }

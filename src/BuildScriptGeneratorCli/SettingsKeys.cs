@@ -37,6 +37,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string NpmRegistryUrl = "NPM_REGISTRY_URL";
         public const string PythonVirtualEnvironmentName = "VIRTUALENV_NAME";
         public const string OryxSdkStorageBaseUrl = "ORYX_SDK_STORAGE_BASE_URL";
-        public const string OryxAppTypeEnv = "ORYX_APP_TYPE";
+        public const string AppType = "ORYX_APP_TYPE";
     }
 }

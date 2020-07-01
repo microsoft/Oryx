@@ -121,6 +121,56 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Empty(testConsole.StdError);
         }
 
+        [Theory]
+        [InlineData("functions")]
+        [InlineData("static-sites")]
+        [InlineData("")]
+        [InlineData(null)]
+        public void IsValidInput_IsTrue_WhenApptype_Has_Valid_Input(string input)
+        {
+            // Arrange
+            var dstDir = _testDir.CreateChildDir();
+            File.WriteAllText(Path.Combine(dstDir, "bla.txt"), "bla");
+            var buildCommand = new BuildCommand
+            {
+                AppType = input,
+            };
+            var testConsole = new TestConsole();
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
+
+            // Act
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
+
+            // Assert
+            Assert.True(isValid);
+            Assert.Empty(testConsole.StdOutput);
+            Assert.Empty(testConsole.StdError);
+        }
+
+        [Theory]
+        [InlineData("asdad")]
+        [InlineData("  ")]
+        public void IsValidInput_IsFalse_WhenApptype_Has_InValid_Input(string input)
+        {
+            // Arrange
+            var dstDir = _testDir.CreateChildDir();
+            File.WriteAllText(Path.Combine(dstDir, "bla.txt"), "bla");
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                AppType = input,
+            };
+            var testConsole = new TestConsole();
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
+
+            // Act
+            var isValid = buildCommand.IsValidInput(serviceProvider, testConsole);
+
+            // Assert
+            Assert.False(isValid);
+            Assert.Empty(testConsole.StdOutput);
+            Assert.NotEmpty(testConsole.StdError);
+        }
         [Fact]
         public void IsValidInput_IsTrue_EvenIfDestinationDirIsNotEmpty()
         {

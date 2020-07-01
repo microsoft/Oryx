@@ -276,16 +276,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var copySourceDirectoryContentToDestinationDirectory = buildScriptSnippets.All(
                 snippet => snippet.CopySourceDirectoryContentToDestinationDirectory);
 
-            string oryxAppType = string.Empty;
             if (_cliOptions != null
-                && _cliOptions.OryxAppType != null)
+                && _cliOptions.AppType != null)
             {
-                oryxAppType = _cliOptions.OryxAppType;
-                if (!string.IsNullOrEmpty(oryxAppType)
-                    || !string.IsNullOrWhiteSpace(oryxAppType))
+                if (!string.IsNullOrEmpty(_cliOptions.AppType)
+                    || !string.IsNullOrWhiteSpace(_cliOptions.AppType))
                 {
-                    _logger.LogInformation($"Build Property Key {Constants.OryxAppType} with value {oryxAppType} is written into manifest");
-                    buildProperties[Constants.OryxAppType] = oryxAppType;
+                    _logger.LogInformation($"Build Property Key {Constants.AppType} with value {_cliOptions.AppType} is written into manifest");
+                    buildProperties[Constants.AppType] = _cliOptions.AppType;
                 }
             }
 

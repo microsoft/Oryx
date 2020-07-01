@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             OptionTemplates.AppType,
             CommandOptionType.SingleValue,
-            Description = "Application type in a multi-app repo, for example a repo that has functions api and blazor-wasm client app.")]
+            Description = "Type of application that the source directory has, for example: 'functions' or 'static-sites' etc.")]
         public string AppType { get; set; }
 
         [Option(
