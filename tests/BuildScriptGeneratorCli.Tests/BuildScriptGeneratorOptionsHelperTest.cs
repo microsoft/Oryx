@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 platform: null,
                 platformVersion: null,
                 shouldPackage: false,
-                requiredOsPackages: null,
+                systemPackages: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 platform: null,
                 platformVersion: null,
                 shouldPackage: false,
-                requiredOsPackages: null,
+                systemPackages: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 platform: null,
                 platformVersion: null,
                 shouldPackage: false,
-                requiredOsPackages: null,
+                systemPackages: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -126,7 +126,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 platform: null,
                 platformVersion: null,
                 shouldPackage: false,
-                requiredOsPackages: null,
+                systemPackages: null,
                 scriptOnly: false,
                 properties: null);
 
@@ -157,7 +157,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 platform: null,
                 platformVersion: null,
                 shouldPackage: false,
-                requiredOsPackages: null,
+                systemPackages: null,
                 scriptOnly: false,
                 properties: null);
 

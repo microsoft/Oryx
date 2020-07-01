@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 platform: PlatformName,
                 platformVersion: PlatformVersion,
                 shouldPackage: ShouldPackage,
-                requiredOsPackages: string.IsNullOrWhiteSpace(SystemPackages) ? null : SystemPackages.Split(','),
+                systemPackages: string.IsNullOrWhiteSpace(SystemPackages) ? null : SystemPackages.Split(','),
                 scriptOnly: true,
                 properties: Properties);
         }

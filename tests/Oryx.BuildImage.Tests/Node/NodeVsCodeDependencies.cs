@@ -61,20 +61,21 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             string commitId = GetGitHeadFromNpmRegistry(pkgName, pkgVersion);
             Assert.NotNull(commitId);
 
-            var osReqsParam = string.Empty;
+            var systemPackagesParam = string.Empty;
             if (systemPackages != null)
             {
-                osReqsParam = $"{OptionTemplates.SystemPackages} {string.Join(',', systemPackages)}";
+                systemPackagesParam = $"{OptionTemplates.SystemPackages} {string.Join(',', systemPackages)}";
             }
 
             var script = new ShellScriptBuilder()
-            // Fetch source code
+                // Fetch source code
                 .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir}")
                 .AddCommand($"cd {pkgSrcDir} && git checkout {commitId}")
                 // Make sure python2 is on the path as node-gyp install of iconv fails otherwise
                 .AddCommand("source benv python=2")
-            // Build & package
-                .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir} {osReqsParam}") // Should create a file <name>-<version>.tgz
+                // Build & package
+                // Should create a file <name>-<version>.tgz
+                .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir} {systemPackagesParam}")
                 .AddFileExistsCheck(oryxPackOutput)
                     // Compute diff between tar contents
                     // Download public NPM build for comparison

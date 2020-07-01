@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string platform = null,
             string platformVersion = null,
             bool? shouldPackage = null,
-            string[] requiredOsPackages = null,
+            string[] systemPackages = null,
             bool? scriptOnly = null,
             string[] properties = null)
         {
@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 options.ShouldPackage = shouldPackage.Value;
             }
 
-            options.SystemPackages = requiredOsPackages;
+            options.SystemPackages = systemPackages;
 
             if (scriptOnly.HasValue)
             {
