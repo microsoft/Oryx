@@ -24,6 +24,7 @@ steps:
     $projectFile="src\Detector\Detector.csproj"
     
     dotnet build Detector.sln -c Release
+    dotnet restore src\Detector\Detector.signproj
   displayName: 'Build Detector.sln'
 
 - task: VSBuild@1
