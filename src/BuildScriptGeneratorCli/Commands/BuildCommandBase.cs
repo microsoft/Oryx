@@ -34,6 +34,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string OsRequirements { get; set; }
 
         [Option(
+            OptionTemplates.AppType,
+            CommandOptionType.SingleValue,
+            Description = "Type of application that the source directory has, for example: 'functions' or 'static-sites' etc.")]
+        public string AppType { get; set; }
+
+        [Option(
             OptionTemplates.Property,
             CommandOptionType.MultipleValue,
             Description = "Additional information used by this tool to generate and run build scripts.")]
