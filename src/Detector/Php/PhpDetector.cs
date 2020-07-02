@@ -23,8 +23,10 @@ namespace Microsoft.Oryx.Detector.Php
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;
-            if (!sourceRepo.FileExists(PhpConstants.ComposerFileName)
-                && !sourceRepo.FileExists(PhpConstants.ComposerLockFileName))
+            var composerFileExists = sourceRepo.FileExists(PhpConstants.ComposerFileName);
+            var composerLockFileExists = sourceRepo.FileExists(PhpConstants.ComposerLockFileName);
+
+            if (!composerFileExists && !composerLockFileExists)
             {
                 _logger.LogDebug(
                     $"Files '{PhpConstants.ComposerFileName}' or '{PhpConstants.ComposerLockFileName}' " +
@@ -34,10 +36,12 @@ namespace Microsoft.Oryx.Detector.Php
 
             var version = GetVersion(context);
 
-            return new PlatformDetectorResult
+            return new PhpPlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = version,
+                ComposerFileExists = composerFileExists,
+                ComposerLockFileExists = composerLockFileExists,
             };
         }
 
