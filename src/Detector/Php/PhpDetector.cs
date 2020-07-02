@@ -23,9 +23,12 @@ namespace Microsoft.Oryx.Detector.Php
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;
-            if (!sourceRepo.FileExists(PhpConstants.ComposerFileName))
+            if (!sourceRepo.FileExists(PhpConstants.ComposerFileName)
+                && !sourceRepo.FileExists(PhpConstants.ComposerLockFileName))
             {
-                _logger.LogDebug($"File '{PhpConstants.ComposerFileName}' does not exist in source repo");
+                _logger.LogDebug(
+                    $"Files '{PhpConstants.ComposerFileName}' or '{PhpConstants.ComposerLockFileName}' " +
+                    $"do not exist in source repo.");
                 return null;
             }
 
