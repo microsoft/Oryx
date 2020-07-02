@@ -131,7 +131,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     buildScriptSnippets,
                     new ReadOnlyDictionary<string, string>(toolsToVersion),
                     directoriesToExcludeFromCopyToIntermediateDir,
-                    directoriesToExcludeFromCopyToBuildOutputDir);
+                    directoriesToExcludeFromCopyToBuildOutputDir,
+                    detectionResults);
             }
             else
             {
@@ -248,7 +249,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IList<BuildScriptSnippet> buildScriptSnippets,
             IDictionary<string, string> toolsToVersion,
             List<string> directoriesToExcludeFromCopyToIntermediateDir,
-            List<string> directoriesToExcludeFromCopyToBuildOutputDir)
+            List<string> directoriesToExcludeFromCopyToBuildOutputDir,
+            IEnumerable<PlatformDetectorResult> detectionResults)
         {
             string script;
             string benvArgs = StringExtensions.JoinKeyValuePairs(toolsToVersion);
@@ -258,6 +260,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .SelectMany(s => s.BuildProperties)
                 .ToDictionary(p => p.Key, p => p.Value);
             buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
+
+            var allPlatformNames = detectionResults
+                .Where( s => s.Platform != null)
+                .Select(s => s.Platform)
+                .ToList();
+
+            foreach (var eachPlatformName in allPlatformNames)
+            {
+                _logger.LogInformation($"Build Property Key:{ManifestFilePropertyKeys.PlatformName} value: {eachPlatformName} is written into manifest");
+                if (buildProperties.ContainsKey(ManifestFilePropertyKeys.PlatformName))
+                {
+                    buildProperties[ManifestFilePropertyKeys.PlatformName]
+                    = string.Join(
+                        buildProperties[ManifestFilePropertyKeys.PlatformName],
+                        ",",
+                        eachPlatformName);
+                }
+                else
+                {
+                    buildProperties[ManifestFilePropertyKeys.PlatformName] = eachPlatformName;
+                }
+            }
 
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
                 context.SourceRepo,
@@ -275,6 +299,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // say yes.
             var copySourceDirectoryContentToDestinationDirectory = buildScriptSnippets.All(
                 snippet => snippet.CopySourceDirectoryContentToDestinationDirectory);
+
+            if (!string.IsNullOrEmpty(_cliOptions.AppType)
+                && !string.IsNullOrWhiteSpace(_cliOptions.AppType))
+            {
+                _logger.LogInformation($"Build Property Key {Constants.AppType} with value {_cliOptions.AppType} is written into manifest");
+                buildProperties[Constants.AppType] = _cliOptions.AppType;
+            }
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {

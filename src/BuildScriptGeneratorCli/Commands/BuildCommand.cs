@@ -79,6 +79,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         }
 
         [Option(
+            OptionTemplates.AppType,
+            CommandOptionType.SingleValue,
+            Description = "Type of application that the source directory has, for example: 'functions' or 'static-sites' etc.",
+            ShowInHelpText = true)]
+        public string AppType { get; set; }
+
+        [Option(
             "-o|--output <dir>",
             CommandOptionType.SingleValue,
             Description = "The destination directory.")]
@@ -319,6 +326,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return false;
             }
 
+            // Invalid to specify apptype anything other than "static-sites" or "functions" empty or null is expected
+            if (!string.IsNullOrEmpty(options.AppType)
+                && !(string.Equals(Constants.FunctionApplications, options.AppType.ToLower())
+                || string.Equals(Constants.StaticSiteApplications, options.AppType.ToLower())))
+            {
+                logger.LogError($"Invalid value '{options.AppType}' for --apptype, only permitted values are 'static-sites' or 'functions'");
+                console.WriteErrorLine($"Invalid input '{options.AppType}' for --apptype, only permitted values are 'static-sites' or 'functions'");
+                return false;
+            }
+
             if (!string.IsNullOrEmpty(options.IntermediateDir))
             {
                 if (DirectoryHelper.AreSameDirectories(options.IntermediateDir, options.SourceDir))
@@ -408,6 +425,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             commandLineConfigSource.Set(SettingsKeys.CreatePackage, ShouldPackage.ToString());
             commandLineConfigSource.Set(SettingsKeys.RequiredOsPackages, OsRequirements);
+            commandLineConfigSource.Set(SettingsKeys.AppType, AppType);
+
             if (buildProperties != null)
             {
                 SetPropertyValueInConfigurationSource(SettingsKeys.Project);

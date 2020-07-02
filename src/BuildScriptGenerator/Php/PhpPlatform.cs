@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             var buildProperties = new Dictionary<string, string>();
 
-            // Write the version to the manifest file
+            // Write the platform name and version to the manifest file
             buildProperties[ManifestFilePropertyKeys.PhpVersion] = detectorResult.PlatformVersion;
 
             _logger.LogDebug("Selected PHP version: {phpVer}", detectorResult.PlatformVersion);

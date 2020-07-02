@@ -20,5 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         internal const string PythonVersion = nameof(PythonVersion);
 
         internal const string HugoVersion = nameof(HugoVersion);
+
+        internal const string PlatformName = nameof(PlatformName);
     }
 }

@@ -132,7 +132,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             var manifestFileProperties = new Dictionary<string, string>();
 
-            // Write the version to the manifest file
+            // Write the platform name and version to the manifest file
             manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = detectorResult.PlatformVersion;
 
             var packageDir = GetPackageDirectory(context);

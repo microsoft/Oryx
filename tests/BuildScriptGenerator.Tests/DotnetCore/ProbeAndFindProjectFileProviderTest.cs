@@ -88,7 +88,75 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var expectedRelativePath = Path.Combine("src", "AzureFunctionsApp1", "AzureFunctionsApp1.csproj");
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
-            var provider = GetProjectFileProvider();
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.AppType = null;
+            var provider = GetProjectFileProvider(null, commonOptions);
+
+            // Act
+            var actual = provider.GetRelativePathToProjectFile(context);
+
+            // Assert
+            Assert.Equal(expectedRelativePath, actual);
+        }
+
+        [Fact]
+        public void GetRelativePathToProjectFile_ReturnsAzureFunctionsApp_OnlyWhenOryxAppType_IsSetTo_Functions()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var webApp1Dir = CreateDir(srcDir, "WebApp1");
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
+            
+            var azureFunctionsApp1Dir = CreateDir(srcDir, "AzureFunctionsApp1");
+            File.WriteAllText(Path.Combine(
+                azureFunctionsApp1Dir,
+                "AzureFunctionsApp1.csproj"),
+                AzureFunctionsProjectFile);
+
+            var expectedRelativePath = Path.Combine("src", "AzureFunctionsApp1", "AzureFunctionsApp1.csproj");
+
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var context = GetContext(sourceRepo);
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.AppType = Constants.FunctionApplications;
+            var provider = GetProjectFileProvider(null, commonOptions);
+
+            // Act
+            var actual = provider.GetRelativePathToProjectFile(context);
+
+            // Assert
+            Assert.Equal(expectedRelativePath, actual);
+        }
+
+        [Fact]
+        public void GetRelativePathToProjectFile_ReturnsAzureBlazorWasmApp_OnlyWhenOryxAppType_IsSetTo_StaticSites()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var webApp1Dir = CreateDir(srcDir, "WebApp1");
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
+
+            var azureFunctionsApp1Dir = CreateDir(srcDir, "AzureFunctionsApp1");
+            File.WriteAllText(Path.Combine(
+                azureFunctionsApp1Dir,
+                "AzureFunctionsApp1.csproj"),
+                AzureFunctionsProjectFile);
+
+            var azureBlazorWasmApp1Dir = CreateDir(srcDir, "BlazorWasmApp1");
+            File.WriteAllText(Path.Combine(
+                azureBlazorWasmApp1Dir,
+                "BlazorWasmApp1.csproj"),
+                AzureBlazorWasmClientProjectFile);
+            var expectedRelativePath = Path.Combine("src", "BlazorWasmApp1", "BlazorWasmApp1.csproj");
+
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var context = GetContext(sourceRepo);
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.AppType = Constants.StaticSiteApplications;
+            
+            var provider = GetProjectFileProvider(null, commonOptions);
 
             // Act
             var actual = provider.GetRelativePathToProjectFile(context);
@@ -111,6 +179,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Assert
             Assert.Null(actual);
+        }
+
+        [Fact]
+        public void GetRelativePathToProjectFile_ReturnsWebApp_WhenOryxAppType_IsNotSet_EvenIfMultipleNonWebAppProjectsExist()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var webApp1Dir = CreateDir(srcDir, "WebApp1");
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
+
+            var azureFunctionsApp1Dir = CreateDir(srcDir, "AzureFunctionsApp1");
+            File.WriteAllText(Path.Combine(
+                azureFunctionsApp1Dir,
+                "AzureFunctionsApp1.csproj"),
+                AzureFunctionsProjectFile);
+
+            var azureBlazorWasmApp1Dir = CreateDir(srcDir, "BlazorWasmApp1");
+            File.WriteAllText(Path.Combine(
+                azureBlazorWasmApp1Dir,
+                "BlazorWasmApp1.csproj"),
+                AzureBlazorWasmClientProjectFile);
+            var expectedRelativePath = Path.Combine("src", "WebApp1", "WebApp1.csproj");
+
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var context = GetContext(sourceRepo);
+            var provider = GetProjectFileProvider();
+
+            // Act
+            var actual = provider.GetRelativePathToProjectFile(context);
+
+            // Assert
+            Assert.Equal(expectedRelativePath, actual);
         }
 
         [Theory]
