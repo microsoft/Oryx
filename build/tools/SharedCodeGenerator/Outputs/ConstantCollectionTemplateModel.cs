@@ -15,6 +15,8 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
 
         public string Name { get; set; }
 
+        public string Scope { get; set; }
+
         public Dictionary<string, string> Constants { get; set; }
     }
 }
