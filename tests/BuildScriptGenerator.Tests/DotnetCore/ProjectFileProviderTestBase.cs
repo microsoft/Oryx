@@ -58,6 +58,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         </Project>
         ";
 
+        protected const string AzureNonBlazorWasmProjectFile = @"
+        <Project Sdk=""Microsoft.NET.Sdk.Web"">
+          <PropertyGroup>
+            <TargetFramework>netstandard2.1</TargetFramework>
+            <RazorLangVersion>3.0</RazorLangVersion>
+          </PropertyGroup>
+          <ItemGroup>
+            <PackageReference Include=""Microsoft.AspNetCore"" Version=""2.1.0"" />
+          </ItemGroup>
+          <ItemGroup>
+            <None Update=""host.json"">
+              <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            </None>
+            <None Update=""local.settings.json"">
+              <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+              <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+            </None>
+          </ItemGroup>
+        </Project>
+        ";
+
         protected const string AzureFunctionsProjectFileWithoutAzureFunctionsVersionProperty = @"
         <Project Sdk=""Microsoft.NET.Sdk"">
           <PropertyGroup>

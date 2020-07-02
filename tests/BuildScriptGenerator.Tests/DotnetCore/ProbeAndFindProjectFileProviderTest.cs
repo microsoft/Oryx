@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
             var commonOptions = new BuildScriptGeneratorOptions();
-            commonOptions.AppType = "functions";
+            commonOptions.AppType = Constants.FunctionApplications;
             var provider = GetProjectFileProvider(null, commonOptions);
 
             // Act
@@ -130,7 +130,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void GetRelativePathToProjectFile_ReturnsAzureBlazorWasmApp_OnlyWhenOryxAppType_IsSetTo_BlazorWasm()
+        public void GetRelativePathToProjectFile_ReturnsAzureBlazorWasmApp_OnlyWhenOryxAppType_IsSetTo_StaticSites()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
@@ -154,7 +154,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
             var context = GetContext(sourceRepo);
             var commonOptions = new BuildScriptGeneratorOptions();
-            commonOptions.AppType = "static-sites";
+            commonOptions.AppType = Constants.StaticSiteApplications;
             
             var provider = GetProjectFileProvider(null, commonOptions);
 

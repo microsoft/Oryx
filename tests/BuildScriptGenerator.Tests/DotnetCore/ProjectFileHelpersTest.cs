@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Fact]
-        public void IsAzureBlazorWebAssemblyProject_ReturnsTrue_WhenProject_IsAzureIsAzureBlazorWebAssemblyProject()
+        public void IsAzureBlazorWebAssemblyProject_ReturnsTrue_WhenProject_Is_AzureBlazorWebAssemblyProject()
         {
             // Arrange
             var projectFile = ProjectFileProviderTestBase.AzureBlazorWasmClientProjectFile;
@@ -72,6 +72,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
             // Assert
             Assert.True(actual);
+        }
+
+        [Fact]
+        public void IsAzureBlazorWebAssemblyProject_ReturnsFalse_WhenProject_IsNot_AzureBlazorWebAssemblyProject()
+        {
+            // Arrange
+            var projectFile = ProjectFileProviderTestBase.AzureNonBlazorWasmProjectFile;
+            var xdoc = XDocument.Load(new StringReader(projectFile));
+
+            // Act
+            var actual = ProjectFileHelpers.IsAzureBlazorWebAssemblyProject(xdoc);
+
+            // Assert
+            Assert.False(actual);
         }
 
         public static TheoryData<string, string, string> GetRelativePathToRootData

@@ -107,18 +107,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 _logger.LogInformation($"ProbeAndProjectFileProvider: {Constants.AppType} is set to {_options.AppType}");
 
-                if (functionProjectExists && _options.AppType.ToLower().Contains("functions"))
+                if (functionProjectExists && _options.AppType.ToLower().Contains(Constants.FunctionApplications))
                 {
                     projectFile = GetProject(azureFunctionsProjects);
                 }
                 else if (blazorWasmProjectExists
-                    && _options.AppType.ToLower().Contains("static-sites"))
+                    && _options.AppType.ToLower().Contains(Constants.StaticSiteApplications))
                 {
                     projectFile = GetProject(azureBlazorWasmProjects);
                 }
                 else
                 {
-                    _logger.LogDebug($"Invalid value {_options.AppType} for env:{Constants.AppType}. Currently, supported values are 'functions', 'blazor-wasm', 'static-sites'");
+                    _logger.LogDebug($"Invalid value '{_options.AppType}' for '{Constants.AppType}'. Currently, supported values are 'functions', 'blazor-wasm', 'static-sites'");
                 }
             }
             else

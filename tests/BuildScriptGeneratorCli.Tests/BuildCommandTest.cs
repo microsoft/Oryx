@@ -124,6 +124,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         [Theory]
         [InlineData("functions")]
         [InlineData("static-sites")]
+        [InlineData("staTic-Sites")]
+        [InlineData("FUNCTIONS")]
         [InlineData("")]
         [InlineData(null)]
         public void IsValidInput_IsTrue_WhenApptype_Has_Valid_Input(string input)

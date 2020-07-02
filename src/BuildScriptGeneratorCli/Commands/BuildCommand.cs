@@ -328,8 +328,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // Invalid to specify apptype anything other than "static-sites" or "functions" empty or null is expected
             if (!string.IsNullOrEmpty(options.AppType)
-                && !(string.Equals("functions", options.AppType)
-                || string.Equals("static-sites", options.AppType)))
+                && !(string.Equals(Constants.FunctionApplications, options.AppType.ToLower())
+                || string.Equals(Constants.StaticSiteApplications, options.AppType.ToLower())))
             {
                 logger.LogError($"Invalid value '{options.AppType}' for --apptype, only permitted values are 'static-sites' or 'functions'");
                 console.WriteErrorLine($"Invalid input '{options.AppType}' for --apptype, only permitted values are 'static-sites' or 'functions'");
