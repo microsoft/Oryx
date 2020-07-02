@@ -83,22 +83,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <returns>The results of language detector operations.</returns>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            PlatformDetectorResult detectionResult;
-            if (TryGetExplicitVersion(out var explicitVersion))
+            var detectionResult = _detector.Detect(new DetectorContext
             {
-                detectionResult = new PlatformDetectorResult
-                {
-                    Platform = PhpConstants.PlatformName,
-                    PlatformVersion = explicitVersion,
-                };
-            }
-            else
-            {
-                detectionResult = _detector.Detect(new DetectorContext
-                {
-                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
-                });
-            }
+                SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+            });
 
             if (detectionResult == null)
             {
@@ -324,25 +312,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             // Fallback to default version
             var versionInfo = _phpVersionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
-        }
-
-        private bool TryGetExplicitVersion(out string explicitVersion)
-        {
-            explicitVersion = null;
-
-            var platformName = _commonOptions.PlatformName;
-            if (platformName.EqualsIgnoreCase(PhpConstants.PlatformName))
-            {
-                if (string.IsNullOrWhiteSpace(_phpScriptGeneratorOptions.PhpVersion))
-                {
-                    return false;
-                }
-
-                explicitVersion = _phpScriptGeneratorOptions.PhpVersion;
-                return true;
-            }
-
-            return false;
         }
     }
 }

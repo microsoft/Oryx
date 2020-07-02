@@ -103,22 +103,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            PlatformDetectorResult detectionResult;
-            if (TryGetExplicitVersion(out var explicitVersion))
+            var detectionResult = _detector.Detect(new DetectorContext
             {
-                detectionResult = new PlatformDetectorResult
-                {
-                    Platform = PythonConstants.PlatformName,
-                    PlatformVersion = explicitVersion,
-                };
-            }
-            else
-            {
-                detectionResult = _detector.Detect(new DetectorContext
-                {
-                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
-                });
-            }
+                SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+            });
 
             if (detectionResult == null)
             {
@@ -495,25 +483,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             // Fallback to default version
             var versionInfo = _versionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
-        }
-
-        private bool TryGetExplicitVersion(out string explicitVersion)
-        {
-            explicitVersion = null;
-
-            var platformName = _commonOptions.PlatformName;
-            if (platformName.EqualsIgnoreCase(PythonConstants.PlatformName))
-            {
-                if (string.IsNullOrWhiteSpace(_pythonScriptGeneratorOptions.PythonVersion))
-                {
-                    return false;
-                }
-
-                explicitVersion = _pythonScriptGeneratorOptions.PythonVersion;
-                return true;
-            }
-
-            return false;
         }
     }
 }

@@ -115,22 +115,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            PlatformDetectorResult detectionResult;
-            if (TryGetExplicitVersion(out var explicitVersion))
+            var detectionResult = _detector.Detect(new DetectorContext
             {
-                detectionResult = new PlatformDetectorResult
-                {
-                    Platform = NodeConstants.PlatformName,
-                    PlatformVersion = explicitVersion,
-                };
-            }
-            else
-            {
-                detectionResult = _detector.Detect(new DetectorContext
-                {
-                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
-                });
-            }
+                SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+            });
 
             if (detectionResult == null)
             {
@@ -576,25 +564,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             // Fallback to default version
             var versionInfo = _nodeVersionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
-        }
-
-        private bool TryGetExplicitVersion(out string explicitVersion)
-        {
-            explicitVersion = null;
-
-            var platformName = _commonOptions.PlatformName;
-            if (platformName.EqualsIgnoreCase(NodeConstants.PlatformName))
-            {
-                if (string.IsNullOrWhiteSpace(_nodeScriptGeneratorOptions.NodeVersion))
-                {
-                    return false;
-                }
-
-                explicitVersion = _nodeScriptGeneratorOptions.NodeVersion;
-                return true;
-            }
-
-            return false;
         }
     }
 }
