@@ -267,17 +267,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private string GetMaxSatisfyingVersionAndVerify(string version)
         {
-            var versionInfo = _phpVersionProvider.GetVersionInfo();
+            var supportedVersions = SupportedVersions;
+            var nonPreviewRuntimeVersions = supportedVersions.Where(v => !v.Any(c => char.IsLetter(c)));
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
-                versionInfo.SupportedVersions);
+                nonPreviewRuntimeVersions);
+
+            // Check if a preview version is available
+            if (string.IsNullOrEmpty(maxSatisfyingVersion))
+            {
+                // Preview versions: '7.4.0RC4', '7.4.0beta2', etc
+                var previewRuntimeVersions = supportedVersions
+                    .Where(v => v.Any(c => char.IsLetter(c)))
+                    .Where(v => v.StartsWith(version))
+                    .OrderByDescending(v => v);
+                if (previewRuntimeVersions.Any())
+                {
+                    maxSatisfyingVersion = previewRuntimeVersions.First();
+                }
+            }
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(
                     PhpConstants.PlatformName,
                     version,
-                    versionInfo.SupportedVersions);
+                    supportedVersions);
                 _logger.LogError(
                     exc,
                     $"Exception caught, the version '{version}' is not supported for the PHP platform.");
