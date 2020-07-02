@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.Oryx.SharedCodeGenerator.Outputs;
 
 namespace Microsoft.Oryx.SharedCodeGenerator
@@ -25,24 +26,29 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         {
             if (args.Length != 2)
             {
-                Console.WriteLine($"Usage: {AppDomain.CurrentDomain.FriendlyName} <input YAML path> <output base path>");
+                Console.WriteLine(
+                    $"Usage: {AppDomain.CurrentDomain.FriendlyName} <input YAML path> <output base path>");
                 return ExitFailure;
             }
 
             return GenerateSharedCode(args[ArgInput], args[ArgOutputBase]);
         }
 
-        public static string BuildAutogenDisclaimer(string inputFile)
-        {
-            inputFile = Path.GetFileName(inputFile);
-            return $"This file was auto-generated from '{inputFile}'. Changes may be overridden.";
-        }
-
         private static int GenerateSharedCode(string inputPath, string outputBasePath)
         {
-            if (!File.Exists(inputPath))
+            var inputFiles = inputPath.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(path => path.Trim());
+            var errors = new StringBuilder();
+            foreach (var inputFile in inputFiles)
             {
-                Console.Error.WriteLine("Input path is not an existing file.");
+                if (!File.Exists(inputPath))
+                {
+                    errors.AppendLine($"File {inputFile} does not exist.");
+                }
+            }
+
+            if (errors.Length > 0)
+            {
+                Console.Error.WriteLine(errors.ToString());
                 return ExitFailure;
             }
 
@@ -52,18 +58,24 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                 return ExitFailure;
             }
 
-            var input = LoadFromString<List<ConstantCollection>>(File.ReadAllText(inputPath));
-
-            foreach (ConstantCollection col in input)
+            var collections = new List<ConstantCollection>();
+            foreach (var inputFile in inputFiles)
             {
-                ReplaceVariablesWithValues(col.Constants);
-                col.SourcePath = inputPath; // This isn't set by YamlDotNet, so it's added manually
+                var inputFileContent = File.ReadAllText(inputFile);
+                var deserializedInput = LoadFromString<List<ConstantCollection>>(inputFileContent);
+                deserializedInput.ForEach(collection => collection.SourcePath = inputFile);
+                collections.AddRange(deserializedInput);
+            }
 
-                foreach (Dictionary<string, string> outputInfo in col.Outputs)
+            foreach (var collection in collections)
+            {
+                ReplaceVariablesWithValues(collection.Constants);
+
+                foreach (Dictionary<string, string> outputInfo in collection.Outputs)
                 {
-                    IOutputFile output = OutputFactory.CreateByType(outputInfo, col);
-                    string filePath = Path.Combine(outputBasePath, output.GetPath());
-                    using (StreamWriter writer = new StreamWriter(filePath))
+                    var output = OutputFactory.CreateByType(outputInfo, collection);
+                    var filePath = Path.Combine(outputBasePath, output.GetPath());
+                    using (var writer = new StreamWriter(filePath))
                     {
                         Console.WriteLine("Writing file '{0}'", filePath);
                         writer.Write(output.GetContent());
@@ -74,11 +86,19 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             return ExitSuccess;
         }
 
+        public static string BuildAutogenDisclaimer(string inputFile)
+        {
+            inputFile = Path.GetFileName(inputFile);
+            return $"This file was auto-generated from '{inputFile}'. Changes may be overridden.";
+        }
+
         private static void ReplaceVariablesWithValues(IDictionary<string, string> dict)
         {
             var colReplacements = dict
                         .Where(e => e.Value.StartsWith(VarPrefix) && e.Value.EndsWith(VarSuffix))
-                        .Select(e => KeyValuePair.Create(e.Key, e.Value.Substring(VarPrefix.Length, e.Value.Length - VarPrefix.Length - VarSuffix.Length)))
+                        .Select(e => KeyValuePair.Create(
+                            e.Key,
+                            e.Value.Substring(VarPrefix.Length, e.Value.Length - VarPrefix.Length - VarSuffix.Length)))
                         .ToList();
             foreach (var entry in colReplacements)
             {
