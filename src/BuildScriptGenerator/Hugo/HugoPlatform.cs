@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Hugo;
 
@@ -43,10 +44,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var detectionResult = _detector.Detect(new DetectorContext
+            PlatformDetectorResult detectionResult;
+            if (TryGetExplicitVersion(out var explicitVersion))
             {
-                SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
-            });
+                detectionResult = new PlatformDetectorResult
+                {
+                    Platform = HugoConstants.PlatformName,
+                    PlatformVersion = explicitVersion,
+                };
+            }
+            else
+            {
+                detectionResult = _detector.Detect(new DetectorContext
+                {
+                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                });
+            }
 
             if (detectionResult == null)
             {
@@ -176,6 +189,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 
             // Fallback to default version
             return HugoConstants.Version;
+        }
+
+        private bool TryGetExplicitVersion(out string explicitVersion)
+        {
+            explicitVersion = null;
+
+            var platformName = _commonOptions.PlatformName;
+            if (platformName.EqualsIgnoreCase(HugoConstants.PlatformName))
+            {
+                if (string.IsNullOrWhiteSpace(_hugoScriptGeneratorOptions.HugoVersion))
+                {
+                    return false;
+                }
+
+                explicitVersion = _hugoScriptGeneratorOptions.HugoVersion;
+                return true;
+            }
+
+            return false;
         }
     }
 }
