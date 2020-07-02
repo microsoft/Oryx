@@ -131,7 +131,6 @@ RUN cd ${IMAGES_DIR} \
  && ./installPlatform.sh nodejs 10.14.2 \
  && ./installPlatform.sh nodejs 10.16.3 \
  && ./installPlatform.sh nodejs 12.16.3 \
- && ./installPlatform.sh nodejs 14.0.0 \
  && ./installPlatform.sh nodejs $NODE6_VERSION
 RUN ${IMAGES_DIR}/build/installNpm.sh
 
@@ -160,8 +159,6 @@ RUN set -ex \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
  && ln -s 10.16.3 /opt/nodejs/10.16 \
  && ln -s 12.16.3 /opt/nodejs/12.16 \
- && ln -s 14.0.0 /opt/nodejs/14.0 \
- && ln -s 14.0 /opt/nodejs/14 \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ln -s $NODE6_VERSION /opt/nodejs/6
 RUN set -ex \
