@@ -114,7 +114,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             // Write the platform name and version to the manifest file
             buildProperties[ManifestFilePropertyKeys.PhpVersion] = detectorResult.PlatformVersion;
-            buildProperties[ManifestFilePropertyKeys.PlatformName] = detectorResult.Platform;
 
             _logger.LogDebug("Selected PHP version: {phpVer}", detectorResult.PlatformVersion);
             bool composerFileExists = false;

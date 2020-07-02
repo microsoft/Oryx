@@ -145,8 +145,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return null;
             }
 
-            manifestFileProperties[ManifestFilePropertyKeys.PlatformName] = DotNetCoreConstants.PlatformName;
-
             var templateProperties = new DotNetCoreBashBuildSnippetProperties
             {
                 ProjectFile = projectFile,

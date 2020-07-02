@@ -134,7 +134,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             // Write the platform name and version to the manifest file
             manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = detectorResult.PlatformVersion;
-            manifestFileProperties[ManifestFilePropertyKeys.PlatformName] = detectorResult.Platform;
 
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);

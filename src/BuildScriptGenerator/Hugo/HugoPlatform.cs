@@ -72,7 +72,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             PlatformDetectorResult detectorResult)
         {
             var manifestFileProperties = new Dictionary<string, string>();
-            manifestFileProperties[ManifestFilePropertyKeys.PlatformName] = detectorResult.Platform;
             manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = detectorResult.PlatformVersion;
 
             string script = TemplateHelper.Render(
