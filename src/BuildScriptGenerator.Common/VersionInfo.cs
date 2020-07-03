@@ -4,7 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
@@ -24,13 +24,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         {
             var semanticVersionStr = displayVersion;
 
-            if (!displayVersion.Contains('-') && !Regex.IsMatch(displayVersion, @"^\d+\.\d+\.\d+$"))
+            // The display version is in preview version format or it's a non-preview version
+            // Both cases can be handled by SemVer library.
+            // Throws ArgumentException if SemVer library found invalid version format.
+            if (displayVersion.Contains('-') || !displayVersion.Any(c => char.IsLetter(c)))
             {
-                var index = displayVersion.Length;
-                index = Regex.Match(displayVersion, @"[^\d\.]").Index;
-                semanticVersionStr = displayVersion.Insert(index, "-");
+                return new SemVer.Version(semanticVersionStr);
             }
 
+            // The display version is an invalid preview version
+            var index = displayVersion.Length;
+            index = displayVersion.ToList().FindIndex(c => char.IsLetter(c));
+            semanticVersionStr = displayVersion.Insert(index, "-");
             return new SemVer.Version(semanticVersionStr);
         }
 
