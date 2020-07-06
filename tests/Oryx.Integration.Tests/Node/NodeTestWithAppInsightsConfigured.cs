@@ -77,7 +77,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("10")]
         [InlineData("12")]
-        [InlineData("14")]
         // From 1.7.2 onward appinsights sdk have new environment variable "APPLICATIONINSIGHTS_CONNECTION_STRING"
         // instead  of "APPINSIGHTS_INSTRUMENTATIONKEY"
         public async Task CanBuildAndRun_NodeApp_WithAppInsights_New_Env_Variable(string nodeVersion)
@@ -131,7 +130,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("10")]
         [InlineData("12")]
-        [InlineData("14")]
         // From 1.7.2 onward appinsights sdk have new environment variable "APPLICATIONINSIGHTS_CONNECTION_STRING"
         // instead  of "APPINSIGHTS_INSTRUMENTATIONKEY"
         public async Task CanBuildAndRun_NodeApp_Without_AppInsights_Old_Env_Variable_Configuration(string nodeVersion)
@@ -184,7 +182,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("10")]
         [InlineData("12")]
-        [InlineData("14")]
         // From 1.7.2 onward appinsights sdk have new environment variable "APPLICATIONINSIGHTS_CONNECTION_STRING"
         // instead  of "APPINSIGHTS_INSTRUMENTATIONKEY"
         public async Task CanBuildAndRun_NodeApp_Without_AppInsights_New_Env_Variable_Configuration(string nodeVersion)
@@ -236,7 +233,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("10")]
         [InlineData("12")]
-        [InlineData("14")]
         // From 1.7.2 onward appinsights sdk have new environment variable "APPLICATIONINSIGHTS_CONNECTION_STRING"
         // instead  of "APPINSIGHTS_INSTRUMENTATIONKEY"
         public async Task CanBuildAndRun_NodeApp_AppInsights_Old_Env_Variable_Configuration(string nodeVersion)
