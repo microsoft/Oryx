@@ -122,12 +122,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         private IList<string> SortVersions(IEnumerable<string> versions)
         {
-            var result = new List<SemVer.Version>();
+
+            var result = new List<VersionInfo>();
             foreach (var version in versions)
             {
                 try
                 {
-                    result.Add(new SemVer.Version(version));
+                    result.Add(new VersionInfo(version));
                 }
                 catch (ArgumentException)
                 {
@@ -136,7 +137,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             result.Sort();
-            return result.Select(v => v.ToString()).ToList();
+            return result.Select(v => v.DisplayVersion).ToList();
         }
 
         private class PlatformResult
