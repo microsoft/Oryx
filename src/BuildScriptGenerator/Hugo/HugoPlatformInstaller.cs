@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -26,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 .Replace("#VERSION#", version)
                 .Replace("#TAR_FILE#", tarFile);
             var platformName = HugoConstants.PlatformName;
-            var versionDirInTemp = $"{Constants.TemporaryInstallationDirectoryRoot}/{platformName}/{version}";
+            var versionDirInTemp = Path.Combine(_commonOptions.DynamicInstallRootDir, platformName, version);
 
             var snippet = new StringBuilder();
             snippet
@@ -50,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 .AppendLine("echo")
 
                 // Write out a sentinel file to indicate downlaod and extraction was successful
-                .AppendLine($"echo > {versionDirInTemp}/{SdkStorageConstants.SdkDownloadSentinelFileName}");
+                .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
             return snippet.ToString();
         }
 
@@ -59,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             return IsVersionInstalled(
                 version,
                 builtInDir: HugoConstants.InstalledHugoVersionsDir,
-                dynamicInstallDir: $"{Constants.TemporaryInstallationDirectoryRoot}/hugo");
+                dynamicInstallDir: Path.Combine(_commonOptions.DynamicInstallRootDir, HugoConstants.PlatformName));
         }
     }
 }

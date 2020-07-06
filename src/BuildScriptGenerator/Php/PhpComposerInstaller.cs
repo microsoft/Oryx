@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -27,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             var scriptBuilder = new StringBuilder();
             scriptBuilder.AppendLine(script);
             scriptBuilder.AppendLine(
-                $"export composer=\"{Constants.TemporaryInstallationDirectoryRoot}/php-composer/{version}/composer.phar\"");
+                $"export composer=\"{Path.Combine(_commonOptions.DynamicInstallRootDir, "php-composer", version, "composer.phar")}\"");
             return scriptBuilder.ToString();
         }
 
@@ -36,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return IsVersionInstalled(
                 version,
                 builtInDir: PhpConstants.InstalledPhpComposerVersionDir,
-                dynamicInstallDir: $"{Constants.TemporaryInstallationDirectoryRoot}/php-composer");
+                dynamicInstallDir: Path.Combine(_commonOptions.DynamicInstallRootDir, "php-composer"));
         }
     }
 }

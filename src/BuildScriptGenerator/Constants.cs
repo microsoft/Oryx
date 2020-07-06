@@ -24,5 +24,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string AppType = "apptype";
         public const string FunctionApplications = "functions";
         public const string StaticSiteApplications = "static-sites";
+
+        /// <summary>
+        /// The name of the key used by benv script to identify the dynamic install root directory so that it can set
+        /// the path to the installed sdks.
+        /// </summary>
+        public const string BenvDynamicInstallRootDirKey = "dynamic_install_root_dir";
     }
 }
