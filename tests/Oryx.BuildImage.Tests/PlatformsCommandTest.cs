@@ -11,6 +11,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Tests.Common;
 using Newtonsoft.Json;
@@ -28,6 +29,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
@@ -56,6 +58,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(dotNetCorePlatform.Versions);
                     Assert.True(dotNetCorePlatform.Versions.Any());
                     Assert.True(dotNetCorePlatform.Versions.Contains("1.1.13"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("5.0.0-preview.3.20214.6"));
 
                     var nodePlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(NodeConstants.PlatformName))
@@ -72,6 +75,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(pythonPlatform.Versions);
                     Assert.True(pythonPlatform.Versions.Any());
                     Assert.True(pythonPlatform.Versions.Contains("2.7.17"));
+                    Assert.True(pythonPlatform.Versions.Contains("3.9.0b1"));
 
                     var phpPlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(PhpConstants.PlatformName))
@@ -89,7 +93,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(hugoPlatform.Versions.Any());
                     Assert.True(hugoPlatform.Versions.Contains(HugoConstants.Version));
                 },
-                result.GetDebugInfo());
+            result.GetDebugInfo());
         }
 
         private class PlatformResult
