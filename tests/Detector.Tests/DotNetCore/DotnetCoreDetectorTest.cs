@@ -4,13 +4,13 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Oryx.Detector.Tests.DotNetCore;
+using Microsoft.Oryx.Detector.DotNetCore;
 using Moq;
 using Xunit;
 
-namespace Microsoft.Oryx.Detector.DotNetCore
+namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
-    public class DotNetCorePlatformDetectorTest
+    public class DotNetCoreDetectorTest
     {
         [Fact]
         public void Detect_ReturnsNull_IfRepoDoesNotContain_ProjectFile()

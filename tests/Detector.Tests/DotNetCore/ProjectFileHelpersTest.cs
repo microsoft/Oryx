@@ -5,10 +5,11 @@
 
 using System.IO;
 using System.Xml.Linq;
+using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.Detector.DotNetCore
+namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
     public class ProjectFileHelpersTest : ProjectFileProviderTestBase
     {

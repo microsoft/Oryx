@@ -7,10 +7,11 @@ using System;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Detector.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.Detector.DotNetCore
+namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
     public abstract class ProjectFileProviderTestBase : IClassFixture<TestTempDirTestFixture>
     {

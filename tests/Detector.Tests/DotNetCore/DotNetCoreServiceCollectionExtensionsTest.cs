@@ -6,9 +6,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Oryx.Detector.DotNetCore;
 using Xunit;
 
-namespace Microsoft.Oryx.Detector.DotNetCore
+namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
     public class DotNetCoreServiceCollectionExtensionsTest
     {

@@ -3,7 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.Detector.DotNetCore
+using Microsoft.Oryx.Detector.DotNetCore;
+
+namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
     class TestProjectFileProvider : DefaultProjectFileProvider
     {

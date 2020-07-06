@@ -56,8 +56,6 @@ namespace Microsoft.Oryx.Tests.Common
 
         public bool DetectInvoked { get; private set; }
 
-        public string PlatformName => _platformName;
-
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             DetectInvoked = true;
