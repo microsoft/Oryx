@@ -92,6 +92,7 @@ stages:
           nuGetFeedType: 'external'
           # Here 'OryxNugetOrg' is a service connection which has the API key to enable pushing to nuget.org
           publishFeedCredentials: 'OryxNugetOrg'
+          verbosityPush: 'Detailed'
       - task: GitHubRelease@0
         displayName: 'GitHub release (create)'
         inputs:
