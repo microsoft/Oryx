@@ -30,7 +30,7 @@ stages:
             exit 1
           fi
           if [[ "$(Build.SourceBranch)" != "refs/heads/master" ]] \
-          && [[ "$(Build.SourceBranch)" != refs/heads/patch* ]]; then
+          && [[ "$(Build.SourceBranch)" != refs/heads/kichalla* ]]; then
             echo
             echo "Invalid configuration."
             echo 'Only 'master' and 'patch/*' branches are allowed.'
@@ -82,6 +82,7 @@ stages:
           . build/detector/__detectorNugetPackagesVersions.sh
           echo "Setting release name to '$releaseName'..."
           echo "##vso[task.setvariable variable=RELEASE_NAME;]$VERSION"
+          curl https://api.nuget.org/v3/index.json
         displayName: 'Set relase name environment variable'
       - task: NuGetCommand@2
         displayName: 'Push nuget packages to nuget.org'
