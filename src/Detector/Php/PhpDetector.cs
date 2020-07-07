@@ -14,8 +14,7 @@ namespace Microsoft.Oryx.Detector.Php
     {
         private readonly ILogger<PhpDetector> _logger;
 
-        public PhpDetector(
-            ILogger<PhpDetector> logger)
+        public PhpDetector(ILogger<PhpDetector> logger)
         {
             _logger = logger;
         }
@@ -23,31 +22,23 @@ namespace Microsoft.Oryx.Detector.Php
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;
-            var composerFileExists = sourceRepo.FileExists(PhpConstants.ComposerFileName);
-            var composerLockFileExists = sourceRepo.FileExists(PhpConstants.ComposerLockFileName);
-
-            if (!composerFileExists && !composerLockFileExists)
+            if (!sourceRepo.FileExists(PhpConstants.ComposerFileName))
             {
-                _logger.LogDebug(
-                    $"Files '{PhpConstants.ComposerFileName}' or '{PhpConstants.ComposerLockFileName}' " +
-                    $"do not exist in source repo.");
+                _logger.LogDebug($"File '{PhpConstants.ComposerFileName}' does not exist in source repo");
                 return null;
             }
 
             var version = GetVersion(context);
 
-            return new PhpPlatformDetectorResult
+            return new PlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = version,
-                ComposerFileExists = composerFileExists,
-                ComposerLockFileExists = composerLockFileExists,
             };
         }
 
         private string GetVersion(DetectorContext context)
         {
-
             var version = GetVersionFromComposerFile(context);
             if (version != null)
             {
