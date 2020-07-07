@@ -98,6 +98,59 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
+        [Theory]
+        [InlineData(new[] {"7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "7.4.0beta4", "7.4.0beta4")]
+        [InlineData(new[] { "7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "7.3.20RC1", "7.3.20RC1")]
+        [InlineData(new[] { "7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "8.0.0alpha1", "8.0.0alpha1")]
+        public void Detect_ReturnsPreviewVersion_UsingMaximumSatisfyingVersionRules(
+            string[] supportedVersions,
+            string versionInComposerFile,
+            string expectedVersion)
+        {
+            // Arrange
+            var platform = CreatePhpPlatform(
+                supportedPhpVersions: supportedVersions);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{\"require\":{\"php\":\"" + versionInComposerFile + "\"}}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
+        }
+
+        [Theory]
+        [InlineData(new[] { "7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "7.4.0beta4", "7.4.0beta4")]
+        [InlineData(new[] { "7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "7.3.20RC1", "7.3.20RC1")]
+        [InlineData(new[] { "7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "8.0.0alpha1", "8.0.0alpha1")]
+        public void Detect_WhenPreviewPhpVersion_IsSetInOptions(string[] supportedVersions, string previewVersion, string expectedVersion)
+        {
+            // Arrange
+            var phpScriptGeneratorOptions = new PhpScriptGeneratorOptions
+            {
+                PhpVersion = previewVersion
+            };
+            var platform = CreatePhpPlatform(
+                supportedPhpVersions: supportedVersions,
+                defaultVersion: previewVersion,
+                phpScriptGeneratorOptions: phpScriptGeneratorOptions);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{\"require\":{\"php\":\"" + previewVersion + "\"}}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Act & Assert
+            Assert.NotNull(result);
+            Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
+        }
+
         [Fact]
         public void Detect_ReturnsVersionFromOptions_EvenIfComposerFileHasVersionSpecified()
         {
