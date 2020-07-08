@@ -85,8 +85,8 @@ stages:
         displayName: 'Set relase name environment variable'
       - bash: |
           dotnet nuget push \
-          --api-key $NUGETORG_API_KEY \
-          $(Build.ArtifactStagingDirectory)/detector_signed/packages/*.nupkg
+          $(Build.ArtifactStagingDirectory)/detector_signed/packages/*.nupkg \
+          --api-key $NUGETORG_API_KEY
         displayName: 'Push nuget packages to nuget.org'
       - task: GitHubRelease@0
         displayName: 'GitHub release (create)'
