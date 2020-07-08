@@ -82,19 +82,13 @@ stages:
           . build/detector/__detectorNugetPackagesVersions.sh
           echo "Setting release name to '$releaseName'..."
           echo "##vso[task.setvariable variable=RELEASE_NAME;]$VERSION"
-          
-          echo "Running mtr tool..."
-          mtr -r -c 100 api.nuget.org
         displayName: 'Set relase name environment variable'
-      - task: NuGetCommand@2
-        displayName: 'Push nuget packages to nuget.org'
+      - task: NuGetAuthenticate@0
         inputs:
-          command: 'push'
-          packagesToPush: '$(Build.ArtifactStagingDirectory)/detector_signed/packages/*.nupkg;!$(Build.ArtifactStagingDirectory)/detector_signed/packages/*.symbols.nupkg'
-          nuGetFeedType: 'external'
-          # Here 'OryxNugetOrg' is a service connection which has the API key to enable pushing to nuget.org
-          publishFeedCredentials: 'OryxNugetOrg'
-          verbosityPush: 'Detailed'
+          nuGetServiceConnections: 'OryxNugetOrg'
+      - bash: |
+          dotnet nuget push $(Build.ArtifactStagingDirectory)/detector_signed/packages/*.nupkg
+        displayName: 'Push nuget packages to nuget.org'
       - task: GitHubRelease@0
         displayName: 'GitHub release (create)'
         inputs:
