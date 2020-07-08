@@ -7,7 +7,7 @@ ARG SDK_STORAGE_BASE_URL_VALUE
 # Determine where the image is getting built (DevOps agents or local)
 ARG AGENTBUILD
 
-FROM buildpack-deps:stretch AS main
+FROM githubrunners-buildpackdeps-stretch AS main
 ARG BUILD_DIR
 ARG IMAGES_DIR
 
