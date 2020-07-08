@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Theory]
-        [InlineData(new[] {"7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "7.4.0beta4", "7.4.0beta4")]
+        [InlineData(new[] { "7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "7.4.0beta4", "7.4.0beta4")]
         [InlineData(new[] { "7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "7.3.20RC1", "7.3.20RC1")]
         [InlineData(new[] { "7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "8.0.0alpha1", "8.0.0alpha1")]
         public void Detect_ReturnsPreviewVersion_UsingMaximumSatisfyingVersionRules(
@@ -108,9 +108,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         {
             // Arrange
             var platform = CreatePhpPlatform(
+                detectedVersion: versionInComposerFile,
                 supportedPhpVersions: supportedVersions);
             var repo = new MemorySourceRepo();
-            repo.AddFile("{\"require\":{\"php\":\"" + versionInComposerFile + "\"}}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
 
             // Act
