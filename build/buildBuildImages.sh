@@ -132,9 +132,6 @@ function buildDockerImage() {
 	fi
 }
 
-# Forcefully pull the latest image having security updates
-docker pull buildpack-deps:stretch
-
 # Create artifact dir & files
 mkdir -p "$ARTIFACTS_DIR/images"
 
