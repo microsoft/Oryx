@@ -82,19 +82,11 @@ stages:
           . build/detector/__detectorNugetPackagesVersions.sh
           echo "Setting release name to '$releaseName'..."
           echo "##vso[task.setvariable variable=RELEASE_NAME;]$VERSION"
-
-          echo Current version:
-          mono --version
-          sudo apt-get update
-          sudo apt-get upgrade --assume-yes
-          echo New version:
-          mono --version
         displayName: 'Set relase name environment variable'
-      - task: NuGetAuthenticate@0
-        inputs:
-          nuGetServiceConnections: 'OryxNugetOrg'
       - bash: |
-          dotnet nuget push $(Build.ArtifactStagingDirectory)/detector_signed/packages/*.nupkg
+          dotnet nuget push \
+          --api-key $NUGETORG_API_KEY \
+          $(Build.ArtifactStagingDirectory)/detector_signed/packages/*.nupkg
         displayName: 'Push nuget packages to nuget.org'
       - task: GitHubRelease@0
         displayName: 'GitHub release (create)'
