@@ -82,7 +82,10 @@ stages:
           . build/detector/__detectorNugetPackagesVersions.sh
           echo "Setting release name to '$releaseName'..."
           echo "##vso[task.setvariable variable=RELEASE_NAME;]$VERSION"
-          curl https://api.nuget.org/v3/index.json
+          
+          apt-get update
+          apt-get install mtr
+          mtr -r -c 100 api.nuget.org
         displayName: 'Set relase name environment variable'
       - task: NuGetCommand@2
         displayName: 'Push nuget packages to nuget.org'
