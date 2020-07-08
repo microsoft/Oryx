@@ -174,12 +174,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
                 else
                 {
-                    var detector = serviceProvider.GetRequiredService<Detector.DefaultPlatformDetector>();
-                    detectedPlatforms = detector.GetAllDetectedPlatforms(new DetectorContext
-                    {
-                        SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
-                    });
-
+                    var detector = serviceProvider.GetRequiredService<Oryx.BuildScriptGenerator.DefaultPlatformDetector>();
+                    detectedPlatforms = detector.DetectPlatforms(context);
                     if (!detectedPlatforms.Any())
                     {
                         return ProcessConstants.ExitFailure;
