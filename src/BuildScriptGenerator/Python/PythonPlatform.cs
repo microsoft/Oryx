@@ -10,6 +10,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Python;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -58,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _versionProvider;
         private readonly ILogger<PythonPlatform> _logger;
-        private readonly PythonPlatformDetector _detector;
+        private readonly IPythonPlatformDetector _detector;
         private readonly PythonPlatformInstaller _platformInstaller;
 
         /// <summary>
@@ -75,7 +77,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             IOptions<PythonScriptGeneratorOptions> pythonScriptGeneratorOptions,
             IPythonVersionProvider versionProvider,
             ILogger<PythonPlatform> logger,
-            PythonPlatformDetector detector,
+            IPythonPlatformDetector detector,
             PythonPlatformInstaller platformInstaller)
         {
             _commonOptions = commonOptions.Value;
@@ -101,19 +103,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            PlatformDetectorResult detectionResult;
-            if (TryGetExplicitVersion(out var explicitVersion))
+            var detectionResult = _detector.Detect(new DetectorContext
             {
-                detectionResult = new PlatformDetectorResult
-                {
-                    Platform = PythonConstants.PlatformName,
-                    PlatformVersion = explicitVersion,
-                };
-            }
-            else
-            {
-                detectionResult = _detector.Detect(context);
-            }
+                SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+            });
 
             if (detectionResult == null)
             {
@@ -490,25 +483,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             // Fallback to default version
             var versionInfo = _versionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
-        }
-
-        private bool TryGetExplicitVersion(out string explicitVersion)
-        {
-            explicitVersion = null;
-
-            var platformName = _commonOptions.PlatformName;
-            if (platformName.EqualsIgnoreCase(PythonConstants.PlatformName))
-            {
-                if (string.IsNullOrWhiteSpace(_pythonScriptGeneratorOptions.PythonVersion))
-                {
-                    return false;
-                }
-
-                explicitVersion = _pythonScriptGeneratorOptions.PythonVersion;
-                return true;
-            }
-
-            return false;
         }
     }
 }

@@ -10,7 +10,7 @@ using Microsoft.Oryx.Detector.Hugo;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
-namespace Microsoft.Oryx.Detector.Tests
+namespace Microsoft.Oryx.Detector.Tests.Hugo
 {
     public class HugoDetectorTest : IClassFixture<TestTempDirTestFixture>
     {

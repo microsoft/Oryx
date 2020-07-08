@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.Detector
 
             foreach (var platformDetector in _platformDetectors)
             {
-                _logger.LogDebug($"Detecting for platform '{platformDetector.PlatformName}'...");
+                _logger.LogDebug($"Detecting platform using '{platformDetector.GetType()}'...");
 
                 if (IsDetectedPlatform(
                     context,

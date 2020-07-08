@@ -10,6 +10,7 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 
 WORKDIR /usr/oryx
+COPY build build
 COPY src src
 COPY build/FinalPublicKey.snk build/
 

@@ -21,6 +21,7 @@ using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
+using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 

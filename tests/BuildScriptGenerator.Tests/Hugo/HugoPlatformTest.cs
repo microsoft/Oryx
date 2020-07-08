@@ -6,7 +6,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Hugo;
-using Microsoft.Oryx.Tests.Common;
+using Microsoft.Oryx.Detector.Hugo;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
@@ -17,8 +17,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
         public void Detect_ReturnsDefaultVersion_IfNoVersionFoundInOptions()
         {
             // Arrange
-            var expectedVersion = "1.2.3";
-            var platform = CreatePlatform(detectedVersion: expectedVersion);
+            var expectedVersion = BuildScriptGenerator.Hugo.HugoConstants.Version;
+            var detector = CreateDetector(detectedVersion: null);
+            var platform = CreatePlatform(detector);
             var context = CreateContext();
 
             // Act
@@ -26,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(BuildScriptGenerator.Hugo.HugoConstants.PlatformName, result.Platform);
             Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
@@ -40,8 +41,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
             {
                 HugoVersion = expectedVersion
             };
+            var detector = CreateDetector(detectedVersion: detectedVersion);
             var platform = CreatePlatform(
-                detectedVersion: detectedVersion,
+                detector,
                 hugoScriptGeneratorOptions: hugoScriptGeneratorOptions);
             var context = CreateContext();
 
@@ -50,8 +52,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(BuildScriptGenerator.Hugo.HugoConstants.PlatformName, result.Platform);
             Assert.Equal(expectedVersion, result.PlatformVersion);
+        }
+
+        private IHugoPlatformDetector CreateDetector(string detectedVersion)
+        {
+            return new TestHugoPlatformDetector(detectedVersion: detectedVersion);
         }
 
         private BuildScriptGeneratorContext CreateContext()
@@ -63,39 +70,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
         }
 
         private HugoPlatform CreatePlatform(
-            string detectedVersion = null,
+            IHugoPlatformDetector detector,
             BuildScriptGeneratorOptions buildScriptGeneratorOptions = null,
             HugoScriptGeneratorOptions hugoScriptGeneratorOptions = null)
         {
-            detectedVersion = detectedVersion ?? HugoConstants.Version;
             buildScriptGeneratorOptions = buildScriptGeneratorOptions ?? new BuildScriptGeneratorOptions();
             hugoScriptGeneratorOptions = hugoScriptGeneratorOptions ?? new HugoScriptGeneratorOptions();
+
             return new HugoPlatform(
                 Options.Create(buildScriptGeneratorOptions),
                 Options.Create(hugoScriptGeneratorOptions),
                 NullLogger<HugoPlatform>.Instance,
                 new HugoPlatformInstaller(Options.Create(buildScriptGeneratorOptions), NullLoggerFactory.Instance),
-                new TestHugoPlatformDetector(detectedVersion));
-        }
-
-        private class TestHugoPlatformDetector : HugoPlatformDetector
-        {
-            private readonly string _detectedVersion;
-
-            public TestHugoPlatformDetector(string detectedVersion)
-                : base(new TestEnvironment())
-            {
-                _detectedVersion = detectedVersion;
-            }
-
-            public override PlatformDetectorResult Detect(RepositoryContext context)
-            {
-                return new PlatformDetectorResult
-                {
-                    Platform = HugoConstants.PlatformName,
-                    PlatformVersion = _detectedVersion
-                };
-            }
+                detector);
         }
     }
 }

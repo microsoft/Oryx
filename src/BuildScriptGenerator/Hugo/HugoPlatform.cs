@@ -7,7 +7,8 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Hugo;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 {
@@ -17,14 +18,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         private readonly HugoPlatformInstaller _platformInstaller;
         private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly HugoScriptGeneratorOptions _hugoScriptGeneratorOptions;
-        private readonly HugoPlatformDetector _detector;
+        private readonly IHugoPlatformDetector _detector;
 
         public HugoPlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<HugoScriptGeneratorOptions> hugoScriptGeneratorOptions,
             ILogger<HugoPlatform> logger,
             HugoPlatformInstaller platformInstaller,
-            HugoPlatformDetector detector)
+            IHugoPlatformDetector detector)
         {
             _logger = logger;
             _platformInstaller = platformInstaller;
@@ -42,19 +43,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            PlatformDetectorResult detectionResult;
-            if (TryGetExplicitVersion(out var explicitVersion))
+            var detectionResult = _detector.Detect(new DetectorContext
             {
-                detectionResult = new PlatformDetectorResult
-                {
-                    Platform = HugoConstants.PlatformName,
-                    PlatformVersion = explicitVersion,
-                };
-            }
-            else
-            {
-                detectionResult = _detector.Detect(context);
-            }
+                SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+            });
 
             if (detectionResult == null)
             {
@@ -184,25 +176,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 
             // Fallback to default version
             return HugoConstants.Version;
-        }
-
-        private bool TryGetExplicitVersion(out string explicitVersion)
-        {
-            explicitVersion = null;
-
-            var platformName = _commonOptions.PlatformName;
-            if (platformName.EqualsIgnoreCase(HugoConstants.PlatformName))
-            {
-                if (string.IsNullOrWhiteSpace(_hugoScriptGeneratorOptions.HugoVersion))
-                {
-                    return false;
-                }
-
-                explicitVersion = _hugoScriptGeneratorOptions.HugoVersion;
-                return true;
-            }
-
-            return false;
         }
     }
 }

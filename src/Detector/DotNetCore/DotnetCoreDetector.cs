@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
-    public class DotNetCoreDetector : IPlatformDetector
+    public class DotNetCoreDetector : IDotNetCorePlatformDetector
     {
         private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCoreDetector> _logger;
@@ -50,8 +50,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 ProjectFile = projectFile,
             };
         }
-
-        public PlatformName PlatformName => PlatformName.DotNetCore;
 
         internal string DetermineRuntimeVersion(string targetFramework)
         {

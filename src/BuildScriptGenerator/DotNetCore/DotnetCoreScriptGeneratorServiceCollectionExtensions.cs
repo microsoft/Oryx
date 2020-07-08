@@ -16,7 +16,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProgrammingPlatform, DotNetCorePlatform>());
             services.AddSingleton<IDotNetCoreVersionProvider, DotNetCoreVersionProvider>();
-            services.AddSingleton<DotNetCorePlatformDetector>();
             services.AddSingleton<DotNetCoreOnDiskVersionProvider>();
             services.AddSingleton<DotNetCoreSdkStorageVersionProvider>();
             services.AddSingleton<DotNetCorePlatformInstaller>();

@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Php;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
@@ -51,11 +53,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             // Arrange
             var platform = CreatePhpPlatform(
                 supportedPhpVersions: supportedVersions,
-                defaultVersion: defaultVersion);
-            var repo = new MemorySourceRepo();
-            repo.AddFile("{\"require\":{\"php\":\"" + versionInComposerFile + "\"}}", PhpConstants.ComposerFileName);
-            repo.AddFile("<?php echo true; ?>", "foo.php");
-            var context = CreateContext(repo);
+                defaultVersion: defaultVersion,
+                detectedVersion: versionInComposerFile);
+            var context = CreateContext();
 
             // Act
             var result = platform.Detect(context);
@@ -84,10 +84,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var platform = CreatePhpPlatform(
                 supportedPhpVersions: supportedVersions,
                 defaultVersion: defaultVersion,
+                detectedVersion: "1.1.1",
                 phpScriptGeneratorOptions: phpScriptGeneratorOptions);
-            var repo = new MemorySourceRepo();
-            repo.AddFile("{\"require\":{\"php\":\"1.1.1\"}}", PhpConstants.ComposerFileName);
-            var context = CreateContext(repo);
+            var context = CreateContext();
 
             // Act
             var result = platform.Detect(context);
@@ -99,7 +98,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Theory]
-        [InlineData(new[] {"7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "7.4.0beta4", "7.4.0beta4")]
+        [InlineData(new[] { "7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "7.4.0beta4", "7.4.0beta4")]
         [InlineData(new[] { "7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "7.3.20RC1", "7.3.20RC1")]
         [InlineData(new[] { "7.3.20RC1", "7.4.0beta4", "7.4.0RC6", "8.0.0alpha1" }, "8.0.0alpha1", "8.0.0alpha1")]
         public void Detect_ReturnsPreviewVersion_UsingMaximumSatisfyingVersionRules(
@@ -109,9 +108,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         {
             // Arrange
             var platform = CreatePhpPlatform(
+                detectedVersion: versionInComposerFile,
                 supportedPhpVersions: supportedVersions);
             var repo = new MemorySourceRepo();
-            repo.AddFile("{\"require\":{\"php\":\"" + versionInComposerFile + "\"}}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
 
             // Act
@@ -152,23 +151,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReturnsVersionFromOptions_EvenIfComposerFileHasVersionSpecified()
+        public void Detect_ReturnsVersionFromOptions_EvenIfDetectorReturnsVersion()
         {
             // Arrange
             var expectedVersion = "100.100.100";
-            var versionInComposerFile = "5.6.0";
+            var detectedVersion = "5.6.0";
             var defaultVersion = "7.3.14";
             var phpScriptGeneratorOptions = new PhpScriptGeneratorOptions
             {
                 PhpVersion = expectedVersion
             };
             var platform = CreatePhpPlatform(
-                supportedPhpVersions: new[] { defaultVersion, "7.2.5", versionInComposerFile, expectedVersion },
+                supportedPhpVersions: new[] { defaultVersion, "7.2.5", detectedVersion, expectedVersion },
                 defaultVersion: defaultVersion,
+                detectedVersion: detectedVersion,
                 phpScriptGeneratorOptions: phpScriptGeneratorOptions);
-            var repo = new MemorySourceRepo();
-            repo.AddFile("{\"require\":{\"php\":\"" + versionInComposerFile + "\"}}", PhpConstants.ComposerFileName);
-            var context = CreateContext(repo);
+            var context = CreateContext();
 
             // Act
             var result = platform.Detect(context);
@@ -180,22 +178,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void Detect_Throws_WhenUnsupportedPhpVersion_FoundInComposerFile()
+        public void Detect_Throws_WhenUnsupportedPhpVersion_ReturnedByDetector()
         {
             // Arrange
-            var unsupportedVersion = "0";
+            var detectedVersion = "0";
             var supportedVersion = "7.3.5";
             var platform = CreatePhpPlatform(
                 supportedPhpVersions: new[] { supportedVersion },
-                defaultVersion: supportedVersion);
-            var repo = new MemorySourceRepo();
-            repo.AddFile("{\"require\":{\"php\":\"" + unsupportedVersion + "\"}}", PhpConstants.ComposerFileName);
-            var context = CreateContext(repo);
+                defaultVersion: supportedVersion,
+                detectedVersion: detectedVersion);
+            var context = CreateContext();
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => platform.Detect(context));
             Assert.Equal(
-                $"Platform 'php' version '{unsupportedVersion}' is unsupported. " +
+                $"Platform 'php' version '{detectedVersion}' is unsupported. " +
                 $"Supported versions: {supportedVersion}",
                 exception.Message);
         }
@@ -204,39 +201,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void Detect_Throws_WhenUnsupportedPhpVersion_IsSetInOptions()
         {
             // Arrange
-            var unsupportedVersion = "0";
+            var versionFromOptions = "0";
             var supportedVersion = "7.3.5";
             var phpScriptGeneratorOptions = new PhpScriptGeneratorOptions
             {
-                PhpVersion = unsupportedVersion
+                PhpVersion = versionFromOptions
             };
             var platform = CreatePhpPlatform(
                 supportedPhpVersions: new[] { supportedVersion },
                 defaultVersion: supportedVersion,
+                detectedVersion: supportedVersion,
                 phpScriptGeneratorOptions: phpScriptGeneratorOptions);
-            var repo = new MemorySourceRepo();
-            repo.AddFile("{\"require\":{\"php\":\"" + supportedVersion + "\"}}", PhpConstants.ComposerFileName);
-            var context = CreateContext(repo);
+            var context = CreateContext();
 
             // Act & Assert
             var exception = Assert.Throws<UnsupportedVersionException>(() => platform.Detect(context));
             Assert.Equal(
-                $"Platform 'php' version '{unsupportedVersion}' is unsupported. " +
+                $"Platform 'php' version '{versionFromOptions}' is unsupported. " +
                 $"Supported versions: {supportedVersion}",
                 exception.Message);
         }
 
         [Fact]
-        public void Detect_ReturnsDefaultVersion_IfNoVersionFoundInComposerFile_OrOptions()
+        public void Detect_ReturnsDefaultVersion_IfNoVersionFoundReturnedByDetector_OrOptions()
         {
             // Arrange
             var expectedVersion = "7.3.14";
             var platform = CreatePhpPlatform(
                 supportedPhpVersions: new[] { "5.6.0", expectedVersion, "7.2.5" },
-                defaultVersion: expectedVersion);
-            var repo = new MemorySourceRepo();
-            repo.AddFile("{}", PhpConstants.ComposerFileName);
-            var context = CreateContext(repo);
+                defaultVersion: expectedVersion,
+                detectedVersion: null);
+            var context = CreateContext();
 
             // Act
             var result = platform.Detect(context);
@@ -446,6 +441,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         private PhpPlatform CreatePhpPlatform(
             string[] supportedPhpVersions = null,
             string defaultVersion = null,
+            string detectedVersion = null,
             BuildScriptGeneratorOptions commonOptions = null,
             PhpScriptGeneratorOptions phpScriptGeneratorOptions = null,
             bool? isPhpVersionAlreadyInstalled = null,
@@ -460,11 +456,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             isPhpComposerAlreadyInstalled = isPhpComposerAlreadyInstalled ?? true;
             phpComposerInstallationScript = phpComposerInstallationScript ?? "default-php-composer-installation-script";
             var versionProvider = new TestPhpVersionProvider(supportedPhpVersions, defaultVersion);
-            var detector = new PhpPlatformDetector(
-                Options.Create(phpScriptGeneratorOptions),
-                versionProvider,
-                NullLogger<PhpPlatformDetector>.Instance,
-                new DefaultStandardOutputWriter());
+            var detector = new TestPhpPlatformDetector(detectedVersion: detectedVersion);
             var phpInstaller = new TestPhpPlatformInstaller(
                 Options.Create(commonOptions),
                 isPhpVersionAlreadyInstalled.Value,
@@ -483,8 +475,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 phpComposerInstaller);
         }
 
-        private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo)
+        private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
         {
+            sourceRepo = sourceRepo ?? new MemorySourceRepo();
+
             return new BuildScriptGeneratorContext
             {
                 SourceRepo = sourceRepo,
@@ -498,7 +492,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 IOptions<BuildScriptGeneratorOptions> commonOptions,
                 IPhpVersionProvider phpVersionProvider,
                 ILogger<PhpPlatform> logger,
-                PhpPlatformDetector detector,
+                IPhpPlatformDetector detector,
                 PhpPlatformInstaller phpInstaller,
                 PhpComposerInstaller phpComposerInstaller)
                 : base(

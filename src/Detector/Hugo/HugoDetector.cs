@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.Detector.Hugo
 {
-    public class HugoDetector : IPlatformDetector
+    public class HugoDetector : IHugoPlatformDetector
     {
         private readonly ILogger<HugoDetector> _logger;
 
@@ -30,8 +30,6 @@ namespace Microsoft.Oryx.Detector.Hugo
         {
             _logger = logger;
         }
-
-        public PlatformName PlatformName => PlatformName.Hugo;
 
         public PlatformDetectorResult Detect(DetectorContext context)
         {

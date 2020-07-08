@@ -417,7 +417,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             commandLineConfigSource.Set(SettingsKeys.PlatformVersion, PlatformVersion);
 
             // Set the platform key and version in the format that they are represented in other sources
-            // (like environment variables and build.env file).
+            // (like environment variables and build.env file).git 
             // This is so that this enables Configuration api to apply the hierarchical config.
             // Example: "--platform python --platform-version 3.6" will win over "PYTHON_VERSION=3.7"
             // in environment variable

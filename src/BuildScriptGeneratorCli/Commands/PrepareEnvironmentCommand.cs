@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -173,7 +174,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
                 else
                 {
-                    var detector = serviceProvider.GetRequiredService<DefaultPlatformDetector>();
+                    var detector = serviceProvider.GetRequiredService<Oryx.BuildScriptGenerator.DefaultPlatformDetector>();
                     detectedPlatforms = detector.DetectPlatforms(context);
                     if (!detectedPlatforms.Any())
                     {
