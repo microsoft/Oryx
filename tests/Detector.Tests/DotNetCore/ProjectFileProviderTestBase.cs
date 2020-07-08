@@ -154,7 +154,8 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             _tempDirRoot = testFixture.RootDirPath;
         }
 
-        public static DefaultProjectFileProvider GetProjectFileProvider(DetectorOptions options = null)
+        protected DefaultProjectFileProvider GetProjectFileProvider(
+            DetectorOptions options = null)
         {
             if (options == null)
             {

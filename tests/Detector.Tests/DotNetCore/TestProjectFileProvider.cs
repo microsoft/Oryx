@@ -3,9 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.Detector.DotNetCore;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
+namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 {
     class TestProjectFileProvider : DefaultProjectFileProvider
     {
@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             _projectFilePath = projectFilePath;
         }
 
-        public override string GetRelativePathToProjectFile(RepositoryContext context)
+        public override string GetRelativePathToProjectFile(DetectorContext context)
         {
             return _projectFilePath;
         }

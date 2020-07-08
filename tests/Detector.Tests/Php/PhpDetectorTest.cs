@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
+using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.Detector.Php;
 using Microsoft.Oryx.Tests.Common;
@@ -23,8 +25,10 @@ namespace Microsoft.Oryx.Detector.Tests.Php
         public void Detect_ReturnsNull_WhenSourceDirectoryIsEmpty()
         {
             // Arrange
+            // No files in source repo
+            var sourceDir = Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString())).FullName;
+            var repo = new LocalSourceRepo(sourceDir);
             var detector = CreatePhpPlatformDetector();
-            var repo = new MemorySourceRepo(); // No files in source repo
             var context = CreateContext(repo);
 
             // Act
@@ -35,19 +39,45 @@ namespace Microsoft.Oryx.Detector.Tests.Php
         }
 
         [Fact]
-        public void Detect_ReutrnsNull_WhenComposerFileDoesNotExist()
+        public void Detect_ReutrnsResult_WhenComposerFileDoesNotExist_ButFilesWithPhpExtensionExist()
         {
             // Arrange
+            var sourceDir = Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString()))
+                .FullName;
+            File.WriteAllText(Path.Combine(sourceDir, "foo.php"), "php file content");
+            var repo = new LocalSourceRepo(sourceDir);
             var detector = CreatePhpPlatformDetector();
-            var repo = new MemorySourceRepo();
-            repo.AddFile("foo.php content", "foo.php");
             var context = CreateContext(repo);
 
             // Act
             var result = detector.Detect(context);
 
             // Assert
-            Assert.Null(result);
+            Assert.NotNull(result);
+            Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
+        }
+
+        [Fact]
+        public void Detect_ReutrnsResult_WhenComposerFileDoesNotExist_ButFilesWithPhpExtensionExistInSubDirectories()
+        {
+            // Arrange
+            var sourceDir = Directory.CreateDirectory(
+                Path.Combine(_tempDirRoot, Guid.NewGuid().ToString()))
+                .FullName;
+            var subDir = Directory.CreateDirectory(Path.Combine(sourceDir, Guid.NewGuid().ToString())).FullName;
+            File.WriteAllText(Path.Combine(subDir, "foo.php"), "php file content");
+            var repo = new LocalSourceRepo(sourceDir);
+            var detector = CreatePhpPlatformDetector();
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
         }
 
         [Fact]

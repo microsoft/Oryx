@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.Tests.Common
 {
@@ -45,7 +46,10 @@ namespace Microsoft.Oryx.Tests.Common
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            return _detector?.Detect(context);
+            return _detector?.Detect(new DetectorContext
+            {
+                SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo?.RootPath),
+            });
         }
 
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(
@@ -75,7 +79,7 @@ namespace Microsoft.Oryx.Tests.Common
             return Array.Empty<string>();
         }
 
-        public bool IsCleanRepo(ISourceRepo repo)
+        public bool IsCleanRepo(BuildScriptGenerator.ISourceRepo repo)
         {
             return true;
         }

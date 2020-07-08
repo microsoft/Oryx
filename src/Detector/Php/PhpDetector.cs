@@ -4,18 +4,18 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.Common.Extensions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Php
 {
-    public class PhpDetector : IPlatformDetector
+    public class PhpDetector : IPhpPlatformDetector
     {
         private readonly ILogger<PhpDetector> _logger;
 
-        public PhpDetector(
-            ILogger<PhpDetector> logger)
+        public PhpDetector(ILogger<PhpDetector> logger)
         {
             _logger = logger;
         }
@@ -23,26 +23,43 @@ namespace Microsoft.Oryx.Detector.Php
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;
-            if (!sourceRepo.FileExists(PhpConstants.ComposerFileName))
+
+            string phpVersion = null;
+            var hasComposerFile = sourceRepo.FileExists(PhpConstants.ComposerFileName);
+            if (hasComposerFile)
+            {
+                _logger.LogDebug($"File '{PhpConstants.ComposerFileName}' exists in source repo");
+                phpVersion = GetVersion(context);
+            }
+            else
             {
                 _logger.LogDebug($"File '{PhpConstants.ComposerFileName}' does not exist in source repo");
-                return null;
-            }
 
-            var version = GetVersion(context);
+                var files = sourceRepo.EnumerateFiles(PhpConstants.PhpFileNamePattern, searchSubDirectories: true);
+                if (files != null && files.Any())
+                {
+                    _logger.LogInformation(
+                        $"Found files with extension '{PhpConstants.PhpFileNamePattern}' " +
+                        $"in the repo.");
+                }
+                else
+                {
+                    _logger.LogInformation(
+                        $"Could not find any file with extension '{PhpConstants.PhpFileNamePattern}' " +
+                        $"in the repo.");
+                    return null;
+                }
+            }
 
             return new PlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
-                PlatformVersion = version,
+                PlatformVersion = phpVersion,
             };
         }
 
-        public PlatformName PlatformName => PlatformName.Php;
-
         private string GetVersion(DetectorContext context)
         {
-
             var version = GetVersionFromComposerFile(context);
             if (version != null)
             {

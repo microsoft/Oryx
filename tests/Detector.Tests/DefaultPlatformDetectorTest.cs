@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Detector.DotNetCore;
+using Microsoft.Oryx.Detector.Node;
 using Moq;
 using Xunit;
 
@@ -29,15 +31,13 @@ namespace Microsoft.Oryx.Detector.Tests
             var context = CreateContext(sourceRepo);
 
             var detectionResult1 = new PlatformDetectorResult();
-            detectionResult1.Platform = "node";
+            detectionResult1.Platform = NodeConstants.PlatformName;
             detectionResult1.PlatformVersion = "12.16.1";
 
             var detectionResult2 = new PlatformDetectorResult();
-            detectionResult2.Platform = "dotnetcore";
+            detectionResult2.Platform = DotNetCoreConstants.PlatformName;
             detectionResult2.PlatformVersion = "3.1";
 
-            mockNodePlatformDetector.Setup(x => x.PlatformName).Returns(PlatformName.Node);
-            mockDotnetcorePlatformDetector.Setup(x => x.PlatformName).Returns(PlatformName.DotNetCore);
             mockNodePlatformDetector.Setup(x => x.Detect(context)).Returns(detectionResult1);
             mockDotnetcorePlatformDetector.Setup(x => x.Detect(context)).Returns(detectionResult2);
 

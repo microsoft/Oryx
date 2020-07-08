@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -370,7 +371,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 throw new NotImplementedException();
             }
 
-            public bool IsCleanRepo(ISourceRepo repo)
+            public bool IsCleanRepo(Oryx.BuildScriptGenerator.ISourceRepo repo)
             {
                 throw new NotImplementedException();
             }

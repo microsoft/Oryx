@@ -15,7 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, PhpPlatform>());
             services.AddSingleton<IPhpVersionProvider, PhpVersionProvider>();
-            services.AddSingleton<PhpPlatformDetector>();
             services.AddSingleton<PhpPlatformInstaller>();
             services.AddSingleton<PhpComposerInstaller>();
             services.AddSingleton<PhpOnDiskVersionProvider>();

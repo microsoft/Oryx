@@ -3,15 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGenerator
+namespace Microsoft.Oryx.Detector.Hugo
 {
     /// <summary>
-    /// Represents the result of a <see cref="IPlatformDetector.Detect(ISourceRepo)"/> operation.
+    /// Marker interface that is to be implemented by <see cref="HugoDetector"/>.
     /// </summary>
-    public class PlatformDetectorResult
+    public interface IHugoPlatformDetector : IPlatformDetector
     {
-        public string Platform { get; set; }
-
-        public string PlatformVersion { get; set; }
     }
 }
