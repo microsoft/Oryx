@@ -6,10 +6,13 @@
 namespace Microsoft.Oryx.Detector
 {
     /// <summary>
-    /// Context to create a detector.
+    /// The information which is used by the detectors to detect applications.
     /// </summary>
     public class DetectorContext
     {
+        /// <summary>
+        /// Gets or sets the property which represents the source directory having the application(s).
+        /// </summary>
         public ISourceRepo SourceRepo { get; set; }
     }
 }

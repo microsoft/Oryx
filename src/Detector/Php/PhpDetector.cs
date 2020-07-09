@@ -11,15 +11,23 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Php
 {
+    /// <summary>
+    /// An implementation of <see cref="IPlatformDetector"/> which detects PHP applications.
+    /// </summary>
     public class PhpDetector : IPhpPlatformDetector
     {
         private readonly ILogger<PhpDetector> _logger;
 
+        /// <summary>
+        /// Creates and instance of <see cref="PhpDetector"/>.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger{PhpDetector}"/>.</param>
         public PhpDetector(ILogger<PhpDetector> logger)
         {
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;

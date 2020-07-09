@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Detector.Tests
             Mock<IPlatformDetector> mockNodePlatformDetector = new Mock<IPlatformDetector>();
             Mock<IPlatformDetector> mockDotnetcorePlatformDetector = new Mock<IPlatformDetector>();
             IEnumerable<IPlatformDetector> platformDetectors = new List<IPlatformDetector>() { mockNodePlatformDetector.Object, mockDotnetcorePlatformDetector.Object };
-
+            
             var options = new Mock<IOptions<DetectorOptions>>();
             var sourceRepo = new MemorySourceRepo();
             var detector = new DefaultPlatformDetector(

@@ -6,12 +6,12 @@
 namespace Microsoft.Oryx.Detector
 {
     /// <summary>
-    /// Detects language name and version of the application in source directory.
+    /// An abstraction to detect a platform and additional information of the application in the source directory.
     /// </summary>
     public interface IPlatformDetector
     {
         /// <summary>
-        /// Detects language name and version of the application in source directory.
+        /// Detects platform and additional information of the application in the source directory.
         /// </summary>
         /// <param name="context">The <see cref="DetectorContext"/>.</param>
         /// <returns>An instance of <see cref="PlatformDetectorResult"/> if detection was

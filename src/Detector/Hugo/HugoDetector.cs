@@ -11,6 +11,9 @@ using YamlDotNet.RepresentationModel;
 
 namespace Microsoft.Oryx.Detector.Hugo
 {
+    /// <summary>
+    /// An implementation of <see cref="IPlatformDetector"/> which detects Hugo applications.
+    /// </summary>
     public class HugoDetector : IHugoPlatformDetector
     {
         private readonly ILogger<HugoDetector> _logger;
@@ -27,11 +30,16 @@ namespace Microsoft.Oryx.Detector.Hugo
             "theme",
         };
 
+        /// <summary>
+        /// Creates and instance of <see cref="HugoDetector"/>.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger{HugoDetector}"/>.</param>
         public HugoDetector(ILogger<HugoDetector> logger)
         {
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var isHugoApp = IsHugoApp(context.SourceRepo);

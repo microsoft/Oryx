@@ -12,30 +12,45 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector
 {
+    /// <summary>
+    /// Default implementation of <see cref="ISourceRepo"/> which is backed by local file system.
+    /// </summary>
     public class LocalSourceRepo : ISourceRepo
     {
         private readonly ILogger<LocalSourceRepo> _logger;
 
+        /// <summary>
+        /// Creates an instance of <see cref="LocalSourceRepo"/>.
+        /// </summary>
+        /// <param name="sourceDirectory">The directory containing the source code of the application.</param>
         public LocalSourceRepo(string sourceDirectory)
         {
             RootPath = sourceDirectory;
             _logger = NullLogger<LocalSourceRepo>.Instance;
         }
 
+        /// <summary>
+        /// Creates an instance of <see cref="LocalSourceRepo"/>.
+        /// </summary>
+        /// <param name="sourceDirectory">The directory containing the source code of the application.</param>
+        /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>
         public LocalSourceRepo(string sourceDirectory, ILoggerFactory loggerFactory)
         {
             RootPath = sourceDirectory;
             _logger = loggerFactory.CreateLogger<LocalSourceRepo>();
         }
 
+        /// <inheritdoc/>
         public string RootPath { get; }
 
+        /// <inheritdoc/>
         public bool FileExists(params string[] paths)
         {
             var path = ResolvePath(paths);
             return File.Exists(path);
         }
 
+        /// <inheritdoc/>
         public bool DirExists(params string[] paths)
         {
             var path = ResolvePath(paths);
@@ -61,12 +76,14 @@ namespace Microsoft.Oryx.Detector
             return Directory.EnumerateFiles(directoryToSearchUnder, searchPattern);
         }
 
+        /// <inheritdoc/>
         public string ReadFile(params string[] paths)
         {
             var path = ResolvePath(paths);
             return File.ReadAllText(path);
         }
 
+        /// <inheritdoc/>
         public string[] ReadAllLines(params string[] paths)
         {
             var path = ResolvePath(paths);
