@@ -16,8 +16,6 @@ namespace Microsoft.Oryx.Detector
             services.AddSingleton<IConfigureOptions<DetectorOptions>, DetectorOptionsSetup>();
 
             services
-                .AddLogging()
-                .AddOptions()
                 .AddDotNetCoreServices()
                 .AddNodeServices()
                 .AddPythonServices()
