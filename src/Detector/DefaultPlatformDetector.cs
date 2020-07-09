@@ -50,8 +50,7 @@ namespace Microsoft.Oryx.Detector
 
             if (platformResult == null)
             {
-                _logger.LogInformation(
-                    $"Platform '{platformResult.Platform}' was not detected in the given repository.");
+                _logger.LogInformation("Could not detect any platform in the given repository.");
                 return false;
             }
 
