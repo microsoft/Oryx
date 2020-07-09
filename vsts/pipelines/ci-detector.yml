@@ -86,6 +86,7 @@ stages:
       - bash: |
           dotnet nuget push \
           $(Build.ArtifactStagingDirectory)/detector_signed/packages/*.nupkg \
+          -s https://api.nuget.org/v3/index.json \
           --api-key $NUGETORG_API_KEY
         env:
           NUGETORG_API_KEY: $(NUGETORG-API-KEY)
