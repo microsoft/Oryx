@@ -35,7 +35,6 @@
     <PackageProjectUrl>https://github.com/microsoft/oryx</PackageProjectUrl>
     <PackageTags>Oryx Detector OryxDetector</PackageTags>
     <Description>A library to detect tools and frameworks used in an application.</Description>
-    <Version>1.0.0-pre-</Version>
     
     <!-- Test projects in this repo will use the following package version to 
     avoid testing any publicly available versions -->

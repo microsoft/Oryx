@@ -6,7 +6,7 @@
 using System;
 using System.IO;
 
-namespace Microsoft.Oryx.Detector.Tests
+namespace Microsoft.Oryx.Tests.Common
 {
     public class TestTempDirTestFixture : IDisposable
     {
