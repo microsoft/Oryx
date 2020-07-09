@@ -35,18 +35,25 @@
     <PackageProjectUrl>https://github.com/microsoft/oryx</PackageProjectUrl>
     <PackageTags>Oryx Detector OryxDetector</PackageTags>
     <Description>A library to detect tools and frameworks used in an application.</Description>
+    
+    <!-- Test projects in this repo will use the following package version to 
+    avoid testing any publicly available versions -->
+    <Version Condition="'$(CREATE_PACKAGE_FOR_TESTS)' == 'true'">1.0.0-test</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.1.5" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Oryx.Common\Common.csproj" />
+    <ProjectReference Include="..\Oryx.Common\Common.csproj">
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>
