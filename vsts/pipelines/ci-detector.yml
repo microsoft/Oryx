@@ -84,10 +84,11 @@ stages:
           echo "##vso[task.setvariable variable=RELEASE_NAME;]$VERSION"
         displayName: 'Set relase name environment variable'
       - bash: |
-          printenv
           dotnet nuget push \
           $(Build.ArtifactStagingDirectory)/detector_signed/packages/*.nupkg \
           --api-key $NUGETORG_API_KEY
+        env:
+          NUGETORG_API_KEY: $(NUGETORG-API-KEY)
         displayName: 'Push nuget packages to nuget.org'
       - task: GitHubRelease@0
         displayName: 'GitHub release (create)'
