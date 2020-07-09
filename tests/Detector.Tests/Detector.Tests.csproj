@@ -35,7 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Detector\Detector.csproj" />
     <ProjectReference Include="..\..\src\Oryx.Common\Common.csproj" />
   </ItemGroup>
 
