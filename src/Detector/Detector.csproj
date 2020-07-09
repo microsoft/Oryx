@@ -46,7 +46,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Oryx.Common\Common.csproj" />
+    <ProjectReference Include="..\Oryx.Common\Common.csproj">
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>
