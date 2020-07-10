@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -45,10 +46,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             };
 
             var detector = serviceProvider.GetRequiredService<IDetector>();
-            var detectedPlatforms = detector.GetAllDetectedPlatforms(ctx);
+            var detectedPlatformResults = detector.GetAllDetectedPlatforms(ctx);
             using (var timedEvent = logger.LogTimedEvent("DetectCommand"))
             {
-                if (detectedPlatforms == null || !detectedPlatforms.Any())
+                if (detectedPlatformResults == null || !detectedPlatformResults.Any())
                 {
                     logger?.LogError($"No platforms and versions detected from source directory: '{SourceDir}'");
                     console.WriteErrorLine($"No platforms and versions detected from source directory: '{SourceDir}'");
@@ -56,11 +57,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (!string.IsNullOrEmpty(OutputFormat) && OutputFormat.Equals("json"))
                 {
-                    PrintJsonResult(detectedPlatforms, console);
+                    PrintJsonResult(detectedPlatformResults, console);
                 }
-                else if (!string.IsNullOrEmpty(OutputFormat) && OutputFormat.Equals("table"))
+                else
                 {
-                    PrintTableResult(detectedPlatforms, console);
+                    PrintTableResult(detectedPlatformResults, console);
                 }
 
                 return ProcessConstants.ExitSuccess;
@@ -83,66 +84,54 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        private void PrintTableResult(IEnumerable<PlatformDetectorResult> detectedPlatforms, IConsole console)
+        private void PrintTableResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)
         {
             var defs = new DefinitionListFormatter();
-            if (detectedPlatforms == null || !detectedPlatforms.Any())
+            if (detectedPlatformResults == null || !detectedPlatformResults.Any())
             {
                 defs.AddDefinition("Platform", "Not Detected");
-                defs.AddDefinition("Version", "Not Detected");
+                defs.AddDefinition("PlatformVersion", "Not Detected");
                 console.WriteLine(defs.ToString());
                 return;
             }
 
-            var result = string.Empty;
-
-            foreach (var detectedPlatform in detectedPlatforms)
+            foreach (var detectedPlatformResult in detectedPlatformResults)
             {
+                // This is to filter out the indexed properties from properties variable.
+                var propertyInfos = detectedPlatformResult.GetType().GetProperties().Where(p => p.GetIndexParameters().Length == 0);
 
-                defs.AddDefinition("Platform", detectedPlatform.Platform);
-                defs.AddDefinition("Version", detectedPlatform.PlatformVersion ?? "Not Detected");
+                // Get all properties from a detected platform result and add them to DefinitionListFormatter.
+                foreach (var propertyInfo in propertyInfos)
+                {
+                    var propertyValue = propertyInfo.GetValue(detectedPlatformResult, null);
+                    defs.AddDefinition(propertyInfo.Name, propertyValue == null ? "Not Detected" : propertyValue.ToString());
+                }
             }
 
             console.WriteLine(defs.ToString());
         }
 
-        private void PrintJsonResult(IEnumerable<PlatformDetectorResult> detectedPlatforms, IConsole console)
+        private void PrintJsonResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)
         {
-            var detectionResult = new Dictionary<string, string>
+            if (detectedPlatformResults == null || !detectedPlatformResults.Any())
             {
-                ["App_Path"] = SourceDir,
-            };
-            var platformData = new List<Dictionary<string, string>>();
-            var jsonPlatformData = string.Empty;
-
-            if (detectedPlatforms == null || !detectedPlatforms.Any())
-            {
+                var platformData = new List<Dictionary<string, string>>();
                 Dictionary<string, string> data = new Dictionary<string, string>
                 {
-                    ["Platform_Name"] = "Not Detected",
-                    ["Platform_Version"] = "Not Detected",
+                    ["Platform"] = "Not Detected",
+                    ["PlatformVersion"] = "Not Detected",
                 };
                 platformData.Add(data);
-                jsonPlatformData = JsonConvert.SerializeObject(platformData, Formatting.Indented);
-                detectionResult["Platform_Data"] = jsonPlatformData;
-                console.WriteLine(JsonConvert.SerializeObject(detectionResult, Formatting.Indented));
+                console.WriteLine(JsonConvert.SerializeObject(platformData, Formatting.Indented));
                 return;
             }
 
-            foreach (var detectedPlatform in detectedPlatforms)
+            foreach (var detectedPlatformResult in detectedPlatformResults)
             {
-                Dictionary<string, string> data = new Dictionary<string, string>
-                {
-                    ["Platform_Name"] = detectedPlatform.Platform,
-                    ["Platform_Version"] = detectedPlatform.PlatformVersion ?? "Not Detected",
-                };
-                platformData.Add(data);
+                detectedPlatformResult.PlatformVersion = detectedPlatformResult.PlatformVersion ?? "Not Detected";
             }
 
-            jsonPlatformData = JsonConvert.SerializeObject(platformData, Formatting.Indented);
-            detectionResult["Platform_Data"] = jsonPlatformData;
-            var json = JsonConvert.SerializeObject(detectionResult, Formatting.Indented);
-            console.WriteLine(json);
+            console.WriteLine(JsonConvert.SerializeObject(detectedPlatformResults, Formatting.Indented));
         }
     }
 }
