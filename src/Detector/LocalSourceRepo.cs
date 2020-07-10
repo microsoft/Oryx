@@ -3,9 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.Common.Extensions;
@@ -42,14 +42,23 @@ namespace Microsoft.Oryx.Detector
             return Directory.Exists(path);
         }
 
-        public IEnumerable<string> EnumerateFiles(string searchPattern, bool searchSubDirectories)
+        public IEnumerable<string> EnumerateFiles(
+            string searchPattern,
+            bool searchSubDirectories,
+            params string[] subDirectoryToSearchUnder)
         {
-            if (searchSubDirectories)
+            var directoryToSearchUnder = RootPath;
+            if (subDirectoryToSearchUnder != null && subDirectoryToSearchUnder.Any())
             {
-                return RootPath.SafeEnumerateFiles(searchPattern);
+                directoryToSearchUnder = Path.Combine(directoryToSearchUnder, Path.Combine(subDirectoryToSearchUnder));
             }
 
-            return Directory.EnumerateFiles(RootPath, searchPattern);
+            if (searchSubDirectories)
+            {
+                return directoryToSearchUnder.SafeEnumerateFiles(searchPattern);
+            }
+
+            return Directory.EnumerateFiles(directoryToSearchUnder, searchPattern);
         }
 
         public string ReadFile(params string[] paths)

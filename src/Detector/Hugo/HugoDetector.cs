@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using YamlDotNet.RepresentationModel;
 
 namespace Microsoft.Oryx.Detector.Hugo
 {
@@ -81,7 +82,10 @@ namespace Microsoft.Oryx.Detector.Hugo
             if (sourceRepo.DirExists(HugoConstants.ConfigFolderName))
             {
                 // Search for config/**/*.toml
-                var tomlFiles = sourceRepo.EnumerateFiles("*.toml", searchSubDirectories: true);
+                var tomlFiles = sourceRepo.EnumerateFiles(
+                    "*.toml",
+                    searchSubDirectories: true,
+                    subDirectoryToSearchUnder: HugoConstants.ConfigFolderName);
                 foreach (var tomlFile in tomlFiles)
                 {
                     if (IsHugoTomlFile(sourceRepo, tomlFile))
@@ -91,7 +95,10 @@ namespace Microsoft.Oryx.Detector.Hugo
                 }
 
                 // Search for config/**/*.yaml and config/**/*.yml
-                var yamlFiles = sourceRepo.EnumerateFiles("*.yaml", searchSubDirectories: true);
+                var yamlFiles = sourceRepo.EnumerateFiles(
+                    "*.yaml",
+                    searchSubDirectories: true,
+                    subDirectoryToSearchUnder: HugoConstants.ConfigFolderName);
                 foreach (var yamlFile in yamlFiles)
                 {
                     if (IsHugoYamlFile(sourceRepo, yamlFile))
@@ -100,7 +107,10 @@ namespace Microsoft.Oryx.Detector.Hugo
                     }
                 }
 
-                var ymlFiles = sourceRepo.EnumerateFiles("*.yml", searchSubDirectories: true);
+                var ymlFiles = sourceRepo.EnumerateFiles(
+                    "*.yml",
+                    searchSubDirectories: true,
+                    subDirectoryToSearchUnder: HugoConstants.ConfigFolderName);
                 foreach (var ymlFile in ymlFiles)
                 {
                     if (IsHugoYamlFile(sourceRepo, ymlFile))
@@ -110,7 +120,10 @@ namespace Microsoft.Oryx.Detector.Hugo
                 }
 
                 // Search for config/**/*.json
-                var jsonFiles = sourceRepo.EnumerateFiles("*.json", searchSubDirectories: true);
+                var jsonFiles = sourceRepo.EnumerateFiles(
+                    "*.json",
+                    searchSubDirectories: true,
+                    subDirectoryToSearchUnder: HugoConstants.ConfigFolderName);
                 foreach (var jsonFile in jsonFiles)
                 {
                     if (IsHugoJsonFile(sourceRepo, jsonFile))
@@ -125,39 +138,55 @@ namespace Microsoft.Oryx.Detector.Hugo
 
         private bool IsHugoTomlFile(ISourceRepo sourceRepo, params string[] subPaths)
         {
-            var tomlTable = ParserHelper.ParseTomlFile(sourceRepo, Path.Combine(subPaths));
+            var relativeFilePath = Path.Combine(subPaths);
+            _logger.LogDebug($"Parsing the file: {relativeFilePath}");
+            var tomlTable = ParserHelper.ParseTomlFile(sourceRepo, relativeFilePath);
             if (tomlTable.Keys
                 .Any(k => HugoConfigurationKeys.Contains(k, StringComparer.OrdinalIgnoreCase)))
             {
+                _logger.LogDebug($"File {relativeFilePath} is a Hugo toml file.");
                 return true;
             }
 
+            _logger.LogDebug($"File {relativeFilePath} is not a Hugo toml file.");
             return false;
         }
 
         private bool IsHugoYamlFile(ISourceRepo sourceRepo, params string[] subPaths)
         {
-            var yamlNode = ParserHelper.ParseYamlFile(sourceRepo, Path.Combine(subPaths));
-            if (yamlNode.Children.Keys
-                .Select(key => key.ToString())
-                .Any(key => HugoConfigurationKeys.Contains(key, StringComparer.OrdinalIgnoreCase)))
+            var relativeFilePath = Path.Combine(subPaths);
+            _logger.LogDebug($"Parsing the file: {relativeFilePath}");
+            var yamlNode = ParserHelper.ParseYamlFile(sourceRepo, relativeFilePath);
+            var yamlMappingNode = yamlNode as YamlMappingNode;
+            if (yamlMappingNode != null)
             {
-                return true;
+                if (yamlMappingNode.Children.Keys
+                    .Select(key => key.ToString())
+                    .Any(key => HugoConfigurationKeys.Contains(key, StringComparer.OrdinalIgnoreCase)))
+                {
+                    _logger.LogDebug($"File {relativeFilePath} is a Hugo yaml file.");
+                    return true;
+                }
             }
 
+            _logger.LogDebug($"File {relativeFilePath} is not a Hugo yaml file.");
             return false;
         }
 
         private bool IsHugoJsonFile(ISourceRepo sourceRepo, params string[] subPaths)
         {
-            var jObject = ParserHelper.ParseJsonFile(sourceRepo, Path.Combine(subPaths));
+            var relativeFilePath = Path.Combine(subPaths);
+            _logger.LogDebug($"Parsing the file: {relativeFilePath}");
+            var jObject = ParserHelper.ParseJsonFile(sourceRepo, relativeFilePath);
             if (jObject.Children()
                 .Select(c => c.Path)
                 .Any(c => HugoConfigurationKeys.Contains(c, StringComparer.OrdinalIgnoreCase)))
             {
+                _logger.LogDebug($"File {relativeFilePath} is a Hugo json file.");
                 return true;
             }
 
+            _logger.LogDebug($"File {relativeFilePath} is not a Hugo json file.");
             return false;
         }
     }
