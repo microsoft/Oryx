@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
-using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Tests.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
@@ -68,6 +67,59 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
+        public void Execute_OutputsNullPlatformAndNullVersion_WhenNotDetected()
+        {
+            // Arrange
+            var sourceDir = Path.Combine(_testDirPath, "appdir");
+            Directory.CreateDirectory(sourceDir);
+
+            var detectCommand = new DetectCommand
+            {
+                SourceDir = sourceDir,
+            };
+            var testConsole = new TestConsole();
+
+            // Act
+            var exitCode = detectCommand.Execute(GetServiceProvider(detectCommand), testConsole);
+
+            // Assert
+            Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
+            Assert.Contains(
+                $"Version : Not Detected",
+                testConsole.StdOutput);
+        }
+
+        [Fact]
+        public void Execute_OutputsJson_NullPlatformAndNullVersion_WhenNotDetected()
+        {
+            // Arrange
+            var sourceDir = Path.Combine(_testDirPath, "appdir");
+            Directory.CreateDirectory(sourceDir);
+
+            var detectCommand = new DetectCommand
+            {
+                SourceDir = sourceDir,
+                OutputFormat = "json",
+            };
+            var testConsole = new TestConsole();
+
+            // Act
+            var exitCode = detectCommand.Execute(GetServiceProvider(detectCommand), testConsole);
+
+            // Assert
+            Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
+            Assert.Contains(
+               "App_Path",
+               testConsole.StdOutput);
+            Assert.Contains(
+                "Platform_Data",
+                testConsole.StdOutput);
+            Assert.Contains(
+                "Not Detected",
+                testConsole.StdOutput);
+        }
+
+        [Fact]
         public void Execute_OutputsNodePlatformAndNullVersion_WhenJsonFileIsEmpty()
         {
             // Arrange
@@ -87,7 +139,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
             Assert.Contains(
-                $"Platform: {PlatformName.Node}",
+                $"Platform: {NodeConstants.PlatformName}",
                 testConsole.StdOutput);
             Assert.Contains(
                 $"Version : Not Detected",
@@ -114,7 +166,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
             Assert.Contains(
-                $"Platform: {PlatformName.Php}",
+                $"Platform: {PhpConstants.PlatformName}",
                 testConsole.StdOutput);
             Assert.Contains(
                 $"Version : 5.6.0",
@@ -145,7 +197,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var detectCommand = new DetectCommand
             {
                 SourceDir = sourceDir,
-                OutputJson = true,
+                OutputFormat = "json",
             };
             var testConsole = new TestConsole();
 
@@ -161,8 +213,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 "Platform_Data",
                 testConsole.StdOutput);
             Assert.Contains(
-               $"{PlatformName.Node}",
-               testConsole.StdOutput);
+                $"{NodeConstants.PlatformName}",
+                testConsole.StdOutput);
             Assert.Contains(
                 "6.11.0",
                 testConsole.StdOutput);
@@ -189,13 +241,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
             Assert.Contains(
-                $"Platform: {PlatformName.Node}",
+                $"Platform: {NodeConstants.PlatformName}",
                 testConsole.StdOutput);
             Assert.Contains(
                 $"Version : Not Detected",
                 testConsole.StdOutput);
             Assert.Contains(
-                $"Platform: {PlatformName.Php}",
+                $"Platform: {PhpConstants.PlatformName}",
                 testConsole.StdOutput);
             Assert.Contains(
                 $"Version : 5.6.0",
@@ -214,7 +266,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var detectCommand = new DetectCommand
             {
                 SourceDir = sourceDir,
-                OutputJson = true,
+                OutputFormat = "json",
             };
             var testConsole = new TestConsole();
 
@@ -230,10 +282,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 "Platform_Data",
                 testConsole.StdOutput);
             Assert.Contains(
-                $"{PlatformName.Node}",
+                $"{NodeConstants.PlatformName}",
                 testConsole.StdOutput);
             Assert.Contains(
-                $"{PlatformName.Php}",
+                $"{PhpConstants.PlatformName}",
                 testConsole.StdOutput);
             Assert.Contains(
                 "Not Detected",
