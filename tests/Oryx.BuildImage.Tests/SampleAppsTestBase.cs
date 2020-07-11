@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         protected readonly string _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
         protected readonly DockerCli _dockerCli;
         protected readonly ImageTestHelper _imageHelper;
+        protected readonly ImageTestHelper _restrictedPermissionsImageHelper;
 
         public static EnvironmentVariable CreateAppNameEnvVar(string sampleAppName) =>
             new EnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName, sampleAppName);
@@ -29,6 +30,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _output = output;
             _dockerCli = dockerCli ?? new DockerCli();
             _imageHelper = new ImageTestHelper(output);
+            _restrictedPermissionsImageHelper = ImageTestHelper.WithRestrictedPermissions(output);
         }
 
         protected void RunAsserts(Action action, string message)

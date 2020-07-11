@@ -25,9 +25,9 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             get
             {
-                var imageHelper = new ImageTestHelper();
                 var data = new TheoryData<string, string>();
-                data.Add("7.3", imageHelper.GetGitHubActionsBuildImage());
+                data.Add("7.3", ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage());
+                var imageHelper = new ImageTestHelper();
                 data.Add("7.4", imageHelper.GetGitHubActionsBuildImage());
                 return data;
             }
