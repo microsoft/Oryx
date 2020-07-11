@@ -139,23 +139,19 @@ namespace Microsoft.Oryx.Detector.Hugo
         private bool IsHugoTomlFile(ISourceRepo sourceRepo, params string[] subPaths)
         {
             var relativeFilePath = Path.Combine(subPaths);
-            _logger.LogDebug($"Parsing the file: {relativeFilePath}");
             var tomlTable = ParserHelper.ParseTomlFile(sourceRepo, relativeFilePath);
             if (tomlTable.Keys
                 .Any(k => HugoConfigurationKeys.Contains(k, StringComparer.OrdinalIgnoreCase)))
             {
-                _logger.LogDebug($"File {relativeFilePath} is a Hugo toml file.");
                 return true;
             }
 
-            _logger.LogDebug($"File {relativeFilePath} is not a Hugo toml file.");
             return false;
         }
 
         private bool IsHugoYamlFile(ISourceRepo sourceRepo, params string[] subPaths)
         {
             var relativeFilePath = Path.Combine(subPaths);
-            _logger.LogDebug($"Parsing the file: {relativeFilePath}");
             var yamlNode = ParserHelper.ParseYamlFile(sourceRepo, relativeFilePath);
             var yamlMappingNode = yamlNode as YamlMappingNode;
             if (yamlMappingNode != null)
@@ -164,29 +160,24 @@ namespace Microsoft.Oryx.Detector.Hugo
                     .Select(key => key.ToString())
                     .Any(key => HugoConfigurationKeys.Contains(key, StringComparer.OrdinalIgnoreCase)))
                 {
-                    _logger.LogDebug($"File {relativeFilePath} is a Hugo yaml file.");
                     return true;
                 }
             }
 
-            _logger.LogDebug($"File {relativeFilePath} is not a Hugo yaml file.");
             return false;
         }
 
         private bool IsHugoJsonFile(ISourceRepo sourceRepo, params string[] subPaths)
         {
             var relativeFilePath = Path.Combine(subPaths);
-            _logger.LogDebug($"Parsing the file: {relativeFilePath}");
             var jObject = ParserHelper.ParseJsonFile(sourceRepo, relativeFilePath);
             if (jObject.Children()
                 .Select(c => c.Path)
                 .Any(c => HugoConfigurationKeys.Contains(c, StringComparer.OrdinalIgnoreCase)))
             {
-                _logger.LogDebug($"File {relativeFilePath} is a Hugo json file.");
                 return true;
             }
 
-            _logger.LogDebug($"File {relativeFilePath} is not a Hugo json file.");
             return false;
         }
     }
