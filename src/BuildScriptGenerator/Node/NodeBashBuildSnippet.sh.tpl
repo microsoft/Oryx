@@ -61,9 +61,17 @@ then
 	if [ -f "$SOURCE_DIR/package-lock.json" ]; then
 		cp -f "$SOURCE_DIR/package-lock.json" .
 	fi
+	
+	if [ -f "$SOURCE_DIR/.npmrc" ]; then
+		cp -f "$SOURCE_DIR/.npmrc" .
+	fi
 
 	if [ -f "$SOURCE_DIR/yarn.lock" ]; then
 		cp -f "$SOURCE_DIR/yarn.lock" .
+	fi
+
+	if [ -f "$SOURCE_DIR/.yarnrc" ]; then
+		cp -f "$SOURCE_DIR/.yarnrc" .
 	fi
 
 	echo
