@@ -36,7 +36,7 @@ steps:
     configuration: '$(BuildConfiguration)'
 
 - powershell: |
-    dotnet pack --no-build --include-symbols src\Detector\Detector.signproj
+    dotnet pack --no-build --include-symbols -c Release src\Detector\Detector.signproj
   displayName: 'Re-package already generated NuGet packages with signed binaries'
 
 - task: VSBuild@1
