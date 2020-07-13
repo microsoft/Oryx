@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
@@ -630,6 +631,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.True(options.EnableNodeJSBuild);
             Assert.True(options.EnablePhpBuild);
             Assert.True(options.EnablePythonBuild);
+            Assert.True(options.EnableHugoBuild);
             Assert.True(options.EnableTelemetry);
 
             Assert.Null(options.PreBuildCommand);
@@ -642,6 +644,38 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             Assert.Empty(testConsole.StdOutput);
             Assert.Empty(testConsole.StdError);
+        }
+
+        [Fact]
+        public void PlatformsAreDisabledAsPerSettings()
+        {
+            // Arrange
+            var testConsole = new TestConsole();
+            var buildCommand = new BuildCommand
+            {
+                SourceDir = _testDir.CreateChildDir(),
+                DestinationDir = _testDir.GenerateRandomChildDirPath(),
+            };
+            var settings = new StringBuilder();
+            settings.AppendLine($"{SettingsKeys.DisableDotNetCoreBuild}=true");
+            settings.AppendLine($"{SettingsKeys.DisableHugoBuild}=true");
+            settings.AppendLine($"{SettingsKeys.DisableNodeJSBuild}=true");
+            settings.AppendLine($"{SettingsKeys.DisablePhpBuild}=true");
+            settings.AppendLine($"{SettingsKeys.DisablePythonBuild}=true");
+            File.WriteAllText(
+                Path.Combine(buildCommand.SourceDir, Constants.BuildEnvironmentFileName),
+                settings.ToString());
+            var serviceProvider = buildCommand.TryGetServiceProvider(testConsole);
+
+            // Act
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+
+            // Assert
+            Assert.False(options.EnableDotNetCoreBuild);
+            Assert.False(options.EnableNodeJSBuild);
+            Assert.False(options.EnablePhpBuild);
+            Assert.False(options.EnablePythonBuild);
+            Assert.False(options.EnableHugoBuild);
         }
 
         private IServiceProvider CreateServiceProvider(TestProgrammingPlatform generator, bool scriptOnly)

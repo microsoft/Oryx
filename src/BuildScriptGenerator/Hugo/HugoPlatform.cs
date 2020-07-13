@@ -145,7 +145,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 
         public bool IsEnabled(RepositoryContext ctx)
         {
-            return true;
+            return _commonOptions.EnableHugoBuild;
         }
 
         public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)

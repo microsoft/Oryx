@@ -41,6 +41,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public bool EnablePhpBuild { get; set; }
 
+        public bool EnableHugoBuild { get; set; }
+
         public bool EnableMultiPlatformBuild { get; set; }
 
         public string OryxSdkStorageBaseUrl { get; set; }

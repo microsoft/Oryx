@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -54,14 +55,12 @@ namespace Microsoft.Oryx.Detector.Tests
             }
         }
 
-        public IEnumerable<string> EnumerateFiles(string searchPattern, bool searchSubDirectories)
+        public IEnumerable<string> EnumerateFiles(
+            string searchPattern,
+            bool searchSubDirectories,
+            params string[] subDirectoryToSearchUnder)
         {
-            if (searchSubDirectories)
-            {
-                return RootPath.SafeEnumerateFiles(searchPattern);
-            }
-
-            return Directory.EnumerateFiles(RootPath, searchPattern);
+            throw new NotImplementedException();
         }
 
         public string[] ReadAllLines(params string[] paths)
