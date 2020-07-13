@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.Oryx.Detector
 {
     /// <summary>
-    /// A default implementation of <see cref="IDetector"/> which invokes the
+    /// The default implementation of <see cref="IDetector"/> which invokes the
     /// <see cref="IDetector.GetAllDetectedPlatforms(DetectorContext)"/> on each of the registered
     /// <see cref="IPlatformDetector"/> and returns back a list of <see cref="PlatformDetectorResult"/>.
     /// </summary>

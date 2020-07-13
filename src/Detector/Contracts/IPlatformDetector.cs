@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.Detector
     public interface IPlatformDetector
     {
         /// <summary>
-        /// Detects platform and additional information of the application in the source directory.
+        /// Detects platform of an application in a source directory.
         /// </summary>
         /// <param name="context">The <see cref="DetectorContext"/>.</param>
         /// <returns>An instance of <see cref="PlatformDetectorResult"/> if detection was

@@ -12,10 +12,10 @@ namespace Microsoft.Oryx.Detector.DotNetCore
     public class DotNetCorePlatformDetectorResult : PlatformDetectorResult
     {
         /// <summary>
-        /// Relative path to the location of the project file.
+        /// Gets or sets the relative path to the location of the project file.
         /// </summary>
         /// <example>
-        /// src/ShoppingWeb/ShoppingWeb.csproj
+        /// "src/ShoppingWeb/ShoppingWeb.csproj"
         /// </example>
         public string ProjectFile { get; set; }
     }

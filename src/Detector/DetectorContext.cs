@@ -6,7 +6,7 @@
 namespace Microsoft.Oryx.Detector
 {
     /// <summary>
-    /// The information which is used by the detectors to detect applications.
+    /// The information used by the detectors to detect applications.
     /// </summary>
     public class DetectorContext
     {

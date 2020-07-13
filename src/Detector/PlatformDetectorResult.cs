@@ -14,12 +14,12 @@ namespace Microsoft.Oryx.Detector
     public class PlatformDetectorResult
     {
         /// <summary>
-        /// The name the platform that was detected. For example: nodejs, dotnet, php and python.
+        /// Gets or sets the name of the platform that was detected. For example: nodejs, dotnet, php and python.
         /// </summary>
         public string Platform { get; set; }
 
         /// <summary>
-        /// The version of the platform that was detected.
+        /// Gets or sets the version of the platform that was detected.
         /// </summary>
         public string PlatformVersion { get; set; }
     }
