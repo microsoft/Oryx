@@ -16,6 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string DisableNodeJSBuild = "DISABLE_NODEJS_BUILD";
         public const string DisablePythonBuild = "DISABLE_PYTHON_BUILD";
         public const string DisablePhpBuild = "DISABLE_PHP_BUILD";
+        public const string DisableHugoBuild = "DISABLE_HUGO_BUILD";
         public const string EnableMultiPlatformBuild = "ENABLE_MULTIPLATFORM_BUILD";
         public const string DisableTelemetry = "ORYX_DISABLE_TELEMETRY";
         public const string PreBuildScriptPath = "PRE_BUILD_SCRIPT_PATH";

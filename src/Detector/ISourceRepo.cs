@@ -52,7 +52,13 @@ namespace Microsoft.Oryx.Detector
         /// <param name="searchSubDirectories">
         /// true files from subdirectories should be included, false for only the files in the root.
         /// </param>
+        /// <param name="subDirectoryToSearchUnder">
+        /// Sub directory under the root under which the search needs to happen.
+        /// </param>
         /// <returns>A collection of file paths.</returns>
-        IEnumerable<string> EnumerateFiles(string searchPattern, bool searchSubDirectories);
+        IEnumerable<string> EnumerateFiles(
+            string searchPattern,
+            bool searchSubDirectories,
+            params string[] subDirectoryToSearchUnder);
     }
 }
