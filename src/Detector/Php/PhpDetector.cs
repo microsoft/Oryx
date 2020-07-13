@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Detector.Php
         private readonly ILogger<PhpDetector> _logger;
 
         /// <summary>
-        /// Creates and instance of <see cref="PhpDetector"/>.
+        /// Creates an instance of <see cref="PhpDetector"/>.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{PhpDetector}"/>.</param>
         public PhpDetector(ILogger<PhpDetector> logger)

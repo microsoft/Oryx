@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Detector.Python
         private readonly ILogger<PythonDetector> _logger;
 
         /// <summary>
-        /// Creates and instance of <see cref="PythonDetector"/>.
+        /// Creates an instance of <see cref="PythonDetector"/>.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{PythonDetector}"/>.</param>
         public PythonDetector(ILogger<PythonDetector> logger)

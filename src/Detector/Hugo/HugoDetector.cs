@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.Detector.Hugo
         };
 
         /// <summary>
-        /// Creates and instance of <see cref="HugoDetector"/>.
+        /// Creates an instance of <see cref="HugoDetector"/>.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{HugoDetector}"/>.</param>
         public HugoDetector(ILogger<HugoDetector> logger)
