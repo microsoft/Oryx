@@ -3,11 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <!-- The following is to enable copying the .dlls of referenced projects (ex: Microsoft.Oryx.Common here) as part
-    of the generated nuget package's "lib" foler -->
-    <TargetsForTfmSpecificBuildOutput>
-      $(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage
-    </TargetsForTfmSpecificBuildOutput>
     <AssemblyName>Microsoft.Oryx.Detector</AssemblyName>
     <RootNamespace>Microsoft.Oryx.Detector</RootNamespace>
     <LangVersion>7.3</LangVersion>
@@ -29,6 +24,14 @@
   
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\detector\__detectorNugetPackagesVersions.props" />
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\General.targets" />
+
+  <!-- Workaround: https://github.com/NuGet/Home/issues/3891#issuecomment-309792369 -->
+  <ItemGroup>
+    <_PackageFiles Include="$(OutputPath)\Microsoft.Oryx.Common.dll">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\netstandard2.0\</PackagePath>
+    </_PackageFiles>
+  </ItemGroup>
 
   <PropertyGroup>
     <AssemblyVersion>$(VERSION_PREFIX)</AssemblyVersion>
@@ -57,6 +60,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Oryx.Common\Common.csproj">
+      <!-- PrivateAssets because we do not want this project to be referenced as a nuget package dependency and
+      instead we want it to be included as part of the Detector package dlls itself. -->
       <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
   </ItemGroup>
