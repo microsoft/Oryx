@@ -33,9 +33,9 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
     <PackageReference Include="Moq" Version="4.10.1" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Oryx.Common\Common.csproj" />
+    <ProjectReference Include="..\..\src\Detector\Detector.csproj" />
   </ItemGroup>
 
 </Project>
