@@ -80,7 +80,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange
-            var phpVersion = "7.3.12"; //NOTE: use the full version so that we know the install directory path
+            var phpVersion = "7.3.15"; //NOTE: use the full version so that we know the install directory path
             var appName = "twig-example";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
