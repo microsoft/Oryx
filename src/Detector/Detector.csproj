@@ -15,7 +15,12 @@
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
     <IsPackable>true</IsPackable>
+
+    <!-- We want to automatically generate package only for testing purposes (i.e in local development or CI agents) -->
+    <!-- In case of release builds, we want to do the following: build, sign the dlls and then run dotnet pack -->
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="'$(SIGN_PACKAGE)' == 'true'">false</GeneratePackageOnBuild>
+    
     <Authors>Microsoft</Authors>
     <Company>Microsoft</Company>
     <RepositoryUrl>https://github.com/microsoft/oryx</RepositoryUrl>

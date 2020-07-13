@@ -23,6 +23,7 @@ steps:
     $env:BUILD_NUMBER=$env:BUILD_BUILDNUMBER
     $projectFile="src\Detector\Detector.csproj"
     
+    $env:SIGN_PACKAGE="true"
     dotnet build Detector.sln -c Release
     dotnet restore src\Detector\Detector.signproj
   displayName: 'Build Detector.sln'
@@ -34,10 +35,9 @@ steps:
     msbuildArgs: '/t:SignFiles /p:MicroBuild_SigningEnabled=true'
     configuration: '$(BuildConfiguration)'
 
-- task: PowerShell@2
+- powershell: |
+    dotnet pack --no-build --no-restore --include-symbols src\Detector\Detector.signproj
   displayName: 'Re-package already generated NuGet packages with signed binaries'
-  inputs:
-    filePath: 'vsts\scripts\createNuGetPackages.ps1'
 
 - task: VSBuild@1
   displayName: 'Sign NuGet packages'
