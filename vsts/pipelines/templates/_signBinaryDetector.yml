@@ -36,6 +36,7 @@ steps:
     configuration: '$(BuildConfiguration)'
 
 - powershell: |
+    Write-Host "Running 'dotnet pack'..."
     dotnet pack --no-build --include-symbols -c Release src\Detector\Detector.csproj
   displayName: 'Re-package already generated NuGet packages with signed binaries'
 
