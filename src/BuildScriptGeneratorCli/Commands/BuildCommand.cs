@@ -413,8 +413,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             IDictionary<string, string> buildProperties)
         {
             var commandLineConfigSource = new CustomConfigurationSource();
-            commandLineConfigSource.Set(SettingsKeys.PlatformName, PlatformName);
-            commandLineConfigSource.Set(SettingsKeys.PlatformVersion, PlatformVersion);
+            SetValueIfNotNullOrEmpty(SettingsKeys.PlatformName, PlatformName);
+            SetValueIfNotNullOrEmpty(SettingsKeys.PlatformVersion, PlatformVersion);
 
             // Set the platform key and version in the format that they are represented in other sources
             // (like environment variables and build.env file).git 
@@ -424,8 +424,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             SetPlatformVersion(PlatformName, PlatformVersion);
 
             commandLineConfigSource.Set(SettingsKeys.CreatePackage, ShouldPackage.ToString());
-            commandLineConfigSource.Set(SettingsKeys.RequiredOsPackages, OsRequirements);
-            commandLineConfigSource.Set(SettingsKeys.AppType, AppType);
+
+            SetValueIfNotNullOrEmpty(SettingsKeys.RequiredOsPackages, OsRequirements);
+            SetValueIfNotNullOrEmpty(SettingsKeys.AppType, AppType);
+            SetValueIfNotNullOrEmpty(SettingsKeys.DynamicInstallRootDir, DynamicInstallRootDir);
 
             if (buildProperties != null)
             {
@@ -443,6 +445,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 // value that is set by earlier configuration sources.
                 if (buildProperties.TryGetValue(key, out var value))
                 {
+                    // NOTE : do NOT use SetValueIfNotNullOrEmpty here since the Key was present explicitly
                     commandLineConfigSource.Set(key, value);
                 }
             }
@@ -463,6 +466,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     platformName = platformName == "nodejs" ? "node" : platformName;
                     var platformVersionKey = $"{platformName}_version".ToUpper();
                     commandLineConfigSource.Set(platformVersionKey, platformVersion);
+                }
+            }
+
+            void SetValueIfNotNullOrEmpty(string key, string value)
+            {
+                if (!string.IsNullOrEmpty(value))
+                {
+                    commandLineConfigSource.Set(key, value);
                 }
             }
         }

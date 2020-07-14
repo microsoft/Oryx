@@ -10,12 +10,6 @@
     </AssemblyAttribute>
   </ItemGroup>
 
-  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
-      <ItemGroup>
-          <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths->WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
-      </ItemGroup>
-  </Target>
-
   <Target Name="CopyNuGetPackage" AfterTargets="GenerateNuspec">
     <PropertyGroup>
       <ArtifactsPackagesDir>..\..\artifacts\packages</ArtifactsPackagesDir>
