@@ -113,7 +113,8 @@ namespace Microsoft.Oryx.Integration.Tests
             {
                 Assert.True(result.IsSuccess);
                 Assert.Contains(
-                    $"PHP executable: {expectedDynamicInstallRootDir}/{phpVersion}",
+                    $"PHP executable: " +
+                    $"{Path.Combine(expectedDynamicInstallRootDir, PhpConstants.PlatformName, phpVersion)}",
                     result.StdOut);
                 Assert.Contains($"Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
             },
