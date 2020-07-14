@@ -111,8 +111,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
-            Assert.Equal(
-                "{}\r\n",
+            Assert.Contains(
+                "{}",
                 testConsole.StdOutput);
         }
 
