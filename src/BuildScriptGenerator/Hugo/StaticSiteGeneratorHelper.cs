@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using YamlDotNet.RepresentationModel;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 {
@@ -112,11 +113,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             foreach (var path in yamlFilePaths)
             {
                 var yamlNode = ParserHelper.ParseYamlFile(sourceRepo, path);
-                if (yamlNode.Children.Keys
-                    .Select(k => k.ToString())
-                    .Any(k => HugoConfigurationVariables.Contains(k, StringComparer.OrdinalIgnoreCase)))
+                var yamlMappingNode = yamlNode as YamlMappingNode;
+                if (yamlMappingNode != null)
                 {
-                    return true;
+                    if (yamlMappingNode.Children.Keys
+                        .Select(k => k.ToString())
+                        .Any(k => HugoConfigurationVariables.Contains(k, StringComparer.OrdinalIgnoreCase)))
+                    {
+                        return true;
+                    }
                 }
             }
 
