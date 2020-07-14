@@ -111,11 +111,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
-            Assert.Contains(
-                "\"Platform\": \"{}\"",
-                testConsole.StdOutput);
-            Assert.Contains(
-                "\"PlatformVersion\": \"{}\"",
+            Assert.Equal(
+                "{}\r\n",
                 testConsole.StdOutput);
         }
 
@@ -276,7 +273,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 $"\"Platform\": \"{NodeConstants.PlatformName}\"",
                 testConsole.StdOutput);
             Assert.Contains(
-                "\"PlatformVersion\": \"{}\"",
+                "\"PlatformVersion\": \"\"",
                 testConsole.StdOutput);
         }
 

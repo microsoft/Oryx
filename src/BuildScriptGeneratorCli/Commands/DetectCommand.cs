@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 foreach (var propertyInfo in propertyInfos)
                 {
                     var propertyValue = propertyInfo.GetValue(detectedPlatformResult, null);
-                    defs.AddDefinition(propertyInfo.Name, 
+                    defs.AddDefinition(propertyInfo.Name,
                         propertyValue == null ? "Not Detected" : propertyValue.ToString());
                 }
             }
@@ -131,20 +131,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (detectedPlatformResults == null || !detectedPlatformResults.Any())
             {
-                var platformData = new List<Dictionary<string, string>>();
-                Dictionary<string, string> data = new Dictionary<string, string>
-                {
-                    ["Platform"] = "{}",
-                    ["PlatformVersion"] = "{}",
-                };
-                platformData.Add(data);
-                console.WriteLine(JsonConvert.SerializeObject(platformData, Formatting.Indented));
+                console.WriteLine("{}");
                 return;
             }
 
             foreach (var detectedPlatformResult in detectedPlatformResults)
             {
-                detectedPlatformResult.PlatformVersion = detectedPlatformResult.PlatformVersion ?? "{}";
+                detectedPlatformResult.PlatformVersion = detectedPlatformResult.PlatformVersion ?? string.Empty;
             }
 
             console.WriteLine(JsonConvert.SerializeObject(detectedPlatformResults, Formatting.Indented));
