@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string SourceDir { get; set; }
 
         [Option(
-            "--output",
+            "-o|--output",
             CommandOptionType.SingleValue,
             Description = "Output the detected platform data in chosen format. " +
             "Example: json, table. " +
@@ -55,7 +55,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.WriteErrorLine($"No platforms and versions detected from source directory: '{SourceDir}'");
                 }
 
-                if (!string.IsNullOrEmpty(OutputFormat) && OutputFormat.Equals("json"))
+                if (!string.IsNullOrEmpty(OutputFormat) 
+                    && string.Equals(OutputFormat, "json", StringComparison.OrdinalIgnoreCase))
                 {
                     PrintJsonResult(detectedPlatformResults, console);
                 }
@@ -81,6 +82,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return false;
             }
 
+            if (!string.IsNullOrEmpty(OutputFormat) 
+                && !string.Equals(OutputFormat, "json", StringComparison.OrdinalIgnoreCase) 
+                && !string.Equals(OutputFormat, "table", StringComparison.OrdinalIgnoreCase))
+            {
+                logger?.LogError("Unsupported output format. Supported output formats are: json, table.");
+                console.WriteErrorLine($"Unsupported output format: '{OutputFormat}'. " + 
+                    "Supported output formats are: json, table.");
+
+                return false;
+            }
+
             return true;
         }
 
@@ -98,13 +110,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             foreach (var detectedPlatformResult in detectedPlatformResults)
             {
                 // This is to filter out the indexed properties from properties variable.
-                var propertyInfos = detectedPlatformResult.GetType().GetProperties().Where(p => p.GetIndexParameters().Length == 0);
+                var propertyInfos = detectedPlatformResult
+                    .GetType()
+                    .GetProperties()
+                    .Where(p => p.GetIndexParameters().Length == 0);
 
                 // Get all properties from a detected platform result and add them to DefinitionListFormatter.
                 foreach (var propertyInfo in propertyInfos)
                 {
                     var propertyValue = propertyInfo.GetValue(detectedPlatformResult, null);
-                    defs.AddDefinition(propertyInfo.Name, propertyValue == null ? "Not Detected" : propertyValue.ToString());
+                    defs.AddDefinition(propertyInfo.Name, 
+                        propertyValue == null ? "Not Detected" : propertyValue.ToString());
                 }
             }
 
@@ -118,8 +134,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var platformData = new List<Dictionary<string, string>>();
                 Dictionary<string, string> data = new Dictionary<string, string>
                 {
-                    ["Platform"] = "Not Detected",
-                    ["PlatformVersion"] = "Not Detected",
+                    ["Platform"] = "{}",
+                    ["PlatformVersion"] = "{}",
                 };
                 platformData.Add(data);
                 console.WriteLine(JsonConvert.SerializeObject(platformData, Formatting.Indented));
@@ -128,7 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             foreach (var detectedPlatformResult in detectedPlatformResults)
             {
-                detectedPlatformResult.PlatformVersion = detectedPlatformResult.PlatformVersion ?? "Not Detected";
+                detectedPlatformResult.PlatformVersion = detectedPlatformResult.PlatformVersion ?? "{}";
             }
 
             console.WriteLine(JsonConvert.SerializeObject(detectedPlatformResults, Formatting.Indented));

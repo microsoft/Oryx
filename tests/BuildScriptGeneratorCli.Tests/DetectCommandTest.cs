@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void Execute_OutputsPlatformAndVersionNotDetected()
+        public void Execute_OutputsTable_PlatformAndVersionNotDetected()
         {
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "appdir");
@@ -112,15 +112,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
             Assert.Contains(
-                "\"Platform\": \"Not Detected\"",
+                "\"Platform\": \"{}\"",
                 testConsole.StdOutput);
             Assert.Contains(
-                "\"PlatformVersion\": \"Not Detected\"",
+                "\"PlatformVersion\": \"{}\"",
                 testConsole.StdOutput);
         }
 
         [Fact]
-        public void Execute_OutputsNodePlatform_WithVersionNotDetected_WhenJsonFileIsEmpty()
+        public void Execute_OutputsTable_NodePlatform_WithVersionNotDetected_WhenJsonFileIsEmpty()
         {
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "nodeappdir");
@@ -147,7 +147,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void Execute_OutputsPhpPlatformAndVersion_WhenComposerFileExplicitsVersion()
+        public void Execute_OutputsTable_PhpPlatformAndVersion_WhenComposerFileExplicitsVersion()
         {
             // Arrange
             var srcDir = Path.Combine(_testDirPath, "phpappdir");
@@ -215,7 +215,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
-        public void Execute_Outputs_MultiplatformNamesAndVersions()
+        public void Execute_OutputsTable_MultiplatformNamesAndVersions()
         {
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "multiappdir");
@@ -276,7 +276,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 $"\"Platform\": \"{NodeConstants.PlatformName}\"",
                 testConsole.StdOutput);
             Assert.Contains(
-                "\"PlatformVersion\": \"Not Detected\"",
+                "\"PlatformVersion\": \"{}\"",
                 testConsole.StdOutput);
         }
 
