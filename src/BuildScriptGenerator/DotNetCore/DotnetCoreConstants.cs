@@ -53,11 +53,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public static readonly string DefaultDotNetCoreRuntimeVersionsInstallDir = $"/opt/{PlatformName}/runtimes";
         public static readonly string DefaultDotNetCoreSdkVersionsInstallDir = $"/opt/{PlatformName}/sdks";
-
-        public static readonly string DynamicDotNetCoreRuntimeVersionsInstallDir
-            = $"{Constants.TemporaryInstallationDirectoryRoot}/{PlatformName}/runtimes";
-
-        public static readonly string DynamicDotNetCoreSdkVersionsInstallDir
-            = $"{Constants.TemporaryInstallationDirectoryRoot}/{PlatformName}/sdks";
     }
 }

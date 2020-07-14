@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -27,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return IsVersionInstalled(
                 version,
                 builtInDir: NodeConstants.InstalledNodeVersionsDir,
-                dynamicInstallDir: $"{Constants.TemporaryInstallationDirectoryRoot}/nodejs");
+                dynamicInstallDir: Path.Combine(_commonOptions.DynamicInstallRootDir, NodeConstants.PlatformName));
         }
     }
 }

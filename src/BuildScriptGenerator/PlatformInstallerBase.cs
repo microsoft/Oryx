@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var versionDirInTemp = directoryToInstall;
             if (string.IsNullOrEmpty(versionDirInTemp))
             {
-                versionDirInTemp = $"{Constants.TemporaryInstallationDirectoryRoot}/{platformName}/{version}";
+                versionDirInTemp = Path.Combine(_commonOptions.DynamicInstallRootDir, platformName, version);
             }
 
             var tarFile = $"{version}.tar.gz";
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo")
 
                 // Write out a sentinel file to indicate downlaod and extraction was successful
-                .AppendLine($"echo > {versionDirInTemp}/{SdkStorageConstants.SdkDownloadSentinelFileName}");
+                .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
             return snippet.ToString();
         }
 

@@ -44,5 +44,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             CommandOptionType.MultipleValue,
             Description = "Additional information used by this tool to generate and run build scripts.")]
         public string[] Properties { get; set; }
+
+        [Option(
+            OptionTemplates.DynamicInstallRootDir,
+            CommandOptionType.SingleValue,
+            Description = "Root directory path under which dynamically installed SDKs are created under.")]
+        public string DynamicInstallRootDir { get; set; }
     }
 }

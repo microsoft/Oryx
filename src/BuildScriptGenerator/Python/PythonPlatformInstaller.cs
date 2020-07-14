@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -27,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return IsVersionInstalled(
                 version,
                 builtInDir: PythonConstants.InstalledPythonVersionsDir,
-                dynamicInstallDir: $"{Constants.TemporaryInstallationDirectoryRoot}/python");
+                dynamicInstallDir: Path.Combine(_commonOptions.DynamicInstallRootDir, PythonConstants.PlatformName));
         }
     }
 }

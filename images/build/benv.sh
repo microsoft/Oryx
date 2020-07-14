@@ -21,25 +21,34 @@ matchesName() {
 #   export dotnet=1
 #   source benv dotnet=3
 #   dotnet --version (This should print version 3)
-while read benvvar; do
-  set -- "$benvvar" "$@"
+# What the following lines do? They rearrange the arguments that are passed to the script so that environment variables
+# come before arguments passed to benv.
+# Example: 
+# Let us say there is an environment variable called NODE=10.14.3
+# and benv was called like 'source benv node=12.16.3', then following lines make it like 
+# it was called 'source benv NODE=10.14.3 node=12.16.3'. So here the last argument's value wins.
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
+done < <(set | grep -i '^dynamic_install_root_dir=')
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^php=')
-while read benvvar; do
-  set -- "$benvvar" "$@"
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^python=')
-while read benvvar; do
-  set -- "$benvvar" "$@"
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^node=')
-while read benvvar; do
-  set -- "$benvvar" "$@"
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^npm=')
-while read benvvar; do
-  set -- "$benvvar" "$@"
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^dotnet=')
-while read benvvar; do
-  set -- "$benvvar" "$@"
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^hugo=')
-unset benvvar # Remove all traces of this part of the script
+unset benvEnvironmentVariable # Remove all traces of this part of the script
 
 # Oryx's paths come to the end of the PATH environment variable so that any user installed platform
 # sdk versions can be picked up. Here we are trying to find the first occurrence of a path like '/opt/oryx'
@@ -59,6 +68,29 @@ updatePath() {
   fi
 }
 
+benv-getDynamicInstallRootDir() {
+  # Iterate through arguments of the format "name=value"
+  # and resolve each one, or exit if there is a failure.
+  local explicitDynamicInstallRootDir=""
+  while [[ $1 = *"="* ]]; do
+    local name=$(echo $1 | sed 's/=.*$//')
+    local value=$(echo $1 | sed 's/^.*=//')
+
+    if matchesName "dynamic_install_root_dir" "$name"
+    then
+      explicitDynamicInstallRootDir="$value"
+    fi
+    shift
+  done
+
+  if [ -z "$explicitDynamicInstallRootDir" ]
+  then
+    echo "/tmp/oryx/platforms"
+  else
+    echo "$explicitDynamicInstallRootDir"
+  fi
+}
+
 # NOTE: We handle .NET Core specially because there are 2 version types:
 # SDK version and Runtime version
 # For platforms other than dotnet, we look at a folder structure like '/opt/nodejs/10.14.1', but
@@ -68,8 +100,9 @@ benv-showSupportedVersionsErrorInfo() {
   local userPlatformName="$1"
   local platformDirName="$2"
   local userSuppliedVersion="$3"
+  local dynamicInstallRootDir="$4"
   local builtInInstallDir="/opt/$platformDirName"
-  local dynamicInstallDir="/tmp/oryx/platforms/$platformDirName"
+  local dynamicInstallDir="$dynamicInstallRootDir/$platformDirName"
 
   if [ "$platformDirName" == "dotnet" ]; then
     builtInInstallDir="$builtInInstallDir/runtimes"
@@ -95,8 +128,9 @@ benv-showSupportedVersionsErrorInfo() {
 benv-getPlatformDir() {
   local platformDirName="$1"
   local userSuppliedVersion="$2"
+  local dynamicInstallRootDir="$3"
   local builtInInstallDir="/opt/$platformDirName"
-  local dynamicInstallDir="/tmp/oryx/platforms/$platformDirName"
+  local dynamicInstallDir="$dynamicInstallRootDir/$platformDirName"
   
   if [ "$platformDirName" == "dotnet" ]; then
     builtInInstallDir="$builtInInstallDir/runtimes"
@@ -125,6 +159,10 @@ benv-versions() {
   done
 }
 
+# Since benv is going to be 'sourced', create a name which suggests it to not
+# be used outside the context of benv script itself
+_benvDynamicInstallRootDir=$(benv-getDynamicInstallRootDir "$@")
+
 benv-resolve() {
   local name=$(echo $1 | sed 's/=.*$//')
   local value=$(echo $1 | sed 's/^.*=//')
@@ -135,9 +173,9 @@ benv-resolve() {
     || matchesName "node_version" "$name" \
     && [ "${value::1}" != "/" ]; then
     
-    platformDir=$(benv-getPlatformDir "nodejs" "$value")
+    platformDir=$(benv-getPlatformDir "nodejs" "$value" "$_benvDynamicInstallRootDir")
     if [ "$platformDir" == "NotFound" ]; then
-      benv-showSupportedVersionsErrorInfo "node" "nodejs" "$value"
+      benv-showSupportedVersionsErrorInfo "node" "nodejs" "$value" "$_benvDynamicInstallRootDir"
       return 1
     fi
 
@@ -154,9 +192,9 @@ benv-resolve() {
 
   # Resolve npm versions
   if matchesName "npm" "$name" || matchesName "npm_version" "$name" && [ "${value::1}" != "/" ]; then
-    platformDir=$(benv-getPlatformDir "npm" "$value")
+    platformDir=$(benv-getPlatformDir "npm" "$value" "$_benvDynamicInstallRootDir")
     if [ "$platformDir" == "NotFound" ]; then
-      benv-showSupportedVersionsErrorInfo "npm" "npm" "$value"
+      benv-showSupportedVersionsErrorInfo "npm" "npm" "$value" "$_benvDynamicInstallRootDir"
       return 1
     fi
 
@@ -172,9 +210,9 @@ benv-resolve() {
 
   # Resolve python versions
   if matchesName "python" "$name" || matchesName "python_version" "$name" && [ "${value::1}" != "/" ]; then
-    platformDir=$(benv-getPlatformDir "python" "$value")
+    platformDir=$(benv-getPlatformDir "python" "$value" "$_benvDynamicInstallRootDir")
     if [ "$platformDir" == "NotFound" ]; then
-      benv-showSupportedVersionsErrorInfo "python" "python" "$value"
+      benv-showSupportedVersionsErrorInfo "python" "python" "$value" "$_benvDynamicInstallRootDir"
       return 1
     fi
 
@@ -197,9 +235,9 @@ benv-resolve() {
 
   # Resolve hugo versions
   if matchesName "hugo" "$name" || matchesName "hugo_version" "$name" && [ "${value::1}" != "/" ]; then
-    platformDir=$(benv-getPlatformDir "hugo" "$value")
+    platformDir=$(benv-getPlatformDir "hugo" "$value" "$_benvDynamicInstallRootDir")
     if [ "$platformDir" == "NotFound" ]; then
-      benv-showSupportedVersionsErrorInfo "hugo" "hugo" "$value"
+      benv-showSupportedVersionsErrorInfo "hugo" "hugo" "$value" "$_benvDynamicInstallRootDir"
       return 1
     fi
 
@@ -212,9 +250,9 @@ benv-resolve() {
 
   # Resolve PHP versions
   if matchesName "php" "$name" || matchesName "php_version" "$name" && [ "${value::1}" != "/" ]; then
-    platformDir=$(benv-getPlatformDir "php" "$value")
+    platformDir=$(benv-getPlatformDir "php" "$value" "$_benvDynamicInstallRootDir")
     if [ "$platformDir" == "NotFound" ]; then
-      benv-showSupportedVersionsErrorInfo "php" "php" "$value"
+      benv-showSupportedVersionsErrorInfo "php" "php" "$value" "$_benvDynamicInstallRootDir"
       return 1
     fi
 
@@ -229,9 +267,9 @@ benv-resolve() {
 
   # Resolve dotnet versions
   if matchesName "dotnet" "$name" || matchesName "dotnet_version" "$name" && [ "${value::1}" != "/" ]; then
-    runtimeDir=$(benv-getPlatformDir "dotnet" "$value")
+    runtimeDir=$(benv-getPlatformDir "dotnet" "$value" "$_benvDynamicInstallRootDir")
     if [ "$runtimeDir" == "NotFound" ]; then
-      benv-showSupportedVersionsErrorInfo "dotnet" "dotnet" "$value"
+      benv-showSupportedVersionsErrorInfo "dotnet" "dotnet" "$value" "$_benvDynamicInstallRootDir"
       return 1
     fi
 
