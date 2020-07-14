@@ -19,6 +19,7 @@
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\General.targets" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Oryx.Detector" Version="1.0.0-*" />
