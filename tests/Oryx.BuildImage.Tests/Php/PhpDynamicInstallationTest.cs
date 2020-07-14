@@ -67,8 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 Assert.True(result.IsSuccess);
                 Assert.Contains(
                     $"PHP executable: " +
-                    $"{Path.Combine(Constants.TemporaryInstallationDirectoryRoot, PhpConstants.PlatformName, phpVersion)}",
-                    result.StdOut);
+                    $"{Path.Combine(BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot, PhpConstants.PlatformName, phpVersion)}", result.StdOut);
                 Assert.Contains("Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
             },
             result.GetDebugInfo());
