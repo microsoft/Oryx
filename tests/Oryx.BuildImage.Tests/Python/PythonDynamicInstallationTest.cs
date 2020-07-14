@@ -5,9 +5,9 @@
 
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -203,6 +203,50 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
                         $"Python Version: {installationDir}/bin/python3",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
+        {
+            // Arrange
+            var version = "3.6.9";
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var expectedDynamicInstallRootDir = "/foo/bar";
+            var script = new ShellScriptBuilder()
+                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
+                 .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddBuildCommand(
+                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}" +
+                $" --dynamic-install-root-dir {expectedDynamicInstallRootDir}")
+                .AddDirectoryExistsCheck(
+                $"{expectedDynamicInstallRootDir}/{PythonConstants.PlatformName}/{version}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: {expectedDynamicInstallRootDir}/{PythonConstants.PlatformName}/{version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());

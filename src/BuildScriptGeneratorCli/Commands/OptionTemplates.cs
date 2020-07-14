@@ -20,5 +20,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string Property = "-p|--property <key-value>";
         public const string ManifestDir = "--manifest-dir <directory-path>";
         public const string AppType = "--apptype <application-type>";
+        public const string DynamicInstallRootDir = "--dynamic-install-root-dir <dir-path>";
     }
 }

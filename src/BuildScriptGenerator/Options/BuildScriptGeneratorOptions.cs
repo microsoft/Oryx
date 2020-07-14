@@ -31,6 +31,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public bool EnableDynamicInstall { get; set; }
 
+        public string DynamicInstallRootDir { get; set; }
+
         public bool EnableCheckers { get; set; }
 
         public bool EnableDotNetCoreBuild { get; set; }

@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -30,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return IsVersionInstalled(
                 version,
                 builtInDir: PhpConstants.InstalledPhpVersionsDir,
-                dynamicInstallDir: $"{Constants.TemporaryInstallationDirectoryRoot}/php");
+                dynamicInstallDir: Path.Combine(_commonOptions.DynamicInstallRootDir, PhpConstants.PlatformName));
         }
     }
 }

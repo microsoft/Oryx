@@ -6,8 +6,8 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }";
             var globalJsonSdkVersion = "3.1.201";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", globalJsonSdkVersion);
-            var sentinelFile = $"{DotNetCoreConstants.DynamicDotNetCoreSdkVersionsInstallDir}/{globalJsonSdkVersion}/" +
+            var sentinelFile = $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}/sdks/{globalJsonSdkVersion}/" +
                 $"{SdkStorageConstants.SdkDownloadSentinelFileName}";
             var appName = NetCoreApp31MvcApp;
             var volume = CreateSampleAppVolume(appName);
@@ -364,6 +364,71 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     Assert.Contains("Using .NET Core SDK Version: ", result.StdOut);
                     Assert.Contains("react-scripts build", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsApplication_ByDynamicallyInstallingSDKs_IntoCustomDynamicInstallationDir()
+        {
+            // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
+
+            // Arrange
+            var expectedSdkVersion = "3.1.201";
+            var globalJsonTemplate = @"
+            {
+                ""sdk"": {
+                    ""version"": ""#version#"",
+                    ""rollForward"": ""Disable""
+                }
+            }";
+            var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
+            var appName = NetCoreApp21WebApp;
+            var runtimeVersion = "2.1";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/output";
+            var expectedDynamicInstallRootDir = "/foo/bar";
+            // Create a global.json in host's app directory so that it can be present in container directory
+            File.WriteAllText(
+                Path.Combine(volume.MountedHostDir, DotNetCoreConstants.GlobalJsonFileName),
+                globalJsonContent);
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} --dynamic-install-root-dir {expectedDynamicInstallRootDir}")
+                .AddDirectoryExistsCheck(
+                $"{expectedDynamicInstallRootDir}/{DotNetCoreConstants.PlatformName}/sdks/{expectedSdkVersion}")
+                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, expectedSdkVersion), result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{runtimeVersion}",
+                        result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersion}",
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
