@@ -180,6 +180,12 @@ docker build -t $builtImageName \
 	$buildMetadataArgs \
 	-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
 	.
+
+docker build \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
+    -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
+    .
+
 echo
 echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 createImageNameWithReleaseTag $builtImageName
