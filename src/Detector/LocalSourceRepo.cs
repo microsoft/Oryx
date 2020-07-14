@@ -13,7 +13,7 @@ using Microsoft.Oryx.Common.Extensions;
 namespace Microsoft.Oryx.Detector
 {
     /// <summary>
-    /// Default implementation of <see cref="ISourceRepo"/> which is backed by local file system.
+    /// Default implementation of <see cref="ISourceRepo"/> which is backed by the local file system.
     /// </summary>
     public class LocalSourceRepo : ISourceRepo
     {

@@ -7,7 +7,7 @@ namespace Microsoft.Oryx.Detector
 {
     /// <summary>
     /// Represents the result of a <see cref="IPlatformDetector.Detect(DetectorContext)"/> operation.
-    /// This contains basic information of the detected application. However, each individual detector could include
+    /// This contains basic information about the detected application. However, each individual detector could include
     /// additional information about the application. For example <see cref="DotNetCore.DotNetCoreDetector"/> returns
     /// an instance of <see cref="DotNetCore.DotNetCorePlatformDetectorResult"/>.
     /// </summary>
