@@ -3,10 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
+namespace Microsoft.Oryx.Detector
 {
-    public interface IProjectFileProvider
+    internal class Constants
     {
-        string GetRelativePathToProjectFile(RepositoryContext context);
+        public const string FunctionApplications = "functions";
+        public const string StaticSiteApplications = "static-sites";
     }
 }

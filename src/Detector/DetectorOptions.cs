@@ -14,5 +14,11 @@ namespace Microsoft.Oryx.Detector
         /// Gets or sets the relative path to the project file to be built.
         /// </summary>
         public string Project { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of application that the source directory has, 
+        /// for example: 'functions' or 'static-sites' etc.
+        /// </summary>
+        public string AppType { get; set; }
     }
 }

@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -23,6 +24,48 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
           </PropertyGroup>
           <ItemGroup>
             <PackageReference Include=""Microsoft.NET.Sdk.Functions"" Version=""1.0.28"" />
+          </ItemGroup>
+          <ItemGroup>
+            <None Update=""host.json"">
+              <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            </None>
+            <None Update=""local.settings.json"">
+              <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+              <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+            </None>
+          </ItemGroup>
+        </Project>
+        ";
+
+        protected const string AzureBlazorWasmClientProjectFile = @"
+        <Project Sdk=""Microsoft.NET.Sdk.Web"">
+          <PropertyGroup>
+            <TargetFramework>netstandard2.1</TargetFramework>
+            <RazorLangVersion>3.0</RazorLangVersion>
+          </PropertyGroup>
+          <ItemGroup>
+            <PackageReference Include=""Microsoft.AspNetCore.Components.WebAssembly"" Version=""3.2.0-rc1.20223.4"" />
+          </ItemGroup>
+          <ItemGroup>
+            <None Update=""host.json"">
+              <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            </None>
+            <None Update=""local.settings.json"">
+              <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+              <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+            </None>
+          </ItemGroup>
+        </Project>
+        ";
+
+        protected const string AzureNonBlazorWasmProjectFile = @"
+        <Project Sdk=""Microsoft.NET.Sdk.Web"">
+          <PropertyGroup>
+            <TargetFramework>netstandard2.1</TargetFramework>
+            <RazorLangVersion>3.0</RazorLangVersion>
+          </PropertyGroup>
+          <ItemGroup>
+            <PackageReference Include=""Microsoft.AspNetCore"" Version=""2.1.0"" />
           </ItemGroup>
           <ItemGroup>
             <None Update=""host.json"">
@@ -154,8 +197,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             _tempDirRoot = testFixture.RootDirPath;
         }
 
-        protected DefaultProjectFileProvider GetProjectFileProvider(
-            DetectorOptions options = null)
+        protected DefaultProjectFileProvider GetProjectFileProvider(DetectorOptions options = null)
         {
             if (options == null)
             {
@@ -168,7 +210,9 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
                     Options.Create(options),
                     NullLogger<ExplicitProjectFileProvider>.Instance),
                 new RootDirectoryProjectFileProvider(NullLogger<RootDirectoryProjectFileProvider>.Instance),
-                new ProbeAndFindProjectFileProvider(NullLogger<ProbeAndFindProjectFileProvider>.Instance),
+                new ProbeAndFindProjectFileProvider(
+                    NullLogger<ProbeAndFindProjectFileProvider>.Instance,
+                    Options.Create(options)),
             };
 
             return new DefaultProjectFileProvider(providers);
