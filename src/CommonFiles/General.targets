@@ -1,4 +1,11 @@
 <Project>
+  <PropertyGroup>
+    <!-- Generate lock file (during development time) -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- Use lock file to restore in CI -->
+    <RestoreLockedMode Condition="'$(BUILD_NUMBER)' == 'true'">true</RestoreLockedMode>
+  </PropertyGroup>
+
   <ItemGroup>
     <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute" Condition="'$(GIT_COMMIT)' != ''">
       <_Parameter1>GitCommit</_Parameter1>
