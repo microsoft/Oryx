@@ -98,6 +98,35 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Theory]
+        [MemberData(
+            nameof(TestValueGenerator.GetNodeVersions),
+            MemberType = typeof(TestValueGenerator))]
+        public void HasExpected_Global_Node_Module_Path(string nodeVersion)
+        {
+            // Arrange & Act
+            var script = new ShellScriptBuilder()
+                .AddCommand("npm root --quiet -g")
+                .ToString();
+
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("node", nodeVersion),
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(FilePaths.NodeGlobalModulesPath, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
 
         [Fact]
         public void GeneratedScript_CanRunStartupScriptsFromAppRoot()
