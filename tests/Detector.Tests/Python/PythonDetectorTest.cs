@@ -6,6 +6,7 @@
 using System;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Detector.Python;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -167,6 +168,54 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             Assert.Null(result.PlatformVersion);
         }
 
+        [Fact]
+        public void Detect_ReutrnsNull_WhenDotPyFilesExistInSubFolders_AndDeepProbingIsDisabled()
+        {
+            // Arrange
+            var options = new DetectorOptions
+            {
+                DisableRecursiveLookUp = true,
+            };
+            var detector = CreatePythonPlatformDetector(options);
+            var sourceDir = Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N")))
+                .FullName;
+            var subDir = Directory.CreateDirectory(Path.Combine(sourceDir, Guid.NewGuid().ToString("N"))).FullName;
+            IOHelpers.CreateFile(subDir, "foo.py content", "foo.py");
+            IOHelpers.CreateFile(subDir, "foo==1.1", PythonConstants.RequirementsFileName);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void Detect_ReutrnsResult_WhenRequirementsFileExistsAtRoot_AndDeepProbingIsDisabled()
+        {
+            // Arrange
+            var options = new DetectorOptions
+            {
+                DisableRecursiveLookUp = true,
+            };
+            var detector = CreatePythonPlatformDetector(options);
+            var sourceDir = Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N")))
+                .FullName;
+            IOHelpers.CreateFile(sourceDir, "foo==1.1", PythonConstants.RequirementsFileName);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(PythonConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
+        }
+
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
         {
             return new DetectorContext
@@ -175,11 +224,10 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             };
         }
 
-        private PythonDetector CreatePythonPlatformDetector()
+        private PythonDetector CreatePythonPlatformDetector(DetectorOptions options = null)
         {
-
-            return new PythonDetector(
-                NullLogger<PythonDetector>.Instance);
+            options = options ?? new DetectorOptions();
+            return new PythonDetector(NullLogger<PythonDetector>.Instance, Options.Create(options));
         }
     }
 }

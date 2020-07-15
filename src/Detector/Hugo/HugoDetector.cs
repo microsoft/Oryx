@@ -87,6 +87,8 @@ namespace Microsoft.Oryx.Detector.Hugo
                 return true;
             }
 
+            // NOTE: we do NOT disable looking up into the 'config' folder because it is a special folder
+            // from perspective of Hugo where users can have configuration files.
             if (sourceRepo.DirExists(HugoConstants.ConfigFolderName))
             {
                 // Search for config/**/*.toml
