@@ -600,7 +600,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal("4.0", configuration.GetValue<string>("dotnet_version"));
-            Assert.Equal("src/foobar.csproj", options.Project);
             Assert.Empty(testConsole.StdOutput);
             Assert.Empty(testConsole.StdError);
         }
