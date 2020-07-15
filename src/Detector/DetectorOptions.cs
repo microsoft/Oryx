@@ -6,12 +6,12 @@
 namespace Microsoft.Oryx.Detector
 {
     /// <summary>
-    /// Options to create a detector.
+    /// Settings used by the detectors when detecting applications.
     /// </summary>
     public class DetectorOptions
     {
         /// <summary>
-        /// Gets or sets the relative path to the project to be built.
+        /// Gets or sets the relative path to the project file to be built.
         /// </summary>
         public string Project { get; set; }
     }

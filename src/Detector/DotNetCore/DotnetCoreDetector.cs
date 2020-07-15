@@ -10,17 +10,28 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
+    /// <summary>
+    /// An implementation of <see cref="IPlatformDetector"/> which detects 
+    /// ASP.NET Core Web Application projects, .NET Core Azure Functions projects and
+    /// ASP.NET Core Blazor Client projects.
+    /// </summary>
     public class DotNetCoreDetector : IDotNetCorePlatformDetector
     {
         private readonly DefaultProjectFileProvider _projectFileProvider;
         private readonly ILogger<DotNetCoreDetector> _logger;
 
+        /// <summary>
+        /// Creates an instance of <see cref="DotNetCoreDetector"/>.
+        /// </summary>
+        /// <param name="projectFileProvider">The <see cref="DefaultProjectFileProvider"/>.</param>
+        /// <param name="logger">The <see cref="ILogger{DotNetCoreDetector}"/>.</param>
         public DotNetCoreDetector(DefaultProjectFileProvider projectFileProvider, ILogger<DotNetCoreDetector> logger)
         {
             _projectFileProvider = projectFileProvider;
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);

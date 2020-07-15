@@ -10,6 +10,9 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Node
 {
+    /// <summary>
+    /// An implementation of <see cref="IPlatformDetector"/> which detects NodeJS applications.
+    /// </summary>
     public class NodeDetector : INodePlatformDetector
     {
         private static readonly string[] IisStartupFiles = new[]
