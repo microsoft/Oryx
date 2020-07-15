@@ -15,7 +15,6 @@
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
-  <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\General.targets" />
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2018.3.0" />
