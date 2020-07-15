@@ -80,7 +80,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
         private string GetVersion(string targetFramework)
         {
-
             var version = DetermineRuntimeVersion(targetFramework);
             if (version != null)
             {
@@ -90,6 +89,5 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                    $"Could not determine runtime version from target framework. ");
             return null;
         }
-
     }
 }

@@ -12,6 +12,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Hugo;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 {
@@ -19,6 +20,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
     {
         public static IServiceCollection AddOptionsServices(this IServiceCollection services)
         {
+            services.TryAddEnumerable(
+                ServiceDescriptor.Transient<IConfigureOptions<DetectorOptions>, DetectorOptionsSetup>());
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<BuildScriptGeneratorOptions>, BuildScriptGeneratorOptionsSetup>());
             services.TryAddEnumerable(

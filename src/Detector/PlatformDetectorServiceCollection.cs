@@ -21,7 +21,6 @@ namespace Microsoft.Oryx.Detector
         public static IServiceCollection AddPlatformDetectorServices(this IServiceCollection services)
         {
             services.AddSingleton<IDetector, DefaultPlatformDetector>();
-            services.AddSingleton<IConfigureOptions<DetectorOptions>, DetectorOptionsSetup>();
 
             services
                 .AddLogging()
