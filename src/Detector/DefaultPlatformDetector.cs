@@ -8,11 +8,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.Detector
 {
+    /// <summary>
+    /// The default implementation of <see cref="IDetector"/> which invokes the
+    /// <see cref="IDetector.GetAllDetectedPlatforms(DetectorContext)"/> on each of the registered
+    /// <see cref="IPlatformDetector"/> and returns back a list of <see cref="PlatformDetectorResult"/>.
+    /// </summary>
     public class DefaultPlatformDetector : IDetector
     {
         private readonly IEnumerable<IPlatformDetector> _platformDetectors;
         private readonly ILogger<DefaultPlatformDetector> _logger;
 
+        /// <summary>
+        /// Creates an instance of <see cref="DefaultPlatformDetector"/>.
+        /// </summary>
+        /// <param name="platformDetectors">List of <see cref="IPlatformDetector"/>.</param>
+        /// <param name="logger">The <see cref="ILogger{DefaultPlatformDetector}"/></param>
         public DefaultPlatformDetector(
             IEnumerable<IPlatformDetector> platformDetectors,
             ILogger<DefaultPlatformDetector> logger)
@@ -21,6 +31,7 @@ namespace Microsoft.Oryx.Detector
             _logger = logger;
         }
 
+        /// <inheritdoc />
         public IEnumerable<PlatformDetectorResult> GetAllDetectedPlatforms(DetectorContext context)
         {
             var detectedPlatforms = new List<PlatformDetectorResult>();

@@ -5,12 +5,11 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.Detector;
-using Microsoft.Oryx.Detector.Tests;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Detector.NuGetPackage.Tests

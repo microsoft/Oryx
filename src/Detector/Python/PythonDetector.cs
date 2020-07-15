@@ -11,15 +11,23 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Python
 {
+    /// <summary>
+    /// An implementation of <see cref="IPlatformDetector"/> which detects Python applications.
+    /// </summary>
     public class PythonDetector : IPythonPlatformDetector
     {
         private readonly ILogger<PythonDetector> _logger;
 
+        /// <summary>
+        /// Creates an instance of <see cref="PythonDetector"/>.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger{PythonDetector}"/>.</param>
         public PythonDetector(ILogger<PythonDetector> logger)
         {
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;
