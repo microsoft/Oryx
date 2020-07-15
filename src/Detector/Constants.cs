@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.Detector
 {
-    internal class Constants
+    internal static class Constants
     {
         public const string FunctionApplications = "functions";
         public const string StaticSiteApplications = "static-sites";
