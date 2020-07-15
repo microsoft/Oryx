@@ -38,8 +38,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// Initializes a new instance of the <see cref="DotNetCorePlatform"/> class.
         /// </summary>
         /// <param name="versionProvider">The .NET version provider.</param>
-        /// <param name="projectFileProvider">The project file provider.</param>
-        /// <param name="environmentSettingsProvider">The environment settings provider.</param>
         /// <param name="logger">The logger of .NET platform.</param>
         /// <param name="detector">The detector of .NET platform.</param>
         /// <param name="commonOptions">The build options for BuildScriptGenerator.</param>
