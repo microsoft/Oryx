@@ -4,10 +4,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public static class DotNetCoreRunTimeVersions
     {
-        public const string DotNetCoreRuntimeBaseTag = "20200623.7";
+        public const string DotNetCoreRuntimeBaseTag = "20200716.2";
         public const string NetCoreApp10 = "1.0.16";
         public const string NetCoreApp11 = "1.1.13";
         public const string NetCoreApp20 = "2.0.9";
+        public const string NetCoreApp21 = "2.1.20";
+        public const string NetCoreApp21Sha = "542c299edba77991d8a4c75f2a4105f024b841e5d359a9d59e60dc64c34296a1256a5c59ab18c47fbb60693d18af8c6c1d7af7dc95c40f64dce1ab96c9e5e103";
         public const string AspnetCoreApp21 = "2.1.20";
         public const string AspnetCoreApp21Sha = "bbde6d45641aea8fd0345dd23a4da0cdc1609c65b372bfce9bb00fd7dbd4d0934c9325a1ffae87d88e43d474d52a7a077a6dc23f861feb8aaf02f834f42b31bd";
         public const string NetCoreApp22 = "2.2.7";
