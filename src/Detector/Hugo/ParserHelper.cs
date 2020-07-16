@@ -3,13 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGenerator
-{
-    using System.IO;
-    using Nett;
-    using Newtonsoft.Json.Linq;
-    using YamlDotNet.RepresentationModel;
+using System.IO;
+using Nett;
+using Newtonsoft.Json.Linq;
+using YamlDotNet.RepresentationModel;
 
+namespace Microsoft.Oryx.Detector.Hugo
+{
     /// <summary>
     /// Helper class to parse various files into a native type.
     /// </summary>
@@ -29,18 +29,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
-        /// Parse a .yaml file into a YamlNode from the YamlDotNet library.
+        /// Parse a .yaml file into a YamlMappingNode from the YamlDotNet library.
         /// See https://github.com/aaubry/YamlDotNet for more information.
         /// </summary>
         /// <param name="sourceRepo">Source repo for the application.</param>
         /// <param name="filePath">The path to the .yaml file.</param>
-        /// <returns>A YamlNode object containing information about the .yaml file.</returns>
-        public static YamlNode ParseYamlFile(ISourceRepo sourceRepo, string filePath)
+        /// <returns>A YamlMappingNode object containing information about the .yaml file.</returns>
+        public static YamlMappingNode ParseYamlFile(ISourceRepo sourceRepo, string filePath)
         {
             var yamlContent = sourceRepo.ReadFile(filePath);
             var yamlStream = new YamlStream();
             yamlStream.Load(new StringReader(yamlContent));
-            return yamlStream.Documents[0].RootNode;
+            return (YamlMappingNode)yamlStream.Documents[0].RootNode;
         }
 
         /// <summary>
