@@ -46,27 +46,27 @@ RUN apt-get update \
         libstdc++6 \
         zlib1g \
         libgdiplus \
-    && rm -rf /var/lib/apt/lists/*
-
+    && rm -rf /var/lib/apt/lists/* \
 # A temporary folder to hold all content temporarily used to build this image.
 # This folder is deleted in the final stage of building this image.
-RUN mkdir -p ${IMAGES_DIR}
-RUN mkdir -p ${BUILD_DIR}
+    && mkdir -p ${IMAGES_DIR} \
+    && mkdir -p ${BUILD_DIR}
+
 ADD build ${BUILD_DIR}
 ADD images ${IMAGES_DIR}
 # chmod all script files
-RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
-RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN mkdir -p /opt/oryx \
+    && find ${IMAGES_DIRx} ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 # This is the folder containing 'links' to benv and build script generator
-RUN mkdir -p /opt/oryx
+#RUN mkdir -p /opt/oryx
 
 # Install Yarn, HUGO
 FROM main AS nodetools-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
-RUN ${IMAGES_DIR}/build/installHugo.sh
 RUN set -ex \
+ && ${IMAGES_DIR}/build/installHugo.sh \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
@@ -75,14 +75,12 @@ RUN set -ex \
  && mkdir -p /opt/yarn \
  && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
  && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
- && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
-RUN set -ex \
+ && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ln -s $YARN_VERSION /opt/yarn/stable \
  && ln -s $YARN_VERSION /opt/yarn/latest \
  && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
- && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
-RUN set -ex \
+ && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION \
  && mkdir -p /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
@@ -97,19 +95,19 @@ ENV ORIGINAL_PATH="$PATH"
 ENV ORYX_PATHS="/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
 ENV PATH="${ORYX_PATHS}:${ORIGINAL_PATH}"
 COPY images/build/benv.sh /opt/oryx/benv
-RUN chmod +x /opt/oryx/benv
-RUN mkdir -p /usr/local/share/pip-cache/lib
-RUN chmod -R 777 /usr/local/share/pip-cache
+RUN chmod +x /opt/oryx/benv \
+ && mkdir -p /usr/local/share/pip-cache/lib \
+ && chmod -R 777 /usr/local/share/pip-cache \
+    # Grant read-write permissions to the nuget folder so that dotnet restore
+    # can write into it.
+ && mkdir -p /var/nuget \
+    && chmod a+rw /var/nuget
 
 # .NET Core related environment variables
 ENV NUGET_XMLDOC_MODE=skip \
 	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
 	NUGET_PACKAGES=/var/nuget
 
-# Grant read-write permissions to the nuget folder so that dotnet restore
-# can write into it.
-RUN mkdir -p /var/nuget
-RUN chmod a+rw /var/nuget
 
 # Copy Yarn and Hugo related content
 COPY --from=nodetools-install /opt /opt
@@ -117,20 +115,17 @@ COPY --from=nodetools-install /opt /opt
 # Build script generator content. Docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
-
-# Install PHP pre-reqs
-RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
+RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
+    && ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh \
 # NOTE: do not include the following lines in prereq installation script as
 # doing so is causing different version of libargon library being installed
 # causing php-composer to fail
-RUN apt-get update \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         libargon2-0 \
         libonig-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN rm -rf /tmp/oryx
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/oryx
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

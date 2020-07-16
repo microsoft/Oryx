@@ -13,7 +13,7 @@ RUN apt-get update \
         zlib1g \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
-RUN mkdir -p /opt/oryx \
+RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript \
+    && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
 ENV PATH="$PATH:/opt/oryx"
