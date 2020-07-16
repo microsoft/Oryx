@@ -15,12 +15,28 @@ source $REPO_DIR/build/__functions.sh
 buildImageDebianFlavor="$1"
 
 echo
-echo Building build images for tests...
-docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:latest" -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
+echo "Building build images for tests..."
 
 docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions" -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" .
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
+    -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
+    .
+
+echo
+echo
+
+docker build \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:latest" \
+    -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
+    .
+
+echo
+echo
+
+docker build \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions" \
+    -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
+    .
 
 echo
 dockerCleanupIfRequested

@@ -23,6 +23,7 @@ declare -r BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE="$REPO_DIR/images/build/Dockerfi
 declare -r PACK_IMAGE_DOCKERFILE="$REPO_DIR/images/pack-builder/pack-runner.Dockerfile"
 declare -r ORYXTESTS_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/Dockerfile"
 declare -r ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/ltsVersions.Dockerfile"
+declare -r ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/gitHubActions.Dockerfile"
 declare -r RUNTIME_IMAGES_SRC_DIR="$REPO_DIR/images/runtime"
 declare -r BUILD_IMAGES_CLI_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/cli.Dockerfile"
 declare -r BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/azureFunctions.JamStack.Dockerfile"

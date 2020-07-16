@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildImage.Tests;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
@@ -25,9 +26,9 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             get
             {
-                var imageHelper = new ImageTestHelper();
                 var data = new TheoryData<string, string>();
-                data.Add("7.3", imageHelper.GetGitHubActionsBuildImage());
+                data.Add("7.3", ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage());
+                var imageHelper = new ImageTestHelper();
                 data.Add("7.4", imageHelper.GetGitHubActionsBuildImage());
                 return data;
             }
@@ -42,14 +43,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
-            var defaultInstallDir = "/foo/bar";
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                // Remove any existing installations
-                .AddCommand($"rm -rf {defaultInstallDir}")
-                .AddCommand($"mkdir -p {defaultInstallDir}")
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
@@ -69,9 +66,9 @@ namespace Microsoft.Oryx.Integration.Tests
             {
                 Assert.True(result.IsSuccess);
                 Assert.Contains(
-                    $"PHP executable: {BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/php/{phpVersion}",
-                    result.StdOut);
-                Assert.Contains($"Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
+                    $"PHP executable: " +
+                    $"{Path.Combine(BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot, PhpConstants.PlatformName, phpVersion)}", result.StdOut);
+                Assert.Contains("Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
             },
             result.GetDebugInfo());
         }

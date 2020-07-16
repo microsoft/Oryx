@@ -16,6 +16,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _repoPrefixEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
         private const string _tagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
         private const string _defaultRepoPrefix = "oryxdevmcr.azurecr.io/public/oryx";
+        private const string _restrictedPermissionsImageRepoPrefix = "oryxtests";
 
         private const string _azureFunctionsJamStack = "azfunc-jamstack";
         private const string _gitHubActions = "github-actions";
@@ -84,6 +85,31 @@ namespace Microsoft.Oryx.Tests.Common
             }
 
             _tagSuffix = tagSuffix;
+        }
+
+        /// <summary>
+        /// Gets helper where the repoPrefix is set as <see cref="_restrictedPermissionsImageRepoPrefix"/> and tagSuffix
+        /// is set to empty. The image names that are returned by this helper is for testing inside an image with
+        /// restricted permissions.
+        /// </summary>
+        /// <returns></returns>
+        public static ImageTestHelper WithRestrictedPermissions()
+        {
+            return WithRestrictedPermissions(outputHelper: null);
+        }
+
+        /// <summary>
+        /// Gets helper where the repoPrefix is set as <see cref="_restrictedPermissionsImageRepoPrefix"/> and tagSuffix
+        /// is set to empty. The image names that are returned by this helper is for testing inside an image with
+        /// restricted permissions.
+        /// </summary>
+        /// <returns></returns>
+        public static ImageTestHelper WithRestrictedPermissions(ITestOutputHelper outputHelper)
+        {
+            return new ImageTestHelper(
+                output: outputHelper,
+                repoPrefix: _restrictedPermissionsImageRepoPrefix,
+                tagSuffix: string.Empty);
         }
 
         /// <summary>
