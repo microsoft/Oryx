@@ -36,8 +36,8 @@ ENV PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Install ASP.NET Core
 RUN . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
-    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$NET_CORE_APP_21/aspnetcore-runtime-$NET_CORE_APP_21-linux-x64.tar.gz \
-    && echo "$NET_CORE_APP_21_SHA aspnetcore.tar.gz" | sha512sum -c - \
+    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_21/aspnetcore-runtime-$ASPNET_CORE_APP_21-linux-x64.tar.gz \
+    && echo "$ASPNET_CORE_APP_21_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet \
     && rm aspnetcore.tar.gz \
