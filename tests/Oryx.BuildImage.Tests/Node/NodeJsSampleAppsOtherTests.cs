@@ -908,6 +908,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var appName = "vuepress";
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
+            // Make sure 'vuepress' package is in 'dependencies' node because that is what triggered the original issue
+            var packageJsonContent = File.ReadAllText(Path.Combine(volume.OriginalHostDir, "package.json"));
+            dynamic packageJson = JsonConvert.DeserializeObject(packageJsonContent);
+            Assert.NotNull(packageJson);
+            Assert.NotNull(packageJson.dependencies);
+            Assert.NotNull(packageJson.dependencies.vuepress);
+            Assert.Null(packageJson.devDependencies);
+
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/vuepress-output";
             var script = new ShellScriptBuilder()
