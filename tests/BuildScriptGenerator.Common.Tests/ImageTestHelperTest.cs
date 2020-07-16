@@ -3,9 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Tests.Common;
 using System;
-using System.IO;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -241,6 +240,48 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
 
             // Assert
             Assert.Throws<NotSupportedException>(() => { imageHelper.GetBuildImage("invalidTag"); });
+        }
+
+        [Fact]
+        public void GetsGitHubActionsImageWithRestrictivePermissions()
+        {
+            // Arrange
+            var imageHelper = ImageTestHelper.WithRestrictedPermissions();
+            var expected = "oryxtests/build:github-actions";
+
+            // Act
+            var actual = imageHelper.GetGitHubActionsBuildImage();
+
+            // Assert
+            Assert.Equal(actual, expected);
+        }
+
+        [Fact]
+        public void GetsFullBuildImageWithRestrictivePermissions()
+        {
+            // Arrange
+            var imageHelper = ImageTestHelper.WithRestrictedPermissions();
+            var expected = "oryxtests/build:latest";
+
+            // Act
+            var actual = imageHelper.GetBuildImage();
+
+            // Assert
+            Assert.Equal(actual, expected);
+        }
+
+        [Fact]
+        public void GetsLtsVersionsImageWithRestrictivePermissions()
+        {
+            // Arrange
+            var imageHelper = ImageTestHelper.WithRestrictedPermissions();
+            var expected = "oryxtests/build:lts-versions";
+
+            // Act
+            var actual = imageHelper.GetLtsVersionsBuildImage();
+
+            // Assert
+            Assert.Equal(actual, expected);
         }
     }
 }

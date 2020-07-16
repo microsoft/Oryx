@@ -114,7 +114,7 @@ steps:
   displayName: 'Build a build image for tests'
   inputs:
     type: FilePath
-    scriptPath: ./build/buildTestBuildImage.sh
+    scriptPath: ./build/buildTestBuildImages.sh
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ShellScript@2
