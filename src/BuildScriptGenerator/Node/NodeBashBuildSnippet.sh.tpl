@@ -24,8 +24,8 @@ fi
 {{ end }}
 
 zippedModulesFileName={{ CompressedNodeModulesFileName }}
-allModulesDirName=__oryx_all_node_modules
-prodModulesDirName=__oryx_prod_node_modules
+allModulesDirName=".oryx_all_node_modules"
+prodModulesDirName=".oryx_prod_node_modules"
 PruneDevDependencies={{ PruneDevDependencies }}
 HasProdDependencies={{ HasProdDependencies }}
 HasDevDependencies={{ HasDevDependencies }}

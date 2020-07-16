@@ -8,10 +8,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Newtonsoft.Json;
 using Xunit;
@@ -882,6 +882,46 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/appdynamics")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.LtsVersionsBuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void CanBuildVuePressSampleAppWithPruneDevDependencies()
+        {
+            // Arrange
+            var appName = "vuepress";
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
+            // Make sure 'vuepress' package is in 'dependencies' node because that is what triggered the original issue
+            var packageJsonContent = File.ReadAllText(Path.Combine(volume.OriginalHostDir, "package.json"));
+            dynamic packageJson = JsonConvert.DeserializeObject(packageJsonContent);
+            Assert.NotNull(packageJson);
+            Assert.NotNull(packageJson.dependencies);
+            Assert.NotNull(packageJson.dependencies.vuepress);
+            Assert.Null(packageJson.devDependencies);
+
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/vuepress-output";
+            var script = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} -p {NodePlatform.PruneDevDependenciesPropertyKey}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/vuepress")
                 .ToString();
 
             // Act
