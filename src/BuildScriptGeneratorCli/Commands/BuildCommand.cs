@@ -435,6 +435,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 SetPropertyValueInConfigurationSource(SettingsKeys.PruneDevDependencies);
                 SetPropertyValueInConfigurationSource(SettingsKeys.NpmRegistryUrl);
                 SetPropertyValueInConfigurationSource(SettingsKeys.PythonVirtualEnvironmentName);
+                SetPropertyValueInConfigurationSource(SettingsKeys.DisableRecursiveLookUp);
             }
 
             return commandLineConfigSource;
