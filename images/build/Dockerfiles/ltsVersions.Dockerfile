@@ -40,19 +40,19 @@ RUN apt-get update \
         python3-pip \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
-    && pip3 install pip --upgrade
-
+    && pip3 install pip --upgrade \
 # A temporary folder to hold all content temporarily used to build this image.
 # This folder is deleted in the final stage of building this image.
-RUN mkdir -p ${IMAGES_DIR}
-RUN mkdir -p ${BUILD_DIR}
+    && mkdir -p ${IMAGES_DIR} \
+    && mkdir -p ${BUILD_DIR} \
+# This is the folder containing 'links' to benv and build script generator
+    && mkdir -p /opt/oryx
+
 ADD build ${BUILD_DIR}
 ADD images ${IMAGES_DIR}
 
-# This is the folder containing 'links' to benv and build script generator
-RUN mkdir -p /opt/oryx \
 # chmod all script files
-    && find ${IMAGES_DIR} ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find ${IMAGES_DIR} ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 # Install .NET Core
 FROM main AS dotnet-install
@@ -155,7 +155,7 @@ RUN cd ${IMAGES_DIR} \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
-FROM main AS python
+FROM main AS python-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
 # https://github.com/docker-library/python/issues/147
@@ -183,12 +183,9 @@ RUN apt-get update \
     && ln -s $PYTHON38_VERSION /opt/python/stable \
     && ln -s 3.8 /opt/python/3
 
-FROM python AS final
+FROM main AS php-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
-ARG SDK_STORAGE_ENV_NAME
-ARG SDK_STORAGE_BASE_URL_VALUE
-WORKDIR /
 
 # Install PHP pre-reqs
 RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh \
@@ -207,32 +204,42 @@ RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh \
         libargon2-0 \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/*
+
+FROM main AS final
+ARG BUILD_DIR
+ARG IMAGES_DIR
+ARG SDK_STORAGE_ENV_NAME
+ARG SDK_STORAGE_BASE_URL_VALUE
+WORKDIR /
     
 ENV ORIGINAL_PATH="$PATH"
 ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts"
 ENV PATH="${ORYX_PATHS}:$PATH"
 COPY images/build/benv.sh /opt/oryx/benv
-RUN chmod +x /opt/oryx/benv \
-    && mkdir -p /usr/local/share/pip-cache/lib \
-    && chmod -R 777 /usr/local/share/pip-cache
 
-# Copy .NET Core related content
 ENV NUGET_XMLDOC_MODE=skip \
 	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
 	NUGET_PACKAGES=/var/nuget
+
+# Copy .NET Core related content
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
-# Grant read-write permissions to the nuget folder so that dotnet restore
-# can write into it.
-RUN chmod a+rw /var/nuget
-
+COPY --from=python-install /opt/python /opt/python
+COPY --from=php-install /opt/php /opt/php
 # Copy NodeJs, NPM and Yarn related content
 COPY --from=node-install /opt /opt
 
 # Build script generator content. Docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
+
+RUN chmod +x /opt/oryx/benv \
+    && mkdir -p /usr/local/share/pip-cache/lib \
+    && chmod -R 777 /usr/local/share/pip-cache \
+    # Grant read-write permissions to the nuget folder so that dotnet restore
+    # can write into it.
+    && chmod a+rw /var/nuget \
+    && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && rm -rf /tmp/oryx
 
 # Bake Application Insights key from pipeline variable into final image

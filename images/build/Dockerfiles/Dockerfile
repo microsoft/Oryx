@@ -20,13 +20,15 @@ RUN apt-get update \
         # Required for .NET Core 1.1
         libunwind8 \
     && rm -rf /var/lib/apt/lists/* \
-    # A temporary folder to hold all content temporarily used to build this image.
-    # This folder is deleted in the final stage of building this image.
+# A temporary folder to hold all content temporarily used to build this image.
+# This folder is deleted in the final stage of building this image.
     && mkdir -p ${IMAGES_DIR} \
-    && mkdir -p ${BUILD_DIR}
+    && mkdir -p ${BUILD_DIR} 
+
 ADD build ${BUILD_DIR}
 ADD images ${IMAGES_DIR}
 RUN find ${IMAGES_DIR} ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+
 
 # Install .NET Core
 FROM main AS dotnet-install
@@ -39,62 +41,72 @@ RUN apt-get update \
         libcurl3 \
         libuuid1 \
         libunwind8 \
-    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/lib/apt/lists/*
+
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
-    && . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh \
-    && export DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
+
+RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
     # To save disk space do not install packages for this old version which is soon going to be out of support
-    && INSTALL_PACKAGES=false \
-    && ${IMAGES_DIR}/build/installDotNetCore.sh \
-    && export DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
-    && ${IMAGES_DIR}/build/installDotNetCore.sh \
-    && export DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION \
-    && ${IMAGES_DIR}/build/installDotNetCore.sh \
-    && rm -rf /tmp/NuGetScratch \
-    && sdksDir=/opt/dotnet/sdks \
-    && cd $sdksDir \
-    && ln -s 1.1 1 \
-    && ln -s 3.0 3 \
-    && dotnetDir=/opt/dotnet \
-    && sdksDir=$dotnetDir/sdks \
-    && runtimesDir=$dotnetDir/runtimes \
-    && cd $runtimesDir \
-    && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
-    # 1.1 sdk <-- 1.0 runtime's sdk
-    && mkdir $NET_CORE_APP_10 \
-    && ln -s $NET_CORE_APP_10 1.0 \
-    && echo $DOT_NET_CORE_11_SDK_VERSION > $NET_CORE_APP_10/sdkVersion.txt \
-    # 1.1 sdk <-- 1.1 runtime's sdk
-    && mkdir $NET_CORE_APP_11 \
-    && ln -s $NET_CORE_APP_11 1.1 \
-    && ln -s 1.1 1 \
-    && echo $DOT_NET_CORE_11_SDK_VERSION > $NET_CORE_APP_11/sdkVersion.txt \
-    # 2.1 sdk <-- 2.0 runtime's sdk
-    && mkdir $NET_CORE_APP_20 \
-    && ln -s $NET_CORE_APP_20 2.0 \
-    && echo $DOT_NET_CORE_21_SDK_VERSION > $NET_CORE_APP_20/sdkVersion.txt \
-    # 2.2 sdk <-- 2.2 runtime's sdk
-    && mkdir $NET_CORE_APP_22 \
-    && ln -s $NET_CORE_APP_22 2.2 \
-    && echo $DOT_NET_CORE_22_SDK_VERSION > $NET_CORE_APP_22/sdkVersion.txt \
-    # 3.0 sdk <-- 3.0 runtime's sdk
-    && mkdir $NET_CORE_APP_30 \
-    && ln -s $NET_CORE_APP_30 3.0 \
-    && echo $DOT_NET_CORE_30_SDK_VERSION > $NET_CORE_APP_30/sdkVersion.txt \
+    INSTALL_PACKAGES=false \
+    ${IMAGES_DIR}/build/installDotNetCore.sh
+
+RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
+    ${IMAGES_DIR}/build/installDotNetCore.sh
+
+RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
+    DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION \
+    ${IMAGES_DIR}/build/installDotNetCore.sh
+
+RUN set -ex \
+    rm -rf /tmp/NuGetScratch \
     && find /var/nuget -type d -exec chmod 777 {} \;
+
+RUN set -ex \
+ && sdksDir=/opt/dotnet/sdks \
+ && cd $sdksDir \
+ && ln -s 1.1 1 \
+ && ln -s 3.0 3 \
+ && dotnetDir=/opt/dotnet \
+ && sdksDir=$dotnetDir/sdks \
+ && runtimesDir=$dotnetDir/runtimes \
+ && cd $runtimesDir \
+ && . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh \
+ && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
+ # 1.1 sdk <-- 1.0 runtime's sdk
+ && mkdir $NET_CORE_APP_10 \
+ && ln -s $NET_CORE_APP_10 1.0 \
+ && echo $DOT_NET_CORE_11_SDK_VERSION > $NET_CORE_APP_10/sdkVersion.txt \
+ # 1.1 sdk <-- 1.1 runtime's sdk
+ && mkdir $NET_CORE_APP_11 \
+ && ln -s $NET_CORE_APP_11 1.1 \
+ && ln -s 1.1 1 \
+ && echo $DOT_NET_CORE_11_SDK_VERSION > $NET_CORE_APP_11/sdkVersion.txt \
+ # 2.1 sdk <-- 2.0 runtime's sdk
+ && mkdir $NET_CORE_APP_20 \
+ && ln -s $NET_CORE_APP_20 2.0 \
+ && echo $DOT_NET_CORE_21_SDK_VERSION > $NET_CORE_APP_20/sdkVersion.txt \
+ # 2.2 sdk <-- 2.2 runtime's sdk
+ && mkdir $NET_CORE_APP_22 \
+ && ln -s $NET_CORE_APP_22 2.2 \
+ && echo $DOT_NET_CORE_22_SDK_VERSION > $NET_CORE_APP_22/sdkVersion.txt \
+ # 3.0 sdk <-- 3.0 runtime's sdk
+ && mkdir $NET_CORE_APP_30 \
+ && ln -s $NET_CORE_APP_30 3.0 \
+ && echo $DOT_NET_CORE_30_SDK_VERSION > $NET_CORE_APP_30/sdkVersion.txt
 
 # Install Node.js, NPM, Yarn
 FROM main AS node-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
-RUN  set -ex \
- && apt-get update \
+RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/* \
- && . ${BUILD_DIR}/__nodeVersions.sh \
  && cd ${IMAGES_DIR} \ 
+ && . ${BUILD_DIR}/__nodeVersions.sh \
  && ./installPlatform.sh nodejs 4.4.7 \
  && ./installPlatform.sh nodejs 4.5.0 \
  && ./installPlatform.sh nodejs 4.8.0 \
@@ -118,7 +130,8 @@ RUN  set -ex \
  && ./installPlatform.sh nodejs 10.21.0 \
  && ./installPlatform.sh nodejs 12.18.2 \
  && ./installPlatform.sh nodejs $NODE6_VERSION \
- && ./build/installNpm.sh \
+ && ${IMAGES_DIR}/build/installNpm.sh \
+ && set -ex \
  && ln -s 4.4.7 /opt/nodejs/4.4 \
  && ln -s 4.5.0 /opt/nodejs/4.5 \
  && ln -s 4.8.0 /opt/nodejs/4.8 \
@@ -141,8 +154,9 @@ RUN  set -ex \
  && ln -s 10.1.0 /opt/nodejs/10.1 \
  && ln -s 10.10.0 /opt/nodejs/10.10 \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
- && ln -s 10.16.3 /opt/nodejs/10.21 \
- && ln -s 12.16.3 /opt/nodejs/12.18 \
+ && ln -s 10.21.0 /opt/nodejs/10.21 \
+ && ln -s 12.18.2 /opt/nodejs/12.18 \
+ && . ${BUILD_DIR}/__nodeVersions.sh \
  && ln -s $NODE6_VERSION /opt/nodejs/6 \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \
@@ -155,7 +169,7 @@ RUN  set -ex \
  && ln -s 5.6.0 /opt/npm/5.6 \
  && ln -s 5.6 /opt/npm/5
 
-FROM main AS python
+FROM main AS python-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
 # https://github.com/docker-library/python/issues/147
@@ -172,16 +186,29 @@ RUN cd ${IMAGES_DIR} \
     && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
-    &&. ${BUILD_DIR}/__pythonVersions.sh && set -ex \
+    && . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
     && ln -sfn $PYTHON27_VERSION /opt/python/2.7 \
     && ln -sfn 2.7 /opt/python/2 \
     && ln -sfn $PYTHON36_VERSION /opt/python/3.6 \
     && ln -sfn $PYTHON37_VERSION /opt/python/3.7 \
     && ln -sfn $PYTHON38_VERSION /opt/python/3.8
-  
+
+
+FROM main AS php-install
+ARG BUILD_DIR
+ARG IMAGES_DIR
+# Copy PHP versions
+RUN cd ${IMAGES_DIR} \
+    && . ${BUILD_DIR}/__phpVersions.sh \
+    && ./installPlatform.sh php $PHP56_VERSION \
+    && ./installPlatform.sh php $PHP70_VERSION \
+    && ./installPlatform.sh php $PHP72_VERSION \
+    && ./installPlatform.sh php $PHP74_VERSION \
+    && ln -s /opt/php/5.6 /opt/php/5
+
 # This stage is a no-op and exists to satisfy a pattern of building different
 # stages in buildBuildImages.sh file
-FROM dotnet-install AS buildscriptbuilder
+#FROM dotnet-install AS buildscriptbuilder
 
 FROM mcr.microsoft.com/oryx/base:build-yarn-cache-${YARN_CACHE_BASE_TAG} AS yarn-cache-base
 
@@ -201,43 +228,37 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 
-RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
-RUN ./build.sh node       /opt/startupcmdgen/nodejs
-RUN ./build.sh php        /opt/startupcmdgen/php
-RUN ./build.sh python     /opt/startupcmdgen/python
+RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet \
+ && ./build.sh node       /opt/startupcmdgen/nodejs \
+ && ./build.sh php        /opt/startupcmdgen/php \
+ && ./build.sh python     /opt/startupcmdgen/python
 ###
 # End build run script generators
 ###
 
-FROM python AS final
+FROM main AS final
 ARG BUILD_DIR
 ARG IMAGES_DIR
+ENV PYTHONIOENCODING UTF-8
 WORKDIR /
+
+# Copy NodeJs, NPM and Yarn related content
+COPY --from=node-install /opt /opt
 
 # Copy .NET Core related content
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
-RUN ${IMAGES_DIR}/build/createFlattenedDotNetCoreInstall.sh
-RUN cp ${IMAGES_DIR}/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md
+COPY --from=python-install /opt/python /opt/python
+COPY --from=php-install /opt/php /opt/php
 
-# Copy NodeJs, NPM and Yarn related content
-COPY --from=node-install /opt /opt
+RUN ${IMAGES_DIR}/build/createFlattenedDotNetCoreInstall.sh \
+ && cp ${IMAGES_DIR}/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md \
+ && rm -rf /tmp/oryx
 
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-cache
-
-# Copy PHP versions
-RUN cd ${IMAGES_DIR} \
-    && . ${BUILD_DIR}/__phpVersions.sh \
-    && ./installPlatform.sh php $PHP56_VERSION \
-    && ./installPlatform.sh php $PHP70_VERSION \
-    && ./installPlatform.sh php $PHP72_VERSION \
-    && ./installPlatform.sh php $PHP74_VERSION
-RUN ln -s /opt/php/5.6 /opt/php/5
-
-RUN rm -rf /tmp/oryx
 
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified

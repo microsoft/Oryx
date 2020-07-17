@@ -81,7 +81,8 @@ function buildDockerImage() {
 	# is not removed.
 	BuildAndTagStage "$dockerFileToBuild" node-install
 	BuildAndTagStage "$dockerFileToBuild" dotnet-install
-	BuildAndTagStage "$dockerFileToBuild" python
+	BuildAndTagStage "$dockerFileToBuild" python-install
+	BuildAndTagStage "$dockerFileToBuild" php-install
 
 	# If no tag was provided, use a default tag of "latest"
 	if [ -z "$dockerImageBaseTag" ]
