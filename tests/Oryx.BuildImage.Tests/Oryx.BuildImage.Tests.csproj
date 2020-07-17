@@ -8,6 +8,7 @@
     <AssemblyOriginatorKeyFile>..\..\build\TestAssembliesKey.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
     <SignAssembly>true</SignAssembly>
+    <RootNamespace>Microsoft.Oryx.BuildImage.Tests</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -199,10 +198,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 
         protected DefaultProjectFileProvider GetProjectFileProvider(DetectorOptions options = null)
         {
-            if (options == null)
-            {
-                options = new DetectorOptions();
-            }
+            options = options ?? new DetectorOptions();
 
             var providers = new IProjectFileProvider[]
             {

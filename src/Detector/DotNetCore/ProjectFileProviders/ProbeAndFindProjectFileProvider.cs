@@ -29,16 +29,8 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
         public string GetRelativePathToProjectFile(DetectorContext context)
         {
-            if (_probedForProjectFile)
-            {
-                return _projectFileRelativePath;
-            }
-
             var sourceRepo = context.SourceRepo;
             string projectFile = null;
-
-            // Check if any of the sub-directories has a .csproj or .fsproj file and if that file has references
-            // to websdk or azure functions
 
             // search for .csproj files
             var projectFiles = GetAllProjectFilesInRepo(
@@ -151,11 +143,12 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             return _projectFileRelativePath;
         }
 
-        private static IEnumerable<string> GetAllProjectFilesInRepo(
+        private IEnumerable<string> GetAllProjectFilesInRepo(
             ISourceRepo sourceRepo,
             string projectFileExtension)
         {
-            return sourceRepo.EnumerateFiles($"*.{projectFileExtension}", searchSubDirectories: true);
+            var searchSubDirectories = !_options.DisableRecursiveLookUp;
+            return sourceRepo.EnumerateFiles($"*.{projectFileExtension}", searchSubDirectories);
         }
 
         private string GetProject(List<string> projects)

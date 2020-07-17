@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.Detector.Python
@@ -17,14 +18,17 @@ namespace Microsoft.Oryx.Detector.Python
     public class PythonDetector : IPythonPlatformDetector
     {
         private readonly ILogger<PythonDetector> _logger;
+        private readonly DetectorOptions _options;
 
         /// <summary>
         /// Creates an instance of <see cref="PythonDetector"/>.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{PythonDetector}"/>.</param>
-        public PythonDetector(ILogger<PythonDetector> logger)
+        /// <param name="options">The <see cref="DetectorOptions"/>.</param>
+        public PythonDetector(ILogger<PythonDetector> logger, IOptions<DetectorOptions> options)
         {
             _logger = logger;
+            _options = options.Value;
         }
 
         /// <inheritdoc/>
@@ -61,7 +65,8 @@ namespace Microsoft.Oryx.Detector.Python
                     $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo.");
             }
 
-            var files = sourceRepo.EnumerateFiles(PythonConstants.PythonFileNamePattern, searchSubDirectories: true);
+            var searchSubDirectories = !_options.DisableRecursiveLookUp;
+            var files = sourceRepo.EnumerateFiles(PythonConstants.PythonFileNamePattern, searchSubDirectories);
             if (files != null && files.Any())
             {
                 _logger.LogInformation(
