@@ -431,25 +431,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (buildProperties != null)
             {
-                SetPropertyValueInConfigurationSource(SettingsKeys.Project);
-                SetPropertyValueInConfigurationSource(SettingsKeys.PruneDevDependencies);
-                SetPropertyValueInConfigurationSource(SettingsKeys.NpmRegistryUrl);
-                SetPropertyValueInConfigurationSource(SettingsKeys.PythonVirtualEnvironmentName);
-                SetPropertyValueInConfigurationSource(SettingsKeys.DisableRecursiveLookUp);
+                foreach (var pair in buildProperties)
+                {
+                    commandLineConfigSource.Set(pair.Key, pair.Value);
+                }
             }
 
             return commandLineConfigSource;
-
-            void SetPropertyValueInConfigurationSource(string key)
-            {
-                // Set the platform version only if it is present otherwise we would be overwriting any
-                // value that is set by earlier configuration sources.
-                if (buildProperties.TryGetValue(key, out var value))
-                {
-                    // NOTE : do NOT use SetValueIfNotNullOrEmpty here since the Key was present explicitly
-                    commandLineConfigSource.Set(key, value);
-                }
-            }
 
             void SetPlatformVersion(string platformName, string platformVersion)
             {
