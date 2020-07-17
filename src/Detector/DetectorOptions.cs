@@ -20,5 +20,11 @@ namespace Microsoft.Oryx.Detector
         /// for example: 'functions' or 'static-sites' etc.
         /// </summary>
         public string AppType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value which indicates if detectors should consider looking into sub-directories for files.
+        /// If <c>true</c>, only the root of the source directory is probed for files. Default is <c>false</c>.
+        /// </summary>
+        public bool DisableRecursiveLookUp { get; set; }
     }
 }

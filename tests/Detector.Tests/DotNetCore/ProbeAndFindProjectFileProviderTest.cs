@@ -340,5 +340,50 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
                 "Ambiguity in selecting a project to build. Found multiple projects:",
                 exception.Message);
         }
+
+        [Fact]
+        public void GetRelativePathToProjectFile_ReturnsNull_WhenSourceRepoHasValidProjectType_ButDeepProbingIsDisabled()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var webApp1Dir = CreateDir(srcDir, "WebApp1");
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var context = GetContext(sourceRepo);
+            var options = new DetectorOptions
+            {
+                DisableRecursiveLookUp = true,
+            };
+            var provider = GetProjectFileProvider(options);
+
+            // Act
+            var actual = provider.GetRelativePathToProjectFile(context);
+
+            // Assert
+            Assert.Null(actual);
+        }
+
+        [Fact]
+        public void GetRelativePathToProjectFile_ReturnsRelativePath_WhenSourceRepoHasValidProjectTypeAtRoot_AndDeepProbingIsDisabled()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            File.WriteAllText(Path.Combine(sourceRepoDir, "WebApp1.csproj"), WebSdkProjectFile);
+            var expectedPath = "WebApp1.csproj";
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var context = GetContext(sourceRepo);
+            var options = new DetectorOptions
+            {
+                DisableRecursiveLookUp = true,
+            };
+            var provider = GetProjectFileProvider(options);
+
+            // Act
+            var actual = provider.GetRelativePathToProjectFile(context);
+
+            // Assert
+            Assert.Equal(expectedPath, actual);
+        }
     }
 }

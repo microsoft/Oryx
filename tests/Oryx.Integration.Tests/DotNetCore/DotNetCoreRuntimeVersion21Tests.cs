@@ -6,12 +6,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
-using ScriptGenerator = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
@@ -624,6 +624,54 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/appDllLocation");
                     Assert.Contains($"Location: {appOutputDir}/{renamedAppName}.dll", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRunApp_WhenRecursiveLookUpIsDisabled_ButProjectSettingIsSupplied()
+        {
+            // Arrange
+            var appName = "MultiWebAppRepo";
+            var dotnetcoreVersion = "2.1";
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var repoDir = volume.ContainerDir;
+            var setProjectEnvVariable = "export PROJECT=src/WebApp1/WebApp1.csproj";
+            var appOutputDir = $"{repoDir}/myoutputdir";
+            var buildImageScript = new ShellScriptBuilder()
+                .AddCommand(setProjectEnvVariable)
+                .SetEnvironmentVariable(SettingsKeys.DisableRecursiveLookUp, "true")
+                .AddCommand($"oryx build {repoDir} -o {appOutputDir}")
+                .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(setProjectEnvVariable)
+                .AddCommand(
+                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World! from WebApp1", data);
                 });
         }
     }

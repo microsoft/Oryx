@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
         {
             options.Project = GetStringValue(SettingsKeys.Project);
             options.AppType = GetStringValue(SettingsKeys.AppType);
+            options.DisableRecursiveLookUp = GetBooleanValue(SettingsKeys.DisableRecursiveLookUp);
         }
     }
 }
