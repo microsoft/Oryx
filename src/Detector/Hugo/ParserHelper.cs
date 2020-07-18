@@ -3,13 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.BuildScriptGenerator
-{
-    using System.IO;
-    using Nett;
-    using Newtonsoft.Json.Linq;
-    using YamlDotNet.RepresentationModel;
+using System.IO;
+using Nett;
+using Newtonsoft.Json.Linq;
+using YamlDotNet.RepresentationModel;
 
+namespace Microsoft.Oryx.Detector.Hugo
+{
     /// <summary>
     /// Helper class to parse various files into a native type.
     /// </summary>
