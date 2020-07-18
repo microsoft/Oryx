@@ -46,12 +46,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             repo.AddFile("", PythonConstants.RequirementsFileName);
             repo.AddFile("print(1)", "bla.py");
             var context = new BuildScriptGeneratorContext { SourceRepo = repo };
-            var detectorResult = new PlatformDetectorResult
-            {
-                Platform = PythonConstants.PlatformName,
-                PlatformVersion = "3.7.5",
-            };
-
+            var detectorResult = new PlatformDetectorResult(PythonConstants.PlatformName, "3.7.5");
+            
             // Act
             var snippet = platform.GetInstallerScriptSnippet(context, detectorResult);
 
@@ -81,11 +77,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             repo.AddFile("", PythonConstants.RequirementsFileName);
             repo.AddFile("print(1)", "bla.py");
             var context = new BuildScriptGeneratorContext { SourceRepo = repo };
-            var detectorResult = new PlatformDetectorResult
-            {
-                Platform = PythonConstants.PlatformName,
-                PlatformVersion = "3.7.5",
-            };
+            var detectorResult = new PlatformDetectorResult(PythonConstants.PlatformName, "3.7.5");
 
             // Act
             var snippet = platform.GetInstallerScriptSnippet(context, detectorResult);
@@ -117,11 +109,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             repo.AddFile("", PythonConstants.RequirementsFileName);
             repo.AddFile("print(1)", "bla.py");
             var context = new BuildScriptGeneratorContext { SourceRepo = repo };
-            var detectorResult = new PlatformDetectorResult
-            {
-                Platform = PythonConstants.PlatformName,
-                PlatformVersion = "3.7.5",
-            };
+            var detectorResult = new PlatformDetectorResult(PythonConstants.PlatformName, "3.7.5");
 
             // Act
             var snippet = platform.GetInstallerScriptSnippet(context, detectorResult);
@@ -139,11 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             repo.AddFile("", PythonConstants.RequirementsFileName);
             repo.AddFile("print(1)", "bla.py");
             var context = new BuildScriptGeneratorContext { SourceRepo = repo };
-            var detectorResult = new PlatformDetectorResult
-            {
-                Platform = PythonConstants.PlatformName,
-                PlatformVersion = "3.7.5",
-            };
+            var detectorResult = new PlatformDetectorResult(PythonConstants.PlatformName, "3.7.5");
 
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);

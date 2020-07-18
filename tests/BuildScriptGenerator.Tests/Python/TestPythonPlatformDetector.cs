@@ -20,11 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
         public PlatformDetectorResult Detect(DetectorContext context)
         {
-            return new PlatformDetectorResult
-            {
-                Platform = PythonConstants.PlatformName,
-                PlatformVersion = _detectedVersion,
-            };
+            return new PlatformDetectorResult(PythonConstants.PlatformName, _detectedVersion);
         }
     }
 }

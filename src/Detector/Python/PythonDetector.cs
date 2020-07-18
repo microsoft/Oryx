@@ -45,11 +45,7 @@ namespace Microsoft.Oryx.Detector.Python
                 return null;
             }
 
-            return new PlatformDetectorResult
-            {
-                Platform = PythonConstants.PlatformName,
-                PlatformVersion = versionFromRuntimeFile,
-            };
+            return new PlatformDetectorResult(PythonConstants.PlatformName, versionFromRuntimeFile);
         }
 
         private bool IsPythonApp(ISourceRepo sourceRepo)

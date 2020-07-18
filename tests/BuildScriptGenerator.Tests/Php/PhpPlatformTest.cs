@@ -256,11 +256,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
-            {
-                Platform = PhpConstants.PlatformName,
-                PlatformVersion = "7.3.5",
-            };
+            var detectedResult = new PlatformDetectorResult(PhpConstants.PlatformName, "7.3.5");
 
             // Act
             var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
@@ -284,12 +280,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
-            {
-                Platform = PhpConstants.PlatformName,
-                PlatformVersion = "7.3.5",
-            };
-
+            var detectedResult = new PlatformDetectorResult(PhpConstants.PlatformName, "7.3.5");
+            
             // Act
             var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
 
@@ -311,12 +303,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
-            {
-                Platform = PhpConstants.PlatformName,
-                PlatformVersion = "7.3.5",
-            };
-
+            var detectedResult = new PlatformDetectorResult(PhpConstants.PlatformName, "7.3.5");
+            
             // Act
             var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
 
@@ -338,12 +326,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
-            {
-                Platform = PhpConstants.PlatformName,
-                PlatformVersion = "7.3.5",
-            };
-
+            var detectedResult = new PlatformDetectorResult(PhpConstants.PlatformName, "7.3.5");
+            
             // Act
             var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
 
@@ -366,12 +350,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
-            {
-                Platform = PhpConstants.PlatformName,
-                PlatformVersion = "7.3.5",
-            };
-
+            var detectedResult = new PlatformDetectorResult(PhpConstants.PlatformName, "7.3.5");
+            
             // Act
             var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
 
@@ -393,12 +373,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
-            {
-                Platform = PhpConstants.PlatformName,
-                PlatformVersion = "7.3.5",
-            };
-
+            var detectedResult = new PlatformDetectorResult(PhpConstants.PlatformName, "7.3.5");
+            
             // Act
             var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
 
@@ -423,12 +399,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
-            {
-                Platform = PhpConstants.PlatformName,
-                PlatformVersion = "7.3.5",
-            };
-
+            var detectedResult = new PlatformDetectorResult(PhpConstants.PlatformName, "7.3.5");
+            
             // Act
             var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
 

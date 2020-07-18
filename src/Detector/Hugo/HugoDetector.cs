@@ -45,10 +45,7 @@ namespace Microsoft.Oryx.Detector.Hugo
             var isHugoApp = IsHugoApp(context.SourceRepo);
             if (isHugoApp)
             {
-                return new PlatformDetectorResult
-                {
-                    Platform = HugoConstants.PlatformName,
-                };
+                return new PlatformDetectorResult(HugoConstants.PlatformName, null);
             }
 
             return null;

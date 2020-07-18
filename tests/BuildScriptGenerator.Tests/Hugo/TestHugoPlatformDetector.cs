@@ -19,11 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
 
         public PlatformDetectorResult Detect(DetectorContext context)
         {
-            return new PlatformDetectorResult
-            {
-                Platform = Detector.Hugo.HugoConstants.PlatformName,
-                PlatformVersion = _detectedVersion,
-            };
+            return new PlatformDetectorResult(Detector.Hugo.HugoConstants.PlatformName, _detectedVersion);
         }
     }
 }

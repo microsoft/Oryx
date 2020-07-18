@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.Detector
 {
     /// <summary>
@@ -14,13 +16,37 @@ namespace Microsoft.Oryx.Detector
     public class PlatformDetectorResult
     {
         /// <summary>
-        /// Gets or sets the name of the platform that was detected. For example: nodejs, dotnet, php and python.
+        /// The name of the platform that was detected. For example: nodejs, dotnet, php and python.
         /// </summary>
-        public string Platform { get; set; }
+        public readonly string Platform;
 
         /// <summary>
-        /// Gets or sets the version of the platform that was detected.
+        /// The version of the platform that was detected. For example: python 3.7.3, php 7.3.15.
         /// </summary>
-        public string PlatformVersion { get; set; }
+        public readonly string PlatformVersion;
+
+        /// <summary>
+        /// Constructor of PlatformDetectorResult.
+        /// </summary>
+        /// <param name="platform"></param>
+        /// <param name="platformVersion"></param>
+        public PlatformDetectorResult(string platform, string platformVersion) {
+            this.Platform = platform;
+            this.PlatformVersion = platformVersion;
+        }
+
+        /// <summary>
+        /// Gets pairs of property names and values from the PlatformDetectorResult.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> GetPlatformDetectorResultPropertyInfos()
+        {
+            var keyValuePairs = new Dictionary<string, string>
+            {
+                { "Platform", this.Platform },
+                { "PlatformVersion", this.PlatformVersion }
+            };
+            return keyValuePairs;
+        }
     }
 }

@@ -124,11 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var platform = platformNames[platformName];
                 var resolvedVersion = platform.ResolveVersion(version);
 
-                var platformDetectorResult = new PlatformDetectorResult
-                {
-                    Platform = platform.Name,
-                    PlatformVersion = resolvedVersion,
-                };
+                var platformDetectorResult = new PlatformDetectorResult(platform.Name, resolvedVersion);
 
                 results.Add(platformDetectorResult);
             }

@@ -21,7 +21,11 @@ namespace Microsoft.Oryx.Detector.Tests
         {
             Mock<IPlatformDetector> mockNodePlatformDetector = new Mock<IPlatformDetector>();
             Mock<IPlatformDetector> mockDotnetcorePlatformDetector = new Mock<IPlatformDetector>();
-            IEnumerable<IPlatformDetector> platformDetectors = new List<IPlatformDetector>() { mockNodePlatformDetector.Object, mockDotnetcorePlatformDetector.Object };
+            IEnumerable<IPlatformDetector> platformDetectors = new List<IPlatformDetector>()
+            {   
+                mockNodePlatformDetector.Object, 
+                mockDotnetcorePlatformDetector.Object 
+            };
             
             var options = new Mock<IOptions<DetectorOptions>>();
             var sourceRepo = new MemorySourceRepo();
@@ -30,13 +34,9 @@ namespace Microsoft.Oryx.Detector.Tests
                 NullLogger<DefaultPlatformDetector>.Instance);
             var context = CreateContext(sourceRepo);
 
-            var detectionResult1 = new PlatformDetectorResult();
-            detectionResult1.Platform = NodeConstants.PlatformName;
-            detectionResult1.PlatformVersion = "12.16.1";
+            var detectionResult1 = new PlatformDetectorResult(NodeConstants.PlatformName, "12.16.1");
 
-            var detectionResult2 = new PlatformDetectorResult();
-            detectionResult2.Platform = DotNetCoreConstants.PlatformName;
-            detectionResult2.PlatformVersion = "3.1";
+            var detectionResult2 = new PlatformDetectorResult(DotNetCoreConstants.PlatformName, "3.1");
 
             mockNodePlatformDetector.Setup(x => x.Detect(context)).Returns(detectionResult1);
             mockDotnetcorePlatformDetector.Setup(x => x.Detect(context)).Returns(detectionResult2);

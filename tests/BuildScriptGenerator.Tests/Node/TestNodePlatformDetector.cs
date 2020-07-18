@@ -20,11 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
         public PlatformDetectorResult Detect(DetectorContext context)
         {
-            return new PlatformDetectorResult
-            {
-                Platform = NodeConstants.PlatformName,
-                PlatformVersion = _detectedVersion,
-            };
+            return new PlatformDetectorResult(NodeConstants.PlatformName, _detectedVersion);
         }
     }
 }

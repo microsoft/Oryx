@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
@@ -212,6 +213,49 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
+        public void Execute_OutputsJson_DotNetCorePlatformAndVersionAndProjectFile()
+        {
+            string ProjectFileWithMultipleProperties = @"
+            <Project Sdk=""Microsoft.NET.Sdk.Web"">
+              <PropertyGroup>
+                <LangVersion>7.3</LangVersion>
+              </PropertyGroup>
+              <PropertyGroup>
+                <TargetFramework>netcoreapp2.1</TargetFramework>
+                <LangVersion>7.3</LangVersion>
+              </PropertyGroup>
+            </Project>";
+
+            // Arrange
+            var sourceDir = Path.Combine(_testDirPath, "dotnetcoreappdir");
+            var projectFile = "webapp.csproj";
+            Directory.CreateDirectory(sourceDir);
+            File.WriteAllText(Path.Combine(sourceDir, projectFile), ProjectFileWithMultipleProperties);
+
+            var detectCommand = new DetectCommand
+            {
+                SourceDir = sourceDir,
+                OutputFormat = "json",
+            };
+            var testConsole = new TestConsole();
+
+            // Act
+            var exitCode = detectCommand.Execute(GetServiceProvider(detectCommand), testConsole);
+
+            // Assert
+            Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
+            Assert.Contains(
+                $"\"Platform\": \"{DotNetCoreConstants.PlatformName}\"",
+                testConsole.StdOutput);
+            Assert.Contains(
+                "\"PlatformVersion\": \"2.1\"",
+                testConsole.StdOutput);
+            Assert.Contains(
+                $"\"ProjectFile\": \"{projectFile}\"",
+                testConsole.StdOutput);
+        }
+
+        [Fact]
         public void Execute_OutputsTable_MultiplatformNamesAndVersions()
         {
             // Arrange
@@ -272,7 +316,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Contains(
                 $"\"Platform\": \"{NodeConstants.PlatformName}\"",
                 testConsole.StdOutput);
-            Assert.Contains(
+            Assert.DoesNotContain(
                 "\"PlatformVersion\": \"\"",
                 testConsole.StdOutput);
         }

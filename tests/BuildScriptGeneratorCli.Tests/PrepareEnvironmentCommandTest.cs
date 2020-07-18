@@ -332,11 +332,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     return null;
                 }
 
-                return new PlatformDetectorResult
-                {
-                    Platform = Name,
-                    PlatformVersion = _detectedVersion
-                };
+                return new PlatformDetectorResult(Name, _detectedVersion);
             }
 
             public BuildScriptSnippet GenerateBashBuildScriptSnippet(

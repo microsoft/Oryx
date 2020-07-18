@@ -28,11 +28,7 @@ namespace Microsoft.Oryx.Tests.Common
 
             if (!string.IsNullOrEmpty(_platformName))
             {
-                return new PlatformDetectorResult
-                {
-                    Platform = _platformName,
-                    PlatformVersion = _platformVersion,
-                };
+                return new PlatformDetectorResult(_platformName, _platformVersion);
             }
             return null;
         }
@@ -62,11 +58,7 @@ namespace Microsoft.Oryx.Tests.Common
 
             if (_shouldMatch)
             {
-                return new PlatformDetectorResult
-                {
-                    Platform = _platformName,
-                    PlatformVersion = _platformVersion
-                };
+                return new PlatformDetectorResult(_platformName, _platformVersion);
             }
             else
             {

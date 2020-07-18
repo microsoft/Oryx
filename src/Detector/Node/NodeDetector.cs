@@ -103,11 +103,7 @@ namespace Microsoft.Oryx.Detector.Node
 
             var version = GetVersion(context);
 
-            return new PlatformDetectorResult
-            {
-                Platform = NodeConstants.PlatformName,
-                PlatformVersion = version,
-            };
+            return new PlatformDetectorResult(NodeConstants.PlatformName, version);
         }
 
         private string GetVersion(DetectorContext context)

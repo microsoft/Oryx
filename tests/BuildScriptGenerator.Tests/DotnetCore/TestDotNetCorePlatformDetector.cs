@@ -22,12 +22,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 
         public PlatformDetectorResult Detect(DetectorContext context)
         {
-            return new DotNetCorePlatformDetectorResult
-            {
-                Platform = DotNetCoreConstants.PlatformName,
-                PlatformVersion = _detectedVersion,
-                ProjectFile = _detectedProjectFile,
-            };
+            return new DotNetCorePlatformDetectorResult(
+                DotNetCoreConstants.PlatformName, 
+                _detectedVersion, 
+                _detectedProjectFile);
         }
     }
 }

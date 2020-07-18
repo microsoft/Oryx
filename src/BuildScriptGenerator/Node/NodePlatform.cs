@@ -126,8 +126,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             var version = ResolveVersion(detectionResult.PlatformVersion);
-            detectionResult.PlatformVersion = version;
-            return detectionResult;
+            return new PlatformDetectorResult(NodeConstants.PlatformName, version);
         }
 
         /// <inheritdoc/>

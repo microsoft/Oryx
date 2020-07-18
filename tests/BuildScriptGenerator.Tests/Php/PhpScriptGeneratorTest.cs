@@ -60,12 +60,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile(ComposerFileWithBuildScript, PhpConstants.ComposerFileName);
             var context = CreateBuildScriptGeneratorContext(repo);
-            var detectorResult = new PlatformDetectorResult
-            {
-                Platform = PhpConstants.PlatformName,
-                PlatformVersion = "10.10.10",
-            };
-
+            var detectorResult = new PlatformDetectorResult(PhpConstants.PlatformName, "10.10.10");
+            
             // Act
             var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
 

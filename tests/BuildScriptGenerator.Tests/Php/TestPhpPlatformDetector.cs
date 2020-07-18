@@ -20,11 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
         public PlatformDetectorResult Detect(DetectorContext context)
         {
-            return new PlatformDetectorResult
-            {
-                Platform = PhpConstants.PlatformName,
-                PlatformVersion = _detectedVersion,
-            };
+            return new PlatformDetectorResult(PhpConstants.PlatformName, _detectedVersion);
         }
     }
 }

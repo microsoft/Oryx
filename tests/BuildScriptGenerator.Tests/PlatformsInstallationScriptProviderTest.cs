@@ -30,11 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var context = CreateScriptGeneratorContext();
             var detectionResults = new[]
             {
-                new PlatformDetectorResult
-                {
-                    Platform = "test",
-                    PlatformVersion = "1.0.0",
-                }
+                new PlatformDetectorResult("test", "1.0.0"),
             };
 
             // Act

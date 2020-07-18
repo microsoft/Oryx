@@ -91,8 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             var version = ResolveVersion(detectionResult.PlatformVersion);
-            detectionResult.PlatformVersion = version;
-            return detectionResult;
+            return new PlatformDetectorResult(detectionResult.Platform, version);
         }
 
         /// <inheritdoc/>
