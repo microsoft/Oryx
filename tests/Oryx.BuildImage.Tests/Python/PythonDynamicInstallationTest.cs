@@ -80,6 +80,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("3.8.0b3")]
+        [InlineData("3.8.4rc1")]
         [InlineData("3.9.0b1")]
         public void GeneratesScript_AndBuildsPythonPreviewVersion(string previewVersion)
         {
