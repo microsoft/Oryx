@@ -148,6 +148,11 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             string projectFileExtension)
         {
             var searchSubDirectories = !_options.DisableRecursiveLookUp;
+            if (!searchSubDirectories)
+            {
+                _logger.LogDebug("Skipping search for files in sub-directories as it has been disabled.");
+            }
+
             return sourceRepo.EnumerateFiles($"*.{projectFileExtension}", searchSubDirectories);
         }
 

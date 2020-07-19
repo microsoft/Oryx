@@ -32,8 +32,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var rootDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-location-output";
             var appLocationBuildScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(SettingsKeys.DisableRecursiveLookUp, "true")
-                .AddCommand($"oryx build {rootDir} -i /tmp/app-location -o {appOutputDir}")
+                .AddCommand(
+                    $"oryx build {rootDir} -i /tmp/app-location -o {appOutputDir} " +
+                    $"-p {SettingsKeys.DisableRecursiveLookUp}=true")
                 .AddFileExistsCheck($"{appOutputDir}/public/index.xml")
                 .ToString();
 

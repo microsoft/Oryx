@@ -66,6 +66,11 @@ namespace Microsoft.Oryx.Detector.Python
             }
 
             var searchSubDirectories = !_options.DisableRecursiveLookUp;
+            if (!searchSubDirectories)
+            {
+                _logger.LogDebug("Skipping search for files in sub-directories as it has been disabled.");
+            }
+
             var files = sourceRepo.EnumerateFiles(PythonConstants.PythonFileNamePattern, searchSubDirectories);
             if (files != null && files.Any())
             {
