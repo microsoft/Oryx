@@ -97,9 +97,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
             catch (InvalidProjectFileException e)
             {
-                _logger.LogError(e, "InvalidProjectFileException caught: Either could not find the .NET Core project file" +
-                    "or found ambiguity in selecting a project to build.");
-                throw new InvalidUsageException($"Invalid project file exception caught from IDotNetCorePlatformDetector. ");
+                _logger.LogError(e, "Error occurred while trying to detect for .Net Core application(s)");
+                throw new InvalidUsageException(e.Message);
             }
         }
 
