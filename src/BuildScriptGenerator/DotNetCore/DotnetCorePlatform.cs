@@ -80,19 +80,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var detectionResult = _detector.Detect(new DetectorContext
+            try
             {
-                SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
-            });
+                var detectionResult = _detector.Detect(new DetectorContext
+                {
+                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                });
+                if (detectionResult == null)
+                {
+                    return null;
+                }
 
-            if (detectionResult == null)
-            {
-                return null;
+                var version = ResolveVersion(detectionResult.PlatformVersion);
+                detectionResult.PlatformVersion = version;
+                return detectionResult;
             }
-
-            var version = ResolveVersion(detectionResult.PlatformVersion);
-            detectionResult.PlatformVersion = version;
-            return detectionResult;
+            catch (InvalidProjectFileException e)
+            {
+                _logger.LogError(e, "Error occurred while trying to detect for .Net Core application(s)");
+                throw new InvalidUsageException(e.Message);
+            }
         }
 
         /// <inheritdoc/>
