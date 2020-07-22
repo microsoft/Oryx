@@ -48,34 +48,6 @@ fi
 storageArgs="--build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME"
 storageArgs="$storageArgs --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL"
 
-# https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
-PARAMS=""
-while (( "$#" )); do
-  case "$1" in
-    -t|--type)
-      imageTypeToBuild=$2
-      shift 2
-      ;;
-    --) # end argument parsing
-      shift
-      break
-      ;;
-    -*|--*=) # unsupported flags
-      echo "Error: Unsupported flag $1" >&2
-      exit 1
-      ;;
-    *) # preserve positional arguments
-      PARAMS="$PARAMS $1"
-      shift
-      ;;
-  esac
-done
-# set positional arguments in their proper place
-eval set -- "$PARAMS"
-
-echo
-echo "Image type to build is set to: $imageTypeToBuild"
-
 function BuildAndTagStage()
 {
 	local dockerFile="$1"
@@ -182,188 +154,128 @@ function createImageNameWithReleaseTag() {
 	fi
 }
 
-function buildBuildScriptGeneratorImage() {
-	# Create the following image so that it's contents can be copied to the rest of the images below
+# Create the following image so that it's contents can be copied to the rest of the images below
+echo
+echo "-------------Creating build script generator image-------------------"
+docker build -t buildscriptgenerator \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	$buildMetadataArgs \
+	-f "$BUILD_IMAGES_BUILDSCRIPTGENERATOR_DOCKERFILE" \
+	.
+
+echo
+echo "-------------Building the image which uses GitHub runners' buildpackdeps-stretch specific digest----------------------------"
+docker build -t githubrunners-buildpackdeps-stretch \
+	-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE" \
+	.
+
+echo
+echo "-------------Creating build image for GitHub Actions-------------------"
+builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
+docker build -t $builtImageName \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	$BASE_TAG_BUILD_ARGS \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+	$storageArgs \
+	$buildMetadataArgs \
+	-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
+	.
+
+docker build \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
+    -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
+    .
+
+echo
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+createImageNameWithReleaseTag $builtImageName
+
+echo
+echo "-------------Creating AzureFunctions JamStack image-------------------"
+builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
+docker build -t $builtImageName \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	$BASE_TAG_BUILD_ARGS \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+	$buildMetadataArgs \
+	$storageArgs \
+	-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
+	.
+echo
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+createImageNameWithReleaseTag $builtImageName
+
+echo
+echo "-------------Creating lts versions build image-------------------"
+buildDockerImage "$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE" \
+				"$ACR_BUILD_IMAGES_REPO" \
+				"$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
+				"$ORYXTESTS_BUILDIMAGE_REPO" \
+				"$DEVBOX_BUILD_IMAGES_REPO" \
+				"lts-versions"
+
+echo
+echo "-------------Creating full build image-------------------"
+buildDockerImage "$BUILD_IMAGES_DOCKERFILE" \
+				"$ACR_BUILD_IMAGES_REPO" \
+				"$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
+				"$ORYXTESTS_BUILDIMAGE_REPO" \
+				"$DEVBOX_BUILD_IMAGES_REPO"
+
+echo
+echo "-------------Creating VSO build image-------------------"
+builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
+docker build -t $builtImageName \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+	$storageArgs \
+	$buildMetadataArgs \
+	-f "$BUILD_IMAGES_VSO_DOCKERFILE" \
+	.
+echo
+echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+createImageNameWithReleaseTag $builtImageName
+
+echo
+echo "-------------Creating CLI image-------------------"
+builtImageTag="$ACR_CLI_BUILD_IMAGE_REPO:latest"
+docker build -t $builtImageTag \
+	--build-arg AGENTBUILD=$BUILD_SIGNED \
+	$BASE_TAG_BUILD_ARGS \
+	--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+	$buildMetadataArgs \
+	-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
+	.
+echo
+echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+
+# Retag build image with build number tags
+if [ "$AGENT_BUILD" == "true" ]
+then
+	uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+
 	echo
-	echo "-------------Creating build script generator image-------------------"
-	docker build -t buildscriptgenerator \
-		--build-arg AGENTBUILD=$BUILD_SIGNED \
-		$buildMetadataArgs \
-		-f "$BUILD_IMAGES_BUILDSCRIPTGENERATOR_DOCKERFILE" \
-		.
-}
+	echo "Retagging image '$builtImageTag' with ACR related tags..."
+	docker tag "$builtImageTag" "$ACR_CLI_BUILD_IMAGE_REPO:latest"
+	docker tag "$builtImageTag" "$ACR_CLI_BUILD_IMAGE_REPO:$uniqueTag"
 
-function buildGitHubRunnersBaseImage() {
+	# Write the list of images that were built to artifacts folder
 	echo
-	echo "-------------Building the image which uses GitHub runners' buildpackdeps-stretch specific digest----------------------------"
-	docker build -t githubrunners-buildpackdeps-stretch \
-		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE" \
-		.
-}
+	echo "Writing the list of build images built to artifacts folder..."
 
-function buildGitHubActionsImage() {
-	buildBuildScriptGeneratorImage
-	buildGitHubRunnersBaseImage
-
-	echo
-	echo "-------------Creating build image for GitHub Actions-------------------"
-	builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
-	docker build -t $builtImageName \
-		--build-arg AGENTBUILD=$BUILD_SIGNED \
-		$BASE_TAG_BUILD_ARGS \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		$storageArgs \
-		$buildMetadataArgs \
-		-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
-		.
-
-	docker build \
-		-t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
-		-f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
-		.
-
-	echo
-	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-	createImageNameWithReleaseTag $builtImageName
-}
-
-function buildJamStackImage() {
-	buildGitHubActionsImage
-
-	echo
-	echo "-------------Creating AzureFunctions JamStack image-------------------"
-	builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
-	docker build -t $builtImageName \
-		--build-arg AGENTBUILD=$BUILD_SIGNED \
-		$BASE_TAG_BUILD_ARGS \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		$buildMetadataArgs \
-		$storageArgs \
-		-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
-		.
-	echo
-	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-	createImageNameWithReleaseTag $builtImageName
-}
-
-function buildLtsVersionsImage() {
-	buildBuildScriptGeneratorImage
-	buildGitHubRunnersBaseImage
-
-	echo
-	echo "-------------Creating lts versions build image-------------------"
-	buildDockerImage "$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE" \
-					"$ACR_BUILD_IMAGES_REPO" \
-					"$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
-					"$ORYXTESTS_BUILDIMAGE_REPO" \
-					"$DEVBOX_BUILD_IMAGES_REPO" \
-					"lts-versions"
-}
-
-function buildFullImage() {
-	buildLtsVersionsImage
-
-	echo
-	echo "-------------Creating full build image-------------------"
-	buildDockerImage "$BUILD_IMAGES_DOCKERFILE" \
-					"$ACR_BUILD_IMAGES_REPO" \
-					"$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
-					"$ORYXTESTS_BUILDIMAGE_REPO" \
-					"$DEVBOX_BUILD_IMAGES_REPO"
-}
-
-function buildVsoImage() {
-	buildFullImage
-
-	echo
-	echo "-------------Creating VSO build image-------------------"
-	builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
-	docker build -t $builtImageName \
-		--build-arg AGENTBUILD=$BUILD_SIGNED \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		$storageArgs \
-		$buildMetadataArgs \
-		-f "$BUILD_IMAGES_VSO_DOCKERFILE" \
-		.
-	echo
-	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-	createImageNameWithReleaseTag $builtImageName
-}
-
-function buildCliImage() {
-	buildBuildScriptGeneratorImage
-	
-	echo
-	echo "-------------Creating CLI image-------------------"
-	builtImageTag="$ACR_CLI_BUILD_IMAGE_REPO:latest"
-	docker build -t $builtImageTag \
-		--build-arg AGENTBUILD=$BUILD_SIGNED \
-		$BASE_TAG_BUILD_ARGS \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		$buildMetadataArgs \
-		-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
-		.
-	echo
-	echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-
-	# Retag build image with build number tags
-	if [ "$AGENT_BUILD" == "true" ]
-	then
-		uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
-
-		echo
-		echo "Retagging image '$builtImageTag' with ACR related tags..."
-		docker tag "$builtImageTag" "$ACR_CLI_BUILD_IMAGE_REPO:latest"
-		docker tag "$builtImageTag" "$ACR_CLI_BUILD_IMAGE_REPO:$uniqueTag"
-
-		# Write the list of images that were built to artifacts folder
-		echo
-		echo "Writing the list of build images built to artifacts folder..."
-
-		# Write image list to artifacts file
-		echo "$ACR_CLI_BUILD_IMAGE_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-	else
-		docker tag "$builtImageTag" "$DEVBOX_CLI_BUILD_IMAGE_REPO:latest"
-	fi
-}
-
-function buildBuildPackImage() {
-	# Build buildpack images
-	# 'pack create-builder' is not supported on Windows
-	if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
-		source $REPO_DIR/build/buildBuildpacksImages.sh
-	else
-		echo
-		echo "Skipping building Buildpacks images as platform '$OSTYPE' is not supported."
-	fi
-}
-
-if [ -z "$imageTypeToBuild" ]; then
-	buildGitHubActionsImage
-	buildJamStackImage
-	buildLtsVersionsImage
-	buildFullImage
-	buildVsoImage
-	buildCliImage
-	buildBuildPackImage
-elif [ "$imageTypeToBuild" == "githubactions" ]; then
-	buildGitHubActionsImage
-elif [ "$imageTypeToBuild" == "jamstack" ]; then
-	buildJamStackImage
-elif [ "$imageTypeToBuild" == "ltsversions" ]; then
-	buildLtsVersionsImage
-elif [ "$imageTypeToBuild" == "full" ]; then
-	buildFullImage
-elif [ "$imageTypeToBuild" == "vso" ]; then
-	buildVsoImage
-elif [ "$imageTypeToBuild" == "cli" ]; then
-	buildCliImage
-elif [ "$imageTypeToBuild" == "buildpack" ]; then
-	buildBuildPackImage
+	# Write image list to artifacts file
+	echo "$ACR_CLI_BUILD_IMAGE_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 else
-	echo "Error: Invalid value for '--type' switch. Valid values are: \
-githubactions, jamstack, ltsversions, full, vso, cli, buildpack"
-	exit 1
+	docker tag "$builtImageTag" "$DEVBOX_CLI_BUILD_IMAGE_REPO:latest"
+fi
+
+# Build buildpack images
+# 'pack create-builder' is not supported on Windows
+if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "darwin"* ]]; then
+	source $REPO_DIR/build/buildBuildpacksImages.sh
+else
+	echo
+	echo "Skipping building Buildpacks images as platform '$OSTYPE' is not supported."
 fi
 
 echo
