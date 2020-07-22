@@ -198,12 +198,6 @@ RUN cd ${IMAGES_DIR} \
     && ./installPlatform.sh php $PHP74_VERSION \
     && ln -s /opt/php/5.6 /opt/php/5
 
-# This stage is a no-op and exists to satisfy a pattern of building different
-# stages in buildBuildImages.sh file
-#FROM dotnet-install AS buildscriptbuilder
-
-FROM mcr.microsoft.com/oryx/base:build-yarn-cache-${YARN_CACHE_BASE_TAG} AS yarn-cache-base
-
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
 ###
@@ -213,13 +207,6 @@ FROM golang:1.11-stretch as startupScriptGens
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
 
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
-ARG RELEASE_TAG_NAME=unspecified
-ENV GIT_COMMIT=${GIT_COMMIT}
-ENV BUILD_NUMBER=${BUILD_NUMBER}
-ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
-
 RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet \
  && ./build.sh node       /opt/startupcmdgen/nodejs \
  && ./build.sh php        /opt/startupcmdgen/php \
@@ -228,25 +215,32 @@ RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet \
 # End build run script generators
 ###
 
+# This stage is a no-op and exists to satisfy a pattern of building different
+# stages in buildBuildImages.sh file
+FROM dotnet-install AS buildscriptbuilder
+
+FROM mcr.microsoft.com/oryx/base:build-yarn-cache-${YARN_CACHE_BASE_TAG} AS yarn-cache-base
+
 FROM main AS final
 ARG BUILD_DIR
 ARG IMAGES_DIR
-ENV PYTHONIOENCODING UTF-8
-WORKDIR /
 
-# Copy NodeJs, NPM and Yarn related content
-COPY --from=node-install /opt /opt
+WORKDIR /
 
 # Copy .NET Core related content
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
-COPY --from=python-install /opt/python /opt/python
-COPY --from=php-install /opt/php /opt/php
 
 RUN ${IMAGES_DIR}/build/createFlattenedDotNetCoreInstall.sh \
  && cp ${IMAGES_DIR}/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md \
  && rm -rf /tmp/oryx
 
+# Copy NodeJs, NPM and Yarn related content
+COPY --from=node-install /opt /opt
+
+COPY --from=python-install /opt/python /opt/python
+COPY --from=php-install /opt/php /opt/php
+COPY --from=startupScriptGens /opt/startupcmdgen /opt/startupcmdgen
 # Oryx depends on the run script generators for most of its
 # `IProgrammingPlatform.GenerateBashRunScript()` implementations
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
@@ -255,6 +249,11 @@ COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-ca
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ARG RELEASE_TAG_NAME=unspecified
-LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
-LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
-LABEL com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}
+# https://github.com/docker-library/python/issues/147
+ENV PYTHONIOENCODING=UTF-8 \
+    GIT_COMMIT=${GIT_COMMIT} \
+    BUILD_NUMBER=${BUILD_NUMBER} \
+    RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
+LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT} \
+      com.microsoft.oryx.build-number=${BUILD_NUMBER} \
+      com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}

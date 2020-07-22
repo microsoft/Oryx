@@ -15,6 +15,14 @@ ARG IMAGES_DIR
 # NOTE: Do NOT move it from here as it could have global implications
 ENV LANG C.UTF-8
 
+# https://github.com/docker-library/python/issues/147
+ENV PYTHONIOENCODING=UTF-8 \
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    DOTNET_USE_POLLING_FILE_WATCHER=true \
+	NUGET_XMLDOC_MODE=skip \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+	NUGET_PACKAGES=/var/nuget
+
 # Install basic build tools
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -71,12 +79,6 @@ RUN apt-get update \
         zlib1g \
     && rm -rf /var/lib/apt/lists/*
 
-ENV DOTNET_RUNNING_IN_CONTAINER=true \
-    DOTNET_USE_POLLING_FILE_WATCHER=true \
-	NUGET_XMLDOC_MODE=skip \
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-	NUGET_PACKAGES=/var/nuget
-
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 RUN mkdir /var/nuget \
     && . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh \
@@ -116,50 +118,52 @@ RUN mkdir /var/nuget \
 FROM main AS node-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
+
+COPY build/__nodeVersions.sh /tmp/scripts
+
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         jq \
     && rm -rf /var/lib/apt/lists/* \
-    && ${IMAGES_DIR}/build/installHugo.sh
-COPY build/__nodeVersions.sh /tmp/scripts
-RUN cd ${IMAGES_DIR} \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ./installPlatform.sh nodejs $NODE8_VERSION \
- && ./installPlatform.sh nodejs $NODE10_VERSION \
- && ./installPlatform.sh nodejs $NODE12_VERSION \
- && ${IMAGES_DIR}/build/installNpm.sh \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
- && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
- && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
- && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
- && mkdir -p /opt/yarn \
- && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
- && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
- && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ln -s $NODE8_VERSION /opt/nodejs/8 \
- && ln -s $NODE10_VERSION /opt/nodejs/10 \
- && ln -s $NODE12_VERSION /opt/nodejs/12 \
- && ln -s 12 /opt/nodejs/lts \
- && ln -s 6.9.0 /opt/npm/6.9 \
- && ln -s 6.9 /opt/npm/6 \
- && ln -s 6 /opt/npm/latest \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ln -s $YARN_VERSION /opt/yarn/stable \
- && ln -s $YARN_VERSION /opt/yarn/latest \
- && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
- && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION \
- && mkdir -p /links \
- && cp -s /opt/nodejs/lts/bin/* /links \
- && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
+    && chmod +x ${IMAGES_DIR}/build/installHugo.sh \
+    && ${IMAGES_DIR}/build/installHugo.sh \
+    && cd ${IMAGES_DIR} \
+    && . ${BUILD_DIR}/__nodeVersions.sh \
+    && ./installPlatform.sh nodejs $NODE8_VERSION \
+    && ./installPlatform.sh nodejs $NODE10_VERSION \
+    && ./installPlatform.sh nodejs $NODE12_VERSION \
+    && chmod +x ${IMAGES_DIR}/build/installNpm.sh \
+    && ${IMAGES_DIR}/build/installNpm.sh \
+    && . ${BUILD_DIR}/__nodeVersions.sh \
+    && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
+    && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
+    && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
+    && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+    && mkdir -p /opt/yarn \
+    && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
+    && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
+    && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+    && . ${BUILD_DIR}/__nodeVersions.sh \
+    && ln -s $NODE8_VERSION /opt/nodejs/8 \
+    && ln -s $NODE10_VERSION /opt/nodejs/10 \
+    && ln -s $NODE12_VERSION /opt/nodejs/12 \
+    && ln -s 12 /opt/nodejs/lts \
+    && ln -s 6.9.0 /opt/npm/6.9 \
+    && ln -s 6.9 /opt/npm/6 \
+    && ln -s 6 /opt/npm/latest \
+    && . ${BUILD_DIR}/__nodeVersions.sh \
+    && ln -s $YARN_VERSION /opt/yarn/stable \
+    && ln -s $YARN_VERSION /opt/yarn/latest \
+    && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
+    && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION \
+    && mkdir -p /links \
+    && cp -s /opt/nodejs/lts/bin/* /links \
+    && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
 FROM main AS python-install
 ARG BUILD_DIR
 ARG IMAGES_DIR
-# https://github.com/docker-library/python/issues/147
-ENV PYTHONIOENCODING UTF-8
 
 # It's not clear whether these are needed at runtime...
 RUN apt-get update \
@@ -210,24 +214,30 @@ ARG BUILD_DIR
 ARG IMAGES_DIR
 ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
+# Bake Application Insights key from pipeline variable into final image
+ARG AI_KEY
+
 WORKDIR /
     
-ENV ORIGINAL_PATH="$PATH"
-ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts"
+ENV ORIGINAL_PATH="$PATH" \
+    ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts" \
+    NUGET_XMLDOC_MODE=skip \
+	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+	NUGET_PACKAGES=/var/nuget \
+    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
 ENV PATH="${ORYX_PATHS}:$PATH"
+
 COPY images/build/benv.sh /opt/oryx/benv
 
-ENV NUGET_XMLDOC_MODE=skip \
-	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-	NUGET_PACKAGES=/var/nuget
+# Copy NodeJs, NPM and Yarn related content
+COPY --from=node-install /opt /opt
 
 # Copy .NET Core related content
 COPY --from=dotnet-install /opt/dotnet /opt/dotnet
 COPY --from=dotnet-install /var/nuget /var/nuget
 COPY --from=python-install /opt/python /opt/python
 COPY --from=php-install /opt/php /opt/php
-# Copy NodeJs, NPM and Yarn related content
-COPY --from=node-install /opt /opt
 
 # Build script generator content. Docker doesn't support variables in --from
 # so we are building an extra stage to copy binaries from correct build stage
@@ -242,17 +252,11 @@ RUN chmod +x /opt/oryx/benv \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && rm -rf /tmp/oryx
 
-# Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ARG RELEASE_TAG_NAME=unspecified
-LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
-LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
-LABEL com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}
-
-ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
+LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT} \
+      com.microsoft.oryx.build-number=${BUILD_NUMBER} \
+      com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}
 
 ENTRYPOINT [ "benv" ]

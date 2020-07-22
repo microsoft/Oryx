@@ -89,56 +89,52 @@ ARG BUILD_DIR
 ARG IMAGES_DIR
 ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
+# Bake Application Insights key from pipeline variable into final image
+ARG AI_KEY
 WORKDIR /
 
-ENV ORIGINAL_PATH="$PATH"
-ENV ORYX_PATHS="/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
-ENV PATH="${ORYX_PATHS}:${ORIGINAL_PATH}"
 COPY images/build/benv.sh /opt/oryx/benv
-RUN chmod +x /opt/oryx/benv \
+# Copy Yarn and Hugo related content
+COPY --from=nodetools-install /opt /opt 
+# Build script generator content. Docker doesn't support variables in --from
+# so we are building an extra stage to copy binaries from correct build stage
+COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+
+RUN /bin/chmod +x /opt/oryx/benv \
  && mkdir -p /usr/local/share/pip-cache/lib \
  && chmod -R 777 /usr/local/share/pip-cache \
     # Grant read-write permissions to the nuget folder so that dotnet restore
     # can write into it.
  && mkdir -p /var/nuget \
-    && chmod a+rw /var/nuget
-
-# .NET Core related environment variables
-ENV NUGET_XMLDOC_MODE=skip \
-	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-	NUGET_PACKAGES=/var/nuget
-
-
-# Copy Yarn and Hugo related content
-COPY --from=nodetools-install /opt /opt
-
-# Build script generator content. Docker doesn't support variables in --from
-# so we are building an extra stage to copy binaries from correct build stage
-COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh \
+ && chmod a+rw /var/nuget \
+ && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
+ && ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh \
 # NOTE: do not include the following lines in prereq installation script as
 # doing so is causing different version of libargon library being installed
 # causing php-composer to fail
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libargon2-0 \
-        libonig-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /tmp/oryx
+ && apt-get update \
+ && apt-get install -y --no-install-recommends \
+      libargon2-0 \
+      libonig-dev \
+ && rm -rf /var/lib/apt/lists/* \
+ && rm -rf /tmp/oryx
 
-# Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-
-ENV ENABLE_DYNAMIC_INSTALL=true
+ENV ORIGINAL_PATH="$PATH" \
+    ORYX_PATHS="/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts" \    
+# .NET Core related environment variables
+    NUGET_XMLDOC_MODE=skip \
+	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+	NUGET_PACKAGES=/var/nuget \
+    ENABLE_DYNAMIC_INSTALL=true \
+    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ENV PATH="${ORYX_PATHS}:${ORIGINAL_PATH}"
 ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
 
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ARG RELEASE_TAG_NAME=unspecified
-LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
-LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
-LABEL com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}
+LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT} \
+      com.microsoft.oryx.build-number=${BUILD_NUMBER} \
+      com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}
 
 ENTRYPOINT [ "benv" ]
