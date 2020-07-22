@@ -50,16 +50,15 @@ RUN apt-get update \
 # A temporary folder to hold all content temporarily used to build this image.
 # This folder is deleted in the final stage of building this image.
     && mkdir -p ${IMAGES_DIR} \
-    && mkdir -p ${BUILD_DIR}
+    && mkdir -p ${BUILD_DIR} \
+    # This is the folder containing 'links' to benv and build script generator
+    && mkdir -p /opt/oryx
 
 ADD build ${BUILD_DIR}
 ADD images ${IMAGES_DIR}
 # chmod all script files
-RUN mkdir -p /opt/oryx \
-    && find ${IMAGES_DIRx} ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
-
-# This is the folder containing 'links' to benv and build script generator
-#RUN mkdir -p /opt/oryx
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \; 
 
 # Install Yarn, HUGO
 FROM main AS nodetools-install

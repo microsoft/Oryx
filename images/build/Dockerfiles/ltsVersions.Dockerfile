@@ -60,7 +60,8 @@ ADD build ${BUILD_DIR}
 ADD images ${IMAGES_DIR}
 
 # chmod all script files
-RUN find ${IMAGES_DIR} ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 # Install .NET Core
 FROM main AS dotnet-install
@@ -77,10 +78,9 @@ RUN apt-get update \
         libssl1.0.2 \
         libstdc++6 \
         zlib1g \
-    && rm -rf /var/lib/apt/lists/*
-
-# Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
-RUN mkdir /var/nuget \
+    && rm -rf /var/lib/apt/lists/* \
+    # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
+    && mkdir /var/nuget \
     && . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh \
     && export DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
     && ${IMAGES_DIR}/build/installDotNetCore.sh \
