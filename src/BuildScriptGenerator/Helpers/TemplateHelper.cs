@@ -98,6 +98,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     "Microsoft.Oryx.BuildScriptGenerator.Python.PythonBashBuildSnippet.sh.tpl");
             }
 
+            public static TemplateResource PythonJupyterNotebookSnippet
+            {
+                get => new TemplateResource(
+                    "Microsoft.Oryx.BuildScriptGenerator.Python.JupyterNotebookBashBuildSnippet.sh.tpl");
+            }
+
             public static TemplateResource NodeBuildSnippet
             {
                 get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Node.NodeBashBuildSnippet.sh.tpl");

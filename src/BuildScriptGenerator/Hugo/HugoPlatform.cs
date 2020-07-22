@@ -133,31 +133,46 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             return installationScriptSnippet;
         }
 
+        /// <inheritdoc/>
         public string GetMaxSatisfyingVersionAndVerify(string version)
         {
             return version;
         }
 
+        /// <inheritdoc/>
         public bool IsCleanRepo(ISourceRepo repo)
         {
             return true;
         }
 
+        /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
             return _commonOptions.EnableHugoBuild;
         }
 
+        /// <inheritdoc/>
         public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
             return true;
         }
 
+        /// <inheritdoc/>
         public string ResolveVersion(string versionToResolve)
         {
             var resolvedVersion = GetVersionUsingHierarchicalRules(versionToResolve);
             resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
             return resolvedVersion;
+        }
+
+        /// <inheritdoc/>
+        public IDictionary<string, string> GetToolsToBeSetInPath(
+            RepositoryContext context,
+            PlatformDetectorResult detectorResult)
+        {
+            var tools = new Dictionary<string, string>();
+            tools[HugoConstants.PlatformName] = detectorResult.PlatformVersion;
+            return tools;
         }
 
         private string GetVersionUsingHierarchicalRules(string detectedVersion)

@@ -123,10 +123,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             BuildScriptGeneratorContext context,
             PlatformDetectorResult detectorResult)
         {
+            var pythonPlatformDetectorResult = detectorResult as PythonPlatformDetectorResult;
+            if (pythonPlatformDetectorResult == null)
+            {
+                throw new ArgumentException(
+                    $"Expected '{nameof(detectorResult)}' argument to be of type " +
+                    $"'{typeof(PythonPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
+            }
+
+            if (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
+                pythonPlatformDetectorResult.HasJupyterNotebookFiles)
+            {
+                return GetBuildScriptSnippetForConda(context, pythonPlatformDetectorResult);
+            }
+
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the platform name and version to the manifest file
-            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = detectorResult.PlatformVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = pythonPlatformDetectorResult.PlatformVersion;
 
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
@@ -143,7 +157,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 // If the package directory was not provided, we default to virtual envs
                 if (string.IsNullOrWhiteSpace(virtualEnvName))
                 {
-                    virtualEnvName = GetDefaultVirtualEnvName(detectorResult);
+                    virtualEnvName = GetDefaultVirtualEnvName(pythonPlatformDetectorResult);
                 }
 
                 manifestFileProperties[PythonManifestFilePropertyKeys.VirtualEnvName] = virtualEnvName;
@@ -156,7 +170,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var virtualEnvModule = string.Empty;
             var virtualEnvCopyParam = string.Empty;
 
-            var pythonVersion = detectorResult.PlatformVersion;
+            var pythonVersion = pythonPlatformDetectorResult.PlatformVersion;
             _logger.LogDebug("Selected Python version: {pyVer}", pythonVersion);
 
             if (!string.IsNullOrEmpty(pythonVersion) && !string.IsNullOrWhiteSpace(virtualEnvName))
@@ -200,6 +214,51 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
+            };
+        }
+
+        private BuildScriptSnippet GetBuildScriptSnippetForConda(
+            BuildScriptGeneratorContext context,
+            PythonPlatformDetectorResult detectorResult)
+        {
+            var scriptProperties = new JupyterNotebookBashBuildSnippetProperties();
+            scriptProperties.HasRequirementsTxtFile = detectorResult.HasRequirementsTxtFile;
+
+            if (detectorResult.HasCondaEnvironmentYmlFile)
+            {
+                scriptProperties.EnvironmentYmlFile = CondaConstants.CondaEnvironmentYmlFileName;
+            }
+            else
+            {
+                string pythonVersion;
+                string templateName;
+                var version = new SemVer.Version(detectorResult.PlatformVersion);
+                if (version.Major.Equals(2))
+                {
+                    templateName = CondaConstants.DefaultPython2CondaEnvironmentYmlFileTemplateName;
+
+                    // Conda seems to have a problem with post 2.7.15 version,
+                    // so we by default restrict it to this version
+                    pythonVersion = CondaConstants.DefaultPython2Version;
+                }
+                else
+                {
+                    templateName = CondaConstants.DefaultCondaEnvironmentYmlFileTemplateName;
+                    pythonVersion = detectorResult.PlatformVersion;
+                }
+
+                scriptProperties.EnvironmentTemplateFileName = templateName;
+                scriptProperties.EnvironmentTemplatePythonVersion = pythonVersion;
+            }
+
+            var script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.PythonJupyterNotebookSnippet,
+                scriptProperties,
+                _logger);
+
+            return new BuildScriptSnippet
+            {
+                BashBuildScriptSnippet = script,
             };
         }
 
@@ -269,30 +328,42 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return excludeDirs;
         }
 
+        /// <inheritdoc/>
         public string GetInstallerScriptSnippet(
             BuildScriptGeneratorContext context,
             PlatformDetectorResult detectorResult)
         {
+            var pythonPlatformDetectorResult = detectorResult as PythonPlatformDetectorResult;
+            if (pythonPlatformDetectorResult != null &&
+                (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
+                pythonPlatformDetectorResult.HasJupyterNotebookFiles))
+            {
+                _logger.LogDebug(
+                    "Application in the source directory is a Conda based app, " +
+                    "so skipping dynamic installation of Python SDK.");
+                return null;
+            }
+
             string installationScriptSnippet = null;
             if (_commonOptions.EnableDynamicInstall)
             {
                 _logger.LogDebug("Dynamic install is enabled.");
 
-                if (_platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
+                if (_platformInstaller.IsVersionAlreadyInstalled(pythonPlatformDetectorResult.PlatformVersion))
                 {
                     _logger.LogDebug(
                        "Python version {version} is already installed. So skipping installing it again.",
-                       detectorResult.PlatformVersion);
+                       pythonPlatformDetectorResult.PlatformVersion);
                 }
                 else
                 {
                     _logger.LogDebug(
                         "Python version {version} is not installed. " +
                         "So generating an installation script snippet for it.",
-                        detectorResult.PlatformVersion);
+                        pythonPlatformDetectorResult.PlatformVersion);
 
                     installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
-                        detectorResult.PlatformVersion);
+                        pythonPlatformDetectorResult.PlatformVersion);
                 }
             }
             else
@@ -303,11 +374,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return installationScriptSnippet;
         }
 
+        /// <inheritdoc/>
         public string ResolveVersion(string versionToResolve)
         {
             var resolvedVersion = GetVersionUsingHierarchicalRules(versionToResolve);
             resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
             return resolvedVersion;
+        }
+
+        public IDictionary<string, string> GetToolsToBeSetInPath(
+            RepositoryContext context,
+            PlatformDetectorResult detectorResult)
+        {
+            var pythonPlatformDetectorResult = detectorResult as PythonPlatformDetectorResult;
+            if (pythonPlatformDetectorResult == null)
+            {
+                throw new ArgumentException(
+                    $"Expected '{nameof(detectorResult)}' argument to be of type " +
+                    $"'{typeof(PythonPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
+            }
+
+            // Since conda is already in the path we do not need to set it explicitly in the path
+            if (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
+                pythonPlatformDetectorResult.HasJupyterNotebookFiles)
+            {
+                return null;
+            }
+
+            var tools = new Dictionary<string, string>();
+            tools[PythonConstants.PlatformName] = pythonPlatformDetectorResult.PlatformVersion;
+            return tools;
         }
 
         private static string GetPackageDirectory(BuildScriptGeneratorContext context)
