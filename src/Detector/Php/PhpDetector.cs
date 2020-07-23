@@ -34,10 +34,13 @@ namespace Microsoft.Oryx.Detector.Php
 
             string phpVersion = null;
             var hasComposerFile = sourceRepo.FileExists(PhpConstants.ComposerFileName);
+            string directory;
             if (hasComposerFile)
             {
                 _logger.LogDebug($"File '{PhpConstants.ComposerFileName}' exists in source repo");
                 phpVersion = GetVersion(context);
+                directory = Constants.RelativeRootDirectory;
+
             }
             else
             {
@@ -49,6 +52,7 @@ namespace Microsoft.Oryx.Detector.Php
                     _logger.LogInformation(
                         $"Found files with extension '{PhpConstants.PhpFileNamePattern}' " +
                         $"in the repo.");
+                    directory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(files.FirstOrDefault(), sourceRepo.RootPath);
                 }
                 else
                 {
@@ -63,6 +67,7 @@ namespace Microsoft.Oryx.Detector.Php
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = phpVersion,
+                Directory = directory,
             };
         }
 

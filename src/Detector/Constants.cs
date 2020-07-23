@@ -9,5 +9,6 @@ namespace Microsoft.Oryx.Detector
     {
         public const string FunctionApplications = "functions";
         public const string StaticSiteApplications = "static-sites";
+        public const string RelativeRootDirectory = "./";
     }
 }

@@ -154,7 +154,8 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             var detector = CreatePythonPlatformDetector();
             var sourceDir = Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N")))
                 .FullName;
-            var subDir = Directory.CreateDirectory(Path.Combine(sourceDir, Guid.NewGuid().ToString("N"))).FullName;
+            var subDirStr = Guid.NewGuid().ToString("N");
+            var subDir = Directory.CreateDirectory(Path.Combine(sourceDir, subDirStr)).FullName;
             IOHelpers.CreateFile(subDir, "foo.py content", "foo.py");
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
@@ -165,6 +166,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PythonConstants.PlatformName, result.Platform);
+            Assert.Equal(Constants.RelativeRootDirectory + subDirStr, result.Directory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -213,6 +215,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PythonConstants.PlatformName, result.Platform);
+            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
             Assert.Null(result.PlatformVersion);
         }
 

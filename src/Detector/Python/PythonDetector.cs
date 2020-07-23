@@ -4,9 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
 using YamlDotNet.RepresentationModel;
@@ -36,10 +38,11 @@ namespace Microsoft.Oryx.Detector.Python
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;
-
+            
             var hasRequirementsTxtFile = false;
             if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
+                directory = Constants.RelativeRootDirectory;
                 _logger.LogInformation($"Found {PythonConstants.RequirementsFileName} at the root of the repo.");
                 hasRequirementsTxtFile = true;
             }
@@ -62,6 +65,7 @@ namespace Microsoft.Oryx.Detector.Python
                 sourceRepo.FileExists(PythonConstants.CondaEnvironmentYamlFileName) &&
                 IsCondaEnvironmentFile(sourceRepo, PythonConstants.CondaEnvironmentYamlFileName))
             {
+                directory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(files.FirstOrDefault(), sourceRepo.RootPath);
                 _logger.LogInformation(
                     $"Found {PythonConstants.CondaEnvironmentYamlFileName} at the root of the repo.");
                 hasCondaEnvironmentYmlFile = true;

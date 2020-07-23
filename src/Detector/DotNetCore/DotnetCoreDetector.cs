@@ -41,6 +41,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             var sourceRepo = context.SourceRepo;
+            var directory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(projectFile, sourceRepo.RootPath);
             var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
                 DotNetCoreConstants.TargetFrameworkElementXPathExpression);
@@ -59,6 +60,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 Platform = DotNetCoreConstants.PlatformName,
                 PlatformVersion = version,
                 ProjectFile = projectFile,
+                Directory = directory,
             };
         }
 

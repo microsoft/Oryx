@@ -55,6 +55,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -65,7 +66,8 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             var sourceDir = Directory.CreateDirectory(
                 Path.Combine(_tempDirRoot, Guid.NewGuid().ToString()))
                 .FullName;
-            var subDir = Directory.CreateDirectory(Path.Combine(sourceDir, Guid.NewGuid().ToString())).FullName;
+            var subDirStr = Guid.NewGuid().ToString();
+            var subDir = Directory.CreateDirectory(Path.Combine(sourceDir, subDirStr)).FullName;
             File.WriteAllText(Path.Combine(subDir, "foo.php"), "php file content");
             var repo = new LocalSourceRepo(sourceDir);
             var detector = CreatePhpPlatformDetector();
@@ -77,6 +79,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Equal(Constants.RelativeRootDirectory + subDirStr, result.Directory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -96,6 +99,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             // Assert
             Assert.NotNull(result);
             Assert.Equal("5.6.0", result.PlatformVersion);
+            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
         }
 
         [Theory]
@@ -117,6 +121,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             Assert.NotNull(result);
             Assert.Equal(PhpConstants.PlatformName, result.Platform);
             Assert.Null(result.PlatformVersion);
+            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)

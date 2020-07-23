@@ -73,6 +73,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             // Assert
             Assert.NotNull(result);
             Assert.Equal(expectedResult, result.PlatformVersion);
+            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)

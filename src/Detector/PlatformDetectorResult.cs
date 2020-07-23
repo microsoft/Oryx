@@ -22,5 +22,10 @@ namespace Microsoft.Oryx.Detector
         /// Gets or sets the version of the platform that was detected.
         /// </summary>
         public string PlatformVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the directory of the platform that was detected.
+        /// </summary>
+        public string Directory { get; set; }
     }
 }
