@@ -30,10 +30,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
-            dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, null);
+            dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, _logger);
             if (packageJson == null)
             {
-                _logger.LogDebug($"{NodeConstants.PackageJsonFileName.Hash()} is null; skipping checking for superseded packages");
+                _logger.LogDebug(
+                    $"{NodeConstants.PackageJsonFileName.Hash()} is null; skipping checking for superseded packages");
                 return Enumerable.Empty<ICheckerMessage>();
             }
 

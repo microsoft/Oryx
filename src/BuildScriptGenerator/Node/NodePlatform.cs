@@ -402,6 +402,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// <returns>Package json Object.</returns>
         internal static dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
         {
+            if (!sourceRepo.FileExists(NodeConstants.PackageJsonFileName))
+            {
+                return null;
+            }
+
             dynamic packageJson = null;
             try
             {
