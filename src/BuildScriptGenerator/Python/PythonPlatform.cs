@@ -349,21 +349,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 _logger.LogDebug("Dynamic install is enabled.");
 
-                if (_platformInstaller.IsVersionAlreadyInstalled(pythonPlatformDetectorResult.PlatformVersion))
+                if (_platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
                 {
                     _logger.LogDebug(
                        "Python version {version} is already installed. So skipping installing it again.",
-                       pythonPlatformDetectorResult.PlatformVersion);
+                       detectorResult.PlatformVersion);
                 }
                 else
                 {
                     _logger.LogDebug(
                         "Python version {version} is not installed. " +
                         "So generating an installation script snippet for it.",
-                        pythonPlatformDetectorResult.PlatformVersion);
+                        detectorResult.PlatformVersion);
 
                     installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
-                        pythonPlatformDetectorResult.PlatformVersion);
+                        detectorResult.PlatformVersion);
                 }
             }
             else
