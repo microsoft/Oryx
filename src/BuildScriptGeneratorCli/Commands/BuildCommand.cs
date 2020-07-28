@@ -79,13 +79,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         }
 
         [Option(
-            OptionTemplates.AppType,
-            CommandOptionType.SingleValue,
-            Description = "Type of application that the source directory has, for example: 'functions' or 'static-sites' etc.",
-            ShowInHelpText = true)]
-        public string AppType { get; set; }
-
-        [Option(
             "-o|--output <dir>",
             CommandOptionType.SingleValue,
             Description = "The destination directory.")]
@@ -417,7 +410,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             SetValueIfNotNullOrEmpty(SettingsKeys.PlatformVersion, PlatformVersion);
 
             // Set the platform key and version in the format that they are represented in other sources
-            // (like environment variables and build.env file).git 
+            // (like environment variables and build.env file).git
             // This is so that this enables Configuration api to apply the hierarchical config.
             // Example: "--platform python --platform-version 3.6" will win over "PYTHON_VERSION=3.7"
             // in environment variable

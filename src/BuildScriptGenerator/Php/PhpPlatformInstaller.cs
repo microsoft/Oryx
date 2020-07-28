@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return IsVersionInstalled(
                 version,
                 builtInDir: PhpConstants.InstalledPhpVersionsDir,
-                dynamicInstallDir: Path.Combine(_commonOptions.DynamicInstallRootDir, PhpConstants.PlatformName));
+                dynamicInstallDir: Path.Combine(CommonOptions.DynamicInstallRootDir, PhpConstants.PlatformName));
         }
     }
 }

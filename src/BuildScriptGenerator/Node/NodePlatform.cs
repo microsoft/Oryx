@@ -76,11 +76,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// <summary>
         /// Initializes a new instance of the <see cref="NodePlatform"/> class.
         /// </summary>
+        /// <param name="commonOptions">The <see cref="BuildScriptGeneratorOptions"/>.</param>
         /// <param name="nodeScriptGeneratorOptions">The options for nodeScriptGenerator.</param>
         /// <param name="nodeVersionProvider">The Node.js version provider.</param>
         /// <param name="logger">The logger of Node.js platform.</param>
         /// <param name="detector">The detector of Node.js platform.</param>
         /// <param name="environment">The environment of Node.js platform.</param>
+        /// <param name="nodePlatformInstaller">The <see cref="NodePlatformInstaller"/>.</param>
         public NodePlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,

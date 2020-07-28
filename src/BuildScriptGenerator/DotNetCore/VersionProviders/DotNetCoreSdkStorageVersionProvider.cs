@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (_versionMap == null)
             {
-                var httpClient = _httpClientFactory.CreateClient("general");
+                var httpClient = HttpClientFactory.CreateClient("general");
                 var sdkStorageBaseUrl = GetPlatformBinariesStorageBaseUrl();
                 var blobList = httpClient
                     .GetStringAsync($"{sdkStorageBaseUrl}/dotnet?restype=container&comp=list&include=metadata")
