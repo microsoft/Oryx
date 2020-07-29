@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.Detector.Python
             var hasRequirementsTxtFile = false;
             if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
-                directory = Constants.RelativeRootDirectory;
+                appDirectory = Constants.RelativeRootDirectory;
                 _logger.LogInformation($"Found {PythonConstants.RequirementsFileName} at the root of the repo.");
                 hasRequirementsTxtFile = true;
             }
@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.Detector.Python
                 sourceRepo.FileExists(PythonConstants.CondaEnvironmentYamlFileName) &&
                 IsCondaEnvironmentFile(sourceRepo, PythonConstants.CondaEnvironmentYamlFileName))
             {
-                directory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(files.FirstOrDefault(), sourceRepo.RootPath);
+                appDirectory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(files.FirstOrDefault(), sourceRepo.RootPath);
                 _logger.LogInformation(
                     $"Found {PythonConstants.CondaEnvironmentYamlFileName} at the root of the repo.");
                 hasCondaEnvironmentYmlFile = true;

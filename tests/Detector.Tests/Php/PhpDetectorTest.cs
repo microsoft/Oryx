@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PhpConstants.PlatformName, result.Platform);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PhpConstants.PlatformName, result.Platform);
-            Assert.Equal(Constants.RelativeRootDirectory + subDirStr, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory + subDirStr, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             // Assert
             Assert.NotNull(result);
             Assert.Equal("5.6.0", result.PlatformVersion);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
         }
 
         [Theory]
@@ -121,7 +121,7 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             Assert.NotNull(result);
             Assert.Equal(PhpConstants.PlatformName, result.Platform);
             Assert.Null(result.PlatformVersion);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)

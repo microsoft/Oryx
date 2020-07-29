@@ -134,7 +134,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
             Assert.Null(result.PlatformVersion);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
         }
 
         [Fact]
@@ -169,7 +169,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
             Assert.Null(result.PlatformVersion);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
         }
 
         [Fact]
@@ -204,7 +204,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
             Assert.Null(result.PlatformVersion);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
         }
 
         [Fact]
@@ -242,7 +242,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
             Assert.Null(result.PlatformVersion);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
         }
 
         [Fact]
@@ -262,7 +262,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
             Assert.Equal("6.11.0", result.PlatformVersion);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
         }
 
         [Fact]
@@ -281,7 +281,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
             Assert.Null(result.PlatformVersion);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
         }
 
         [Fact]
@@ -300,7 +300,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
             Assert.Null(result.PlatformVersion);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
         }
 
         [Theory]

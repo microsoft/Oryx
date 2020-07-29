@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.Detector.Node
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             bool isNodeApp = false;
-            string directory = Constants.RelativeRootDirectory;
+            string appDirectory = Constants.RelativeRootDirectory;
             var sourceRepo = context.SourceRepo;
             if (sourceRepo.FileExists(NodeConstants.PackageJsonFileName) ||
                 sourceRepo.FileExists(NodeConstants.PackageLockJsonFileName) ||
@@ -107,7 +107,7 @@ namespace Microsoft.Oryx.Detector.Node
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = version,
-                Directory = directory,
+                AppDirectory = appDirectory,
             };
         }
 

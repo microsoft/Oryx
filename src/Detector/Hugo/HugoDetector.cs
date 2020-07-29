@@ -42,24 +42,24 @@ namespace Microsoft.Oryx.Detector.Hugo
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(DetectorContext context)
         {
-            var isHugoApp = IsHugoApp(context.SourceRepo, out string directory);
+            var isHugoApp = IsHugoApp(context.SourceRepo, out string appDirectory);
             if (isHugoApp)
             {
                 return new PlatformDetectorResult
                 {
                     Platform = HugoConstants.PlatformName,
-                    Directory = directory,
+                    AppDirectory = appDirectory,
                 };
             }
 
             return null;
         }
 
-        private bool IsHugoApp(ISourceRepo sourceRepo, out string directory)
+        private bool IsHugoApp(ISourceRepo sourceRepo, out string appDirectory)
         {
             // Hugo configuration variables:
             // https://gohugo.io/getting-started/configuration/#all-configuration-settings
-            directory = Constants.RelativeRootDirectory;
+            appDirectory = Constants.RelativeRootDirectory;
 
             // Search for config.toml
             if (sourceRepo.FileExists(HugoConstants.TomlFileName)
@@ -102,7 +102,6 @@ namespace Microsoft.Oryx.Detector.Hugo
                 {
                     if (IsHugoTomlFile(sourceRepo, tomlFile))
                     {
-                        directory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(tomlFile, sourceRepo.RootPath);
                         return true;
                     }
                 }
@@ -116,7 +115,6 @@ namespace Microsoft.Oryx.Detector.Hugo
                 {
                     if (IsHugoYamlFile(sourceRepo, yamlFile))
                     {
-                        directory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(yamlFile, sourceRepo.RootPath);
                         return true;
                     }
                 }
@@ -129,7 +127,6 @@ namespace Microsoft.Oryx.Detector.Hugo
                 {
                     if (IsHugoYamlFile(sourceRepo, ymlFile))
                     {
-                        directory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(ymlFile, sourceRepo.RootPath);
                         return true;
                     }
                 }
@@ -143,7 +140,6 @@ namespace Microsoft.Oryx.Detector.Hugo
                 {
                     if (IsHugoJsonFile(sourceRepo, jsonFile))
                     {
-                        directory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(jsonFile, sourceRepo.RootPath);
                         return true;
                     }
                 }

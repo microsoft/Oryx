@@ -26,6 +26,6 @@ namespace Microsoft.Oryx.Detector
         /// <summary>
         /// Gets or sets the directory of the platform that was detected.
         /// </summary>
-        public string Directory { get; set; }
+        public string AppDirectory { get; set; }
     }
 }

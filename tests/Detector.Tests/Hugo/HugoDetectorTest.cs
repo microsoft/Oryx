@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -94,6 +94,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -113,7 +114,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -134,6 +135,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -154,6 +156,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -173,7 +176,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
-            Assert.Equal(Constants.RelativeRootDirectory, result.Directory);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
