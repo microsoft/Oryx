@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             OptionTemplates.AppType,
             CommandOptionType.SingleValue,
-            Description = "Type of application thatheck the source directory has, for example: 'functions' or 'static-sites' etc.")]
+            Description = "Type of application that the the source directory has, for example: 'functions' or 'static-sites' etc.")]
         public string AppType { get; set; }
 
         [Option(
