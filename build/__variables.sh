@@ -30,6 +30,7 @@ declare -r BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE="$REPO_DIR/images/build/Doc
 declare -r BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubActions.Dockerfile"
 declare -r BUILD_IMAGES_VSO_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/vso.Dockerfile"
 declare -r BUILD_IMAGES_BUILDSCRIPTGENERATOR_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/buildScriptGenerator.Dockerfile"
+declare -r BUILD_IMAGES_TEMPORARY_FILES_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/temporaryFiles.Dockerfile"
 declare -r BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubRunners.BuildPackDepsStretch.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_DOCKERFILE_PATH="$RUNTIME_IMAGES_SRC_DIR/commonbase/Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_NAME="oryx-run-base"
