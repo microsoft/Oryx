@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             get
             {
-                return Path.Combine(_commonOptions.DynamicInstallRootDir, DotNetCoreConstants.PlatformName, "runtimes");
+                return Path.Combine(CommonOptions.DynamicInstallRootDir, DotNetCoreConstants.PlatformName, "runtimes");
             }
         }
 
@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             get
             {
-                return Path.Combine(_commonOptions.DynamicInstallRootDir, DotNetCoreConstants.PlatformName, "sdks");
+                return Path.Combine(CommonOptions.DynamicInstallRootDir, DotNetCoreConstants.PlatformName, "sdks");
             }
         }
 
@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 var versionMap = _versionProvider.GetSupportedVersions();
                 sdkVersion = versionMap[runtimeVersion];
-                _logger.LogDebug(
+                Logger.LogDebug(
                     "Generating installation script for sdk version {sdkVersion} based on " +
                     "runtime version {runtimeVersion}",
                     sdkVersion,
@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             else
             {
                 sdkVersion = globalJsonSdkVersion;
-                _logger.LogDebug(
+                Logger.LogDebug(
                     "Generating installation script for sdk version {sdkVersion} based on global.json file.",
                     sdkVersion);
             }

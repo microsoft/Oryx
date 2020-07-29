@@ -18,7 +18,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class SdkStorageVersionProviderBase
     {
-        protected readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger _logger;
         private readonly BuildScriptGeneratorOptions _commonOptions;
 
@@ -28,16 +27,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             ILoggerFactory loggerFactory)
         {
             _commonOptions = commonOptions.Value;
-            _httpClientFactory = httpClientFactory;
+            HttpClientFactory = httpClientFactory;
             _logger = loggerFactory.CreateLogger(GetType());
         }
+
+        protected IHttpClientFactory HttpClientFactory { get; }
 
         protected PlatformVersionInfo GetAvailableVersionsFromStorage(
             string platformName,
             string versionMetadataElementName)
         {
             _logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
-            var httpClient = _httpClientFactory.CreateClient("general");
+            var httpClient = HttpClientFactory.CreateClient("general");
 
             var sdkStorageBaseUrl = GetPlatformBinariesStorageBaseUrl();
             var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platformName);
@@ -65,7 +66,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         protected string GetDefaultVersion(string platformName, string sdkStorageBaseUrl)
         {
-            var httpClient = _httpClientFactory.CreateClient("general");
+            var httpClient = HttpClientFactory.CreateClient("general");
 
             var defaultVersionUrl = $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}";
             _logger.LogDebug("Getting the default version from url {defaultVersionUrl}.", defaultVersionUrl);

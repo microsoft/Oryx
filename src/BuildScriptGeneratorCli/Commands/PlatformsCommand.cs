@@ -122,7 +122,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         private IList<string> SortVersions(IEnumerable<string> versions)
         {
-
             var result = new List<VersionInfo>();
             foreach (var version in versions)
             {

@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return IsVersionInstalled(
                 version,
                 builtInDir: NodeConstants.InstalledNodeVersionsDir,
-                dynamicInstallDir: Path.Combine(_commonOptions.DynamicInstallRootDir, NodeConstants.PlatformName));
+                dynamicInstallDir: Path.Combine(CommonOptions.DynamicInstallRootDir, NodeConstants.PlatformName));
         }
     }
 }
