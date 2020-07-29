@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -55,7 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.WriteErrorLine($"No platforms and versions detected from source directory: '{SourceDir}'");
                 }
 
-                if (!string.IsNullOrEmpty(OutputFormat) 
+                if (!string.IsNullOrEmpty(OutputFormat)
                     && string.Equals(OutputFormat, "json", StringComparison.OrdinalIgnoreCase))
                 {
                     PrintJsonResult(detectedPlatformResults, console);
@@ -82,12 +81,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return false;
             }
 
-            if (!string.IsNullOrEmpty(OutputFormat) 
-                && !string.Equals(OutputFormat, "json", StringComparison.OrdinalIgnoreCase) 
+            if (!string.IsNullOrEmpty(OutputFormat)
+                && !string.Equals(OutputFormat, "json", StringComparison.OrdinalIgnoreCase)
                 && !string.Equals(OutputFormat, "table", StringComparison.OrdinalIgnoreCase))
             {
                 logger?.LogError("Unsupported output format. Supported output formats are: json, table.");
-                console.WriteErrorLine($"Unsupported output format: '{OutputFormat}'. " + 
+                console.WriteErrorLine($"Unsupported output format: '{OutputFormat}'. " +
                     "Supported output formats are: json, table.");
 
                 return false;
