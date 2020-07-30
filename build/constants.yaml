@@ -49,10 +49,10 @@
     net-core-app-31-sha: 3d0667120f6af71f7bbdd8493f75952df70396886f6e167961103e0f1c6c5566ef9730c4abec060734edfa4dbcebf48397dca4e2b8f5308fb01cd4ecc2e4fe6c
     aspnet-core-app-31: 3.1.6
     aspnet-core-app-31-sha: f74da84b6ddc9e9a7fed91772e82a01772a20c3b9f4f9e8948502e7defd1c6aaf5c6fb18c73259f1010edfc0e6ab0fef483ed5285560c00ef01f974650636f7a
-    net-core-app-50: 5.0.0-preview.4.20251.6
-    net-core-app-50-sha: 7b3e90ccab3abd95bc678551a1778abf8d672978c598974669ba84418adc37d5bf2393a8c194adece7e86998418713e18571953f8ff7bb5780026d8814d882cb
-    aspnet-core-app-50: 5.0.0-preview.4.20257.10
-    aspnet-core-app-50-sha: 4e1fcba63e8ed494e29da789a6f737d59769b5be8eca038c070ec1a26ffb6601a14fae53be9e463e45b36957dd3b2e425d02d77c36d8682a93c3e3d9ef2742dc
+    net-core-app-50: 5.0.0-preview.7.20364.11
+    net-core-app-50-sha: 409802189c72820e67a5b064b8f2997095bc5b0be7a4c6734473c6aa56220ff60c758e4c12d2e99e2cf93cf8510e9bbe66e26e68abbe85085c28c5bc9428e77f
+    aspnet-core-app-50: 5.0.0-preview.7.20365.19
+    aspnet-core-app-50-sha: 6a6bbe7848e835b6dbfc183eb30dad2f88aed5b7a4509584b5309bab5ef6f6f0b5fc4b09d7b557ca4e30b31a93a6583dbe904c185772b8bff58d3d4d7134053e
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -67,7 +67,7 @@
     python27-version: 2.7.17
     python36-version: 3.6.10
     python37-version: 3.7.7
-    python38-version: 3.8.4
+    python38-version: 3.8.5
     python39-version: 3.9.0b1
   outputs:
     - type: csharp
@@ -132,7 +132,7 @@
     node8-version: 8.17.0
     node10-version: 10.21.0
     node12-version: 12.18.2
-    node14-version: 14.0.0
+    node14-version: 14.5.0
     node-app-insights-sdk-version: 1.8.3
   outputs:
     - type: shell
