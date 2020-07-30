@@ -252,6 +252,46 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void GeneratesScript_AndBuilds_WithPackageDir()
+        {
+            // Arrange
+            var version = "3.6.9";
+            var appName = "flask-app";
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/python/{version}";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var packagesDir = ".python_packages/lib/python3.7/site-packages";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {version} -p packagedir={packagesDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{packagesDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: {installationDir}/bin/python3",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         private string GetSnippetToCleanUpExistingInstallation()
         {
             return $"rm -rf {DefaultInstallationRootDir}; mkdir -p {DefaultInstallationRootDir}";
