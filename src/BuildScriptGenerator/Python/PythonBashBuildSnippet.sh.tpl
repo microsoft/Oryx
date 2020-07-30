@@ -40,7 +40,7 @@ fi
 	elif [ -e "setup.py" ]
 	then
 		echo "Running python setup.py install..."
-		python setup.py install --user| ts $TS_FMT
+		$python setup.py install --user| ts $TS_FMT
 		cd *.egg-info
 		python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requires.txt | ts $TS_FMT
 
