@@ -130,9 +130,9 @@
     yarn-major-version: 1
     node6-version: 6.17.1
     node8-version: 8.17.0
-    node10-version: 10.21.0
-    node12-version: 12.18.2
-    node14-version: 14.5.0
+    node10-version: 10.22.0
+    node12-version: 12.18.3
+    node14-version: 14.7.0
     node-app-insights-sdk-version: 1.8.3
   outputs:
     - type: shell
