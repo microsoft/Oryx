@@ -136,6 +136,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
             var connectionStringEnv = ExtVarNames.UserAppInsightsConnectionStringEnv;
             int containerDebugPort = 8080;
+            var AppInsightsStartUpLegacyPayLoadMessage = "Application Insights was started with setupString";
 
             var script = new ShellScriptBuilder()
                 .AddCommand($"export {aIEnabled}=Enabled")
@@ -145,8 +146,9 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand($"oryx create-script -appPath {appDir}")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/node_modules/applicationinsights")
-                .AddCommand("./run.sh")
+                .AddCommand($"./run.sh > {appDir}/log.log")
                 .AddFileDoesNotExistCheck($"{appDir}/oryx-appinsightsloader.js")
+                .AddStringDoesNotExistInFileCheck(AppInsightsStartUpLegacyPayLoadMessage, $"{appDir}/log.log")
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
