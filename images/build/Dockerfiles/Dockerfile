@@ -26,7 +26,7 @@ RUN ./build.sh python     /opt/startupcmdgen/python
 
 # Install .NET Core
 FROM main AS intermediate
-COPY --from=supportFilesImageForBuild /tmp/oryx/ /opt/tmp
+COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 COPY --from=yarn-cache-base /usr/local/share/yarn-cache /opt/yarn-cache
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 ARG BUILD_DIR="/opt/tmp/build"

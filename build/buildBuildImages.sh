@@ -61,7 +61,7 @@ eval set -- "$PARAMS"
 echo
 echo "Image type to build is set to: $imageTypeToBuild"
 
-declare -r supportFilesImageName="supportFilesImageForBuild"
+declare -r supportFilesImageName="support-files-image-for-build"
 
 function BuildAndTagStage()
 {
@@ -121,7 +121,7 @@ function buildTemporaryFilesImage() {
 	# Create the following image so that it's contents can be copied to the rest of the images below
 	echo
 	echo "-------------Creating temporary files image-------------------"
-	docker build -t supportFilesImageForBuild \
+	docker build -t support-files-image-for-build \
 		-f "$BUILD_IMAGES_SUPPORT_FILES_DOCKERFILE" \
 		.
 }

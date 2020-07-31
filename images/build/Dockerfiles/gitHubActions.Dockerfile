@@ -37,7 +37,7 @@ RUN LANG="C.UTF-8" \
 
 # Install Yarn, HUGO
 FROM main AS intermediate
-COPY --from=supportFilesImageForBuild /tmp/oryx/ /opt/tmp
+COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images"
