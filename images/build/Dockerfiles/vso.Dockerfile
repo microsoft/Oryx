@@ -20,7 +20,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         conda=${CONDA_VERSION} \
     && rm -rf /var/lib/apt/lists/* \
-    && . $CONDA_SCRIPT && \
+    && . $CONDA_SCRIPT \
     && conda config --add channels conda-forge \
     && conda config --set channel_priority strict \
     && conda config --set env_prompt '({name})' \
