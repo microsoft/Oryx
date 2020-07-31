@@ -25,6 +25,6 @@ RUN apt-get update \
     && conda config --set channel_priority strict \
     && conda config --set env_prompt '({name})' \
     && echo "source ${CONDA_SCRIPT}" >> ~/.bashrc \
-    && mkdir -p /opt/oryx/conda \
-    && cp -rf images/build/python/conda/ /opt/oryx/conda
+    && rm -f /tmp/__condaConstants.sh
 
+COPY images/build/python/conda/ /opt/oryx/conda
