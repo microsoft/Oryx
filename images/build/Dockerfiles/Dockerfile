@@ -46,12 +46,6 @@ RUN apt-get update \
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 
 RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
-    # To save disk space do not install packages for this old version which is soon going to be out of support
-    INSTALL_PACKAGES=false \
-    ${IMAGES_DIR}/build/installDotNetCore.sh
-
-RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
     ${IMAGES_DIR}/build/installDotNetCore.sh
 
@@ -66,7 +60,6 @@ RUN set -ex \
 RUN set -ex \
  && sdksDir=/opt/dotnet/sdks \
  && cd $sdksDir \
- && ln -s 1.1 1 \
  && ln -s 3.0 3
 
 RUN set -ex \
@@ -76,15 +69,6 @@ RUN set -ex \
  && cd $runtimesDir \
  && . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh \
  && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
- # 1.1 sdk <-- 1.0 runtime's sdk
- && mkdir $NET_CORE_APP_10 \
- && ln -s $NET_CORE_APP_10 1.0 \
- && echo $DOT_NET_CORE_11_SDK_VERSION > $NET_CORE_APP_10/sdkVersion.txt \
- # 1.1 sdk <-- 1.1 runtime's sdk
- && mkdir $NET_CORE_APP_11 \
- && ln -s $NET_CORE_APP_11 1.1 \
- && ln -s 1.1 1 \
- && echo $DOT_NET_CORE_11_SDK_VERSION > $NET_CORE_APP_11/sdkVersion.txt \
  # 2.1 sdk <-- 2.0 runtime's sdk
  && mkdir $NET_CORE_APP_20 \
  && ln -s $NET_CORE_APP_20 2.0 \
@@ -109,9 +93,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 RUN cd ${IMAGES_DIR} \ 
  && . ${BUILD_DIR}/__nodeVersions.sh \
- && ./installPlatform.sh nodejs 4.4.7 \
- && ./installPlatform.sh nodejs 4.5.0 \
- && ./installPlatform.sh nodejs 4.8.0 \
  && ./installPlatform.sh nodejs 6.2.2 \
  && ./installPlatform.sh nodejs 6.6.0 \
  && ./installPlatform.sh nodejs 6.9.3 \
@@ -135,10 +116,6 @@ RUN cd ${IMAGES_DIR} \
 RUN ${IMAGES_DIR}/build/installNpm.sh
 
 RUN set -ex \
- && ln -s 4.4.7 /opt/nodejs/4.4 \
- && ln -s 4.5.0 /opt/nodejs/4.5 \
- && ln -s 4.8.0 /opt/nodejs/4.8 \
- && ln -s 4.8 /opt/nodejs/4 \
  && ln -s 6.2.2 /opt/nodejs/6.2 \
  && ln -s 6.6.0 /opt/nodejs/6.6 \
  && ln -s 6.9.3 /opt/nodejs/6.9 \
@@ -180,19 +157,15 @@ ARG IMAGES_DIR
 ENV PYTHONIOENCODING UTF-8
 RUN cd ${IMAGES_DIR} \
     && . ${BUILD_DIR}/__pythonVersions.sh \
-    && ./installPlatform.sh python $PYTHON27_VERSION \
     && ./installPlatform.sh python $PYTHON36_VERSION \
     && ./installPlatform.sh python $PYTHON37_VERSION \
     && ./installPlatform.sh python $PYTHON38_VERSION
 RUN . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
- && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig
 RUN . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
- && ln -sfn $PYTHON27_VERSION /opt/python/2.7 \
- && ln -sfn 2.7 /opt/python/2 \
  && ln -sfn $PYTHON36_VERSION /opt/python/3.6 \
  && ln -sfn $PYTHON37_VERSION /opt/python/3.7 \
  && ln -sfn $PYTHON38_VERSION /opt/python/3.8
@@ -249,7 +222,6 @@ COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-ca
 # Copy PHP versions
 RUN cd ${IMAGES_DIR} \
     && . ${BUILD_DIR}/__phpVersions.sh \
-    && ./installPlatform.sh php $PHP56_VERSION \
     && ./installPlatform.sh php $PHP70_VERSION \
     && ./installPlatform.sh php $PHP72_VERSION \
     && ./installPlatform.sh php $PHP74_VERSION
