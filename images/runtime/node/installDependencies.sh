@@ -42,4 +42,6 @@ fi
 
 # Application-Insights is supported as an option for telemetry when running the app,
 # so we need to make sure it is available in our images.
-npm install -g applicationinsights@1.7.3
+# updated to 1.8.3 to stop emitting json payload to stdout which is causing trouble 
+# to customers after sucessfully configuring AppInsights instance
+npm install -g applicationinsights@1.8.3
