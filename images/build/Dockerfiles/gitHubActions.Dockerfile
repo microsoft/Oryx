@@ -36,8 +36,8 @@ RUN LANG="C.UTF-8" \
     && mkdir -p /opt/oryx
 
 # Install Yarn, HUGO
-FROM main AS pre-final
-COPY --from=tempfiles /tmp/oryx/ /opt/tmp
+FROM main AS intermediate
+COPY --from=supportFilesImageForBuild /tmp/oryx/ /opt/tmp
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images"
@@ -66,7 +66,7 @@ FROM main AS final
 ARG SDK_STORAGE_BASE_URL_VALUE
 ARG AI_KEY
 
-COPY --from=pre-final /opt /opt
+COPY --from=intermediate /opt /opt
 
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
@@ -103,8 +103,8 @@ ENV LANG="C.UTF-8" \
     ORIGINAL_PATH="$PATH" \
     PATH="$ORYX_PATHS:$PATH" \
     NUGET_XMLDOC_MODE="skip" \
-	DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
-	NUGET_PACKAGES="/var/nuget" \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
+    NUGET_PACKAGES="/var/nuget" \
     ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}"

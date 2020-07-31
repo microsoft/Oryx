@@ -61,6 +61,8 @@ eval set -- "$PARAMS"
 echo
 echo "Image type to build is set to: $imageTypeToBuild"
 
+declare -r supportFilesImageName="supportFilesImageForBuild"
+
 function BuildAndTagStage()
 {
 	local dockerFile="$1"
@@ -119,8 +121,8 @@ function buildTemporaryFilesImage() {
 	# Create the following image so that it's contents can be copied to the rest of the images below
 	echo
 	echo "-------------Creating temporary files image-------------------"
-	docker build -t tempfiles \
-		-f "$BUILD_IMAGES_TEMPORARY_FILES_DOCKERFILE" \
+	docker build -t supportFilesImageForBuild \
+		-f "$BUILD_IMAGES_SUPPORT_FILES_DOCKERFILE" \
 		.
 }
 
@@ -192,7 +194,7 @@ function buildLtsVersionsImage() {
 	buildBuildScriptGeneratorImage
 	buildGitHubRunnersBaseImage
 
-	BuildAndTagStage "$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE" pre-final
+	BuildAndTagStage "$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE" intermediate
 
 	echo
 	echo "-------------Creating lts versions build image-------------------"
@@ -228,7 +230,7 @@ function buildFullImage() {
 	docker pull $yarnImage
 	docker tag $yarnImage yarn-cache-base
 
-	BuildAndTagStage "$BUILD_IMAGES_DOCKERFILE" pre-final
+	BuildAndTagStage "$BUILD_IMAGES_DOCKERFILE" intermediate
 
 	echo
 	echo "-------------Creating full build image-------------------"

@@ -33,9 +33,9 @@ RUN LANG="C.UTF-8" \
     && mkdir -p /opt/oryx
 
 # Install .NET Core
-FROM main AS pre-final
+FROM main AS intermediate
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-COPY --from=tempfiles /tmp/oryx/ /opt/tmp
+COPY --from=supportFilesImageForBuild /tmp/oryx/ /opt/tmp
 ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images"
 RUN apt-get update \
@@ -149,7 +149,7 @@ RUN set -ex \
 FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE
-COPY --from=pre-final /opt /opt
+COPY --from=intermediate /opt /opt
 RUN imagesDir="/opt/tmp/images" \
     && buildDir="/opt/tmp/build" \
     && mkdir -p /var/nuget \
@@ -220,8 +220,8 @@ ENV LANG="C.UTF-8" \
     ORIGINAL_PATH="$PATH" \
     PATH="$ORYX_PATHS:$PATH" \
     NUGET_XMLDOC_MODE="skip" \
-	DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
-	NUGET_PACKAGES="/var/nuget" \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
+    NUGET_PACKAGES="/var/nuget" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
     ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
     PYTHONIOENCODING="UTF-8"

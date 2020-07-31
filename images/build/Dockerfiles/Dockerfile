@@ -25,8 +25,8 @@ RUN ./build.sh python     /opt/startupcmdgen/python
 ###
 
 # Install .NET Core
-FROM main AS pre-final
-COPY --from=tempfiles /tmp/oryx/ /opt/tmp
+FROM main AS intermediate
+COPY --from=supportFilesImageForBuild /tmp/oryx/ /opt/tmp
 COPY --from=yarn-cache-base /usr/local/share/yarn-cache /opt/yarn-cache
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 ARG BUILD_DIR="/opt/tmp/build"
@@ -169,7 +169,7 @@ RUN set -ex \
  && ln -s 5.6 /opt/npm/5
 
 FROM main AS final
-COPY --from=pre-final /opt /opt
+COPY --from=intermediate /opt /opt
 # https://github.com/docker-library/python/issues/147
 RUN PYTHONIOENCODING="UTF-8" \
     && apt-get update \
