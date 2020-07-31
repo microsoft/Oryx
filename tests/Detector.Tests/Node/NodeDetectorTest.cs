@@ -3,7 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Detector.Node;
 using Xunit;
 
@@ -92,6 +95,23 @@ namespace Microsoft.Oryx.Detector.Tests.Node
           },
           ""author"": ""Dev"",
           ""license"": ""ISC""
+        }";
+
+        private const string PackageJsonWithFrameworks = @"{
+          ""name"": ""mynodeapp"",
+          ""version"": ""1.0.0"",
+          ""main"": ""server.js"",
+          ""author"": ""Dev"",
+          ""license"": ""ISC"",
+          ""devDependencies"": {
+            ""aurelia-cli"": ""1.3.1"",
+            ""svelte"": ""3.0.0"",
+          },
+          ""dependencies"": {
+            ""jquery"": ""3.5.1"",
+            ""react"": ""16.12.0"",
+          },
+          ""engines"" : { ""npm"" : ""5.4.2"" }
         }";
 
         private const string SimpleServerJs = @"
@@ -352,6 +372,40 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             Assert.Null(result);
         }
 
+        [Fact]
+        public void Detect_ReturnsFrameworkInfos_IfKeywordExistsInPackageJsonFile()
+        {
+            // Arrange
+            var sourceRepo = new MemorySourceRepo();
+            sourceRepo.AddFile(PackageJsonWithFrameworks, NodeConstants.PackageJsonFileName);
+            sourceRepo.AddFile("", NodeConstants.FlutterYamlFileName);
+            var context = CreateContext(sourceRepo);
+            var options = new DetectorOptions
+            {
+                DisableFrameworkDetection = false,
+            };
+            var detector = CreateNodePlatformDetector(options);
+            List<string> expectedFrameworkNames = new List<string>()
+            {
+                "Aurelia", "Svelte", "jQuery", "React", "Flutter"
+            };
+            List<string> expectedFrameworkVersions = new List<string>()
+            {
+                "1.3.1", "3.0.0", "3.5.1", "16.12.0", ""
+            };
+
+            // Act
+            var result = (NodePlatformDetectorResult)detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Null(result.PlatformVersion);
+            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
+            Assert.Equal(expectedFrameworkNames, result.Frameworks.Select(x => x.Framework).ToList());
+            Assert.Equal(expectedFrameworkVersions, result.Frameworks.Select(x => x.FrameworkVersion).ToList());
+        }
+
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
         {
             return new DetectorContext
@@ -360,10 +414,11 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             };
         }
 
-        private NodeDetector CreateNodePlatformDetector()
+        private NodeDetector CreateNodePlatformDetector(DetectorOptions options = null)
         {
+            options = options ?? new DetectorOptions();
             return new NodeDetector(
-                NullLogger<NodeDetector>.Instance);
+                NullLogger<NodeDetector>.Instance, Options.Create(options));
         }
 
     }

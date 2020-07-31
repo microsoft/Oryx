@@ -290,6 +290,55 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
+        public void Execute_OutputsJson_NodePlatformAndVersionAndFrameworkInfos()
+        {
+            string PackageJsonWithNodeVersion = @"{
+              ""name"": ""mynodeapp"",
+              ""version"": ""1.0.0"",
+              ""main"": ""server.js"",
+              ""devDependencies"": {
+                ""aurelia-cli"": ""1.3.1"",
+                ""svelte"": ""3.0.0"",
+              },
+              ""dependencies"": {
+                ""jquery"": ""3.5.1"",
+                ""react"": ""16.12.0"",
+              },
+              ""author"": ""Dev"",
+              ""engines"" : { ""node"" : ""6.11.0"" }
+            }";
+            // Arrange
+            var sourceDir = Path.Combine(_testDirPath, "nodeappdir");
+            Directory.CreateDirectory(sourceDir);
+            File.WriteAllText(Path.Combine(sourceDir, NodeConstants.PackageJsonFileName), PackageJsonWithNodeVersion);
+
+            var detectCommand = new DetectCommand
+            {
+                SourceDir = sourceDir,
+                OutputFormat = "json",
+            };
+            var testConsole = new TestConsole();
+
+            // Act
+            var exitCode = detectCommand.Execute(GetServiceProvider(detectCommand), testConsole);
+
+            // Assert
+            Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
+            Assert.Contains(
+                $"\"Platform\": \"{NodeConstants.PlatformName}\"",
+                testConsole.StdOutput);
+            Assert.Contains(
+                "\"PlatformVersion\": \"6.11.0\"",
+                testConsole.StdOutput);
+            Assert.Contains(
+                $"\"Framework\": \"Aurelia\"",
+                testConsole.StdOutput);
+            Assert.Contains(
+                $"\"Framework\": \"React\"",
+                testConsole.StdOutput);
+        }
+
+        [Fact]
         public void Execute_OutputsJson_MultiplatformNames_WithVersionsNotDetected()
         {
             // Arrange
