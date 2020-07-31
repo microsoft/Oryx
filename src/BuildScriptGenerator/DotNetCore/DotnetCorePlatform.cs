@@ -264,11 +264,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return installationScriptSnippet;
         }
 
+        /// <inheritdoc/>
         public string ResolveVersion(string versionToResolve)
         {
             var resolvedVersion = GetVersionUsingHierarchicalRules(versionToResolve);
             resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
             return resolvedVersion;
+        }
+
+        /// <inheritdoc/>
+        public IDictionary<string, string> GetToolsToBeSetInPath(
+            RepositoryContext context,
+            PlatformDetectorResult detectorResult)
+        {
+            var tools = new Dictionary<string, string>();
+            tools[DotNetCoreConstants.PlatformName] = detectorResult.PlatformVersion;
+            return tools;
         }
 
         private string GetBuildConfiguration()

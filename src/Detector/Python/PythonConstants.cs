@@ -13,5 +13,9 @@ namespace Microsoft.Oryx.Detector.Python
         public const string PythonFileNamePattern = "*.py";
         public const string ZipFileExtension = "tar.gz";
         public const string SetupDotPyFileName = "setup.py";
+        public const string CondaEnvironmentYamlFileName = "environment.yml";
+        public const string CondaEnvironmentYmlFileName = "environment.yaml";
+        public const string JupyterNotebookFileExtensionName = "ipynb";
+        public static readonly string[] CondaEnvironmentFileKeys = new[] { "channels", "dependencies" };
     }
 }

@@ -25,14 +25,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly BuildScriptGeneratorOptions _cliOptions;
         private readonly ICompatiblePlatformDetector _compatiblePlatformDetector;
-        private readonly DefaultPlatformDetector _platformDetector;
+        private readonly DefaultPlatformsInformationProvider _platformsInformationProvider;
         private readonly PlatformsInstallationScriptProvider _environmentSetupScriptProvider;
         private readonly IEnumerable<IChecker> _checkers;
         private readonly ILogger<DefaultBuildScriptGenerator> _logger;
         private readonly IStandardOutputWriter _writer;
 
         public DefaultBuildScriptGenerator(
-            DefaultPlatformDetector platformDetector,
+            DefaultPlatformsInformationProvider platformsInformationProvider,
             PlatformsInstallationScriptProvider environmentSetupScriptProvider,
             IOptions<BuildScriptGeneratorOptions> cliOptions,
             ICompatiblePlatformDetector compatiblePlatformDetector,
@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             ILogger<DefaultBuildScriptGenerator> logger,
             IStandardOutputWriter writer)
         {
-            _platformDetector = platformDetector;
+            _platformsInformationProvider = platformsInformationProvider;
             _environmentSetupScriptProvider = environmentSetupScriptProvider;
             _cliOptions = cliOptions.Value;
             _compatiblePlatformDetector = compatiblePlatformDetector;
@@ -66,16 +66,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // install both these platforms' sdks before actually using any of their commands. So even though a user
             // of Oryx might explicitly supply the platform of the app as .NET Core, we still need to make sure the
             // build environment is setup with detected platforms' sdks.
-            var detectionResults = _platformDetector.DetectPlatforms(context);
+            var platformInfos = _platformsInformationProvider.GetPlatformsInfo(context);
+            var detectionResults = platformInfos.Select(pi => pi.DetectorResult);
             var installationScript = _environmentSetupScriptProvider.GetBashScriptSnippet(
                 context,
                 detectionResults);
 
-            // Get list of detected platforms and versions to be set on benv
+            // Get list of tools to be set on benv
             var toolsToVersion = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var detectionResult in detectionResults)
+            foreach (var toolsToBeSetInPath in platformInfos
+                .Where(pi => pi.RequiredToolsInPath != null)
+                .Select(pi => pi.RequiredToolsInPath))
             {
-                toolsToVersion[detectionResult.Platform] = detectionResult.PlatformVersion;
+                foreach (var toolNameAndVersion in toolsToBeSetInPath)
+                {
+                    toolsToVersion[toolNameAndVersion.Key] = toolNameAndVersion.Value;
+                }
             }
 
             using (var timedEvent = _logger.LogTimedEvent("GetBuildSnippets"))

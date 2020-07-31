@@ -8,7 +8,7 @@ using Nett;
 using Newtonsoft.Json.Linq;
 using YamlDotNet.RepresentationModel;
 
-namespace Microsoft.Oryx.Detector.Hugo
+namespace Microsoft.Oryx.Detector
 {
     /// <summary>
     /// Helper class to parse various files into a native type.

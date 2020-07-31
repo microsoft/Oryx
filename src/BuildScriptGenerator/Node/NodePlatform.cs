@@ -396,6 +396,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return resolvedVersion;
         }
 
+        /// <inheritdoc/>
+        public IDictionary<string, string> GetToolsToBeSetInPath(
+            RepositoryContext context,
+            PlatformDetectorResult detectorResult)
+        {
+            var tools = new Dictionary<string, string>();
+            tools[NodeConstants.PlatformName] = detectorResult.PlatformVersion;
+            return tools;
+        }
+
         /// <summary>
         /// Gets the package json object.
         /// </summary>

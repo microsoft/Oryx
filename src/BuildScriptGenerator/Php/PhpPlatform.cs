@@ -177,6 +177,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return Array.Empty<string>();
         }
 
+        /// <inheritdoc/>
         public string ResolveVersion(string versionToResolve)
         {
             var resolvedVersion = GetVersionUsingHierarchicalRules(versionToResolve);
@@ -184,6 +185,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return resolvedVersion;
         }
 
+        /// <inheritdoc/>
         public string GetInstallerScriptSnippet(
             BuildScriptGeneratorContext context,
             PlatformDetectorResult detectorResult)
@@ -210,6 +212,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 _logger.LogDebug("Dynamic install not enabled.");
                 return null;
             }
+        }
+
+        /// <inheritdoc/>
+        public IDictionary<string, string> GetToolsToBeSetInPath(
+            RepositoryContext context,
+            PlatformDetectorResult detectorResult)
+        {
+            var tools = new Dictionary<string, string>();
+            tools[PhpConstants.PlatformName] = detectorResult.PlatformVersion;
+            return tools;
         }
 
         private void InstallPhp(string phpVersion, StringBuilder scriptBuilder)

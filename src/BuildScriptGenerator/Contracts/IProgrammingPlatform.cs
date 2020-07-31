@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
-using JetBrains.Annotations;
 using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -86,8 +85,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <returns>true, if the platform wants to participate, false otherwise.</returns>
         bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx);
 
+        /// <summary>
+        /// Gets installation script snippet for this platform.
+        /// </summary>
+        /// <param name="context">The <see cref="BuildScriptGeneratorContext"/>.</param>
+        /// <param name="detectorResult">The <see cref="PlatformDetectorResult"/>.</param>
+        /// <returns>
+        /// Installation script snippet for this platform and if the platform SDK is already
+        /// installed returns null.
+        /// </returns>
         string GetInstallerScriptSnippet(BuildScriptGeneratorContext context, PlatformDetectorResult detectorResult);
 
+        /// <summary>
+        /// Resolves the version returned by a <see cref="IPlatformDetector"/>. The version returned by a detector
+        /// could be partial (for example, major or major.minor) or a detector might not have found a version.
+        /// This platform resolves this result from a detector to get a full version: major.minor.patch
+        /// </summary>
+        /// <param name="versionToResolve">The version detected by a detector. Can be null.</param>
+        /// <returns>A full resolved version</returns>
         string ResolveVersion(string versionToResolve);
+
+        /// <summary>
+        /// Gets the required tools and their versions to be set on the benv script.
+        /// </summary>
+        /// <param name="context">The <see cref="RepositoryContext"/>.</param>
+        /// <param name="detectorResult">The <see cref="PlatformDetectorResult"/>.</param>
+        IDictionary<string, string> GetToolsToBeSetInPath(
+            RepositoryContext context,
+            PlatformDetectorResult detectorResult);
     }
 }

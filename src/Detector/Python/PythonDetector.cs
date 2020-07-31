@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
+using YamlDotNet.RepresentationModel;
 
 namespace Microsoft.Oryx.Detector.Python
 {
@@ -36,28 +37,11 @@ namespace Microsoft.Oryx.Detector.Python
         {
             var sourceRepo = context.SourceRepo;
 
-            var isPythonApp = IsPythonApp(sourceRepo);
-
-            // This detects if a runtime.txt file exists and if that is a python file
-            var versionFromRuntimeFile = DetectPythonVersionFromRuntimeFile(context.SourceRepo);
-            if (!isPythonApp && string.IsNullOrEmpty(versionFromRuntimeFile))
-            {
-                return null;
-            }
-
-            return new PlatformDetectorResult
-            {
-                Platform = PythonConstants.PlatformName,
-                PlatformVersion = versionFromRuntimeFile,
-            };
-        }
-
-        private bool IsPythonApp(ISourceRepo sourceRepo)
-        {
+            var hasRequirementsTxtFile = false;
             if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
                 _logger.LogInformation($"Found {PythonConstants.RequirementsFileName} at the root of the repo.");
-                return true;
+                hasRequirementsTxtFile = true;
             }
             else
             {
@@ -65,28 +49,79 @@ namespace Microsoft.Oryx.Detector.Python
                     $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo.");
             }
 
-            var searchSubDirectories = !_options.DisableRecursiveLookUp;
-            if (!searchSubDirectories)
-            {
-                _logger.LogDebug("Skipping search for files in sub-directories as it has been disabled.");
-            }
-
-            var files = sourceRepo.EnumerateFiles(PythonConstants.PythonFileNamePattern, searchSubDirectories);
-            if (files != null && files.Any())
+            var hasCondaEnvironmentYmlFile = false;
+            if (sourceRepo.FileExists(PythonConstants.CondaEnvironmentYmlFileName) &&
+                IsCondaEnvironmentFile(sourceRepo, PythonConstants.CondaEnvironmentYmlFileName))
             {
                 _logger.LogInformation(
-                    $"Found files with extension '{PythonConstants.PythonFileNamePattern}' " +
-                    $"in the repo.");
-                return true;
-            }
-            else
-            {
-                _logger.LogInformation(
-                    $"Could not find any file with extension '{PythonConstants.PythonFileNamePattern}' " +
-                    $"in the repo.");
+                    $"Found {PythonConstants.CondaEnvironmentYmlFileName} at the root of the repo.");
+                hasCondaEnvironmentYmlFile = true;
             }
 
-            return false;
+            if (!hasCondaEnvironmentYmlFile &&
+                sourceRepo.FileExists(PythonConstants.CondaEnvironmentYamlFileName) &&
+                IsCondaEnvironmentFile(sourceRepo, PythonConstants.CondaEnvironmentYamlFileName))
+            {
+                _logger.LogInformation(
+                    $"Found {PythonConstants.CondaEnvironmentYamlFileName} at the root of the repo.");
+                hasCondaEnvironmentYmlFile = true;
+            }
+
+            var hasJupyterNotebookFiles = false;
+            var notebookFiles = sourceRepo.EnumerateFiles(
+                $"*.{PythonConstants.JupyterNotebookFileExtensionName}",
+                searchSubDirectories: false);
+            if (notebookFiles != null && notebookFiles.Any())
+            {
+                _logger.LogInformation(
+                    $"Found files with extension {PythonConstants.JupyterNotebookFileExtensionName} " +
+                    $"at the root of the repo.");
+                hasJupyterNotebookFiles = true;
+            }
+
+            // This detects if a runtime.txt file exists and if that is a python file
+            var hasRuntimeTxtFile = false;
+            var versionFromRuntimeFile = DetectPythonVersionFromRuntimeFile(context.SourceRepo);
+            if (!string.IsNullOrEmpty(versionFromRuntimeFile))
+            {
+                hasRuntimeTxtFile = true;
+            }
+
+            if (!hasRequirementsTxtFile &&
+                !hasCondaEnvironmentYmlFile &&
+                !hasJupyterNotebookFiles &&
+                !hasRuntimeTxtFile)
+            {
+                var searchSubDirectories = !_options.DisableRecursiveLookUp;
+                if (!searchSubDirectories)
+                {
+                    _logger.LogDebug("Skipping search for files in sub-directories as it has been disabled.");
+                }
+
+                var files = sourceRepo.EnumerateFiles(PythonConstants.PythonFileNamePattern, searchSubDirectories);
+                if (files != null && files.Any())
+                {
+                    _logger.LogInformation(
+                        $"Found files with extension '{PythonConstants.PythonFileNamePattern}' " +
+                        $"in the repo.");
+                }
+                else
+                {
+                    _logger.LogInformation(
+                        $"Could not find any file with extension '{PythonConstants.PythonFileNamePattern}' " +
+                        $"in the repo.");
+                    return null;
+                }
+            }
+
+            return new PythonPlatformDetectorResult
+            {
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = versionFromRuntimeFile,
+                HasJupyterNotebookFiles = hasJupyterNotebookFiles,
+                HasCondaEnvironmentYmlFile = hasCondaEnvironmentYmlFile,
+                HasRequirementsTxtFile = hasRequirementsTxtFile,
+            };
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)
@@ -134,6 +169,25 @@ namespace Microsoft.Oryx.Detector.Python
             }
 
             return null;
+        }
+
+        private bool IsCondaEnvironmentFile(ISourceRepo sourceRepo, string fileName)
+        {
+            var yamlNode = ParserHelper.ParseYamlFile(sourceRepo, fileName);
+            var yamlMappingNode = yamlNode as YamlMappingNode;
+            if (yamlMappingNode != null)
+            {
+                if (yamlMappingNode.Children.Keys
+                    .Select(key => key.ToString())
+                    .Any(key => PythonConstants.CondaEnvironmentFileKeys.Contains(
+                        key,
+                        StringComparer.OrdinalIgnoreCase)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

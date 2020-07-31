@@ -35,15 +35,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var context = CreateScriptGeneratorContext();
 
             // Act
-            var actualResults = detector.DetectPlatforms(context);
+            var actualResults = detector.GetPlatformsInfo(context);
 
             // Assert
             Assert.NotNull(actualResults);
             Assert.Equal(2, actualResults.Count());
-            Assert.Equal("platform1", actualResults.ElementAt(0).Platform);
-            Assert.Equal("1.0.0", actualResults.ElementAt(0).PlatformVersion);
-            Assert.Equal("platform2", actualResults.ElementAt(1).Platform);
-            Assert.Equal("1.0.0", actualResults.ElementAt(1).PlatformVersion);
+            var actualDetectedResults = actualResults.Select(pi => pi.DetectorResult);
+            Assert.Equal("platform1", actualDetectedResults.ElementAt(0).Platform);
+            Assert.Equal("1.0.0", actualDetectedResults.ElementAt(0).PlatformVersion);
+            Assert.Equal("platform2", actualDetectedResults.ElementAt(1).Platform);
+            Assert.Equal("1.0.0", actualDetectedResults.ElementAt(1).PlatformVersion);
         }
 
         [Fact]
@@ -68,13 +69,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var context = CreateScriptGeneratorContext();
 
             // Act
-            var actualResults = detector.DetectPlatforms(context);
+            var actualResults = detector.GetPlatformsInfo(context);
 
             // Assert
             Assert.NotNull(actualResults);
-            Assert.Single(actualResults);
-            Assert.Equal("platform1", actualResults.ElementAt(0).Platform);
-            Assert.Equal("1.0.0", actualResults.ElementAt(0).PlatformVersion);
+            var actualResult = Assert.Single(actualResults);
+            Assert.Equal("platform1", actualResult.DetectorResult.Platform);
+            Assert.Equal("1.0.0", actualResult.DetectorResult.PlatformVersion);
         }
 
         [Fact]
@@ -99,19 +100,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             var context = CreateScriptGeneratorContext();
 
             // Act
-            var actualResults = detector.DetectPlatforms(context);
+            var actualResults = detector.GetPlatformsInfo(context);
 
             // Assert
             Assert.NotNull(actualResults);
-            Assert.Single(actualResults);
-            Assert.Equal("platform2", actualResults.ElementAt(0).Platform);
-            Assert.Equal("1.0.0", actualResults.ElementAt(0).PlatformVersion);
+            var actualResult = Assert.Single(actualResults);
+            Assert.Equal("platform2", actualResult.DetectorResult.Platform);
+            Assert.Equal("1.0.0", actualResult.DetectorResult.PlatformVersion);
         }
 
-        private DefaultPlatformDetector CreatePlatformDetector(
+        private DefaultPlatformsInformationProvider CreatePlatformDetector(
             IEnumerable<IProgrammingPlatform> platforms)
         {
-            return new DefaultPlatformDetector(
+            return new DefaultPlatformsInformationProvider(
                 platforms,
                 new DefaultStandardOutputWriter());
         }
