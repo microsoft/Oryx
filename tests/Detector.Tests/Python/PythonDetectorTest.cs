@@ -216,6 +216,100 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             Assert.Null(result.PlatformVersion);
         }
 
+        [Fact]
+        public void Detect_ReutrnsResult_WhenOnlyJupyterNotebookFilesExist()
+        {
+            // Arrange
+            var detector = CreatePythonPlatformDetector();
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
+            IOHelpers.CreateFile(
+                sourceDir,
+                "notebook content",
+                $"notebook1.{PythonConstants.JupyterNotebookFileExtensionName}");
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            var pythonPlatformResult = Assert.IsType<PythonPlatformDetectorResult>(result);
+            Assert.Equal(PythonConstants.PlatformName, pythonPlatformResult.Platform);
+            Assert.Null(pythonPlatformResult.PlatformVersion);
+            Assert.True(pythonPlatformResult.HasJupyterNotebookFiles);
+            Assert.False(pythonPlatformResult.HasCondaEnvironmentYmlFile);
+        }
+
+        [Theory]
+        [InlineData(PythonConstants.CondaEnvironmentYmlFileName)]
+        [InlineData(PythonConstants.CondaEnvironmentYamlFileName)]
+        public void Detect_ReutrnsResult_WhenValidCondaEnvironmentFileExists(string environmentFileName)
+        {
+            // Arrange
+            var detector = CreatePythonPlatformDetector();
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
+            IOHelpers.CreateFile(sourceDir, "channels:", environmentFileName);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            var pythonPlatformResult = Assert.IsType<PythonPlatformDetectorResult>(result);
+            Assert.Equal(PythonConstants.PlatformName, pythonPlatformResult.Platform);
+            Assert.Null(pythonPlatformResult.PlatformVersion);
+            Assert.False(pythonPlatformResult.HasJupyterNotebookFiles);
+            Assert.True(pythonPlatformResult.HasCondaEnvironmentYmlFile);
+        }
+
+        [Theory]
+        [InlineData(PythonConstants.CondaEnvironmentYmlFileName)]
+        [InlineData(PythonConstants.CondaEnvironmentYamlFileName)]
+        public void Detect_ReutrnsFalse_WhenValidCondaEnvironmentFileDoesNotExist(string environmentFileName)
+        {
+            // Arrange
+            var detector = CreatePythonPlatformDetector();
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
+            IOHelpers.CreateFile(sourceDir, "foo:", environmentFileName);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void Detect_ReutrnsResult_WithAllPropertiesPopulatedWithExpectedInformation()
+        {
+            // Arrange
+            var expectedPythonVersion = "3.5.6";
+            var detector = CreatePythonPlatformDetector();
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
+            IOHelpers.CreateFile(sourceDir, "channels:", PythonConstants.CondaEnvironmentYmlFileName);
+            IOHelpers.CreateFile(sourceDir, "requirements.txt content", PythonConstants.RequirementsFileName);
+            IOHelpers.CreateFile(
+                sourceDir, 
+                "notebook content", 
+                $"notebook1.{PythonConstants.JupyterNotebookFileExtensionName}");
+            IOHelpers.CreateFile(sourceDir, $"python-{expectedPythonVersion}", PythonConstants.RuntimeFileName);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            var pythonPlatformResult = Assert.IsType<PythonPlatformDetectorResult>(result);
+            Assert.Equal(PythonConstants.PlatformName, pythonPlatformResult.Platform);
+            Assert.Equal(expectedPythonVersion, pythonPlatformResult.PlatformVersion);
+            Assert.True(pythonPlatformResult.HasJupyterNotebookFiles);
+            Assert.True(pythonPlatformResult.HasCondaEnvironmentYmlFile);
+        }
+
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
         {
             return new DetectorContext

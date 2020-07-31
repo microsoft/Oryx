@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Python;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -46,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             repo.AddFile("", PythonConstants.RequirementsFileName);
             repo.AddFile("print(1)", "bla.py");
             var context = new BuildScriptGeneratorContext { SourceRepo = repo };
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new PythonPlatformDetectorResult
             {
                 Platform = PythonConstants.PlatformName,
                 PlatformVersion = "3.7.5",
@@ -81,7 +82,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             repo.AddFile("", PythonConstants.RequirementsFileName);
             repo.AddFile("print(1)", "bla.py");
             var context = new BuildScriptGeneratorContext { SourceRepo = repo };
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new PythonPlatformDetectorResult
             {
                 Platform = PythonConstants.PlatformName,
                 PlatformVersion = "3.7.5",
@@ -117,7 +118,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             repo.AddFile("", PythonConstants.RequirementsFileName);
             repo.AddFile("print(1)", "bla.py");
             var context = new BuildScriptGeneratorContext { SourceRepo = repo };
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new PythonPlatformDetectorResult
             {
                 Platform = PythonConstants.PlatformName,
                 PlatformVersion = "3.7.5",
@@ -139,7 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             repo.AddFile("", PythonConstants.RequirementsFileName);
             repo.AddFile("print(1)", "bla.py");
             var context = new BuildScriptGeneratorContext { SourceRepo = repo };
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new PythonPlatformDetectorResult
             {
                 Platform = PythonConstants.PlatformName,
                 PlatformVersion = "3.7.5",

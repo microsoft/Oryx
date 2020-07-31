@@ -371,6 +371,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 throw new NotImplementedException();
             }
 
+            public IDictionary<string, string> GetToolsToBeSetInPath(
+                RepositoryContext context,
+                PlatformDetectorResult detectorResult)
+            {
+                throw new NotImplementedException();
+            }
+
             public bool IsCleanRepo(Oryx.BuildScriptGenerator.ISourceRepo repo)
             {
                 throw new NotImplementedException();

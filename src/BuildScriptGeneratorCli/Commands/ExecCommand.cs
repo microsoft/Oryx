@@ -47,9 +47,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var shellPath = env.GetEnvironmentVariable("BASH") ?? FilePaths.Bash;
             var context = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
-            var detector = serviceProvider.GetRequiredService<DefaultPlatformDetector>();
-            var detectedPlatforms = detector.DetectPlatforms(context);
-            if (!detectedPlatforms.Any())
+            var detector = serviceProvider.GetRequiredService<DefaultPlatformsInformationProvider>();
+            var platformInfos = detector.GetPlatformsInfo(context);
+            if (!platformInfos.Any())
             {
                 return ProcessConstants.ExitFailure;
             }
@@ -62,8 +62,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     .AddShebang(shellPath)
                     .AddCommand("set -e");
 
-                var envSetupProvider = serviceProvider.GetRequiredService<PlatformsInstallationScriptProvider>();
-                var installationScript = envSetupProvider.GetBashScriptSnippet(
+                var detectedPlatforms = platformInfos.Select(pi => pi.DetectorResult);
+                var installationScriptProvider = serviceProvider.GetRequiredService<PlatformsInstallationScriptProvider>();
+                var installationScript = installationScriptProvider.GetBashScriptSnippet(
                     context,
                     detectedPlatforms);
                 if (!string.IsNullOrEmpty(installationScript))
