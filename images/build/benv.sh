@@ -216,18 +216,17 @@ benv-resolve() {
       return 1
     fi
 
+    IFS='.' read -ra SPLIT_VERSION <<< "$value"
+    majorAndMinorParts="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
+
     export LD_LIBRARY_PATH="$platformDir/lib:$LD_LIBRARY_PATH"
 
-    local DIR="$platformDir/bin"
-    updatePath "$DIR"
-    if [ -e "$DIR/python2" ]; then
-      export python="$DIR/python2"
-    elif [ -e "$DIR/python3" ]; then
-      export python="$DIR/python3"
-    fi
-    export pip="$DIR/pip"
-    if [ -e "$DIR/virtualenv" ]; then
-      export virtualenv="$DIR/virtualenv"
+    local binDir="$platformDir/bin"
+    updatePath "$binDir"
+    export python="$binDir/python$majorAndMinorParts"
+    export pip="$binDir/pip"
+    if [ -e "$binDir/virtualenv" ]; then
+      export virtualenv="$binDir/virtualenv"
     fi
 
     return 0
