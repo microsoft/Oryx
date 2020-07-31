@@ -42,4 +42,5 @@ fi
 
 # Application-Insights is supported as an option for telemetry when running the app,
 # so we need to make sure it is available in our images.
-npm install -g applicationinsights@1.7.3
+# Updated to 1.8.3 that doesn't emit json payload in stdout which is causing issues to customers in ant-88
+npm install -g applicationinsights@1.8.3
