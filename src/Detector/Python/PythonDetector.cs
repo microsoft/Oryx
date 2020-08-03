@@ -38,12 +38,12 @@ namespace Microsoft.Oryx.Detector.Python
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;
-            
+            var appDirectory = string.Empty;
             var hasRequirementsTxtFile = false;
             if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
-                appDirectory = Constants.RelativeRootDirectory;
                 _logger.LogInformation($"Found {PythonConstants.RequirementsFileName} at the root of the repo.");
+                appDirectory = Constants.RelativeRootDirectory;
                 hasRequirementsTxtFile = true;
             }
             else
@@ -58,6 +58,7 @@ namespace Microsoft.Oryx.Detector.Python
             {
                 _logger.LogInformation(
                     $"Found {PythonConstants.CondaEnvironmentYmlFileName} at the root of the repo.");
+                appDirectory = Constants.RelativeRootDirectory;
                 hasCondaEnvironmentYmlFile = true;
             }
 
@@ -65,9 +66,9 @@ namespace Microsoft.Oryx.Detector.Python
                 sourceRepo.FileExists(PythonConstants.CondaEnvironmentYamlFileName) &&
                 IsCondaEnvironmentFile(sourceRepo, PythonConstants.CondaEnvironmentYamlFileName))
             {
-                appDirectory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(files.FirstOrDefault(), sourceRepo.RootPath);
                 _logger.LogInformation(
                     $"Found {PythonConstants.CondaEnvironmentYamlFileName} at the root of the repo.");
+                appDirectory = Constants.RelativeRootDirectory;
                 hasCondaEnvironmentYmlFile = true;
             }
 
@@ -80,6 +81,7 @@ namespace Microsoft.Oryx.Detector.Python
                 _logger.LogInformation(
                     $"Found files with extension {PythonConstants.JupyterNotebookFileExtensionName} " +
                     $"at the root of the repo.");
+                appDirectory = Constants.RelativeRootDirectory;
                 hasJupyterNotebookFiles = true;
             }
 
@@ -88,6 +90,7 @@ namespace Microsoft.Oryx.Detector.Python
             var versionFromRuntimeFile = DetectPythonVersionFromRuntimeFile(context.SourceRepo);
             if (!string.IsNullOrEmpty(versionFromRuntimeFile))
             {
+                appDirectory = Constants.RelativeRootDirectory;
                 hasRuntimeTxtFile = true;
             }
 
@@ -108,6 +111,8 @@ namespace Microsoft.Oryx.Detector.Python
                     _logger.LogInformation(
                         $"Found files with extension '{PythonConstants.PythonFileNamePattern}' " +
                         $"in the repo.");
+                    appDirectory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(
+                        files.FirstOrDefault(), sourceRepo.RootPath);
                 }
                 else
                 {
@@ -122,6 +127,7 @@ namespace Microsoft.Oryx.Detector.Python
             {
                 Platform = PythonConstants.PlatformName,
                 PlatformVersion = versionFromRuntimeFile,
+                AppDirectory = appDirectory,
                 HasJupyterNotebookFiles = hasJupyterNotebookFiles,
                 HasCondaEnvironmentYmlFile = hasCondaEnvironmentYmlFile,
                 HasRequirementsTxtFile = hasRequirementsTxtFile,
