@@ -160,71 +160,25 @@ RUN cd ${IMAGES_DIR} \
     && ./installPlatform.sh python $PYTHON27_VERSION \
     && ./installPlatform.sh python $PYTHON36_VERSION \
     && ./installPlatform.sh python $PYTHON37_VERSION \
-    && ./installPlatform.sh python $PYTHON38_VERSION
-RUN . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
- && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && ldconfig
-RUN . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
- && ln -sfn $PYTHON36_VERSION /opt/python/2.7 \
- && ln -sfn $PYTHON36_VERSION /opt/python/3.6 \
- && ln -sfn $PYTHON37_VERSION /opt/python/3.7 \
- && ln -sfn $PYTHON38_VERSION /opt/python/3.8
-  
-# This stage is a no-op and exists to satisfy a pattern of building different
-# stages in buildBuildImages.sh file
-FROM dotnet-install AS buildscriptbuilder
-
-FROM mcr.microsoft.com/oryx/base:build-yarn-cache-${YARN_CACHE_BASE_TAG} AS yarn-cache-base
-
-###
-# Build run script generators (to be used by the `oryx run-script` command)
-###
-FROM golang:1.11-stretch as startupScriptGens
-
-# GOPATH is set to "/go" in the base image
-WORKDIR /go/src
-COPY src/startupscriptgenerator/src .
-
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
-ARG RELEASE_TAG_NAME=unspecified
-ENV GIT_COMMIT=${GIT_COMMIT}
-ENV BUILD_NUMBER=${BUILD_NUMBER}
-ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
-
-RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
-RUN ./build.sh node       /opt/startupcmdgen/nodejs
-RUN ./build.sh php        /opt/startupcmdgen/php
-RUN ./build.sh python     /opt/startupcmdgen/python
-###
-# End build run script generators
-###
-
-FROM python AS final
-ARG BUILD_DIR
-ARG IMAGES_DIR
-WORKDIR /
-
-# Copy .NET Core related content
-COPY --from=dotnet-install /opt/dotnet /opt/dotnet
-COPY --from=dotnet-install /var/nuget /var/nuget
-RUN ${IMAGES_DIR}/build/createFlattenedDotNetCoreInstall.sh
-RUN cp ${IMAGES_DIR}/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md
-
-# Copy NodeJs, NPM and Yarn related content
-COPY --from=node-install /opt /opt
-
-# Oryx depends on the run script generators for most of its
-# `IProgrammingPlatform.GenerateBashRunScript()` implementations
-COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
-COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-cache
-
-# Copy PHP versions
-RUN cd ${IMAGES_DIR} \
-    && . ${BUILD_DIR}/__phpVersions.sh \
+    && ./installPlatform.sh python $PYTHON38_VERSION \
+    && . $buildDir/__pythonVersions.sh && set -ex \
+    && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && ldconfig \
+    && . $buildDir/__pythonVersions.sh && set -ex \
+    && ln -sfn $PYTHON27_VERSION /opt/python/2.7 \
+    && ln -sfn 2.7 /opt/python/2 \
+    && ln -sfn $PYTHON36_VERSION /opt/python/3.6 \
+    && ln -sfn $PYTHON37_VERSION /opt/python/3.7 \
+    && ln -sfn $PYTHON38_VERSION /opt/python/3.8 \
+    && $imagesDir/build/createFlattenedDotNetCoreInstall.sh \
+    && cp $imagesDir/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md \
+    # Copy PHP versions
+    && cd $imagesDir \
+    && . $buildDir/__phpVersions.sh \
+    && ./installPlatform.sh php $PHP56_VERSION \
     && ./installPlatform.sh php $PHP70_VERSION \
     && ./installPlatform.sh php $PHP72_VERSION \
     && ./installPlatform.sh php $PHP74_VERSION
