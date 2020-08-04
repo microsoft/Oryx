@@ -38,7 +38,7 @@ ln -s $DOTNET_SDK_VER $SDK_DIR/$MAJOR_MINOR
 dotnet=$SDK_DIR/$DOTNET_SDK_VER/dotnet
 
 # Install MVC template based packages
-if [ "$INSTALL_PACKAGES" != "false" ]
+if [ "$INSTALL_PACKAGES" == "true" ]
 then
     echo
     echo Installing MVC template based packages ...

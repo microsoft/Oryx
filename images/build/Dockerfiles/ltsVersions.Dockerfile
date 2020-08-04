@@ -62,10 +62,12 @@ RUN mkdir /opt/nuget
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
+    INSTALL_PACKAGES="true" \
     ${IMAGES_DIR}/build/installDotNetCore.sh
 
 RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
+    INSTALL_PACKAGES="true" \
     ${IMAGES_DIR}/build/installDotNetCore.sh
 
 RUN set -ex \
