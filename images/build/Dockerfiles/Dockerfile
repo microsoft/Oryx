@@ -41,6 +41,7 @@ RUN LANG="C.UTF-8" \
         libunwind8 \
     && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir /opt/nuget
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 ENV NUGET_PACKAGES=/opt/nuget
 RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
