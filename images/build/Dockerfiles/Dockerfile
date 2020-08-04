@@ -45,8 +45,6 @@ RUN LANG="C.UTF-8" \
 ENV NUGET_PACKAGES=/opt/nuget
 RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
-    # To save disk space do not install packages for this old version which is soon going to be out of support
-    INSTALL_PACKAGES=false \
     ${IMAGES_DIR}/build/installDotNetCore.sh
 
 RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
