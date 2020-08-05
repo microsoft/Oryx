@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
