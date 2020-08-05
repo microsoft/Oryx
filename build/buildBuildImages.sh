@@ -146,7 +146,7 @@ function buildGitHubActionsImage() {
 	
 	echo
 	echo "-------------Creating build image for GitHub Actions-------------------"
-	builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
+	local builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
@@ -177,7 +177,7 @@ function buildJamStackImage() {
 	# turn inherited by this image.
 	echo
 	echo "-------------Creating AzureFunctions JamStack image-------------------"
-	builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
+	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
 	docker build -t $builtImageName -f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" .
 	
 	createImageNameWithReleaseTag $builtImageName
@@ -198,7 +198,7 @@ function buildLtsVersionsImage() {
 
 	echo
 	echo "-------------Creating lts versions build image-------------------"
-	builtImageTag="$ACR_BUILD_IMAGES_REPO:lts-versions"
+	local builtImageTag="$ACR_BUILD_IMAGES_REPO:lts-versions"
 	docker build -t $builtImageTag \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
@@ -218,7 +218,7 @@ function buildLtsVersionsImage() {
 	echo
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
-	testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
+	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
 	docker build -t $testImageName -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" .
 }
 
@@ -226,7 +226,7 @@ function buildFullImage() {
 	buildLtsVersionsImage
 
 	# Pull and tag the image with the name that this image's Dockerfile expects
-	yarnImage="mcr.microsoft.com/oryx/base:build-yarn-cache-$YARN_CACHE_BASE_TAG"
+	local yarnImage="mcr.microsoft.com/oryx/base:build-yarn-cache-$YARN_CACHE_BASE_TAG"
 	docker pull $yarnImage
 	docker tag $yarnImage yarn-cache-base
 
@@ -234,7 +234,7 @@ function buildFullImage() {
 
 	echo
 	echo "-------------Creating full build image-------------------"
-	builtImageName="$ACR_BUILD_IMAGES_REPO"
+	local builtImageName="$ACR_BUILD_IMAGES_REPO"
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
@@ -252,7 +252,7 @@ function buildFullImage() {
 	echo
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
-	testImageName="$ORYXTESTS_BUILDIMAGE_REPO"
+	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO"
 	docker build -t $testImageName -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
 }
 
@@ -264,7 +264,7 @@ function buildVsoImage() {
 	# turn inherited by this image.
 	echo
 	echo "-------------Creating VSO build image-------------------"
-	builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
+	local builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
 	docker build -t $builtImageName -f "$BUILD_IMAGES_VSO_DOCKERFILE" .
 
 	createImageNameWithReleaseTag $builtImageName
@@ -284,7 +284,7 @@ function buildCliImage() {
 	
 	echo
 	echo "-------------Creating CLI image-------------------"
-	builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
+	local builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
