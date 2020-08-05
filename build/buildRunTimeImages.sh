@@ -117,7 +117,7 @@ for dockerFile in $dockerFiles; do
 
     echo
     echo "'$localImageTagName' image history:"
-    echo docker history $localImageTagName
+    docker history $localImageTagName
     echo
 
     echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
