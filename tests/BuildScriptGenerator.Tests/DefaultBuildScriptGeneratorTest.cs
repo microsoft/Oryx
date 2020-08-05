@@ -615,7 +615,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             commonOptions.SourceDir = "/app";
             commonOptions.DestinationDir = "/output";
 
-            var defaultPlatformDetector = new DefaultPlatformDetector(
+            var defaultPlatformDetector = new DefaultPlatformsInformationProvider(
                 platforms,
                 new DefaultStandardOutputWriter());
             var envScriptProvider = new BuildScriptGenerator.PlatformsInstallationScriptProvider(

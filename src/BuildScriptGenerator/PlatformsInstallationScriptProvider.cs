@@ -17,12 +17,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public class PlatformsInstallationScriptProvider
     {
         private readonly IEnumerable<IProgrammingPlatform> _platforms;
-        private readonly DefaultPlatformDetector _platformDetector;
+        private readonly DefaultPlatformsInformationProvider _platformDetector;
         private readonly IStandardOutputWriter _outputWriter;
 
         public PlatformsInstallationScriptProvider(
             IEnumerable<IProgrammingPlatform> platforms,
-            DefaultPlatformDetector platformDetector,
+            DefaultPlatformsInformationProvider platformDetector,
             IStandardOutputWriter outputWriter)
         {
             _platforms = platforms;
@@ -45,7 +45,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // Avoid detecting again if detection was already run.
             if (detectionResults == null)
             {
-                detectionResults = _platformDetector.DetectPlatforms(context);
+                var platformInfos = _platformDetector.GetPlatformsInfo(context);
+                if (platformInfos != null)
+                {
+                    detectionResults = platformInfos.Select(pi => pi.DetectorResult);
+                }
             }
 
             var snippets = GetInstallationScriptSnippets(detectionResults, context);

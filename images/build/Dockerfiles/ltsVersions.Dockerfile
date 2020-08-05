@@ -1,22 +1,10 @@
-# Folders in the image which we use to build this image itself
-# These are deleted in the final stage of the build
-ARG IMAGES_DIR=/tmp/oryx/images
-ARG BUILD_DIR=/tmp/oryx/build
-ARG SDK_STORAGE_ENV_NAME
-ARG SDK_STORAGE_BASE_URL_VALUE
-# Determine where the image is getting built (DevOps agents or local)
-ARG AGENTBUILD
-
 FROM githubrunners-buildpackdeps-stretch AS main
-ARG BUILD_DIR
-ARG IMAGES_DIR
-
-# Configure locale (required for Python)
-# NOTE: Do NOT move it from here as it could have global implications
-ENV LANG C.UTF-8
 
 # Install basic build tools
-RUN apt-get update \
+# Configure locale (required for Python)
+# NOTE: Do NOT move it from here as it could have global implications
+RUN LANG="C.UTF-8" \
+    && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         git \
@@ -38,28 +26,18 @@ RUN apt-get update \
         # By default pip is not available in the buildpacks image
         python-pip \
         python3-pip \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN pip install pip --upgrade
-RUN pip3 install pip --upgrade
-
-# A temporary folder to hold all content temporarily used to build this image.
-# This folder is deleted in the final stage of building this image.
-RUN mkdir -p ${IMAGES_DIR}
-RUN mkdir -p ${BUILD_DIR}
-ADD build ${BUILD_DIR}
-ADD images ${IMAGES_DIR}
-# chmod all script files
-RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
-RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
-
-# This is the folder containing 'links' to benv and build script generator
-RUN mkdir -p /opt/oryx
+    && rm -rf /var/lib/apt/lists/* \
+    && pip install pip --upgrade \
+    && pip3 install pip --upgrade \
+    # This is the folder containing 'links' to benv and build script generator
+    && mkdir -p /opt/oryx
 
 # Install .NET Core
-FROM main AS dotnet-install
-ARG BUILD_DIR
-ARG IMAGES_DIR
+FROM main AS intermediate
+COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
+ARG BUILD_DIR="/opt/tmp/build"
+ARG IMAGES_DIR="/opt/tmp/images"
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -77,22 +55,24 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
     DOTNET_USE_POLLING_FILE_WATCHER=true \
 	NUGET_XMLDOC_MODE=skip \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-	NUGET_PACKAGES=/var/nuget
+	NUGET_PACKAGES=/opt/nuget
 
-RUN mkdir /var/nuget
+RUN mkdir /opt/nuget
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
+    INSTALL_PACKAGES="true" \
     ${IMAGES_DIR}/build/installDotNetCore.sh
 
 RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
+    INSTALL_PACKAGES="true" \
     ${IMAGES_DIR}/build/installDotNetCore.sh
 
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
-    && find /var/nuget -type d -exec chmod 777 {} \;
+    && find /opt/nuget -type d -exec chmod 777 {} \;
 
 RUN set -ex \
  && sdksDir=/opt/dotnet/sdks \
@@ -123,9 +103,6 @@ RUN set -ex \
  && ln -s $ltsSdk/dotnet /usr/local/bin/dotnet
 
 # Install Node.js, NPM, Yarn
-FROM main AS node-install
-ARG BUILD_DIR
-ARG IMAGES_DIR
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -171,98 +148,84 @@ RUN set -ex \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
-FROM main AS python
-ARG BUILD_DIR
-ARG IMAGES_DIR
-# It's not clear whether these are needed at runtime...
-RUN apt-get update \
+FROM main AS final
+ARG AI_KEY
+ARG SDK_STORAGE_BASE_URL_VALUE
+COPY --from=intermediate /opt /opt
+RUN imagesDir="/opt/tmp/images" \
+    && buildDir="/opt/tmp/build" \
+    && mkdir -p /var/nuget \
+    && cd /opt/nuget \
+    && mv * /var/nuget \
+    && cd /opt \
+    && rm -rf /opt/nuget \
+    # Grant read-write permissions to the nuget folder so that dotnet restore
+    # can write into it.
+    && chmod a+rw /var/nuget \
+    # https://github.com/docker-library/python/issues/147
+    && PYTHONIOENCODING="UTF-8" \
+    # It's not clear whether these are needed at runtime...
+    && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         tk-dev \
         uuid-dev \
-    && rm -rf /var/lib/apt/lists/*
-# https://github.com/docker-library/python/issues/147
-ENV PYTHONIOENCODING UTF-8
-RUN cd ${IMAGES_DIR} \
-    && . ${BUILD_DIR}/__pythonVersions.sh \
+    && rm -rf /var/lib/apt/lists/* \
+    && cd $imagesDir \
+    && . $buildDir/__pythonVersions.sh \
     && ./installPlatform.sh python $PYTHON37_VERSION \
-    && ./installPlatform.sh python $PYTHON38_VERSION
-RUN . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
- && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
- && ldconfig
-RUN . ${BUILD_DIR}/__pythonVersions.sh && set -ex \
- && ln -s $PYTHON37_VERSION /opt/python/3.7 \
- && ln -s $PYTHON38_VERSION /opt/python/3.8 \
- && ln -s $PYTHON38_VERSION /opt/python/latest \
- && ln -s $PYTHON38_VERSION /opt/python/stable \
- && ln -s 3.8 /opt/python/3
-
-FROM python AS final
-ARG BUILD_DIR
-ARG IMAGES_DIR
-ARG SDK_STORAGE_ENV_NAME
-ARG SDK_STORAGE_BASE_URL_VALUE
-WORKDIR /
-
-# Install PHP pre-reqs
-RUN ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh
-# Copy PHP versions
-RUN cd ${IMAGES_DIR} \
-    && . ${BUILD_DIR}/__phpVersions.sh \
+    && ./installPlatform.sh python $PYTHON38_VERSION \
+    && . $buildDir/__pythonVersions.sh \
+    && set -ex \
+    && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && ldconfig \
+    && . $buildDir/__pythonVersions.sh && set -ex \
+    && ln -s $PYTHON37_VERSION /opt/python/3.7 \
+    && ln -s $PYTHON38_VERSION /opt/python/3.8 \
+    && ln -s $PYTHON38_VERSION /opt/python/latest \
+    && ln -s $PYTHON38_VERSION /opt/python/stable \
+    && ln -s 3.8 /opt/python/3 \
+    # Install PHP pre-reqs
+    && $imagesDir/build/php/prereqs/installPrereqs.sh \
+    # Copy PHP versions
+    && cd $imagesDir \
+    && . $buildDir/__phpVersions.sh \
     && ./installPlatform.sh php $PHP73_VERSION \
-    && ./installPlatform.sh php-composer $COMPOSER_VERSION
-
-RUN ln -s /opt/php/7.3 /opt/php/7 \
- && ln -s /opt/php/7 /opt/php/lts \
- && cd /opt/php-composer \
- && ln -sfn 1.9.3 stable
-RUN ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar
-RUN apt-get update \
+    && ./installPlatform.sh php-composer $COMPOSER_VERSION \
+    && ln -s /opt/php/7.3 /opt/php/7 \
+    && ln -s /opt/php/7 /opt/php/lts \
+    && cd /opt/php-composer \
+    && ln -sfn 1.9.3 stable \
+    && ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         libargon2-0 \
         libonig-dev \
-    && rm -rf /var/lib/apt/lists/*
-    
-ENV ORIGINAL_PATH="$PATH"
+    && rm -rf /var/lib/apt/lists/* \
+    && cp -f $imagesDir/build/benv.sh /opt/oryx/benv \
+    && mkdir -p /usr/local/share/pip-cache/lib \
+    && chmod -R 777 /usr/local/share/pip-cache \
+    && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
+    && rm -rf /opt/tmp
+
+# Docker has an issue with variable expansion when all are used in a single ENV command.
+# For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 
+#   ENV LASTNAME="JORDAN" \
+#       NAME="MICHAEL $LASTNAME"
+#
+# Even though this adds a new docker layer we are doing this 
+# because we want to avoid duplication (which is always error-prone)
 ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/sdks/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts"
-ENV PATH="${ORYX_PATHS}:$PATH"
-COPY images/build/benv.sh /opt/oryx/benv
-RUN chmod +x /opt/oryx/benv
-RUN mkdir -p /usr/local/share/pip-cache/lib
-RUN chmod -R 777 /usr/local/share/pip-cache
 
-# Copy .NET Core related content
-ENV NUGET_XMLDOC_MODE=skip \
-	DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-	NUGET_PACKAGES=/var/nuget
-COPY --from=dotnet-install /opt/dotnet /opt/dotnet
-COPY --from=dotnet-install /var/nuget /var/nuget
-# Grant read-write permissions to the nuget folder so that dotnet restore
-# can write into it.
-RUN chmod a+rw /var/nuget
-
-# Copy NodeJs, NPM and Yarn related content
-COPY --from=node-install /opt /opt
-
-# Build script generator content. Docker doesn't support variables in --from
-# so we are building an extra stage to copy binaries from correct build stage
-COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-RUN ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
-
-RUN rm -rf /tmp/oryx
-
-# Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
-ARG RELEASE_TAG_NAME=unspecified
-LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
-LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
-LABEL com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}
-
-ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
+ENV LANG="C.UTF-8" \
+    ORIGINAL_PATH="$PATH" \
+    PATH="$ORYX_PATHS:$PATH" \
+    NUGET_XMLDOC_MODE="skip" \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
+    NUGET_PACKAGES="/var/nuget" \
+    ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
+    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
+    PYTHONIOENCODING="UTF-8"
 
 ENTRYPOINT [ "benv" ]

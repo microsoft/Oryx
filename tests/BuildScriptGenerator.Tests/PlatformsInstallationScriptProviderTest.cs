@@ -142,7 +142,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         private PlatformsInstallationScriptProvider CreateEnvironmentSetupScriptProvider(
             IEnumerable<IProgrammingPlatform> platforms)
         {
-            var platformDetector = new DefaultPlatformDetector(
+            var platformDetector = new DefaultPlatformsInformationProvider(
                 platforms,
                 new DefaultStandardOutputWriter());
             return new PlatformsInstallationScriptProvider(

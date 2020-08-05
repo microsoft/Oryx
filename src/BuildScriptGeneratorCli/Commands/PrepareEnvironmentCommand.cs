@@ -174,12 +174,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
                 else
                 {
-                    var detector = serviceProvider.GetRequiredService<Oryx.BuildScriptGenerator.DefaultPlatformDetector>();
-                    detectedPlatforms = detector.DetectPlatforms(context);
-                    if (!detectedPlatforms.Any())
+                    var detector = serviceProvider.GetRequiredService<DefaultPlatformsInformationProvider>();
+                    var platformInfos = detector.GetPlatformsInfo(context);
+                    if (!platformInfos.Any())
                     {
                         return ProcessConstants.ExitFailure;
                     }
+                    detectedPlatforms = platformInfos.Select(pi => pi.DetectorResult);
                 }
 
                 var environmentScriptProvider = serviceProvider.GetRequiredService<PlatformsInstallationScriptProvider>();

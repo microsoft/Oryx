@@ -1,40 +1,38 @@
-ARG IMAGES_DIR=/tmp/oryx/images
-ARG BUILD_DIR=/tmp/oryx/build
-# Start declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
-ARG AGENTBUILD
-ARG YARN_CACHE_BASE_TAG
-
 FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions AS main
-ARG IMAGES_DIR
-ARG BUILD_DIR
-# End declaration of Build-Arg to determine where the image is getting built (DevOps agents or local)
 
-# Configure locale (required for Python)
-# NOTE: Do NOT move it from here as it could have global implications
-ENV LANG C.UTF-8
+###
+# Build run script generators (to be used by the `oryx run-script` command)
+###
+FROM golang:1.11-stretch as startupScriptGens
 
-# Install basic build tools
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        # Required for .NET Core 1.1
-        libunwind8 \
-    && rm -rf /var/lib/apt/lists/*
+# GOPATH is set to "/go" in the base image
+WORKDIR /go/src
+COPY src/startupscriptgenerator/src .
 
-# A temporary folder to hold all content temporarily used to build this image.
-# This folder is deleted in the final stage of building this image.
-RUN mkdir -p ${IMAGES_DIR}
-RUN mkdir -p ${BUILD_DIR}
-ADD build ${BUILD_DIR}
-ADD images ${IMAGES_DIR}
-RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
-RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ARG RELEASE_TAG_NAME=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
+
+RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
+RUN ./build.sh node       /opt/startupcmdgen/nodejs
+RUN ./build.sh php        /opt/startupcmdgen/php
+RUN ./build.sh python     /opt/startupcmdgen/python
+###
+# End build run script generators
+###
 
 # Install .NET Core
-FROM main AS dotnet-install
-ARG BUILD_DIR
-ARG IMAGES_DIR
-RUN apt-get update \
+FROM main AS intermediate
+COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
+COPY --from=yarn-cache-base /usr/local/share/yarn-cache /opt/yarn-cache
+COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
+ARG BUILD_DIR="/opt/tmp/build"
+ARG IMAGES_DIR="/opt/tmp/images"
+RUN LANG="C.UTF-8" \
+    && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         # For .NET Core 1.1
@@ -43,8 +41,9 @@ RUN apt-get update \
         libunwind8 \
     && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir /opt/nuget
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
-
+ENV NUGET_PACKAGES=/opt/nuget
 RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION \
     ${IMAGES_DIR}/build/installDotNetCore.sh
@@ -55,7 +54,7 @@ RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
 
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
-    && find /var/nuget -type d -exec chmod 777 {} \;
+    && find /opt/nuget -type d -exec chmod 777 {} \;
 
 RUN set -ex \
  && sdksDir=/opt/dotnet/sdks \
@@ -83,9 +82,6 @@ RUN set -ex \
  && echo $DOT_NET_CORE_30_SDK_VERSION > $NET_CORE_APP_30/sdkVersion.txt
 
 # Install Node.js, NPM, Yarn
-FROM main AS node-install
-ARG BUILD_DIR
-ARG IMAGES_DIR
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -150,13 +146,32 @@ RUN set -ex \
  && ln -s 5.6.0 /opt/npm/5.6 \
  && ln -s 5.6 /opt/npm/5
 
-FROM main AS python
-ARG BUILD_DIR
-ARG IMAGES_DIR
+FROM main AS final
+COPY --from=intermediate /opt /opt
 # https://github.com/docker-library/python/issues/147
-ENV PYTHONIOENCODING UTF-8
-RUN cd ${IMAGES_DIR} \
-    && . ${BUILD_DIR}/__pythonVersions.sh \
+RUN PYTHONIOENCODING="UTF-8" \
+    && apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        # Required for .NET Core 1.1
+        libunwind8 \
+    && rm -rf /var/lib/apt/lists/* \
+    && tmpDir="/opt/tmp" \
+    && imagesDir="$tmpDir/images" \
+    && buildDir="$tmpDir/build" \
+    && mkdir -p /var/nuget \
+    && cd /opt/nuget \
+    && cp -rf . /var/nuget \
+    && cd /opt \
+    && rm -rf /opt/nuget \
+    && mkdir -p /usr/local/share/yarn-cache \
+    && cd /opt/yarn-cache \
+    && cp -rf . /usr/local/share/yarn-cache \
+    && cd /opt \
+    && rm -rf /opt/yarn-cache \
+    && chmod -R 777 /usr/local/share/yarn-cache \
+    && cd $imagesDir \
+    && . $buildDir/__pythonVersions.sh \
     && ./installPlatform.sh python $PYTHON27_VERSION \
     && ./installPlatform.sh python $PYTHON36_VERSION \
     && ./installPlatform.sh python $PYTHON37_VERSION \
@@ -181,14 +196,6 @@ RUN cd ${IMAGES_DIR} \
     && ./installPlatform.sh php $PHP56_VERSION \
     && ./installPlatform.sh php $PHP70_VERSION \
     && ./installPlatform.sh php $PHP72_VERSION \
-    && ./installPlatform.sh php $PHP74_VERSION
-RUN ln -s /opt/php/5.6 /opt/php/5
-
-RUN rm -rf /tmp/oryx
-
-ARG GIT_COMMIT=unspecified
-ARG BUILD_NUMBER=unspecified
-ARG RELEASE_TAG_NAME=unspecified
-LABEL com.microsoft.oryx.git-commit=${GIT_COMMIT}
-LABEL com.microsoft.oryx.build-number=${BUILD_NUMBER}
-LABEL com.microsoft.oryx.release-tag-name=${RELEASE_TAG_NAME}
+    && ./installPlatform.sh php $PHP74_VERSION \
+    && ln -s /opt/php/5.6 /opt/php/5 \
+    && rm -rf $tmpDir

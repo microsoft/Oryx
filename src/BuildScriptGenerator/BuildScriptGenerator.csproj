@@ -69,12 +69,17 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Python\JupyterNotebookBashBuildSnippet.sh.tpl" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Include="BaseBashBuildScript.sh.tpl" />
     <EmbeddedResource Include="Dockerfile.oryx.tpl" />
     <EmbeddedResource Include="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Node\NodeBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Hugo\HugoBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Php\PhpBashBuildSnippet.sh.tpl" />
+    <EmbeddedResource Include="Python\JupyterNotebookBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Python\PythonBashBuildSnippet.sh.tpl" />
   </ItemGroup>
 

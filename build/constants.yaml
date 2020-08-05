@@ -219,3 +219,18 @@
     - type: powershell
       directory: build\detector
       file-name-prefix: __
+- name: conda-constants
+  constants:
+    conda-version: 4.8.3-0
+    conda-environment-yml-file-name: environment.yml
+    oryx-generated-environment-yml-file-name: oryx.environment.yml
+    default-conda-environment-yml-file-template-name: default.envrionment.yml.template
+    default-python2-version: 2.7.15
+    default-python2-conda-environment-yml-file-template-name: python2.default.envrionment.yml.template
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator/Python
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Python
+    - type: shell
+      directory: build
+      file-name-prefix: __

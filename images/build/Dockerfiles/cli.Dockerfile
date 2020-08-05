@@ -1,5 +1,7 @@
 FROM debian:stretch-slim
 
+COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
 # .NET Core dependencies
@@ -11,9 +13,9 @@ RUN apt-get update \
         libssl1.0.2 \
         libstdc++6 \
         zlib1g \
-    && rm -rf /var/lib/apt/lists/*
-COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
-RUN mkdir -p /opt/oryx \
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
+    && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
+    
 ENV PATH="$PATH:/opt/oryx"

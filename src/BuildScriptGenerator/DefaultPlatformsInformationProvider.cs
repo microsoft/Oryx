@@ -5,19 +5,18 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
     /// Detects platforms in the provided source directory.
     /// </summary>
-    public class DefaultPlatformDetector
+    public class DefaultPlatformsInformationProvider
     {
         private readonly IEnumerable<IProgrammingPlatform> _platforms;
         private readonly IStandardOutputWriter _outputWriter;
 
-        public DefaultPlatformDetector(
+        public DefaultPlatformsInformationProvider(
             IEnumerable<IProgrammingPlatform> platforms,
             IStandardOutputWriter outputWriter)
         {
@@ -30,9 +29,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <param name="context">The <see cref="RepositoryContext"/>.</param>
         /// <returns>A list of detected platform results.</returns>
-        public IEnumerable<PlatformDetectorResult> DetectPlatforms(RepositoryContext context)
+        public IEnumerable<PlatformInfo> GetPlatformsInfo(RepositoryContext context)
         {
-            var detectionResults = new List<PlatformDetectorResult>();
+            var platformInfos = new List<PlatformInfo>();
 
             // Try detecting ALL platforms since in some scenarios this is required.
             // For example, in case of a multi-platform app like ASP.NET Core + NodeJs, we might need to dynamically
@@ -52,18 +51,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 var detectionResult = platform.Detect(context);
+
                 if (detectionResult != null)
                 {
-                    detectionResults.Add(detectionResult);
+                    var toolsInPath = platform.GetToolsToBeSetInPath(context, detectionResult);
+
+                    platformInfos.Add(new PlatformInfo
+                    {
+                        DetectorResult = detectionResult,
+                        RequiredToolsInPath = toolsInPath,
+                    });
                 }
             }
 
-            if (detectionResults.Any())
+            if (platformInfos.Any())
             {
                 _outputWriter.WriteLine("Detected following platforms:");
-                foreach (var result in detectionResults)
+                foreach (var platformInfo in platformInfos)
                 {
-                    _outputWriter.WriteLine($"  {result.Platform}: {result.PlatformVersion}");
+                    var detectorResult = platformInfo.DetectorResult;
+                    _outputWriter.WriteLine($"  {detectorResult.Platform}: {detectorResult.PlatformVersion}");
                 }
             }
             else
@@ -71,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 _outputWriter.WriteLine("Could not detect any platform in the source directory.");
             }
 
-            return detectionResults;
+            return platformInfos;
         }
     }
 }

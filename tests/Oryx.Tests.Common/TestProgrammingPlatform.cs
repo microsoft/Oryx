@@ -110,5 +110,15 @@ namespace Microsoft.Oryx.Tests.Common
         {
             return versionToResolve;
         }
+
+        public IDictionary<string, string> GetToolsToBeSetInPath(
+            RepositoryContext context, 
+            PlatformDetectorResult detectorResult)
+        {
+            return new Dictionary<string, string>
+            {
+                { detectorResult.Platform, detectorResult.PlatformVersion }
+            };
+        }
     }
 }

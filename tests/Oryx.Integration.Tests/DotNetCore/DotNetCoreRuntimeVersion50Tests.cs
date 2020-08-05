@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_NetCore50MvcApp()
         {
             // Arrange
-            var dotnetcoreVersion = "5.0";
+            var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp50;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp50MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", "5.0"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
