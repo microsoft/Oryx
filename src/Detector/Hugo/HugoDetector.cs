@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.Detector.Hugo
         {
             // Hugo configuration variables:
             // https://gohugo.io/getting-started/configuration/#all-configuration-settings
-            appDirectory = Constants.RelativeRootDirectory;
+            appDirectory = string.Empty;
 
             // Search for config.toml
             if (sourceRepo.FileExists(HugoConstants.TomlFileName)

@@ -43,7 +43,6 @@ namespace Microsoft.Oryx.Detector.Python
             if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
                 _logger.LogInformation($"Found {PythonConstants.RequirementsFileName} at the root of the repo.");
-                appDirectory = Constants.RelativeRootDirectory;
                 hasRequirementsTxtFile = true;
             }
             else
@@ -58,7 +57,6 @@ namespace Microsoft.Oryx.Detector.Python
             {
                 _logger.LogInformation(
                     $"Found {PythonConstants.CondaEnvironmentYmlFileName} at the root of the repo.");
-                appDirectory = Constants.RelativeRootDirectory;
                 hasCondaEnvironmentYmlFile = true;
             }
 
@@ -68,7 +66,6 @@ namespace Microsoft.Oryx.Detector.Python
             {
                 _logger.LogInformation(
                     $"Found {PythonConstants.CondaEnvironmentYamlFileName} at the root of the repo.");
-                appDirectory = Constants.RelativeRootDirectory;
                 hasCondaEnvironmentYmlFile = true;
             }
 
@@ -81,7 +78,6 @@ namespace Microsoft.Oryx.Detector.Python
                 _logger.LogInformation(
                     $"Found files with extension {PythonConstants.JupyterNotebookFileExtensionName} " +
                     $"at the root of the repo.");
-                appDirectory = Constants.RelativeRootDirectory;
                 hasJupyterNotebookFiles = true;
             }
 
@@ -90,7 +86,6 @@ namespace Microsoft.Oryx.Detector.Python
             var versionFromRuntimeFile = DetectPythonVersionFromRuntimeFile(context.SourceRepo);
             if (!string.IsNullOrEmpty(versionFromRuntimeFile))
             {
-                appDirectory = Constants.RelativeRootDirectory;
                 hasRuntimeTxtFile = true;
             }
 

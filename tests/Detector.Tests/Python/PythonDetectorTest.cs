@@ -166,7 +166,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PythonConstants.PlatformName, result.Platform);
-            Assert.Equal(Constants.RelativeRootDirectory + subDirStr, result.AppDirectory);
+            Assert.Equal(subDirStr, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -215,7 +215,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             // Assert
             Assert.NotNull(result);
             Assert.Equal(PythonConstants.PlatformName, result.Platform);
-            Assert.Equal(Constants.RelativeRootDirectory, result.AppDirectory);
+            Assert.Equal(string.Empty, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 

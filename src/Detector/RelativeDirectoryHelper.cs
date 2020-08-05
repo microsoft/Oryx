@@ -23,10 +23,9 @@ namespace Microsoft.Oryx.Detector
                 parts.Insert(0, currDir.Name);
                 currDir = currDir.Parent;
             }
-            parts.Insert(0, ".");
 
-            // Since we have different expressions of directory in different OS, normalize it to be like "./a/b", "./".
-            return parts.Count == 1 ? Constants.RelativeRootDirectory : string.Join("/", parts.ToArray());
+            // Since we have different expressions of directory in different OS, normalize it to be like "a/b".
+            return string.Join("/", parts.ToArray());
         }
     }
 }

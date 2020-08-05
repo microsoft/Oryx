@@ -34,13 +34,11 @@ namespace Microsoft.Oryx.Detector.Php
 
             string phpVersion = null;
             var hasComposerFile = sourceRepo.FileExists(PhpConstants.ComposerFileName);
-            string appDirectory;
+            var appDirectory = string.Empty;
             if (hasComposerFile)
             {
                 _logger.LogDebug($"File '{PhpConstants.ComposerFileName}' exists in source repo");
                 phpVersion = GetVersion(context);
-                appDirectory = Constants.RelativeRootDirectory;
-
             }
             else
             {

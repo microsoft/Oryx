@@ -13,7 +13,6 @@ namespace Microsoft.Oryx.Detector.Node
     /// </summary>
     public class NodePlatformDetectorResult : PlatformDetectorResult
     {
-
         /// <summary>
         /// Gets or sets a list of detected framework information of an application.
         /// </summary>

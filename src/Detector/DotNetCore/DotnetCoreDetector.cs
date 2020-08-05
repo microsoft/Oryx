@@ -8,7 +8,6 @@ using System.IO;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
-using Microsoft.Oryx.Detector;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
@@ -43,7 +42,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             var sourceRepo = context.SourceRepo;
-            var appDirectory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(projectFile, sourceRepo.RootPath);
+            var appDirectory = Path.GetDirectoryName(projectFile);
             var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
                 DotNetCoreConstants.TargetFrameworkElementXPathExpression);

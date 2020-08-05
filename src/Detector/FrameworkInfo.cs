@@ -19,5 +19,10 @@ namespace Microsoft.Oryx.Detector
         /// Gets or sets the framework version that was detected.
         /// </summary>
         public string FrameworkVersion { get; set; }
+
+        public override string ToString()
+        {
+            return Framework + ": " + FrameworkVersion;
+        }
     }
 }

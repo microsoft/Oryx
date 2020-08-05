@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
@@ -34,7 +35,7 @@ namespace Microsoft.Oryx.Detector.Node
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             bool isNodeApp = false;
-            string appDirectory = Constants.RelativeRootDirectory;
+            string appDirectory = string.Empty;
             var sourceRepo = context.SourceRepo;
             if (sourceRepo.FileExists(NodeConstants.PackageJsonFileName) ||
                 sourceRepo.FileExists(NodeConstants.PackageLockJsonFileName) ||
@@ -157,17 +158,20 @@ namespace Microsoft.Oryx.Detector.Node
             if (packageJson?.devDependencies != null)
             {
                 var devDependencyObject = packageJson?.devDependencies;
-                foreach (var KeyWordToName in NodeConstants.DevDependencyFrameworkKeyWordToName)
+                foreach (var keyWordToName in NodeConstants.DevDependencyFrameworkKeyWordToName)
                 {
-                    var keyword = KeyWordToName.Key;
-                    if (devDependencyObject[keyword] != null)
+                    var keyword = keyWordToName.Key;
+                    try
                     {
                         var frameworkInfo = new FrameworkInfo
                         {
-                            Framework = KeyWordToName.Value,
+                            Framework = keyWordToName.Value,
                             FrameworkVersion = devDependencyObject[keyword].Value as string
                         };
                         detectedFrameworkResult.Add(frameworkInfo);
+                    } 
+                    catch (RuntimeBinderException)
+                    {
                     }
                 }
             }
@@ -175,17 +179,20 @@ namespace Microsoft.Oryx.Detector.Node
             if (packageJson?.dependencies != null)
             {
                 var dependencyObject = packageJson?.dependencies;
-                foreach (var KeyWordToName in NodeConstants.DependencyFrameworkKeyWordToName)
+                foreach (var keyWordToName in NodeConstants.DependencyFrameworkKeyWordToName)
                 {
-                    var keyword = KeyWordToName.Key;
-                    if (dependencyObject[keyword] != null)
+                    var keyword = keyWordToName.Key;
+                    try
                     {
                         var frameworkInfo = new FrameworkInfo
                         {
-                            Framework = KeyWordToName.Value,
+                            Framework = keyWordToName.Value,
                             FrameworkVersion = dependencyObject[keyword].Value as string
                         };
                         detectedFrameworkResult.Add(frameworkInfo);
+                    }
+                    catch (RuntimeBinderException)
+                    {
                     }
                 }
             }
