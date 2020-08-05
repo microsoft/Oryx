@@ -198,19 +198,19 @@ function buildLtsVersionsImage() {
 
 	echo
 	echo "-------------Creating lts versions build image-------------------"
-	local builtImageTag="$ACR_BUILD_IMAGES_REPO:lts-versions"
-	docker build -t $builtImageTag \
+	local builtImageName="$ACR_BUILD_IMAGES_REPO:lts-versions"
+	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE" \
 		.
 
-	createImageNameWithReleaseTag $builtImageTag
+	createImageNameWithReleaseTag $builtImageName
 
 	echo
-	echo "$builtImageTag image history"
-	docker history $builtImageTag
+	echo "$builtImageName image history"
+	docker history $builtImageName
 	echo
 
 	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO:lts-versions
