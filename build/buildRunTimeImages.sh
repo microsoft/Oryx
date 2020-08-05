@@ -115,6 +115,11 @@ for dockerFile in $dockerFiles; do
         $labels \
         .
 
+    echo
+    echo "'$localImageTagName' image history:"
+    docker history $localImageTagName
+    echo
+
     echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
 
     # Retag image with build number (for images built in oryxlinux buildAgent)

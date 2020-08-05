@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
+set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
@@ -146,7 +146,7 @@ function buildGitHubActionsImage() {
 	
 	echo
 	echo "-------------Creating build image for GitHub Actions-------------------"
-	builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
+	local builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
@@ -177,7 +177,7 @@ function buildJamStackImage() {
 	# turn inherited by this image.
 	echo
 	echo "-------------Creating AzureFunctions JamStack image-------------------"
-	builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
+	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
 	docker build -t $builtImageName -f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" .
 	
 	createImageNameWithReleaseTag $builtImageName
@@ -198,19 +198,19 @@ function buildLtsVersionsImage() {
 
 	echo
 	echo "-------------Creating lts versions build image-------------------"
-	builtImageTag="$ACR_BUILD_IMAGES_REPO:lts-versions"
-	docker build -t $builtImageTag \
+	local builtImageName="$ACR_BUILD_IMAGES_REPO:lts-versions"
+	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE" \
 		.
 
-	createImageNameWithReleaseTag $builtImageTag
+	createImageNameWithReleaseTag $builtImageName
 
 	echo
-	echo "$builtImageTag image history"
-	docker history $builtImageTag
+	echo "$builtImageName image history"
+	docker history $builtImageName
 	echo
 
 	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO:lts-versions
@@ -218,15 +218,15 @@ function buildLtsVersionsImage() {
 	echo
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
-	testImageTag="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
-	docker build -t $testImageTag -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" .
+	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
+	docker build -t $testImageName -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" .
 }
 
 function buildFullImage() {
 	buildLtsVersionsImage
 
 	# Pull and tag the image with the name that this image's Dockerfile expects
-	yarnImage="mcr.microsoft.com/oryx/base:build-yarn-cache-$YARN_CACHE_BASE_TAG"
+	local yarnImage="mcr.microsoft.com/oryx/base:build-yarn-cache-$YARN_CACHE_BASE_TAG"
 	docker pull $yarnImage
 	docker tag $yarnImage yarn-cache-base
 
@@ -234,17 +234,17 @@ function buildFullImage() {
 
 	echo
 	echo "-------------Creating full build image-------------------"
-	builtImageTag="$ACR_BUILD_IMAGES_REPO"
+	local builtImageName="$ACR_BUILD_IMAGES_REPO"
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
-	docker build -t $builtImageTag -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build -t $builtImageName -f "$BUILD_IMAGES_DOCKERFILE" .
 
-	createImageNameWithReleaseTag $builtImageTag
+	createImageNameWithReleaseTag $builtImageName
 
 	echo
-	echo "$builtImageTag image history"
-	docker history $builtImageTag
+	echo "$builtImageName image history"
+	docker history $builtImageName
 	echo
 
 	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO
@@ -252,8 +252,8 @@ function buildFullImage() {
 	echo
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
-	testImageTag="$ORYXTESTS_BUILDIMAGE_REPO"
-	docker build -t $testImageTag -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
+	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO"
+	docker build -t $testImageName -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
 }
 
 function buildVsoImage() {
@@ -264,18 +264,19 @@ function buildVsoImage() {
 	# turn inherited by this image.
 	echo
 	echo "-------------Creating VSO build image-------------------"
-	builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
+	local builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
 	docker build -t $builtImageName -f "$BUILD_IMAGES_VSO_DOCKERFILE" .
 
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:vso"
+	createImageNameWithReleaseTag $builtImageName
 
 	echo
 	echo "$builtImageName image history"
 	docker history $builtImageName
 
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:vso"
+
 	echo
 	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-	createImageNameWithReleaseTag $builtImageName
 }
 
 function buildCliImage() {
@@ -283,42 +284,24 @@ function buildCliImage() {
 	
 	echo
 	echo "-------------Creating CLI image-------------------"
-	builtImageTag="$ACR_CLI_BUILD_IMAGE_REPO:latest"
-	docker build -t $builtImageTag \
+	local builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
+	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
 		.
 
-	docker tag $builtImageTag "$DEVBOX_BUILD_IMAGES_REPO:cli"
+	createImageNameWithReleaseTag $builtImageName
 
 	echo
-	echo "$builtImageTag image history"
-	docker history $builtImageTag
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:cli"
 
 	echo
-	echo "$builtImageTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-
-	# Retag build image with build number tags
-	if [ "$AGENT_BUILD" == "true" ]
-	then
-		uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
-
-		echo
-		echo "Retagging image '$builtImageTag' with ACR related tags..."
-		docker tag "$builtImageTag" "$ACR_CLI_BUILD_IMAGE_REPO:latest"
-		docker tag "$builtImageTag" "$ACR_CLI_BUILD_IMAGE_REPO:$uniqueTag"
-
-		# Write the list of images that were built to artifacts folder
-		echo
-		echo "Writing the list of build images built to artifacts folder..."
-
-		# Write image list to artifacts file
-		echo "$ACR_CLI_BUILD_IMAGE_REPO:$uniqueTag" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-	else
-		docker tag "$builtImageTag" "$DEVBOX_CLI_BUILD_IMAGE_REPO:latest"
-	fi
+	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 }
 
 function buildBuildPackImage() {
