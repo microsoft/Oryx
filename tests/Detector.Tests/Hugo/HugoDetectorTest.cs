@@ -73,6 +73,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(string.Empty, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -93,6 +94,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(string.Empty, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -112,6 +114,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(string.Empty, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -132,6 +135,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(string.Empty, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -152,6 +156,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(string.Empty, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 
@@ -171,6 +176,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             // Assert
             Assert.NotNull(result);
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(string.Empty, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
         }
 

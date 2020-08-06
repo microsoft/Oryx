@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.Detector.Node
 {
     internal static class NodeConstants
@@ -20,5 +22,63 @@ namespace Microsoft.Oryx.Detector.Node
         public const string NodeModulesZippedFileName = "node_modules.zip";
         public const string NodeModulesTarGzFileName = "node_modules.tar.gz";
         public const string NodeModulesFileBuildProperty = "compressedNodeModulesFile";
+        public const string FlutterYamlFileName = "pubspec.yaml";
+        public const string FlutterFrameworkeName = "Flutter";
+        public static readonly string[] IisStartupFiles = new[]
+        {
+            "default.htm",
+            "default.html",
+            "default.asp",
+            "index.htm",
+            "index.html",
+            "iisstart.htm",
+            "default.aspx",
+            "index.php",
+        };
+
+        public static readonly string[] TypicalNodeDetectionFiles = new[]
+        {
+            "server.js",
+            "app.js",
+        };
+
+        public static readonly Dictionary<string, string> DevDependencyFrameworkKeyWordToName = new Dictionary<string, string>()
+        {
+            { "aurelia-cli", "Aurelia" },
+            { "@11ty/eleventy", "Eleventy" },
+            { "elm", "Elm" },
+            { "ember-cli", "Ember" },
+            { "@glimmer/component", "Glimmer" },
+            { "hugo-cli", "Hugo" },
+            { "@angular/cli", "Angular" },
+            { "knockout", "KnockoutJs" },
+            { "polymer-cli", "Polymer" },
+            { "@stencil/core", "Stencil" },
+            { "svelte", "Svelte" },
+            { "typescript", "Typescript" },
+            { "vuepress", "VuePress" },
+            { "@vue/cli-service", "Vue.js" }
+        };
+
+        public static readonly Dictionary<string, string> DependencyFrameworkKeyWordToName = new Dictionary<string, string>()
+        {
+            { "gatsby", "Gatsby" },
+            { "gridsome", "Gridsome" },
+            { "@ionic/angular", "Ionic Angular" },
+            { "@ionic/react", "Ionic React" },
+            { "jquery", "jQuery" },
+            { "lit-element", "LitElement" },
+            { "marko", "Marko" },
+            { "express", "Express" },
+            { "meteor-node-stubs", "Meteor" },
+            { "mithril", "Mithril" },
+            { "next", "Next.js" },
+            { "react", "React" },
+            { "nuxt", "Nuxt.js" },
+            { "preact", "Preact" },
+            { "@scullyio/init", "Scully" },
+            { "three", "Three.js" },
+            { "vue", "Vue.js" }
+        };
     }
 }

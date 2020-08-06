@@ -26,5 +26,11 @@ namespace Microsoft.Oryx.Detector
         /// If <c>true</c>, only the root of the source directory is probed for files. Default is <c>false</c>.
         /// </summary>
         public bool DisableRecursiveLookUp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value which indicates if detectors should detect and outputs the frameworks that the application
+        /// is using. If <c>true</c>, then disable detection for frameworks. Default is <c>false</c>.
+        /// </summary>
+        public bool DisableFrameworkDetection { get; set; }
     }
 }

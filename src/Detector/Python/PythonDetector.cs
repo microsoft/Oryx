@@ -4,9 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
 using YamlDotNet.RepresentationModel;
@@ -36,7 +38,7 @@ namespace Microsoft.Oryx.Detector.Python
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             var sourceRepo = context.SourceRepo;
-
+            var appDirectory = string.Empty;
             var hasRequirementsTxtFile = false;
             if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
@@ -104,6 +106,8 @@ namespace Microsoft.Oryx.Detector.Python
                     _logger.LogInformation(
                         $"Found files with extension '{PythonConstants.PythonFileNamePattern}' " +
                         $"in the repo.");
+                    appDirectory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(
+                        files.FirstOrDefault(), sourceRepo.RootPath);
                 }
                 else
                 {
@@ -118,6 +122,7 @@ namespace Microsoft.Oryx.Detector.Python
             {
                 Platform = PythonConstants.PlatformName,
                 PlatformVersion = versionFromRuntimeFile,
+                AppDirectory = appDirectory,
                 HasJupyterNotebookFiles = hasJupyterNotebookFiles,
                 HasCondaEnvironmentYmlFile = hasCondaEnvironmentYmlFile,
                 HasRequirementsTxtFile = hasRequirementsTxtFile,
