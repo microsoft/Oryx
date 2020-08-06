@@ -12,6 +12,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Tests.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
@@ -242,6 +243,98 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 testConsole.StdOutput);
             Assert.Contains(
                 $"5.6.0",
+                testConsole.StdOutput);
+        }
+
+        [Fact]
+        public void Execute_OutputsJson_DotNetCorePlatformAndVersionAndProjectFile()
+        {
+            string ProjectFileWithMultipleProperties = @"
+            <Project Sdk=""Microsoft.NET.Sdk.Web"">
+              <PropertyGroup>
+                <LangVersion>7.3</LangVersion>
+              </PropertyGroup>
+              <PropertyGroup>
+                <TargetFramework>netcoreapp2.1</TargetFramework>
+                <LangVersion>7.3</LangVersion>
+              </PropertyGroup>
+            </Project>";
+
+            // Arrange
+            var sourceDir = Path.Combine(_testDirPath, "dotnetcoreappdir");
+            var projectFile = "webapp.csproj";
+            Directory.CreateDirectory(sourceDir);
+            File.WriteAllText(Path.Combine(sourceDir, projectFile), ProjectFileWithMultipleProperties);
+
+            var detectCommand = new DetectCommand
+            {
+                SourceDir = sourceDir,
+                OutputFormat = "json",
+            };
+            var testConsole = new TestConsole();
+
+            // Act
+            var exitCode = detectCommand.Execute(GetServiceProvider(detectCommand), testConsole);
+
+            // Assert
+            Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
+            Assert.Contains(
+                $"\"Platform\": \"{DotNetCoreConstants.PlatformName}\"",
+                testConsole.StdOutput);
+            Assert.Contains(
+                "\"PlatformVersion\": \"2.1\"",
+                testConsole.StdOutput);
+            Assert.Contains(
+                $"\"ProjectFile\": \"{projectFile}\"",
+                testConsole.StdOutput);
+        }
+
+        [Fact]
+        public void Execute_OutputsJson_NodePlatformAndVersionAndFrameworkInfos()
+        {
+            string PackageJsonWithNodeVersion = @"{
+              ""name"": ""mynodeapp"",
+              ""version"": ""1.0.0"",
+              ""main"": ""server.js"",
+              ""devDependencies"": {
+                ""aurelia-cli"": ""1.3.1"",
+                ""svelte"": ""3.0.0"",
+              },
+              ""dependencies"": {
+                ""jquery"": ""3.5.1"",
+                ""react"": ""16.12.0"",
+              },
+              ""author"": ""Dev"",
+              ""engines"" : { ""node"" : ""6.11.0"" }
+            }";
+            // Arrange
+            var sourceDir = Path.Combine(_testDirPath, "nodeappdir");
+            Directory.CreateDirectory(sourceDir);
+            File.WriteAllText(Path.Combine(sourceDir, NodeConstants.PackageJsonFileName), PackageJsonWithNodeVersion);
+
+            var detectCommand = new DetectCommand
+            {
+                SourceDir = sourceDir,
+                OutputFormat = "json",
+            };
+            var testConsole = new TestConsole();
+
+            // Act
+            var exitCode = detectCommand.Execute(GetServiceProvider(detectCommand), testConsole);
+
+            // Assert
+            Assert.Equal(ProcessConstants.ExitSuccess, exitCode);
+            Assert.Contains(
+                $"\"Platform\": \"{NodeConstants.PlatformName}\"",
+                testConsole.StdOutput);
+            Assert.Contains(
+                "\"PlatformVersion\": \"6.11.0\"",
+                testConsole.StdOutput);
+            Assert.Contains(
+                $"\"Framework\": \"Aurelia\"",
+                testConsole.StdOutput);
+            Assert.Contains(
+                $"\"Framework\": \"React\"",
                 testConsole.StdOutput);
         }
 

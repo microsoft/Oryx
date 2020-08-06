@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -41,6 +42,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             var sourceRepo = context.SourceRepo;
+            var appDirectory = Path.GetDirectoryName(projectFile);
             var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
                 DotNetCoreConstants.TargetFrameworkElementXPathExpression);
@@ -59,6 +61,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 Platform = DotNetCoreConstants.PlatformName,
                 PlatformVersion = version,
                 ProjectFile = projectFile,
+                AppDirectory = appDirectory,
             };
         }
 

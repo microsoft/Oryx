@@ -4,7 +4,10 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
+using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
 using Newtonsoft.Json;
 
@@ -15,35 +18,24 @@ namespace Microsoft.Oryx.Detector.Node
     /// </summary>
     public class NodeDetector : INodePlatformDetector
     {
-        private static readonly string[] IisStartupFiles = new[]
-        {
-            "default.htm",
-            "default.html",
-            "default.asp",
-            "index.htm",
-            "index.html",
-            "iisstart.htm",
-            "default.aspx",
-            "index.php",
-        };
-
-        private static readonly string[] TypicalNodeDetectionFiles = new[]
-        {
-            "server.js",
-            "app.js",
-        };
-
         private readonly ILogger<NodeDetector> _logger;
+        private readonly DetectorOptions _options;
 
-        public NodeDetector(ILogger<NodeDetector> logger)
+        /// <summary>
+        /// Creates an instance of <see cref="NodeDetector"/>.
+        /// </summary>
+        /// <param name="logger">The <see cref="ILogger{NodeDetector}"/>.</param>
+        /// <param name="options">The <see cref="DetectorOptions"/>.</param>
+        public NodeDetector(ILogger<NodeDetector> logger, IOptions<DetectorOptions> options)
         {
             _logger = logger;
+            _options = options.Value;
         }
 
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             bool isNodeApp = false;
-
+            string appDirectory = string.Empty;
             var sourceRepo = context.SourceRepo;
             if (sourceRepo.FileExists(NodeConstants.PackageJsonFileName) ||
                 sourceRepo.FileExists(NodeConstants.PackageLockJsonFileName) ||
@@ -62,7 +54,7 @@ namespace Microsoft.Oryx.Detector.Node
             {
                 // Copying the logic currently running in Kudu:
                 var mightBeNode = false;
-                foreach (var typicalNodeFile in TypicalNodeDetectionFiles)
+                foreach (var typicalNodeFile in NodeConstants.TypicalNodeDetectionFiles)
                 {
                     if (sourceRepo.FileExists(typicalNodeFile))
                     {
@@ -75,7 +67,7 @@ namespace Microsoft.Oryx.Detector.Node
                 {
                     // Check if any of the known iis start pages exist
                     // If so, then it is not a node.js web site otherwise it is
-                    foreach (var iisStartupFile in IisStartupFiles)
+                    foreach (var iisStartupFile in NodeConstants.IisStartupFiles)
                     {
                         if (sourceRepo.FileExists(iisStartupFile))
                         {
@@ -102,11 +94,18 @@ namespace Microsoft.Oryx.Detector.Node
             }
 
             var version = GetVersion(context);
+            IEnumerable<FrameworkInfo> detectedFrameworkInfos = null;
+            if (!_options.DisableFrameworkDetection)
+            {
+                detectedFrameworkInfos = DetectFrameworkInfos(context);
+            }
 
-            return new PlatformDetectorResult
+            return new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = version,
+                AppDirectory = appDirectory,
+                Frameworks = detectedFrameworkInfos,
             };
         }
 
@@ -150,6 +149,64 @@ namespace Microsoft.Oryx.Detector.Node
         {
             var jsonContent = sourceRepo.ReadFile(fileName);
             return JsonConvert.DeserializeObject(jsonContent);
+        }
+
+        private IEnumerable<FrameworkInfo> DetectFrameworkInfos(DetectorContext context)
+        {
+            var detectedFrameworkResult = new List<FrameworkInfo>();
+            var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
+            if (packageJson?.devDependencies != null)
+            {
+                var devDependencyObject = packageJson?.devDependencies;
+                foreach (var keyWordToName in NodeConstants.DevDependencyFrameworkKeyWordToName)
+                {
+                    var keyword = keyWordToName.Key;
+                    try
+                    {
+                        var frameworkInfo = new FrameworkInfo
+                        {
+                            Framework = keyWordToName.Value,
+                            FrameworkVersion = devDependencyObject[keyword].Value as string
+                        };
+                        detectedFrameworkResult.Add(frameworkInfo);
+                    } 
+                    catch (RuntimeBinderException)
+                    {
+                    }
+                }
+            }
+
+            if (packageJson?.dependencies != null)
+            {
+                var dependencyObject = packageJson?.dependencies;
+                foreach (var keyWordToName in NodeConstants.DependencyFrameworkKeyWordToName)
+                {
+                    var keyword = keyWordToName.Key;
+                    try
+                    {
+                        var frameworkInfo = new FrameworkInfo
+                        {
+                            Framework = keyWordToName.Value,
+                            FrameworkVersion = dependencyObject[keyword].Value as string
+                        };
+                        detectedFrameworkResult.Add(frameworkInfo);
+                    }
+                    catch (RuntimeBinderException)
+                    {
+                    }
+                }
+            }
+
+            if (context.SourceRepo.FileExists(NodeConstants.FlutterYamlFileName)) {
+                var frameworkInfo = new FrameworkInfo
+                {
+                    Framework = NodeConstants.FlutterFrameworkeName,
+                    FrameworkVersion = string.Empty
+                };
+                detectedFrameworkResult.Add(frameworkInfo);
+            }
+
+            return detectedFrameworkResult;
         }
     }
 }

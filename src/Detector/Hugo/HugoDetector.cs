@@ -42,22 +42,24 @@ namespace Microsoft.Oryx.Detector.Hugo
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(DetectorContext context)
         {
-            var isHugoApp = IsHugoApp(context.SourceRepo);
+            var isHugoApp = IsHugoApp(context.SourceRepo, out string appDirectory);
             if (isHugoApp)
             {
                 return new PlatformDetectorResult
                 {
                     Platform = HugoConstants.PlatformName,
+                    AppDirectory = appDirectory,
                 };
             }
 
             return null;
         }
 
-        private bool IsHugoApp(ISourceRepo sourceRepo)
+        private bool IsHugoApp(ISourceRepo sourceRepo, out string appDirectory)
         {
             // Hugo configuration variables:
             // https://gohugo.io/getting-started/configuration/#all-configuration-settings
+            appDirectory = string.Empty;
 
             // Search for config.toml
             if (sourceRepo.FileExists(HugoConstants.TomlFileName)

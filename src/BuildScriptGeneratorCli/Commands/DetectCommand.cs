@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -118,8 +119,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 foreach (var propertyInfo in propertyInfos)
                 {
                     var propertyValue = propertyInfo.GetValue(detectedPlatformResult, null);
-                    defs.AddDefinition(propertyInfo.Name,
-                        propertyValue == null ? "Not Detected" : propertyValue.ToString());
+                    var propertyString = string.Empty;
+                    if (propertyValue is IEnumerable && !(propertyValue is string))
+                    {
+                        propertyString = string.Join(", ", (propertyValue as IEnumerable<FrameworkInfo>).Select(x => x.ToString()));
+                    }
+                    else
+                    {
+                        propertyString = propertyValue == null ? "Not Detected" : propertyValue.ToString();
+                    }
+
+                    defs.AddDefinition(propertyInfo.Name, propertyString);
                 }
             }
 

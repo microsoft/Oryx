@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.Detector.Php
 
             string phpVersion = null;
             var hasComposerFile = sourceRepo.FileExists(PhpConstants.ComposerFileName);
+            var appDirectory = string.Empty;
             if (hasComposerFile)
             {
                 _logger.LogDebug($"File '{PhpConstants.ComposerFileName}' exists in source repo");
@@ -49,6 +50,7 @@ namespace Microsoft.Oryx.Detector.Php
                     _logger.LogInformation(
                         $"Found files with extension '{PhpConstants.PhpFileNamePattern}' " +
                         $"in the repo.");
+                    appDirectory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(files.FirstOrDefault(), sourceRepo.RootPath);
                 }
                 else
                 {
@@ -63,6 +65,7 @@ namespace Microsoft.Oryx.Detector.Php
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = phpVersion,
+                AppDirectory = appDirectory,
             };
         }
 
