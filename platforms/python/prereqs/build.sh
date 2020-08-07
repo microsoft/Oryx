@@ -67,6 +67,11 @@ if [ ! -e "$pythonAliasFile" ]; then
     ln -s $pythonBinDir/python$majorAndMinorParts $pythonBinDir/python
 fi
 
+echo
+echo "Contents of '$pythonBinDir':"
+ls -l $pythonBinDir
+echo
+
 # Replace log level in pip's code as a workaround for https://github.com/pypa/pip/issues/6189
 pipReqSetPath=`find $INSTALLATION_PREFIX/lib -path "*site-packages/pip/_internal/req/req_set.py"`
 sed -i 's|logger\.debug('\''Cleaning up\.\.\.'\'')|logger\.info('\''Cleaning up\.\.\.'\'')|' "$pipReqSetPath"
