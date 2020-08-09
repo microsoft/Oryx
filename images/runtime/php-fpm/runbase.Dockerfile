@@ -64,3 +64,9 @@ RUN set -eux; \
 		libsqlite3-dev \
 	; \
 	rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update \
+    && ACCEPT_EULA=Y \
+    DEBIAN_FRONTEND=noninteractive \
+    apt-get upgrade --assume-yes \
+	&& rm -rf /var/lib/apt/lists/*

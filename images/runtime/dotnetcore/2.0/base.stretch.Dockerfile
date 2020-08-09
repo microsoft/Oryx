@@ -12,6 +12,6 @@ RUN apt-get update \
      file \
      openssl \
      libgdiplus \
-  && apt-get upgrade --assume-yes \
+  && apt-get upgrade -y \
   && rm -rf /var/lib/apt/lists/*
   

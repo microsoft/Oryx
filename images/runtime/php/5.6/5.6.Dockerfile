@@ -29,6 +29,8 @@ RUN set -eux; \
 	rm -rf /var/lib/apt/lists/*
 
 RUN set -eux; \
-	apt-get update && apt-get install -y libmcrypt-dev \
+	apt-get update \
+    && apt-get install -y libmcrypt-dev \
 	&& docker-php-ext-install mcrypt \
-	&& docker-php-ext-enable mcrypt
+	&& docker-php-ext-enable mcrypt \
+    && rm -rf /var/lib/apt/lists/*

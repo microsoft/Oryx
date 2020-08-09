@@ -21,8 +21,7 @@ ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
-RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
-RUN rm -rf /tmp/oryx
-
-# Temporarily making sure apache2-foreground has permission
-RUN chmod +x /usr/local/bin/apache2-foreground
+RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
+    && rm -rf /tmp/oryx \
+    # Temporarily making sure apache2-foreground has permission
+    && chmod +x /usr/local/bin/apache2-foreground
