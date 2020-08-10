@@ -63,10 +63,10 @@
 - name: python-versions
   constants:
     python-base-tag: 20200217.4
-    pip-version: 20.1
+    pip-version: 20.2
     python27-version: 2.7.17
     python36-version: 3.6.10
-    python37-version: 3.7.7
+    python37-version: 3.7.8
     python38-version: 3.8.5
     python39-version: 3.9.0b1
   outputs:
@@ -123,8 +123,8 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20200731.3
-    yarn-cache-base-tag: 20200529.1
+    node-runtime-base-tag: 20200810.1
+    yarn-cache-base-tag: 20200810.1
     yarn-version: 1.17.3
     yarn-minor-version: 1.17
     yarn-major-version: 1
