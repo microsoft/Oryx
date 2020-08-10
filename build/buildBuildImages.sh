@@ -226,7 +226,7 @@ function buildFullImage() {
 	buildLtsVersionsImage
 
 	# Pull and tag the image with the name that this image's Dockerfile expects
-	local yarnImage="mcr.microsoft.com/oryx/base:build-yarn-cache-$YARN_CACHE_BASE_TAG"
+	local yarnImage="mcr.microsoft.com/oryx/base:build-yarn-cache-$YARN_CACHE_BASE_TAG-stretch"
 	docker pull $yarnImage
 	docker tag $yarnImage yarn-cache-base
 
