@@ -65,12 +65,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     var detectionResult = platform.Detect(ctx);
                     if (detectionResult != null)
                     {
-                        _logger.LogDebug($"Detected platform '{detectionResult.Platform}' with version '{detectionResult.PlatformVersion}'.");
+                        _logger.LogDebug($"Detected platform '{detectionResult.Platform}' with version " + 
+                        "'{detectionResult.PlatformVersion}'.");
                         if (string.IsNullOrEmpty(detectionResult.PlatformVersion))
                         {
-                            throw new UnsupportedVersionException($"Couldn't detect a version for platform '{detectionResult.Platform}' in the repo.");
+                            throw new UnsupportedVersionException($"Couldn't detect a version for platform " + 
+                            "'{detectionResult.Platform}' in the repo.");
                         }
+                        var buildEventProps = new Dictionary<string, string>()
+                            {
+                                { "Platform", detectionResult.Platform },
+                                { "PlatformVersion", detectionResult.PlatformVersion },
+                            };
 
+                        _logger.LogEvent("RunScriptPlatformInformationLog", buildEventProps);
                         targetPlatform = platform;
                         break;
                     }
