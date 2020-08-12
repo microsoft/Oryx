@@ -26,7 +26,7 @@ RUN apt-get update \
         curl \
         file \
         libgdiplus \
-    && apt-get ugprade --assume-yes \
+    && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure web servers to bind to port 80 when present
