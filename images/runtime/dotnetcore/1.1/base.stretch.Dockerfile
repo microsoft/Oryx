@@ -7,10 +7,10 @@ FROM mcr.microsoft.com/dotnet/core/runtime:1.1.13
 RUN sed -i '/jessie-updates/d' /etc/apt/sources.list  # Now archived
 
 RUN apt-get update \
-  && apt-get upgrade -y \
   && apt-get install -y \
      curl \
      file \
      openssl \
      libgdiplus \
+  && apt-get upgrade --assume-yes \
   && rm -rf /var/lib/apt/lists/*

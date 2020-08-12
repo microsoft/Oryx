@@ -8,7 +8,6 @@ FROM oryx-run-base-stretch
 ARG BUILD_DIR=/tmp/oryx/build
 
 RUN apt-get update \
-    && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         \
@@ -24,15 +23,17 @@ RUN apt-get update \
         lldb \
         curl \
         file \
+        libgdiplus \
+    && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure web servers to bind to port 80 when present
 ENV ASPNETCORE_URLS=http://+:80 \
     # Enable detection of running in a container
-    DOTNET_RUNNING_IN_CONTAINER=true
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    PATH="/opt/dotnetcore-tools:${PATH}"
 
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
-ENV PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Install ASP.NET Core
 RUN . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
@@ -41,13 +42,6 @@ RUN . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet \
     && rm aspnetcore.tar.gz \
-    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
-
-RUN dotnet-sos install
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libgdiplus \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN rm -rf ${BUILD_DIR}
+    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
+    && dotnet-sos install \
+    && rm -rf ${BUILD_DIR}
