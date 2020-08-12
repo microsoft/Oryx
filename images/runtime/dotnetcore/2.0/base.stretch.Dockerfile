@@ -7,11 +7,11 @@ FROM microsoft/aspnetcore:2.0.9
 RUN sed -i '/jessie-updates/d' /etc/apt/sources.list  # Now archived
 
 RUN apt-get update \
-  && apt-get upgrade -y \
   && apt-get install -y \
      curl \
      file \
      openssl \
      libgdiplus \
+  && apt-get upgrade --assume-yes \
   && rm -rf /var/lib/apt/lists/*
   
