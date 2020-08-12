@@ -14,7 +14,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates \
         \
-# .NET Core dependencies
+        # .NET Core dependencies
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
@@ -25,15 +25,17 @@ RUN apt-get update \
         lldb \
         curl \
         file \
+        libgdiplus \
+    && apt-get ugprade --assume-yes \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure web servers to bind to port 80 when present
 ENV ASPNETCORE_URLS=http://+:80 \
     # Enable detection of running in a container
-    DOTNET_RUNNING_IN_CONTAINER=true
+    DOTNET_RUNNING_IN_CONTAINER=true \
+    PATH="/opt/dotnetcore-tools:${PATH}"
 
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
-ENV PATH="/opt/dotnetcore-tools:${PATH}"
 
 # Install .NET Core
 RUN set -ex \
@@ -43,22 +45,13 @@ RUN set -ex \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
-    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
-    
-# Install ASP.NET Core
-RUN set -ex \
+    && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
+    # Install ASP.NET Core
     && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
     && curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_30/aspnetcore-runtime-$ASPNET_CORE_APP_30-linux-x64.tar.gz \
     && echo "$ASPNET_CORE_APP_30_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
-    && rm aspnetcore.tar.gz
-
-RUN dotnet-sos install
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libgdiplus \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN rm -rf ${BUILD_DIR}
+    && rm aspnetcore.tar.gz \
+    && dotnet-sos install \
+    && rm -rf ${BUILD_DIR}
