@@ -27,7 +27,7 @@ It analyzes the codebase, detecting which programming platforms are being used a
 We have a single build image which supports all of the SDKs and their versions. This allows developers to use
 multiple languages in their build, for instance run a Python setup script when building their .NET Core app,
 or have a TypeScript frontend for their Python app. You can take a look at its
-[Dockerfile](../images/build/Dockerfile) to better understand its contents.
+[Dockerfile](../images/build/Dockerfiles/Dockerfile) to better understand its contents.
 
 Note that some layers of this build image come from yet another set of images, which we build independently for
 modularization and for faster build times. You can see what are those images and how they are built in their
