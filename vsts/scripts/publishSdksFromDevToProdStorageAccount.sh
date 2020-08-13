@@ -57,6 +57,11 @@ function copyPlatformBlobsToProd() {
     local versionsFile="$REPO_DIR/platforms/$platformName/versionsToBuild.txt"
     local defaultVersionFile="$REPO_DIR/platforms/$platformName/defaultVersion.txt"
 
+    if [ "$platformName" == "php-composer" ]; then
+        versionsFile="$REPO_DIR/platforms/php/$platformName/versionsToBuild.txt"
+        defaultVersionFile="$REPO_DIR/platforms/php/$platformName/defaultVersion.txt"
+    fi
+
     # Here '3' is a file descriptor which is specifically used to read the versions file.
     # This is used since 'azcopy' command seems to also be using the standard file descriptor for stdin '0'
     # which causes some issues when trying to loop through the lines of the file.
@@ -90,3 +95,4 @@ copyPlatformBlobsToProd "dotnet"
 copyPlatformBlobsToProd "python"
 copyPlatformBlobsToProd "nodejs"
 copyPlatformBlobsToProd "php"
+copyPlatformBlobsToProd "php-composer"
