@@ -91,6 +91,16 @@ fi
 		echo $REQS_NOT_FOUND_MSG
 	fi
 
+	{{ if RunPythonPackageCommand }}
+		echo
+		echo "Running python packaging commands ...."
+		echo
+		cd {{ PackagesDirectory }}
+		$python setup.py bdist_wheel --universal
+		echo
+	{{ end }}
+
+
 	# We need to use the python binary selected by benv
 	python_bin=$python
 
