@@ -236,11 +236,13 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             var result = detector.Detect(context);
 
             // Assert
-            var pythonPlatformResult = Assert.IsType<PythonPlatformDetectorResult>(result);
+            var pythonPlatformResult = Assert.IsType<PlatformDetectorResult>(result);
+            pythonPlatformResult.PlatformSpecificInfos.TryGetValue(PythonConstants.HasJupyterNotebookFileSettingName, out string JupyterNotebookFileInfo);
+            pythonPlatformResult.PlatformSpecificInfos.TryGetValue(PythonConstants.HasCondaEnvironmentYmlFileSettingName, out string CondaEnvironmentYmlFileInfo);
             Assert.Equal(PythonConstants.PlatformName, pythonPlatformResult.Platform);
             Assert.Null(pythonPlatformResult.PlatformVersion);
-            Assert.True(pythonPlatformResult.HasJupyterNotebookFiles);
-            Assert.False(pythonPlatformResult.HasCondaEnvironmentYmlFile);
+            Assert.Equal(JupyterNotebookFileInfo, true.ToString());
+            Assert.Equal(CondaEnvironmentYmlFileInfo, false.ToString());
         }
 
         [Theory]
@@ -259,11 +261,13 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             var result = detector.Detect(context);
 
             // Assert
-            var pythonPlatformResult = Assert.IsType<PythonPlatformDetectorResult>(result);
+            var pythonPlatformResult = Assert.IsType<PlatformDetectorResult>(result);
+            pythonPlatformResult.PlatformSpecificInfos.TryGetValue(PythonConstants.HasJupyterNotebookFileSettingName, out string JupyterNotebookFileInfo);
+            pythonPlatformResult.PlatformSpecificInfos.TryGetValue(PythonConstants.HasCondaEnvironmentYmlFileSettingName, out string CondaEnvironmentYmlFileInfo);
             Assert.Equal(PythonConstants.PlatformName, pythonPlatformResult.Platform);
             Assert.Null(pythonPlatformResult.PlatformVersion);
-            Assert.False(pythonPlatformResult.HasJupyterNotebookFiles);
-            Assert.True(pythonPlatformResult.HasCondaEnvironmentYmlFile);
+            Assert.Equal(JupyterNotebookFileInfo, false.ToString());
+            Assert.Equal(CondaEnvironmentYmlFileInfo, true.ToString());
         }
 
         [Theory]
@@ -306,11 +310,13 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             var result = detector.Detect(context);
 
             // Assert
-            var pythonPlatformResult = Assert.IsType<PythonPlatformDetectorResult>(result);
+            var pythonPlatformResult = Assert.IsType<PlatformDetectorResult>(result);
+            pythonPlatformResult.PlatformSpecificInfos.TryGetValue(PythonConstants.HasJupyterNotebookFileSettingName, out string JupyterNotebookFileInfo);
+            pythonPlatformResult.PlatformSpecificInfos.TryGetValue(PythonConstants.HasCondaEnvironmentYmlFileSettingName, out string CondaEnvironmentYmlFileInfo);
             Assert.Equal(PythonConstants.PlatformName, pythonPlatformResult.Platform);
-            Assert.Equal(expectedPythonVersion, pythonPlatformResult.PlatformVersion);
-            Assert.True(pythonPlatformResult.HasJupyterNotebookFiles);
-            Assert.True(pythonPlatformResult.HasCondaEnvironmentYmlFile);
+            Assert.Null(pythonPlatformResult.PlatformVersion);
+            Assert.Equal(JupyterNotebookFileInfo, true.ToString());
+            Assert.Equal(CondaEnvironmentYmlFileInfo, true.ToString());
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)

@@ -395,15 +395,15 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             };
 
             // Act
-            var result = (NodePlatformDetectorResult)detector.Detect(context);
+            var result = detector.Detect(context);
 
             // Assert
             Assert.NotNull(result);
             Assert.Equal("nodejs", result.Platform);
             Assert.Null(result.PlatformVersion);
             Assert.Equal(string.Empty, result.AppDirectory);
-            Assert.Equal(expectedFrameworkNames, result.Frameworks.Select(x => x.Framework).ToList());
-            Assert.Equal(expectedFrameworkVersions, result.Frameworks.Select(x => x.FrameworkVersion).ToList());
+            Assert.Equal(expectedFrameworkNames, result.FrameworkInfos.Select(x => x.Framework).ToList());
+            Assert.Equal(expectedFrameworkVersions, result.FrameworkInfos.Select(x => x.FrameworkVersion).ToList());
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)

@@ -100,12 +100,12 @@ namespace Microsoft.Oryx.Detector.Node
                 detectedFrameworkInfos = DetectFrameworkInfos(context);
             }
 
-            return new NodePlatformDetectorResult
+            return new PlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = version,
                 AppDirectory = appDirectory,
-                Frameworks = detectedFrameworkInfos,
+                FrameworkInfos = detectedFrameworkInfos,
             };
         }
 

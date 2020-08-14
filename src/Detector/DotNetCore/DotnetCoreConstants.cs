@@ -30,5 +30,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         public const string AzureBlazorWasmRazorLangVersionXPathExpression =
             "/Project/PropertyGroup/RazorLangVersion";
         public const string AzureBlazorWasmPackageReference = "Microsoft.AspNetCore.Components.WebAssembly";
+        public const string CSharpProjectFileSettingName = "ProjectFile";
     }
 }

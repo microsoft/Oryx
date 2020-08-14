@@ -39,6 +39,7 @@ namespace Microsoft.Oryx.Detector.Python
         {
             var sourceRepo = context.SourceRepo;
             var appDirectory = string.Empty;
+            var platformSpecificInfos = new Dictionary<string, string>();
             var hasRequirementsTxtFile = false;
             if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
@@ -117,15 +118,15 @@ namespace Microsoft.Oryx.Detector.Python
                     return null;
                 }
             }
-
-            return new PythonPlatformDetectorResult
+            platformSpecificInfos.Add(PythonConstants.HasJupyterNotebookFileSettingName, hasJupyterNotebookFiles.ToString());
+            platformSpecificInfos.Add(PythonConstants.HasCondaEnvironmentYmlFileSettingName, hasCondaEnvironmentYmlFile.ToString());
+            platformSpecificInfos.Add(PythonConstants.HasRequirementsTxtFileSettingName, hasRequirementsTxtFile.ToString());
+            return new PlatformDetectorResult
             {
                 Platform = PythonConstants.PlatformName,
                 PlatformVersion = versionFromRuntimeFile,
                 AppDirectory = appDirectory,
-                HasJupyterNotebookFiles = hasJupyterNotebookFiles,
-                HasCondaEnvironmentYmlFile = hasCondaEnvironmentYmlFile,
-                HasRequirementsTxtFile = hasRequirementsTxtFile,
+                PlatformSpecificInfos = platformSpecificInfos,
             };
         }
 

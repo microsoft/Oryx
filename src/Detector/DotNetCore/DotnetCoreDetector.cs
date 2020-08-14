@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -55,13 +56,14 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             var version = GetVersion(targetFramework);
-
-            return new DotNetCorePlatformDetectorResult
+            var platformSpecificInfos = new Dictionary<string, string>();
+            platformSpecificInfos.Add(DotNetCoreConstants.CSharpProjectFileSettingName, projectFile.ToString());
+            return new PlatformDetectorResult
             {
                 Platform = DotNetCoreConstants.PlatformName,
                 PlatformVersion = version,
-                ProjectFile = projectFile,
                 AppDirectory = appDirectory,
+                PlatformSpecificInfos = platformSpecificInfos,
             };
         }
 

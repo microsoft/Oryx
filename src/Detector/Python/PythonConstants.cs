@@ -17,5 +17,8 @@ namespace Microsoft.Oryx.Detector.Python
         public const string CondaEnvironmentYmlFileName = "environment.yaml";
         public const string JupyterNotebookFileExtensionName = "ipynb";
         public static readonly string[] CondaEnvironmentFileKeys = new[] { "channels", "dependencies" };
+        public const string HasJupyterNotebookFileSettingName = "HasJupyterNotebookFile";
+        public const string HasCondaEnvironmentYmlFileSettingName = "HasCondaEnvironmentYmlFile";
+        public const string HasRequirementsTxtFileSettingName = "HasRequirementsTxtFile";
     }
 }
