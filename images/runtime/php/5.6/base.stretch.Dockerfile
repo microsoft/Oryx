@@ -70,8 +70,7 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 #       wddx \
         xmlrpc \
         xsl \
-    && pecl install imagick && docker-php-ext-enable imagick \
-    && pecl install mongodb && docker-php-ext-enable mongodb
+    && pecl install imagick && docker-php-ext-enable imagick
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
@@ -110,4 +109,5 @@ RUN set -x \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc
 
-RUN rm -rf /tmp/oryx
+RUN rm -rf /tmp/oryx \
+    && rm -rf /var/lib/apt/lists/*

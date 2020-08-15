@@ -219,7 +219,8 @@ RUN set -eux; \
 	rm -rf /tmp/pear ~/.pearrc
 
 COPY docker-php-ext-* docker-php-entrypoint /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-*
+RUN chmod +x /usr/local/bin/docker-* \
+	&& rm -rf /var/lib/apt/lists/*
 
 RUN set -eux \
 	&& docker-php-ext-install mcrypt \

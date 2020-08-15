@@ -65,7 +65,6 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-base-tag: 20200217.4
     pip-version: 20.2
     python27-version: 2.7.17
     python36-version: 3.6.10
@@ -81,8 +80,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20200610.1
-    php-fpm-runtime-base-tag: 20200610.2
+    php-runtime-base-tag: 20200812.3
+    php-fpm-runtime-base-tag: 20200811.1
     composer-version: 1.9.3
     composer-sha384: e0012edf3e80b6978849f5eff0d4b4e4c79ff1609dd1e613307e16318854d24ae64f26d17af3ef0bf7cfb710ca74755a
     # hashes are for .tar.xz
@@ -126,7 +125,7 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20200810.1
+    node-runtime-base-tag: 20200814.6
     yarn-cache-base-tag: 20200810.1
     yarn-version: 1.17.3
     yarn-minor-version: 1.17
@@ -137,6 +136,7 @@
     node12-version: 12.18.3
     node14-version: 14.7.0
     node-app-insights-sdk-version: 1.8.3
+    pm2-version: 3.5.1
   outputs:
     - type: shell
       directory: build

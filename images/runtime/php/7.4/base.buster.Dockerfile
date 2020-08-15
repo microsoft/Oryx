@@ -110,4 +110,5 @@ RUN set -x \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc
 
-RUN rm -rf /tmp/oryx
+RUN rm -rf /tmp/ \
+    && rm -rf /var/lib/apt/lists/*

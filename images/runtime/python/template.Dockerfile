@@ -39,7 +39,10 @@ RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN pip install --upgrade pip \
     && pip install gunicorn \
     && pip install ptvsd \
-    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
-
-RUN rm -rf /tmp/oryx
+    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
+    && apt-get update \
+    && apt-get upgrade --assume-yes \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/oryx
+    
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen

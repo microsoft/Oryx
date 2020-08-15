@@ -58,8 +58,8 @@ function copyPlatformBlobsToProd() {
     local defaultVersionFile="$REPO_DIR/platforms/$platformName/defaultVersion.txt"
 
     if [ "$platformName" == "php-composer" ]; then
-        versionsFile="$REPO_DIR/platforms/php/$platformName/versionsToBuild.txt"
-        defaultVersionFile="$REPO_DIR/platforms/php/$platformName/defaultVersion.txt"
+        versionsFile="$REPO_DIR/platforms/php/composer/versionsToBuild.txt"
+        defaultVersionFile="$REPO_DIR/platforms/php/composer/defaultVersion.txt"
     fi
 
     # Here '3' is a file descriptor which is specifically used to read the versions file.
