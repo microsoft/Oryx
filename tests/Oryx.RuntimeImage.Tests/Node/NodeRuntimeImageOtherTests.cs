@@ -3,12 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Tests.Common;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -66,34 +66,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Equal(expectedNodeVersion, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
-        // Only version 6 of npm is upgraded, so the following should remain unchanged.
-        [InlineData("10.1", "5.6.0")]
-        // Make sure the we get the upgraded version of npm in the following cases
-        [InlineData("10.10", "6.9.0")]
-        [InlineData("10.12", "6.9.0")]
-        [InlineData("10.14", "6.9.0")]
-        public void HasExpectedNpmVersion(string nodeTag, string expectedNpmVersion)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
-                CommandToExecuteOnRun = "npm",
-                CommandArguments = new[] { "--version" }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedNpmVersion, actualOutput);
                 },
                 result.GetDebugInfo());
         }

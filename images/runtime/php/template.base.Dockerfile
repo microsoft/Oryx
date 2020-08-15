@@ -108,6 +108,7 @@ RUN set -x \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
     && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
-    && docker-php-ext-install odbc
+    && docker-php-ext-install odbc \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN rm -rf /tmp/oryx
