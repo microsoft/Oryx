@@ -123,3 +123,16 @@ jobs:
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
+
+- job: Job_DevStorageAccountTest
+  displayName: Test Dev Storage Account
+  pool:
+    name: OryxLinux
+  variables:
+    skipComponentGovernanceDetection: true
+  steps:
+  - task: ShellScript@2
+    displayName: 'Test Dev storage account'
+    inputs:
+      scriptPath: ./build/testIntegration.sh
+      args: StorageAccountTests=Dev
