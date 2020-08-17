@@ -203,8 +203,11 @@ for pkg in \
     installPackage $pkg
 done;
 
-# Open up the cache so other users can consume it.
-chmod -R 777 $YARN_CACHE_DIR
-
 echo "Caching done. Total cache size: $(du -sh $YARN_CACHE_DIR | cut -f -1)"
 rm -fr $TEMP_APP_DIR
+
+mkdir -p /output
+cd $YARN_CACHE_DIR
+tar -zcf /output/yarncache.tar.gz .
+cd ..
+rm -rf $YARN_CACHE_DIR

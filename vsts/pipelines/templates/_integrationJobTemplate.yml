@@ -131,6 +131,10 @@ jobs:
   variables:
     skipComponentGovernanceDetection: true
   steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk 3.1.x'
+    inputs:
+      version: 3.1.x
   - task: ShellScript@2
     displayName: 'Test Dev storage account'
     inputs:
