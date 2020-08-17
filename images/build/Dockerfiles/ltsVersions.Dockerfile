@@ -55,9 +55,9 @@ ENV DOTNET_RUNNING_IN_CONTAINER=true \
     DOTNET_USE_POLLING_FILE_WATCHER=true \
 	NUGET_XMLDOC_MODE=skip \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-	NUGET_PACKAGES=/opt/nuget
+	NUGET_PACKAGES=/var/nuget
 
-RUN mkdir /opt/nuget
+RUN mkdir -p /var/nuget
 
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
 RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
@@ -72,7 +72,7 @@ RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
 
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
-    && find /opt/nuget -type d -exec chmod 777 {} \;
+    && find /var/nuget -type d -exec chmod 777 {} \;
 
 RUN set -ex \
  && sdksDir=/opt/dotnet/sdks \
@@ -147,21 +147,29 @@ RUN set -ex \
  && mkdir -p /links \
  && cp -s /opt/nodejs/lts/bin/* /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
+RUN set -ex \
+    && mkdir -p /output \
+    && cd /var/nuget \
+    && tar -zcf /output/nuget.tar.gz . \
+    && cd /opt \
+    && tar -zcf /output/opt.tar.gz .
 
 FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE
-COPY --from=intermediate /opt /opt
-RUN imagesDir="/opt/tmp/images" \
-    && buildDir="/opt/tmp/build" \
-    && mkdir -p /var/nuget \
-    && cd /opt/nuget \
-    && mv * /var/nuget \
-    && cd /opt \
-    && rm -rf /opt/nuget \
+COPY --from=intermediate /output/ /opt/
+RUN mkdir -p /var/nuget \
+    && cd /var/nuget \
+    && tar -xf /opt/nuget.tar.gz \
+    && rm -f /opt/nuget.tar.gz \
     # Grant read-write permissions to the nuget folder so that dotnet restore
     # can write into it.
     && chmod a+rw /var/nuget \
+    && cd /opt \
+    && tar -xf opt.tar.gz \
+    && rm -f opt.tar.gz \
+    && imagesDir="/opt/tmp/images" \
+    && buildDir="/opt/tmp/build" \
     # https://github.com/docker-library/python/issues/147
     && PYTHONIOENCODING="UTF-8" \
     # It's not clear whether these are needed at runtime...
