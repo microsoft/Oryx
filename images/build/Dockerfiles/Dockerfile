@@ -27,7 +27,7 @@ RUN ./build.sh python     /opt/startupcmdgen/python
 # Install .NET Core
 FROM main AS intermediate
 COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
-COPY --from=yarn-cache-base /output /output
+COPY --from=yarn-cache-base /usr/local/share/yarn-cache /opt/yarn-cache
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images"
@@ -41,9 +41,9 @@ RUN LANG="C.UTF-8" \
         libunwind8 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /var/nuget
+RUN mkdir /opt/nuget
 # Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
-ENV NUGET_PACKAGES=/var/nuget
+ENV NUGET_PACKAGES=/opt/nuget
 RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
     DOTNET_SDK_VER=$DOT_NET_CORE_11_SDK_VERSION \
     ${IMAGES_DIR}/build/installDotNetCore.sh
@@ -58,7 +58,7 @@ RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
 
 RUN set -ex \
     rm -rf /tmp/NuGetScratch \
-    && find /var/nuget -type d -exec chmod 777 {} \;
+    && find /opt/nuget -type d -exec chmod 777 {} \;
 
 RUN set -ex \
  && sdksDir=/opt/dotnet/sdks \
@@ -166,19 +166,11 @@ RUN set -ex \
  && ln -s 5.4.2 /opt/npm/5.4 \
  && ln -s 5.6.0 /opt/npm/5.6 \
  && ln -s 5.6 /opt/npm/5
-RUN set -ex \
-    && mkdir -p /output \
-    && cd /opt \
-    && tar -zcf /output/opt.tar.gz .
 
 FROM main AS final
-COPY --from=intermediate /output /opt
+COPY --from=intermediate /opt /opt
 # https://github.com/docker-library/python/issues/147
-RUN cd /opt \
-    && tar -xf opt.tar.gz \
-    && rm -f opt.tar.gz \
-    && ls -l \
-    && PYTHONIOENCODING="UTF-8" \
+RUN PYTHONIOENCODING="UTF-8" \
     && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -188,10 +180,16 @@ RUN cd /opt \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
+    && mkdir -p /var/nuget \
+    && cd /opt/nuget \
+    && cp -rf . /var/nuget \
+    && cd /opt \
+    && rm -rf /opt/nuget \
     && mkdir -p /usr/local/share/yarn-cache \
-    && cd /usr/local/share/yarn-cache \
-    && tar -xf /opt/yarncache.tar.gz \
-    && rm -f /opt/yarncache.tar.gz \
+    && cd /opt/yarn-cache \
+    && cp -rf . /usr/local/share/yarn-cache \
+    && cd /opt \
+    && rm -rf /opt/yarn-cache \
     && chmod -R 777 /usr/local/share/yarn-cache \
     && cd $imagesDir \
     && . $buildDir/__pythonVersions.sh \
