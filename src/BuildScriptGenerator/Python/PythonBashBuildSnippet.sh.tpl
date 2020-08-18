@@ -91,16 +91,6 @@ fi
 		echo $REQS_NOT_FOUND_MSG
 	fi
 
-	{{ if RunPythonPackageCommand }}
-		echo
-		echo "Running python packaging commands ...."
-		echo
-		cd {{ PackagesDirectory }}
-		$python setup.py bdist_wheel --universal
-		echo
-	{{ end }}
-
-
 	# We need to use the python binary selected by benv
 	python_bin=$python
 
@@ -113,6 +103,18 @@ fi
 	APP_PACKAGES_PATH=$(pwd)"/{{ PackagesDirectory }}"
 	echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
 {{ end }}
+
+{{ if RunPythonPackageCommand }}
+	echo
+	echo "Running python packaging commands ...."
+	echo
+	echo "Creating python package wheel ...."
+	$python setup.py sdist bdist_wheel --universal
+	echo "Now creating python package egg ...."
+	$python setup.py bdist_egg
+	echo
+{{ end }}
+
 
 {{ if EnableCollectStatic }}
 	if [ -e "$SOURCE_DIR/manage.py" ]
