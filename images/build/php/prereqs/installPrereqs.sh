@@ -26,7 +26,7 @@ apt-get update \
         ca-certificates \
         curl \
         xz-utils \
-    --no-install-recommends && rm -r /var/lib/apt/lists/*
+    --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 ##<argon2>##
 sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
@@ -39,6 +39,9 @@ sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/bust
 	echo 'Pin: release n=buster';
 	echo 'Pin-Priority: 990';
 } > /etc/apt/preferences.d/argon2-buster;
-apt-get update;
-apt-get install -y --no-install-recommends libsodium-dev;
+apt-get update
+apt-get install -y --no-install-recommends \
+    libsodium-dev
+rm -rf /var/lib/apt/lists/*
+rm -f /etc/apt/sources.list.d/buster.list
 ##</argon2>##
