@@ -35,12 +35,12 @@ namespace Microsoft.Oryx.Detector
         /// <param name="sourceRepo">Source repo for the application.</param>
         /// <param name="filePath">The path to the .yaml file.</param>
         /// <returns>A YamlMappingNode object containing information about the .yaml file.</returns>
-        public static YamlMappingNode ParseYamlFile(ISourceRepo sourceRepo, string filePath)
+        public static YamlNode ParseYamlFile(ISourceRepo sourceRepo, string filePath)
         {
             var yamlContent = sourceRepo.ReadFile(filePath);
             var yamlStream = new YamlStream();
             yamlStream.Load(new StringReader(yamlContent));
-            return (YamlMappingNode)yamlStream.Documents[0].RootNode;
+            return yamlStream.Documents[0].RootNode;
         }
 
         /// <summary>
