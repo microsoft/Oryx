@@ -6,21 +6,17 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
-using System.ComponentModel;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
     [Trait("category", "php")]
     public class PhpPreRunCommandOrScriptTest : PhpEndToEndTestsBase
     {
-        private readonly string RunScriptTempPath = "/tmp/startup_temp.sh";
-        private readonly string RunScriptPreRunPath = "/tmp/startup_prerun.sh";
-
         public PhpPreRunCommandOrScriptTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
@@ -96,6 +92,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "./prerunscript.sh")
+                .AddCommand($"chmod +x {appOutputDir}/prerunscript.sh")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
@@ -145,6 +142,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, "./prerunscript.sh")
+                .AddCommand($"chmod +x {appOutputDir}/prerunscript.sh")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
