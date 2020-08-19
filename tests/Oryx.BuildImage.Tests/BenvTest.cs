@@ -115,6 +115,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("yarn")]
         [InlineData("python")]
         [InlineData("php")]
+        [InlineData("java")]
+        [InlineData("mvn")]
         public void UserInstalledExecutable_IsChosenOverOryxExecutable_InVsoBuildImage(string executableName)
         {
             // Arrange
@@ -313,6 +315,68 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.StartsWith(expected, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        // DotNet
+        [InlineData("dotnet", "/opt/dotnet/")]
+        // Node
+        [InlineData("node", "/opt/nodejs/")]
+        [InlineData("npm", "/opt/nodejs/")]
+        [InlineData("npx", "/opt/nodejs/")]
+        [InlineData("yarn", "/opt/yarn/")]
+        [InlineData("yarnpkg", "/opt/yarn/")]
+        // Python: Note that by default system installed python is available in the path
+        // Php
+        [InlineData("php", "/opt/php/")]
+        [InlineData("composer.phar", "/opt/php-composer/")]
+        // Java
+        [InlineData("java", "/opt/java/")]
+        [InlineData("mvn", "/opt/maven/")]
+        public void OutOfTheBox_SomeToolsAreAvailableInPathOfVSOImage(
+            string executableName,
+            string expectedPathPrefix)
+        {
+            // Arrange
+            var script = new ShellScriptBuilder()
+                .AddCommand($"which {executableName}")
+                .ToString();
+
+            // Act
+            var image = _imageHelper.GetVsoBuildImage();
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedPathPrefix, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void OutOfTheBox_JavaHomeEnvironmentVarialbeIsSetInVSOImage()
+        {
+            // Arrange
+            var expectedContent = "JAVA_HOME=/opt/java/lts";
+            var script = new ShellScriptBuilder()
+                .AddCommand("printenv")
+                .ToString();
+
+            // Act
+            var image = _imageHelper.GetVsoBuildImage();
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedContent, result.StdOut);
                 },
                 result.GetDebugInfo());
         }

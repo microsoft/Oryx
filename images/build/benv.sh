@@ -58,6 +58,12 @@ done < <(set | grep -i '^dotnet=')
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^hugo=')
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
+done < <(set | grep -i '^java=')
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
+done < <(set | grep -i '^maven=')
 unset benvEnvironmentVariable # Remove all traces of this part of the script
 
 # Oryx's paths come to the end of the PATH environment variable so that any user installed platform
@@ -303,6 +309,36 @@ benv-resolve() {
     updatePath "$SDK_DIR"
     export dotnet="$SDK_DIR/dotnet"
     
+    return 0
+  fi
+
+  # Resolve java versions
+  if matchesName "java" "$name" || matchesName "java_version" "$name" && [ "${value::1}" != "/" ]; then
+    platformDir=$(benv-getPlatformDir "java" "$value" "$_benvDynamicInstallRootDir")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "java" "java" "$value" "$_benvDynamicInstallRootDir"
+      return 1
+    fi
+
+    local DIR="$platformDir/bin"
+    updatePath "$DIR"
+    export JAVA_HOME="$platformDir"
+    export java="$DIR/java"
+
+    return 0
+  fi
+
+  # Resolve maven versions
+  if matchesName "maven" "$name" || matchesName "maven_version" "$name" && [ "${value::1}" != "/" ]; then
+    platformDir=$(benv-getPlatformDir "maven" "$value" "$_benvDynamicInstallRootDir")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "maven" "maven" "$value" "$_benvDynamicInstallRootDir"
+      return 1
+    fi
+
+    local DIR="$platformDir/bin"
+    updatePath "$DIR"
+
     return 0
   fi
 
