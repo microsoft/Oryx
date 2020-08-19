@@ -104,6 +104,18 @@ fi
 	echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
 {{ end }}
 
+{{ if RunPythonPackageCommand }}
+	echo
+	echo "Running python packaging commands ...."
+	echo
+	echo "Creating python package wheel ...."
+	$python setup.py sdist bdist_wheel --universal
+	echo "Now creating python package egg ...."
+	$python setup.py bdist_egg
+	echo
+{{ end }}
+
+
 {{ if EnableCollectStatic }}
 	if [ -e "$SOURCE_DIR/manage.py" ]
 	then

@@ -144,6 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
+            var isPythonPackageCommandEnabled = _commonOptions.ShouldPackage;
 
             if (!string.IsNullOrWhiteSpace(packageDir) && !string.IsNullOrWhiteSpace(virtualEnvName))
             {
@@ -204,7 +205,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 packagesDirectory: packageDir,
                 enableCollectStatic: _pythonScriptGeneratorOptions.EnableCollectStatic,
                 compressVirtualEnvCommand: compressVirtualEnvCommand,
-                compressedVirtualEnvFileName: compressedVirtualEnvFileName);
+                compressedVirtualEnvFileName: compressedVirtualEnvFileName,
+                runPythonPackageCommand: isPythonPackageCommandEnabled);
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,
                 scriptProps,
