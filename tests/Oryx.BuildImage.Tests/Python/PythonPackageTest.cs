@@ -3,13 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using JetBrains.Annotations;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Tests.Common;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using Xunit;
@@ -65,7 +61,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
             {
                 osReqsParam = $"--os-requirements {string.Join(',', requiredOsPackages)}";
             }
-            
+
             // pypi package url usually is in following format
             //https://pypi.io/packages/source/{ package_name_first_letter }/{ package_name }/{ package_name }-{ package_version }.tar.gz
 
@@ -73,13 +69,14 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
             var pyPiTarUrl = $"https://pypi.io/packages/source/{pkgNameFirstLetter}/{pkgName}/{pkgName}-{pkgVersion}.tar.gz";
 
             if (string.IsNullOrEmpty(pkgTag))
+            { 
                 pkgTag = pkgVersion;
+            }
 
             var script = new ShellScriptBuilder()
             // Fetch source code
                 .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir}")
                 .AddCommand($"cd {pkgSrcDir} && git checkout tags/{pkgTag} -b test/{pkgVersion}")
-                .AddCommand("source benv python=3")
             // Build & package
                 .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir} {osReqsParam}") // Should create a file <name>-<version>.tgz
                 .AddFileExistsCheck(oryxPackTarOutput)
@@ -110,13 +107,11 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
             var unContained = pypiTarList.Where(x => !oryxTarList.Contains(x));
             Assert.Equal(pypiTarList, oryxTarList);
             
-
             // Assert tar file sizes
             var tarSizeDiff = Math.Abs(pypiTarSize - oryxTarSize);
             Assert.True(tarSizeDiff <= pypiTarSize * 0.1, // Accepting differences of less than 10% of the official artifact size
                 $"Size difference is too big. Oryx build: {oryxTarSize}, Actual PyPi: {pypiTarSize}");
         }
-
 
         private (IEnumerable<string>, int) ParseTarList(string rawTarList)
         {

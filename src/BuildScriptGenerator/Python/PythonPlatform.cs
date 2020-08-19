@@ -145,8 +145,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
             var isPythonPackageCommandEnabled = _commonOptions.ShouldPackage;
-            _logger.LogDebug(
-                    "PythonPackageCommandEnabled:  " + isPythonPackageCommandEnabled);
 
             if (!string.IsNullOrWhiteSpace(packageDir) && !string.IsNullOrWhiteSpace(virtualEnvName))
             {
@@ -200,10 +198,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             TryLogDependencies(pythonVersion, context.SourceRepo);
 
-            _logger.LogDebug(
-                    "PythonPackagedir:  " + packageDir);
-
-
             var scriptProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: virtualEnvName,
                 virtualEnvironmentModule: virtualEnvModule,
@@ -217,8 +211,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 TemplateHelper.TemplateResource.PythonSnippet,
                 scriptProps,
                 _logger);
-
-            
 
             return new BuildScriptSnippet()
             {
