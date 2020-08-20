@@ -75,7 +75,7 @@ if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR == '4' ]; then
 	# Return to root
 	cd ..
 	tar -xf php.tar.xz 
-	cd php-7.4.3*
+	cd php-7.4.*
 	autoconf
 	cd ..
 else 

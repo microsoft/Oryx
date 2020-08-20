@@ -1,6 +1,6 @@
 FROM php-fpm-7.3
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 7.3.15
+ENV PHP_VERSION 7.3.21
 
 # An environment variable for oryx run-script to know the origin of php image so that
 # start-up command can be determined while creating run script
