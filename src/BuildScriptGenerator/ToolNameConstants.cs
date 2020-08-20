@@ -14,6 +14,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public const string PhpName = "php";
 
+        public const string PhpComposerName = "composer";
+
         public const string DotNetName = "dotnet";
 
         public const string NodeName = "node";

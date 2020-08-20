@@ -30,21 +30,31 @@ matchesName() {
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^dynamic_install_root_dir=')
+
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^php=')
+
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
+done < <(set | grep -i '^composer=')
+
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^python=')
+
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^node=')
+
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^npm=')
+
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^dotnet=')
+
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^hugo=')
@@ -261,6 +271,17 @@ benv-resolve() {
     updatePath "$DIR"
     export php="$DIR/php"
 
+    return 0
+  fi
+
+  # Resolve PHP versions
+  if matchesName "composer" "$name" || matchesName "composer_version" "$name" && [ "${value::1}" != "/" ]; then
+    platformDir=$(benv-getPlatformDir "composer" "$value" "$_benvDynamicInstallRootDir")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "composer" "php-composer" "$value" "$_benvDynamicInstallRootDir"
+      return 1
+    fi
+    export composer="$platformDir/composer.phar"
     return 0
   fi
 
