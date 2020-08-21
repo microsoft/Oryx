@@ -1,0 +1,37 @@
+variables:
+    - group: Oryx
+  
+  stages:
+  - stage: Build
+    jobs:
+    - job: Ruby
+      timeoutInMinutes: 250
+      pool:
+        name: OryxLinux
+      steps:
+      - template: ../templates/_platformBinariesTemplate.yml
+        parameters:
+          platformName: 'ruby'
+  
+  - stage: Release
+    dependsOn: Build
+    jobs:
+    - job: Publish_Platform_Binaries
+      timeoutInMinutes: 250
+      displayName: Publish to Azure Blob Storage
+      pool:
+        name: OryxLinux
+      steps:
+      - template: ../templates/_platformBinariesReleaseTemplate.yml
+  
+  trigger:
+    batch: true
+    branches:
+      include:
+      - master
+    paths:
+      exclude:
+      - /*
+      include:
+      - platforms/ruby
+      - vsts/PlatformBinaries/ruby.yml
