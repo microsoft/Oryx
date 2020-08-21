@@ -276,7 +276,7 @@ benv-resolve() {
 
   # Resolve PHP versions
   if matchesName "composer" "$name" || matchesName "composer_version" "$name" && [ "${value::1}" != "/" ]; then
-    platformDir=$(benv-getPlatformDir "composer" "$value" "$_benvDynamicInstallRootDir")
+    platformDir=$(benv-getPlatformDir "php-composer" "$value" "$_benvDynamicInstallRootDir")
     if [ "$platformDir" == "NotFound" ]; then
       benv-showSupportedVersionsErrorInfo "composer" "php-composer" "$value" "$_benvDynamicInstallRootDir"
       return 1

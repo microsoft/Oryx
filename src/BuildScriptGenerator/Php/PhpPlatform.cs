@@ -254,7 +254,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             var tools = new Dictionary<string, string>();
             tools[PhpConstants.PlatformName] = phpPlatformDetectorResult.PlatformVersion;
-            tools[PhpConstants.PhpComposerName] = phpPlatformDetectorResult.PhpComposerVersion;
+            tools["composer"] = phpPlatformDetectorResult.PhpComposerVersion;
             return tools;
         }
 

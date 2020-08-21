@@ -10,10 +10,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
 source $REPO_DIR/platforms/__common.sh
 source $REPO_DIR/build/__phpVersions.sh
-
 phpPlatformDir="$REPO_DIR/platforms/php"
-targetDir="$volumeHostDir/php"
-mkdir -p "$targetDir"
 
 builtPhpPrereqs=false
 buildPhpPrereqsImage() {
@@ -30,6 +27,10 @@ buildPhp() {
 	local sha="$2"
 	local gpgKeys="$3"
 	local imageName="oryx/php-sdk"
+	local targetDir="$volumeHostDir/php"
+	mkdir -p "$targetDir"
+
+	cp "$phpPlatformDir/defaultVersion.txt" "$targetDir"
 
 	if shouldBuildSdk php php-$version.tar.gz || shouldOverwriteSdk || shouldOverwritePhpSdk; then
 		if ! $builtPhpPrereqs; then
@@ -60,6 +61,8 @@ buildPhpComposer() {
 	local targetDir="$volumeHostDir/php-composer"
 	mkdir -p "$targetDir"
 
+	cp "$phpPlatformDir/composer/defaultVersion.txt" "$targetDir"
+
 	if shouldBuildSdk php-composer php-composer-$version.tar.gz || shouldOverwriteSdk || shouldOverwritePhpComposerSdk; then
 		if ! $builtPhpPrereqs; then
 			buildPhpPrereqsImage
@@ -76,7 +79,7 @@ buildPhpComposer() {
 			--build-arg PHP_SHA256="$PHP73_TAR_SHA256" \
 			--build-arg GPG_KEYS="$PHP73_KEYS" \
 			--build-arg COMPOSER_VERSION="$version" \
-			--build-arg COMPOSER_SHA384="$sha" \
+			--build-arg COMPOSER_SETUP_SHA384="$COMPOSER_SETUP_SHA384" \
 			-t $imageName \
 			$REPO_DIR
 
@@ -102,7 +105,6 @@ shouldOverwritePhpComposerSdk() {
 	fi
 }
 
-
 echo "Building Php..."
 echo
 buildPlatform "$phpPlatformDir/versionsToBuild.txt" buildPhp
@@ -111,7 +113,4 @@ echo
 echo "Building Php composer..."
 echo
 buildPlatform "$phpPlatformDir/composer/versionsToBuild.txt" buildPhpComposer
-
-# Write the default version
-cp "$phpPlatformDir/defaultVersion.txt" $targetDir
 
