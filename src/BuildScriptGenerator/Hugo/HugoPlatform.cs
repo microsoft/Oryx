@@ -53,8 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 return null;
             }
 
-            var version = ResolveVersion(detectionResult.PlatformVersion);
-            detectionResult.PlatformVersion = version;
+            ResolveVersions(detectionResult);
             return detectionResult;
         }
 
@@ -158,11 +157,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         }
 
         /// <inheritdoc/>
-        public string ResolveVersion(string versionToResolve)
+        public void ResolveVersions(PlatformDetectorResult detectorResult)
         {
-            var resolvedVersion = GetVersionUsingHierarchicalRules(versionToResolve);
+            var resolvedVersion = GetVersionUsingHierarchicalRules(detectorResult.PlatformVersion);
             resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
-            return resolvedVersion;
+            detectorResult.PlatformVersion = resolvedVersion;
         }
 
         /// <inheritdoc/>

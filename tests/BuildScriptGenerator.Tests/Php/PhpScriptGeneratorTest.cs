@@ -5,10 +5,11 @@
 
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Xunit;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Php;
+using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 {
@@ -60,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile(ComposerFileWithBuildScript, PhpConstants.ComposerFileName);
             var context = CreateBuildScriptGeneratorContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new PhpPlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -129,12 +130,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var phpVersionProvider = new TestPhpVersionProvider(
                 supportedPhpVersions: new[] { "7.2.15", Common.PhpVersions.Php73Version });
 
+            var phpComposerVersionProvider = new TestPhpComposerVersionProvider(
+                supportedPhpComposerVersions: new[] { "7.2.15", Common.PhpVersions.ComposerVersion });
+
             phpScriptGeneratorOptions = phpScriptGeneratorOptions ?? new PhpScriptGeneratorOptions();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             return new PhpPlatform(
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),
                 phpVersionProvider,
+                phpComposerVersionProvider,
                 NullLogger<PhpPlatform>.Instance,
                 detector: null,
                 phpInstaller: null,
@@ -161,6 +166,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             public PlatformVersionInfo GetVersionInfo()
             {
                 return PlatformVersionInfo.CreateOnDiskVersionInfo(_supportedPhpVersions, PhpVersions.Php73Version);
+            }
+        }
+
+        private class TestPhpComposerVersionProvider : IPhpComposerVersionProvider
+        {
+            private readonly string[] _supportedPhpComposerVersions;
+
+            public TestPhpComposerVersionProvider(string[] supportedPhpComposerVersions)
+            {
+                _supportedPhpComposerVersions = supportedPhpComposerVersions;
+            }
+
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(
+                    _supportedPhpComposerVersions,
+                    PhpVersions.ComposerVersion);
             }
         }
     }
