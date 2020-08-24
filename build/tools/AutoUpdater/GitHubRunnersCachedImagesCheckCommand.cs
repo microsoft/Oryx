@@ -69,6 +69,7 @@ namespace AutoUpdater
             var forkAccountName = Environment.GetEnvironmentVariable("FORK_ACCOUNT_NAME");
             var accessToken = Environment.GetEnvironmentVariable("AUTOUPDATE_PAT");
 
+            var prDescription = PullRequestHelper.GetDescriptionForCreatingPullRequest(newBranchName);
             var scriptBuilder = new ShellScriptBuilder(cmdSeparator: Environment.NewLine)
                 .AddShebang("/bin/bash")
                 .AddCommand("set -e")
@@ -82,7 +83,7 @@ namespace AutoUpdater
                 .AddCommand($"curl -u {forkAccountName}:{accessToken} -X POST " +
                 $"-H 'Accept: application/vnd.github.v3+json' " +
                 $"https://api.github.com/repos/microsoft/oryx/pulls -d " +
-                @$"'{{""title"":""Updated GitHub runners digest"",""head"":""{forkAccountName}:{newBranchName}"",""base"":""master""}}'");
+                @$"'{{""title"":""Updated GitHub runners digest"",""head"":""{forkAccountName}:{newBranchName}"",""base"":""master"",""body"":""{prDescription}""}}'");
             var script = scriptBuilder.ToString();
 
             var scriptPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.sh");
