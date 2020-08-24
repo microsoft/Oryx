@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System.IO;
-using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -24,12 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public virtual string GetInstallerScriptSnippet(string version)
         {
-            var script = GetInstallerScriptSnippet(platformName: "php-composer", version);
-            var scriptBuilder = new StringBuilder();
-            scriptBuilder.AppendLine(script);
-            scriptBuilder.AppendLine(
-                $"export composer=\"{Path.Combine(CommonOptions.DynamicInstallRootDir, "php-composer", version, "composer.phar")}\"");
-            return scriptBuilder.ToString();
+            return GetInstallerScriptSnippet(platformName: "php-composer", version);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)

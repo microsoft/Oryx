@@ -6,6 +6,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Detector;
@@ -256,7 +257,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
+            var detectedResult = new PhpPlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = "7.3.5",
@@ -284,7 +285,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
+            var detectedResult = new PhpPlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = "7.3.5",
@@ -311,7 +312,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
+            var detectedResult = new PhpPlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = "7.3.5",
@@ -338,7 +339,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
+            var detectedResult = new PhpPlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = "7.3.5",
@@ -366,7 +367,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
+            var detectedResult = new PhpPlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = "7.3.5",
@@ -393,7 +394,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
+            var detectedResult = new PhpPlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = "7.3.5",
@@ -423,7 +424,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
-            var detectedResult = new PlatformDetectorResult
+            var detectedResult = new PhpPlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = "7.3.5",
@@ -440,7 +441,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
         private PhpPlatform CreatePhpPlatform(
             string[] supportedPhpVersions = null,
+            string[] supportedPhpComposerVersions = null,
             string defaultVersion = null,
+            string defaultComposerVersion = null,
             string detectedVersion = null,
             BuildScriptGeneratorOptions commonOptions = null,
             PhpScriptGeneratorOptions phpScriptGeneratorOptions = null,
@@ -456,6 +459,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             isPhpComposerAlreadyInstalled = isPhpComposerAlreadyInstalled ?? true;
             phpComposerInstallationScript = phpComposerInstallationScript ?? "default-php-composer-installation-script";
             var versionProvider = new TestPhpVersionProvider(supportedPhpVersions, defaultVersion);
+            supportedPhpComposerVersions = supportedPhpComposerVersions ?? new[] { PhpVersions.ComposerVersion };
+            defaultComposerVersion = defaultComposerVersion ?? PhpVersions.ComposerVersion;
+            var composerVersionProvider = new TestPhpComposerVersionProvider(
+                supportedPhpComposerVersions,
+                defaultComposerVersion);
             var detector = new TestPhpPlatformDetector(detectedVersion: detectedVersion);
             var phpInstaller = new TestPhpPlatformInstaller(
                 Options.Create(commonOptions),
@@ -469,6 +477,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),
                 versionProvider,
+                composerVersionProvider,
                 NullLogger<TestPhpPlatform>.Instance,
                 detector,
                 phpInstaller,
@@ -491,6 +500,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 IOptions<PhpScriptGeneratorOptions> phpScriptGeneratorOptions,
                 IOptions<BuildScriptGeneratorOptions> commonOptions,
                 IPhpVersionProvider phpVersionProvider,
+                IPhpComposerVersionProvider phpComposerVersionProvider,
                 ILogger<PhpPlatform> logger,
                 IPhpPlatformDetector detector,
                 PhpPlatformInstaller phpInstaller,
@@ -499,6 +509,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                       phpScriptGeneratorOptions,
                       commonOptions,
                       phpVersionProvider,
+                      phpComposerVersionProvider,
                       logger,
                       detector,
                       phpInstaller,
@@ -556,6 +567,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             public override string GetInstallerScriptSnippet(string version)
             {
                 return _installationScript;
+            }
+        }
+
+        private class TestPhpComposerVersionProvider : IPhpComposerVersionProvider
+        {
+            private readonly string[] _supportedPhpComposerVersions;
+            private readonly string _defaultVersion;
+
+            public TestPhpComposerVersionProvider(string[] supportedPhpComposerVersions, string defaultVersion)
+            {
+                _supportedPhpComposerVersions = supportedPhpComposerVersions;
+                _defaultVersion = defaultVersion;
+            }
+
+            public PlatformVersionInfo GetVersionInfo()
+            {
+                return PlatformVersionInfo.CreateOnDiskVersionInfo(
+                    _supportedPhpComposerVersions,
+                    _defaultVersion);
             }
         }
     }

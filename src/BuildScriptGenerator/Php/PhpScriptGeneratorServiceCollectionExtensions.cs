@@ -15,10 +15,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, PhpPlatform>());
             services.AddSingleton<IPhpVersionProvider, PhpVersionProvider>();
+            services.AddSingleton<IPhpComposerVersionProvider, PhpComposerVersionProvider>();
             services.AddSingleton<PhpPlatformInstaller>();
             services.AddSingleton<PhpComposerInstaller>();
             services.AddSingleton<PhpOnDiskVersionProvider>();
+            services.AddSingleton<PhpComposerOnDiskVersionProvider>();
             services.AddSingleton<PhpSdkStorageVersionProvider>();
+            services.AddSingleton<PhpComposerSdkStorageVersionProvider>();
             return services;
         }
     }

@@ -393,9 +393,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 throw new NotImplementedException();
             }
 
-            public string ResolveVersion(string versionToResolve)
+            public void ResolveVersions(PlatformDetectorResult detectorResult)
             {
-                return _resolvedVersion;
+                detectorResult.Platform = _name;
+                detectorResult.PlatformVersion = _resolvedVersion;
             }
         }
     }
