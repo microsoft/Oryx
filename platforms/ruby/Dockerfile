@@ -1,0 +1,7 @@
+FROM ruby-build-prereqs
+WORKDIR /usr/src/ruby
+ARG VERSION_TO_BUILD
+ARG GEM_VERSION
+RUN RUBY_VERSION=$VERSION_TO_BUILD \
+    GEM_VERSION=$GEM_VERSION \
+    /tmp/build.sh

@@ -23,6 +23,9 @@ case $PLATFORM_TO_BUILD in
 		;;
 	'nodejs')
 		"$platformsDir/nodejs/getNode.sh"
-		;;            
+		;;
+	'ruby')
+		"$platformsDir/ruby/buildRuby.sh"
+		;;
 	*) echo "Unknown image directory";;
 esac

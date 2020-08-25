@@ -49,7 +49,7 @@ uploadFiles() {
     done
 }
 
-platforms=("nodejs" "python" "dotnet" "php" "php-composer")
+platforms=("nodejs" "python" "dotnet" "php" "php-composer" "ruby")
 for platform in "${platforms[@]}"
 do
     uploadFiles $platform
