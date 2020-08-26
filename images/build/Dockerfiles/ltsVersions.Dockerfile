@@ -207,6 +207,7 @@ RUN imagesDir="/opt/tmp/images" \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
+    && rm -f /etc/apt/sources.list.d/buster.list \
     && rm -rf /opt/tmp
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.

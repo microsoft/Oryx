@@ -43,5 +43,4 @@ apt-get update
 apt-get install -y --no-install-recommends \
     libsodium-dev
 rm -rf /var/lib/apt/lists/*
-rm -f /etc/apt/sources.list.d/buster.list
 ##</argon2>##

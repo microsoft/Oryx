@@ -88,6 +88,7 @@ RUN tmpDir="/opt/tmp" \
         libargon2-0 \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
+    && rm -f /etc/apt/sources.list.d/buster.list \
     && rm -rf $tmpDir
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
