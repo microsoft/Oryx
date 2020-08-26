@@ -76,7 +76,7 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 RUN set -eux; \
     if [[ $PHP_VERSION != 5.* ]]; then \
         echo "pecl/mongodb requires PHP (version >= 7.0.0, version <= 7.99.99)"; \
-        pecl install mongodb && docker-php-ext-enable mongodb \
+        pecl install mongodb && docker-php-ext-enable mongodb; \
     fi
 
 
