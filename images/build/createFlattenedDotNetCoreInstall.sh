@@ -79,5 +79,3 @@ echo
 createLinks "$DOT_NET_CORE_22_SDK_VERSION" "$NET_CORE_APP_22"
 echo
 createLinks "$DOT_NET_CORE_21_SDK_VERSION" "$NET_CORE_APP_21"
-echo
-createLinks "$DOT_NET_CORE_11_SDK_VERSION" "$NET_CORE_APP_11"

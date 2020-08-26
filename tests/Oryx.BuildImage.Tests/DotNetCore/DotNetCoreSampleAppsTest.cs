@@ -30,93 +30,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
         [Fact]
-        public void Builds_NetCore10App_UsingNetCore11_DotNetSdkVersion()
-        {
-            // Arrange
-            var appName = "aspnetcore10";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/aspnetcore10-output";
-            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddFileExistsCheck($"{appOutputDir}/app.dll")
-                .AddFileExistsCheck(manifestFile)
-                .AddCommand($"cat {manifestFile}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
-                        result.StdOut);
-                    Assert.Contains(
-                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{DotNetCoreRunTimeVersions.NetCoreApp10}\"",
-                        result.StdOut);
-                    Assert.Contains(
-                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{DotNetCoreSdkVersions.DotNetCore11SdkVersion}\"",
-                        result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
-        public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion()
-        {
-            // Arrange
-            var appName = "NetCoreApp11WebApp";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/NetCoreApp11WebApp-output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
-                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
-                        result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
         public void Builds_NetCore20App_UsingNetCore21_DotNetSdkVersion()
         {
             // Arrange
             var appName = "aspnetcore20";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/aspnetcore10-output";
+            var appOutputDir = "/tmp/aspnetcore20-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
