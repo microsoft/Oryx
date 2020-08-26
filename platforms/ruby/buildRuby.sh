@@ -31,7 +31,11 @@ buildRuby() {
 	local imageName="oryx/ruby"
 
 	if shouldBuildSdk ruby ruby-$version.tar.gz || shouldOverwriteSdk || shouldOverwriteRubySdk; then
-		echo "Building Ruby version '$version' in a docker image..."
+		if ! $builtRubyPrereqs; then
+			buildRubyPrereqsImage
+		fi
+        
+        echo "Building Ruby version '$version' in a docker image..."
 		echo
 
 		if [ -z "$dockerFile" ]; then
