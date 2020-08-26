@@ -27,7 +27,7 @@ buildRubyPrereqsImage() {
 
 buildRuby() {
 	local version="$1"
-	local dockerFile="$2"
+	local sha="$2"
 	local imageName="oryx/ruby"
 
 	if shouldBuildSdk ruby ruby-$version.tar.gz || shouldOverwriteSdk || shouldOverwriteRubySdk; then
@@ -42,8 +42,9 @@ buildRuby() {
 		fi
 
 		docker build \
-			-f "$dockerFile" \
+			-f "$rubyPlatformDir/Dockerfile" \
 			--build-arg VERSION_TO_BUILD=$version \
+            --build-arg RUBY_SHA256=$sha \
 			--build-arg GEM_VERSION=$GEM_VERSION \
 			-t $imageName \
 			$REPO_DIR
