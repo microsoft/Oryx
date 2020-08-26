@@ -47,7 +47,7 @@ buildRuby() {
 
 		docker build \
 			-f "$rubyPlatformDir/Dockerfile" \
-			--build-arg VERSION_TO_BUILD=$version \
+			--build-arg RUBY_VERSION=$version \
             --build-arg RUBY_SHA256=$sha \
 			--build-arg GEM_VERSION=$GEM_VERSION \
 			-t $imageName \

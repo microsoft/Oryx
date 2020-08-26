@@ -3,21 +3,21 @@
 # This script is referenced from official docker library: 
 # https://github.com/docker-library/ruby/blob/master/Dockerfile-debian.template
 # some of ruby's build scripts are written in ruby
-#   we purge system ruby later to make sure our final image uses what we just built
+# we purge system ruby later to make sure our final image uses what we just built
+
+set -eux
+
+LANG=C.UTF-8
+RUBY_MAJOR_VERSION=${RUBY_VERSION:0:3}
+INSTALLATION_PREFIX=/opt/ruby/$RUBY_VERSION
 
 # skip installing gem documentation
 set -eux; \
-	mkdir -p /usr/local/etc; \
+	mkdir -p $INSTALLATION_PREFIX/etc; \
 	{ \
 		echo 'install: --no-document'; \
 		echo 'update: --no-document'; \
-	} >> /usr/local/etc/gemrc
-
-LANG=C.UTF-8
-RUBY_MAJOR=$RUBY_MAJOR_VERSION
-RUBY_VERSION=$RUBY_VERSION
-RUBY_DOWNLOAD_SHA256=$RUBY_SHA256
-RUBYGEMS_VERSION=$GEM_VERSION
+	} >> $INSTALLATION_PREFIX/etc/gemrc
 
 set -eux; \
 	\
@@ -53,6 +53,7 @@ set -eux; \
 	autoconf; \
 	gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)"; \
 	./configure \
+        --prefix=$INSTALLATION_PREFIX \
 		--build="$gnuArch" \
 		--disable-install-doc \
 		--enable-shared \
@@ -62,7 +63,7 @@ set -eux; \
 	\
 	apt-mark auto '.*' > /dev/null; \
 	apt-mark manual $savedAptMark > /dev/null; \
-	find /usr/local -type f -executable -not \( -name '*tkinter*' \) -exec ldd '{}' ';' \
+	find $INSTALLATION_PREFIX -type f -executable -not \( -name '*tkinter*' \) -exec ldd '{}' ';' \
 		| awk '/=>/ { print $(NF-1) }' \
 		| sort -u \
 		| xargs -r dpkg-query --search \
@@ -75,24 +76,37 @@ set -eux; \
 	cd /; \
 	rm -r /usr/src/ruby; \
 
+rubyBinDir="$INSTALLATION_PREFIX/bin"
+
+echo
+echo "Contents of '$rubyBinDir':"
+ls -l $rubyBinDir
+echo
+
 # make sure bundled "rubygems" is older than GEM_VERSION (https://github.com/docker-library/ruby/issues/246)
-ruby -e 'exit(Gem::Version.create(ENV["GEM_VERSION"]) > Gem::Version.create(Gem::VERSION))'; \
-gem update --system "$GEM_VERSION" && rm -r /root/.gem/; \
+$rubyBinDir/ruby -e 'exit(Gem::Version.create(ENV["GEM_VERSION"]) > Gem::Version.create(Gem::VERSION))'; \
+$rubyBinDir/gem update --system "$GEM_VERSION" && rm -r /root/.gem/; \
 
 # verify we have no "ruby" packages installed
-! dpkg -l | grep -i ruby; \
-[ "$(command -v ruby)" = '/usr/local/bin/ruby' ]; \
+! dpkg -l | grep -i $rubyBinDir/ruby; \
+[ "$(command -v $rubyBinDir/ruby)" = "$rubyBinDir/ruby" ]; \
 
 # rough smoke test
-ruby --version; \
-gem --version; \
-bundle --version
+$rubyBinDir/ruby --version; \
+$rubyBinDir/gem --version; \
+$rubyBinDir/bundle --version
 
 # don't create ".bundle" in all our apps
-GEM_HOME=/usr/local/bundle
+GEM_HOME=$INSTALLATION_PREFIX/bundle
 BUNDLE_SILENCE_ROOT_WARNING=1
 BUNDLE_APP_CONFIG="$GEM_HOME"
 PATH=$GEM_HOME/bin:$PATH
 
 # adjust permissions of a few directories for running "gem install" as an arbitrary user
-mkdir -p "$GEM_HOME" && chmod 777 "$GEM_HOME" 
+mkdir -p "$GEM_HOME"; \
+chmod 777 "$GEM_HOME" 
+
+compressedSdkDir="/tmp/compressedSdk"
+mkdir -p $compressedSdkDir
+cd "$INSTALLATION_PREFIX"
+tar -zcf $compressedSdkDir/ruby-$RUBY_VERSION.tar.gz .
