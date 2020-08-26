@@ -39,6 +39,16 @@ jobs:
     parameters:
       baseImageName: 'node'
 
+- job: Release_RubyBaseImage
+  displayName: Push Ruby Base Image to MCR
+  timeoutInMinutes: 300
+  pool:
+    name: OryxLinux
+  steps:
+  - template: _releaseBaseImagesStepTemplate.yml
+    parameters:
+      aseImageName: 'ruby'
+
 - job: Release_YarnCacheBuildBaseImage
   displayName: Push Yarn Cache Build Base Image to MCR
   timeoutInMinutes: 250

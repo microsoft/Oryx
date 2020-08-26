@@ -114,7 +114,7 @@ namespace Oryx.Integration.Tests
             // Assert
             Assert.Equal(expectedVersion, actualVersion);
         }
-
+        
         [Fact]
         public void PhpComposerCoreContainer_HasExpectedListOfBlobs()
         {
@@ -137,6 +137,33 @@ namespace Oryx.Integration.Tests
             var platformName = "php-composer";
             var actualVersion = GetDefaultVersionFromContainer(platformName);
             var expectedVersion = GetDefaultVersion("php", "composer");
+
+            // Assert
+            Assert.Equal(expectedVersion, actualVersion);
+        }
+
+        [Fact]
+        public void RubyContainer_HasExpectedListOfBlobs()
+        {
+            // Arrange & Act
+            var platformName = "ruby";
+            var actualVersions = GetVersionsFromContainer(platformName, "version");
+            var expectedVersions = GetListOfVersionsToBuild(platformName);
+
+            // Assert
+            foreach (var expectedVersion in expectedVersions)
+            {
+                Assert.Contains(expectedVersion, actualVersions);
+            }
+        }
+
+        [Fact]
+        public void RubyContainer_HasExpectedDefaultVersion()
+        {
+            // Arrange & Act
+            var platformName = "ruby";
+            var actualVersion = GetDefaultVersionFromContainer(platformName);
+            var expectedVersion = GetDefaultVersion(platformName);
 
             // Assert
             Assert.Equal(expectedVersion, actualVersion);

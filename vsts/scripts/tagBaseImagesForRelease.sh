@@ -96,6 +96,12 @@ then
   echo $imageName
   retagImageWithStagingRepository dotnetcore-runtimeimage-bases-buster.txt $imageName buster
   retagImageWithStagingRepository dotnetcore-runtimeimage-bases-stretch.txt $imageName stretch
+elif [ "$imageName" == "ruby" ]
+then
+  echo ""
+  echo $imageName
+  retagImageWithStagingRepository ruby-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository ruby-runtimeimage-bases-stretch.txt $imageName stretch
 else
   echo "ImageName $imageName is invalid/not supported.. "
   exit 1
