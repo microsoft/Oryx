@@ -114,6 +114,33 @@ namespace Oryx.Integration.Tests
             // Assert
             Assert.Equal(expectedVersion, actualVersion);
         }
+        
+        [Fact]
+        public void PhpComposerCoreContainer_HasExpectedListOfBlobs()
+        {
+            // Arrange & Act
+            var platformName = "php-composer";
+            var actualVersions = GetVersionsFromContainer(platformName, "version");
+            var expectedVersions = GetListOfVersionsToBuild("php", "composer");
+
+            // Assert
+            foreach (var expectedVersion in expectedVersions)
+            {
+                Assert.Contains(expectedVersion, actualVersions);
+            }
+        }
+
+        [Fact]
+        public void PhpComposerContainer_HasExpectedDefaultVersion()
+        {
+            // Arrange & Act
+            var platformName = "php-composer";
+            var actualVersion = GetDefaultVersionFromContainer(platformName);
+            var expectedVersion = GetDefaultVersion("php", "composer");
+
+            // Assert
+            Assert.Equal(expectedVersion, actualVersion);
+        }
 
         [Fact]
         public void RubyContainer_HasExpectedListOfBlobs()
@@ -192,12 +219,13 @@ namespace Oryx.Integration.Tests
             return defaultVersion;
         }
 
-        private List<string> GetListOfVersionsToBuild(string platformName)
+        private List<string> GetListOfVersionsToBuild(params string[] platformPath)
         {
+            var platformSubPath = Path.Combine(platformPath);
             var versionFile = Path.Combine(
                 _repoRootDir,
                 "platforms",
-                platformName,
+                platformSubPath,
                 SdkStorageConstants.VersionsToBuildFileName);
             if (!File.Exists(versionFile))
             {
@@ -223,12 +251,13 @@ namespace Oryx.Integration.Tests
             return versions;
         }
 
-        private string GetDefaultVersion(string platformName)
+        private string GetDefaultVersion(params string[] platformPath)
         {
+            var platformSubPath = Path.Combine(platformPath);
             var file = Path.Combine(
                 _repoRootDir,
                 "platforms",
-                platformName,
+                platformSubPath,
                 SdkStorageConstants.DefaultVersionFileName);
             if (!File.Exists(file))
             {

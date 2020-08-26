@@ -91,8 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     return null;
                 }
 
-                var version = ResolveVersion(detectionResult.PlatformVersion);
-                detectionResult.PlatformVersion = version;
+                ResolveVersions(detectionResult);
                 return detectionResult;
             }
             catch (InvalidProjectFileException e)
@@ -265,11 +264,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         }
 
         /// <inheritdoc/>
-        public string ResolveVersion(string versionToResolve)
+        public void ResolveVersions(PlatformDetectorResult detectorResult)
         {
-            var resolvedVersion = GetVersionUsingHierarchicalRules(versionToResolve);
+            var resolvedVersion = GetVersionUsingHierarchicalRules(detectorResult.PlatformVersion);
             resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
-            return resolvedVersion;
+            detectorResult.PlatformVersion = resolvedVersion;
         }
 
         /// <inheritdoc/>

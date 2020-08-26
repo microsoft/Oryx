@@ -106,9 +106,8 @@ namespace Microsoft.Oryx.Tests.Common
             return _installationScriptContent;
         }
 
-        public string ResolveVersion(string versionToResolve)
+        public void ResolveVersions(PlatformDetectorResult detectorResult)
         {
-            return versionToResolve;
         }
 
         public IDictionary<string, string> GetToolsToBeSetInPath(

@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.Detector.Php
                 }
             }
 
-            return new PlatformDetectorResult
+            return new PhpPlatformDetectorResult
             {
                 Platform = PhpConstants.PlatformName,
                 PlatformVersion = phpVersion,
