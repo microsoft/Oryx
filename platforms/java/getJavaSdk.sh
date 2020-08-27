@@ -40,7 +40,7 @@ downloadJavaSdk()
 
     if shouldBuildSdk java $tarFileName || shouldOverwriteSdk || shouldOverwriteJavaSdk; then
         local baseUrl="https://github.com/AdoptOpenJDK/openjdk${majorVersion}-binaries/releases/download"
-        if [ "$majorVersion" == "10" && "$JDK_BUILD_NUMBER" == "13" ]; then
+        if [ "$majorVersion" == "10" ] && [ "$JDK_BUILD_NUMBER" == "13" ]; then
             url="$baseUrl/jdk-10.0.2%2B13.1/OpenJDK10U-jdk_x64_linux_hotspot_10.0.2_13.tar.gz"
         else
             url="$baseUrl/jdk-${JDK_VERSION}%2B${JDK_BUILD_NUMBER}/OpenJDK${majorVersion}U-jdk_x64_linux_hotspot_${JDK_VERSION}_${JDK_BUILD_NUMBER}.tar.gz"
