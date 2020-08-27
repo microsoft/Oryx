@@ -108,9 +108,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("1", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
-        [InlineData("1.0", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
-        [InlineData("1.1", DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
         [InlineData("2", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData("2.0", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData("2.1", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
@@ -203,11 +200,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Trait("platform", "node")]
         [Theory]
-        [InlineData("4", "v4.8.0")]
-        [InlineData("4.5", "v4.5.0")]
-        [InlineData("4.8", "v4.8.0")]
-        [InlineData("4.5.0", "v4.5.0")]
-        [InlineData("4.8.0", "v4.8.0")]
         [InlineData("6.11", "v6.11.0")]
         [InlineData("6.11.0", "v6.11.0")]
         [InlineData("8.1.4", "v8.1.4")]
@@ -334,8 +326,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("3", "3.10.10")]
         [InlineData("3.10", "3.10.10")]
         [InlineData("3.9", "3.9.5")]
-        [InlineData("2", "2.15.9")]
-        [InlineData("2.15", "2.15.9")]
         public void Npm_UsesVersion_SpecifiedToBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
@@ -480,7 +470,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(environmentVariableName, "3")
-                .Source($"benv {argumentName}=1")
+                .Source($"benv {argumentName}=2")
                 .AddCommand("dotnet --version")
                 .ToString();
 
@@ -511,7 +501,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
             var script = new ShellScriptBuilder()
                 .Source("benv dotnet=3")
-                .Source("benv dotnet_version=1")
+                .Source("benv dotnet_version=2")
                 // benv should update the PATH environment in such a way that we should version 1
                 .AddCommand("dotnet --version")
                 .ToString();
@@ -612,7 +602,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
             var expectedPythonVersion = Python36VersionInfo;
             var script = new ShellScriptBuilder()
-                .Source("benv dotnet=1 python=3.6")
+                .Source("benv dotnet=2 python=3.6")
                 .AddCommand("dotnet --version")
                 .AddCommand("python --version")
                 .ToString();
@@ -643,7 +633,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
             var script = new ShellScriptBuilder()
-                .Source("benv dotnet_foo=1")
+                .Source("benv dotnet_foo=2")
                 .AddCommand("dotnet --version")
                 .ToString();
 
