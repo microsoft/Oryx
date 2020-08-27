@@ -467,7 +467,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string argumentName)
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(environmentVariableName, "3")
                 .Source($"benv {argumentName}=2")
@@ -498,7 +498,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void RunningBenvMultipleTimes_HonorsLastRunArguments()
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
             var script = new ShellScriptBuilder()
                 .Source("benv dotnet=3")
                 .Source("benv dotnet_version=2")
@@ -599,7 +599,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BenvShouldSetUpEnviroment_WhenMultiplePlatforms_AreSuppliedAsArguments()
         {
             // Arrange
-            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
             var expectedPythonVersion = Python36VersionInfo;
             var script = new ShellScriptBuilder()
                 .Source("benv dotnet=2 python=3.6")
@@ -633,7 +633,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
             var script = new ShellScriptBuilder()
-                .Source("benv dotnet_foo=2")
+                .Source("benv dotnet_foo=1")
                 .AddCommand("dotnet --version")
                 .ToString();
 
