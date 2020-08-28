@@ -27,5 +27,11 @@ case $PLATFORM_TO_BUILD in
 	'ruby')
 		"$platformsDir/ruby/buildRuby.sh"
 		;;
+	'java')
+		"$platformsDir/java/getJavaSdk.sh"
+		;;     
+	'maven')
+		"$platformsDir/java/maven/getMaven.sh"
+		;;            
 	*) echo "Unknown image directory";;
 esac

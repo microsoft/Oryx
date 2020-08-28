@@ -169,6 +169,59 @@ namespace Oryx.Integration.Tests
             Assert.Equal(expectedVersion, actualVersion);
         }
 
+        [Fact]
+        public void JavaContainer_HasExpectedListOfBlobs()
+        {
+            // Arrange & Act
+            var platformName = "java";
+            var actualVersions = GetVersionsFromContainer(platformName, "version");
+            var expectedVersions = GetListOfVersionsToBuild(platformName);
+
+            // Assert
+            foreach (var expectedVersion in expectedVersions)
+            {
+                Assert.Contains(expectedVersion, actualVersions);
+            }
+        }
+
+        [Fact]
+        public void JavaContainer_HasExpectedDefaultVersion()
+        {
+            // Arrange & Act
+            var platformName = "java";
+            var actualVersion = GetDefaultVersionFromContainer(platformName);
+            var expectedVersion = GetDefaultVersion(platformName);
+
+            // Assert
+            Assert.Equal(expectedVersion, actualVersion);
+
+        }
+
+        [Fact]
+        public void MavenContainer_HasExpectedListOfBlobs()
+        {
+            // Arrange & Act
+            var actualVersions = GetVersionsFromContainer("maven", "version");
+            var expectedVersions = GetListOfVersionsToBuild("java", "maven");
+
+            // Assert
+            foreach (var expectedVersion in expectedVersions)
+            {
+                Assert.Contains(expectedVersion, actualVersions);
+            }
+        }
+
+        [Fact]
+        public void MavenContainer_HasExpectedDefaultVersion()
+        {
+            // Arrange & Act
+            var actualVersion = GetDefaultVersionFromContainer("maven");
+            var expectedVersion = GetDefaultVersion("java", "maven");
+
+            // Assert
+            Assert.Equal(expectedVersion, actualVersion);
+        }
+
         private XDocument GetMetadata(string platformName)
         {
             var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, _storageUrl, platformName);

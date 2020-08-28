@@ -60,6 +60,9 @@ function copyPlatformBlobsToProd() {
     if [ "$platformName" == "php-composer" ]; then
         versionsFile="$REPO_DIR/platforms/php/composer/versionsToBuild.txt"
         defaultVersionFile="$REPO_DIR/platforms/php/composer/defaultVersion.txt"
+    elif [ "$platformName" == "maven" ]; then
+        versionsFile="$REPO_DIR/platforms/java/maven/versionsToBuild.txt"
+        defaultVersionFile="$REPO_DIR/platforms/java/maven/defaultVersion.txt"
     fi
 
     # Here '3' is a file descriptor which is specifically used to read the versions file.
@@ -97,3 +100,5 @@ copyPlatformBlobsToProd "nodejs"
 copyPlatformBlobsToProd "php"
 copyPlatformBlobsToProd "php-composer"
 copyPlatformBlobsToProd "ruby"
+copyPlatformBlobsToProd "java"
+copyPlatformBlobsToProd "maven"
