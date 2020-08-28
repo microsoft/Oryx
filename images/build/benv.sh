@@ -48,6 +48,9 @@ done < <(set | grep -i '^dotnet=')
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^hugo=')
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
+done < <(set | grep -i '^ruby=')
 unset benvEnvironmentVariable # Remove all traces of this part of the script
 
 # Oryx's paths come to the end of the PATH environment variable so that any user installed platform
@@ -282,6 +285,21 @@ benv-resolve() {
     updatePath "$SDK_DIR"
     export dotnet="$SDK_DIR/dotnet"
     
+    return 0
+  fi
+
+  # Resolve ruby versions
+  if matchesName "ruby" "$name" || matchesName "ruby_version" "$name" && [ "${value::1}" != "/" ]; then
+    platformDir=$(benv-getPlatformDir "ruby" "$value" "$_benvDynamicInstallRootDir")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "ruby" "ruby" "$value" "$_benvDynamicInstallRootDir"
+      return 1
+    fi
+
+    local binDIR="$platformDir/bin"
+    updatePath "$binDIR"
+    export ruby="$binDIR/ruby"
+    export gem="$binDir/gem"
     return 0
   fi
 
