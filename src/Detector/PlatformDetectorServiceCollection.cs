@@ -29,7 +29,8 @@ namespace Microsoft.Oryx.Detector
                 .AddNodeServices()
                 .AddPythonServices()
                 .AddPhpServices()
-                .AddHugoServices();
+                .AddHugoServices()
+                .AddRubyServices();
 
             return services;
         }
