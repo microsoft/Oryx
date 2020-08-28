@@ -35,7 +35,6 @@ namespace Microsoft.Oryx.Detector.Ruby
             bool isRubyApp = false;
             string appDirectory = string.Empty;
             var sourceRepo = context.SourceRepo;
-
             if (sourceRepo.FileExists(RubyConstants.GemFileName))
             {
                 isRubyApp = true;
@@ -46,7 +45,6 @@ namespace Microsoft.Oryx.Detector.Ruby
                 _logger.LogDebug(
                     $"Could not find {RubyConstants.GemFileName} in repo");
             }
-            
             if (!isRubyApp) {
                 var isRubyLikeApp = false;
                 if (sourceRepo.FileExists(RubyConstants.GemFileLockName) 
@@ -56,7 +54,6 @@ namespace Microsoft.Oryx.Detector.Ruby
                     _logger.LogInformation($"Found {RubyConstants.GemFileLockName}/{RubyConstants.ConfigRubyFileName} "
                     + "at the root of the repo.");
                 }
-
                 if (isRubyLikeApp) {
                      foreach (var iisStartupFile in RubyConstants.IisStartupFiles)
                     {
@@ -75,14 +72,12 @@ namespace Microsoft.Oryx.Detector.Ruby
                     _logger.LogDebug("Could not find typical Ruby files in repo");
                 }
             }
-
             if (!isRubyApp)
             {
                 _logger.LogDebug("App in repo is not a Ruby app");
                 return null;
             }
             var version = GetVersion(context);
-
             return new PlatformDetectorResult
             {
                 Platform = RubyConstants.PlatformName,
@@ -98,7 +93,6 @@ namespace Microsoft.Oryx.Detector.Ruby
             {
                 return versionFromGemfile;
             }
-
             var versionFromGemfileLock = GetVersionFromGemFileLock(context);
             if (versionFromGemfileLock != null) {
                 return versionFromGemfileLock;
@@ -126,7 +120,7 @@ namespace Microsoft.Oryx.Detector.Ruby
                         // Make sure it's in valid format.
                         if (rubyVersionLine.Length == 2)
                         {
-                            return rubyVersionLine[1].Substring(1, rubyVersionLine[1].Length-2);
+                            return rubyVersionLine[1].Trim('\"').Trim('\'');
                         }
                     }
                 }
@@ -170,7 +164,6 @@ namespace Microsoft.Oryx.Detector.Ruby
                     ex,
                     $"Exception caught while trying to parse {RubyConstants.GemFileLockName}");
             }
-
             return null;
         }
     }
