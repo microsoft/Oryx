@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
 using System;
+using System.Linq;
 
 namespace Microsoft.Oryx.Detector.Ruby
 {
@@ -146,7 +147,7 @@ namespace Microsoft.Oryx.Detector.Ruby
             {
                 var gemFileLockContent = context.SourceRepo.ReadFile(RubyConstants.GemFileLockName);
                 var gemFileLockContentLines = gemFileLockContent.Split('\n');
-
+                gemFileLockContentLines = gemFileLockContentLines.Select(x => x.Trim()).ToArray();
                 // Example content from a Gemfile.lock:
                 // PLATFORMS
                 //   ruby
@@ -155,7 +156,7 @@ namespace Microsoft.Oryx.Detector.Ruby
                 int rubyVersionLineIndex = Array.IndexOf(gemFileLockContentLines, "RUBY VERSION");
                 if (rubyVersionLineIndex != -1)
                 {
-                    var rubyVersionLine = gemFileLockContentLines[rubyVersionLineIndex + 1].Trim().Split(' ');
+                    var rubyVersionLine = gemFileLockContentLines[rubyVersionLineIndex + 1].Split(' ');
                     // Make sure it's in valid format.
                     if (rubyVersionLine.Length == 2)
                     {
