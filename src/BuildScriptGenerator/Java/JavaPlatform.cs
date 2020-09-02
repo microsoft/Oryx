@@ -117,31 +117,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             {
                 if (_commonOptions.ShouldPackage)
                 {
-                    command = "./mvnw clean package";
+                    command = JavaConstants.CreatePackageCommandUsingMavenWrapper;
                 }
                 else
                 {
-                    command = "./mvnw clean compile";
+                    command = JavaConstants.CompileCommandUsingMavenWrapper;
                 }
             }
             else if (javaPlatformDetectorResult.UsesMaven)
             {
                 if (_commonOptions.ShouldPackage)
                 {
-                    command = "mvn clean package";
+                    command = JavaConstants.CreatePackageCommandUsingMaven;
                 }
                 else
                 {
-                    command = "mvn clean compile";
+                    command = JavaConstants.CompileCommandUsingMaven;
                 }
 
                 // Maven spits out lot of information related to downloading of packages which is too verbose.
                 // Since the --quiet option is too quiet, we are trying to use a new switch below to just mute the
                 // messages related to transfer progress of these downloads.
                 // https://maven.apache.org/docs/3.6.1/release-notes.html#user-visible-changes
-                var minVersionHavingLessVerbositySupport = new SemVer.Version("3.6.1");
                 var currentMavenVersion = new SemVer.Version(javaPlatformDetectorResult.MavenVersion);
-                if (currentMavenVersion.CompareTo(minVersionHavingLessVerbositySupport) >= 0)
+                if (currentMavenVersion.CompareTo(JavaConstants.MinMavenVersionWithNoTransferProgressSupport) >= 0)
                 {
                     command = $"{command} --no-transfer-progress";
                 }

@@ -14,5 +14,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         public const string MavenName = "maven";
         public const string MavenVersion = JavaVersions.MavenVersion;
         public const string InstalledMavenVersionsDir = "/opt/maven";
+
+        public const string CreatePackageCommandUsingMaven = "mvn clean package";
+        public const string CompileCommandUsingMaven = "mvn clean compile";
+        public const string CreatePackageCommandUsingMavenWrapper = "./mvnw clean package";
+        public const string CompileCommandUsingMavenWrapper = "./mvnw clean compile";
+        public static readonly SemVer.Version MinMavenVersionWithNoTransferProgressSupport = 
+            new SemVer.Version("3.6.1");
     }
 }
