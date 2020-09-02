@@ -111,28 +111,46 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             // Write the platform name and version to the manifest file
             manifestFileProperties[ManifestFilePropertyKeys.JavaVersion] = detectorResult.PlatformVersion;
 
-            string buildCommand = string.Empty;
+            string command = string.Empty;
+
             if (javaPlatformDetectorResult.UsesMavenWrapperTool)
             {
-                buildCommand = "./mvnw clean compile";
+                if (_commonOptions.ShouldPackage)
+                {
+                    command = "./mvnw clean package";
+                }
+                else
+                {
+                    command = "./mvnw clean compile";
+                }
             }
             else if (javaPlatformDetectorResult.UsesMaven)
             {
+                if (_commonOptions.ShouldPackage)
+                {
+                    command = "mvn clean package";
+                }
+                else
+                {
+                    command = "mvn clean compile";
+                }
+
+                // Maven spits out lot of information related to downloading of packages which is too verbose.
+                // Since the --quiet option is too quiet, we are trying to use a new switch below to just mute the
+                // messages related to transfer progress of these downloads.
                 // https://maven.apache.org/docs/3.6.1/release-notes.html#user-visible-changes
                 var minVersionHavingLessVerbositySupport = new SemVer.Version("3.6.1");
                 var currentMavenVersion = new SemVer.Version(javaPlatformDetectorResult.MavenVersion);
-
-                buildCommand = "mvn clean compile";
                 if (currentMavenVersion.CompareTo(minVersionHavingLessVerbositySupport) >= 0)
                 {
-                    buildCommand = $"{buildCommand} --no-transfer-progress";
+                    command = $"{command} --no-transfer-progress";
                 }
             }
 
             var scriptProps = new JavaBashBuildSnippetProperties();
             scriptProps.UsesMaven = javaPlatformDetectorResult.UsesMaven;
             scriptProps.UsesMavenWrapperTool = javaPlatformDetectorResult.UsesMavenWrapperTool;
-            scriptProps.BuildCommand = buildCommand;
+            scriptProps.Command = command;
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.JavaBuildSnippet,

@@ -14,6 +14,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 
         public bool UsesMavenWrapperTool { get; set; }
 
-        public string BuildCommand { get; set; }
+        public string Command { get; set; }
     }
 }

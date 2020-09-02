@@ -1,3 +1,3 @@
-echo "Running the command '{{ BuildCommand }}'"
+echo "Running the command '{{ Command }}'"
 echo
-{{ BuildCommand }}
+{{ Command }}
