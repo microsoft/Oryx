@@ -5,10 +5,10 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 {
-    public class RubyScriptGeneratorOptions
+    internal static class RubyManifestFilePropertyKeys
     {
-        public string RubyVersion { get; set; }
+        internal const string RubyVersion = "rubyversion";
 
-        public string GemVersion { get; set; }
+        internal const string GemVersion = "gemversion";
     }
 }

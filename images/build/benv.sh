@@ -306,6 +306,22 @@ benv-resolve() {
     return 0
   fi
 
+    # Resolve RUBY versions
+  if matchesName "ruby" "$name" || matchesName "ruby_version" "$name" && [ "${value::1}" != "/" ]; then
+    platformDir=$(benv-getPlatformDir "ruby" "$value" "$_benvDynamicInstallRootDir")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "ruby" "ruby" "$value" "$_benvDynamicInstallRootDir"
+      return 1
+    fi
+
+    local DIR="$platformDir/bin"
+    updatePath "$DIR"
+    export RUBY_HOME="$platformDir"
+    export ruby="$DIR/ruby"
+
+    return 0
+  fi
+
   # Export other names without resolution
   eval export $name\=\'${value//\'/\'\\\'\'}\'
 }

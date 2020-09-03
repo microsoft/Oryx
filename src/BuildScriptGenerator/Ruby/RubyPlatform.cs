@@ -33,10 +33,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
         /// <summary>
         /// Initializes a new instance of the <see cref="RubyPlatform"/> class.
         /// </summary>
-        /// <param name="rubyScriptGeneratorOptions">The options of rubyScriptGenerator.</param>
-        /// <param name="rubyVersionProvider">The RUBY version provider.</param>
-        /// <param name="logger">The logger of RUBY platform.</param>
-        /// <param name="detector">The detector of RUBY platform.</param>
+        /// <param name="rubyScriptGeneratorOptions">The options of RubyScriptGenerator.</param>
+        /// <param name="rubyVersionProvider">The Ruby version provider.</param>
+        /// <param name="logger">The logger of Ruby platform.</param>
+        /// <param name="detector">The detector of Ruby platform.</param>
         /// <param name="commonOptions">The <see cref="BuildScriptGeneratorOptions"/>.</param>
         /// <param name="rubyInstaller">The <see cref="RubyPlatformInstaller"/>.</param>
         public RubyPlatform(
@@ -111,67 +111,60 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             // Write the platform name and version to the manifest file
             buildProperties[ManifestFilePropertyKeys.RubyVersion] = rubyPlatformDetectorResult.PlatformVersion;
 
-            _logger.LogDebug("Selected RUBY version: {rubyVer}", rubyPlatformDetectorResult.PlatformVersion);
-            
-            }
-            string snippet = TemplateHelper.Render(TemplateHelper.TemplateResource.RubyBuildSnippet, props, _logger);
-            return new BuildScriptSnippet { BashBuildScriptSnippet = snippet, BuildProperties = buildProperties };
+            _logger.LogDebug("Selected Ruby version: {rubyVer}", rubyPlatformDetectorResult.PlatformVersion);
+
+            bool hasRailsDependencies = false;
+            bool runRakeExecuteCommand = false;
+
+            var scriptProps = new RubyBashBuildSnippetProperties { 
+                HasRailsDependencies = hasRailsDependencies,
+                UseBundlerToInstallDependencies = true,
+                RunRakeExecuteCommand = runRakeExecuteCommand
+            };
+
+            string script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.RubyBuildSnippet,
+                scriptProps,
+                _logger);
+
+            return new BuildScriptSnippet
+            {
+                BashBuildScriptSnippet = script,
+                BuildProperties = buildProperties,
+            };
         }
 
-        /// <inheritdoc/>
-        public bool IsEnabled(RepositoryContext ctx)
-        {
-            return _commonOptions.EnableRubyBuild;
-        }
-
-        /// <inheritdoc/>
-        public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
-        {
-            return true;
-        }
-
-        /// <inheritdoc/>
-        public bool IsCleanRepo(ISourceRepo repo)
-        {
-            return true;
-        }
-
-        /// <inheritdoc/>
         public string GenerateBashRunTimeInstallationScript(RunTimeInstallationScriptGeneratorOptions options)
         {
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc/>
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext ctx)
+        public bool IsEnabled(RepositoryContext ctx)
+        {
+            return _commonOptions.EnableRubyBuild;
+        }
+
+        public bool IsCleanRepo(ISourceRepo repo)
+        {
+            return true;
+        }
+
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToBuildOutputDir(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return Array.Empty<string>();
         }
 
-        /// <inheritdoc/>
-        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext ctx)
+        public IEnumerable<string> GetDirectoriesToExcludeFromCopyToIntermediateDir(BuildScriptGeneratorContext scriptGeneratorContext)
         {
             return Array.Empty<string>();
         }
 
-        /// <inheritdoc/>
-        public void ResolveVersions(PlatformDetectorResult detectorResult)
+        public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
-            var rubyPlatformDetectorResult = detectorResult as RubyPlatformDetectorResult;
-            if (rubyPlatformDetectorResult == null)
-            {
-                throw new ArgumentException(
-                    $"Expected '{nameof(detectorResult)}' argument to be of type " +
-                    $"'{typeof(RubyPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
-            }
-
-            ResolveVersionsUsingHierarchicalRules(rubyPlatformDetectorResult);
+            return true;
         }
 
-        /// <inheritdoc/>
-        public string GetInstallerScriptSnippet(
-            BuildScriptGeneratorContext context,
-            PlatformDetectorResult detectorResult)
+        public string GetInstallerScriptSnippet(BuildScriptGeneratorContext context, PlatformDetectorResult detectorResult)
         {
             var rubyPlatformDetectorResult = detectorResult as RubyPlatformDetectorResult;
             if (rubyPlatformDetectorResult == null)
@@ -189,7 +182,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 
                 InstallRuby(rubyPlatformDetectorResult.PlatformVersion, scriptBuilder);
 
-
                 if (scriptBuilder.Length == 0)
                 {
                     return null;
@@ -202,6 +194,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
                 _logger.LogDebug("Dynamic install not enabled.");
                 return null;
             }
+        }
+
+        /// <inheritdoc/>
+        public void ResolveVersions(PlatformDetectorResult detectorResult)
+        {
+            var rubyPlatformDetectorResult = detectorResult as RubyPlatformDetectorResult;
+            if (rubyPlatformDetectorResult == null)
+            {
+                throw new ArgumentException(
+                    $"Expected '{nameof(detectorResult)}' argument to be of type " +
+                    $"'{typeof(RubyPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
+            }
+
+            ResolveVersionsUsingHierarchicalRules(rubyPlatformDetectorResult);
         }
 
         /// <inheritdoc/>
@@ -227,13 +233,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             if (_rubyInstaller.IsVersionAlreadyInstalled(rubyVersion))
             {
                 _logger.LogDebug(
-                   "RUBY version {version} is already installed. So skipping installing it again.",
+                   "Ruby version {version} is already installed. So skipping installing it again.",
                    rubyVersion);
             }
             else
             {
                 _logger.LogDebug(
-                    "RUBY version {version} is not installed. " +
+                    "Ruby version {version} is not installed. " +
                     "So generating an installation script snippet for it.",
                     rubyVersion);
 
@@ -271,35 +277,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 
         private string GetMaxSatisfyingRubyVersionAndVerify(string version)
         {
-            var supportedVersions = SupportedVersions;
-            var nonPreviewRuntimeVersions = supportedVersions.Where(v => !v.Any(c => char.IsLetter(c)));
+            var versionInfo = _rubyVersionProvider.GetVersionInfo();
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
-                nonPreviewRuntimeVersions);
-
-            // Check if a preview version is available
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                // Preview versions: '7.4.0RC4', '7.4.0beta2', etc
-                var previewRuntimeVersions = supportedVersions
-                    .Where(v => v.Any(c => char.IsLetter(c)))
-                    .Where(v => v.StartsWith(version))
-                    .OrderByDescending(v => v);
-                if (previewRuntimeVersions.Any())
-                {
-                    maxSatisfyingVersion = previewRuntimeVersions.First();
-                }
-            }
+                versionInfo.SupportedVersions);
 
             if (string.IsNullOrEmpty(maxSatisfyingVersion))
             {
                 var exc = new UnsupportedVersionException(
                     RubyConstants.PlatformName,
                     version,
-                    supportedVersions);
+                    versionInfo.SupportedVersions);
                 _logger.LogError(
                     exc,
-                    $"Exception caught, the version '{version}' is not supported for the RUBY platform.");
+                    $"Exception caught, the version '{version}' is not supported for the Ruby platform.");
                 throw exc;
             }
 

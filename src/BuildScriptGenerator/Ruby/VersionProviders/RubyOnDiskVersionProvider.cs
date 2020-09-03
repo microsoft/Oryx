@@ -9,7 +9,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 {
     public class RubyOnDiskVersionProvider : IRubyVersionProvider
     {
-        private const string DefaultOnDiskVersion = RubyConstants.RubyLtsVersion;
         private readonly ILogger<RubyOnDiskVersionProvider> _logger;
 
         public RubyOnDiskVersionProvider(ILogger<RubyOnDiskVersionProvider> logger)
@@ -25,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             var installedVersions = VersionProviderHelper.GetVersionsFromDirectory(
                             RubyConstants.InstalledRubyVersionsDir);
 
-            return PlatformVersionInfo.CreateOnDiskVersionInfo(installedVersions, DefaultOnDiskVersion);
+            return PlatformVersionInfo.CreateOnDiskVersionInfo(installedVersions, RubyConstants.RubyLtsVersion);
         }
     }
 }

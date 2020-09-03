@@ -78,7 +78,7 @@ namespace Microsoft.Oryx.Detector.Ruby
                 return null;
             }
             var version = GetVersion(context);
-            return new PlatformDetectorResult
+            return new RubyPlatformDetectorResult
             {
                 Platform = RubyConstants.PlatformName,
                 PlatformVersion = version,
