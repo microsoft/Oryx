@@ -3,7 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
+using Microsoft.Oryx.Detector.Exceptions;
+using Microsoft.Oryx.Detector.Resources;
 using Nett;
 using Newtonsoft.Json.Linq;
 using YamlDotNet.RepresentationModel;
@@ -25,7 +28,18 @@ namespace Microsoft.Oryx.Detector
         public static TomlTable ParseTomlFile(ISourceRepo sourceRepo, string filePath)
         {
             var tomlContent = sourceRepo.ReadFile(filePath);
-            return Toml.ReadString(tomlContent);
+
+            try
+            {
+                return Toml.ReadString(tomlContent);
+            }
+            catch (Exception ex)
+            {
+                throw new FailedToParseFileException(
+                    filePath,
+                    string.Format(Messages.FailedToParseFileExceptionFormat, filePath),
+                    ex);
+            }
         }
 
         /// <summary>
@@ -39,7 +53,19 @@ namespace Microsoft.Oryx.Detector
         {
             var yamlContent = sourceRepo.ReadFile(filePath);
             var yamlStream = new YamlStream();
-            yamlStream.Load(new StringReader(yamlContent));
+
+            try
+            {
+                yamlStream.Load(new StringReader(yamlContent));
+            }
+            catch (Exception ex)
+            {
+                throw new FailedToParseFileException(
+                    filePath,
+                    string.Format(Messages.FailedToParseFileExceptionFormat, filePath),
+                    ex);
+            }
+
             return yamlStream.Documents[0].RootNode;
         }
 
