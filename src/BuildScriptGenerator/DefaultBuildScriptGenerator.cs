@@ -269,6 +269,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .ToDictionary(p => p.Key, p => p.Value);
             buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
+            var sourceDirInBuildContainer = _cliOptions.SourceDir;
+            if (!string.IsNullOrEmpty(_cliOptions.IntermediateDir))
+            {
+                sourceDirInBuildContainer = _cliOptions.IntermediateDir;
+            }
+
+            buildProperties[ManifestFilePropertyKeys.SourceDirectoryInBuildContainer] = sourceDirInBuildContainer;
+
             var allPlatformNames = detectionResults
                 .Where(s => s.Platform != null)
                 .Select(s => s.Platform)

@@ -15,18 +15,19 @@ import (
 )
 
 type BuildManifest struct {
-	StartupFileName           string
-	OperationID               string
-	VirtualEnvName            string
-	PackageDir                string
-	CompressedVirtualEnvFile  string
-	StartupDllFileName        string
-	InjectedAppInsights       string
-	CompressedNodeModulesFile string
-	DotNetCoreSdkVersion      string
-	DotNetCoreRuntimeVersion  string
-	NodeVersion               string
-	PythonVersion             string
+	StartupFileName                 string
+	OperationID                     string
+	VirtualEnvName                  string
+	PackageDir                      string
+	CompressedVirtualEnvFile        string
+	StartupDllFileName              string
+	InjectedAppInsights             string
+	CompressedNodeModulesFile       string
+	DotNetCoreSdkVersion            string
+	DotNetCoreRuntimeVersion        string
+	NodeVersion                     string
+	PythonVersion                   string
+	SourceDirectoryInBuildContainer string
 }
 
 var _buildManifest BuildManifest

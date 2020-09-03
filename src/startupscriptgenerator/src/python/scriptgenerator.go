@@ -11,9 +11,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"runtime"
 	"strconv"
+	"strings"
 )
 
 type PythonStartupScriptGenerator struct {
@@ -149,7 +149,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 				// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
 				// python libraries including the absolute path. Since Python is installed in different paths in build and runtime images,
 				// the libraries are not found.
-				venvSubScript := getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
+				venvSubScript := gen.getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
 				scriptBuilder.WriteString(venvSubScript)
 
 			} else {
@@ -182,7 +182,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 			scriptBuilder.WriteString("mkdir -p " + virtualEnvDir + "\n")
 			scriptBuilder.WriteString("echo Extracting to directory '" + virtualEnvDir + "'...\n")
 			scriptBuilder.WriteString("$extractionCommand\n")
-			venvSubScript := getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
+			venvSubScript := gen.getVenvHandlingScript(virtualEnvironmentName, virtualEnvDir)
 			scriptBuilder.WriteString(venvSubScript)
 		}
 	}
@@ -206,8 +206,12 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	return scriptBuilder.String()
 }
 
-func getVenvHandlingScript(virtualEnvName string, virtualEnvDir string) string {
+func (gen *PythonStartupScriptGenerator) getVenvHandlingScript(virtualEnvName string, virtualEnvDir string) string {
 	scriptBuilder := strings.Builder{}
+
+	// We install 'gunicorn' and 'ptvsd' when building the runtime images. Since they get installed in 'global' scope
+	// here we are trying to update the python path so that 'gunicorn' and 'ptvsd' know about the site packages which
+	// are part of virtual environment of the app too.
 	scriptBuilder.WriteString(
 		"PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) " +
 			"+ '.' + str(sys.version_info.minor))\")\n")
@@ -216,6 +220,21 @@ func getVenvHandlingScript(virtualEnvName string, virtualEnvDir string) string {
 	virtualEnvSitePackagesDir := "\"" + virtualEnvDir + "/lib/python$PYTHON_VERSION/site-packages\""
 	scriptBuilder.WriteString("export PYTHONPATH=$PYTHONPATH:" + virtualEnvSitePackagesDir + "\n")
 	scriptBuilder.WriteString("echo \"Updated PYTHONPATH to '$PYTHONPATH'\"\n")
+
+	// When pip install is run with virtual environment option in build container, it causes the scripts within the
+	// virtual environment folder to have hard-coded paths to source directory structure of the build container.
+	// Here we are trying to mimic that structure so that activation of the virtual environment in runtime container
+	// does not fail.
+
+	if gen.Manifest.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
+		if gen.Manifest.SourceDirectoryInBuildContainer != "" {
+			scriptBuilder.WriteString("mkdir -p " + gen.Manifest.SourceDirectoryInBuildContainer + "\n")
+			scriptBuilder.WriteString(
+				fmt.Sprintf("ln -sf %s %s\n", virtualEnvDir, gen.Manifest.SourceDirectoryInBuildContainer))
+			scriptBuilder.WriteString(fmt.Sprintf(". %s/bin/activate\n", virtualEnvName))
+		}
+	}
+
 	return scriptBuilder.String()
 }
 
@@ -234,7 +253,7 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 		workers := strconv.Itoa((2 * runtime.NumCPU()) + 1)
 		args = appendArgs(args, "--workers="+workers)
 	}
-	
+
 	if gen.BindPort != "" {
 		args = appendArgs(args, "--bind="+DefaultHost+":"+gen.BindPort)
 	}
