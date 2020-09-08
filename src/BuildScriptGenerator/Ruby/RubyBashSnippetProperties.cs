@@ -10,10 +10,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
     /// </summary>
     internal class RubyBashBuildSnippetProperties
     {
-        public bool HasRailsDependencies { get; set; }
-
         public bool UseBundlerToInstallDependencies { get; set; }
-
-        public bool RunRakeExecuteCommand { get; set; }
     }
 } 

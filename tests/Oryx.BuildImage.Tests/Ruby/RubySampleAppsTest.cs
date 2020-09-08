@@ -15,147 +15,115 @@ namespace Microsoft.Oryx.BuildImage.Tests
     [Trait("platform", "ruby")]
     public class RubySampleAppsTest : SampleAppsTestBase
     {
+        public RubySampleAppsTest(ITestOutputHelper output) : base(output)
+        {
+        }
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
-        public RubySampleAppsTestBase(ITestOutputHelper output) : base(output)
+        [Fact]
+        public void GeneratesScript_AndBuildSinatraApp()
         {
+            // Arrange
+            var appName = "sinatra-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Ruby Version", result.StdOut);
+                },
+                result.GetDebugInfo());
         }
-    }
 
-    [Fact]
-    public void GeneratesScript_AndBuildSinatraApp()
-    {
-        // Arrange
-        var appName = "sinatra-app";
-        var volume = CreateSampleAppVolume(appName);
-        var appDir = volume.ContainerDir;
-        var appOutputDir = "/tmp/app-output";
-        var script = new ShellScriptBuilder()
-            .SetEnvironmentVariable(
-                SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                SdkStorageConstants.DevSdkStorageBaseUrl)
-            .AddBuildCommand($"{appDir} -o {appOutputDir}")
-            .ToString();
-
-        // Act
-        var result = _dockerCli.Run(new DockerRunArguments
+        [Fact]
+        public void GeneratesScript_AndBuildRailsApp()
         {
-            ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-            EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-            Volumes = new List<DockerVolume> { volume },
-            CommandToExecuteOnRun = "/bin/bash",
-            CommandArguments = new[] { "-c", script }
-        });
+            // Arrange
+            var appName = "ruby-on-rails-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
 
-        // Assert
-        RunAsserts(
-            () =>
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
             {
-                Assert.True(result.IsSuccess);
-            },
-            result.GetDebugInfo());
-    }
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
-    [Fact]
-    public void GeneratesScript_AndBuildSinatraApp()
-    {
-        // Arrange
-        var appName = "sinatra-app";
-        var volume = CreateSampleAppVolume(appName);
-        var appDir = volume.ContainerDir;
-        var appOutputDir = "/tmp/app-output";
-        var script = new ShellScriptBuilder()
-            .SetEnvironmentVariable(
-                SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                SdkStorageConstants.DevSdkStorageBaseUrl)
-            .AddBuildCommand($"{appDir} -o {appOutputDir}")
-            .ToString();
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Ruby Version", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
 
-        // Act
-        var result = _dockerCli.Run(new DockerRunArguments
+        [Fact]
+        public void GeneratesScript_AndBuildJekyllApp()
         {
-            ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-            EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-            Volumes = new List<DockerVolume> { volume },
-            CommandToExecuteOnRun = "/bin/bash",
-            CommandArguments = new[] { "-c", script }
-        });
+            // Arrange
+            var appName = "Jekyll-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
 
-        // Assert
-        RunAsserts(
-            () =>
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
             {
-                Assert.True(result.IsSuccess);
-            },
-            result.GetDebugInfo());
-    }
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
-    [Fact]
-    public void GeneratesScript_AndBuildRailsApp()
-    {
-        // Arrange
-        var appName = "ruby-on-rails-app";
-        var volume = CreateSampleAppVolume(appName);
-        var appDir = volume.ContainerDir;
-        var appOutputDir = "/tmp/app-output";
-        var script = new ShellScriptBuilder()
-            .SetEnvironmentVariable(
-                SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                SdkStorageConstants.DevSdkStorageBaseUrl)
-            .AddBuildCommand($"{appDir} -o {appOutputDir}")
-            .ToString();
-
-        // Act
-        var result = _dockerCli.Run(new DockerRunArguments
-        {
-            ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-            EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-            Volumes = new List<DockerVolume> { volume },
-            CommandToExecuteOnRun = "/bin/bash",
-            CommandArguments = new[] { "-c", script }
-        });
-
-        // Assert
-        RunAsserts(
-            () =>
-            {
-                Assert.True(result.IsSuccess);
-            },
-            result.GetDebugInfo());
-    }
-
-    [Fact]
-    public void GeneratesScript_AndBuildJekyllApp()
-    {
-        // Arrange
-        var appName = "Jekyll-app";
-        var volume = CreateSampleAppVolume(appName);
-        var appDir = volume.ContainerDir;
-        var appOutputDir = "/tmp/app-output";
-        var script = new ShellScriptBuilder()
-            .SetEnvironmentVariable(
-                SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                SdkStorageConstants.DevSdkStorageBaseUrl)
-            .AddBuildCommand($"{appDir} -o {appOutputDir}")
-            .ToString();
-
-        // Act
-        var result = _dockerCli.Run(new DockerRunArguments
-        {
-            ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-            EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-            Volumes = new List<DockerVolume> { volume },
-            CommandToExecuteOnRun = "/bin/bash",
-            CommandArguments = new[] { "-c", script }
-        });
-
-        // Assert
-        RunAsserts(
-            () =>
-            {
-                Assert.True(result.IsSuccess);
-            },
-            result.GetDebugInfo());
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Ruby Version", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
     }
 } 

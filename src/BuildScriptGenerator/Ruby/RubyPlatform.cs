@@ -113,13 +113,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 
             _logger.LogDebug("Selected Ruby version: {rubyVer}", rubyPlatformDetectorResult.PlatformVersion);
 
-            bool hasRailsDependencies = false;
-            bool runRakeExecuteCommand = false;
-
             var scriptProps = new RubyBashBuildSnippetProperties { 
-                HasRailsDependencies = hasRailsDependencies,
                 UseBundlerToInstallDependencies = true,
-                RunRakeExecuteCommand = runRakeExecuteCommand
             };
 
             string script = TemplateHelper.Render(
