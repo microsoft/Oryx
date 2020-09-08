@@ -7,6 +7,9 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Oryx.Detector.Exceptions;
+using Nett;
+using Newtonsoft.Json.Linq;
 using YamlDotNet.RepresentationModel;
 
 namespace Microsoft.Oryx.Detector.Hugo
@@ -150,8 +153,20 @@ namespace Microsoft.Oryx.Detector.Hugo
 
         private bool IsHugoTomlFile(ISourceRepo sourceRepo, params string[] subPaths)
         {
+            TomlTable tomlTable = null;
+
             var relativeFilePath = Path.Combine(subPaths);
-            var tomlTable = ParserHelper.ParseTomlFile(sourceRepo, relativeFilePath);
+
+            try
+            {
+                tomlTable = ParserHelper.ParseTomlFile(sourceRepo, relativeFilePath);
+            }
+            catch (FailedToParseFileException ex)
+            {
+                _logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
+                return false;
+            }
+
             if (tomlTable.Keys
                 .Any(k => HugoConfigurationKeys.Contains(k, StringComparer.OrdinalIgnoreCase)))
             {
@@ -164,7 +179,19 @@ namespace Microsoft.Oryx.Detector.Hugo
         private bool IsHugoYamlFile(ISourceRepo sourceRepo, params string[] subPaths)
         {
             var relativeFilePath = Path.Combine(subPaths);
-            var yamlNode = ParserHelper.ParseYamlFile(sourceRepo, relativeFilePath);
+
+            YamlNode yamlNode = null;
+
+            try
+            {
+                yamlNode = ParserHelper.ParseYamlFile(sourceRepo, relativeFilePath);
+            }
+            catch (FailedToParseFileException ex)
+            {
+                _logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
+                return false;
+            }
+
             var yamlMappingNode = yamlNode as YamlMappingNode;
             if (yamlMappingNode != null)
             {
@@ -182,7 +209,19 @@ namespace Microsoft.Oryx.Detector.Hugo
         private bool IsHugoJsonFile(ISourceRepo sourceRepo, params string[] subPaths)
         {
             var relativeFilePath = Path.Combine(subPaths);
-            var jObject = ParserHelper.ParseJsonFile(sourceRepo, relativeFilePath);
+
+            JObject jObject = null;
+
+            try
+            {
+                jObject = ParserHelper.ParseJsonFile(sourceRepo, relativeFilePath);
+            }
+            catch (FailedToParseFileException ex)
+            {
+                _logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
+                return false;
+            }
+
             if (jObject.Children()
                 .Select(c => c.Path)
                 .Any(c => HugoConfigurationKeys.Contains(c, StringComparer.OrdinalIgnoreCase)))

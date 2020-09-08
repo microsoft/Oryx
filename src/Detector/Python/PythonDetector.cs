@@ -4,13 +4,12 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector.Exceptions;
 using YamlDotNet.RepresentationModel;
 
 namespace Microsoft.Oryx.Detector.Python
@@ -178,7 +177,18 @@ namespace Microsoft.Oryx.Detector.Python
 
         private bool IsCondaEnvironmentFile(ISourceRepo sourceRepo, string fileName)
         {
-            var yamlNode = ParserHelper.ParseYamlFile(sourceRepo, fileName);
+            YamlNode yamlNode = null;
+
+            try
+            {
+                yamlNode = ParserHelper.ParseYamlFile(sourceRepo, fileName);
+            }
+            catch (FailedToParseFileException ex)
+            {
+                _logger.LogError(ex, $"An error occurred when trying to parse file '{fileName}'.");
+                return false;
+            }
+
             var yamlMappingNode = yamlNode as YamlMappingNode;
             if (yamlMappingNode != null)
             {
