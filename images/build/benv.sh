@@ -58,6 +58,10 @@ done < <(set | grep -i '^dotnet=')
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^hugo=')
+
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
+done < <(set | grep -i '^ruby=')
 unset benvEnvironmentVariable # Remove all traces of this part of the script
 
 # Oryx's paths come to the end of the PATH environment variable so that any user installed platform

@@ -31,4 +31,8 @@ RUN buildDir="/opt/tmp/build" \
     && mkdir -p "$condaDir" \
     && cd $imagesDir/build/python/conda \
     && cp -rf * "$condaDir" \
+    && cd $imagesDir \
+    && . $buildDir/__rubyVersions.sh \
+    && ./installPlatform.sh ruby $RUBY27_VERSION \
+    && ln -s $RUBY27_VERSION /opt/ruby/2.7 \
     && rm -rf /opt/tmp
