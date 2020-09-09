@@ -30,9 +30,16 @@ RUN buildDir="/opt/tmp/build" \
     && condaDir="/opt/oryx/conda" \
     && mkdir -p "$condaDir" \
     && cd $imagesDir/build/python/conda \
-    && cp -rf * "$condaDir" \
+    && cp -rf * "$condaDir"
+
+# Install Ruby
+ENV RUBY_BIN="opt/ruby/lts/bin"
+ENV PATH="$RUBY_BIN:$PATHS"
+RUN imagesDir="/opt/tmp/images" \
+    && buildDir="/opt/tmp/build" \
     && cd $imagesDir \
     && . $buildDir/__rubyVersions.sh \
     && ./installPlatform.sh ruby $RUBY27_VERSION \
     && ln -s $RUBY27_VERSION /opt/ruby/2.7 \
+    && ln -s 2.7 /opt/ruby/lts \
     && rm -rf /opt/tmp

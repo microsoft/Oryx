@@ -1,10 +1,10 @@
 echo
-echo "Using Gem version:"
-gem --version
-echo
-echo
 echo "Using Ruby version:"
 ruby --version
+echo
+echo
+echo "Using Gem version:"
+gem --version
 echo
 
 {{ if UseBundlerToInstallDependencies }}
