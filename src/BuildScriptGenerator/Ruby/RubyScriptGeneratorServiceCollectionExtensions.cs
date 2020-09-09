@@ -11,10 +11,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal static class RubyScriptGeneratorServiceCollectionExtensions
     {
-        public static IServiceCollection AddRubyScriptGeneratorServices(this IServiceCollection services)
+        public static IServiceCollection AddScriptGeneratorServicesRuby(this IServiceCollection services)
         {
-            services.TryAddEnumerable(
-                ServiceDescriptor.Singleton<IProgrammingPlatform, RubyPlatform>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, RubyPlatform>());
             services.AddSingleton<IRubyVersionProvider, RubyVersionProvider>();
             services.AddSingleton<RubyPlatformInstaller>();
             services.AddSingleton<RubyOnDiskVersionProvider>();

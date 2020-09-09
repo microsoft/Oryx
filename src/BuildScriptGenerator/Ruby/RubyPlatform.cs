@@ -106,6 +106,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
                     $"'{typeof(RubyPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
+            if (!rubyPlatformDetectorResult.GemfileExists) {
+                throw new InvalidUsageException($"No Gemfile found at the root of the repo. Please provide a Gemfile.");
+            }
+
             var buildProperties = new Dictionary<string, string>();
 
             // Write the platform name and version to the manifest file

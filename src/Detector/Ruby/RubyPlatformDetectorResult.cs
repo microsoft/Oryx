@@ -5,7 +5,14 @@
 
 namespace Microsoft.Oryx.Detector.Ruby
 {
+    /// <summary>
+    /// Represents the model which contains Ruby specific detected metadata.
+    /// </summary>
     public class RubyPlatformDetectorResult : PlatformDetectorResult
     {
+        /// <summary>
+        /// Gets or sets the value indicating if a 'Gemfile' file exists in the repo.
+        /// </summary>
+        public bool GemfileExists { get; set; }
     }
 }

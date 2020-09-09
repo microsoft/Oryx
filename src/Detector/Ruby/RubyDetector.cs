@@ -34,10 +34,12 @@ namespace Microsoft.Oryx.Detector.Ruby
         {
             bool isRubyApp = false;
             string appDirectory = string.Empty;
+            bool gemfileExists = false;
             var sourceRepo = context.SourceRepo;
             if (sourceRepo.FileExists(RubyConstants.GemFileName))
             {
                 isRubyApp = true;
+                gemfileExists = true;
                 _logger.LogInformation($"Found {RubyConstants.GemFileName} at the root of the repo.");
             }
             else
@@ -83,6 +85,7 @@ namespace Microsoft.Oryx.Detector.Ruby
                 Platform = RubyConstants.PlatformName,
                 PlatformVersion = version,
                 AppDirectory = appDirectory,
+                GemfileExists = gemfileExists,
             };
         }
 
