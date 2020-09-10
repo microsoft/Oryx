@@ -318,10 +318,13 @@ benv-resolve() {
       return 1
     fi
 
+    export LD_LIBRARY_PATH="$platformDir/lib:$LD_LIBRARY_PATH"
     local DIR="$platformDir/bin"
     updatePath "$DIR"
     export RUBY_HOME="$platformDir"
+    export GEM_HOME="$platformDir"
     export ruby="$DIR/ruby"
+    export gem="$DIR/gem"
 
     return 0
   fi
