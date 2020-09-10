@@ -7,8 +7,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 {
     internal static class RubyManifestFilePropertyKeys
     {
-        internal const string RubyVersion = "rubyversion";
-
-        internal const string GemVersion = "gemversion";
+        internal const string RubyVersion = nameof(RubyVersion);
     }
 }

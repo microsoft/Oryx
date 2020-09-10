@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -21,21 +22,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
-        public static TheoryData<string> ImageNameData
-        {
-            get
-            {
-                var data = new TheoryData<string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetVsoBuildImage());
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage());
-                return data;
-            }
-        }
-
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuildSinatraApp(string buildImageName)
+        [Fact]
+        public void GeneratesScript_AndBuildSinatraApp()
         {
             // Arrange
             var appName = "sinatra-app";
@@ -52,7 +40,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = buildImageName,
+                ImageId = _imageHelper.GetVsoBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
