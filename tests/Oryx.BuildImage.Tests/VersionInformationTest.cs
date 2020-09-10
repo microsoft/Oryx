@@ -200,8 +200,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Trait("platform", "node")]
         [Theory]
-        [InlineData("6.11", "v6.11.0")]
-        [InlineData("6.11.0", "v6.11.0")]
         [InlineData("8.1.4", "v8.1.4")]
         [InlineData("8.11", "v8.11.2")]
         [InlineData("8.11.2", "v8.11.2")]
@@ -214,7 +212,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("10.1.0", "v10.1.0")]
         [InlineData("10.10.0", "v10.10.0")]
         [InlineData("10.14.2", "v10.14.2")]
-        [InlineData("6", "v" + NodeVersions.Node6Version)]
         [InlineData("8", "v" + NodeVersions.Node8Version)]
         [InlineData("10", "v" + NodeVersions.Node10Version)]
         [InlineData("12", "v" + NodeVersions.Node12Version)]

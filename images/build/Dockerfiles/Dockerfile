@@ -89,11 +89,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 RUN cd ${IMAGES_DIR} \ 
  && . ${BUILD_DIR}/__nodeVersions.sh \
- && ./installPlatform.sh nodejs 6.2.2 \
- && ./installPlatform.sh nodejs 6.6.0 \
- && ./installPlatform.sh nodejs 6.9.3 \
- && ./installPlatform.sh nodejs 6.10.3 \
- && ./installPlatform.sh nodejs 6.11.0 \
  && ./installPlatform.sh nodejs 8.0.0 \
  && ./installPlatform.sh nodejs 8.1.4 \
  && ./installPlatform.sh nodejs 8.2.1 \
@@ -108,15 +103,9 @@ RUN cd ${IMAGES_DIR} \
  && ./installPlatform.sh nodejs 10.14.2 \
  && ./installPlatform.sh nodejs 10.21.0 \
  && ./installPlatform.sh nodejs 12.18.2 \
- && ./installPlatform.sh nodejs $NODE6_VERSION
 RUN ${IMAGES_DIR}/build/installNpm.sh
 
 RUN set -ex \
- && ln -s 6.2.2 /opt/nodejs/6.2 \
- && ln -s 6.6.0 /opt/nodejs/6.6 \
- && ln -s 6.9.3 /opt/nodejs/6.9 \
- && ln -s 6.10.3 /opt/nodejs/6.10 \
- && ln -s 6.11.0 /opt/nodejs/6.11 \ 
  && ln -s 8.0.0 /opt/nodejs/8.0 \
  && ln -s 8.1.4 /opt/nodejs/8.1 \
  && ln -s 8.2.1 /opt/nodejs/8.2 \
@@ -132,8 +121,7 @@ RUN set -ex \
  && ln -s 10.14.2 /opt/nodejs/10.14 \
  && ln -s 10.21.0 /opt/nodejs/10.21 \
  && ln -s 12.18.2 /opt/nodejs/12.18 \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ln -s $NODE6_VERSION /opt/nodejs/6
+ && . ${BUILD_DIR}/__nodeVersions.sh
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \

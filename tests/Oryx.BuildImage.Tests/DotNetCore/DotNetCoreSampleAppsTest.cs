@@ -10,6 +10,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -28,6 +29,86 @@ namespace Microsoft.Oryx.BuildImage.Tests
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", sampleAppName));
 
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
+
+        [Fact]	
+        public void Builds_NetCore10App_UsingNetCore11_DotNetSdkVersion()
+        {	
+            // Arrange	
+            var appName = "aspnetcore10";	
+            var volume = CreateSampleAppVolume(appName);	
+            var appDir = volume.ContainerDir;	
+            var appOutputDir = "/tmp/aspnetcore10-output";	
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";	
+            var script = new ShellScriptBuilder()	
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")	
+                .AddFileExistsCheck($"{appOutputDir}/app.dll")	
+                .AddFileExistsCheck(manifestFile)	
+                .AddCommand($"cat {manifestFile}")	
+                .ToString();	
+
+            // Act	
+            var result = _dockerCli.Run(new DockerRunArguments	
+            {	
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),	
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },	
+                Volumes = new List<DockerVolume> { volume },	
+                CommandToExecuteOnRun = "/bin/bash",	
+                CommandArguments = new[] { "-c", script }	
+            });	
+
+            // Assert	
+            RunAsserts(	
+                () =>	
+                {	
+                    Assert.True(result.IsSuccess);	
+                    Assert.Contains(	
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),	
+                        result.StdOut);	
+                    Assert.Contains(	
+                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{DotNetCoreRunTimeVersions.NetCoreApp10}\"",	
+                        result.StdOut);	
+                    Assert.Contains(	
+                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{DotNetCoreSdkVersions.DotNetCore11SdkVersion}\"",	
+                        result.StdOut);	
+                },	
+                result.GetDebugInfo());	
+        }	
+
+        [Fact]	
+        public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion()	
+        {	
+            // Arrange	
+            var appName = "NetCoreApp11WebApp";	
+            var volume = CreateSampleAppVolume(appName);	
+            var appDir = volume.ContainerDir;	
+            var appOutputDir = "/tmp/NetCoreApp11WebApp-output";	
+            var script = new ShellScriptBuilder()	
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")	
+                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")	
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")	
+                .ToString();	
+
+            // Act	
+            var result = _dockerCli.Run(new DockerRunArguments	
+            {	
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),	
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },	
+                Volumes = new List<DockerVolume> { volume },	
+                CommandToExecuteOnRun = "/bin/bash",	
+                CommandArguments = new[] { "-c", script }	
+            });	
+
+            // Assert	
+            RunAsserts(	
+                () =>	
+                {	
+                    Assert.True(result.IsSuccess);	
+                    Assert.Contains(	
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),	
+                        result.StdOut);	
+                },	
+                result.GetDebugInfo());	
+        }	
 
         [Fact]
         public void Builds_NetCore20App_UsingNetCore21_DotNetSdkVersion()
@@ -539,7 +620,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringDoesNotExistInFileCheck($"{Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringDoesNotExistInFileCheck($"{BuildScriptGenerator.Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -576,10 +657,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --apptype {BuildScriptGenerator.Constants.StaticSiteApplications}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{BuildScriptGenerator.Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -619,7 +700,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir}/MessageFunction -o {appOutputDir} --apptype functions")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{Constants.AppType}=\"functions\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{BuildScriptGenerator.Constants.AppType}=\"functions\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act

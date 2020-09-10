@@ -31,6 +31,10 @@ RUN LANG="C.UTF-8" \
         libstdc++6 \
         zlib1g \
         libgdiplus \
+        # For .NET Core 1.1
+        libcurl3 \
+        libuuid1 \
+        libunwind8 \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx

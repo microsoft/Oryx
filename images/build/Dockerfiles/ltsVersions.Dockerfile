@@ -26,6 +26,10 @@ RUN LANG="C.UTF-8" \
         # By default pip is not available in the buildpacks image
         python-pip \
         python3-pip \
+        # For .NET Core 1.1
+        libcurl3 \
+        libuuid1 \
+        libunwind8 \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
