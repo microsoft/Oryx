@@ -180,6 +180,27 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             Assert.Null(result.PlatformVersion);
         }
 
+        [Theory]
+        [InlineData("invalid text", HugoConstants.TomlFileName)]
+        [InlineData("{", HugoConstants.JsonFileName)]
+        [InlineData("\"invalid text", HugoConstants.YamlFileName)]
+        public void Detect_ReturnsNull_AndDoesNotThrow_ForInvalidConfigurationFiles(
+            string fileContent,
+            params string[] subPaths)
+        {
+            // Arrange
+            var appDir = CreateAppDir();
+            WriteFile(fileContent, appDir, subPaths);
+            var detector = GetDetector();
+            var context = GetContext(appDir);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.Null(result);
+        }
+
         private string CreateAppDir()
         {
             return Directory.CreateDirectory(Path.Combine(_tempDirRootPath, Guid.NewGuid().ToString())).FullName;

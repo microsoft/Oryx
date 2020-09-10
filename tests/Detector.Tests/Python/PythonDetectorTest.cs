@@ -295,8 +295,8 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             IOHelpers.CreateFile(sourceDir, "channels:", PythonConstants.CondaEnvironmentYmlFileName);
             IOHelpers.CreateFile(sourceDir, "requirements.txt content", PythonConstants.RequirementsFileName);
             IOHelpers.CreateFile(
-                sourceDir, 
-                "notebook content", 
+                sourceDir,
+                "notebook content",
                 $"notebook1.{PythonConstants.JupyterNotebookFileExtensionName}");
             IOHelpers.CreateFile(sourceDir, $"python-{expectedPythonVersion}", PythonConstants.RuntimeFileName);
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
@@ -311,6 +311,25 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             Assert.Equal(expectedPythonVersion, pythonPlatformResult.PlatformVersion);
             Assert.True(pythonPlatformResult.HasJupyterNotebookFiles);
             Assert.True(pythonPlatformResult.HasCondaEnvironmentYmlFile);
+        }
+
+        [Theory]
+        [InlineData(PythonConstants.CondaEnvironmentYmlFileName)]
+        [InlineData(PythonConstants.CondaEnvironmentYamlFileName)]
+        public void Detect_ReutrnsNull_ForMalformedCondaYamlFiles(string environmentFileName)
+        {
+            // Arrange
+            var detector = CreatePythonPlatformDetector();
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
+            IOHelpers.CreateFile(sourceDir, "\"invalid text", environmentFileName);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.Null(result);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
