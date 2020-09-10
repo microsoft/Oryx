@@ -119,6 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 
             var scriptProps = new RubyBashBuildSnippetProperties { 
                 UseBundlerToInstallDependencies = true,
+                BundlerVersion = rubyPlatformDetectorResult.BundlerVersion,
             };
 
             string script = TemplateHelper.Render(

@@ -14,5 +14,10 @@ namespace Microsoft.Oryx.Detector.Ruby
         /// Gets or sets the value indicating if a 'Gemfile' file exists in the repo.
         /// </summary>
         public bool GemfileExists { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value if a bundler version specified in 'Gemfile.lock' in the repo.
+        /// </summary>
+        public string BundlerVersion { get; set; }
     }
 }
