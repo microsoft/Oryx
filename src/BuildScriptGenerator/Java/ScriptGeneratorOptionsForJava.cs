@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Java
 {
-    public class JavaScriptGeneratorOptions
+    public class ScriptGeneratorOptionsForJava
     {
         public string JavaVersion { get; set; }
 

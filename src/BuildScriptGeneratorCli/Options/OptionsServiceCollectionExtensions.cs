@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             services.TryAddEnumerable(
                 ServiceDescriptor.Transient<IConfigureOptions<HugoScriptGeneratorOptions>, HugoScriptGeneratorOptionsSetup>());
             services.TryAddEnumerable(
-                ServiceDescriptor.Transient<IConfigureOptions<JavaScriptGeneratorOptions>, JavaScriptGeneratorOptionsSetup>());
+                ServiceDescriptor.Transient<IConfigureOptions<ScriptGeneratorOptionsForJava>, ScriptGeneratorOptionsSetupForJava>());
             return services;
         }
     }

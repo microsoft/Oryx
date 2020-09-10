@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal static class JavaScriptGeneratorServiceCollectionExtensions
     {
-        public static IServiceCollection AddJavaScriptGeneratorServices(this IServiceCollection services)
+        public static IServiceCollection AddScriptGeneratorServicesForJava(this IServiceCollection services)
         {
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProgrammingPlatform, JavaPlatform>());

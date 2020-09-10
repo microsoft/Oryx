@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         /// The tar-gz option for Java modules.
         /// </summary>
         private readonly BuildScriptGeneratorOptions _commonOptions;
-        private readonly JavaScriptGeneratorOptions _javaScriptGeneratorOptions;
+        private readonly ScriptGeneratorOptionsForJava _javaScriptGeneratorOptions;
         private readonly IJavaVersionProvider _javaVersionProvider;
         private readonly IMavenVersionProvider _mavenVersionProvider;
         private readonly ILogger<JavaPlatform> _logger;
@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         /// <param name="mavenInstaller">The <see cref="MavenInstaller"/>.</param>
         public JavaPlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IOptions<JavaScriptGeneratorOptions> javaScriptGeneratorOptions,
+            IOptions<ScriptGeneratorOptionsForJava> javaScriptGeneratorOptions,
             IJavaVersionProvider javaVersionProvider,
             IMavenVersionProvider mavenVersionProvider,
             ILogger<JavaPlatform> logger,

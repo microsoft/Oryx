@@ -11,16 +11,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 {
     /// <summary>
     /// Gets hierarchical configuration from IConfiguration api and
-    /// binds the properties on <see cref="JavaScriptGeneratorOptions"/>.
+    /// binds the properties on <see cref="ScriptGeneratorOptionsForJava"/>.
     /// </summary>
-    public class JavaScriptGeneratorOptionsSetup : OptionsSetupBase, IConfigureOptions<JavaScriptGeneratorOptions>
+    public class ScriptGeneratorOptionsSetupForJava : OptionsSetupBase, IConfigureOptions<ScriptGeneratorOptionsForJava>
     {
-        public JavaScriptGeneratorOptionsSetup(IConfiguration configuration)
+        public ScriptGeneratorOptionsSetupForJava(IConfiguration configuration)
             : base(configuration)
         {
         }
 
-        public void Configure(JavaScriptGeneratorOptions options)
+        public void Configure(ScriptGeneratorOptionsForJava options)
         {
             options.JavaVersion = GetStringValue(SettingsKeys.JavaVersion);
             options.MavenVersion = GetStringValue(SettingsKeys.MavenVersion);
