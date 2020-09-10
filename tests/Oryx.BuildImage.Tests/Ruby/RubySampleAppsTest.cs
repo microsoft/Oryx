@@ -21,8 +21,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
-        [Fact]
-        public void GeneratesScript_AndBuildSinatraApp()
+        public static TheoryData<string> ImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string>();
+                var imageTestHelper = new ImageTestHelper();
+                data.Add(imageTestHelper.GetVsoBuildImage());
+                data.Add(imageTestHelper.GetGitHubActionsBuildImage());
+                return data;
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(ImageNameData))]
+        public void GeneratesScript_AndBuildSinatraApp(string buildImageName)
         {
             // Arrange
             var appName = "sinatra-app";
@@ -39,7 +52,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage(),
+                ImageId = buildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

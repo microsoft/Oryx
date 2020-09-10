@@ -1,9 +1,13 @@
 FROM oryxdevmcr.azurecr.io/public/oryx/build
 
+ENV ORYX_PATHS="$ORYX_PATHS:/opt/ruby/lts/bin"
+
 ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     # VSO requires user installed tools to be preferred over Oryx installed tools
     PATH="$ORIGINAL_PATH:$ORYX_PATHS" \
-    CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh"
+    CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh" \
+    RUBY_HOME="/opt/ruby/lts"
+
 
 COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 
@@ -30,16 +34,10 @@ RUN buildDir="/opt/tmp/build" \
     && condaDir="/opt/oryx/conda" \
     && mkdir -p "$condaDir" \
     && cd $imagesDir/build/python/conda \
-    && cp -rf * "$condaDir"
-
-# Install Ruby
-ENV RUBY_BIN="opt/ruby/lts/bin"
-ENV PATH="$RUBY_BIN:$PATHS"
-RUN imagesDir="/opt/tmp/images" \
-    && buildDir="/opt/tmp/build" \
+    && cp -rf * "$condaDir" \
     && cd $imagesDir \
     && . $buildDir/__rubyVersions.sh \
     && ./installPlatform.sh ruby $RUBY27_VERSION \
-    && ln -s $RUBY27_VERSION /opt/ruby/2.7 \
-    && ln -s 2.7 /opt/ruby/lts \
+    && cd /opt/ruby \
+    && ln -s $RUBY27_VERSION /opt/ruby/lts \
     && rm -rf /opt/tmp
