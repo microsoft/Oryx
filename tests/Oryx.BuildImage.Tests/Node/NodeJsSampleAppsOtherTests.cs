@@ -542,7 +542,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform {NodeConstants.PlatformName} --platform-version 6")
+                .AddBuildCommand($"{appDir} --platform {NodeConstants.PlatformName} --platform-version 8")
                 .ToString();
 
             // Act
