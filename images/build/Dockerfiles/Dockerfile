@@ -59,7 +59,7 @@ RUN set -ex \
 RUN set -ex \
  && sdksDir=/opt/dotnet/sdks \
  && cd $sdksDir \
- && ln -s 1.1.1 \
+ && ln -s 1.1 1 \
  && ln -s 3.0 3
 
 RUN set -ex \

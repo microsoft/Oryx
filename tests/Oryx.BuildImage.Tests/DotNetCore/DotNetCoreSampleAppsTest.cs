@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Fact]
         public void Builds_NetCore10App_UsingNetCore11_DotNetSdkVersion()
-        {	
+        {
             // Arrange
             var appName = "aspnetcore10";
             var volume = CreateSampleAppVolume(appName);
@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck(manifestFile)
                 .AddCommand($"cat {manifestFile}")
-                .ToString();	
+                .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
