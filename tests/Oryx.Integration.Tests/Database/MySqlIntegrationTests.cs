@@ -5,8 +5,6 @@
 
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,52 +20,53 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.LtsVersionsBuildImageName)]
-        public async Task NodeApp_MySqlDB(string buildImageName)
+        [InlineData("latest")]
+        [InlineData("github-actions")]
+        public async Task NodeApp_MySqlDB(string imageTag)
         {
             await RunTestAsync(
                 "nodejs",
                 "10",
                 Path.Combine(HostSamplesDir, "nodejs", "node-mysql"),
-                buildImageName: buildImageName);
+                buildImageName: _imageHelper.GetBuildImage(imageTag));
         }
 
         [Theory]
-        [InlineData("mysql-pymysql-sample")]
-        [InlineData("mysql-mysqlconnector-sample")]
-        [InlineData("mysql-mysqlclient-sample")]
-        public async Task Python37App_MySqlDB_UsingPyMySql_UsingLtsVersionsBuildImage(string sampleAppName)
+        [InlineData("mysql-pymysql-sample", "latest")]
+        [InlineData("mysql-pymysql-sample", "github-actions")]
+        [InlineData("mysql-mysqlconnector-sample", "latest")]
+        [InlineData("mysql-mysqlconnector-sample", "github-actions")]
+        [InlineData("mysql-mysqlclient-sample", "latest")]
+        [InlineData("mysql-mysqlclient-sample", "github-actions")]
+        public async Task Python37App_MySqlDB_UsingPyMySql_UsingLtsVersionsBuildImage(
+            string sampleAppName,
+            string imageTag)
         {
             await RunTestAsync(
                 "python",
                 "3.7",
                 Path.Combine(HostSamplesDir, "python", sampleAppName),
-                buildImageName: Settings.LtsVersionsBuildImageName);
+                buildImageName: _imageHelper.GetBuildImage(imageTag));
         }
 
         [Theory]
-        [InlineData("mysql-pymysql-sample")]
-        [InlineData("mysql-mysqlconnector-sample")]
-        [InlineData("mysql-mysqlclient-sample")]
-        public async Task Python37App_MySqlDB_UsingPyMySql(string sampleAppName)
-        {
-            await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", sampleAppName));
-        }
-
-        [Theory]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
-        [InlineData("5.6")]
-        public async Task PhpApp_UsingMysqli(string phpVersion)
+        [InlineData("7.3", "latest")]
+        [InlineData("7.3", "github-actions")]
+        [InlineData("7.2", "latest")]
+        [InlineData("7.2", "github-actions")]
+        [InlineData("7.0", "latest")]
+        [InlineData("7.0", "github-actions")]
+        [InlineData("5.6", "latest")]
+        [InlineData("5.6", "github-actions")]
+        public async Task PhpApp_UsingMysqli(string phpVersion, string imageTag)
         {
             await RunTestAsync(
                 "php",
                 phpVersion,
                 Path.Combine(HostSamplesDir, "php", "mysqli-example"),
                 8080,
-                specifyBindPortFlag: false);
+                specifyBindPortFlag: false,
+                buildImageName: _imageHelper.GetBuildImage(imageTag));
         }
     }
 }
