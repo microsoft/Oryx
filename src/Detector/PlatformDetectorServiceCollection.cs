@@ -30,7 +30,8 @@ namespace Microsoft.Oryx.Detector
                 .AddPythonServices()
                 .AddPhpServices()
                 .AddHugoServices()
-                .AddRubyServices();
+                .AddRubyServices()
+                .AddJavaServices();
 
             return services;
         }

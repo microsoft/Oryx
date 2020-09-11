@@ -1,9 +1,15 @@
 FROM oryxdevmcr.azurecr.io/public/oryx/build
 
+# This is a separate instruction because of the limit of Docker where variable expansion fails when used in the
+# same instruction. In the below example the variable TEST would be empty instead of having the value "bar"
+# Example: ENV FOO="bar" TEST="$FOO"
+ENV ORYX_PATHS="$ORYX_PATHS:/opt/java/lts/bin:/opt/maven/lts/bin"
+
 ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     # VSO requires user installed tools to be preferred over Oryx installed tools
     PATH="$ORIGINAL_PATH:$ORYX_PATHS" \
-    CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh"
+    CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh" \
+    JAVA_HOME="/opt/java/lts"
 
 COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 
@@ -31,4 +37,12 @@ RUN buildDir="/opt/tmp/build" \
     && mkdir -p "$condaDir" \
     && cd $imagesDir/build/python/conda \
     && cp -rf * "$condaDir" \
+        && cd $imagesDir \
+    && . $buildDir/__javaVersions.sh \
+    && ./installPlatform.sh java $JAVA_VERSION \
+    && ./installPlatform.sh maven $MAVEN_VERSION \
+    && cd /opt/java \
+    && ln -s $JAVA_VERSION lts \
+    && cd /opt/maven \
+    && ln -s $MAVEN_VERSION lts \
     && rm -rf /opt/tmp

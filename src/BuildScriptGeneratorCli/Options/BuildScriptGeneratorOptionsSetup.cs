@@ -36,6 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.EnablePythonBuild = !GetBooleanValue(SettingsKeys.DisablePythonBuild);
             options.EnablePhpBuild = !GetBooleanValue(SettingsKeys.DisablePhpBuild);
             options.EnableHugoBuild = !GetBooleanValue(SettingsKeys.DisableHugoBuild);
+            options.EnableJavaBuild = !GetBooleanValue(SettingsKeys.DisableJavaBuild);
             options.EnableMultiPlatformBuild = GetBooleanValue(SettingsKeys.EnableMultiPlatformBuild);
             options.EnableTelemetry = !GetBooleanValue(SettingsKeys.DisableTelemetry);
             options.PreBuildScriptPath = GetStringValue(SettingsKeys.PreBuildScriptPath);
