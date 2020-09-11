@@ -47,6 +47,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public bool EnableRubyBuild { get; set; }
 
+        public bool EnableJavaBuild { get; set; }
+
         public bool EnableMultiPlatformBuild { get; set; }
 
         public string OryxSdkStorageBaseUrl { get; set; }

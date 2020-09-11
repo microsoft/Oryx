@@ -62,6 +62,15 @@ done < <(set | grep -i '^hugo=')
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^ruby=')
+
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
+done < <(set | grep -i '^java=')
+
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
+done < <(set | grep -i '^maven=')
+
 unset benvEnvironmentVariable # Remove all traces of this part of the script
 
 # Oryx's paths come to the end of the PATH environment variable so that any user installed platform
@@ -310,7 +319,7 @@ benv-resolve() {
     return 0
   fi
 
-    # Resolve RUBY versions
+  # Resolve RUBY versions
   if matchesName "ruby" "$name" || matchesName "ruby_version" "$name" && [ "${value::1}" != "/" ]; then
     platformDir=$(benv-getPlatformDir "ruby" "$value" "$_benvDynamicInstallRootDir")
     if [ "$platformDir" == "NotFound" ]; then
@@ -329,6 +338,36 @@ benv-resolve() {
     export GEM_HOME="$platformDir"
     export ruby="$DIR/ruby"
     export gem="$DIR/gem"
+    
+    return 0
+  fi
+
+# Resolve java versions
+  if matchesName "java" "$name" || matchesName "java_version" "$name" && [ "${value::1}" != "/" ]; then
+    platformDir=$(benv-getPlatformDir "java" "$value" "$_benvDynamicInstallRootDir")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "java" "java" "$value" "$_benvDynamicInstallRootDir"
+      return 1
+    fi
+
+    local DIR="$platformDir/bin"
+    updatePath "$DIR"
+    export JAVA_HOME="$platformDir"
+    export java="$DIR/java"
+
+    return 0
+  fi
+
+  # Resolve maven versions
+  if matchesName "maven" "$name" || matchesName "maven_version" "$name" && [ "${value::1}" != "/" ]; then
+    platformDir=$(benv-getPlatformDir "maven" "$value" "$_benvDynamicInstallRootDir")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "maven" "maven" "$value" "$_benvDynamicInstallRootDir"
+      return 1
+    fi
+
+    local DIR="$platformDir/bin"
+    updatePath "$DIR"
 
     return 0
   fi

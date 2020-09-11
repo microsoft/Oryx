@@ -127,6 +127,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     "Microsoft.Oryx.BuildScriptGenerator.Ruby.RubyBashBuildSnippet.sh.tpl");
             }
 
+            public static TemplateResource JavaBuildSnippet
+            {
+                get => new TemplateResource(
+                    "Microsoft.Oryx.BuildScriptGenerator.Java.JavaBashBuildSnippet.sh.tpl");
+            }
+
             public string Name { get; private set; }
         }
     }

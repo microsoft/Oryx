@@ -252,3 +252,14 @@
     - type: shell
       directory: build
       file-name-prefix: __
+- name: java-versions
+  constants:
+    java-version: 11.0.8
+    maven-version: 3.6.3
+  outputs:
+    - type: shell
+      directory: build
+      file-name-prefix: __
+    - type: csharp
+      directory: src/BuildScriptGenerator/Java
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Java
