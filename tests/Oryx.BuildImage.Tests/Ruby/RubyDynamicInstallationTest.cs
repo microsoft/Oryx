@@ -37,10 +37,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuildRailsAppWithDynamicInstall(string buildImageName)
+        public void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string buildImageName)
         {
             // Arrange
-            var appName = "ruby-on-rails-app";
+            var appName = "sinatra-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";

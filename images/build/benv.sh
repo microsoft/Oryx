@@ -329,8 +329,10 @@ benv-resolve() {
 
     local installationDir="/tmp/oryx/platforms/ruby/$value"
     local currentDir="/opt/ruby"
-    mkdir -p $currentDir
-    cp -r $installationDir $currentDir
+    if [ -d "$installationDir" ]; then
+      mkdir -p $currentDir
+      cp -r $installationDir $currentDir
+    fi
     export LD_LIBRARY_PATH="$platformDir/lib:$LD_LIBRARY_PATH"
     local DIR="$platformDir/bin"
     updatePath "$DIR"
