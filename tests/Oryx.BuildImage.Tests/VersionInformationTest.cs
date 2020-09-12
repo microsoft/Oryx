@@ -309,46 +309,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Trait("platform", "node")]
-        [Theory]
-        [InlineData("latest", "6.9.0")]
-        [InlineData("6", "6.9.0")]
-        [InlineData("6.9", "6.9.0")]
-        [InlineData("5", "5.6.0")]
-        [InlineData("5.6", "5.6.0")]
-        [InlineData("5.4", "5.4.2")]
-        [InlineData("5.3", "5.3.0")]
-        [InlineData("5.0", "5.0.3")]
-        [InlineData("3", "3.10.10")]
-        [InlineData("3.10", "3.10.10")]
-        [InlineData("3.9", "3.9.5")]
-        public void Npm_UsesVersion_SpecifiedToBenv(string specifiedVersion, string expectedOutput)
-        {
-            // Arrange
-            var script = new ShellScriptBuilder()
-                .Source($"benv npm={specifiedVersion}")
-                .AddCommand("npm --version")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
         [Trait("platform", "python")]
         [Theory]
         [InlineData("2", Python27VersionInfo)]
