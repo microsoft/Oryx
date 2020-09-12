@@ -107,15 +107,6 @@ RUN cd ${IMAGES_DIR} \
 RUN ${IMAGES_DIR}/build/installNpm.sh
 
 RUN set -ex \
- && ln -s 4.4.7 /opt/nodejs/4.4 \
- && ln -s 4.5.0 /opt/nodejs/4.5 \
- && ln -s 4.8.0 /opt/nodejs/4.8 \
- && ln -s 4.8 /opt/nodejs/4 \
- && ln -s 6.2.2 /opt/nodejs/6.2 \
- && ln -s 6.6.0 /opt/nodejs/6.6 \
- && ln -s 6.9.3 /opt/nodejs/6.9 \
- && ln -s 6.10.3 /opt/nodejs/6.10 \
- && ln -s 6.11.0 /opt/nodejs/6.11 \
  && ln -s 8.0.0 /opt/nodejs/8.0 \
  && ln -s 8.1.4 /opt/nodejs/8.1 \
  && ln -s 8.2.1 /opt/nodejs/8.2 \
@@ -132,7 +123,6 @@ RUN set -ex \
  && ln -s 10.21.0 /opt/nodejs/10.21 \
  && ln -s 12.18.2 /opt/nodejs/12.18 \
  && . ${BUILD_DIR}/__nodeVersions.sh \
- && ln -s $NODE6_VERSION /opt/nodejs/6
 RUN set -ex \
  && ln -s 2.15.9 /opt/npm/2.15 \
  && ln -s 2.15 /opt/npm/2 \
