@@ -7,6 +7,9 @@ package main
 
 import (
 	"fmt"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func ExampleNodeStartupScriptGenerator_getPackageJsonStartCommand_subDir() {
@@ -127,6 +130,22 @@ func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_simpleNodeCom
 	fmt.Println(command)
 	// Output:
 	// node a/b/c.js
+}
+
+func ExampleNodeStartupScriptGenerator_getConfigJsCommand_returnsEmptyString_WhenUsePm2IsFalse(t *testing.T) {
+	gen := &NodeStartupScriptGenerator{
+		UsePm2: false,
+	}
+	command := gen.getConfigJsCommand("ecosystem.config.js")
+	assert.Empty(t, command)
+}
+
+func ExampleNodeStartupScriptGenerator_getConfigYamlCommand_returnsEmptyString_WhenUsePm2IsFalse(t *testing.T) {
+	gen := &NodeStartupScriptGenerator{
+		UsePm2: false,
+	}
+	command := gen.getConfigYamlCommand("ecosystem.config.yaml")
+	assert.Empty(t, command)
 }
 
 func ExampleNodeStartupScriptGenerator_getStartupCommandFromJsFile_customServerPassedIn() {
