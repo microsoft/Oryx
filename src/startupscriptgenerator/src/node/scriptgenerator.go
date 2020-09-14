@@ -314,6 +314,10 @@ func (gen *NodeStartupScriptGenerator) getPackageJsonMainCommand(packageJsonObj 
 }
 
 func (gen *NodeStartupScriptGenerator) getProcessJsonCommand(userInputPath string) string {
+	if !gen.UsePm2 {
+		return ""
+	}
+
 	processJsonPath := gen.checkStartupFileWithPath(".json", "process.json", userInputPath)
 	if processJsonPath != "" {
 		debugCommand := ""
@@ -326,6 +330,10 @@ func (gen *NodeStartupScriptGenerator) getProcessJsonCommand(userInputPath strin
 }
 
 func (gen *NodeStartupScriptGenerator) getConfigJsCommand(userInputFullPath string) string {
+	if !gen.UsePm2 {
+		return ""
+	}
+
 	configJsFullPath := gen.checkStartupFileWithPath(".config.js", "ecosystem.config.js", userInputFullPath)
 	if configJsFullPath != "" {
 		return getPm2StartCommand(configJsFullPath)
@@ -334,6 +342,10 @@ func (gen *NodeStartupScriptGenerator) getConfigJsCommand(userInputFullPath stri
 }
 
 func (gen *NodeStartupScriptGenerator) getConfigYamlCommand(userInputFullPath string) string {
+	if !gen.UsePm2 {
+		return ""
+	}
+
 	configYamlFullPath := gen.checkStartupFileWithPath(".yml", "", userInputFullPath)
 
 	if configYamlFullPath == "" {

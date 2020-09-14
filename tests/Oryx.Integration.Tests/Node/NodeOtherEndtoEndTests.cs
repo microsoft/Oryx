@@ -7,8 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -317,6 +317,56 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
+        [Theory]
+        [InlineData("ecosystem.config.js")]
+        [InlineData("ecosystem.config.yaml")]
+        [InlineData("ecosystem.config.yml")]
+        public async Task CanRunNodeApp_WithoutPm2_EvenThoughPm2SpecificFilesArePresentInRepo(string pm2ConfigFileName)
+        {
+            // Arrange
+            // NOTE: this version does not have PM2 installed and so if PM2 was used in the startup script this test
+            // will fail.
+            var nodeVersion = "10.14";
+            var appName = "webfrontend";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            // Create the pm2's config file
+            File.WriteAllText(Path.Combine(volume.MountedHostDir, pm2ConfigFileName), "");
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appDir}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                volume,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("10.14", nodeVersion);
+                    Assert.Contains("Say It Again", data);
+                });
+        }
+
         [Fact]
         public async Task NodeStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresent()
         {
@@ -558,7 +608,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip ="get rid of single image, #1088920")]
+        [Fact(Skip = "get rid of single image, #1088920")]
         public async Task Node_CreateReactAppSample_SingleImage()
         {
             // Arrange
