@@ -19,16 +19,28 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact]
-        public async Task NodeApp_PostgreSqlDB()
+        [Theory]
+        [InlineData("github-actions")]
+        [InlineData("latest")]
+        public async Task NodeApp_PostgreSqlDB(string imageTag)
         {
-            await RunTestAsync("nodejs", "10.14", Path.Combine(HostSamplesDir, "nodejs", "node-postgres"));
+            await RunTestAsync(
+                "nodejs",
+                "10.14",
+                Path.Combine(HostSamplesDir, "nodejs", "node-postgres"),
+                buildImageName: _imageHelper.GetBuildImage(imageTag));
         }
 
-        [Fact]
-        public async Task Python37App_PostgreSqlDB()
+        [Theory]
+        [InlineData("github-actions")]
+        [InlineData("latest")]
+        public async Task Python37App_PostgreSqlDB(string imageTag)
         {
-            await RunTestAsync("python", "3.7", Path.Combine(HostSamplesDir, "python", "postgres-sample"));
+            await RunTestAsync(
+                "python",
+                "3.7",
+                Path.Combine(HostSamplesDir, "python", "postgres-sample"),
+                buildImageName: _imageHelper.GetBuildImage(imageTag));
         }
 
         [Theory]
