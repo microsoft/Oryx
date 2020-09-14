@@ -327,7 +327,7 @@ benv-resolve() {
       return 1
     fi
 
-    local installationDir="/tmp/oryx/platforms/ruby/$value"
+    local installationDir="$_benvDynamicInstallRootDir/ruby/$value"
     local currentDir="/opt/ruby"
     if [ -d "$installationDir" ]; then
       mkdir -p $currentDir
