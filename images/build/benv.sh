@@ -235,6 +235,12 @@ benv-resolve() {
     IFS='.' read -ra SPLIT_VERSION <<< "$value"
     majorAndMinorParts="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
 
+    # https://stackoverflow.com/a/4250666/1184056
+    # LIBRARY_PATH is used by gcc before compilation to search directories containing static and shared libraries
+    # that need to be linked to your program.
+    # LD_LIBRARY_PATH is used by your program to search directories containing shared libraries after it has been
+    # successfully compiled and linked.
+    export LIBRARY_PATH="$platformDir/lib:$LIBRARY_PATH"
     export LD_LIBRARY_PATH="$platformDir/lib:$LD_LIBRARY_PATH"
 
     local binDir="$platformDir/bin"
@@ -271,6 +277,12 @@ benv-resolve() {
       return 1
     fi
 
+    # https://stackoverflow.com/a/4250666/1184056
+    # LIBRARY_PATH is used by gcc before compilation to search directories containing static and shared libraries
+    # that need to be linked to your program.
+    # LD_LIBRARY_PATH is used by your program to search directories containing shared libraries after it has been
+    # successfully compiled and linked.
+    export LIBRARY_PATH="$platformDir/lib:$LIBRARY_PATH"
     export LD_LIBRARY_PATH="$platformDir/lib:$LD_LIBRARY_PATH"
     
     local DIR="$platformDir/bin"

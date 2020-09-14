@@ -31,8 +31,10 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact]
-        public async Task NodeApp_MicrosoftSqlServerDB()
+        [Theory]
+        [InlineData("github-actions")]
+        [InlineData("latest")]
+        public async Task NodeApp_MicrosoftSqlServerDB(string imageTag)
         {
             // Arrange
             var appName = "node-mssql";
@@ -48,7 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new List<DockerVolume> { volume },
-                Settings.BuildImageName,
+                _imageHelper.GetBuildImage(imageTag),
                 "oryx",
                 new[] { "build", appDir, "--platform", "nodejs", "--platform-version", "10.14" },
                 _imageHelper.GetRuntimeImage("node", "10.14"),
@@ -71,8 +73,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task Python37App_MicrosoftSqlServerDB()
+        [Theory]
+        [InlineData("github-actions")]
+        [InlineData("latest")]
+        public async Task Python37App_MicrosoftSqlServerDB(string imageTag)
         {
             // Arrange
             var appName = "mssqlserver-sample";
@@ -88,7 +92,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new List<DockerVolume> { volume },
-                Settings.BuildImageName,
+                _imageHelper.GetBuildImage(imageTag),
                 "oryx",
                 new[] { "build", appDir, "--platform", "python", "--platform-version", "3.7" },
                 _imageHelper.GetRuntimeImage("python", "3.7"),
@@ -112,10 +116,12 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
+        [InlineData("7.3", "github-actions")]
+        [InlineData("7.2", "github-actions")]
+        [InlineData("7.3", "latest")]
+        [InlineData("7.2", "latest")]
         // pdo_sqlsrv only supports PHP >= 7.1
-        public async Task PhpApp_UsingPdo(string phpVersion)
+        public async Task PhpApp_UsingPdo(string phpVersion, string imageTag)
         {
             // Arrange
             var appName = "sqlsrv-example";
@@ -131,7 +137,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new List<DockerVolume> { volume },
-                Settings.BuildImageName,
+                _imageHelper.GetBuildImage(imageTag),
                 "oryx",
                 new[] { "build", appDir, "--platform", "php", "--platform-version", phpVersion },
                 _imageHelper.GetRuntimeImage("php", phpVersion),
