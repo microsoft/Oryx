@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string DisablePythonBuild = "DISABLE_PYTHON_BUILD";
         public const string DisablePhpBuild = "DISABLE_PHP_BUILD";
         public const string DisableHugoBuild = "DISABLE_HUGO_BUILD";
+        public const string DisableRubyBuild = "DISABLE_RUBY_BUILD";
         public const string DisableJavaBuild = "DISABLE_JAVA_BUILD";
         public const string EnableMultiPlatformBuild = "ENABLE_MULTIPLATFORM_BUILD";
         public const string DisableTelemetry = "ORYX_DISABLE_TELEMETRY";
@@ -31,6 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string PhpVersion = "PHP_VERSION";
         public const string PhpComposerVersion = "PHP_COMPOSER_VERSION";
         public const string HugoVersion = "HUGO_VERSION";
+        public const string RubyVersion = "RUBY_VERSION";
         public const string JavaVersion = "JDK_VERSION";
         public const string MavenVersion = "MAVEN_VERSION";
         public const string Project = "PROJECT";

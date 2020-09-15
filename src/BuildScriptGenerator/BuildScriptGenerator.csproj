@@ -66,6 +66,7 @@
     <Content Remove="Python\PythonBashBuildSnippet.sh.tpl" />
     <Content Remove="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
     <Content Remove="Hugo\HugoBashBuildSnippet.sh.tpl" />
+    <Content Remove="Ruby\RubyBashBuildSnippet.sh.tpl" />
   </ItemGroup>
 
   <ItemGroup>
@@ -83,6 +84,7 @@
     <EmbeddedResource Include="Php\PhpBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Python\JupyterNotebookBashBuildSnippet.sh.tpl" />
     <EmbeddedResource Include="Python\PythonBashBuildSnippet.sh.tpl" />
+    <EmbeddedResource Include="Ruby\RubyBashBuildSnippet.sh.tpl" />
   </ItemGroup>
 
   <ItemGroup>

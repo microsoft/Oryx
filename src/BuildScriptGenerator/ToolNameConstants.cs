@@ -23,5 +23,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string NpmName = "npm";
 
         public const string HugoName = "hugo";
+
+        public const string RubyName = "ruby";
+
+        public const string GemName = "gem";
     }
 }

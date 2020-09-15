@@ -45,6 +45,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public bool EnableHugoBuild { get; set; }
 
+        public bool EnableRubyBuild { get; set; }
+
         public bool EnableJavaBuild { get; set; }
 
         public bool EnableMultiPlatformBuild { get; set; }
