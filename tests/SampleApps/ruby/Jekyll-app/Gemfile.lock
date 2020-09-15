@@ -8,7 +8,7 @@ GEM
       fast-stemmer (>= 1.0.0)
     daemons (1.1.8)
     directory_watcher (1.4.1)
-    eventmachine (0.12.10)
+    eventmachine (1.2.7)
     fast-stemmer (1.0.0)
     jekyll (0.11.2)
       albino (~> 1.3)

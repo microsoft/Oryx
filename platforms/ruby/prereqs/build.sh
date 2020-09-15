@@ -101,6 +101,7 @@ GEM_HOME=$INSTALLATION_PREFIX/bundle
 BUNDLE_SILENCE_ROOT_WARNING=1
 BUNDLE_APP_CONFIG="$GEM_HOME"
 PATH=$GEM_HOME/bin:$PATH
+LD_LIBRARY_PATH=$INSTALLATION_PREFIX/lib
 
 # adjust permissions of a few directories for running "gem install" as an arbitrary user
 mkdir -p "$GEM_HOME"; \

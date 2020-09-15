@@ -34,10 +34,13 @@ namespace Microsoft.Oryx.Detector.Ruby
         {
             bool isRubyApp = false;
             string appDirectory = string.Empty;
+            bool gemfileExists = false;
             var sourceRepo = context.SourceRepo;
+            string bundlerVersion = string.Empty;
             if (sourceRepo.FileExists(RubyConstants.GemFileName))
             {
                 isRubyApp = true;
+                gemfileExists = true;
                 _logger.LogInformation($"Found {RubyConstants.GemFileName} at the root of the repo.");
             }
             else
@@ -47,11 +50,17 @@ namespace Microsoft.Oryx.Detector.Ruby
             }
             if (!isRubyApp) {
                 var isRubyLikeApp = false;
-                if (sourceRepo.FileExists(RubyConstants.GemFileLockName) 
-                    || sourceRepo.FileExists(RubyConstants.ConfigRubyFileName))
+                if (sourceRepo.FileExists(RubyConstants.GemFileLockName))
                 {
                     isRubyLikeApp = true;
-                    _logger.LogInformation($"Found {RubyConstants.GemFileLockName}/{RubyConstants.ConfigRubyFileName} "
+                    bundlerVersion = GetBundlerVersionFromGemFileLock(context);
+                    _logger.LogInformation($"Found {RubyConstants.GemFileLockName} "
+                    + "at the root of the repo.");
+                }
+                if (sourceRepo.FileExists(RubyConstants.ConfigRubyFileName))
+                {
+                    isRubyLikeApp = true;
+                    _logger.LogInformation($"Found {RubyConstants.ConfigRubyFileName} "
                     + "at the root of the repo.");
                 }
                 if (isRubyLikeApp) {
@@ -78,11 +87,13 @@ namespace Microsoft.Oryx.Detector.Ruby
                 return null;
             }
             var version = GetVersion(context);
-            return new PlatformDetectorResult
+            return new RubyPlatformDetectorResult
             {
                 Platform = RubyConstants.PlatformName,
                 PlatformVersion = version,
                 AppDirectory = appDirectory,
+                GemfileExists = gemfileExists,
+                BundlerVersion = bundlerVersion,
             };
         }
 
@@ -156,6 +167,30 @@ namespace Microsoft.Oryx.Detector.Ruby
                     {
                         return rubyVersionLine[1];
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    $"Exception caught while trying to parse {RubyConstants.GemFileLockName}");
+            }
+            return null;
+        }
+
+        private string GetBundlerVersionFromGemFileLock(DetectorContext context) {
+            try
+            {
+                var gemFileLockContent = context.SourceRepo.ReadFile(RubyConstants.GemFileLockName);
+                var gemFileLockContentLines = gemFileLockContent.Split('\n');
+                gemFileLockContentLines = gemFileLockContentLines.Select(x => x.Trim()).ToArray();
+                // Example content from a Gemfile.lock:
+                //BUNDLED WITH
+                //   1.11.2
+                int bundlerVersionLineIndex = Array.IndexOf(gemFileLockContentLines, "BUNDLED WITH");
+                if (bundlerVersionLineIndex != -1)
+                {
+                    return gemFileLockContentLines[bundlerVersionLineIndex + 1];
                 }
             }
             catch (Exception ex)

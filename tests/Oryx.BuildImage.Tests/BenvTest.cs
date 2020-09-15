@@ -115,6 +115,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("yarn")]
         [InlineData("python")]
         [InlineData("php")]
+        [InlineData("ruby")]
         [InlineData("java")]
         [InlineData("mvn")]
         public void UserInstalledExecutable_IsChosenOverOryxExecutable_InVsoBuildImage(string executableName)

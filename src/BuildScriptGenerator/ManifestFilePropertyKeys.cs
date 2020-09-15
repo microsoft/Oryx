@@ -21,6 +21,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         internal const string HugoVersion = nameof(HugoVersion);
 
+        internal const string RubyVersion = nameof(RubyVersion);
+
         internal const string PlatformName = nameof(PlatformName);
     }
 }

@@ -10,6 +10,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Hugo;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.BuildScriptGenerator.Ruby;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Common.Extensions;
@@ -93,6 +94,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(hugoPlatform.Versions);
                     Assert.True(hugoPlatform.Versions.Any());
                     Assert.True(hugoPlatform.Versions.Contains(HugoConstants.Version));
+
+                    var rubyPlatform = actualResults
+                        .Where(pr => pr.Name.EqualsIgnoreCase(RubyConstants.PlatformName))
+                        .FirstOrDefault();
+                    Assert.NotNull(rubyPlatform);
+                    Assert.NotNull(rubyPlatform.Versions);
+                    Assert.True(rubyPlatform.Versions.Any());
+                    Assert.True(rubyPlatform.Versions.Contains("2.6.6"));
+                    Assert.True(rubyPlatform.Versions.Contains("2.7.1"));
                 },
             result.GetDebugInfo());
         }

@@ -117,8 +117,8 @@
     ruby26-tar-sha256: 5db187882b7ac34016cd48d7032e197f07e4968f406b0690e20193b9b424841f
   outputs:
     - type: csharp
-      directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+      directory: src/BuildScriptGenerator/Ruby
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Ruby
     - type: shell
       directory: build
       file-name-prefix: __
