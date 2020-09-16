@@ -25,7 +25,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
         public async Task RunNodeAppUsingConfigYml(string nodeVersion)
         {
-
             var appName = "express-config-yaml";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
@@ -36,7 +35,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand($"cd {dir}/app")
                 .AddCommand("npm install")
                 .AddCommand("cd ..")
-                .AddCommand($"oryx create-script -bindPort {containerPort} -userStartupCommand config.yml")
+                .AddCommand($"oryx create-script -bindPort {containerPort} -userStartupCommand config.yml -UsePM2")
                 .AddCommand("./run.sh")
                 .ToString();
 
