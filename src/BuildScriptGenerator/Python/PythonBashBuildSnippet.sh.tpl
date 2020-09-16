@@ -17,10 +17,14 @@ fi
 
 	VIRTUALENVIRONMENTNAME={{ VirtualEnvironmentName }}
 	VIRTUALENVIRONMENTMODULE={{ VirtualEnvironmentModule }}
-	VIRTUALENVIRONMENTOPTIONS={{ VirtualEnvironmentParameters }}
+	VIRTUALENVIRONMENTOPTIONS="{{ VirtualEnvironmentParameters }}"
 	zippedVirtualEnvFileName={{ CompressedVirtualEnvFileName }}
 
 	echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
+
+	if [ -e "requirements.txt" ]; then
+		VIRTUALENVIRONMENTOPTIONS="$VIRTUALENVIRONMENTOPTIONS --system-site-packages"
+	fi
 
 	echo Creating virtual environment...
 	$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS

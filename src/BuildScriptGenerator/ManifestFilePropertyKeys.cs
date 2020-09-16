@@ -24,5 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         internal const string RubyVersion = nameof(RubyVersion);
 
         internal const string PlatformName = nameof(PlatformName);
+
+        internal const string SourceDirectoryInBuildContainer = nameof(SourceDirectoryInBuildContainer);
     }
 }

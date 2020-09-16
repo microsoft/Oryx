@@ -168,14 +168,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             var virtualEnvModule = string.Empty;
-            var virtualEnvCopyParam = string.Empty;
+            var virtualEnvParams = string.Empty;
 
             var pythonVersion = pythonPlatformDetectorResult.PlatformVersion;
             _logger.LogDebug("Selected Python version: {pyVer}", pythonVersion);
 
             if (!string.IsNullOrEmpty(pythonVersion) && !string.IsNullOrWhiteSpace(virtualEnvName))
             {
-                (virtualEnvModule, virtualEnvCopyParam) = GetVirtualEnvModules(pythonVersion);
+                (virtualEnvModule, virtualEnvParams) = GetVirtualEnvModules(pythonVersion);
 
                 _logger.LogDebug(
                     "Using virtual environment {venv}, module {venvModule}",
@@ -200,7 +200,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var scriptProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: virtualEnvName,
                 virtualEnvironmentModule: virtualEnvModule,
-                virtualEnvironmentParameters: virtualEnvCopyParam,
+                virtualEnvironmentParameters: virtualEnvParams,
                 packagesDirectory: packageDir,
                 enableCollectStatic: _pythonScriptGeneratorOptions.EnableCollectStatic,
                 compressVirtualEnvCommand: compressVirtualEnvCommand,
@@ -468,10 +468,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return isVirtualEnvPackaged;
         }
 
-        private (string virtualEnvModule, string virtualEnvCopyParam) GetVirtualEnvModules(string pythonVersion)
+        private (string virtualEnvModule, string virtualEnvParams) GetVirtualEnvModules(string pythonVersion)
         {
             string virtualEnvModule;
-            string virtualEnvCopyParam = string.Empty;
+            string virtualEnvParams = string.Empty;
             switch (pythonVersion.Split('.')[0])
             {
                 case "2":
@@ -480,7 +480,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
                 case "3":
                     virtualEnvModule = "venv";
-                    virtualEnvCopyParam = "--copies";
+                    virtualEnvParams = "--copies";
                     break;
 
                 default:
@@ -489,7 +489,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     throw new NotSupportedException(errorMessage);
             }
 
-            return (virtualEnvModule, virtualEnvCopyParam);
+            return (virtualEnvModule, virtualEnvParams);
         }
 
         private void TryLogDependencies(string pythonVersion, ISourceRepo repo)
