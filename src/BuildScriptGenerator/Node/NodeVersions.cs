@@ -4,7 +4,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     public static class NodeVersions
     {
-        public const string NodeRuntimeBaseTag = "20200814.6";
+        public const string NodeRuntimeBaseTag = "20200917.1";
         public const string YarnCacheBaseTag = "20200810.1";
         public const string YarnVersion = "1.17.3";
         public const string YarnMinorVersion = "1.17";
@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string Node10Version = "10.22.0";
         public const string Node12Version = "12.18.3";
         public const string Node14Version = "14.7.0";
-        public const string NodeAppInsightsSdkVersion = "1.8.3";
+        public const string NodeAppInsightsSdkVersion = "1.8.7";
         public const string Pm2Version = "3.5.1";
     }
 }
