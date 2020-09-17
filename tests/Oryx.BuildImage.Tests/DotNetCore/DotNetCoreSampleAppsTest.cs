@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/aspnetcore10-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 1.1")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck(manifestFile)
                 .AddCommand($"cat {manifestFile}")
@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
                         result.StdOut);
                     Assert.Contains(
-                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{DotNetCoreRunTimeVersions.NetCoreApp10}\"",
+                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{DotNetCoreRunTimeVersions.NetCoreApp11}\"",
                         result.StdOut);
                     Assert.Contains(
                         $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{DotNetCoreSdkVersions.DotNetCore11SdkVersion}\"",
@@ -118,7 +118,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/aspnetcore10-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
@@ -346,7 +346,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    var dotnetExecutable = $"/opt/dotnet/sdks/{DotNetCoreSdkVersions.DotNetCore21SdkVersion}/dotnet";
+                    var dotnetExecutable = $"/opt/dotnet/{DotNetCoreSdkVersions.DotNetCore21SdkVersion}/dotnet";
                     Assert.Matches($"Pre-build script: {dotnetExecutable}", result.StdOut);
                     Assert.Matches($"Post-build script: {dotnetExecutable}", result.StdOut);
                 },

@@ -5,19 +5,19 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
-    internal static class PythonConstants
+    public static class PythonConstants
     {
-        internal const string PlatformName = "python";
-        internal const string RequirementsFileName = "requirements.txt";
-        internal const string RuntimeFileName = "runtime.txt";
-        internal const string PythonFileNamePattern = "*.py";
-        internal const string PythonVersionEnvVarName = "PYTHON_VERSION";
-        internal const string PythonLtsVersion = Common.PythonVersions.Python38Version;
-        internal const string InstalledPythonVersionsDir = "/opt/python/";
-        internal const string ZipFileExtension = "tar.gz";
-        internal const string ZipVirtualEnvFileNameFormat = "{0}.zip";
-        internal const string TarGzVirtualEnvFileNameFormat = "{0}.tar.gz";
-        internal const string DefaultTargetPackageDirectory = "__oryx_packages__";
-        internal const string SetupDotPyFileName = "setup.py";
+        public const string PlatformName = "python";
+        public const string RequirementsFileName = "requirements.txt";
+        public const string RuntimeFileName = "runtime.txt";
+        public const string PythonFileNamePattern = "*.py";
+        public const string PythonVersionEnvVarName = "PYTHON_VERSION";
+        public const string PythonLtsVersion = Common.PythonVersions.Python38Version;
+        public const string InstalledPythonVersionsDir = "/opt/python/";
+        public const string ZipFileExtension = "tar.gz";
+        public const string ZipVirtualEnvFileNameFormat = "{0}.zip";
+        public const string TarGzVirtualEnvFileNameFormat = "{0}.tar.gz";
+        public const string DefaultTargetPackageDirectory = "__oryx_packages__";
+        public const string SetupDotPyFileName = "setup.py";
     }
 }

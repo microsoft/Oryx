@@ -22,18 +22,11 @@ globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
 # Example: 3.0.100-preview4-011223 will be changed to 3.0.100
 DOTNET_SDK_VER=${DOTNET_SDK_VER%%-*}
 
-SDK_DIR=/opt/dotnet/sdks
+SDK_DIR=/opt/dotnet
 DOTNET_DIR=$SDK_DIR/$DOTNET_SDK_VER
 mkdir -p $DOTNET_DIR
 tar -xzf $fileName -C $DOTNET_DIR
 rm $fileName
-
-# Create a link : major.minor => major.minor.path
-IFS='.' read -ra SDK_VERSION_PARTS <<< "$DOTNET_SDK_VER"
-MAJOR_MINOR="${SDK_VERSION_PARTS[0]}.${SDK_VERSION_PARTS[1]}"
-echo
-echo "Created link from $MAJOR_MINOR to $DOTNET_SDK_VER"
-ln -s $DOTNET_SDK_VER $SDK_DIR/$MAJOR_MINOR
 
 dotnet=$SDK_DIR/$DOTNET_SDK_VER/dotnet
 

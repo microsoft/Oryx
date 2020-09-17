@@ -106,7 +106,7 @@ namespace Microsoft.Oryx.Tests.Common
             return _installationScriptContent;
         }
 
-        public void ResolveVersions(PlatformDetectorResult detectorResult)
+        public void ResolveVersions(RepositoryContext context, PlatformDetectorResult detectorResult)
         {
         }
 

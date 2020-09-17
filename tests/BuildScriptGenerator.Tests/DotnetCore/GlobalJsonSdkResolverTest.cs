@@ -101,10 +101,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("3.0.3", "3.2.201")]
-        [InlineData("2.1.16", "2.3.202")]
-        [InlineData("5.0.0", "5.2.100-rc1-01445")]
-        public void GetSatisfyingSdkVersion_MustReturnLatestMinorOfRuntimeVersion_IfGlobalJsonFileIsNotFoundInTheRepo(
+        [InlineData("3.0.3", "3.0.202")]
+        [InlineData("2.1.16", "2.1.202")]
+        [InlineData("5.1.0", "5.1.100-preview3-01445")]
+        [InlineData("5.0.0", null)]
+        public void GetSatisfyingSdkVersion_MustReturnLatestFeaturePatchOfRuntimeVersion_IfGlobalJsonFileIsNotFoundInTheRepo(
             string runtimeVersion,
             string expectedSdkVersion)
         {
@@ -112,8 +113,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var availableVersions = new[]
             {
                 "2.1.100",
+                "2.1.202",
                 "2.3.200",
                 "2.3.202",
+                "3.0.202",
                 "3.1.100",
                 "3.1.101",
                 "3.2.100",

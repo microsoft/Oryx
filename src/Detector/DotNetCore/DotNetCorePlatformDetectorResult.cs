@@ -18,5 +18,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         /// "src/ShoppingWeb/ShoppingWeb.csproj"
         /// </example>
         public string ProjectFile { get; set; }
+
+        public string SdkVersion { get; set; }
     }
 }

@@ -60,41 +60,6 @@ RUN set -ex \
     rm -rf /tmp/NuGetScratch \
     && find /opt/nuget -type d -exec chmod 777 {} \;
 
-RUN set -ex \
- && sdksDir=/opt/dotnet/sdks \
- && cd $sdksDir \
- && ln -s 1.1 1 \
- && ln -s 3.0 3
-
-RUN set -ex \
- && dotnetDir=/opt/dotnet \
- && sdksDir=$dotnetDir/sdks \
- && runtimesDir=$dotnetDir/runtimes \
- && cd $runtimesDir \
- && . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh \
- && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
- # 1.1 sdk <-- 1.0 runtime's sdk
- && mkdir $NET_CORE_APP_10 \
- && ln -s $NET_CORE_APP_10 1.0 \
- && echo $DOT_NET_CORE_11_SDK_VERSION > $NET_CORE_APP_10/sdkVersion.txt \
- # 1.1 sdk <-- 1.1 runtime's sdk
- && mkdir $NET_CORE_APP_11 \
- && ln -s $NET_CORE_APP_11 1.1 \
- && ln -s 1.1 1 \
- && echo $DOT_NET_CORE_11_SDK_VERSION > $NET_CORE_APP_11/sdkVersion.txt \
- # 2.1 sdk <-- 2.0 runtime's sdk
- && mkdir $NET_CORE_APP_20 \
- && ln -s $NET_CORE_APP_20 2.0 \
- && echo $DOT_NET_CORE_21_SDK_VERSION > $NET_CORE_APP_20/sdkVersion.txt \
- # 2.2 sdk <-- 2.2 runtime's sdk
- && mkdir $NET_CORE_APP_22 \
- && ln -s $NET_CORE_APP_22 2.2 \
- && echo $DOT_NET_CORE_22_SDK_VERSION > $NET_CORE_APP_22/sdkVersion.txt \
- # 3.0 sdk <-- 3.0 runtime's sdk
- && mkdir $NET_CORE_APP_30 \
- && ln -s $NET_CORE_APP_30 3.0 \
- && echo $DOT_NET_CORE_30_SDK_VERSION > $NET_CORE_APP_30/sdkVersion.txt
-
 # Install Node.js, NPM, Yarn
 RUN apt-get update \
     && apt-get upgrade -y \
