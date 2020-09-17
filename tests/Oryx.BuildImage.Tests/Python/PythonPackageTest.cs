@@ -32,6 +32,10 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
                 "git://github.com/boto/botocore.git" },
             new object[] { "pyasn1", "0.4.8",
                 "git://github.com/etingof/pyasn1.git", "v0.4.8"},
+            new object[] { "configparser", "5.0.0",
+                "git://github.com/jaraco/configparser.git", "5.0.0"},
+            new object[] { "attrs", "5.0.0",
+                "git://github.com/python-attrs/attrs.git", "20.2.0"},
         };
 
         private readonly string[] IgnoredTarEntries = new[] { "tutorial.rst", "docs/tutorial.rst" };
