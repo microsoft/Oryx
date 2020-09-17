@@ -10,7 +10,8 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     PATH="$ORIGINAL_PATH:$ORYX_PATHS" \
     CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh" \
     RUBY_HOME="/opt/ruby/lts" \
-    JAVA_HOME="/opt/java/lts"
+    JAVA_HOME="/opt/java/lts" \
+    DYNAMIC_INSTALL_ROOT_DIR="/opt"
 
 COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 

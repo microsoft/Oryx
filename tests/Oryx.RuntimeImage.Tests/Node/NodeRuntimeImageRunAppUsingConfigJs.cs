@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand($"cd {dir}/app")
                 .AddCommand("npm install")
                 .AddCommand("cd ..")
-                .AddCommand($"oryx create-script -bindPort {containerPort}")
+                .AddCommand($"oryx create-script -bindPort {containerPort} -usePM2")
                 .AddCommand("./run.sh")
                 .ToString();
 
