@@ -28,7 +28,9 @@ RUN LANG="C.UTF-8" \
         python3-pip \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
+    && pip install --upgrade cython \
     && pip3 install pip --upgrade \
+    && pip3 install --upgrade cython \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
 
