@@ -33,13 +33,13 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
             new object[] { "pyasn1", "0.4.8",
                 "git://github.com/etingof/pyasn1.git", "v0.4.8"},
             new object[] { "configparser", "5.0.0",
-                "git://github.com/jaraco/configparser.git", "5.0.0"},
-            new object[] { "attrs", "5.0.0",
+                "git://github.com/jaraco/configparser.git", "v5.0.0"},
+            new object[] { "attrs", "20.2.0",
                 "git://github.com/python-attrs/attrs.git", "20.2.0"},
             new object[] { "pytest-timeout", "1.4.2",
                 "git://github.com/pytest-dev/pytest-timeout.git", "1.4.2"},
             new object[] { "matplotlib", "3.3.2",
-                "git://github.com/matplotlib/matplotlib.git", "3.3.2"},
+                "git://github.com/matplotlib/matplotlib.git", "v3.3.2"},
             new object[] { "cryptography", "3.1",
                 "git://github.com/pyca/cryptography.git", "3.1"},
         };
@@ -165,7 +165,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
                 .AddCommand("export ENABLE_DYNAMIC_INSTALL=true")
                 .AddCommand($"cd {pkgSrcDir} && git checkout tags/{pkgTag} -b test/{pkgVersion}")
             // Build & package
-                .AddCommand($"pip3 install cython")
+            //  .AddCommand($"pip3 install cython")
                 .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir} {osReqsParam}") // Should create a file <name>-<version>.tgz
                 .AddFileExistsCheck(oryxPackTarOutput)
                 // Compute diff between tar contents
