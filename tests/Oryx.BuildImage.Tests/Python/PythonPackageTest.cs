@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
                 .AddCommand("export ENABLE_DYNAMIC_INSTALL=true")
                 .AddCommand($"cd {pkgSrcDir} && git checkout tags/{pkgTag} -b test/{pkgVersion}")
             // Build & package
-            //  .AddCommand($"pip3 install cython")
+                .AddCommand($"pip3 install cython")
                 .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir} {osReqsParam}") // Should create a file <name>-<version>.tgz
                 .AddFileExistsCheck(oryxPackTarOutput)
                 // Compute diff between tar contents
@@ -179,7 +179,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
                 .ToString();
 
             // Act
-            var image = Settings.BuildImageWithRootAccess;
+            var image = Settings.LtsVersionsBuildImageWithRootAccess;
             var result = _dockerCli.Run(image, "/bin/bash", new[] { "-c", script });
 
             // Assert contained file names

@@ -28,9 +28,7 @@ RUN LANG="C.UTF-8" \
         python3-pip \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
-    && pip install --upgrade cython \
     && pip3 install pip --upgrade \
-    && pip3 install --upgrade cython \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
 
@@ -188,6 +186,8 @@ RUN imagesDir="/opt/tmp/images" \
     && ln -s $PYTHON38_VERSION /opt/python/latest \
     && ln -s $PYTHON38_VERSION /opt/python/stable \
     && ln -s 3.8 /opt/python/3 \
+    && pip install --upgrade cython \
+    && pip3 install --upgrade cython \
     # Install PHP pre-reqs
     && $imagesDir/build/php/prereqs/installPrereqs.sh \
     # Copy PHP versions

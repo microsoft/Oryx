@@ -209,6 +209,8 @@ RUN PYTHONIOENCODING="UTF-8" \
     && ln -sfn $PYTHON36_VERSION /opt/python/3.6 \
     && ln -sfn $PYTHON37_VERSION /opt/python/3.7 \
     && ln -sfn $PYTHON38_VERSION /opt/python/3.8 \
+    && pip install --upgrade cython \
+    && pip3 install --upgrade cython \
     && $imagesDir/build/createFlattenedDotNetCoreInstall.sh \
     && cp $imagesDir/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md \
     # Copy PHP versions
