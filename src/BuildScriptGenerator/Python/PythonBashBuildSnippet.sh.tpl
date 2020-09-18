@@ -108,7 +108,7 @@ fi
 	echo "Running python packaging commands ...."
 	echo
 	echo "Creating python package wheel ...."
-	$python setup.py sdist bdist_wheel --universal
+	$python setup.py sdist --formats=gztar,zip,tar bdist_wheel --universal
 	echo "Now creating python package egg ...."
 	$python setup.py bdist_egg
 	echo
