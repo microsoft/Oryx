@@ -103,8 +103,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
                 .ToString();
 
             // Act
-            // Not using Settings.BuildImageName on purpose - so that apt-get can run as root
-            var image = _imageHelper.GetBuildImage();
+            var image = Settings.BuildImageWithRootAccess;
             var result = _dockerCli.Run(image, "/bin/bash", new[] { "-c", script });
 
             // Assert contained file names
@@ -180,8 +179,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
                 .ToString();
 
             // Act
-            // Not using Settings.BuildImageName on purpose - so that apt-get can run as root
-            var image = _imageHelper.GetBuildImage();
+            var image = Settings.BuildImageWithRootAccess;
             var result = _dockerCli.Run(image, "/bin/bash", new[] { "-c", script });
 
             // Assert contained file names
