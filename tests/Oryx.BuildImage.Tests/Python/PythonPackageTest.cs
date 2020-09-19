@@ -32,6 +32,16 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
                 "git://github.com/boto/botocore.git" },
             new object[] { "pyasn1", "0.4.8",
                 "git://github.com/etingof/pyasn1.git", "v0.4.8"},
+            new object[] { "configparser", "5.0.0",
+                "git://github.com/jaraco/configparser.git", "v5.0.0"},
+            new object[] { "attrs", "20.2.0",
+                "git://github.com/python-attrs/attrs.git", "20.2.0"},
+            new object[] { "pytest-timeout", "1.4.2",
+                "git://github.com/pytest-dev/pytest-timeout.git", "1.4.2"},
+            new object[] { "matplotlib", "3.3.2",
+                "git://github.com/matplotlib/matplotlib.git", "v3.3.2"},
+            new object[] { "cryptography", "3.1",
+                "git://github.com/pyca/cryptography.git", "3.1"},
         };
 
         private readonly string[] IgnoredTarEntries = new[] { "tutorial.rst", "docs/tutorial.rst" };
@@ -76,12 +86,11 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
             var script = new ShellScriptBuilder()
             // Fetch source code
                 .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir}")
+                .AddCommand("export ENABLE_DYNAMIC_INSTALL=true")
                 .AddCommand($"cd {pkgSrcDir} && git checkout tags/{pkgTag} -b test/{pkgVersion}")
             // Build & package
                 .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir} {osReqsParam}") // Should create a file <name>-<version>.tgz
                 .AddFileExistsCheck(oryxPackTarOutput)
-                .AddFileExistsCheck(oryxPackEggOutput)
-                .AddFileExistsCheck(oryxPackWheelOutput)
            // Compute diff between tar contents
            // Download public PyPi tar for comparison
                 .AddCommand($"export PyPiTarUrl={pyPiTarUrl}")
@@ -94,8 +103,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
                 .ToString();
 
             // Act
-            // Not using Settings.BuildImageName on purpose - so that apt-get can run as root
-            var image = _imageHelper.GetBuildImage();
+            var image = Settings.BuildImageWithRootAccess;
             var result = _dockerCli.Run(image, "/bin/bash", new[] { "-c", script });
 
             // Assert contained file names
@@ -112,6 +120,83 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
             Assert.True(tarSizeDiff <= pypiTarSize * 0.1, // Accepting differences of less than 10% of the official artifact size
                 $"Size difference is too big. Oryx build: {oryxTarSize}, Actual PyPi: {pypiTarSize}");
         }
+
+        [Theory(Skip = "Random failure 'ValueError: Submodule not clean'")]
+        [InlineData("numpy", "1.19.2", "git://github.com/numpy/numpy.git", "v1.19.2")]
+        public void CanBuildPython3NumpyPackage(
+            string pkgName,
+            string pkgVersion,
+            string gitRepoUrl,
+            string pkgTag = null,
+            string[] requiredOsPackages = null)
+        {
+            const string tarListCmd = "tar -tvf";
+            const string pypiTarPath = "/tmp/pypi-pkg.tar.gz";
+            const string tarListMarker = "---TAR---";
+
+            // Arrange
+            var pkgSrcDir = "/tmp/pkg/src";
+            var pkgBuildOutputDir = "/tmp/pkg/out";
+            var oryxPackTarOutput = $"{pkgBuildOutputDir}/dist/{pkgName}-{pkgVersion}.tar.gz";
+            var oryxPackEggOutput = $"{pkgBuildOutputDir}/dist/{pkgName}-{pkgVersion}-py3.8.egg";
+            var oryxPackWheelOutput = $"{pkgBuildOutputDir}/dist/{pkgName}-{pkgVersion}-py2.py3-none-any.whl";
+
+            var osReqsParam = string.Empty;
+            if (requiredOsPackages != null)
+            {
+                osReqsParam = $"--os-requirements {string.Join(',', requiredOsPackages)}";
+            }
+
+            // pypi package url usually is in following format
+            //https://pypi.io/packages/source/{ package_name_first_letter }/{ package_name }/{ package_name }-{ package_version }.tar.gz
+
+            var pkgNameFirstLetter = pkgName.ElementAt(0);
+            var pyPiTarUrl = $"https://pypi.io/packages/source/{pkgNameFirstLetter}/{pkgName}/{pkgName}-{pkgVersion}.tar.gz";
+
+            if (string.IsNullOrEmpty(pkgTag))
+            {
+                pkgTag = pkgVersion;
+            }
+
+            var script = new ShellScriptBuilder()
+            // Fetch source code
+                .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir} --recursive")
+                .AddCommand("export ENABLE_DYNAMIC_INSTALL=true")
+                .AddCommand($"cd {pkgSrcDir} && git checkout tags/{pkgTag} -b test/{pkgVersion}")
+            // Build & package
+                .AddCommand($"pip3 install cython")
+                .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir} {osReqsParam}") // Should create a file <name>-<version>.tgz
+                .AddFileExistsCheck(oryxPackTarOutput)
+                // Compute diff between tar contents
+                // Download public PyPi tar for comparison
+                .AddCommand($"export PyPiTarUrl={pyPiTarUrl}")
+                .AddCommand($"wget -O {pypiTarPath} $PyPiTarUrl")
+                // Print tar content lists
+                .AddCommand("echo " + tarListMarker)
+                .AddCommand($"{tarListCmd} {oryxPackTarOutput}")
+                .AddCommand("echo " + tarListMarker)
+                .AddCommand($"{tarListCmd} {pypiTarPath}")
+                .ToString();
+
+            // Act
+            var image = Settings.LtsVersionsBuildImageWithRootAccess;
+            var result = _dockerCli.Run(image, "/bin/bash", new[] { "-c", script });
+
+            // Assert contained file names
+            var tarLists = result.StdOut.Split(tarListMarker);
+
+            var (oryxTarList, oryxTarSize) = ParseTarList(tarLists[1]);
+            var (pypiTarList, pypiTarSize) = ParseTarList(tarLists[2]);
+
+            var unContained = pypiTarList.Where(x => !oryxTarList.Contains(x));
+            Assert.Equal(pypiTarList, oryxTarList);
+
+            // Assert tar file sizes
+            var tarSizeDiff = Math.Abs(pypiTarSize - oryxTarSize);
+            Assert.True(tarSizeDiff <= pypiTarSize * 0.1, // Accepting differences of less than 10% of the official artifact size
+                $"Size difference is too big. Oryx build: {oryxTarSize}, Actual PyPi: {pypiTarSize}");
+        }
+
 
         private (IEnumerable<string>, int) ParseTarList(string rawTarList)
         {
