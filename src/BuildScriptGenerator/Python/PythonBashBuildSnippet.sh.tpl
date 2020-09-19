@@ -45,9 +45,6 @@ fi
 	then
 		echo "Running python setup.py install..."
 		$python setup.py install --user| ts $TS_FMT
-		cd *.egg-info
-		python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requires.txt | ts $TS_FMT
-
 		pythonBuildExitCode=${PIPESTATUS[0]}
 		if [[ $pythonBuildExitCode != 0 ]]
 		then
@@ -84,8 +81,6 @@ fi
 
 		echo "Running python setup.py install..."
 		$python setup.py install --user| ts $TS_FMT
-		cd *.egg-info
-		$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requires.txt | ts $TS_FMT
 		pythonBuildExitCode=${PIPESTATUS[0]}
 		if [[ $pythonBuildExitCode != 0 ]]
 		then
@@ -113,7 +108,7 @@ fi
 	echo "Running python packaging commands ...."
 	echo
 	echo "Creating python package wheel ...."
-	$python setup.py sdist bdist_wheel --universal
+	$python setup.py sdist --formats=gztar,zip,tar bdist_wheel --universal
 	echo "Now creating python package egg ...."
 	$python setup.py bdist_egg
 	echo
