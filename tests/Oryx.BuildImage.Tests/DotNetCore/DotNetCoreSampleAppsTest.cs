@@ -31,45 +31,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
         [Fact]
-        public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion_LTSBuildImage()
-        {
-            // Arrange
-            var appName = "NetCoreApp11WebApp";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/NetCoreApp11WebApp-output";
-            var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
-                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.LtsVersionsBuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
-                        result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
         public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion_GithubActionBuildImage()
         {
             // Arrange
