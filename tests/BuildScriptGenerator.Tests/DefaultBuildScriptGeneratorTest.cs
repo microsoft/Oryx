@@ -435,10 +435,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             // Act
             generator.GenerateBashScript(context, out var generatedScript);
-
+            var expectedPlatformNameManifestEntry = "echo \"PlatformName=\\\"lang1,lang2\\\"\" >> \"$MANIFEST_DIR/$MANIFEST_FILE\"";
+            var buggyPlatformNameManifestEntry = "echo \"PlatformName=\\\",lang1lang2\\\"\" >> \"$MANIFEST_DIR/$MANIFEST_FILE\"";
             // Assert
             Assert.Contains("ABCDEFG", generatedScript);
             Assert.Contains("123456", generatedScript);
+            Assert.Contains(expectedPlatformNameManifestEntry, generatedScript, StringComparison.OrdinalIgnoreCase);
+            Assert.DoesNotContain(buggyPlatformNameManifestEntry, generatedScript, StringComparison.OrdinalIgnoreCase);
         }
 
         [Fact]

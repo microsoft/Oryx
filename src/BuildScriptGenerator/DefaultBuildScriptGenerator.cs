@@ -287,10 +287,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 _logger.LogInformation($"Build Property Key:{ManifestFilePropertyKeys.PlatformName} value: {eachPlatformName} is written into manifest");
                 if (buildProperties.ContainsKey(ManifestFilePropertyKeys.PlatformName))
                 {
+                    var previousValue = buildProperties[ManifestFilePropertyKeys.PlatformName];
                     buildProperties[ManifestFilePropertyKeys.PlatformName]
                     = string.Join(
-                        buildProperties[ManifestFilePropertyKeys.PlatformName],
                         ",",
+                        previousValue,
                         eachPlatformName);
                 }
                 else
