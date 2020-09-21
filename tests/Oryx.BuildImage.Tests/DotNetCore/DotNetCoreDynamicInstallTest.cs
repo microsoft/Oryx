@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }";
             var globalJsonSdkVersion = "3.1.201";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", globalJsonSdkVersion);
-            var sentinelFile = $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}/sdks/{globalJsonSdkVersion}/" +
+            var sentinelFile = $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}/{globalJsonSdkVersion}/" +
                 $"{SdkStorageConstants.SdkDownloadSentinelFileName}";
             var appName = NetCoreApp31MvcApp;
             var volume = CreateSampleAppVolume(appName);
@@ -401,7 +401,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} --dynamic-install-root-dir {expectedDynamicInstallRootDir}")
                 .AddDirectoryExistsCheck(
-                $"{expectedDynamicInstallRootDir}/{DotNetCoreConstants.PlatformName}/sdks/{expectedSdkVersion}")
+                $"{expectedDynamicInstallRootDir}/{DotNetCoreConstants.PlatformName}/{expectedSdkVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
                 .AddCommand($"cat {manifestFile}")

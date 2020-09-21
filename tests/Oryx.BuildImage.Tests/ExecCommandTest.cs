@@ -9,6 +9,7 @@ using System.IO;
 using Microsoft.Oryx.BuildImage.Tests;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -53,7 +54,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        "Downloading and extracting nodejs version",
+                        $"Downloading and extracting '{NodeConstants.PlatformName}' version",
                         result.StdOut);
                     Assert.Contains(
                         $"v{nodeVersion}",
@@ -91,7 +92,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        "Downloading and extracting nodejs version",
+                        $"Downloading and extracting '{NodeConstants.PlatformName}' version",
                         result.StdOut);
                 },
                 result.GetDebugInfo());

@@ -113,7 +113,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 return null;
             }
 
-            ResolveVersions(detectionResult);
+            ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 
@@ -376,7 +376,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         }
 
         /// <inheritdoc/>
-        public void ResolveVersions(PlatformDetectorResult detectorResult)
+        public void ResolveVersions(RepositoryContext context, PlatformDetectorResult detectorResult)
         {
             var resolvedVersion = GetVersionUsingHierarchicalRules(detectorResult.PlatformVersion);
             resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);

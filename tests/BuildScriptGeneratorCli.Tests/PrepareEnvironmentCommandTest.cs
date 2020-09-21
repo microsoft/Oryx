@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 suppliedPlatformsAndVersions,
                 suppliedPlatformsAndVersionsFile: null,
                 new TestConsole(),
+                GetContext(),
                 out var results);
 
             // Assert
@@ -67,6 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 suppliedPlatformsAndVersions,
                 suppliedPlatformsAndVersionsFile: null,
                 new TestConsole(),
+                GetContext(),
                 out var results);
 
             // Assert
@@ -88,6 +90,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 suppliedPlatformsAndVersions: null,
                 suppliedPlatformsAndVersionsFile: versionsToBeInstalledFile,
                 new TestConsole(),
+                GetContext(),
                 out var results);
 
             // Assert
@@ -113,6 +116,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 suppliedPlatformsAndVersions: null,
                 suppliedPlatformsAndVersionsFile: versionsToBeInstalledFile,
                 new TestConsole(),
+                GetContext(),
                 out var results);
 
             // Assert
@@ -137,6 +141,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 suppliedPlatformsAndVersions,
                 suppliedPlatformsAndVersionsFile: null,
                 new TestConsole(),
+                GetContext(),
                 out var results);
 
             // Assert
@@ -165,6 +170,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 suppliedPlatformsAndVersions,
                 suppliedPlatformsAndVersionsFile: null,
                 new TestConsole(),
+                GetContext(),
                 out var results);
 
             // Assert
@@ -197,6 +203,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 suppliedPlatformsAndVersions: null,
                 suppliedPlatformsAndVersionsFile: versionsToBeInstalledFile,
                 new TestConsole(),
+                GetContext(),
                 out var results);
 
             // Assert
@@ -231,6 +238,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 suppliedPlatformsAndVersions: null,
                 suppliedPlatformsAndVersionsFile: versionsToBeInstalledFile,
                 new TestConsole(),
+                GetContext(),
                 out var results);
 
             // Assert
@@ -265,6 +273,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 suppliedPlatformsAndVersions: null,
                 suppliedPlatformsAndVersionsFile: versionsToBeInstalledFile,
                 new TestConsole(),
+                GetContext(),
                 out var results);
 
             // Assert
@@ -296,11 +305,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 suppliedPlatformsAndVersions: null,
                 suppliedPlatformsAndVersionsFile: null,
                 new TestConsole(),
+                GetContext(),
                 out var results);
 
             // Assert
             Assert.False(actual);
         }
+
+        private BuildScriptGeneratorContext GetContext()
+        {
+            return new BuildScriptGeneratorContext();
+        }
+
 
         private class TestProgrammingPlatform : IProgrammingPlatform
         {
@@ -393,7 +409,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 throw new NotImplementedException();
             }
 
-            public void ResolveVersions(PlatformDetectorResult detectorResult)
+            public void ResolveVersions(RepositoryContext context, PlatformDetectorResult detectorResult)
             {
                 detectorResult.Platform = _name;
                 detectorResult.PlatformVersion = _resolvedVersion;

@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
                 return null;
             }
 
-            ResolveVersions(detectionResult);
+            ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 
@@ -266,7 +266,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         }
 
         /// <inheritdoc/>
-        public void ResolveVersions(PlatformDetectorResult detectorResult)
+        public void ResolveVersions(RepositoryContext context, PlatformDetectorResult detectorResult)
         {
             var javaPlatformDetectorResult = detectorResult as JavaPlatformDetectorResult;
             if (javaPlatformDetectorResult == null)

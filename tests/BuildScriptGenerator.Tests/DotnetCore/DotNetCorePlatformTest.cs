@@ -111,7 +111,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var dotNetCoreScriptGeneratorOptions = new DotNetCoreScriptGeneratorOptions();
             var installer = new DotNetCorePlatformInstaller(
                 Options.Create(commonOptions),
-                versionProvider,
                 NullLoggerFactory.Instance);
             var globalJsonSdkResolver = new GlobalJsonSdkResolver(NullLogger<GlobalJsonSdkResolver>.Instance);
             return new TestDotNetCorePlatform(

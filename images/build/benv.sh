@@ -114,11 +114,7 @@ benv-getDynamicInstallRootDir() {
   fi
 }
 
-# NOTE: We handle .NET Core specially because there are 2 version types:
-# SDK version and Runtime version
-# For platforms other than dotnet, we look at a folder structure like '/opt/nodejs/10.14.1', but
-# for dotnet, it would be '/opt/dotnet/runtimes/10.14.1'
-# i.e Versioning of .NET Core is based on the runtime versions rather than sdk version
+# We look at a folder structure like '/opt/nodejs/10.14.1'
 benv-showSupportedVersionsErrorInfo() {
   local userPlatformName="$1"
   local platformDirName="$2"
@@ -126,11 +122,6 @@ benv-showSupportedVersionsErrorInfo() {
   local dynamicInstallRootDir="$4"
   local builtInInstallDir="/opt/$platformDirName"
   local dynamicInstallDir="$dynamicInstallRootDir/$platformDirName"
-
-  if [ "$platformDirName" == "dotnet" ]; then
-    builtInInstallDir="$builtInInstallDir/runtimes"
-    dynamicInstallDir="$dynamicInstallDir/runtimes"
-  fi
 
   echo >&2 benv: "$userPlatformName" version \'$userSuppliedVersion\' not found.
   if [ ! -d "$builtInInstallDir" ] && [ ! -d "$dynamicInstallDir" ]; then
@@ -155,11 +146,6 @@ benv-getPlatformDir() {
   local builtInInstallDir="/opt/$platformDirName"
   local dynamicInstallDir="$dynamicInstallRootDir/$platformDirName"
   
-  if [ "$platformDirName" == "dotnet" ]; then
-    builtInInstallDir="$builtInInstallDir/runtimes"
-    dynamicInstallDir="$dynamicInstallDir/runtimes"
-  fi
-
   if [ -d "$builtInInstallDir/$userSuppliedVersion" ]; then
     echo "$builtInInstallDir/$userSuppliedVersion"
   elif [ -d "$dynamicInstallDir/$userSuppliedVersion" ]; then
@@ -312,14 +298,13 @@ benv-resolve() {
 
   # Resolve dotnet versions
   if matchesName "dotnet" "$name" || matchesName "dotnet_version" "$name" && [ "${value::1}" != "/" ]; then
-    runtimeDir=$(benv-getPlatformDir "dotnet" "$value" "$_benvDynamicInstallRootDir")
-    if [ "$runtimeDir" == "NotFound" ]; then
+    platformDir=$(benv-getPlatformDir "dotnet" "$value" "$_benvDynamicInstallRootDir")
+    if [ "$platformDir" == "NotFound" ]; then
       benv-showSupportedVersionsErrorInfo "dotnet" "dotnet" "$value" "$_benvDynamicInstallRootDir"
       return 1
     fi
 
-    local sdkVersion=$(cat "$runtimeDir/sdkVersion.txt" | tr -d '\r') 
-    local SDK_DIR=$(cd "$runtimeDir/../../sdks/$sdkVersion" && pwd)
+    local SDK_DIR="$platformDir"
     toolsDir="$SDK_DIR/tools"
     if [ -d "$toolsDir" ]; then
       updatePath "$SDK_DIR/tools"
@@ -345,7 +330,15 @@ benv-resolve() {
       mkdir -p $currentDir
       cp -r $installationDir $currentDir
     fi
+
+    # https://stackoverflow.com/a/4250666/1184056
+    # LIBRARY_PATH is used by gcc before compilation to search directories containing static and shared libraries
+    # that need to be linked to your program.
+    # LD_LIBRARY_PATH is used by your program to search directories containing shared libraries after it has been
+    # successfully compiled and linked.
+    export LIBRARY_PATH="$platformDir/lib:$LIBRARY_PATH"
     export LD_LIBRARY_PATH="$platformDir/lib:$LD_LIBRARY_PATH"
+    
     local DIR="$platformDir/bin"
     updatePath "$DIR"
     export RUBY_HOME="$platformDir"

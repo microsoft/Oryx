@@ -101,8 +101,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// could be partial (for example, major or major.minor) or a detector might not have found a version.
         /// This platform resolves this result from a detector to get a full version: major.minor.patch
         /// </summary>
+        /// <param name="context">The repository context.</param>
         /// <param name="detectorResult">The <see cref="PlatformDetectorResult"/>.</param>
-        void ResolveVersions(PlatformDetectorResult detectorResult);
+        void ResolveVersions(RepositoryContext context, PlatformDetectorResult detectorResult);
 
         /// <summary>
         /// Gets the required tools and their versions to be set on the benv script.

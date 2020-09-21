@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string PhpComposerVersion = "PHP_COMPOSER_VERSION";
         public const string HugoVersion = "HUGO_VERSION";
         public const string RubyVersion = "RUBY_VERSION";
-        public const string JavaVersion = "JDK_VERSION";
+        public const string JavaVersion = "JAVA_VERSION";
         public const string MavenVersion = "MAVEN_VERSION";
         public const string Project = "PROJECT";
         public const string MSBuildConfiguration = "MSBUILD_CONFIGURATION";

@@ -52,7 +52,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        "Downloading and extracting nodejs version",
+                        $"Downloading and extracting '{NodeConstants.PlatformName}' version",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -87,7 +87,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        "Downloading and extracting nodejs version",
+                        $"Downloading and extracting '{NodeConstants.PlatformName}' version",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -122,7 +122,7 @@ namespace Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        "Downloading and extracting nodejs version",
+                        $"Downloading and extracting '{NodeConstants.PlatformName}' version",
                         result.StdOut);
                 },
                 result.GetDebugInfo());

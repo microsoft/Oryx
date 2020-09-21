@@ -174,7 +174,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .Source($"benv dotnet=3")
+               .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore30SdkVersion}")
                .AddCommand($"cd {appDir}")
                .AddCommand($"dotnet publish -c release -r linux-x64 -o {appOutputDir}")
                .ToString();
@@ -194,6 +194,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
+                // NOTE: it is 1.1 version on purpose. Read comments at the beginning of this method for more details
                 _imageHelper.GetRuntimeImage("dotnetcore", "1.1"),
                 ContainerPort,
                 "/bin/sh",

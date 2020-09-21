@@ -10,6 +10,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
@@ -31,6 +32,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
+                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version {dotNetCoreVersion} -o {appOutputDir}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()

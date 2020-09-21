@@ -48,16 +48,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // As per global.json spec, if a global.json file is not present, then roll forward policy is
                 // considered as 'latestMajor'. This can cause end users apps to fail since in this case even prelreease
                 // versions are considered. So here we minimize the impact by relying on the runtime version instead.
-                // We choose only the 'major' part of the runtime version to decide the major and latest minor of the
-                // sdk version. For example, 2.1.14 of runtime will result in a latest minor sdk in '2', for example
-                // 2.1.202 or 2.4.100
+                // We choose only the 'major' and 'minor' part of the runtime version.
+                // For example, 2.1.14 of runtime will result in a latest minor sdk in '1', for example
+                // 2.1.202 or 2.1.400
                 var version = new SemVer.Version(runtimeVersion);
                 var globalJsonModel = new GlobalJsonModel
                 {
                     Sdk = new SdkModel
                     {
-                        Version = $"{version.Major}.0.100",
-                        RollForward = RollForwardPolicy.LatestMinor,
+                        Version = $"{version.Major}.{version.Minor}.100",
+                        // Get latest feature and patch of the version
+                        RollForward = RollForwardPolicy.LatestFeature,
                         AllowPreRelease = true,
                     },
                 };

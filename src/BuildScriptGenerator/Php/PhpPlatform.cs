@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return null;
             }
 
-            ResolveVersions(detectionResult);
+            ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 
@@ -189,7 +189,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         }
 
         /// <inheritdoc/>
-        public void ResolveVersions(PlatformDetectorResult detectorResult)
+        public void ResolveVersions(RepositoryContext context, PlatformDetectorResult detectorResult)
         {
             var phpPlatformDetectorResult = detectorResult as PhpPlatformDetectorResult;
             if (phpPlatformDetectorResult == null)
