@@ -10,7 +10,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -31,7 +30,51 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
         [Fact]
-        public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion_GithubActionBuildImage()
+        public void Builds_NetCore10App_UsingNetCore11_DotNetSdkVersion()
+        {
+            // Arrange
+            var appName = "aspnetcore10";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/aspnetcore10-output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 1.1")
+                .AddFileExistsCheck($"{appOutputDir}/app.dll")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
+                        result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{DotNetCoreRunTimeVersions.NetCoreApp11}\"",
+                        result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{DotNetCoreSdkVersions.DotNetCore11SdkVersion}\"",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion()
         {
             // Arrange
             var appName = "NetCoreApp11WebApp";
@@ -39,9 +82,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp11WebApp-output";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -50,7 +90,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                ImageId = Settings.BuildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -76,9 +116,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appName = "aspnetcore20";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/aspnetcore20-output";
+            var appOutputDir = "/tmp/aspnetcore10-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
@@ -306,7 +346,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    var dotnetExecutable = $"/opt/dotnet/sdks/{DotNetCoreSdkVersions.DotNetCore21SdkVersion}/dotnet";
+                    var dotnetExecutable = $"/opt/dotnet/{DotNetCoreSdkVersions.DotNetCore21SdkVersion}/dotnet";
                     Assert.Matches($"Pre-build script: {dotnetExecutable}", result.StdOut);
                     Assert.Matches($"Post-build script: {dotnetExecutable}", result.StdOut);
                 },
@@ -579,7 +619,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringDoesNotExistInFileCheck($"{BuildScriptGenerator.Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringDoesNotExistInFileCheck($"{Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -616,10 +656,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --apptype {BuildScriptGenerator.Constants.StaticSiteApplications}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{BuildScriptGenerator.Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -627,7 +667,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 ImageId = Settings.BuildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable>
-                { 
+                {
                     CreateAppNameEnvVar(appName)
                 },
                 Volumes = new List<DockerVolume> { volume },
@@ -659,15 +699,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir}/MessageFunction -o {appOutputDir} --apptype functions")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{BuildScriptGenerator.Constants.AppType}=\"functions\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{Constants.AppType}=\"functions\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = Settings.BuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> 
-                { 
+                EnvironmentVariables = new List<EnvironmentVariable>
+                {
                     CreateAppNameEnvVar(appName)
                 },
                 Volumes = new List<DockerVolume> { volume },
@@ -688,6 +728,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
