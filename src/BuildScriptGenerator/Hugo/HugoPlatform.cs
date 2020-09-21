@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 return null;
             }
 
-            ResolveVersions(detectionResult);
+            ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 
@@ -172,7 +172,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         }
 
         /// <inheritdoc/>
-        public void ResolveVersions(PlatformDetectorResult detectorResult)
+        public void ResolveVersions(RepositoryContext context, PlatformDetectorResult detectorResult)
         {
             var resolvedVersion = GetVersionUsingHierarchicalRules(detectorResult.PlatformVersion);
             resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);

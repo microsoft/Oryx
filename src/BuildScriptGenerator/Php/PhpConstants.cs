@@ -5,15 +5,15 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
-    internal class PhpConstants
+    public class PhpConstants
     {
-        internal const string PlatformName = "php";
-        internal const string PhpFileNamePattern = "*.php";
-        internal const string PhpComposerName = "php-composer";
-        internal const string ComposerFileName = "composer.json";
-        internal const string PhpRuntimeVersionEnvVarName = "PHP_VERSION";
-        internal const string DefaultPhpRuntimeVersion = Common.PhpVersions.Php73Version;
-        internal const string InstalledPhpVersionsDir = "/opt/php/"; // TODO: consolidate with Dockerfile to yaml?
-        internal const string InstalledPhpComposerVersionDir = "/opt/php-composer/";
+        public const string PlatformName = "php";
+        public const string PhpFileNamePattern = "*.php";
+        public const string PhpComposerName = "php-composer";
+        public const string ComposerFileName = "composer.json";
+        public const string PhpRuntimeVersionEnvVarName = "PHP_VERSION";
+        public const string DefaultPhpRuntimeVersion = Common.PhpVersions.Php73Version;
+        public const string InstalledPhpVersionsDir = "/opt/php/"; // TODO: consolidate with Dockerfile to yaml?
+        public const string InstalledPhpComposerVersionDir = "/opt/php-composer/";
     }
 }

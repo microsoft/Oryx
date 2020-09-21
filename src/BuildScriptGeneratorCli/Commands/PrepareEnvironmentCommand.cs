@@ -15,8 +15,21 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Hugo;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.BuildScriptGenerator.Ruby;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.DotNetCore;
+using Microsoft.Oryx.Detector.Java;
+using Microsoft.Oryx.Detector.Node;
+using Microsoft.Oryx.Detector.Php;
+using Microsoft.Oryx.Detector.Python;
+using Microsoft.Oryx.Detector.Ruby;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -64,6 +77,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string suppliedPlatformsAndVersions,
             string suppliedPlatformsAndVersionsFile,
             IConsole console,
+            BuildScriptGeneratorContext context,
             out List<PlatformDetectorResult> results)
         {
             results = new List<PlatformDetectorResult>();
@@ -121,14 +135,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return false;
                 }
 
-                var platformDetectorResult = new PlatformDetectorResult
-                {
-                    Platform = platformName,
-                    PlatformVersion = version,
-                };
+                var platformDetectorResult = GetPlatformDetectorResult(platformName, version);
 
                 var platform = platformNames[platformName];
-                platform.ResolveVersions(platformDetectorResult);
+                platform.ResolveVersions(context, platformDetectorResult);
 
                 results.Add(platformDetectorResult);
             }
@@ -161,6 +171,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         PlatformsAndVersions,
                         PlatformsAndVersionsFile,
                         console,
+                        context,
                         out var results))
                     {
                         detectedPlatforms = results;
@@ -180,6 +191,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     {
                         return ProcessConstants.ExitFailure;
                     }
+
                     detectedPlatforms = platformInfos.Select(pi => pi.DetectorResult);
                 }
 
@@ -321,6 +333,40 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 });
 
             return serviceProviderBuilder.Build();
+        }
+
+        private static PlatformDetectorResult GetPlatformDetectorResult(string name, string version)
+        {
+            var result = new PlatformDetectorResult();
+            switch (name)
+            {
+                case DotNetCoreConstants.PlatformName:
+                    result = new DotNetCorePlatformDetectorResult();
+                    break;
+                case NodeConstants.PlatformName:
+                    result = new NodePlatformDetectorResult();
+                    break;
+                case PythonConstants.PlatformName:
+                    result = new PythonPlatformDetectorResult();
+                    break;
+                case HugoConstants.PlatformName:
+                    result = new PlatformDetectorResult();
+                    break;
+                case PhpConstants.PlatformName:
+                    result = new PhpPlatformDetectorResult();
+                    break;
+                case JavaConstants.PlatformName:
+                    result = new JavaPlatformDetectorResult();
+                    break;
+                case RubyConstants.PlatformName:
+                    result = new RubyPlatformDetectorResult();
+                    break;
+            }
+
+            result.Platform = name;
+            result.PlatformVersion = version;
+
+            return result;
         }
 
         private bool IsValidInput(IConsole console)

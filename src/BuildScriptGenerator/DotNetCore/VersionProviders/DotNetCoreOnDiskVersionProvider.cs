@@ -34,28 +34,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             _logger.LogDebug(
                 "Getting list of supported runtime and their sdk versions from {installationDir}",
-                DotNetCoreConstants.DefaultDotNetCoreRuntimeVersionsInstallDir);
+                DotNetCoreConstants.DefaultDotNetCoreSdkVersionsInstallDir);
 
-            var installedRuntimeVersions = VersionProviderHelper.GetVersionsFromDirectory(
-                        DotNetCoreConstants.DefaultDotNetCoreRuntimeVersionsInstallDir);
-            foreach (var runtimeVersion in installedRuntimeVersions)
+            // Example:
+            // /opt/dotnet/
+            //      1.1.100
+            //      2.1.810
+            //      all
+            var dotNetCoreVersionDirs = Directory.GetDirectories(
+                DotNetCoreConstants.DefaultDotNetCoreSdkVersionsInstallDir);
+            foreach (var sdkVersionDirPath in dotNetCoreVersionDirs)
             {
-                var runtimeDir = Path.Combine(
-                    DotNetCoreConstants.DefaultDotNetCoreRuntimeVersionsInstallDir,
-                    runtimeVersion);
-                var sdkVersionFile = Path.Combine(runtimeDir, "sdkVersion.txt");
-                if (!File.Exists(sdkVersionFile))
+                var sdkVersionDir = new DirectoryInfo(sdkVersionDirPath);
+
+                try
                 {
-                    throw new InvalidOperationException($"Could not find file '{sdkVersionFile}'.");
+                    var version = new SemVer.Version(sdkVersionDir.Name);
+                }
+                catch
+                {
+                    // Ignore directory names like 'all', 'lts' etc.
+                    continue;
                 }
 
-                var sdkVersion = File.ReadAllText(sdkVersionFile);
-                if (string.IsNullOrEmpty(sdkVersion))
+                var netCoreAppDirPath = Path.Combine(sdkVersionDirPath, "shared", "Microsoft.NETCore.App");
+                if (Directory.Exists(netCoreAppDirPath))
                 {
-                    throw new InvalidOperationException("Sdk version cannot be empty.");
+                    var runtimeVersionDirNames = Directory.GetDirectories(netCoreAppDirPath);
+                    foreach (var runtimeVersionDirPath in runtimeVersionDirNames)
+                    {
+                        var runtimeVersionDir = new DirectoryInfo(runtimeVersionDirPath);
+                        versionMap[runtimeVersionDir.Name] = sdkVersionDir.Name;
+                    }
                 }
-
-                versionMap[runtimeVersion] = sdkVersion.Trim();
             }
 
             return versionMap;

@@ -127,7 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 return null;
             }
 
-            ResolveVersions(detectionResult);
+            ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 
@@ -388,7 +388,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         }
 
         /// <inheritdoc/>
-        public void ResolveVersions(PlatformDetectorResult detectorResult)
+        public void ResolveVersions(RepositoryContext context, PlatformDetectorResult detectorResult)
         {
             var resolvedVersion = GetVersionUsingHierarchicalRules(detectorResult.PlatformVersion);
             resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
