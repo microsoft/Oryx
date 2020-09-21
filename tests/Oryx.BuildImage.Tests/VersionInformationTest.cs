@@ -420,10 +420,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string argumentName)
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
             var script = new ShellScriptBuilder()
+                //.SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
                 .SetEnvironmentVariable(environmentVariableName, DotNetCoreSdkVersions.DotNetCore31SdkVersion)
-                .Source($"benv {argumentName}={DotNetCoreSdkVersions.DotNetCore11SdkVersion}")
+                .Source($"benv {argumentName}={DotNetCoreSdkVersions.DotNetCore21SdkVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
 
@@ -555,7 +556,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
             var expectedPythonVersion = Python36VersionInfo;
             var script = new ShellScriptBuilder()
-                .Source("benv dotnet=2 python=3.6")
+                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore21SdkVersion} python=3.6")
                 .AddCommand("dotnet --version")
                 .AddCommand("python --version")
                 .ToString();

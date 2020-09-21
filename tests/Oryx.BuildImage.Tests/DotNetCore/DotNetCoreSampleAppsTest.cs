@@ -39,6 +39,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/aspnetcore10-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 1.1")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck(manifestFile)
@@ -82,6 +83,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp11WebApp-output";
             var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -118,6 +120,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/aspnetcore10-output";
             var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -728,7 +731,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
+        //[InlineData(DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
