@@ -108,19 +108,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("2", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        [InlineData("2.0", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        [InlineData("2.1", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        [InlineData("lts", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
-        [InlineData("2.2", DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
-        [InlineData("3", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
-        [InlineData("3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-        [InlineData("3.1", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
-        public void DotNetAlias_UsesVersion_SetOnBenv(string runtimeVersion, string expectedSdkVersion)
+        [InlineData(DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
+        public void DotNetAlias_UsesVersion_SetOnBenv(string expectedSdkVersion)
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .Source($"benv dotnet={runtimeVersion}")
+                .Source($"benv dotnet={expectedSdkVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
 
@@ -423,10 +420,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string argumentName)
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(environmentVariableName, "3")
-                .Source($"benv {argumentName}=2")
+                .SetEnvironmentVariable(environmentVariableName, DotNetCoreSdkVersions.DotNetCore31SdkVersion)
+                .Source($"benv {argumentName}={DotNetCoreSdkVersions.DotNetCore11SdkVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
 
