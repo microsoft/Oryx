@@ -542,7 +542,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform {NodeConstants.PlatformName} --platform-version 6")
+                .AddBuildCommand($"{appDir} --platform {NodeConstants.PlatformName} --platform-version 8")
                 .ToString();
 
             // Act
@@ -559,10 +559,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.StdOut);
-                    Assert.Matches(@"Pre-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/node", result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/nodejs/6.\d+.\d+/bin/npm", result.StdOut);
+                    Assert.Matches(@"Pre-build script: /opt/nodejs/8.\d+.\d+/bin/node", result.StdOut);
+                    Assert.Matches(@"Pre-build script: /opt/nodejs/8.\d+.\d+/bin/npm", result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/nodejs/8.\d+.\d+/bin/node", result.StdOut);
+                    Assert.Matches(@"Post-build script: /opt/nodejs/8.\d+.\d+/bin/npm", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

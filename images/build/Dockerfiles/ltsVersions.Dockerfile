@@ -26,6 +26,10 @@ RUN LANG="C.UTF-8" \
         # By default pip is not available in the buildpacks image
         python-pip \
         python3-pip \
+        # For .NET Core 1.1
+        libcurl3 \
+        libuuid1 \
+        libunwind8 \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
@@ -206,6 +210,7 @@ ENV LANG="C.UTF-8" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
     NUGET_PACKAGES="/var/nuget" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
+    ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
     PYTHONIOENCODING="UTF-8"
 

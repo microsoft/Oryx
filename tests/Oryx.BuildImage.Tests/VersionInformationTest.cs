@@ -108,7 +108,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
@@ -197,13 +196,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Trait("platform", "node")]
         [Theory]
-        [InlineData("4", "v4.8.0")]
-        [InlineData("4.5", "v4.5.0")]
-        [InlineData("4.8", "v4.8.0")]
-        [InlineData("4.5.0", "v4.5.0")]
-        [InlineData("4.8.0", "v4.8.0")]
-        [InlineData("6.11", "v6.11.0")]
-        [InlineData("6.11.0", "v6.11.0")]
         [InlineData("8.1.4", "v8.1.4")]
         [InlineData("8.11", "v8.11.2")]
         [InlineData("8.11.2", "v8.11.2")]
@@ -216,11 +208,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("10.1.0", "v10.1.0")]
         [InlineData("10.10.0", "v10.10.0")]
         [InlineData("10.14.2", "v10.14.2")]
-        [InlineData("6", "v" + NodeVersions.Node6Version)]
         [InlineData("8", "v" + NodeVersions.Node8Version)]
         [InlineData("10", "v" + NodeVersions.Node10Version)]
         [InlineData("12", "v" + NodeVersions.Node12Version)]
-        [InlineData(NodeVersions.Node6Version, "v" + NodeVersions.Node6Version)]
         [InlineData(NodeVersions.Node8Version, "v" + NodeVersions.Node8Version)]
         [InlineData(NodeVersions.Node10Version, "v" + NodeVersions.Node10Version)]
         [InlineData(NodeVersions.Node12Version, "v" + NodeVersions.Node12Version)]
@@ -311,48 +301,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.DoesNotContain("6.9.0", actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Trait("platform", "node")]
-        [Theory]
-        [InlineData("latest", "6.9.0")]
-        [InlineData("6", "6.9.0")]
-        [InlineData("6.9", "6.9.0")]
-        [InlineData("5", "5.6.0")]
-        [InlineData("5.6", "5.6.0")]
-        [InlineData("5.4", "5.4.2")]
-        [InlineData("5.3", "5.3.0")]
-        [InlineData("5.0", "5.0.3")]
-        [InlineData("3", "3.10.10")]
-        [InlineData("3.10", "3.10.10")]
-        [InlineData("3.9", "3.9.5")]
-        [InlineData("2", "2.15.9")]
-        [InlineData("2.15", "2.15.9")]
-        public void Npm_UsesVersion_SpecifiedToBenv(string specifiedVersion, string expectedOutput)
-        {
-            // Arrange
-            var script = new ShellScriptBuilder()
-                .Source($"benv npm={specifiedVersion}")
-                .AddCommand("npm --version")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
                 },
                 result.GetDebugInfo());
         }
@@ -471,10 +419,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string argumentName)
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
             var script = new ShellScriptBuilder()
+                //.SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
                 .SetEnvironmentVariable(environmentVariableName, DotNetCoreSdkVersions.DotNetCore31SdkVersion)
-                .Source($"benv {argumentName}={DotNetCoreSdkVersions.DotNetCore11SdkVersion}")
+                .Source($"benv {argumentName}={DotNetCoreSdkVersions.DotNetCore21SdkVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
 
@@ -502,10 +451,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void RunningBenvMultipleTimes_HonorsLastRunArguments()
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
             var script = new ShellScriptBuilder()
                 .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
-                .Source($"benv dotnet_version={DotNetCoreSdkVersions.DotNetCore11SdkVersion}")
+                .Source($"benv dotnet_version={DotNetCoreSdkVersions.DotNetCore21SdkVersion}")
                 // benv should update the PATH environment in such a way that we should version 1
                 .AddCommand("dotnet --version")
                 .ToString();
@@ -603,10 +552,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BenvShouldSetUpEnviroment_WhenMultiplePlatforms_AreSuppliedAsArguments()
         {
             // Arrange
-            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
             var expectedPythonVersion = Python36VersionInfo;
             var script = new ShellScriptBuilder()
-                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore11SdkVersion} python=3.6")
+                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore21SdkVersion} python=3.6")
                 .AddCommand("dotnet --version")
                 .AddCommand("python --version")
                 .ToString();
