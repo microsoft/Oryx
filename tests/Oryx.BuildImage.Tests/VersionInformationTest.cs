@@ -108,7 +108,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
@@ -454,8 +453,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
             var script = new ShellScriptBuilder()
-                .Source("benv dotnet=3")
-                .Source("benv dotnet_version=2")
+                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
+                .Source($"benv dotnet_version={DotNetCoreSdkVersions.DotNetCore21SdkVersion}")
                 // benv should update the PATH environment in such a way that we should version 1
                 .AddCommand("dotnet --version")
                 .ToString();
