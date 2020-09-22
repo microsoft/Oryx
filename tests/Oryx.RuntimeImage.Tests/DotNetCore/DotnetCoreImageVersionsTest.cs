@@ -125,7 +125,9 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("2.0", "Version  : " + DotNetCoreRunTimeVersions.NetCoreApp20)]
         [InlineData("2.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp21)]
-        [InlineData("2.2", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp22)]
+        //[InlineData("2.2", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp22)]
+        // Need to run base images build with latest 5.0 
+        [InlineData("2.2", "Version: " + "2.2.7")]
         [InlineData("3.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30)]
         [InlineData("3.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
         [InlineData("5.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp50)]
