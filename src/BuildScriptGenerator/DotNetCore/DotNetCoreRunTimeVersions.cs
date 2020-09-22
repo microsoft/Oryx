@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string AspnetCoreApp21 = "2.1.22";
         public const string AspnetCoreApp21Sha = "34a424a79fa91f76fd2f91c9104104b65239192d9f5167bc1647b8888c103fe6fde3786f12dac275d8da6a7ce3d8de8d56531c0bdbc42d9f9265ed6bc9a8b18f";
         public const string NetCoreApp22 = "2.2.8";
-        public const string NetCoreApp22Sha = "9d70b4a8a63b66da90544087199a0f681d135bf90d43ca53b12ea97cc600a768b0a3d2f824cfe27bd3228e058b060c63319cd86033be8b8d27925283f99de958";
+        public const string NetCoreApp22Sha = "b818557b0090ec047be0fb2e5ffee212e23e8417e1b0164f455e3a880bf5b94967dc4c86d6ed82397af9acc1f7415674904f6225a1abff85d28d2a6d5de8073b";
         public const string NetCoreApp30 = "3.0.3";
         public const string NetCoreApp30Sha = "3d1f0ba2f293f43e087a8940a0f4736561f43b9f28bc5beda79a61f887e258543aea4dc71e88414a7c6e271dcda984a989afb62fc659a72223707a179cdde9c5";
         public const string AspnetCoreApp30 = "3.0.3";
