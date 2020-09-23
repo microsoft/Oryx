@@ -1,7 +1,7 @@
 ## Why so many scripts?
 The scripts in this folder are broken down into different layers to enable a good development as a well as CI experience.  
 So if a user wants to just build and test build images, they can do so by running its respective script.  
-These scripts are actually called in VSTS pipelines too (Check the `vsts/pipelines/_buildTemplate.yml` file).
+These scripts are actually called in VSTS pipelines too (Check the `vsts/pipelines/templates/_buildTemplate.yml` file).
 
 ## Artifact files
 Building build and runtime images can conceptually be viewed as building a .NET repo's 'src' folder where after successfully  

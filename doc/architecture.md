@@ -27,7 +27,7 @@ It analyzes the codebase, detecting which programming platforms are being used a
 We have a single build image which supports all of the SDKs and their versions. This allows developers to use
 multiple languages in their build, for instance run a Python setup script when building their .NET Core app,
 or have a TypeScript frontend for their Python app. You can take a look at its
-[Dockerfile](../images/build/Dockerfile) to better understand its contents.
+[Dockerfile](../images/build/Dockerfiles/Dockerfile) to better understand its contents.
 
 Note that some layers of this build image come from yet another set of images, which we build independently for
 modularization and for faster build times. You can see what are those images and how they are built in their
@@ -40,7 +40,7 @@ version of Node 8 the default ones.
 The build image also contains the build script generator, which can be accessed by its alias, `oryx`.
 
 The build image manifest is at
-[/images/build/Dockerfile](../images/build/Dockerfile). It is built and
+[/images/build/Dockerfiles/Dockerfile](../images/build/Dockerfiles/Dockerfile). It is built and
 published via the Microsoft Container Registry (MCR) ([info][]) as
 `mcr.microsoft.com/oryx/build` and syndicated to Docker Hub as
 [`https://hub.docker.com/_/microsoft-oryx-images`](https://hub.docker.com/_/microsoft-oryx-images). Pull with `docker pull
@@ -55,64 +55,64 @@ mcr.microsoft.com/oryx/build:latest`.
 <details>
 <summary>For a list of packages installed as a part of this build image, click here.</summary>
 
-#### [Lts Versions Build Image](../images/build/ltsVersions.Dockerfile)
+#### [Lts Versions Build Image](../images/build/Dockerfiles/ltsVersions.Dockerfile)
 
 **Docker**
 
-- [`buildpack-deps:stretch`](../images/build/ltsVersions.Dockerfile#L5)
-- [`mcr.microsoft.com/oryx/python-build-base:3.7-{BUILD}`](../images/build/ltsVersions.Dockerfile#L160)
+- [`buildpack-deps:stretch`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L5)
+- [`mcr.microsoft.com/oryx/python-build-base:3.7-{BUILD}`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L160)
 
 **`apt-get`**
 
 - Basic build tools
-    - [`build-essential`](../images/build/ltsVersions.Dockerfile#L25)
-    - [`default-libmysqlclient-dev`](../images/build/ltsVersions.Dockerfile#L31)
-    - [`git`](../images/build/ltsVersions.Dockerfile#L21)
-    - [`libpq-dev`](../images/build/ltsVersions.Dockerfile#L29)
-    - [`make`](../images/build/ltsVersions.Dockerfile#L22)
-    - [`moreutils`](../images/build/ltsVersions.Dockerfile#L33)
-    - [`rsync`](../images/build/ltsVersions.Dockerfile#L34)
-    - [`unixodbc-dev`](../images/build/ltsVersions.Dockerfile#L27)
-    - [`unzip`](../images/build/ltsVersions.Dockerfile#L23)
-    - [`zip`](../images/build/ltsVersions.Dockerfile#L35)
+    - [`build-essential`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L25)
+    - [`default-libmysqlclient-dev`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L31)
+    - [`git`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L21)
+    - [`libpq-dev`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L29)
+    - [`make`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L22)
+    - [`moreutils`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L33)
+    - [`rsync`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L34)
+    - [`unixodbc-dev`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L27)
+    - [`unzip`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L23)
+    - [`zip`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L35)
 - .NET Core
-    - [`libc6`](../images/build/ltsVersions.Dockerfile#L50)
-    - [`libgcc1`](../images/build/ltsVersions.Dockerfile#L51)
-    - [`libgssapi-krb5-2`](../images/build/ltsVersions.Dockerfile#L52)
-    - [`libicu57`](../images/build/ltsVersions.Dockerfile#L53)
-    - [`liblttng-ust0`](../images/build/ltsVersions.Dockerfile#L54)
-    - [`libssl1.0.2`](../images/build/ltsVersions.Dockerfile#L55)
-    - [`libstdc++6`](../images/build/ltsVersions.Dockerfile#L56)
-    - [`zlib1g`](../images/build/ltsVersions.Dockerfile#L57)
+    - [`libc6`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L50)
+    - [`libgcc1`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L51)
+    - [`libgssapi-krb5-2`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L52)
+    - [`libicu57`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L53)
+    - [`liblttng-ust0`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L54)
+    - [`libssl1.0.2`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L55)
+    - [`libstdc++6`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L56)
+    - [`zlib1g`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L57)
 - Node
-    - [`jq`](../images/build/ltsVersions.Dockerfile#L108)
+    - [`jq`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L108)
 - Python
-    - [`tk-dev`](../images/build/ltsVersions.Dockerfile#L169)
-    - [`uuid-dev`](../images/build/ltsVersions.Dockerfile#L170)
+    - [`tk-dev`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L169)
+    - [`uuid-dev`](../images/build/Dockerfiles/ltsVersions.Dockerfile#L170)
 
-#### [Full build image](../images/build/Dockerfile)
+#### [Full build image](../images/build/Dockerfiles/Dockerfile)
 
 **Docker**
 
 - Python
-    - [`mcr.microsoft.com/oryx/python-build-base:2.7-{BUILD}`](../images/build/Dockerfile#L179)
-    - [`mcr.microsoft.com/oryx/python-build-base:3.6-{BUILD}`](../images/build/Dockerfile#L180)
-    - [`mcr.microsoft.com/oryx/python-build-base:3.8-{BUILD}`](../images/build/Dockerfile#L181)
+    - [`mcr.microsoft.com/oryx/python-build-base:2.7-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L179)
+    - [`mcr.microsoft.com/oryx/python-build-base:3.6-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L180)
+    - [`mcr.microsoft.com/oryx/python-build-base:3.8-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L181)
 - PHP
-    - [`mcr.microsoft.com/oryx/php-build-base:5.6-{BUILD}`](../images/build/Dockerfile#L217)
-    - [`mcr.microsoft.com/oryx/php-build-base:7.0-{BUILD}`](../images/build/Dockerfile#L218)
-    - [`mcr.microsoft.com/oryx/php-build-base:7.2-{BUILD}`](../images/build/Dockerfile#L219)
-    - [`mcr.microsoft.com/oryx/php-build-base:7.3-{BUILD}`](../images/build/Dockerfile#L220)
-- [`golang:1.11-stretch`](../images/build/Dockerfile#L228)
+    - [`mcr.microsoft.com/oryx/php-build-base:5.6-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L217)
+    - [`mcr.microsoft.com/oryx/php-build-base:7.0-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L218)
+    - [`mcr.microsoft.com/oryx/php-build-base:7.2-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L219)
+    - [`mcr.microsoft.com/oryx/php-build-base:7.3-{BUILD}`](../images/build/Dockerfiles/Dockerfile#L220)
+- [`golang:1.11-stretch`](../images/build/Dockerfiles/Dockerfile#L228)
 
 **`apt-get`**
 
 - .NET Core
-    - [`libunwind8`](../images/build/Dockerfile#L16)
-    - [`libcurl3`](../images/build/Dockerfile#L26)
-    - [`libuuid1`](../images/build/Dockerfile#L27)
+    - [`libunwind8`](../images/build/Dockerfiles/Dockerfile#L16)
+    - [`libcurl3`](../images/build/Dockerfiles/Dockerfile#L26)
+    - [`libuuid1`](../images/build/Dockerfiles/Dockerfile#L27)
 - Node
-    - [`jq`](../images/build/Dockerfile#L100)
+    - [`jq`](../images/build/Dockerfiles/Dockerfile#L100)
 
 </details>
 
@@ -212,6 +212,6 @@ The *Run* images are published to MCR (mcr.microsoft.com/oryx/&lt;platform&gt;).
 The following are required to run and test this project locally.
 
 - Bash v4.4
-- [.NET Core 2.1](https://dotnet.microsoft.com/download/dotnet-core)
+- [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core)
 - [Go 1.11+](https://golang.org/dl/) (for startup script generator)
 - [Docker v18.06.1-ce](https://docs.docker.com/install/)

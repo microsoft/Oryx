@@ -13,6 +13,8 @@ They represent the build pipelines for this repository.
     Pipeline which builds, tests and pushes build images and runtime images.  
     This pipeline, by default, gets triggered for check-ins into 'master' branch.  
 	Also it has a scheduled build for releasing signed binaries to images on Saturday mornings.  
+### PlatformBinaries
+The pipelines for each platform to build and publish platform binaries to Azure Blob Storage.
 
 ## Scripts
 This folder contains scripts that are used in VSTS pipelines.
