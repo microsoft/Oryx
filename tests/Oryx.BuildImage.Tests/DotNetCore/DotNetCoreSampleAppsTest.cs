@@ -303,6 +303,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/Net5MvcApp-output";
             var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
@@ -325,7 +328,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         string.Format(
                             SdkVersionMessageFormat,
-                            DotNetCoreSdkVersions.DotNetCore31SdkVersion),
+                            DotNetCoreSdkVersions.DotNet50SdkVersion),
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -656,6 +659,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
                 $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp50}")
