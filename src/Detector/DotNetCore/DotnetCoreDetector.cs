@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -68,9 +67,11 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         internal string DetermineRuntimeVersion(string targetFramework)
         {
             // Ex: "netcoreapp2.2" => "2.2"
-            targetFramework = targetFramework.ToLower().Replace(
-                "netcoreapp",
-                string.Empty);
+            targetFramework = targetFramework
+                .ToLower()
+                .Replace("netcoreapp", string.Empty)
+                // For handling .NET 5
+                .Replace("net", string.Empty);
 
             // Ex: "2.2" => 2.2
             if (decimal.TryParse(targetFramework, out var val))

@@ -49,11 +49,14 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             Assert.Null(result);
         }
 
-        [Fact]
-        public void Detect_ReturnsVersionPartOfTargetFramework()
+        [Theory]
+        [InlineData("netcoreapp2.1", "2.1")]
+        [InlineData("net5.0", "5.0")]
+        public void Detect_ReturnsVersionPartOfTargetFramework(
+            string targetFrameworkName,
+            string expectedRuntimeVersion)
         {
             // Arrange
-            var expectedResult = "2.1";
             var projectFile = "test.csproj";
             var sourceRepo = new Mock<ISourceRepo>();
             sourceRepo
@@ -63,7 +66,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(SampleProjectFileContents.ProjectFileWithTargetFrameworkPlaceHolder.Replace(
                     "#TargetFramework#",
-                    "netcoreapp2.1"));
+                    targetFrameworkName));
             var context = CreateContext(sourceRepo.Object);
             var detector = CreateDetector(projectFile);
 
@@ -72,7 +75,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(expectedResult, result.PlatformVersion);
+            Assert.Equal(expectedRuntimeVersion, result.PlatformVersion);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
