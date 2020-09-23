@@ -45,7 +45,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // split run script to test pre-run command before running the app.
             var runtimeImageScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
@@ -120,7 +119,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // split run script to test pre-run command and then run the app
             var runtimeImageScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)

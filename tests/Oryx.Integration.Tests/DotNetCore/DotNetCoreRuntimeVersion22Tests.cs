@@ -3,12 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -32,7 +32,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} " +
+               $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
 
             // NOTE: Do NOT change this as we want to make sure that all the non-existent directories in the path
@@ -81,7 +82,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(EnvironmentSettingsKeys.MSBuildConfiguration, "Debug")
-                .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version {dotnetcoreVersion} -o {appOutputDir}")
+                .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} " +
+                $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -124,7 +126,9 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand(
+                $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} " +
+               $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
@@ -168,7 +172,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} " +
+               $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
@@ -213,7 +218,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version {dotnetcoreVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} " +
+               $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
                .AddFileExistsCheck($"{appOutputDir}/foo  bar.dll")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()

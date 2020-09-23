@@ -44,7 +44,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
@@ -54,7 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                NetCoreApp30WebApp,
+                appName,
                 _output,
                 new[] { volume },
                 _imageHelper.GetGitHubActionsBuildImage(),
@@ -64,7 +63,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "dynamic"),
+                _imageHelper.GetRuntimeImage("dotnetcore", runtimeVersion),
                 ContainerPort,
                 "/bin/sh",
                 new[]

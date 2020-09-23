@@ -37,7 +37,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
@@ -108,7 +107,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
