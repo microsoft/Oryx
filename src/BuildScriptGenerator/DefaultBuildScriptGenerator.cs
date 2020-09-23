@@ -225,7 +225,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     _logger.LogDebug(
                         "Platform {platformName} with version {platformVersion} was used.",
                         platform.Name,
-                        detectorResult);
+                        detectorResult.PlatformVersion);
                     snippets.Add(snippet);
                 }
                 else
