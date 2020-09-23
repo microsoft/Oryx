@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace NetCore50BlazorSample.Client
+namespace Net5BlazorWasmClientApp
 {
     public class Program
     {

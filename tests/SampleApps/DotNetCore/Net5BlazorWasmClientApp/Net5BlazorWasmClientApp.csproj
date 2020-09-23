@@ -10,8 +10,4 @@
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0-rc.1.20451.14" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Shared\NetCore50BlazorSample.Shared.csproj" />
-  </ItemGroup>
-
 </Project>

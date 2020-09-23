@@ -651,15 +651,19 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Builds_SingleBlazorWasmProject_Without_Setting_Apptype_Option()
         {
             // Arrange
-            var appName = "SimpleBlazorWasmApp";
+            var appName = "Net5BlazorWasmClientApp";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform dotnet " +
+                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp50}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringDoesNotExistInFileCheck($"{Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck(
+                ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringDoesNotExistInFileCheck(
+                $"{Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -681,7 +685,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion),
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNet50SdkVersion),
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -768,7 +772,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        //[InlineData(DotNetCoreSdkVersions.DotNetCore11SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
