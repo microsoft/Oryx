@@ -154,45 +154,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
-        [InlineData("2.7")]
-        [InlineData("3.6")]
-        [InlineData("3.7")]
-        [InlineData("3.8")]
-        public async Task BuildWithVirtualEnv_From_File_Setup_Py(string pythonVersion)
-        {
-            // Arrange
-            var appName = "flask-setup-py-app";
-            var volume = CreateAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            
-            var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
-                .ToString();
-
-            var runScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                volume,
-                "/bin/bash",
-                new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
-                ContainerPort,
-                "/bin/bash",
-                new[] { "-c", runScript },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
-                });
-        }
-
         
         [Theory]
         [InlineData("2.7")]
