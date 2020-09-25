@@ -91,7 +91,11 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .Source($"benv dotnet={DotNetCoreSdkVersions.DotNet50SdkVersion}")
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+               .AddCommand($"oryx prep --skip-detection --platforms-and-versions dotnet={DotNetCoreRunTimeVersions.NetCoreApp50}")
+               .Source($"benv dotnet={DotNetCoreRunTimeVersions.NetCoreApp50}")
                .AddCommand($"cd {appDir}")
                .AddCommand($"dotnet publish -c release -r linux-x64 -o {appOutputDir}")
                .ToString();
