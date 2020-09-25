@@ -95,7 +95,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand($"oryx prep --skip-detection --platforms-and-versions dotnet={DotNetCoreRunTimeVersions.NetCoreApp50}")
-               .Source($"benv dotnet={DotNetCoreRunTimeVersions.NetCoreApp50}")
+               .Source($"benv dotnet={DotNetCoreSdkVersions.DotNet50SdkVersion}")
                .AddCommand($"cd {appDir}")
                .AddCommand($"dotnet publish -c release -r linux-x64 -o {appOutputDir}")
                .ToString();
