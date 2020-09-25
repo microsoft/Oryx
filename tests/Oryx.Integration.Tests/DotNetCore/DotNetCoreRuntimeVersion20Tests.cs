@@ -33,6 +33,9 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
+                    SettingsKeys.DynamicInstallRootDir,
+                    BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
+                .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand(

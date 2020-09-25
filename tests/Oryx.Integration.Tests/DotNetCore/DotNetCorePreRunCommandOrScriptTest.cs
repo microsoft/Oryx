@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "dynamic"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "3.1"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -160,7 +160,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "dynamic"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "3.1"),
                 ContainerPort,
                 "/bin/sh",
                 new[]

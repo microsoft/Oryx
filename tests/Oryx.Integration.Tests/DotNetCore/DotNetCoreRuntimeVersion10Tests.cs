@@ -32,10 +32,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
+                    SettingsKeys.DynamicInstallRootDir,
+                    BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
+                .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .AddCommand($"oryx build {appDir} " +
-                $"--platform {DotNetCoreConstants.PlatformName} --platform-version {dotNetCoreVersion} -o {appOutputDir}")
+                .AddCommand(
+                $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} " +
+                $"--platform-version {dotNetCoreVersion} -o {appOutputDir}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
