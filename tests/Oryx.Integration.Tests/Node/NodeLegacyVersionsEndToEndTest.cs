@@ -12,6 +12,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Microsoft.Oryx.BuildScriptGeneratorCli;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
@@ -32,6 +33,12 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SettingsKeys.DynamicInstallRootDir,
+                    BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
@@ -82,6 +89,12 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var buildScript = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SettingsKeys.DynamicInstallRootDir,
+                    BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} " +
                 $"--platform-version {nodeVersion} -p compress_node_modules={compressFormat}")

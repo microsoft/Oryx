@@ -21,7 +21,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        //[MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
         [InlineData("8")]
         [InlineData("10")]
         [InlineData("12")]
