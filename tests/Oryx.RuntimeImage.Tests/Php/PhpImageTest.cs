@@ -137,7 +137,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .AddCommand("echo 'ServerName localhost' >> /etc/apache2/apache2.conf")
                 .AddCommand(customSiteConfig)
                 .AddCommand("a2ensite php-x.conf") // load custom site
-                .AddCommand("service apache2 restart") // start apache with the custom site configuration
+                .AddCommand("service apache2 start") // start apache with the custom site configuration
                 .AddCommand("tail -f /dev/null") //foreground process to keep the container alive
                 .ToString();
 
