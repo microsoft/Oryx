@@ -22,15 +22,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("4.4", "4.4.7")]
-        [InlineData("4.5", "4.5.0")]
-        [InlineData("4.8", "4.8.7")]
-        [InlineData("6", NodeVersions.Node6Version)]
-        [InlineData("6.2", "6.2.2")]
-        [InlineData("6.6", "6.6.0")]
-        [InlineData("6.9", "6.9.5")]
-        [InlineData("6.10", "6.10.3")]
-        [InlineData("6.11", "6.11.5")]
         [InlineData("8", NodeVersions.Node8Version)]
         [InlineData("8.0", "8.0.0")]
         [InlineData("8.1", "8.1.4")]

@@ -69,7 +69,7 @@ RUN cd ${IMAGES_DIR} \
  && ./installPlatform.sh nodejs 8.2.1 \
  && ./installPlatform.sh nodejs 8.8.1 \
  && ./installPlatform.sh nodejs 8.9.4 \
- && ./installPlatform.sh nodejs 8.11.2 \
+ && ./installPlatform.sh nodejs 8.11.4 \
  && ./installPlatform.sh nodejs 8.12.0 \
  && ./installPlatform.sh nodejs 8.15.1 \
  && ./installPlatform.sh nodejs 9.4.0 \
@@ -86,7 +86,7 @@ RUN set -ex \
  && ln -s 8.2.1 /opt/nodejs/8.2 \
  && ln -s 8.8.1 /opt/nodejs/8.8 \
  && ln -s 8.9.4 /opt/nodejs/8.9 \
- && ln -s 8.11.2 /opt/nodejs/8.11 \
+ && ln -s 8.11.4 /opt/nodejs/8.11 \
  && ln -s 8.12.0 /opt/nodejs/8.12 \
  && ln -s 8.15.1 /opt/nodejs/8.15 \
  && ln -s 9.4.0 /opt/nodejs/9.4 \
