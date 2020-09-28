@@ -30,120 +30,28 @@ RUN LANG="C.UTF-8" \
         libcurl3 \
         libuuid1 \
         libunwind8 \
+        jq \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
 
-# Install .NET Core
+# NOTE: Place only folders whose size does not extrememly effect the perf of building this image
+# For example, if we put yarn-cache here it is going to impact perf since it more than 500MB
 FROM main AS intermediate
-COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
-ARG BUILD_DIR="/opt/tmp/build"
-ARG IMAGES_DIR="/opt/tmp/images"
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        libc6 \
-        libgcc1 \
-        libgssapi-krb5-2 \
-        libicu57 \
-        liblttng-ust0 \
-        libssl1.0.2 \
-        libstdc++6 \
-        zlib1g \
-    && rm -rf /var/lib/apt/lists/*
-
-ENV DOTNET_RUNNING_IN_CONTAINER=true \
-    DOTNET_USE_POLLING_FILE_WATCHER=true \
-	NUGET_XMLDOC_MODE=skip \
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
-	NUGET_PACKAGES=/opt/nuget
-
-RUN mkdir /opt/nuget
-
-# Check https://www.microsoft.com/net/platform/support-policy for support policy of .NET Core versions
-RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
-    INSTALL_PACKAGES="true" \
-    ${IMAGES_DIR}/build/installDotNetCore.sh
-
-RUN . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh && \
-    DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
-    INSTALL_PACKAGES="true" \
-    ${IMAGES_DIR}/build/installDotNetCore.sh
-
-RUN set -ex \
-    rm -rf /tmp/NuGetScratch \
-    && find /opt/nuget -type d -exec chmod 777 {} \;
-
-RUN set -ex \
- && cd /opt/dotnet \
- && . ${BUILD_DIR}/__dotNetCoreSdkVersions.sh \
- && ln -s $DOT_NET_CORE_31_SDK_VERSION lts \
- && ln -s lts/dotnet /usr/local/bin/dotnet
-
-# Install Node.js, NPM, Yarn
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        jq \
-    && rm -rf /var/lib/apt/lists/*
-RUN ${IMAGES_DIR}/build/installHugo.sh
-COPY build/__nodeVersions.sh /tmp/scripts
-RUN cd ${IMAGES_DIR} \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ./installPlatform.sh nodejs $NODE8_VERSION \
- && ./installPlatform.sh nodejs $NODE10_VERSION \
- && ./installPlatform.sh nodejs $NODE12_VERSION
-RUN ${IMAGES_DIR}/build/installNpm.sh
-RUN set -ex \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
- && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
- && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
- && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
- && mkdir -p /opt/yarn \
- && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
- && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
- && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
-
-RUN set -ex \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ln -s $NODE8_VERSION /opt/nodejs/8 \
- && ln -s $NODE10_VERSION /opt/nodejs/10 \
- && ln -s $NODE12_VERSION /opt/nodejs/12 \
- && ln -s 12 /opt/nodejs/lts
-RUN set -ex \
- && ln -s 6.9.0 /opt/npm/6.9 \
- && ln -s 6.9 /opt/npm/6 \
- && ln -s 6 /opt/npm/latest
-RUN set -ex \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ln -s $YARN_VERSION /opt/yarn/stable \
- && ln -s $YARN_VERSION /opt/yarn/latest \
- && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
- && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
-RUN set -ex \
- && mkdir -p /links \
- && cp -s /opt/nodejs/lts/bin/* /links \
- && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
-
+COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+RUN du -hs /opt/tmp
+ 
 FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE
 COPY --from=intermediate /opt /opt
-RUN imagesDir="/opt/tmp/images" \
-    && buildDir="/opt/tmp/build" \
-    && mkdir -p /var/nuget \
-    && cd /opt/nuget \
-    && mv * /var/nuget \
-    && cd /opt \
-    && rm -rf /opt/nuget \
-    # Grant read-write permissions to the nuget folder so that dotnet restore
-    # can write into it.
-    && chmod a+rw /var/nuget \
+RUN set -ex \
+    && tmpDir="/opt/tmp" \
+    && imagesDir="$tmpDir/images" \
+    && buildDir="$tmpDir/build" \
     # https://github.com/docker-library/python/issues/147
     && PYTHONIOENCODING="UTF-8" \
     # It's not clear whether these are needed at runtime...
@@ -153,16 +61,61 @@ RUN imagesDir="/opt/tmp/images" \
         tk-dev \
         uuid-dev \
     && rm -rf /var/lib/apt/lists/* \
+    # Install .NET Core SDKs
+    && nugetPackagesDir="/var/nuget" \
+    && mkdir -p $nugetPackagesDir \
+    # Grant read-write permissions to the nuget folder so that dotnet restore
+    # can write into it.
+    && chmod a+rw $nugetPackagesDir \
+    && DOTNET_RUNNING_IN_CONTAINER=true \
+    && DOTNET_USE_POLLING_FILE_WATCHER=true \
+	&& NUGET_XMLDOC_MODE=skip \
+    && DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+	&& NUGET_PACKAGES="$nugetPackagesDir" \
+    && . $buildDir/__dotNetCoreSdkVersions.sh \
+    && DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
+       INSTALL_PACKAGES="true" \
+       $imagesDir/build/installDotNetCore.sh \
+    && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
+       INSTALL_PACKAGES="true" \
+       $imagesDir/build/installDotNetCore.sh \
+    && rm -rf /tmp/NuGetScratch \
+    && find $nugetPackagesDir -type d -exec chmod 777 {} \; \
+    # Install Hugo
+    && $imagesDir/build/installHugo.sh \
+    # Install Node
+    && . $buildDir/__nodeVersions.sh \
+    && cd $imagesDir \
+    && ./installPlatform.sh nodejs $NODE8_VERSION \
+    && ./installPlatform.sh nodejs $NODE10_VERSION \
+    && ./installPlatform.sh nodejs $NODE12_VERSION \
+    && $imagesDir/build/installNpm.sh \
+    && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
+    && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
+    && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
+    && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+    && mkdir -p /opt/yarn \
+    && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
+    && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
+    && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+    && ln -s $NODE8_VERSION /opt/nodejs/8 \
+    && ln -s $NODE10_VERSION /opt/nodejs/10 \
+    && ln -s $NODE12_VERSION /opt/nodejs/12 \
+    && ln -s 12 /opt/nodejs/lts \
+    && ln -s 6.9.0 /opt/npm/6.9 \
+    && ln -s 6.9 /opt/npm/6 \
+    && ln -s 6 /opt/npm/latest \
+    && ln -s $YARN_VERSION /opt/yarn/stable \
+    && ln -s $YARN_VERSION /opt/yarn/latest \
+    && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
+    && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION \
     && cd $imagesDir \
     && . $buildDir/__pythonVersions.sh \
     && ./installPlatform.sh python $PYTHON37_VERSION \
     && ./installPlatform.sh python $PYTHON38_VERSION \
-    && . $buildDir/__pythonVersions.sh \
-    && set -ex \
     && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
-    && . $buildDir/__pythonVersions.sh && set -ex \
     && ln -s $PYTHON37_VERSION /opt/python/3.7 \
     && ln -s $PYTHON38_VERSION /opt/python/3.8 \
     && ln -s $PYTHON38_VERSION /opt/python/latest \
@@ -191,8 +144,7 @@ RUN imagesDir="/opt/tmp/images" \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && rm -f /etc/apt/sources.list.d/buster.list \
-    && rm -rf /opt/tmp
+    && rm -f /etc/apt/sources.list.d/buster.list
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
 # For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 

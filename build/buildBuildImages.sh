@@ -230,8 +230,6 @@ function buildFullImage() {
 	docker pull $yarnImage
 	docker tag $yarnImage yarn-cache-base
 
-	BuildAndTagStage "$BUILD_IMAGES_DOCKERFILE" intermediate
-
 	echo
 	echo "-------------Creating full build image-------------------"
 	local builtImageName="$ACR_BUILD_IMAGES_REPO"
