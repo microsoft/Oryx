@@ -16,6 +16,8 @@ namespace Microsoft.Oryx.Detector.Node
         public const string HugoTomlFileName = "config.toml";
         public const string HugoYamlFileName = "config.yaml";
         public const string HugoJsonFileName = "config.json";
+        public const string LernaJsonFileName = "lerna.json";
+        public const string LageConfigJSFileName = "lage.config.js";
         public const string HugoConfigFolderName = "config";
         public const string NodeModulesDirName = "node_modules";
         public const string NodeModulesToBeDeletedName = "_del_node_modules";

@@ -406,6 +406,22 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             Assert.Equal(expectedFrameworkVersions, result.Frameworks.Select(x => x.FrameworkVersion).ToList());
         }
 
+        public void Detect_ReturnsTrue_IfLernaJsonFileExists()
+        {
+            // Arrange
+            var sourceRepo = new MemorySourceRepo();
+            sourceRepo.AddFile(string.Empty, NodeConstants.LernaJsonFileName);
+            var detector = CreateNodePlatformDetector();
+            var context = CreateContext(sourceRepo);
+
+            // Act
+            var result = (NodePlatformDetectorResult)detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(result.HasLernaJsonFile);
+        }
+
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
         {
             return new DetectorContext

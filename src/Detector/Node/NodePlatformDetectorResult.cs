@@ -17,5 +17,9 @@ namespace Microsoft.Oryx.Detector.Node
         /// Gets or sets a list of detected framework information of an application.
         /// </summary>
         public IEnumerable<FrameworkInfo> Frameworks { get; set; }
+
+        public bool HasLernaJsonFile { get; set; }
+
+        public bool HasLageConfigJSFile { get; set; }
     }
 }

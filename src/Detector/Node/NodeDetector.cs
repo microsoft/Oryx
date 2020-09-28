@@ -35,6 +35,8 @@ namespace Microsoft.Oryx.Detector.Node
         public PlatformDetectorResult Detect(DetectorContext context)
         {
             bool isNodeApp = false;
+            bool hasLernaJsonFile = false;
+            bool hasLageConfigJSFile = false;
             string appDirectory = string.Empty;
             var sourceRepo = context.SourceRepo;
             if (sourceRepo.FileExists(NodeConstants.PackageJsonFileName) ||
@@ -48,6 +50,15 @@ namespace Microsoft.Oryx.Detector.Node
                 _logger.LogDebug(
                     $"Could not find {NodeConstants.PackageJsonFileName}/{NodeConstants.PackageLockJsonFileName}" +
                     $"/{NodeConstants.YarnLockFileName} in repo");
+            }
+
+            if (sourceRepo.FileExists(NodeConstants.LernaJsonFileName))
+            {
+                hasLernaJsonFile = true;
+            }
+            if (sourceRepo.FileExists(NodeConstants.LageConfigJSFileName))
+            {
+                hasLageConfigJSFile = true;
             }
 
             if (!isNodeApp)
@@ -106,6 +117,8 @@ namespace Microsoft.Oryx.Detector.Node
                 PlatformVersion = version,
                 AppDirectory = appDirectory,
                 Frameworks = detectedFrameworkInfos,
+                HasLernaJsonFile = hasLernaJsonFile,
+                HasLageConfigJSFile = hasLageConfigJSFile,
             };
         }
 

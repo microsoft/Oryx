@@ -136,10 +136,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             BuildScriptGeneratorContext ctx,
             PlatformDetectorResult detectorResult)
         {
+            var nodePlatformDetectorResult = detectorResult as NodePlatformDetectorResult;
+            if (nodePlatformDetectorResult == null)
+            {
+                throw new ArgumentException(
+                    $"Expected '{nameof(detectorResult)}' argument to be of type " +
+                    $"'{typeof(NodePlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
+            }
+
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the platform name and version to the manifest file
-            manifestFileProperties[ManifestFilePropertyKeys.NodeVersion] = detectorResult.PlatformVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.NodeVersion] = nodePlatformDetectorResult.PlatformVersion;
+
+            if (nodePlatformDetectorResult.HasLernaJsonFile || nodePlatformDetectorResult.HasLageConfigJSFile)
+            {
+                return GetBuildScriptSnippetForMonorepos(ctx, nodePlatformDetectorResult);
+            }
 
             var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
@@ -216,7 +229,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 var depSpecs = ((JObject)packageJson.dependencies).ToObject<IDictionary<string, string>>();
                 _logger.LogDependencies(
                     _commonOptions.PlatformName,
-                    detectorResult.PlatformVersion,
+                    nodePlatformDetectorResult.PlatformVersion,
                     depSpecs.Select(d => d.Key + d.Value));
             }
 
@@ -225,7 +238,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 var depSpecs = ((JObject)packageJson.devDependencies).ToObject<IDictionary<string, string>>();
                 _logger.LogDependencies(
                     _commonOptions.PlatformName,
-                    detectorResult.PlatformVersion,
+                    nodePlatformDetectorResult.PlatformVersion,
                     depSpecs.Select(d => d.Key + d.Value), true);
             }
 
@@ -580,6 +593,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             // Fallback to default version
             var versionInfo = _nodeVersionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
+        }
+
+        private BuildScriptSnippet GetBuildScriptSnippetForMonorepos(
+            BuildScriptGeneratorContext context,
+            NodePlatformDetectorResult detectorResult)
+        {
+            var scriptProperties = new MonoreposBashBuildSnippetProperties();
+            scriptProperties.HasLernaJsonFile = detectorResult.HasLernaJsonFile;
+            scriptProperties.HasLageConfigJSFile = detectorResult.HasLageConfigJSFile;
+
+            if (detectorResult.HasLernaJsonFile)
+            {
+                scriptProperties.NpmInstallLernaCommand = NodeConstants.NpmInstallLernaCommand;
+                scriptProperties.LernaInitCommand = NodeConstants.LernaInitCommand;
+                scriptProperties.LernaCleanCommand = NodeConstants.LernaCleanCommand;
+                scriptProperties.LernaListCommand = NodeConstants.LernaListCommand;
+                scriptProperties.LernaRunBuildCommand = NodeConstants.LernaRunBuildCommand;
+            }
+
+            var script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.NodeMonoreposBuildSnippet,
+                scriptProperties,
+                _logger);
+
+            return new BuildScriptSnippet
+            {
+                BashBuildScriptSnippet = script,
+            };
         }
     }
 }
