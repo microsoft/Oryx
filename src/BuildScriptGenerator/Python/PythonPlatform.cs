@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -130,8 +131,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     $"'{typeof(PythonPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            if (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
+            if ((pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
                 pythonPlatformDetectorResult.HasJupyterNotebookFiles)
+                && IsCondaInstalled())
             {
                 return GetBuildScriptSnippetForConda(context, pythonPlatformDetectorResult);
             }
@@ -216,6 +218,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
             };
+        }
+
+        private bool IsCondaInstalled()
+        {
+            return File.Exists(PythonConstants.CondaExecutablePath);
         }
 
         private BuildScriptSnippet GetBuildScriptSnippetForConda(
