@@ -1,0 +1,11 @@
+{
+  "name": "building-monorepos-using-lerna",
+  "version": "1.0.0",
+  "keywords": [],
+  "author": "nirmalya.email@gmail.com",
+  "license": "MIT",
+  "description": "Sample application which shows how to build monorepos using Lerna",
+  "devDependencies": {
+    "lerna": "^3.20.2"
+  }
+}
