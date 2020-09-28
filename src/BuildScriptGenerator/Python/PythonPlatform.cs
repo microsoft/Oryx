@@ -344,7 +344,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var pythonPlatformDetectorResult = detectorResult as PythonPlatformDetectorResult;
             if (pythonPlatformDetectorResult != null &&
                 (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
-                pythonPlatformDetectorResult.HasJupyterNotebookFiles))
+                pythonPlatformDetectorResult.HasJupyterNotebookFiles)
+                && IsCondaInstalled())
             {
                 _logger.LogDebug(
                     "Application in the source directory is a Conda based app, " +
@@ -403,8 +404,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             // Since conda is already in the path we do not need to set it explicitly in the path
-            if (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
+            if ((pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
                 pythonPlatformDetectorResult.HasJupyterNotebookFiles)
+                && IsCondaInstalled())
             {
                 return null;
             }
