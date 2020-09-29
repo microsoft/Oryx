@@ -23,6 +23,7 @@ RUN LANG="C.UTF-8" \
         rsync \
         zip \
         libgdiplus \
+        jq \
         # By default pip is not available in the buildpacks image
         python-pip \
         python3-pip \
@@ -30,7 +31,6 @@ RUN LANG="C.UTF-8" \
         libcurl3 \
         libuuid1 \
         libunwind8 \
-        jq \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
@@ -38,11 +38,11 @@ RUN LANG="C.UTF-8" \
     && mkdir -p /opt/oryx
 
 # NOTE: Place only folders whose size does not extrememly effect the perf of building this image
+# since this intermediate stage is copied to final stage.
 # For example, if we put yarn-cache here it is going to impact perf since it more than 500MB
 FROM main AS intermediate
 COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-RUN du -hs /opt/tmp
  
 FROM main AS final
 ARG AI_KEY
@@ -84,15 +84,13 @@ RUN set -ex \
     && cd /opt/dotnet \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
     && ln -s $DOT_NET_CORE_31_SDK_VERSION lts \
-    && ln -s lts/dotnet /usr/local/bin/dotnet \
     # Install Hugo
     && $imagesDir/build/installHugo.sh \
     # Install Node
     && . $buildDir/__nodeVersions.sh \
-    && cd $imagesDir \
-    && ./installPlatform.sh nodejs $NODE8_VERSION \
-    && ./installPlatform.sh nodejs $NODE10_VERSION \
-    && ./installPlatform.sh nodejs $NODE12_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $NODE8_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $NODE10_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $NODE12_VERSION \
     && $imagesDir/build/installNpm.sh \
     && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
     && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
@@ -102,40 +100,45 @@ RUN set -ex \
     && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
     && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
     && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
-    && ln -s $NODE8_VERSION /opt/nodejs/8 \
-    && ln -s $NODE10_VERSION /opt/nodejs/10 \
-    && ln -s $NODE12_VERSION /opt/nodejs/12 \
-    && ln -s 12 /opt/nodejs/lts \
-    && ln -s 6.9.0 /opt/npm/6.9 \
-    && ln -s 6.9 /opt/npm/6 \
-    && ln -s 6 /opt/npm/latest \
-    && ln -s $YARN_VERSION /opt/yarn/stable \
-    && ln -s $YARN_VERSION /opt/yarn/latest \
-    && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
-    && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION \
-    && cd $imagesDir \
+    && cd /opt/nodejs \
+    && ln -s $NODE8_VERSION 8 \
+    && ln -s $NODE10_VERSION 10 \
+    && ln -s $NODE12_VERSION 12 \
+    && ln -s 12 lts \
+    && cd /opt/npm \
+    && ln -s 6.9.0 6.9 \
+    && ln -s 6.9 6 \
+    && ln -s 6 latest \
+    && cd /opt/yarn \
+    && ln -s $YARN_VERSION stable \
+    && ln -s $YARN_VERSION latest \
+    && ln -s $YARN_VERSION $YARN_MINOR_VERSION \
+    && ln -s $YARN_MINOR_VERSION $YARN_MAJOR_VERSION \
+    # Install Python SDKs
+    # Upgrade system python
+    && pip install --upgrade cython \
+    && pip3 install --upgrade cython \
     && . $buildDir/__pythonVersions.sh \
-    && ./installPlatform.sh python $PYTHON37_VERSION \
-    && ./installPlatform.sh python $PYTHON38_VERSION \
+    && $imagesDir/installPlatform.sh python $PYTHON37_VERSION \
+    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
     && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
-    && ln -s $PYTHON37_VERSION /opt/python/3.7 \
-    && ln -s $PYTHON38_VERSION /opt/python/3.8 \
-    && ln -s $PYTHON38_VERSION /opt/python/latest \
-    && ln -s $PYTHON38_VERSION /opt/python/stable \
-    && ln -s 3.8 /opt/python/3 \
-    && pip install --upgrade cython \
-    && pip3 install --upgrade cython \
+    && cd /opt/python \
+    && ln -s $PYTHON37_VERSION 3.7 \
+    && ln -s $PYTHON38_VERSION 3.8 \
+    && ln -s $PYTHON38_VERSION latest \
+    && ln -s $PYTHON38_VERSION stable \
+    && ln -s 3.8 3 \
     # Install PHP pre-reqs
     && $imagesDir/build/php/prereqs/installPrereqs.sh \
     # Copy PHP versions
-    && cd $imagesDir \
     && . $buildDir/__phpVersions.sh \
-    && ./installPlatform.sh php $PHP73_VERSION \
-    && ./installPlatform.sh php-composer $COMPOSER_VERSION \
-    && ln -s /opt/php/7.3 /opt/php/7 \
-    && ln -s /opt/php/7 /opt/php/lts \
+    && $imagesDir/installPlatform.sh php $PHP73_VERSION \
+    && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
+    && cd /opt/php \
+    && ln -s 7.3 7 \
+    && ln -s 7 lts \
     && cd /opt/php-composer \
     && ln -sfn 1.9.3 stable \
     && ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar \
