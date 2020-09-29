@@ -9,23 +9,44 @@ set -euo pipefail
 # $2 > runtime-images-acr.txt
 declare imagefilter="oryxdevmcr.azurecr.io/public/oryx"
 
-echo "Build image filter is set"
-while read buildImage; do
-  # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
-  if [[ $buildImage != *:latest ]]; then
-	echo "Pulling the build image $buildImage ..."
-	docker pull "$buildImage" | sed 's/^/     /'
+function tagBuildImageForIntegrationTest() {
+	local devbuildImageName="$1"
+	local devbuildImageType="$2"
+	local buildDefName="$BUILD_DEFINITIONNAME"
+	local buildNumber="$RELEASE_TAG_NAME"
+	
+	# Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
+	if [ -z "$devbuildImageType" ]; then
+		buildImage=$devbuildImageName:$buildDefName.$buildNumber
+		# Trim the build number tag and append the '':latest' to end of it
+		newtag=$devbuildImageName:latest
+	else
+		buildImage=$devbuildImageName:$devbuildImageType-$buildDefName.$buildNumber
+		newtag=$devbuildImageName:$devbuildImageType
+	fi
 
-	# Trim the build number tag and append the '':latest' to end of it
-	newtag="${buildImage%:*}:latest"
+	echo "Pulling the build image $buildImage ..."
+ 	docker pull "$buildImage" | sed 's/^/     /'
 
 	echo
 	echo "Tagging the source image with tag $newtag ..."
+	
 	docker tag "$buildImage" "$newtag" | sed 's/^/     /'
 	echo
 	echo -------------------------------------------------------------------------------
-  fi
-done <"$1"
+  
+}
+
+echo "Build image filter is set"
+
+tagBuildImageForIntegrationTest "$imagefilter/build" ""
+tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions" 
+tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack" 
+tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions"
+tagBuildImageForIntegrationTest "$imagefilter/build" "vso"
+tagBuildImageForIntegrationTest "$imagefilter/cli" ""
+tagBuildImageForIntegrationTest "$imagefilter/pack" ""
+
 
 # Extract language string from string (e.g extract 'python' from 'category=python')
 if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
