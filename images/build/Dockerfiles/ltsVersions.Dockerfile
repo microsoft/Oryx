@@ -81,6 +81,10 @@ RUN set -ex \
        $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPackagesDir -type d -exec chmod 777 {} \; \
+    && cd /opt/dotnet \
+    && . $buildDir/__dotNetCoreSdkVersions.sh \
+    && ln -s $DOT_NET_CORE_31_SDK_VERSION lts \
+    && ln -s lts/dotnet /usr/local/bin/dotnet \
     # Install Hugo
     && $imagesDir/build/installHugo.sh \
     # Install Node
