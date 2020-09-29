@@ -85,6 +85,9 @@ RUN set -ex \
     && ln -s 5.4.2 5.4 \
     && ln -s 5.6.0 5.6 \
     && ln -s 5.6 5 \
+    # NOTE: Do NOT do recursive permission setup as it is already done through yarn-cache-base image
+    # and slows the build
+    && chmod 777 /usr/local/share/yarn-cache \
     # Install Python SDKs
     && PYTHONIOENCODING="UTF-8" \
     && . $buildDir/__pythonVersions.sh \
@@ -107,4 +110,4 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh php $PHP74_VERSION \
     && cd /opt/php \
     && ln -s 5.6 5
-    
+
