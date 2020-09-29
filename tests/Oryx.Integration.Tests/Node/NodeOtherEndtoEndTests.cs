@@ -337,7 +337,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir}")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
