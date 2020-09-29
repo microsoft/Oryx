@@ -126,12 +126,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void GeneratedBuildSnippet_HasLernaRunBuildCommand()
+        public void GeneratedBuildSnippet_HasLernaRunBuildCommand_IfLernaJsonFileExists()
         {
             // Arrange
             const string lernaJson = @"{
-              ""version"": ""1.1.3"",
-              ""npmClient"": ""npm"",
+              ""version"": ""3.22.1"",
+              ""npmClient"": ""yarn"",
             }";
             var commonOptions = new BuildScriptGeneratorOptions();
             var nodePlatform = CreateNodePlatform(

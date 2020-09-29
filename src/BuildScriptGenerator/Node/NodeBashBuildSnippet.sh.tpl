@@ -116,6 +116,37 @@ echo
 	echo
 	{{ NpmRunBuildAzureCommand }}
 	{{ end }}
+
+	{{ if LernaRunBuildCommand | IsNotBlank }}
+	echo
+	echo "Using npm to install Lerna:"
+	{{ InstallLernaCommand }}
+	echo
+	echo
+	echo "Using Lerna version:"
+	lerna --version
+	echo
+	echo
+	echo "Running '{{ LernaInitCommand }} & {{ LernaBootstrapCommand }}':"
+	{{ LernaInitCommand }}
+	{{ LernaBootstrapCommand }}
+	echo
+	echo
+	echo "Running '{{ LernaRunBuildCommand }}'..."
+	echo
+	{{ LernaRunBuildCommand }}
+	{{ end }}
+
+	{{ if LageRunBuildCommand | IsNotBlank }}
+	echo
+	echo "Running ' {{ InstallLageCommand }} ':"
+	{{ InstallLageCommand }}
+	echo
+	echo
+	echo "Running '{{ LageRunBuildCommand }}'..."
+	echo
+	{{ LageRunBuildCommand }}
+	{{ end }}
 {{ end }}
 
 {{ if RunNpmPack }}

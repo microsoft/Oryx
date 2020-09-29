@@ -109,12 +109,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 get => new TemplateResource("Microsoft.Oryx.BuildScriptGenerator.Node.NodeBashBuildSnippet.sh.tpl");
             }
 
-            public static TemplateResource NodeMonoreposBuildSnippet
-            {
-                get => new TemplateResource(
-                    "Microsoft.Oryx.BuildScriptGenerator.Node.MonoreposBashBuildSnippet.sh.tpl");
-            }
-
             public static TemplateResource DotNetCoreSnippet
             {
                 get => new TemplateResource(

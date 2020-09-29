@@ -149,14 +149,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             // Write the platform name and version to the manifest file
             manifestFileProperties[ManifestFilePropertyKeys.NodeVersion] = nodePlatformDetectorResult.PlatformVersion;
 
-            if (nodePlatformDetectorResult.HasLernaJsonFile || nodePlatformDetectorResult.HasLageConfigJSFile)
-            {
-                return GetBuildScriptSnippetForMonorepos(ctx, nodePlatformDetectorResult);
-            }
-
             var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
+            string runBuildLernaCommand = null;
+            string runBuildLageCommand = null;
+            string installLernaCommand = null;
             bool configureYarnCache = false;
             string packageManagerCmd = null;
             string packageInstallCommand = null;
@@ -168,12 +166,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
                 configureYarnCache = true;
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
+                installLernaCommand = NodeConstants.InstallLernaCommandYarn;
             }
             else
             {
                 packageManagerCmd = NodeConstants.NpmCommand;
                 packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
                 packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
+                installLernaCommand = NodeConstants.InstallLernaCommandNpm;
             }
 
             _logger.LogInformation("Using {packageManager}", packageManagerCmd);
@@ -209,6 +209,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                         runBuildAzureCommand = string.Format(
                             NodeConstants.PkgMgrRunBuildAzureCommandTemplate,
                             packageManagerCmd);
+                    }
+
+                    if (nodePlatformDetectorResult.HasLernaJsonFile)
+                    {
+                        runBuildLernaCommand = string.Format(
+                            NodeConstants.PkgMgrRunBuildCommandTemplate,
+                            NodeConstants.LernaCommand);
+                    }
+
+                    if (nodePlatformDetectorResult.HasLageConfigJSFile)
+                    {
+                        runBuildLageCommand = ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName) ?
+                            NodeConstants.YarnRunLageBuildCommand : NodeConstants.NpmRunLageBuildCommand;
                     }
                 }
             }
@@ -286,6 +299,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 PackageInstallerVersionCommand = packageInstallerVersionCommand,
                 RunNpmPack = _commonOptions.ShouldPackage,
                 CustomRunBuildCommand = _nodeScriptGeneratorOptions.CustomRunBuildCommand,
+                LernaRunBuildCommand = runBuildLernaCommand,
+                InstallLernaCommand = installLernaCommand,
+                LernaInitCommand = NodeConstants.LernaInitCommand,
+                LernaBootstrapCommand = NodeConstants.LernaBootstrapCommand,
+                InstallLageCommand = NodeConstants.InstallLageCommand,
+                LageRunBuildCommand = runBuildLageCommand,
             };
 
             string script = TemplateHelper.Render(
@@ -593,34 +612,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             // Fallback to default version
             var versionInfo = _nodeVersionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
-        }
-
-        private BuildScriptSnippet GetBuildScriptSnippetForMonorepos(
-            BuildScriptGeneratorContext context,
-            NodePlatformDetectorResult detectorResult)
-        {
-            var scriptProperties = new MonoreposBashBuildSnippetProperties();
-            scriptProperties.HasLernaJsonFile = detectorResult.HasLernaJsonFile;
-            scriptProperties.HasLageConfigJSFile = detectorResult.HasLageConfigJSFile;
-
-            if (detectorResult.HasLernaJsonFile)
-            {
-                scriptProperties.NpmInstallLernaCommand = NodeConstants.NpmInstallLernaCommand;
-                scriptProperties.LernaInitCommand = NodeConstants.LernaInitCommand;
-                scriptProperties.LernaCleanCommand = NodeConstants.LernaCleanCommand;
-                scriptProperties.LernaListCommand = NodeConstants.LernaListCommand;
-                scriptProperties.LernaRunBuildCommand = NodeConstants.LernaRunBuildCommand;
-            }
-
-            var script = TemplateHelper.Render(
-                TemplateHelper.TemplateResource.NodeMonoreposBuildSnippet,
-                scriptProperties,
-                _logger);
-
-            return new BuildScriptSnippet
-            {
-                BashBuildScriptSnippet = script,
-            };
         }
     }
 }

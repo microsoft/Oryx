@@ -1,0 +1,11 @@
+{
+  "name": "lage-monorepo-post",
+  "version": "1.0.0",
+  "description": "Sample how to use lage to make a monorepo",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "lage": "0.16.0"
+  }
+}

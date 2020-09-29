@@ -43,5 +43,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string PackageInstallerVersionCommand { get; set; }
 
         public bool RunNpmPack { get; set; }
+
+        public string LernaRunBuildCommand { get; set; }
+
+        public string InstallLernaCommand { get; set; }
+
+        public string LernaInitCommand { get; set; }
+
+        public string LernaBootstrapCommand { get; set; }
+
+        public string InstallLageCommand { get; set; }
+
+        public string LageRunBuildCommand { get; set; }
     }
 }
