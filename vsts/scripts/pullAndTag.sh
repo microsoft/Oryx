@@ -13,7 +13,7 @@ function tagBuildImageForIntegrationTest() {
 	local devbuildImageName="$1"
 	local devbuildImageType="$2"
 	local buildDefName="$BUILD_DEFINITIONNAME"
-	local buildNumber="$BUILD_BUILDNUMBER"
+	local buildNumber="$RELEASE_TAG_NAME"
 	
 	# Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
 	if [ -z "$devbuildImageType" ]; then
@@ -22,7 +22,7 @@ function tagBuildImageForIntegrationTest() {
 		newtag=$devbuildImageName:latest
 	else
 		buildImage=$devbuildImageName:$devbuildImageType-$buildDefName.$buildNumber
-		newtag=$devbuildImageName:$devbuildImageType-latest
+		newtag=$devbuildImageName:$devbuildImageType
 	fi
 
 	echo "Pulling the build image $buildImage ..."
