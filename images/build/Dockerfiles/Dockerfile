@@ -12,9 +12,10 @@ COPY src/startupscriptgenerator/src .
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ARG RELEASE_TAG_NAME=unspecified
-ENV GIT_COMMIT=${GIT_COMMIT}
-ENV BUILD_NUMBER=${BUILD_NUMBER}
-ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
+ENV GIT_COMMIT=${GIT_COMMIT} \
+    BUILD_NUMBER=${BUILD_NUMBER} \
+    RELEASE_TAG_NAME=${RELEASE_TAG_NAME} \
+    ORYX_BUILDIMAGE_TYPE="full"
 
 RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
 RUN ./build.sh node       /opt/startupcmdgen/nodejs
