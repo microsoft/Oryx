@@ -83,7 +83,9 @@ RUN set -ex \
     && find $nugetPackagesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
-    && ln -s $DOT_NET_CORE_31_SDK_VERSION lts \
+    && ln -s $DOT_NET_CORE_21_SDK_VERSION 2-lts \
+    && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
+    && ln -s 3-lts lts \
     # Install Hugo
     && $imagesDir/build/installHugo.sh \
     # Install Node
@@ -91,7 +93,6 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh nodejs $NODE8_VERSION \
     && $imagesDir/installPlatform.sh nodejs $NODE10_VERSION \
     && $imagesDir/installPlatform.sh nodejs $NODE12_VERSION \
-    && $imagesDir/build/installNpm.sh \
     && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
     && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
     && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
@@ -105,10 +106,6 @@ RUN set -ex \
     && ln -s $NODE10_VERSION 10 \
     && ln -s $NODE12_VERSION 12 \
     && ln -s 12 lts \
-    && cd /opt/npm \
-    && ln -s 6.9.0 6.9 \
-    && ln -s 6.9 6 \
-    && ln -s 6 latest \
     && cd /opt/yarn \
     && ln -s $YARN_VERSION stable \
     && ln -s $YARN_VERSION latest \

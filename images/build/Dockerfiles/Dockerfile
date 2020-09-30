@@ -57,7 +57,6 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh nodejs 10.14.2 \
     && $imagesDir/installPlatform.sh nodejs 10.21.0 \
     && $imagesDir/installPlatform.sh nodejs 12.18.2 \
-    && $imagesDir/build/installNpm.sh \
     && cd /opt/nodejs \
     && ln -s 8.0.0 8.0 \
     && ln -s 8.1.4 8.1 \
@@ -74,17 +73,6 @@ RUN set -ex \
     && ln -s 10.14.2 10.14 \
     && ln -s 10.21.0 10.21 \
     && ln -s 12.18.2 12.18 \
-    && cd /opt/npm \
-    && ln -s 2.15.9 2.15 \
-    && ln -s 2.15 2 \
-    && ln -s 3.9.5 3.9 \
-    && ln -s 3.10.10 3.10 \
-    && ln -s 3.10 3 \
-    && ln -s 5.0.3 5.0 \
-    && ln -s 5.3.0 5.3 \
-    && ln -s 5.4.2 5.4 \
-    && ln -s 5.6.0 5.6 \
-    && ln -s 5.6 5 \
     # NOTE: Do NOT do recursive permission setup as it is already done through yarn-cache-base image
     # and slows the build
     && chmod 777 /usr/local/share/yarn-cache \

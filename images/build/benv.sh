@@ -49,10 +49,6 @@ done < <(set | grep -i '^node=')
 
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
-done < <(set | grep -i '^npm=')
-
-while read benvEnvironmentVariable; do
-  set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^dotnet=')
 
 while read benvEnvironmentVariable; do
@@ -191,24 +187,6 @@ benv-resolve() {
     local DIR="$platformDir/bin"
     updatePath "$DIR"
     export node="$DIR/node"
-    export npm="$DIR/npm"
-    if [ -e "$DIR/npx" ]; then
-      export npx="$DIR/npx"
-    fi
-
-    return 0
-  fi
-
-  # Resolve npm versions
-  if matchesName "npm" "$name" || matchesName "npm_version" "$name" && [ "${value::1}" != "/" ]; then
-    platformDir=$(benv-getPlatformDir "npm" "$value" "$_benvDynamicInstallRootDir")
-    if [ "$platformDir" == "NotFound" ]; then
-      benv-showSupportedVersionsErrorInfo "npm" "npm" "$value" "$_benvDynamicInstallRootDir"
-      return 1
-    fi
-
-    local DIR="$platformDir"
-    updatePath "$DIR"
     export npm="$DIR/npm"
     if [ -e "$DIR/npx" ]; then
       export npx="$DIR/npx"

@@ -147,7 +147,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(Path.Combine(
                 azureBlazorWasmApp1Dir,
                 "BlazorWasmApp1.csproj"),
-                AzureBlazorWasmClientProjectFile);
+                AzureBlazorWasmClientNetStandardProjectFile);
             var expectedRelativePath = Path.Combine("src", "BlazorWasmApp1", "BlazorWasmApp1.csproj");
 
             var sourceRepo = CreateSourceRepo(sourceRepoDir);
@@ -199,7 +199,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             File.WriteAllText(Path.Combine(
                 azureBlazorWasmApp1Dir,
                 "BlazorWasmApp1.csproj"),
-                AzureBlazorWasmClientProjectFile);
+                AzureBlazorWasmClientNetStandardProjectFile);
             var expectedRelativePath = Path.Combine("src", "WebApp1", "WebApp1.csproj");
 
             var sourceRepo = CreateSourceRepo(sourceRepoDir);

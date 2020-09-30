@@ -15,8 +15,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         private readonly ILogger<ProbeAndFindProjectFileProvider> _logger;
         private readonly DetectorOptions _options;
 
-        // Since this service is registered as a singleton, we can cache the lookup of project file.
-        private bool _probedForProjectFile;
         private string _projectFileRelativePath;
 
         public ProbeAndFindProjectFileProvider(
@@ -137,8 +135,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 return null;
             }
 
-            // Cache the results
-            _probedForProjectFile = true;
             _projectFileRelativePath = ProjectFileHelpers.GetRelativePathToRoot(projectFile, sourceRepo.RootPath);
             return _projectFileRelativePath;
         }

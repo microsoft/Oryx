@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         </Project>
         ";
 
-        protected const string AzureBlazorWasmClientProjectFile = @"
+        protected const string AzureBlazorWasmClientNetStandardProjectFile = @"
         <Project Sdk=""Microsoft.NET.Sdk.Web"">
           <PropertyGroup>
             <TargetFramework>netstandard2.1</TargetFramework>
@@ -54,6 +54,22 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
               <CopyToPublishDirectory>Never</CopyToPublishDirectory>
             </None>
           </ItemGroup>
+        </Project>
+        ";
+
+        protected const string AzureBlazorWasmClientNet5ProjectFile = @"
+        <Project Sdk=""Microsoft.NET.Sdk.BlazorWebAssembly"">
+
+          <PropertyGroup>
+            <TargetFramework>net5.0</TargetFramework>
+          </PropertyGroup>
+
+          <ItemGroup>
+            <PackageReference Include=""Microsoft.AspNetCore.Components.WebAssembly"" Version=""5.0.0-rc.1.20451.17"" />
+            <PackageReference Include=""Microsoft.AspNetCore.Components.WebAssembly.DevServer"" Version=""5.0.0-rc.1.20451.17"" PrivateAssets=""all"" />
+            <PackageReference Include=""System.Net.Http.Json"" Version=""5.0.0-rc.1.20451.14"" />
+          </ItemGroup>
+
         </Project>
         ";
 
