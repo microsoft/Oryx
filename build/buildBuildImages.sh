@@ -181,7 +181,6 @@ function buildJamStackImage() {
 	echo "-------------Creating AzureFunctions JamStack image-------------------"
 	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
 	docker build -t $builtImageName \
-		--build-arg ORYX_BUILDIMAGE_TYPE="jamstack" \
 		-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
 		.
 	
@@ -246,7 +245,6 @@ function buildFullImage() {
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
 	docker build -t $builtImageName \
-		--build-arg ORYX_BUILDIMAGE_TYPE="full" \
 		-f "$BUILD_IMAGES_DOCKERFILE" \
 		.
 
@@ -264,7 +262,6 @@ function buildFullImage() {
 	# Do not write this image tag to the artifacts file as we do not intend to push it
 	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO"
 	docker build -t $testImageName \
-		--build-arg ORYX_BUILDIMAGE_TYPE="full" \
 		-f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
 		.
 }
@@ -279,7 +276,6 @@ function buildVsoImage() {
 	echo "-------------Creating VSO build image-------------------"
 	local builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
 	docker build -t $builtImageName \
-		--build-arg ORYX_BUILDIMAGE_TYPE="vso" \
 		-f "$BUILD_IMAGES_VSO_DOCKERFILE" \
 		.
 

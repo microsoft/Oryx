@@ -48,6 +48,7 @@ FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE
 ARG ORYX_BUILDIMAGE_TYPE
+
 COPY --from=intermediate /opt /opt
 RUN set -ex \
     && tmpDir="/opt/tmp" \
