@@ -10,6 +10,8 @@ namespace Microsoft.Oryx.Detector.Node
     internal static class NodeConstants
     {
         public const string PlatformName = "nodejs";
+        public const string NpmToolName = "npm";
+        public const string YarnToolName = "yarn";
         public const string PackageJsonFileName = "package.json";
         public const string PackageLockJsonFileName = "package-lock.json";
         public const string YarnLockFileName = "yarn.lock";

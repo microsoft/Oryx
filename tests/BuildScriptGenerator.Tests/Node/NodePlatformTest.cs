@@ -131,7 +131,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Arrange
             const string lernaJson = @"{
               ""version"": ""3.22.1"",
-              ""npmClient"": ""yarn"",
             }";
             var commonOptions = new BuildScriptGeneratorOptions();
             var nodePlatform = CreateNodePlatform(
@@ -149,6 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",
                 HasLernaJsonFile = true,
+                LernaNpmClient = "npm",
             };
 
             // Act
@@ -156,6 +156,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("npm install --global lerna", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("lerna bootstrap", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.Contains("lerna run build", buildScriptSnippet.BashBuildScriptSnippet);
         }
 
@@ -361,7 +363,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Equal(
                 "Could not find either 'build' or 'build:azure' node under 'scripts' in package.json. " +
                 "Could not find value for custom run build command using the environment variable " +
-                "key 'RUN_BUILD_COMMAND'.",
+                "key 'RUN_BUILD_COMMAND'." +
+                "Could not find tools for building monorepos, no 'lerna.json' or 'lage.config.js' files found.",
                 exception.Message);
         }
 

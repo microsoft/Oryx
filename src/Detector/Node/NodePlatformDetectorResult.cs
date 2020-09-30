@@ -20,6 +20,8 @@ namespace Microsoft.Oryx.Detector.Node
 
         public bool HasLernaJsonFile { get; set; }
 
+        public string LernaNpmClient { get; set; }
+
         public bool HasLageConfigJSFile { get; set; }
     }
 }

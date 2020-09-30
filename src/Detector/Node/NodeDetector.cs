@@ -38,6 +38,7 @@ namespace Microsoft.Oryx.Detector.Node
             bool hasLernaJsonFile = false;
             bool hasLageConfigJSFile = false;
             string appDirectory = string.Empty;
+            string lernaNpmClient = string.Empty;
             var sourceRepo = context.SourceRepo;
             if (sourceRepo.FileExists(NodeConstants.PackageJsonFileName) ||
                 sourceRepo.FileExists(NodeConstants.PackageLockJsonFileName) ||
@@ -55,6 +56,7 @@ namespace Microsoft.Oryx.Detector.Node
             if (sourceRepo.FileExists(NodeConstants.LernaJsonFileName))
             {
                 hasLernaJsonFile = true;
+                lernaNpmClient = GetLernaJsonNpmClient(context);
             }
             if (sourceRepo.FileExists(NodeConstants.LageConfigJSFileName))
             {
@@ -119,6 +121,7 @@ namespace Microsoft.Oryx.Detector.Node
                 Frameworks = detectedFrameworkInfos,
                 HasLernaJsonFile = hasLernaJsonFile,
                 HasLageConfigJSFile = hasLageConfigJSFile,
+                LernaNpmClient = lernaNpmClient,
             };
         }
 
@@ -220,6 +223,37 @@ namespace Microsoft.Oryx.Detector.Node
             }
 
             return detectedFrameworkResult;
+        }
+
+        private string GetLernaJsonNpmClient(DetectorContext context)
+        {
+            var npmClientName = string.Empty;
+            if (!context.SourceRepo.FileExists(NodeConstants.LernaJsonFileName))
+            {
+                return npmClientName;
+            }
+
+            try
+            {
+                dynamic lernaJson = ReadJsonObjectFromFile(context.SourceRepo, NodeConstants.LernaJsonFileName);
+                if (lernaJson?.npmClient != null)
+                {
+                    npmClientName = lernaJson["npmClient"].Value as string;
+                } else
+                {
+                    //Default Client for Lerna is npm.
+                    npmClientName = NodeConstants.NpmToolName;
+                }
+            }
+            catch (Exception exc)
+            {
+                // Leave malformed lerna.json files for Node.js to handle.
+                // This prevents Oryx from erroring out when Node.js itself might be able to tolerate the file.
+                _logger.LogWarning(
+                    exc,
+                    $"Exception caught while trying to deserialize {NodeConstants.LernaJsonFileName.Hash()}");
+            }
+            return npmClientName;
         }
     }
 }
