@@ -150,7 +150,6 @@ function buildGitHubActionsImage() {
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
-		--build-arg ORYX_BUILDIMAGE_TYPE="githubactions" \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
 		.
@@ -166,7 +165,6 @@ function buildGitHubActionsImage() {
 	
 	docker build \
 		-t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
-		--build-arg ORYX_BUILDIMAGE_TYPE="githubactions" \
 		-f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
 		.
 }
@@ -206,7 +204,6 @@ function buildLtsVersionsImage() {
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
-		--build-arg ORYX_BUILDIMAGE_TYPE="ltsversions" \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE" \
 		.
@@ -225,7 +222,6 @@ function buildLtsVersionsImage() {
 	# Do not write this image tag to the artifacts file as we do not intend to push it
 	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
 	docker build -t $testImageName \
-		--build-arg ORYX_BUILDIMAGE_TYPE="ltsversions" \
 		-f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
 		.
 }
@@ -300,7 +296,6 @@ function buildCliImage() {
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
-		--build-arg ORYX_BUILDIMAGE_TYPE="cli" \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
 		.

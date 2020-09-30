@@ -20,4 +20,4 @@ RUN apt-get update \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
     
 ENV PATH="$PATH:/opt/oryx" \
-    ORYX_BUILDIMAGE_TYPE="${ORYX_BUILDIMAGE_TYPE}"
+    ORYX_BUILDIMAGE_TYPE="cli"
