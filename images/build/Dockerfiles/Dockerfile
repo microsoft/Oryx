@@ -25,8 +25,12 @@ RUN ./build.sh python     /opt/startupcmdgen/python
 ###
 
 FROM main AS final
+ARG ORYX_BUILDIMAGE_TYPE
 COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
+
+ENV ORYX_BUILDIMAGE_TYPE="${ORYX_BUILDIMAGE_TYPE}"
+
 # https://github.com/docker-library/python/issues/147
 RUN set -ex \
     && tmpDir="/opt/tmp" \

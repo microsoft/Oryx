@@ -1,5 +1,5 @@
 FROM oryxdevmcr.azurecr.io/public/oryx/build
-
+ARG ORYX_BUILDIMAGE_TYPE
 # This is a separate instruction because of the limit of Docker where variable expansion fails when used in the
 # same instruction. In the below example the variable TEST would be empty instead of having the value "bar"
 # Example: ENV FOO="bar" TEST="$FOO"
@@ -11,7 +11,8 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh" \
     RUBY_HOME="/opt/ruby/lts" \
     JAVA_HOME="/opt/java/lts" \
-    DYNAMIC_INSTALL_ROOT_DIR="/opt"
+    DYNAMIC_INSTALL_ROOT_DIR="/opt" \
+    ORYX_BUILDIMAGE_TYPE="${ORYX_BUILDIMAGE_TYPE}"
 
 COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 

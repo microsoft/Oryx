@@ -150,6 +150,7 @@ function buildGitHubActionsImage() {
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg ORYX_BUILDIMAGE_TYPE="githubactions" \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
 		.
@@ -165,6 +166,7 @@ function buildGitHubActionsImage() {
 	
 	docker build \
 		-t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
+		--build-arg ORYX_BUILDIMAGE_TYPE="githubactions" \
 		-f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
 		.
 }
@@ -178,7 +180,10 @@ function buildJamStackImage() {
 	echo
 	echo "-------------Creating AzureFunctions JamStack image-------------------"
 	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
-	docker build -t $builtImageName -f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" .
+	docker build -t $builtImageName \
+		--build-arg ORYX_BUILDIMAGE_TYPE="jamstack" \
+		-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
+		.
 	
 	createImageNameWithReleaseTag $builtImageName
 
@@ -202,6 +207,7 @@ function buildLtsVersionsImage() {
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg ORYX_BUILDIMAGE_TYPE="ltsversions" \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE" \
 		.
@@ -219,7 +225,10 @@ function buildLtsVersionsImage() {
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
 	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
-	docker build -t $testImageName -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" .
+	docker build -t $testImageName \
+		--build-arg ORYX_BUILDIMAGE_TYPE="ltsversions" \
+		-f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
+		.
 }
 
 function buildFullImage() {
@@ -236,7 +245,10 @@ function buildFullImage() {
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
-	docker build -t $builtImageName -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build -t $builtImageName \
+		--build-arg ORYX_BUILDIMAGE_TYPE="full" \
+		-f "$BUILD_IMAGES_DOCKERFILE" \
+		.
 
 	createImageNameWithReleaseTag $builtImageName
 
@@ -251,7 +263,10 @@ function buildFullImage() {
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
 	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO"
-	docker build -t $testImageName -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
+	docker build -t $testImageName \
+		--build-arg ORYX_BUILDIMAGE_TYPE="full" \
+		-f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
+		.
 }
 
 function buildVsoImage() {
@@ -263,7 +278,10 @@ function buildVsoImage() {
 	echo
 	echo "-------------Creating VSO build image-------------------"
 	local builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
-	docker build -t $builtImageName -f "$BUILD_IMAGES_VSO_DOCKERFILE" .
+	docker build -t $builtImageName \
+		--build-arg ORYX_BUILDIMAGE_TYPE="vso" \
+		-f "$BUILD_IMAGES_VSO_DOCKERFILE" \
+		.
 
 	createImageNameWithReleaseTag $builtImageName
 
@@ -286,6 +304,7 @@ function buildCliImage() {
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg ORYX_BUILDIMAGE_TYPE="cli" \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
 		.

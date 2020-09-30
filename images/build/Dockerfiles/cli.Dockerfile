@@ -1,4 +1,5 @@
 FROM debian:stretch-slim
+ARG ORYX_BUILDIMAGE_TYPE
 
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 
@@ -18,4 +19,5 @@ RUN apt-get update \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
     
-ENV PATH="$PATH:/opt/oryx"
+ENV PATH="$PATH:/opt/oryx" \
+    ORYX_BUILDIMAGE_TYPE="${ORYX_BUILDIMAGE_TYPE}"

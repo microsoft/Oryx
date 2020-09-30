@@ -47,6 +47,7 @@ COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE
+ARG ORYX_BUILDIMAGE_TYPE
 COPY --from=intermediate /opt /opt
 RUN set -ex \
     && tmpDir="/opt/tmp" \
@@ -171,6 +172,7 @@ ENV LANG="C.UTF-8" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
+    ORYX_BUILDIMAGE_TYPE="${ORYX_BUILDIMAGE_TYPE}" \
     PYTHONIOENCODING="UTF-8"
 
 ENTRYPOINT [ "benv" ]
