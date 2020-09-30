@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         public static bool IsAzureBlazorWebAssemblyProject(ISourceRepo sourceRepo, string projectFile)
         {
             var projFileDoc = GetXmlDocument(sourceRepo, projectFile);
-            return IsAzureBlazorWebAssemblyProject(projFileDoc);
+            return IsBlazorWebAssemblyProject(projFileDoc);
         }
 
         public static string GetRelativePathToRoot(string projectFilePath, string repoRoot)
@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
         public static bool IsAspNetCoreWebApplicationProject(XDocument projectFileDoc)
         {
-            return !IsAzureBlazorWebAssemblyProject(projectFileDoc)
+            return !IsBlazorWebAssemblyProject(projectFileDoc)
                 && IsOfSdkProjectType(
                 projectFileDoc,
                 DotNetCoreConstants.DotNetWebSdkName.ToLowerInvariant());
@@ -72,25 +72,9 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             return HasPackageReference(projectFileDoc, DotNetCoreConstants.AzureFunctionsPackageReference);
         }
 
-        public static bool IsAzureBlazorWebAssemblyProject(XDocument projectFileDoc)
+        public static bool IsBlazorWebAssemblyProject(XDocument projectFileDoc)
         {
-            var azureBlazorWasmTargetFrameworkElement = projectFileDoc.XPathSelectElement(
-                DotNetCoreConstants.TargetFrameworkElementXPathExpression);
-            var azureBlazorWasmTargetFramework = azureBlazorWasmTargetFrameworkElement?.Value;
-
-            var azureBlazorWasmRazorLangVersionElement = projectFileDoc.XPathSelectElement(
-                DotNetCoreConstants.AzureBlazorWasmRazorLangVersionXPathExpression);
-            var azureBlazorWasmRazorLangVersion = azureBlazorWasmRazorLangVersionElement?.Value;
-
-            if (((!string.IsNullOrEmpty(azureBlazorWasmTargetFramework)
-                && azureBlazorWasmTargetFramework.Contains("netstandard"))
-                || !string.IsNullOrEmpty(azureBlazorWasmTargetFramework))
-                && HasPackageReference(projectFileDoc, DotNetCoreConstants.AzureBlazorWasmPackageReference))
-            {
-                return true;
-            }
-
-            return false;
+            return HasPackageReference(projectFileDoc, DotNetCoreConstants.AzureBlazorWasmPackageReference);
         }
 
         private static XDocument GetXmlDocument(ISourceRepo sourceRepo, string projectFile)

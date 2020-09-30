@@ -64,11 +64,25 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         public void IsAzureBlazorWebAssemblyProject_ReturnsTrue_WhenProject_Is_AzureBlazorWebAssemblyProject()
         {
             // Arrange
-            var projectFile = ProjectFileProviderTestBase.AzureBlazorWasmClientProjectFile;
+            var projectFile = ProjectFileProviderTestBase.AzureBlazorWasmClientNetStandardProjectFile;
             var xdoc = XDocument.Load(new StringReader(projectFile));
 
             // Act
-            var actual = ProjectFileHelpers.IsAzureBlazorWebAssemblyProject(xdoc);
+            var actual = ProjectFileHelpers.IsBlazorWebAssemblyProject(xdoc);
+
+            // Assert
+            Assert.True(actual);
+        }
+
+        [Fact]
+        public void IsAzureBlazorWebAssemblyProject_ReturnsTrue_WhenProject_Is_NonNetStandardBlazorWebAssemblyProject()
+        {
+            // Arrange0
+            var projectFile = ProjectFileProviderTestBase.AzureBlazorWasmClientNet5ProjectFile;
+            var xdoc = XDocument.Load(new StringReader(projectFile));
+
+            // Act
+            var actual = ProjectFileHelpers.IsBlazorWebAssemblyProject(xdoc);
 
             // Assert
             Assert.True(actual);
@@ -82,7 +96,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var xdoc = XDocument.Load(new StringReader(projectFile));
 
             // Act
-            var actual = ProjectFileHelpers.IsAzureBlazorWebAssemblyProject(xdoc);
+            var actual = ProjectFileHelpers.IsBlazorWebAssemblyProject(xdoc);
 
             // Assert
             Assert.False(actual);
