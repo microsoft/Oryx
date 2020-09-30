@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -130,8 +131,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     $"'{typeof(PythonPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            if (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
-                pythonPlatformDetectorResult.HasJupyterNotebookFiles)
+            if (IsCondaEnvironment(pythonPlatformDetectorResult))
             {
                 return GetBuildScriptSnippetForConda(context, pythonPlatformDetectorResult);
             }
@@ -335,9 +335,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             PlatformDetectorResult detectorResult)
         {
             var pythonPlatformDetectorResult = detectorResult as PythonPlatformDetectorResult;
-            if (pythonPlatformDetectorResult != null &&
-                (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
-                pythonPlatformDetectorResult.HasJupyterNotebookFiles))
+            if (pythonPlatformDetectorResult != null && IsCondaEnvironment(pythonPlatformDetectorResult))
             {
                 _logger.LogDebug(
                     "Application in the source directory is a Conda based app, " +
@@ -396,8 +394,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             // Since conda is already in the path we do not need to set it explicitly in the path
-            if (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
-                pythonPlatformDetectorResult.HasJupyterNotebookFiles)
+            if (IsCondaEnvironment(pythonPlatformDetectorResult))
             {
                 return null;
             }
@@ -580,6 +577,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             // Fallback to default version
             var versionInfo = _versionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
+        }
+
+        private bool IsCondaEnvironment(PythonPlatformDetectorResult pythonPlatformDetectorResult)
+        {
+            if ((pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
+                pythonPlatformDetectorResult.HasJupyterNotebookFiles)
+                && IsCondaInstalledInImage())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool IsCondaInstalledInImage()
+        {
+            return File.Exists(PythonConstants.CondaExecutablePath);
         }
     }
 }

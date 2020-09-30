@@ -109,6 +109,40 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Theory]
+        [InlineData("github-actions")]
+        [InlineData("lts-versions")]
+        [InlineData("latest")]
+        public void DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(string imageTag)
+        {
+            // Arrange
+            var appName = "requirements";
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "python", "conda-samples", appName));
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetBuildImage(imageTag),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.DoesNotContain("Setting up Conda virtual environment", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
 
         [Fact]
         public void Builds_AndCopiesContentToOutputDirectory_Recursively()

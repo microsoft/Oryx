@@ -19,5 +19,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public const string TarGzVirtualEnvFileNameFormat = "{0}.tar.gz";
         public const string DefaultTargetPackageDirectory = "__oryx_packages__";
         public const string SetupDotPyFileName = "setup.py";
+        public const string CondaExecutablePath = "/opt/conda/condabin/conda";
     }
 }
