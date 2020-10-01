@@ -387,7 +387,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BenvDotNet22UsesDotNetCore22Version()
         {
             // Arrange
-            var expectedPath = $"/opt/dotnet/{DotNetCoreSdkVersions.DotNetCore22SdkVersion}/dotnet";
+            var expectedPath = $"/opt/dotnet/2.2/dotnet";
             var script = new ShellScriptBuilder()
                 .AddCommand($"source benv dotnet=2.2")
                 .AddCommand("which dotnet")
