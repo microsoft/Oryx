@@ -93,30 +93,15 @@ fi
 
 cd "$SOURCE_DIR"
 
-echo
-echo "Running '{{ PackageInstallCommand }}'..."
-echo
-{{ PackageInstallCommand }}
-
 {{ if CustomRunBuildCommand | IsNotBlank }}
+	echo
+	echo "Running '{{ PackageInstallCommand }}'..."
+	echo
+	{{ PackageInstallCommand }}
 	echo
 	{{ CustomRunBuildCommand }}
 	echo
 {{ else }}
-	{{ if NpmRunBuildCommand | IsNotBlank }}
-	echo
-	echo "Running '{{ NpmRunBuildCommand }}'..."
-	echo
-	{{ NpmRunBuildCommand }}
-	{{ end }}
-
-	{{ if NpmRunBuildAzureCommand | IsNotBlank }}
-	echo
-	echo "Running '{{ NpmRunBuildAzureCommand }}'..."
-	echo
-	{{ NpmRunBuildAzureCommand }}
-	{{ end }}
-
 	{{ if LernaRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Using npm to install Lerna:"
@@ -146,6 +131,28 @@ echo
 	echo "Running '{{ LageRunBuildCommand }}'..."
 	echo
 	{{ LageRunBuildCommand }}
+	{{ end }}
+
+	{{ if NpmRunBuildCommand | IsNotBlank }}
+	echo
+	echo "Running '{{ PackageInstallCommand }}'..."
+	echo
+	{{ PackageInstallCommand }}
+	echo
+	echo "Running '{{ NpmRunBuildCommand }}'..."
+	echo
+	{{ NpmRunBuildCommand }}
+	{{ end }}
+
+	{{ if NpmRunBuildAzureCommand | IsNotBlank }}
+	echo
+	echo "Running '{{ PackageInstallCommand }}'..."
+	echo
+	{{ PackageInstallCommand }}
+	echo
+	echo "Running '{{ NpmRunBuildAzureCommand }}'..."
+	echo
+	{{ NpmRunBuildAzureCommand }}
 	{{ end }}
 {{ end }}
 
