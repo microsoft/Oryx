@@ -47,7 +47,9 @@ COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE
+
 COPY --from=intermediate /opt /opt
+
 RUN set -ex \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
@@ -148,7 +150,8 @@ RUN set -ex \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && rm -f /etc/apt/sources.list.d/buster.list
+    && rm -f /etc/apt/sources.list.d/buster.list \
+    && echo "ltsversions" > /opt/oryx/.imagetype
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
 # For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 

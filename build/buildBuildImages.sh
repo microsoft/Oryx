@@ -178,7 +178,9 @@ function buildJamStackImage() {
 	echo
 	echo "-------------Creating AzureFunctions JamStack image-------------------"
 	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
-	docker build -t $builtImageName -f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" .
+	docker build -t $builtImageName \
+		-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
+		.
 	
 	createImageNameWithReleaseTag $builtImageName
 
@@ -219,7 +221,9 @@ function buildLtsVersionsImage() {
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
 	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
-	docker build -t $testImageName -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" .
+	docker build -t $testImageName \
+		-f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
+		.
 }
 
 function buildFullImage() {
@@ -236,7 +240,9 @@ function buildFullImage() {
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
-	docker build -t $builtImageName -f "$BUILD_IMAGES_DOCKERFILE" .
+	docker build -t $builtImageName \
+		-f "$BUILD_IMAGES_DOCKERFILE" \
+		.
 
 	createImageNameWithReleaseTag $builtImageName
 
@@ -251,7 +257,9 @@ function buildFullImage() {
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
 	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO"
-	docker build -t $testImageName -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" .
+	docker build -t $testImageName \
+		-f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
+		.
 }
 
 function buildVsoImage() {
@@ -263,7 +271,9 @@ function buildVsoImage() {
 	echo
 	echo "-------------Creating VSO build image-------------------"
 	local builtImageName="$ACR_BUILD_VSO_IMAGE_NAME"
-	docker build -t $builtImageName -f "$BUILD_IMAGES_VSO_DOCKERFILE" .
+	docker build -t $builtImageName \
+		-f "$BUILD_IMAGES_VSO_DOCKERFILE" \
+		.
 
 	createImageNameWithReleaseTag $builtImageName
 

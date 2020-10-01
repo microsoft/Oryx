@@ -16,6 +16,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
-    && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
+    && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
+    && echo "cli" > /opt/oryx/.imagetype
     
 ENV PATH="$PATH:/opt/oryx"

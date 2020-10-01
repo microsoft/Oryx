@@ -1,5 +1,4 @@
 FROM oryxdevmcr.azurecr.io/public/oryx/build
-
 # This is a separate instruction because of the limit of Docker where variable expansion fails when used in the
 # same instruction. In the below example the variable TEST would be empty instead of having the value "bar"
 # Example: ENV FOO="bar" TEST="$FOO"
@@ -52,4 +51,5 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $JAVA_VERSION lts \
     && cd /opt/maven \
     && ln -s $MAVEN_VERSION lts \
-    && rm -rf /opt/tmp
+    && rm -rf /opt/tmp \
+    && echo "vso" > /opt/oryx/.imagetype

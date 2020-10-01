@@ -8,7 +8,13 @@ namespace Microsoft.Oryx.Tests.Common
     public class Settings
     {
         public const string BuildImageName = "oryxtests/build:latest";
+        public const string WithRootAccessBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:latest";
         public const string LtsVersionsBuildImageName = "oryxtests/build:lts-versions";
+        public const string WithRootAccessLtsVersionsBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions";
+        public const string GitHubActionsBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:github-actions";
+        public const string JamStackBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack";
+        public const string CliBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/cli";
+        public const string VsoBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:vso";
 
         public const string RemoveTestContainersEnvironmentVariableName = "ORYX_REMOVE_TEST_CONTAINERS";
 

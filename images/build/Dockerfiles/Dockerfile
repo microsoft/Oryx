@@ -27,6 +27,7 @@ RUN ./build.sh python     /opt/startupcmdgen/python
 FROM main AS final
 COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
+
 # https://github.com/docker-library/python/issues/147
 RUN set -ex \
     && tmpDir="/opt/tmp" \
@@ -97,5 +98,6 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh php $PHP72_VERSION \
     && $imagesDir/installPlatform.sh php $PHP74_VERSION \
     && cd /opt/php \
-    && ln -s 5.6 5
+    && ln -s 5.6 5 \
+    && echo "full" > /opt/oryx/.imagetype
 
