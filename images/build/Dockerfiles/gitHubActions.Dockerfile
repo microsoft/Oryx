@@ -93,7 +93,8 @@ RUN tmpDir="/opt/tmp" \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f /etc/apt/sources.list.d/buster.list \
-    && rm -rf $tmpDir
+    && rm -rf $tmpDir \
+    && echo "githubactions" > /opt/oryx/.imagetype
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
 # For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 
@@ -112,7 +113,6 @@ ENV LANG="C.UTF-8" \
     NUGET_PACKAGES="/var/nuget" \
     ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
     ENABLE_DYNAMIC_INSTALL="true" \
-    ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
-    ORYX_BUILDIMAGE_TYPE="githubactions"
+    ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}"
 
 ENTRYPOINT [ "benv" ]

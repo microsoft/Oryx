@@ -10,8 +10,7 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh" \
     RUBY_HOME="/opt/ruby/lts" \
     JAVA_HOME="/opt/java/lts" \
-    DYNAMIC_INSTALL_ROOT_DIR="/opt" \
-    ORYX_BUILDIMAGE_TYPE="vso"
+    DYNAMIC_INSTALL_ROOT_DIR="/opt"
 
 COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 
@@ -52,4 +51,5 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $JAVA_VERSION lts \
     && cd /opt/maven \
     && ln -s $MAVEN_VERSION lts \
-    && rm -rf /opt/tmp
+    && rm -rf /opt/tmp \
+    && echo "vso" > /opt/oryx/.imagetype

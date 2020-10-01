@@ -12,10 +12,9 @@ COPY src/startupscriptgenerator/src .
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ARG RELEASE_TAG_NAME=unspecified
-ENV GIT_COMMIT=${GIT_COMMIT} \
-    BUILD_NUMBER=${BUILD_NUMBER} \
-    RELEASE_TAG_NAME=${RELEASE_TAG_NAME} \
-    ORYX_BUILDIMAGE_TYPE="full"
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 
 RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
 RUN ./build.sh node       /opt/startupcmdgen/nodejs
@@ -28,8 +27,6 @@ RUN ./build.sh python     /opt/startupcmdgen/python
 FROM main AS final
 COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
-
-ENV ORYX_BUILDIMAGE_TYPE="full"
 
 # https://github.com/docker-library/python/issues/147
 RUN set -ex \
@@ -113,5 +110,6 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh php $PHP72_VERSION \
     && $imagesDir/installPlatform.sh php $PHP74_VERSION \
     && cd /opt/php \
-    && ln -s 5.6 5
+    && ln -s 5.6 5 \
+    && echo "full" > /opt/oryx/.imagetype
 

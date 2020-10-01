@@ -44,14 +44,14 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData(Settings.CliBuildImageName, "cli")]
         [InlineData(Settings.JamStackBuildImageName, "jamstack")]
         [InlineData(Settings.VsoBuildImageName, "vso")]
-        public void PulledBuildImages_Contains_ORYX_BUILDIMAGE_TYPE_Info(string buildImageName, string expectedBuildImageType)
+        public void PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(string buildImageName, string expectedBuildImageType)
         {
             // Arrange and Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = buildImageName,
                 CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", "echo $ORYX_BUILDIMAGE_TYPE" }
+                CommandArguments = new[] { "-c", "cat /opt/oryx/.imagetype" }
             });
 
             // Assert
