@@ -383,6 +383,30 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void BenvDotNet22UsesDotNetCore22Version()
+        {
+            // Arrange
+            var expectedPath = $"/opt/dotnet/2.2/dotnet";
+            var script = new ShellScriptBuilder()
+                .AddCommand($"source benv dotnet=2.2")
+                .AddCommand("which dotnet")
+                .ToString();
+
+            // Act
+            var image = _imageHelper.GetBuildImage();
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedPath, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         private void RunAsserts(Action action, string message)
         {
             try

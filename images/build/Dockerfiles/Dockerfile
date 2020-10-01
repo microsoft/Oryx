@@ -42,6 +42,9 @@ RUN set -ex \
     && DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
+    && cd /opt/dotnet \
+    # A temporary solution for AppService to make it builds work
+    && ln -s $DOT_NET_CORE_22_SDK_VERSION 2.2 \
     && cd $imagesDir \ 
     && . $buildDir/__nodeVersions.sh \
     && $imagesDir/installPlatform.sh nodejs 8.0.0 \
