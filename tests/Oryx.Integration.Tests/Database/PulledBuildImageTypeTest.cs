@@ -36,9 +36,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData(Settings.BuildImageName, "full")]
         [InlineData(Settings.WithRootAccessBuildImageName, "full")]
-        [InlineData(Settings.LtsVersionsBuildImageName, "ltsversions")]
         [InlineData(Settings.WithRootAccessLtsVersionsBuildImageName, "ltsversions")]        
         [InlineData(Settings.GitHubActionsBuildImageName, "githubactions")]
         [InlineData(Settings.CliBuildImageName, "cli")]
