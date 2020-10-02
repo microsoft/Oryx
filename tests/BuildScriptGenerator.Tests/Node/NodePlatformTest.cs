@@ -156,9 +156,78 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(buildScriptSnippet);
-            Assert.Contains("npm install --global lerna", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.Contains("lerna bootstrap", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.Contains("lerna run build", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_ThrowsException_IfBothLernaAndLageFileExists()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            repo.AddFile(string.Empty, NodeConstants.LageConfigJSFileName);
+            repo.AddFile(string.Empty, NodeConstants.LernaJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+                HasLernaJsonFile = true,
+                HasLageConfigJSFile = true,
+            };
+
+            // Act & Assert
+            var exception = Assert.Throws<InvalidUsageException>(
+                () => nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult));
+
+            Assert.Equal(
+                "Multiple monorepo package management tools are found, please choose to use either Lerna or Lage.",
+                exception.Message);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_CustomRunCommandWillExecute_WhenOtherCommandsAlsoExist()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here" },
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            repo.AddFile(string.Empty, NodeConstants.LernaJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+                HasLernaJsonFile = true,
+                LernaNpmClient = "npm",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("custom command here", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("lerna run build", buildScriptSnippet.BashBuildScriptSnippet);
         }
 
         [Fact]

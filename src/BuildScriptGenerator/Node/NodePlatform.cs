@@ -188,7 +188,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 runBuildLernaCommand = string.Format(
                         NodeConstants.PkgMgrRunBuildCommandTemplate,
                         NodeConstants.LernaCommand);
-                if (nodePlatformDetectorResult.LernaNpmClient.Equals(
+                if (!string.IsNullOrEmpty(nodePlatformDetectorResult.LernaNpmClient)
+                    && nodePlatformDetectorResult.LernaNpmClient.Equals(
                     NodeConstants.YarnCommand, StringComparison.OrdinalIgnoreCase))
                 {
                     packageInstallCommand = NodeConstants.YarnPackageInstallCommand;

@@ -101,12 +101,7 @@ cd "$SOURCE_DIR"
 	echo
 	{{ CustomRunBuildCommand }}
 	echo
-{{ else }}
-	{{ if LernaRunBuildCommand | IsNotBlank }}
-	echo
-	echo "Using npm to install Lerna:"
-	{{ InstallLernaCommand }}
-	echo
+{{ else if LernaRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Using Lerna version:"
 	lerna --version
@@ -120,9 +115,7 @@ cd "$SOURCE_DIR"
 	echo "Running '{{ LernaRunBuildCommand }}'..."
 	echo
 	{{ LernaRunBuildCommand }}
-	{{ end }}
-
-	{{ if LageRunBuildCommand | IsNotBlank }}
+{{ else if LageRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running ' {{ InstallLageCommand }} ':"
 	{{ InstallLageCommand }}
@@ -131,24 +124,18 @@ cd "$SOURCE_DIR"
 	echo "Running '{{ LageRunBuildCommand }}'..."
 	echo
 	{{ LageRunBuildCommand }}
-	{{ end }}
-
-	{{ if NpmRunBuildCommand | IsNotBlank }}
+{{ else }}
 	echo
 	echo "Running '{{ PackageInstallCommand }}'..."
 	echo
 	{{ PackageInstallCommand }}
+	{{ if NpmRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ NpmRunBuildCommand }}'..."
 	echo
 	{{ NpmRunBuildCommand }}
 	{{ end }}
-
 	{{ if NpmRunBuildAzureCommand | IsNotBlank }}
-	echo
-	echo "Running '{{ PackageInstallCommand }}'..."
-	echo
-	{{ PackageInstallCommand }}
 	echo
 	echo "Running '{{ NpmRunBuildAzureCommand }}'..."
 	echo
