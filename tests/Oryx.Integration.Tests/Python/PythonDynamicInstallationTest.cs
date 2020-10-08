@@ -24,9 +24,10 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("2.7")]
-        [InlineData("3")]
         [InlineData("3.6")]
         [InlineData("3.7")]
+        [InlineData("3.8")]
+        [InlineData("3.9")]
         public async Task CanBuildAndRunPythonApp(string pythonVersion)
         {
             // Arrange
@@ -56,7 +57,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { volume },
                 _imageHelper.GetLtsVersionsBuildImage(),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", "dynamic"),
+                _imageHelper.GetRuntimeImage("python", pythonVersion),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
