@@ -36,24 +36,17 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-               .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} --platform dotnet --platform-version {runtimeVersion} -o {appOutputDir}")
                .ToString();
 
             // split run script to test pre-run command before running the app.
             var runtimeImageScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
-
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName,
                     $"\"touch {appOutputDir}/_test_file.txt\ntouch {appOutputDir}/_test_file_2.txt\"")
-
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
-
                 .AddCommand($"LINENUMBER=\"$(grep -n '# End of pre-run' {RunScriptPath} | cut -f1 -d:)\"")
                 .AddCommand($"eval \"head -n +${{LINENUMBER}} {RunScriptPath} > {RunScriptPreRunPath}\"")
                 .AddCommand($"chmod +x {RunScriptPreRunPath}")
@@ -109,9 +102,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildImageScript = new ShellScriptBuilder()
-               .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} --platform dotnet --platform-version {runtimeVersion} -o {appOutputDir}")
                .ToString();
@@ -119,10 +110,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // split run script to test pre-run command and then run the app
             var runtimeImageScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
-
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"")
                 .AddCommand($"touch {preRunScriptPath}")
                 .AddFileExistsCheck(preRunScriptPath)
