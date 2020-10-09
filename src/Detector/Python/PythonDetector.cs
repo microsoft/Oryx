@@ -178,17 +178,7 @@ namespace Microsoft.Oryx.Detector.Python
         private bool IsCondaEnvironmentFile(ISourceRepo sourceRepo, string fileName)
         {
             YamlNode yamlNode = null;
-
-            try
-            {
-                yamlNode = ParserHelper.ParseYamlFile(sourceRepo, fileName);
-            }
-            catch (FailedToParseFileException ex)
-            {
-                _logger.LogError(ex, $"An error occurred when trying to parse file '{fileName}'.");
-                return false;
-            }
-
+            yamlNode = ParserHelper.ParseYamlFile(sourceRepo, fileName);
             var yamlMappingNode = yamlNode as YamlMappingNode;
             if (yamlMappingNode != null)
             {

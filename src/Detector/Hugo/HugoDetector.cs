@@ -156,17 +156,7 @@ namespace Microsoft.Oryx.Detector.Hugo
             TomlTable tomlTable = null;
 
             var relativeFilePath = Path.Combine(subPaths);
-
-            try
-            {
-                tomlTable = ParserHelper.ParseTomlFile(sourceRepo, relativeFilePath);
-            }
-            catch (FailedToParseFileException ex)
-            {
-                _logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
-                return false;
-            }
-
+            tomlTable = ParserHelper.ParseTomlFile(sourceRepo, relativeFilePath);
             if (tomlTable.Keys
                 .Any(k => HugoConfigurationKeys.Contains(k, StringComparer.OrdinalIgnoreCase)))
             {
@@ -182,16 +172,8 @@ namespace Microsoft.Oryx.Detector.Hugo
 
             YamlNode yamlNode = null;
 
-            try
-            {
-                yamlNode = ParserHelper.ParseYamlFile(sourceRepo, relativeFilePath);
-            }
-            catch (FailedToParseFileException ex)
-            {
-                _logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
-                return false;
-            }
-
+            yamlNode = ParserHelper.ParseYamlFile(sourceRepo, relativeFilePath);
+            
             var yamlMappingNode = yamlNode as YamlMappingNode;
             if (yamlMappingNode != null)
             {
@@ -212,16 +194,8 @@ namespace Microsoft.Oryx.Detector.Hugo
 
             JObject jObject = null;
 
-            try
-            {
-                jObject = ParserHelper.ParseJsonFile(sourceRepo, relativeFilePath);
-            }
-            catch (FailedToParseFileException ex)
-            {
-                _logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
-                return false;
-            }
-
+            jObject = ParserHelper.ParseJsonFile(sourceRepo, relativeFilePath);
+            
             if (jObject.Children()
                 .Select(c => c.Path)
                 .Any(c => HugoConfigurationKeys.Contains(c, StringComparer.OrdinalIgnoreCase)))
