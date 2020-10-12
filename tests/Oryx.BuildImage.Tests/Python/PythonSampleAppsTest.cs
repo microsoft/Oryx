@@ -1220,9 +1220,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Matches($"Pre-build script: /opt/python/{version}/bin/python{version}", result.StdOut);
+                    var semVer = new SemVer.Version(version);
+                    var virtualEnvSuffix = $"{semVer.Major}.{semVer.Minor}";
+                    Assert.Matches($"Pre-build script: /opt/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
                     Assert.Matches($"Pre-build script: /opt/python/{version}/bin/pip", result.StdOut);
-                    Assert.Matches($"Post-build script: /opt/python/{version}/bin/python{version}", result.StdOut);
+                    Assert.Matches($"Post-build script: /opt/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
                     Assert.Matches($"Post-build script: /opt/python/{version}/bin/pip", result.StdOut);
                 },
                 result.GetDebugInfo());
