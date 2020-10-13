@@ -49,9 +49,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
@@ -113,9 +111,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var buildCmd = $"{appDir} -i /tmp/int -o {appOutputDir}";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(buildCmd)
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(sentinelFile)
@@ -171,9 +167,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 globalJsonContent);
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} --log-file log.txt")
@@ -235,9 +229,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 globalJsonContent);
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
@@ -296,9 +288,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
@@ -395,9 +385,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 globalJsonContent);
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} --dynamic-install-root-dir {expectedDynamicInstallRootDir}")
                 .AddDirectoryExistsCheck(

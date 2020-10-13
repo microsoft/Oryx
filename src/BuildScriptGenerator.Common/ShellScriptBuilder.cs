@@ -149,6 +149,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
                 "exit 1; fi");
         }
 
+        public ShellScriptBuilder AddDefaultTestEnvironmentVariables()
+        {
+            return SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl);
+        }
+
         public override string ToString()
         {
             return _scriptBuilder.ToString();

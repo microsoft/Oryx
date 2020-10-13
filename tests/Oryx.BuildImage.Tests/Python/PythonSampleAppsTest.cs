@@ -37,6 +37,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
 
@@ -71,6 +72,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -p packagedir={PackagesDirectory}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .ToString();
@@ -109,6 +111,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
 
@@ -142,6 +145,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var subDir = Guid.NewGuid();
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 // Add a test sub-directory with a file
                 .CreateDirectory($"{appDir}/{subDir}")
                 .CreateFile($"{appDir}/{subDir}/file1.txt", "file1.txt")
@@ -179,7 +183,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appDir}/output --platform {PythonConstants.PlatformName} --platform-version 3.7")
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand(
+                $"{appDir} -o {appDir}/output --platform {PythonConstants.PlatformName} " +
+                $"--platform-version 3.7")
                 .AddDirectoryExistsCheck($"{appDir}/output/pythonenv3.7")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
                 .ToString();
@@ -212,8 +219,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             // NOTE: we want to make sure that even after subsequent builds(like in case of AppService),
             // the output structure is like what we expect.
-            var buildCmd = $"oryx build {appDir} -o {appDir}/output --platform {PythonConstants.PlatformName} --platform-version 3.7";
+            var buildCmd = $"oryx build {appDir} -o {appDir}/output --platform {PythonConstants.PlatformName} " +
+                $"--platform-version 3.7";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(buildCmd)
                 .AddCommand(buildCmd)
                 .AddCommand(buildCmd)
@@ -249,6 +258,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var virtualEnvName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir}")
                 .AddDirectoryExistsCheck($"{appDir}/{virtualEnvName}")
                 .ToString();
@@ -282,6 +292,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = $"{appDir}/output";
             var virtualEnvName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvName}")
                 .ToString();
@@ -315,6 +326,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var virtualEnvName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 // Pre-populate the output directory with content
                 .CreateDirectory(appOutputDir)
                 .CreateFile($"{appOutputDir}/hi.txt", "hi")
@@ -360,7 +372,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version {langVersion} > {generatedScript}")
+                .AddScriptCommand(
+                $"{appDir} --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {langVersion} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -396,8 +410,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = $"{appDir}/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python36Version}")
+                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {PythonVersions.Python36Version}")
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -441,8 +457,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = $"{appDir}/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python36Version}")
+                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {PythonVersions.Python36Version}")
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -483,8 +501,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = $"{appDir}/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python36Version}")
+                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {PythonVersions.Python36Version}")
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -525,7 +545,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
                 .AddScriptCommand(
-                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python36Version} > {generatedScript}")
+                $"{appDir} --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {PythonVersions.Python36Version} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -562,7 +583,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version 4.0.1 > {generatedScript}")
+                .AddDefaultTestEnvironmentVariables()
+                .AddScriptCommand(
+                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version 4.0.1 > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -602,7 +625,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddScriptCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version {langVersion} > {generatedScript}")
+                .AddScriptCommand(
+                $"{appDir} --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {langVersion} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
@@ -677,6 +702,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvironmentName}")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/{virtualEnvironmentName}.tar.gz")
@@ -716,6 +742,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"-p virtualenv_name={virtualEnvironmentName} -p compress_virtualenv={compressionFormat}")
@@ -755,6 +782,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"-p virtualenv_name={virtualEnvironmentName} -p compress_virtualenv=zip")
@@ -794,8 +822,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python37Version}")
+                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {PythonVersions.Python37Version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/pythonenv3.7/lib/python3.7/site-packages/flask")
                 .ToString();
 
@@ -830,8 +860,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python37Version}")
+                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {PythonVersions.Python37Version}")
                 .ToString();
 
             // Act
@@ -1097,7 +1129,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python37Version}")
+                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {PythonVersions.Python37Version}")
                 .ToString();
 
             // Act
@@ -1124,8 +1157,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("3")]
-        [InlineData("2")]
+        [InlineData(PythonVersions.Python38Version)]
+        [InlineData(PythonVersions.Python27Version)]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext(string version)
         {
             // Arrange
@@ -1164,7 +1197,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {version}")
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {version}")
                 .ToString();
 
             // Act
@@ -1185,16 +1220,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Matches(
-                        @"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version,
-                        result.StdOut);
-                    Assert.Matches(
-                        @"Pre-build script: /opt/python/" + version + @".\d+.\d+/bin/pip",
-                        result.StdOut);
-                    Assert.Matches(
-                        @"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/python" + version,
-                        result.StdOut);
-                    Assert.Matches(@"Post-build script: /opt/python/" + version + @".\d+.\d+/bin/pip", result.StdOut);
+                    var semVer = new SemVer.Version(version);
+                    var virtualEnvSuffix = $"{semVer.Major}.{semVer.Minor}";
+                    Assert.Matches($"Pre-build script: /opt/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
+                    Assert.Matches($"Pre-build script: /opt/python/{version}/bin/pip", result.StdOut);
+                    Assert.Matches($"Post-build script: /opt/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
+                    Assert.Matches($"Post-build script: /opt/python/{version}/bin/pip", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -1210,6 +1241,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"mkdir -p {appDir}/foo")
                 .AddCommand($"echo > {appDir}/foo/test.py")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")

@@ -32,11 +32,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
@@ -74,10 +71,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var buildCmd = $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {NodeConstants.PlatformName} --platform-version {version}";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand(buildCmd)
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddFileExistsCheck(sentinelFile)
@@ -120,10 +115,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"--platform {NodeConstants.PlatformName} --platform-version {version} " +
                 $"--dynamic-install-root-dir {expectedDynamicInstallRootDir}";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(buildCmd)
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck(

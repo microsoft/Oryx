@@ -35,17 +35,13 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
+               .AddDefaultTestEnvironmentVariables()
                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-               .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand(
                 $"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx setupEnv -appPath {appDir}")
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -79,17 +75,13 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
+               .AddDefaultTestEnvironmentVariables()
                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-               .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand(
                 $"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx setupEnv -appPath {appDir}")
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -121,18 +113,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
+               .AddDefaultTestEnvironmentVariables()
                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-               .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand(
                 $"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -164,18 +152,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var packagesDir = ".python_packages/lib/python3.7/site-packages";
             var buildScript = new ShellScriptBuilder()
-               .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion} " +
                 $"-p packagedir={packagesDir}")
                .AddDirectoryExistsCheck($"{appDir}/{packagesDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();

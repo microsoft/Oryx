@@ -37,19 +37,15 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} --platform nodejs --platform-version {nodeVersion} -o {appOutputDir}")
                 .ToString();
 
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName,
                     $"\"touch {appOutputDir}/_test_file.txt\ntouch {appOutputDir}/_test_file_2.txt\"")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
@@ -107,18 +103,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = $"{appDir}/myoutputdir";
             var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} --platform nodejs --platform-version {nodeVersion} -o {appOutputDir}")
                 .ToString();
 
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"")
                 .AddCommand($"touch {preRunScriptPath}")

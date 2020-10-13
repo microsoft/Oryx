@@ -85,10 +85,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var buildCmd = $"{appDir} --platform {HugoConstants.PlatformName} --platform-version {hugoVersion} -o {appOutputDir}";
             var script = new ShellScriptBuilder()
-                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                 .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(buildCmd)
                 .AddFileExistsCheck(sentinelFile)
                 .AddCommand($"rm -f {sentinelFile}")
@@ -129,11 +127,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("HUGO_VERSION", hugoVersion)
-                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} " +

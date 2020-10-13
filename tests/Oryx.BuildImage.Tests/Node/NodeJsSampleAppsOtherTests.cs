@@ -542,6 +542,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} --platform {NodeConstants.PlatformName} --platform-version 8")
                 .ToString();
 

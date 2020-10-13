@@ -70,7 +70,7 @@
     python27-version: 2.7.18
     python36-version: 3.6.12
     python37-version: 3.7.9
-    python38-version: 3.8.5
+    python38-version: 3.8.6
     python39-version: 3.9.0
   outputs:
     - type: csharp
@@ -143,16 +143,16 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20200917.1 
+    node-runtime-base-tag: 20201009.5
     yarn-cache-base-tag: 20200810.1
-    yarn-version: 1.17.3
+    yarn-version: 1.22.10
     yarn-minor-version: 1.17
     yarn-major-version: 1
     node6-version: 6.17.1
     node8-version: 8.17.0
-    node10-version: 10.22.0
-    node12-version: 12.18.3
-    node14-version: 14.7.0
+    node10-version: 10.22.1
+    node12-version: 12.19.0
+    node14-version: 14.13.1
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 3.5.1
   outputs:
@@ -196,7 +196,7 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: hugo-constants
   constants:
-    version: 0.71.0
+    version: 0.76.3
     platform-name: hugo
     installed-hugo-versions-dir: /opt/hugo
     installation-url-format: https://github.com/gohugoio/hugo/releases/download/v#VERSION#/#TAR_FILE#

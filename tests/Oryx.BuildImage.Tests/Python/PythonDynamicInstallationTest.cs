@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -42,17 +41,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuildsPython(string imageName, string version)
         {
             // Arrange
-            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/python/{version}";
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
+                $"python/{version}";
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                 .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
                 .ToString();
@@ -86,18 +83,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuildsPythonPreviewVersion(string previewVersion)
         {
             // Arrange
-            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/python/{previewVersion}";
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
+                $"python/{previewVersion}";
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                 .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
-                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {previewVersion} -o {appOutputDir}")
+                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {previewVersion} " +
+                $"-o {appOutputDir}")
                 .ToString();
 
             // Act
@@ -122,25 +118,23 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-
         [Fact]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
             var version = "3.8.1"; //NOTE: use the full version so that we know the install directory path
-            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/python/{version}";
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
+                $"python/{version}";
             var sentinelFile = $"{installationDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}";
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
-            var buildCmd = $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}";
+            var buildCmd = $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} " +
+                $"-o {appOutputDir}";
             var script = new ShellScriptBuilder()
-                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                 .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(buildCmd)
                 .AddFileExistsCheck(sentinelFile)
                 .AddCommand($"rm -f {sentinelFile}")
@@ -172,17 +166,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var version = "3.8.1";
-            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/python/{version}";
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
+                $"python/{version}";
             var appName = "Python_HttpTriggerSample";
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "azureFunctionsApps", appName));
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                 .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddCommand(GetSnippetToCleanUpExistingInstallation())
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
                 .ToString();
@@ -220,10 +212,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var expectedDynamicInstallRootDir = "/foo/bar";
             var script = new ShellScriptBuilder()
-                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                 .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}" +
                 $" --dynamic-install-root-dir {expectedDynamicInstallRootDir}")
@@ -247,7 +236,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: {expectedDynamicInstallRootDir}/{PythonConstants.PlatformName}/{version}/bin/python3",
+                        $"Python Version: {expectedDynamicInstallRootDir}/{PythonConstants.PlatformName}" +
+                        $"/{version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -259,7 +249,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var version = "3.6.9";
             var appName = "flask-app";
-            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/python/{version}";
+            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}" +
+                $"/python/{version}";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";

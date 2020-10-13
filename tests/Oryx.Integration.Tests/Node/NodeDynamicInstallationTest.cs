@@ -35,17 +35,13 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddCommand($"oryx setupEnv -appPath {appDir}")
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -89,16 +85,12 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)

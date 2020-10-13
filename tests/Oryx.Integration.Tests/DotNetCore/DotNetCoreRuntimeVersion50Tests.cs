@@ -32,9 +32,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
@@ -92,12 +90,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/myoutputdir";
             var buildImageScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
+               .AddDefaultTestEnvironmentVariables()
+               .SetEnvironmentVariable(
                     SettingsKeys.DynamicInstallRootDir,
                     BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
                .AddCommand($"oryx prep --skip-detection --platforms-and-versions dotnet={DotNetCoreRunTimeVersions.NetCoreApp50}")
                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNet50SdkVersion}")
                .AddCommand($"cd {appDir}")
