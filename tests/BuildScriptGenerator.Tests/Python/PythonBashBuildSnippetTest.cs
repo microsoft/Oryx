@@ -22,7 +22,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 enableCollectStatic: true,
                 compressVirtualEnvCommand: null,
                 compressedVirtualEnvFileName: null,
-                runPythonPackageCommand: false);
+                runPythonPackageCommand: false
+                );
 
             // Act
             var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
@@ -50,6 +51,74 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
 
             // Assert
             Assert.DoesNotContain("manage.py collectstatic", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_DoesNotContainPackageWheelType_If_PackageWheelType_IsNotProvided()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                runPythonPackageCommand: true);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.DoesNotContain("Creating universal package wheel", text);
+            Assert.Contains("setup.py sdist --formats=gztar,zip,tar bdist_wheel", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_DoesNotContainPackageWheelType_When_PackageCommand_IsNotPresent()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                runPythonPackageCommand: false,
+                pythonPackageWheelProperty: "universal");
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.DoesNotContain("Creating universal package wheel", text);
+            Assert.DoesNotContain("Creating non universal package wheel", text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_ContainsPackageWheelType_When_PackageCommandAndPackageWheelType_IsPresent()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                runPythonPackageCommand: true,
+                pythonPackageWheelProperty: "universal");
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.Contains("Creating universal package wheel", text);
+            Assert.Contains("setup.py sdist --formats=gztar,zip,tar bdist_wheel --universal", text);
         }
     }
 }

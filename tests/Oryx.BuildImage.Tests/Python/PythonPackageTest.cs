@@ -103,7 +103,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
                 .ToString();
 
             // Act
-            var image = Settings.BuildImageWithRootAccess;
+            var image = Settings.LtsVersionsBuildImageWithRootAccess;
             var result = _dockerCli.Run(image, "/bin/bash", new[] { "-c", script });
 
             // Assert contained file names
