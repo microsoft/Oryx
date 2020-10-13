@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!string.IsNullOrEmpty(appType))
             {
-                options.AppType = appType;
+                options.AppType = appType.Trim();
             }
 
             if (scriptOnly.HasValue)

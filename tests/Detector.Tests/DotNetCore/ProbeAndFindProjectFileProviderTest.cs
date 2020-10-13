@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         }
 
         [Fact]
-        public void GetRelativePathToProjectFile_ReturnsAzureFunctionsApp_OnlyWhenOryxAppType_IsSetTo_Functions()
+        public void GetRelativePathToProjectFile_ReturnsOnlyAzureFunctionsApp_WhenOryxAppType_IsSetTo_Functions()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
@@ -129,7 +129,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         }
 
         [Fact]
-        public void GetRelativePathToProjectFile_ReturnsAzureBlazorWasmApp_OnlyWhenOryxAppType_IsSetTo_StaticSites()
+        public void GetRelativePathToProjectFile_ReturnsOnlyBlazorWasmApp_WhenOryxAppType_IsSetTo_StaticSites()
         {
             // Arrange
             var sourceRepoDir = CreateSourceRepoDir();
@@ -162,6 +162,82 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 
             // Assert
             Assert.Equal(expectedRelativePath, actual);
+        }
+
+        [Fact]
+        public void GetRelativePathToProjectFile_ReturnsOnlyWebApp_WhenOryxAppType_IsSetTo_WebApps()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var webApp1Dir = CreateDir(srcDir, "WebApp1");
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
+
+            var azureFunctionsApp1Dir = CreateDir(srcDir, "AzureFunctionsApp1");
+            File.WriteAllText(Path.Combine(
+                azureFunctionsApp1Dir,
+                "AzureFunctionsApp1.csproj"),
+                AzureFunctionsProjectFile);
+
+            var azureBlazorWasmApp1Dir = CreateDir(srcDir, "BlazorWasmApp1");
+            File.WriteAllText(Path.Combine(
+                azureBlazorWasmApp1Dir,
+                "BlazorWasmApp1.csproj"),
+                AzureBlazorWasmClientNetStandardProjectFile);
+            var expectedRelativePath = Path.Combine("src", "WebApp1", "WebApp1.csproj");
+
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var context = GetContext(sourceRepo);
+            var options = new DetectorOptions();
+            options.AppType = Constants.WebApplications;
+
+            var provider = GetProjectFileProvider(options);
+
+            // Act
+            var actual = provider.GetRelativePathToProjectFile(context);
+
+            // Assert
+            Assert.Equal(expectedRelativePath, actual);
+        }
+
+        [Fact]
+        public void GetRelativePathToProjectFile_ThrowsWhenAppTypeIsSetToWebAppsAndMultipleProjectFilesAreFound()
+        {
+            // Arrange
+            var sourceRepoDir = CreateSourceRepoDir();
+            var srcDir = CreateDir(sourceRepoDir, "src");
+            var webApp1Dir = CreateDir(srcDir, "WebApp1");
+            File.WriteAllText(Path.Combine(webApp1Dir, "WebApp1.csproj"), WebSdkProjectFile);
+            var webApp2Dir = CreateDir(srcDir, "WebApp2");
+            File.WriteAllText(Path.Combine(webApp2Dir, "WebApp2.csproj"), WebSdkProjectFile);
+
+            var azureFunctionsApp1Dir = CreateDir(srcDir, "AzureFunctionsApp1");
+            File.WriteAllText(Path.Combine(
+                azureFunctionsApp1Dir,
+                "AzureFunctionsApp1.csproj"),
+                AzureFunctionsProjectFile);
+
+            var azureBlazorWasmApp1Dir = CreateDir(srcDir, "BlazorWasmApp1");
+            File.WriteAllText(Path.Combine(
+                azureBlazorWasmApp1Dir,
+                "BlazorWasmApp1.csproj"),
+                AzureBlazorWasmClientNetStandardProjectFile);
+
+            var sourceRepo = CreateSourceRepo(sourceRepoDir);
+            var context = GetContext(sourceRepo);
+            var options = new DetectorOptions();
+            options.AppType = Constants.WebApplications;
+
+            var provider = GetProjectFileProvider(options);
+
+            // Act & Assert
+            var exception = Assert.Throws<InvalidProjectFileException>(
+                () => provider.GetRelativePathToProjectFile(context));
+            Assert.StartsWith(
+                "Ambiguity in selecting a project to build. Found multiple projects:",
+                exception.Message);
+            Assert.DoesNotContain("AzureFunctionsApp1.csproj", exception.Message);
+            Assert.DoesNotContain("BlazorWasmApp1.csproj", exception.Message);
         }
 
         [Fact]

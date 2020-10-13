@@ -57,36 +57,30 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
             var webAppProjects = new List<string>();
             var azureFunctionsProjects = new List<string>();
-            var azureBlazorWasmProjects = new List<string>();
+            var blazorWasmProjects = new List<string>();
             var allProjects = new List<string>();
-            bool functionProjectExists = false;
-            bool webAppProjectExists = false;
-            bool blazorWasmProjectExists = false;
 
             foreach (var file in projectFiles)
             {
                 allProjects.Add(file);
                 if (ProjectFileHelpers.IsAzureBlazorWebAssemblyProject(sourceRepo, file))
                 {
-                    azureBlazorWasmProjects.Add(file);
-                    blazorWasmProjectExists = true;
+                    blazorWasmProjects.Add(file);
                 }
                 else if (ProjectFileHelpers.IsAzureFunctionsProject(sourceRepo, file))
                 {
                     azureFunctionsProjects.Add(file);
-                    functionProjectExists = true;
                 }
                 else if (ProjectFileHelpers.IsAspNetCoreWebApplicationProject(sourceRepo, file))
                 {
                     webAppProjects.Add(file);
-                    webAppProjectExists = true;
                 }
             }
 
             // Assumption: some build option "--apptype" will be passed to oryx
             // which will indicate if the app is an azure function type or static type app
 
-            // If there are multiple projects, we will look for --appty to detect corresponding project.
+            // If there are multiple projects, we will look for --apptype to detect corresponding project.
             // for example azurefunction and blazor both projects can reside
             // at the same repo, so more than 2 csprojs will be found. Now we will
             // look for --apptype value to determine which project needs to be built
@@ -94,35 +88,54 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             {
                 _logger.LogInformation($"{nameof(_options.AppType)} is set to {_options.AppType}");
 
-                if (functionProjectExists && _options.AppType.ToLower().Contains(Constants.FunctionApplications))
+                var appType = _options.AppType.ToLower();
+                if (appType.Contains(Constants.FunctionApplications))
                 {
+                    if (azureFunctionsProjects.Count() == 0)
+                    {
+                        return null;
+                    }
+
                     projectFile = GetProject(azureFunctionsProjects);
                 }
-                else if (blazorWasmProjectExists
-                    && _options.AppType.ToLower().Contains(Constants.StaticSiteApplications))
+                else if (appType.Contains(Constants.StaticSiteApplications))
                 {
-                    projectFile = GetProject(azureBlazorWasmProjects);
+                    if (blazorWasmProjects.Count() == 0)
+                    {
+                        return null;
+                    }
+
+                    projectFile = GetProject(blazorWasmProjects);
+                }
+                else if (appType.Contains(Constants.WebApplications))
+                {
+                    if (webAppProjects.Count() == 0)
+                    {
+                        return null;
+                    }
+
+                    projectFile = GetProject(webAppProjects);
                 }
                 else
                 {
-                    _logger.LogDebug(
-                        $"Invalid value '{_options.AppType}' for '{nameof(_options.AppType)}'. " +
-                        $"Currently, supported values are 'functions', 'blazor-wasm', 'static-sites'");
+                    _logger.LogDebug($"Unrecognized app type {appType}'.");
                 }
             }
             else
             {
+                _logger.LogInformation($"AppType is not provided. Selecting projects based on ");
+
                 // If multiple project exists, and appType is not passed
                 // we detect them in following order
-                if (projectFile == null && webAppProjectExists)
+                if (webAppProjects.Count() > 0)
                 {
                     projectFile = GetProject(webAppProjects);
                 }
-                else if (projectFile == null && blazorWasmProjectExists)
+                else if (blazorWasmProjects.Count() > 0)
                 {
-                    projectFile = GetProject(azureBlazorWasmProjects);
+                    projectFile = GetProject(blazorWasmProjects);
                 }
-                else if (projectFile == null && functionProjectExists)
+                else if (azureFunctionsProjects.Count() > 0)
                 {
                     projectFile = GetProject(azureFunctionsProjects);
                 }
