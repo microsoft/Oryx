@@ -175,6 +175,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 throw new InvalidUsageException($"Option '{PythonPackageWheelPropertyKey}' can only have 'universal' as value.");
             }
+            else if (isPythonPackageCommandEnabled &&
+                !string.IsNullOrWhiteSpace(pythonPackageWheelType) &&
+                string.Equals(pythonPackageWheelType.ToLower(), "universal"))
+            {
+                manifestFileProperties[PythonManifestFilePropertyKeys.PackageWheel] = pythonPackageWheelType;
+            }
 
             if (!string.IsNullOrWhiteSpace(packageDir) && !string.IsNullOrWhiteSpace(virtualEnvName))
             {
