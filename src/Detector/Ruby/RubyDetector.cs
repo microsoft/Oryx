@@ -6,6 +6,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector.Exceptions;
 using System;
 using System.Linq;
 

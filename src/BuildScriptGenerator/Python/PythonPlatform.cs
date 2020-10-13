@@ -129,9 +129,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 detectionResult = _detector.Detect(new DetectorContext
                 {
                     SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
-                });  
+                });
             }
-            catch (FailedToParseFileException ex)
+            catch (DetectorException ex)
             {
                 // Make sure to log exception which might contain the exact exception details from the parser which
                 // we can look up in appinsights and tell user if required.

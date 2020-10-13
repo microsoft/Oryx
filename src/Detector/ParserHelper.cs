@@ -41,9 +41,7 @@ namespace Microsoft.Oryx.Detector
             catch (Exception ex)
             {
                 throw new FailedToParseFileException(
-                    filePath,
-                    string.Format(Messages.FailedToParseFileExceptionFormat, filePath),
-                    ex);
+                    string.Format(Messages.FailedToParseFileExceptionFormat, filePath));
             }
         }
 
@@ -66,9 +64,7 @@ namespace Microsoft.Oryx.Detector
             catch (Exception ex)
             {
                 throw new FailedToParseFileException(
-                    filePath,
-                    string.Format(Messages.FailedToParseFileExceptionFormat, filePath),
-                    ex);
+                    string.Format(Messages.FailedToParseFileExceptionFormat, filePath));
             }
 
             return yamlStream.Documents[0].RootNode;

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Detector.Exceptions;
 
 namespace Microsoft.Oryx.Detector.DotNetCore
 {

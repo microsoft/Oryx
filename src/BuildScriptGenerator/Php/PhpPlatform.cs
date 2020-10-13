@@ -14,6 +14,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Detector.Php;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
@@ -87,10 +88,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <returns>The results of language detector operations.</returns>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var detectionResult = _detector.Detect(new DetectorContext
+            PlatformDetectorResult detectionResult;
+
+            try
             {
-                SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
-            });
+                detectionResult = _detector.Detect(new DetectorContext
+                {
+                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                });
+            }
+            catch (DetectorException ex)
+            {
+                // Make sure to log exception which might contain the exact exception details from the parser which
+                // we can look up in appinsights and tell user if required.
+                _logger.LogError(ex, "Error occurred while trying to detect for the Php application.");
+
+                throw new InvalidUsageException(ex.Message);
+            }
 
             if (detectionResult == null)
             {

@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Detector.Python;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -316,7 +317,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         [Theory]
         [InlineData(PythonConstants.CondaEnvironmentYmlFileName)]
         [InlineData(PythonConstants.CondaEnvironmentYamlFileName)]
-        public void Detect_ReutrnsNull_ForMalformedCondaYamlFiles(string environmentFileName)
+        public void Detect_ThrowsException_ForMalformedCondaYamlFiles(string environmentFileName)
         {
             // Arrange
             var detector = CreatePythonPlatformDetector();
@@ -325,11 +326,13 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
             var context = CreateContext(repo);
 
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.Null(result);
+            // Act & Assert
+            var exception = Assert.Throws<FailedToParseFileException>(
+                () => detector.Detect(context));
+            Assert.Equal(
+                $"An error occurred while trying to parse file '{environmentFileName}'. " +
+                "Please check if the file is valid.",
+                exception.Message);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)

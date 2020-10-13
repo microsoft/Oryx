@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Detector.Java;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Java
@@ -79,10 +80,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var detectionResult = _detector.Detect(new DetectorContext
+            PlatformDetectorResult detectionResult;
+
+            try
             {
-                SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
-            });
+                detectionResult = _detector.Detect(new DetectorContext
+                {
+                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                });
+            }
+            catch (DetectorException ex)
+            {
+                // Make sure to log exception which might contain the exact exception details from the parser which
+                // we can look up in appinsights and tell user if required.
+                _logger.LogError(ex, "Error occurred while trying to detect for the Java application.");
+
+                throw new InvalidUsageException(ex.Message);
+            }
 
             if (detectionResult == null)
             {

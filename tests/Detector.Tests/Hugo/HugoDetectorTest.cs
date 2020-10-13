@@ -6,6 +6,7 @@
 using System;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Detector.Hugo;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -184,7 +185,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         [InlineData("invalid text", HugoConstants.TomlFileName)]
         [InlineData("{", HugoConstants.JsonFileName)]
         [InlineData("\"invalid text", HugoConstants.YamlFileName)]
-        public void Detect_ReturnsNull_AndDoesNotThrow_ForInvalidConfigurationFiles(
+        public void Detect_ThrowFailedToParseException_ForInvalidConfigurationFiles(
             string fileContent,
             params string[] subPaths)
         {
@@ -194,11 +195,12 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             var detector = GetDetector();
             var context = GetContext(appDir);
 
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.Null(result);
+            // Act & Assert
+            var exception = Assert.Throws<FailedToParseFileException>(
+                () => detector.Detect(context));
+            Assert.Contains(
+                $"An error occurred while trying to parse file",
+                exception.Message);
         }
 
         private string CreateAppDir()

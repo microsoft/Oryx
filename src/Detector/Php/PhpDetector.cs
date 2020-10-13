@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector.Exceptions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Php
@@ -95,6 +96,8 @@ namespace Microsoft.Oryx.Detector.Php
                 // some errors in the composer.json file.
                 _logger.LogWarning(
                     ex,
+                    $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName.Hash()}");
+                throw new FailedToParseFileException(
                     $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName.Hash()}");
             }
 

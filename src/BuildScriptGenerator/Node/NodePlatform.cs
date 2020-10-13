@@ -12,6 +12,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Detector.Node;
 using Newtonsoft.Json.Linq;
 
@@ -117,10 +118,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var detectionResult = _detector.Detect(new DetectorContext
+            PlatformDetectorResult detectionResult = null;
+            try
             {
-                SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
-            });
+                detectionResult = _detector.Detect(new DetectorContext
+                {
+                    SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
+                });
+            }
+            catch (DetectorException ex)
+            {
+                // Make sure to log exception which might contain the exact exception details from the parser which
+                // we can look up in appinsights and tell user if required.
+                _logger.LogError(ex, "Error occurred while trying to detect for the Node application.");
+
+                throw new InvalidUsageException(ex.Message);
+            }
 
             if (detectionResult == null)
             {

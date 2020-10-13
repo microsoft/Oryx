@@ -9,6 +9,7 @@ using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector.Exceptions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Detector.Node
@@ -155,6 +156,8 @@ namespace Microsoft.Oryx.Detector.Node
                 // This prevents Oryx from erroring out when Node.js itself might be able to tolerate the file.
                 logger.LogWarning(
                     exc,
+                    $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName.Hash()}");
+                throw new FailedToParseFileException(
                     $"Exception caught while trying to deserialize {NodeConstants.PackageJsonFileName.Hash()}");
             }
 

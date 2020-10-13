@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Detector.Tests
             var exception = Assert.Throws<FailedToParseFileException>(
                 () => ParserHelper.ParseTomlFile(repo, fileName));
             Assert.Equal(expectedMessage, exception.Message);
-            Assert.Equal(fileName, exception.FilePath);
+            Assert.Contains(fileName, exception.Message);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.Detector.Tests
             var exception = Assert.Throws<FailedToParseFileException>(
                 () => ParserHelper.ParseYamlFile(repo, fileName));
             Assert.Equal(expectedMessage, exception.Message);
-            Assert.Equal(fileName, exception.FilePath);
+            Assert.Contains(fileName, exception.Message);
         }
 
         [Fact]

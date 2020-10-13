@@ -15,6 +15,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.DotNetCore;
+using Microsoft.Oryx.Detector.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -94,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 ResolveVersions(context, detectionResult);
                 return detectionResult;
             }
-            catch (InvalidProjectFileException e)
+            catch (DetectorException e)
             {
                 _logger.LogError(e, "Error occurred while trying to detect for .Net Core application(s)");
                 throw new InvalidUsageException(e.Message);

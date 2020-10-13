@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.Detector.Exceptions
     /// <summary>
     /// Exception used when failing to parse files.
     /// </summary>
-    public class FailedToParseFileException : Exception
+    public class FailedToParseFileException : DetectorException
     {
         /// <summary>
         /// Creates an instance of <see cref="FailedToParseFileException"/>.
@@ -18,13 +18,10 @@ namespace Microsoft.Oryx.Detector.Exceptions
         /// <param name="filePath">The file whose parsing caused this exception.</param>
         /// <param name="message">The message that describes the error.</param>
         /// <param name="innerException">The exception that is the cause of the current exception.</param>
-        public FailedToParseFileException(string filePath, string message, Exception innerException)
-            : base(message, innerException)
+        public FailedToParseFileException(string message)
+            : base(message)
         {
-            FilePath = filePath;
         }
-
-        public string FilePath { get; }
     }
 }
 

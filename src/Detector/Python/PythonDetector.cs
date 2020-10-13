@@ -163,6 +163,8 @@ namespace Microsoft.Oryx.Detector.Python
                         ex,
                         "An error occurred while reading file {rtFileName}",
                         PythonConstants.RuntimeFileName);
+                    throw new FailedToParseFileException(
+                    $"An error occurred while reading file {PythonConstants.RuntimeFileName}");
                 }
             }
             else

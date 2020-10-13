@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Detector.Node;
 using Xunit;
 
@@ -145,7 +146,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsNullVersion_ForSourceRepoOnlyWithServerJs()
+        public void Detect_ThrowsException_ForSourceRepoOnlyWithServerJs()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -153,14 +154,12 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             repo.AddFile(SimpleServerJs, "server.js");
             var context = CreateContext(repo);
 
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Platform);
-            Assert.Null(result.PlatformVersion);
-            Assert.Equal(string.Empty, result.AppDirectory);
+            // Act & Assert
+            var exception = Assert.Throws<FailedToParseFileException>(
+                () => detector.Detect(context));
+            Assert.Contains(
+                $"Exception caught while trying to deserialize",
+                exception.Message);
         }
 
         [Fact]
@@ -180,7 +179,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsNullVersion_ForSourceRepoOnlyWithAppJs()
+        public void Detect_ThrowsException_ForSourceRepoOnlyWithAppJs()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -188,14 +187,12 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             repo.AddFile("app.js content", "app.js");
             var context = CreateContext(repo);
 
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Platform);
-            Assert.Null(result.PlatformVersion);
-            Assert.Equal(string.Empty, result.AppDirectory);
+            // Act & Assert
+            var exception = Assert.Throws<FailedToParseFileException>(
+                () => detector.Detect(context));
+            Assert.Contains(
+                $"Exception caught while trying to deserialize",
+                exception.Message);
         }
 
         [Fact]
@@ -292,7 +289,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
         }
 
         [Fact]
-        public void Detect_ReturnsNullVersion_ForMalformedPackageJson()
+        public void Detect_ThrowsException_ForMalformedPackageJson()
         {
             // Arrange
             var detector = CreateNodePlatformDetector();
@@ -300,14 +297,12 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
 
-            // Act
-            var result = detector.Detect(context);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("nodejs", result.Platform);
-            Assert.Null(result.PlatformVersion);
-            Assert.Equal(string.Empty, result.AppDirectory);
+            // Act & Assert
+            var exception = Assert.Throws<FailedToParseFileException>(
+                () => detector.Detect(context));
+            Assert.Contains(
+                $"Exception caught while trying to deserialize",
+                exception.Message);
         }
 
         [Fact]

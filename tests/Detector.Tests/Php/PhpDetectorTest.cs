@@ -6,6 +6,7 @@
 using System;
 using System.IO;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Detector.Php;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -102,15 +103,13 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             Assert.Equal(string.Empty, result.AppDirectory);
         }
 
-        [Theory]
-        [InlineData("invalid json")]
-        [InlineData("{\"data\": \"valid but meaningless\"}")]
-        public void Detect_ReturnsNullVersion_WithComposerFile(string composerFileContent)
+        [Fact]
+        public void Detect_ReturnsNullVersion_WithComposerFile()
         {
             // Arrange
             var detector = CreatePhpPlatformDetector();
             var repo = new MemorySourceRepo();
-            repo.AddFile(composerFileContent, PhpConstants.ComposerFileName);
+            repo.AddFile("{\"data\": \"valid but meaningless\"}", PhpConstants.ComposerFileName);
             repo.AddFile("<?php echo true; ?>", "foo.php");
             var context = CreateContext(repo);
 
@@ -122,6 +121,24 @@ namespace Microsoft.Oryx.Detector.Tests.Php
             Assert.Equal(PhpConstants.PlatformName, result.Platform);
             Assert.Null(result.PlatformVersion);
             Assert.Equal(string.Empty, result.AppDirectory);
+        }
+
+        [Fact]
+        public void Detect_ThrowsException_WithInvalidComposerFile()
+        {
+            // Arrange
+            var detector = CreatePhpPlatformDetector();
+            var repo = new MemorySourceRepo();
+            repo.AddFile("invalid json", PhpConstants.ComposerFileName);
+            repo.AddFile("<?php echo true; ?>", "foo.php");
+            var context = CreateContext(repo);
+
+            // Act & Assert
+            var exception = Assert.Throws<FailedToParseFileException>(
+                () => detector.Detect(context));
+            Assert.Contains(
+                $"Exception caught while trying to deserialize",
+                exception.Message);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
