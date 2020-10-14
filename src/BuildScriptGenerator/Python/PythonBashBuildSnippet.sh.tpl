@@ -103,7 +103,6 @@ fi
 	echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
 {{ end }}
 
-packageWheelType={{ PythonPackageWheelProperty }}
 
 {{ if RunPythonPackageCommand }}
 	echo
