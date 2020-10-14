@@ -103,12 +103,24 @@ fi
 	echo $APP_PACKAGES_PATH > $SITE_PACKAGES_PATH"/oryx.pth"
 {{ end }}
 
+
 {{ if RunPythonPackageCommand }}
 	echo
 	echo "Running python packaging commands ...."
 	echo
-	echo "Creating python package wheel ...."
-	$python setup.py sdist --formats=gztar,zip,tar bdist_wheel --universal
+	echo "Determining python package wheel ...."
+
+	{{ if PythonPackageWheelProperty }}
+		echo "Creating universal package wheel ...."
+	{{ end }}
+
+	if [ -z "{{ PythonPackageWheelProperty }}" ]
+	then 
+		echo "Creating non universal package wheel ...."
+		$python setup.py sdist --formats=gztar,zip,tar bdist_wheel
+	else		
+		$python setup.py sdist --formats=gztar,zip,tar bdist_wheel --universal
+	fi
 	echo "Now creating python package egg ...."
 	$python setup.py bdist_egg
 	echo

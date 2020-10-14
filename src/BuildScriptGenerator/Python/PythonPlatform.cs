@@ -31,6 +31,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     [BuildProperty(
         TargetPackageDirectoryPropertyKey,
         "If provided, packages will be downloaded to the given directory instead of to a virtual environment.")]
+    [BuildProperty(
+        PythonPackageWheelPropertyKey,
+        "If provided, package wheels will be built with universal flag. For example," +
+        "folder. Option is '" + UniversalWheel + ". Default is to not Non universal wheel. " +
+        "For example, when this property is enabled, wheel build command will be "+
+        "'python setup.py bdist_wheel --universal'")]
     internal class PythonPlatform : IProgrammingPlatform
     {
         /// <summary>
@@ -49,6 +55,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         internal const string CompressVirtualEnvPropertyKey = "compress_virtualenv";
 
         /// <summary>
+        /// The Package Wheel Property.
+        /// </summary>
+        internal const string PythonPackageWheelPropertyKey = "packagewheel";
+
+        /// <summary>
         /// The zip option.
         /// </summary>
         internal const string ZipOption = "zip";
@@ -57,6 +68,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// The tar-gz option.
         /// </summary>
         internal const string TarGzOption = "tar-gz";
+
+        /// <summary>
+        /// The Universal Wheel option.
+        /// </summary>
+        internal const string UniversalWheel = "universal";
+
         private readonly BuildScriptGeneratorOptions _commonOptions;
         private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider _versionProvider;
@@ -144,6 +161,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
             var isPythonPackageCommandEnabled = _commonOptions.ShouldPackage;
+            var pythonPackageWheelType = GetPythonPackageWheelType(context);
+
+            if (!isPythonPackageCommandEnabled && !string.IsNullOrWhiteSpace(pythonPackageWheelType))
+            {
+                throw new InvalidUsageException($"Option '{PythonPackageWheelPropertyKey}' can't exist" +
+                    $"without package command being enabled. Please provide --package along with wheel type");
+            }
+
+            if (isPythonPackageCommandEnabled &&
+                !string.IsNullOrWhiteSpace(pythonPackageWheelType))
+            {
+                if (!string.Equals(pythonPackageWheelType.ToLower(), "universal"))
+                {
+                    throw new InvalidUsageException($"Option '{PythonPackageWheelPropertyKey}' can only have 'universal' as value.'");
+                }
+
+                manifestFileProperties[PythonManifestFilePropertyKeys.PackageWheel] = pythonPackageWheelType;
+            }
 
             if (!string.IsNullOrWhiteSpace(packageDir) && !string.IsNullOrWhiteSpace(virtualEnvName))
             {
@@ -205,7 +240,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 enableCollectStatic: _pythonScriptGeneratorOptions.EnableCollectStatic,
                 compressVirtualEnvCommand: compressVirtualEnvCommand,
                 compressedVirtualEnvFileName: compressedVirtualEnvFileName,
-                runPythonPackageCommand: isPythonPackageCommandEnabled);
+                runPythonPackageCommand: isPythonPackageCommandEnabled,
+                pythonPackageWheelProperty: pythonPackageWheelType);
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,
                 scriptProps,
@@ -519,6 +555,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return virtualEnvName;
         }
 
+        private string GetPythonPackageWheelType(BuildScriptGeneratorContext context)
+        {
+            if (context.Properties == null ||
+                !context.Properties.TryGetValue(PythonPackageWheelPropertyKey, out var packageWheelProperty))
+            {
+                packageWheelProperty = string.Empty;
+            }
+
+            return packageWheelProperty;
+        }
         private string GetMaxSatisfyingVersionAndVerify(string version)
         {
             var supportedVersions = SupportedVersions;
