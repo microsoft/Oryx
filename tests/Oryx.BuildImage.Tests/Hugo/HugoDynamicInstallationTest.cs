@@ -163,5 +163,28 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             return $"rm -rf {DefaultInstallationRootDir}; mkdir -p {DefaultInstallationRootDir}";
         }
+
+        [Fact]
+        public void JamStackImageContainsGoLangInstalled()
+        {
+            // Arrange
+            var expectedText = "go version go";
+            var script = new ShellScriptBuilder()
+                .AddCommand("go version")
+                .ToString();
+
+            // Act
+            var image = _imageHelper.GetBuildImage();
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedText, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
     }
 }
