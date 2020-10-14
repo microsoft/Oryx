@@ -165,10 +165,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void JamStackImageContainsGoLangInstalled()
+        public void JamStackImageHasGoLangInstalled()
         {
             // Arrange
-            var expectedText = "go version go";
+            var expectedText = "1.15.2";
             var script = new ShellScriptBuilder()
                 .AddCommand("go version")
                 .ToString();
