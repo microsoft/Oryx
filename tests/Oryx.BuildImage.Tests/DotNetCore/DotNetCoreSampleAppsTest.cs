@@ -9,8 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.Oryx.BuildScriptGenerator;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -39,8 +39,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/aspnetcore10-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 1.1")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 1.1.13")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck(manifestFile)
                 .AddCommand($"cat {manifestFile}")
@@ -65,10 +64,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
                         result.StdOut);
                     Assert.Contains(
-                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{DotNetCoreRunTimeVersions.NetCoreApp11}\"",
+                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"1.1.13\"",
                         result.StdOut);
                     Assert.Contains(
-                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{DotNetCoreSdkVersions.DotNetCore11SdkVersion}\"",
+                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"1.1.14\"",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -83,7 +82,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp11WebApp-output";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -104,9 +102,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "1.1.14"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -120,8 +116,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/aspnetcore10-output";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1.22")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
@@ -141,9 +136,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore21SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "2.1.810"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -159,7 +152,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp21WebApp-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1.22")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
@@ -178,9 +171,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore21SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "2.1.810"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -194,7 +185,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp22WebApp-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.2.8")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
@@ -213,9 +204,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore22SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "2.2.207"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -229,7 +218,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp30WebApp-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 3.0.3")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
@@ -248,11 +237,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(
-                            SdkVersionMessageFormat,
-                            DotNetCoreSdkVersions.DotNetCore30SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.0.103"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -266,7 +251,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 3.1.8")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
@@ -285,11 +270,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(
-                            SdkVersionMessageFormat,
-                            DotNetCoreSdkVersions.DotNetCore31SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -304,7 +285,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/Net5MvcApp-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform dotnet " +
+                $"--platform-version 5.0.0-rc.1.20451.14")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
@@ -323,11 +306,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(
-                            SdkVersionMessageFormat,
-                            DotNetCoreSdkVersions.DotNet50SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "5.0.100-rc.1.20452.10"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -370,7 +349,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddBuildCommand($"{appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1")
+                .AddBuildCommand(
+                $"{appDir} --platform {DotNetCoreConstants.PlatformName} " +
+                $"--platform-version 2.1.22")
                 .ToString();
 
             // Act
@@ -388,7 +369,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    var dotnetExecutable = $"/opt/dotnet/{DotNetCoreSdkVersions.DotNetCore21SdkVersion}/dotnet";
+                    var dotnetExecutable = $"{Constants.TemporaryInstallationDirectoryRoot}/dotnet/2.1.810/dotnet";
                     Assert.Matches($"Pre-build script: {dotnetExecutable}", result.StdOut);
                     Assert.Matches($"Post-build script: {dotnetExecutable}", result.StdOut);
                 },
@@ -621,7 +602,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/AzureFunctionsHttpTriggerApp-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1.22")
                 .AddFileExistsCheck($"{appOutputDir}/bin/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -642,9 +623,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore21SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "2.1.810"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -661,12 +640,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
-                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp50}")
+                $"--platform-version 5.0.0-rc.1.20451.14")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck(
                 ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringDoesNotExistInFileCheck(
-                $"{Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -687,9 +664,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNet50SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "5.0.100-rc.1.20452.10"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -703,10 +678,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications}")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} " +
+                $"--platform dotnet --platform-version 3.1.8")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{Constants.AppType}=\"static-sites\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -727,9 +703,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -743,10 +717,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir}/MessageFunction -o {appOutputDir} --apptype functions")
+                .AddBuildCommand(
+                $"{appDir}/MessageFunction -o {appOutputDir} --apptype functions --platform dotnet " +
+                $"--platform-version 3.1.8")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{Constants.AppType}=\"functions\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck(
+                $"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"",
+                $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -767,9 +744,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -821,7 +796,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appDir}/output")
+                .AddBuildCommand($"{appDir} -o {appDir}/output --platform dotnet --platform-version 3.1.8")
                 .AddFileExistsCheck($"{appDir}/output/{appName}.dll")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
                 .ToString();
@@ -841,11 +816,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(
-                            SdkVersionMessageFormat,
-                            DotNetCoreSdkVersions.DotNetCore31SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -859,10 +830,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             // NOTE: we want to make sure that even after subsequent builds(like in case of AppService),
             // the output structure is like what we expect.
+            var platformNameAndVersion = "--platform dotnet --platform-version 3.1.8";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appDir}/output")
-                .AddBuildCommand($"{appDir} -o {appDir}/output")
-                .AddBuildCommand($"{appDir} -o {appDir}/output")
+                .AddBuildCommand($"{appDir} -o {appDir}/output {platformNameAndVersion}")
+                .AddBuildCommand($"{appDir} -o {appDir}/output {platformNameAndVersion}")
+                .AddBuildCommand($"{appDir} -o {appDir}/output {platformNameAndVersion}")
                 .AddFileExistsCheck($"{appDir}/output/{appName}.dll")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
                 .ToString();
@@ -882,11 +854,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(
-                            SdkVersionMessageFormat,
-                            DotNetCoreSdkVersions.DotNetCore31SdkVersion),
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }

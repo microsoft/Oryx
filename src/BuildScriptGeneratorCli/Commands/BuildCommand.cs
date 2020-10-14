@@ -319,14 +319,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return false;
             }
 
-            // Invalid to specify apptype anything other than "static-sites" or "functions" empty or null is expected
-            if (!string.IsNullOrEmpty(options.AppType)
-                && !(string.Equals(Constants.FunctionApplications, options.AppType.ToLower())
-                || string.Equals(Constants.StaticSiteApplications, options.AppType.ToLower())))
+            if (!string.IsNullOrEmpty(options.AppType))
             {
-                logger.LogError($"Invalid value '{options.AppType}' for --apptype, only permitted values are 'static-sites' or 'functions'");
-                console.WriteErrorLine($"Invalid input '{options.AppType}' for --apptype, only permitted values are 'static-sites' or 'functions'");
-                return false;
+                var appType = options.AppType.ToLower();
+                if (!string.Equals(appType, Constants.FunctionApplications)
+                    && !string.Equals(appType, Constants.StaticSiteApplications)
+                    && !string.Equals(appType, Constants.WebApplications))
+                {
+                    logger.LogError($"Invalid value for AppType: '{options.AppType}'.");
+                    console.WriteErrorLine(
+                        $"Invalid value '{options.AppType}' for switch '--apptype'. " +
+                        $"Valid values are '{Constants.StaticSiteApplications}' or " +
+                        $"'{Constants.FunctionApplications}' or '{Constants.WebApplications}'");
+                    return false;
+                }
             }
 
             if (!string.IsNullOrEmpty(options.IntermediateDir))

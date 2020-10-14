@@ -317,13 +317,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var copySourceDirectoryContentToDestinationDirectory = buildScriptSnippets.All(
                 snippet => snippet.CopySourceDirectoryContentToDestinationDirectory);
 
-            if (!string.IsNullOrEmpty(_cliOptions.AppType)
-                && !string.IsNullOrWhiteSpace(_cliOptions.AppType))
-            {
-                _logger.LogInformation($"Build Property Key {Constants.AppType} with value {_cliOptions.AppType} is written into manifest");
-                buildProperties[Constants.AppType] = _cliOptions.AppType;
-            }
-
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
                 OsPackagesToInstall = _cliOptions.RequiredOsPackages ?? new string[0],

@@ -12,5 +12,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string BuildEnvironmentFileName = "build.env";
         public const string FunctionApplications = "functions";
         public const string StaticSiteApplications = "static-sites";
+        public const string WebApplications = "webapps";
     }
 }
