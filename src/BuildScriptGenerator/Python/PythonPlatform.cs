@@ -165,20 +165,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             if (!isPythonPackageCommandEnabled && !string.IsNullOrWhiteSpace(pythonPackageWheelType))
             {
-                throw new InvalidUsageException($"Option '{PythonPackageWheelPropertyKey}' cann't exist" +
+                throw new InvalidUsageException($"Option '{PythonPackageWheelPropertyKey}' can't exist" +
                     $"without package command being enabled. Please provide --package along with wheel type");
             }
 
             if (isPythonPackageCommandEnabled &&
-                !string.IsNullOrWhiteSpace(pythonPackageWheelType) &&
-                !string.Equals(pythonPackageWheelType.ToLower(), "universal"))
+                !string.IsNullOrWhiteSpace(pythonPackageWheelType))
             {
-                throw new InvalidUsageException($"Option '{PythonPackageWheelPropertyKey}' can only have 'universal' as value.");
-            }
-            else if (isPythonPackageCommandEnabled &&
-                !string.IsNullOrWhiteSpace(pythonPackageWheelType) &&
-                string.Equals(pythonPackageWheelType.ToLower(), "universal"))
-            {
+                if (!string.Equals(pythonPackageWheelType.ToLower(), "universal"))
+                {
+                    throw new InvalidUsageException($"Option '{PythonPackageWheelPropertyKey}' can only have 'universal' as value.'");
+                }
+
                 manifestFileProperties[PythonManifestFilePropertyKeys.PackageWheel] = pythonPackageWheelType;
             }
 
