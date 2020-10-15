@@ -1269,6 +1269,54 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void BuildsAppAndCompressesOutputDirectory()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var buildDir = "/tmp/int";
+            var outputDir = "/tmp/output";
+            var virtualEnvName = "antenv";
+            var manifestFile = $"{outputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand(
+                $"oryx build {appDir} -i {buildDir} -o {outputDir} " +
+                $"-p virtualenv_name={virtualEnvName} --compress-destination-dir")
+                .AddFileExistsCheck($"{outputDir}/output.tar.gz")
+                .AddFileExistsCheck($"{outputDir}/oryx-manifest.toml")
+                .AddFileDoesNotExistCheck($"{outputDir}/requirements.txt")
+                .AddDirectoryDoesNotExistCheck($"{outputDir}/{virtualEnvName}")
+                .AddCommand($"cat {manifestFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                       $"{ManifestFilePropertyKeys.CompressDestinationDir}=\"true\"",
+                       result.StdOut);
+                    Assert.Contains(
+                       $"{ManifestFilePropertyKeys.SourceDirectoryInBuildContainer}=\"{buildDir}\"",
+                       result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         private string GetDefaultVirtualEnvName(string version)
         {
             var ver = new SemVer.Version(version);

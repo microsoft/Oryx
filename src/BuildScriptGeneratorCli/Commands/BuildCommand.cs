@@ -423,9 +423,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             SetPlatformVersion(PlatformName, PlatformVersion);
 
             commandLineConfigSource.Set(SettingsKeys.CreatePackage, ShouldPackage.ToString());
-
             SetValueIfNotNullOrEmpty(SettingsKeys.RequiredOsPackages, OsRequirements);
             SetValueIfNotNullOrEmpty(SettingsKeys.AppType, AppType);
+            commandLineConfigSource.Set(SettingsKeys.CompressDestinationDir, CompressDestinationDir.ToString());
             SetValueIfNotNullOrEmpty(SettingsKeys.DynamicInstallRootDir, DynamicInstallRootDir);
 
             if (buildProperties != null)
