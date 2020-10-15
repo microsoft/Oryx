@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             string platform = null,
             string platformVersion = null,
             bool? shouldPackage = null,
+            bool? compressDestinationDir = null,
             string[] requiredOsPackages = null,
             string appType = null,
             bool? scriptOnly = null,
@@ -55,6 +56,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (shouldPackage.HasValue)
             {
                 options.ShouldPackage = shouldPackage.Value;
+            }
+
+            if (compressDestinationDir.HasValue)
+            {
+                options.CompressDestinationDir = compressDestinationDir.Value;
             }
 
             options.RequiredOsPackages = requiredOsPackages;

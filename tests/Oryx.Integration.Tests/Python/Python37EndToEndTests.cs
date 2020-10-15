@@ -3,13 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -311,6 +311,51 @@ namespace Microsoft.Oryx.Integration.Tests
 
                     data = await GetResponseDataAsync($"http://localhost:{hostPort}/uservoice/");
                     Assert.Contains("Hello, World! from Uservoice app", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRunPythonApp_WhenAllOutputIsCompressed()
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var pythonVersion = "3.7";
+            // Simulating a typical intermediate directory structure used by AppService in a build container
+            // We expect the compressed output to be extracted under the same directory structure inside the runtime
+            // container too.
+            var buildContainerBuildDir = $"/tmp/{Guid.NewGuid():N}";
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} -i {buildContainerBuildDir} -o {appOutputDir} " +
+                $"-p virtualenv_name=antenv --platform {PythonConstants.PlatformName} " +
+                $"--platform-version {pythonVersion} --compress-destination-dir")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new[] { volume, appOutputDirVolume },
+                _imageHelper.GetGitHubActionsBuildImage(),
+                "/bin/bash", new[] { "-c", buildScript },
+                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                ContainerPort,
+                "/bin/bash",
+                new[] { "-c", runScript },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello World!", data);
+
+                    data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/applicationpath");
+                    Assert.Contains(buildContainerBuildDir, data);
                 });
         }
     }

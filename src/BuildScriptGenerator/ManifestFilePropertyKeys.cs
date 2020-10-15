@@ -26,5 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         internal const string PlatformName = nameof(PlatformName);
 
         internal const string SourceDirectoryInBuildContainer = nameof(SourceDirectoryInBuildContainer);
+
+        internal const string CompressDestinationDir = nameof(CompressDestinationDir);
     }
 }
