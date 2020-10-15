@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.Detector.Java
                 var files = sourceRepo.EnumerateFiles($"*.{fileExtensionName}", searchSubDirectories: true);
                 if (files.Any())
                 {
+                    _logger.LogDebug($"Found files with extension '{fileExtensionName}' in the repo");
                     hasJavaRelatedFileExtensions = true;
                     break;
                 }
@@ -41,6 +42,9 @@ namespace Microsoft.Oryx.Detector.Java
 
             if (!hasJavaRelatedFileExtensions)
             {
+                _logger.LogDebug(
+                    $"Could not find any files with the following extensions in the repo: " +
+                    $"{string.Join(", ", JavaConstants.JavaFileExtensionNames)}");
                 return null;
             }
 

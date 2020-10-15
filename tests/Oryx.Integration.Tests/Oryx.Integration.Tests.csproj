@@ -40,11 +40,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    <Compile Remove="Java\**" />
+    <EmbeddedResource Remove="Java\**" />
+    <None Remove="Java\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Java\" />
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
   </ItemGroup>
 
 </Project>

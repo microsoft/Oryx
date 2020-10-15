@@ -40,6 +40,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string AppType { get; set; }
 
         [Option(
+            OptionTemplates.CompressDestinationDir,
+            CommandOptionType.NoValue,
+            Description = "Compresses the destination directory(excluding the manifest file) into a tar ball.")]
+        public bool CompressDestinationDir { get; set; }
+
+        [Option(
             OptionTemplates.Property,
             CommandOptionType.MultipleValue,
             Description = "Additional information used by this tool to generate and run build scripts.")]
