@@ -120,6 +120,14 @@ echo "{{ PostBuildCommandEpilogue }}"
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
 	cd "$SOURCE_DIR"
+
+	{{ if CompressDestinationDir }}
+	preCompressedDestinationDir="/tmp/_preCompressedDestinationDir"
+	rm -rf $preCompressedDestinationDir
+	OLD_DESTINATION_DIR="$DESTINATION_DIR"
+	DESTINATION_DIR="$preCompressedDestinationDir"
+	{{ end }}
+
 	echo
 	echo "Copying files to destination directory '$DESTINATION_DIR'..."
 	START_TIME=$SECONDS
@@ -151,6 +159,14 @@ then
 		rsync -rcE --links "$tmpDestinationDir/" "$DESTINATION_DIR"
 		rm -rf "$tmpDestinationDir"
 	fi
+	{{ end }}
+
+	{{ if CompressDestinationDir }}
+	DESTINATION_DIR="$OLD_DESTINATION_DIR"
+	echo "Compressing content of directory '$preCompressedDestinationDir'..."
+	cd "$preCompressedDestinationDir"
+	tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+	echo "Copied the compressed output to '$DESTINATION_DIR'"
 	{{ end }}
 
 	ELAPSED_TIME=$(($SECONDS - $START_TIME))
