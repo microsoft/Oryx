@@ -13,9 +13,9 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    public class NodeJsSampleAppsTest : SampleAppsTestBase
+    public class NodeJsMonorepoSampleAppsTest : SampleAppsTestBase
     {
-        public NodeJsSampleAppsTest(ITestOutputHelper output) : base(output)
+        public NodeJsMonorepoSampleAppsTest(ITestOutputHelper output) : base(output)
         {
         }
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
@@ -34,12 +34,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/@babel")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/abbrev")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(),
+                ImageId = _imageHelper.GetLtsVersionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -68,12 +70,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/@babel")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/universalify")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(),
+                ImageId = _imageHelper.GetLtsVersionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

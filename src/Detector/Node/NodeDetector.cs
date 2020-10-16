@@ -239,7 +239,8 @@ namespace Microsoft.Oryx.Detector.Node
                 if (lernaJson?.npmClient != null)
                 {
                     npmClientName = lernaJson["npmClient"].Value as string;
-                } else
+                }
+                else
                 {
                     //Default Client for Lerna is npm.
                     npmClientName = NodeConstants.NpmToolName;
