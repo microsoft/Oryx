@@ -57,8 +57,10 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		println("Output is compressed. Extracting it...")
 		tarballFile := filepath.Join(gen.AppPath, "output.tar.gz")
 		common.ExtractTarball(tarballFile, gen.Manifest.SourceDirectoryInBuildContainer)
-		println(fmt.Sprintf("App path is set to '%s'", gen.getAppPath()))
+		println(fmt.Sprintf("App path is set to '%s'", gen.Manifest.SourceDirectoryInBuildContainer))
 	}
+
+	scriptBuilder.WriteString(fmt.Sprintf("echo 'export APP_PATH=\"%s\"' >> ~/.bashrc\n", gen.getAppPath()))
 
 	if gen.Configuration.EnableDynamicInstall && !common.PathExists(pythonInstallationRoot) {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.getAppPath()))
