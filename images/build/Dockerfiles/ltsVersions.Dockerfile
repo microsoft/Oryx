@@ -50,6 +50,26 @@ ARG SDK_STORAGE_BASE_URL_VALUE
 
 COPY --from=intermediate /opt /opt
 
+# Docker has an issue with variable expansion when all are used in a single ENV command.
+# For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 
+#   ENV LASTNAME="JORDAN" \
+#       NAME="MICHAEL $LASTNAME"
+#
+# Even though this adds a new docker layer we are doing this 
+# because we want to avoid duplication (which is always error-prone)
+ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts"
+
+ENV LANG="C.UTF-8" \
+    ORIGINAL_PATH="$PATH" \
+    PATH="$ORYX_PATHS:$PATH" \
+    NUGET_XMLDOC_MODE="skip" \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
+    NUGET_PACKAGES="/var/nuget" \
+    ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
+    ENABLE_DYNAMIC_INSTALL="true" \
+    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
+    PYTHONIOENCODING="UTF-8"
+
 RUN set -ex \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
@@ -108,7 +128,7 @@ RUN set -ex \
     && ln -s $NODE10_VERSION 10 \
     && ln -s $NODE12_VERSION 12 \
     && ln -s 12 lts \
-    && /opt/nodejs/lts/bin/npm install -g lerna \
+    && npm install -g lerna \
     && cd /opt/yarn \
     && ln -s $YARN_VERSION stable \
     && ln -s $YARN_VERSION latest \
@@ -153,25 +173,5 @@ RUN set -ex \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && rm -f /etc/apt/sources.list.d/buster.list \
     && echo "ltsversions" > /opt/oryx/.imagetype
-
-# Docker has an issue with variable expansion when all are used in a single ENV command.
-# For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 
-#   ENV LASTNAME="JORDAN" \
-#       NAME="MICHAEL $LASTNAME"
-#
-# Even though this adds a new docker layer we are doing this 
-# because we want to avoid duplication (which is always error-prone)
-ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts"
-
-ENV LANG="C.UTF-8" \
-    ORIGINAL_PATH="$PATH" \
-    PATH="$ORYX_PATHS:$PATH" \
-    NUGET_XMLDOC_MODE="skip" \
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
-    NUGET_PACKAGES="/var/nuget" \
-    ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
-    ENABLE_DYNAMIC_INSTALL="true" \
-    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
-    PYTHONIOENCODING="UTF-8"
 
 ENTRYPOINT [ "benv" ]
