@@ -174,7 +174,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetBuildImage();
+            var image = _imageHelper.GetAzureFunctionsJamStackBuildImage();
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
