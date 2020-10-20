@@ -28,14 +28,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appName = "monorepo-lerna-npm";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
+            var appOutputDir = "/tmp/app1-output";
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/@babel")
-                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/abbrev")
                 .ToString();
 
             // Act
@@ -64,7 +62,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appName = "monorepo-lerna-yarn";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
+            var appOutputDir = "/tmp/app2-output";
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
