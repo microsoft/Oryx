@@ -93,23 +93,48 @@ fi
 
 cd "$SOURCE_DIR"
 
-echo
-echo "Running '{{ PackageInstallCommand }}'..."
-echo
-{{ PackageInstallCommand }}
-
 {{ if CustomRunBuildCommand | IsNotBlank }}
+	echo
+	echo "Running '{{ PackageInstallCommand }}'..."
+	echo
+	{{ PackageInstallCommand }}
 	echo
 	{{ CustomRunBuildCommand }}
 	echo
+{{ else if LernaRunBuildCommand | IsNotBlank }}
+	echo
+	echo "Using Lerna version:"
+	lerna --version
+	echo
+	echo
+	echo "Running '{{ LernaInitCommand }} & {{ LernaBootstrapCommand }}':"
+	{{ LernaInitCommand }}
+	{{ LernaBootstrapCommand }}
+	echo
+	echo
+	echo "Running '{{ LernaRunBuildCommand }}'..."
+	echo
+	{{ LernaRunBuildCommand }}
+{{ else if LageRunBuildCommand | IsNotBlank }}
+	echo
+	echo "Running ' {{ InstallLageCommand }} ':"
+	{{ InstallLageCommand }}
+	echo
+	echo
+	echo "Running '{{ LageRunBuildCommand }}'..."
+	echo
+	{{ LageRunBuildCommand }}
 {{ else }}
+	echo
+	echo "Running '{{ PackageInstallCommand }}'..."
+	echo
+	{{ PackageInstallCommand }}
 	{{ if NpmRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ NpmRunBuildCommand }}'..."
 	echo
 	{{ NpmRunBuildCommand }}
 	{{ end }}
-
 	{{ if NpmRunBuildAzureCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ NpmRunBuildAzureCommand }}'..."

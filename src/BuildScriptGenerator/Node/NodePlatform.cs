@@ -136,18 +136,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             BuildScriptGeneratorContext ctx,
             PlatformDetectorResult detectorResult)
         {
+            var nodePlatformDetectorResult = detectorResult as NodePlatformDetectorResult;
+            if (nodePlatformDetectorResult == null)
+            {
+                throw new ArgumentException(
+                    $"Expected '{nameof(detectorResult)}' argument to be of type " +
+                    $"'{typeof(NodePlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
+            }
+
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the platform name and version to the manifest file
-            manifestFileProperties[ManifestFilePropertyKeys.NodeVersion] = detectorResult.PlatformVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.NodeVersion] = nodePlatformDetectorResult.PlatformVersion;
 
             var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
+            string runBuildLernaCommand = null;
+            string runBuildLageCommand = null;
+            string installLernaCommand = null;
             bool configureYarnCache = false;
             string packageManagerCmd = null;
             string packageInstallCommand = null;
             string packageInstallerVersionCommand = null;
+
+            if (nodePlatformDetectorResult.HasLernaJsonFile && nodePlatformDetectorResult.HasLageConfigJSFile)
+            {
+                _logger.LogError(
+                "Could not build monorepo with multiple package management tools. Both 'lerna.json' and 'lage.config.js' files are found.");
+                throw new InvalidUsageException("Multiple monorepo package management tools are found, please choose to use either Lerna or Lage.");
+            }
 
             if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
             {
@@ -161,6 +179,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 packageManagerCmd = NodeConstants.NpmCommand;
                 packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
                 packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
+            }
+
+            // If a 'lerna.json' file exists, override the npm client that lerna chosen to build monorepo.
+            if (nodePlatformDetectorResult.HasLernaJsonFile)
+            {
+                packageManagerCmd = nodePlatformDetectorResult.LernaNpmClient;
+                runBuildLernaCommand = string.Format(
+                        NodeConstants.PkgMgrRunBuildCommandTemplate,
+                        NodeConstants.LernaCommand);
+                if (!string.IsNullOrEmpty(nodePlatformDetectorResult.LernaNpmClient)
+                    && nodePlatformDetectorResult.LernaNpmClient.Equals(
+                    NodeConstants.YarnCommand, StringComparison.OrdinalIgnoreCase))
+                {
+                    packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
+                    configureYarnCache = true;
+                    packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
+                    installLernaCommand = NodeConstants.InstallLernaCommandYarn;
+                }
+                else
+                {
+                    packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
+                    packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
+                    installLernaCommand = NodeConstants.InstallLernaCommandNpm;
+                }
+            }
+
+            // If a 'lage.config.js' file exits, run build using lage specifc commands.
+            if (nodePlatformDetectorResult.HasLageConfigJSFile)
+            {
+                runBuildLageCommand = ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName) ?
+                        NodeConstants.YarnRunLageBuildCommand : NodeConstants.NpmRunLageBuildCommand;
             }
 
             _logger.LogInformation("Using {packageManager}", packageManagerCmd);
@@ -181,7 +230,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var productionOnlyPackageInstallCommand = string.Format(
                 NodeConstants.ProductionOnlyPackageInstallCommandTemplate, packageInstallCommand);
 
-            if (string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand))
+            if (string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand) &&
+                string.IsNullOrEmpty(runBuildLernaCommand) &&
+                string.IsNullOrEmpty(runBuildLageCommand))
             {
                 var scriptsNode = packageJson?.scripts;
                 if (scriptsNode != null)
@@ -203,12 +254,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (IsBuildRequired(ctx)
                 && string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand)
                 && string.IsNullOrEmpty(runBuildCommand)
-                && string.IsNullOrEmpty(runBuildAzureCommand))
+                && string.IsNullOrEmpty(runBuildAzureCommand)
+                && string.IsNullOrEmpty(runBuildLernaCommand)
+                && string.IsNullOrEmpty(runBuildLageCommand))
             {
                 throw new NoBuildStepException(
                     "Could not find either 'build' or 'build:azure' node under 'scripts' in package.json. " +
                     "Could not find value for custom run build command using the environment variable " +
-                    "key 'RUN_BUILD_COMMAND'.");
+                    "key 'RUN_BUILD_COMMAND'." +
+                    "Could not find tools for building monorepos, no 'lerna.json' or 'lage.config.js' files found.");
             }
 
             if (packageJson?.dependencies != null)
@@ -216,7 +270,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 var depSpecs = ((JObject)packageJson.dependencies).ToObject<IDictionary<string, string>>();
                 _logger.LogDependencies(
                     _commonOptions.PlatformName,
-                    detectorResult.PlatformVersion,
+                    nodePlatformDetectorResult.PlatformVersion,
                     depSpecs.Select(d => d.Key + d.Value));
             }
 
@@ -225,7 +279,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 var depSpecs = ((JObject)packageJson.devDependencies).ToObject<IDictionary<string, string>>();
                 _logger.LogDependencies(
                     _commonOptions.PlatformName,
-                    detectorResult.PlatformVersion,
+                    nodePlatformDetectorResult.PlatformVersion,
                     depSpecs.Select(d => d.Key + d.Value), true);
             }
 
@@ -273,6 +327,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 PackageInstallerVersionCommand = packageInstallerVersionCommand,
                 RunNpmPack = _commonOptions.ShouldPackage,
                 CustomRunBuildCommand = _nodeScriptGeneratorOptions.CustomRunBuildCommand,
+                LernaRunBuildCommand = runBuildLernaCommand,
+                InstallLernaCommand = installLernaCommand,
+                LernaInitCommand = NodeConstants.LernaInitCommand,
+                LernaBootstrapCommand = NodeConstants.LernaBootstrapCommand,
+                InstallLageCommand = NodeConstants.InstallLageCommand,
+                LageRunBuildCommand = runBuildLageCommand,
             };
 
             string script = TemplateHelper.Render(

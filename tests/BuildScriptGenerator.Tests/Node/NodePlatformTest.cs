@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",
@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",
@@ -126,6 +126,111 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
+        public void GeneratedBuildSnippet_HasLernaRunBuildCommand_IfLernaJsonFileExists()
+        {
+            // Arrange
+            const string lernaJson = @"{
+              ""version"": ""3.22.1"",
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            repo.AddFile(lernaJson, NodeConstants.LernaJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+                HasLernaJsonFile = true,
+                LernaNpmClient = "npm",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("lerna bootstrap", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("lerna run build", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_ThrowsException_IfBothLernaAndLageFileExists()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            repo.AddFile(string.Empty, NodeConstants.LageConfigJSFileName);
+            repo.AddFile(string.Empty, NodeConstants.LernaJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+                HasLernaJsonFile = true,
+                HasLageConfigJSFile = true,
+            };
+
+            // Act & Assert
+            var exception = Assert.Throws<InvalidUsageException>(
+                () => nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult));
+
+            Assert.Equal(
+                "Multiple monorepo package management tools are found, please choose to use either Lerna or Lage.",
+                exception.Message);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_CustomRunCommandWillExecute_WhenOtherCommandsAlsoExist()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here" },
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            repo.AddFile(string.Empty, NodeConstants.LernaJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+                HasLernaJsonFile = true,
+                LernaNpmClient = "npm",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("custom command here", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("lerna run build", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
         public void BuildScript_HasSdkInstallScript_IfDynamicInstallIsEnabled_AndSdkIsNotAlreadyInstalled()
         {
             // Arrange
@@ -133,7 +238,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",
@@ -154,7 +259,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",
@@ -175,7 +280,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",
@@ -212,7 +317,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
             context.Properties[NodePlatform.RequireBuildPropertyKey] = requireBuild;
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",
@@ -247,7 +352,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
             context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",
@@ -281,7 +386,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
             context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",
@@ -315,7 +420,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
             context.Properties[NodePlatform.RequireBuildPropertyKey] = "true";
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",
@@ -327,7 +432,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Equal(
                 "Could not find either 'build' or 'build:azure' node under 'scripts' in package.json. " +
                 "Could not find value for custom run build command using the environment variable " +
-                "key 'RUN_BUILD_COMMAND'.",
+                "key 'RUN_BUILD_COMMAND'." +
+                "Could not find tools for building monorepos, no 'lerna.json' or 'lage.config.js' files found.",
                 exception.Message);
         }
 
@@ -351,7 +457,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
             var context = CreateContext(repo);
             context.Properties[NodePlatform.RequireBuildPropertyKey] = "false";
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10",

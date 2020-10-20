@@ -9,6 +9,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         public const string PlatformName = "nodejs";
         public const string PackageJsonFileName = "package.json";
+        public const string LernaJsonFileName = "lerna.json";
+        public const string LageConfigJSFileName = "lage.config.js";
         public const string PackageLockJsonFileName = "package-lock.json";
         public const string YarnLockFileName = "yarn.lock";
         public const string NodeToolName = "node";
@@ -18,7 +20,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string YarnStartCommand = "yarn run start";
         public const string YarnCommand = "yarn";
         public const string HugoCommand = "hugo";
+        public const string LernaCommand = "lerna";
+        public const string LernaVersionCommand = "echo Using Npm version: && lerna --version";
+        public const string LernaInitCommand = "lerna init";
+        public const string LernaBootstrapCommand = "lerna bootstrap";
+        public const string InstallLernaCommandNpm = "npm install --global lerna";
         public const string NpmPackageInstallCommand = "npm install --unsafe-perm";
+        public const string InstallLernaCommandYarn = "npm install --global lerna --no-package-lock";
+        public const string InstallLageCommand = "npm install --global lage";
+        public const string NpmRunLageBuildCommand = "npm run lage build";
+        public const string YarnRunLageBuildCommand = "yarn lage build";
         public const string NpmVersionCommand = "echo Using Npm version: && npm --version";
         public const string YarnVersionCommand = "echo Using Yarn version: && yarn --version";
         public const string HugoVersionCommand = "echo Using Hugo version: && hugo version";

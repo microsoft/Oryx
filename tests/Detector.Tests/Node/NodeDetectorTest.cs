@@ -122,6 +122,12 @@ namespace Microsoft.Oryx.Detector.Tests.Node
                 res.end();
             }).listen(8888);";
 
+        private const string LernaJsonWithNpmClient = @"{
+          ""name"": ""mynodeapp"",
+          ""version"": ""1.0.0"",
+          ""npmClient"": ""yarn""
+        }";
+
         [Fact]
         public void Detect_ReturnsNull_IfSourceDirectory_DoesNotHaveAnyFiles()
         {
@@ -404,6 +410,26 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             Assert.Equal(string.Empty, result.AppDirectory);
             Assert.Equal(expectedFrameworkNames, result.Frameworks.Select(x => x.Framework).ToList());
             Assert.Equal(expectedFrameworkVersions, result.Frameworks.Select(x => x.FrameworkVersion).ToList());
+        }
+
+        [Fact]
+        public void Detect_ReturnsLernaNpmClientName_IfLernaJsonFileExists()
+        {
+            // Arrange
+            var sourceRepo = new MemorySourceRepo();
+            sourceRepo.AddFile("", NodeConstants.PackageJsonFileName);
+            sourceRepo.AddFile("", NodeConstants.YarnLockFileName);
+            sourceRepo.AddFile(LernaJsonWithNpmClient, NodeConstants.LernaJsonFileName);
+            var detector = CreateNodePlatformDetector();
+            var context = CreateContext(sourceRepo);
+
+            // Act
+            var result = (NodePlatformDetectorResult)detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(result.HasLernaJsonFile);
+            Assert.Equal(result.LernaNpmClient, NodeConstants.YarnToolName);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)

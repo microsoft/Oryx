@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Detector;
+using Microsoft.Oryx.Detector.Node;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
@@ -97,7 +98,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -140,7 +141,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -180,7 +181,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(MalformedPackageJson, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -222,7 +223,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -265,7 +266,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             repo.AddFile("Yarn lock file content here", NodeConstants.YarnLockFileName);
             var context = CreateScriptGeneratorContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -309,7 +310,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithNoNpmVersion, NodeConstants.PackageJsonFileName);
             repo.AddFile("Package lock json file content here", NodeConstants.PackageLockJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -350,7 +351,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -396,7 +397,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.Properties[NodePlatform.CompressNodeModulesPropertyKey] = "tar-gz";
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -444,7 +445,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.Properties[NodePlatform.CompressNodeModulesPropertyKey] = null;
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -491,7 +492,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.Properties[NodePlatform.CompressNodeModulesPropertyKey] = "zip";
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -534,7 +535,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
@@ -577,7 +578,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             context.Properties[NodePlatform.RegistryUrlPropertyKey] = "https://example.com/registry/";
-            var detectorResult = new PlatformDetectorResult
+            var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
