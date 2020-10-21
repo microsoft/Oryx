@@ -30,10 +30,11 @@ stages:
             exit 1
           fi
           if [[ "$(Build.SourceBranch)" != "refs/heads/master" ]] \
-          && [[ "$(Build.SourceBranch)" != refs/heads/patch* ]]; then
+          && [[ "$(Build.SourceBranch)" != refs/heads/patch* ]] \
+          && [[ "$(Build.SourceBranch)" != refs/heads/exp* ]]; then
             echo
             echo "Invalid configuration."
-            echo 'Only 'master' and 'patch/*' branches are allowed.'
+            echo 'Only 'master', 'patch/*' and 'exp/*' branches are allowed.'
             exit 1
           fi
         displayName: 'Validate pipeline run'

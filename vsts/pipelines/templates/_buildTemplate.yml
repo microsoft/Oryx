@@ -1,5 +1,5 @@
 parameters:
-  ascName: OryxMCR
+  ascName: oryxSP
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
 
@@ -25,7 +25,9 @@ steps:
   condition: >
     and(succeeded(),
     or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')),
-    or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
+    or(startsWith(variables['Build.SourceBranch'], 'refs/heads/master'), 
+    startsWith(variables['Build.SourceBranch'],'refs/heads/patch/'),
+    startsWith(variables['Build.SourceBranch'],'refs/heads/exp/')))
 
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 3.1.x'
