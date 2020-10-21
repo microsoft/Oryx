@@ -160,7 +160,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string packageInstallCommand = null;
             string packageInstallerVersionCommand = null;
 
-            if (nodePlatformDetectorResult.HasLernaJsonFile && nodePlatformDetectorResult.HasLageConfigJSFile)
+            if (_nodeScriptGeneratorOptions.EnableNodeMonorepoBuild &&
+                nodePlatformDetectorResult.HasLernaJsonFile &&
+                nodePlatformDetectorResult.HasLageConfigJSFile)
             {
                 _logger.LogError(
                 "Could not build monorepo with multiple package management tools. Both 'lerna.json' and 'lage.config.js' files are found.");
@@ -181,35 +183,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
             }
 
-            // If a 'lerna.json' file exists, override the npm client that lerna chosen to build monorepo.
-            if (nodePlatformDetectorResult.HasLernaJsonFile)
-            {
-                packageManagerCmd = nodePlatformDetectorResult.LernaNpmClient;
-                runBuildLernaCommand = string.Format(
-                        NodeConstants.PkgMgrRunBuildCommandTemplate,
-                        NodeConstants.LernaCommand);
-                if (!string.IsNullOrEmpty(nodePlatformDetectorResult.LernaNpmClient)
-                    && nodePlatformDetectorResult.LernaNpmClient.Equals(
-                    NodeConstants.YarnCommand, StringComparison.OrdinalIgnoreCase))
+            if (_nodeScriptGeneratorOptions.EnableNodeMonorepoBuild) {
+                // If a 'lerna.json' file exists, override the npm client that lerna chosen to build monorepo.
+                if (nodePlatformDetectorResult.HasLernaJsonFile)
                 {
-                    packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
-                    configureYarnCache = true;
-                    packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
-                    installLernaCommand = NodeConstants.InstallLernaCommandYarn;
+                    packageManagerCmd = nodePlatformDetectorResult.LernaNpmClient;
+                    runBuildLernaCommand = string.Format(
+                            NodeConstants.PkgMgrRunBuildCommandTemplate,
+                            NodeConstants.LernaCommand);
+                    if (!string.IsNullOrEmpty(nodePlatformDetectorResult.LernaNpmClient)
+                        && nodePlatformDetectorResult.LernaNpmClient.Equals(
+                        NodeConstants.YarnCommand, StringComparison.OrdinalIgnoreCase))
+                    {
+                        packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
+                        configureYarnCache = true;
+                        packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
+                        installLernaCommand = NodeConstants.InstallLernaCommandYarn;
+                    }
+                    else
+                    {
+                        packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
+                        packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
+                        installLernaCommand = NodeConstants.InstallLernaCommandNpm;
+                    }
                 }
-                else
-                {
-                    packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
-                    packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
-                    installLernaCommand = NodeConstants.InstallLernaCommandNpm;
-                }
-            }
 
-            // If a 'lage.config.js' file exits, run build using lage specifc commands.
-            if (nodePlatformDetectorResult.HasLageConfigJSFile)
-            {
-                runBuildLageCommand = ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName) ?
-                        NodeConstants.YarnRunLageBuildCommand : NodeConstants.NpmRunLageBuildCommand;
+                // If a 'lage.config.js' file exits, run build using lage specifc commands.
+                if (nodePlatformDetectorResult.HasLageConfigJSFile)
+                {
+                    runBuildLageCommand = ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName) ?
+                            NodeConstants.YarnRunLageBuildCommand : NodeConstants.NpmRunLageBuildCommand;
+                }
             }
 
             _logger.LogInformation("Using {packageManager}", packageManagerCmd);
