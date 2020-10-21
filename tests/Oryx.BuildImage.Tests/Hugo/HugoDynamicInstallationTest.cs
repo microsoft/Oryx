@@ -10,6 +10,7 @@ using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Microsoft.Oryx.BuildScriptGenerator.Go;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
@@ -168,7 +169,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void JamStackImageHasGoLangInstalled()
         {
             // Arrange
-            var expectedText = "1.15.2";
+            var expectedText = GoVersions.GoVersion;
             var script = new ShellScriptBuilder()
                 .AddCommand("go version")
                 .ToString();

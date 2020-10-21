@@ -5,8 +5,8 @@ ENV ORYX_BUILDIMAGE_TYPE="jamstack" \
 
 RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     && echo "jamstack" > /opt/oryx/.imagetype \
-    && golangVersion="1.15.2" \
-    && downloadedFileName="go${golangVersion}.linux-amd64.tar.gz" \
+    && . /opt/tmp/build/_goVersions.sh \
+    && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
     && curl -SLsO https://golang.org/dl/$downloadedFileName \
     && tar -C /usr/local -xzf $downloadedFileName \
     && rm -rf $downloadedFileName
