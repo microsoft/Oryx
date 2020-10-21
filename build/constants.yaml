@@ -266,3 +266,13 @@
     - type: csharp
       directory: src/BuildScriptGenerator/Java
       namespace: Microsoft.Oryx.BuildScriptGenerator.Java
+- name: go-versions
+  constants:
+    go-version: 1.15.2
+  outputs:
+    - type: shell
+      directory: build
+      file-name-prefix: __
+    - type: csharp
+      directory: src/BuildScriptGenerator
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Go

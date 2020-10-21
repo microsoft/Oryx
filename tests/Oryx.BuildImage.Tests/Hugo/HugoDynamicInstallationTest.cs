@@ -10,6 +10,7 @@ using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Microsoft.Oryx.BuildScriptGenerator.Go;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
@@ -162,6 +163,29 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private string GetSnippetToCleanUpExistingInstallation()
         {
             return $"rm -rf {DefaultInstallationRootDir}; mkdir -p {DefaultInstallationRootDir}";
+        }
+
+        [Fact]
+        public void JamStackImageHasGoLangInstalled()
+        {
+            // Arrange
+            var expectedText = GoVersions.GoVersion;
+            var script = new ShellScriptBuilder()
+                .AddCommand("go version")
+                .ToString();
+
+            // Act
+            var image = _imageHelper.GetAzureFunctionsJamStackBuildImage();
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedText, result.StdOut);
+                },
+                result.GetDebugInfo());
         }
     }
 }
