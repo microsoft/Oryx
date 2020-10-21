@@ -125,7 +125,8 @@ stages:
     dependsOn: Build
     condition: >
       and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-      startsWith(variables['Build.SourceBranch'],'refs/heads/patch/' )))
+      startsWith(variables['Build.SourceBranch'],'refs/heads/patch/'),
+      startsWith(variables['Build.SourceBranch'],'refs/heads/exp/')))
 
     jobs:
     - template: templates/_releaseJobTemplate.yml
