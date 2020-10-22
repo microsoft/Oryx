@@ -7,8 +7,9 @@ using System;
 using System.IO;
 using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Detector.Resources;
-using Nett;
 using Newtonsoft.Json.Linq;
+using Tomlyn;
+using Tomlyn.Model;
 using YamlDotNet.RepresentationModel;
 
 namespace Microsoft.Oryx.Detector
@@ -19,8 +20,8 @@ namespace Microsoft.Oryx.Detector
     internal static class ParserHelper
     {
         /// <summary>
-        /// Parse a .toml file into a TomlTable from the Nett library.
-        /// See https://github.com/paiden/Nett for more information.
+        /// Parse a .toml file into a TomlTable from the Tomlyn library.
+        /// See https://github.com/xoofx/Tomlyn for more information.
         /// </summary>
         /// <param name="sourceRepo">Source repo for the application.</param>
         /// <param name="filePath">The path to the .toml file.</param>
@@ -31,7 +32,17 @@ namespace Microsoft.Oryx.Detector
 
             try
             {
-                return Toml.ReadString(tomlContent);
+                // Gets a syntax tree of the TOML text
+                var doc = Toml.Parse(tomlContent); // returns a DocumentSyntax
+                // Check for parsing errors with doc.HasErrors and doc.Diagnostics
+                // doc.HasErrors => throws an exception
+                if (doc.HasErrors)
+                {
+                    throw new Exception("TOML file content has parsing errors.");
+                }
+                // Gets a runtime representation of the syntax tree
+                var table = doc.ToModel();
+                return table;
             }
             catch (Exception ex)
             {
