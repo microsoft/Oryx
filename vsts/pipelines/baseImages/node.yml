@@ -1,5 +1,5 @@
 variables:
-    ascName: OryxMCR
+    ascName: oryxSP
     acrName: oryxdevmcr.azurecr.io
     skipComponentGovernanceDetection: true
   

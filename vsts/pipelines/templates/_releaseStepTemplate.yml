@@ -1,5 +1,5 @@
 parameters:
-  ascName: OryxMCR
+  ascName: oryxSP
   acrDevName: oryxdevmcr.azurecr.io
   acrProdName: oryxmcr
   acrPmeProdName: oryxprodmcr
