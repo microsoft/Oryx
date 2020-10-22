@@ -300,9 +300,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
             }
 
-            buildProperties[ManifestFilePropertyKeys.CompressDestinationDir] =
-                _cliOptions.CompressDestinationDir.ToString().ToLower();
-
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
                 context.SourceRepo,
                 _cliOptions);
@@ -336,7 +333,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 PlatformInstallationScript = installationScript,
                 OutputDirectoryIsNested = outputIsSubDirOfSourceDir,
                 CopySourceDirectoryContentToDestinationDirectory = copySourceDirectoryContentToDestinationDirectory,
-                CompressDestinationDir = _cliOptions.CompressDestinationDir,
             };
 
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);

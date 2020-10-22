@@ -28,7 +28,6 @@ type BuildManifest struct {
 	NodeVersion                     string
 	PythonVersion                   string
 	SourceDirectoryInBuildContainer string
-	CompressDestinationDir          string
 }
 
 var _buildManifest BuildManifest
