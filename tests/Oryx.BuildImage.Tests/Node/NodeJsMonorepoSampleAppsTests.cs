@@ -33,6 +33,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
+                .SetEnvironmentVariable(
+                    SettingsKeys.EnableNodeMonorepoBuild,
+                    true.ToString())
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
 
@@ -67,6 +70,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
+                .SetEnvironmentVariable(
+                    SettingsKeys.EnableNodeMonorepoBuild,
+                    true.ToString())
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/@babel")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/universalify")
