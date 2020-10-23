@@ -8,9 +8,9 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.Detector.Exceptions;
-using Nett;
 using Newtonsoft.Json.Linq;
 using YamlDotNet.RepresentationModel;
+using Tomlyn.Model;
 
 namespace Microsoft.Oryx.Detector.Hugo
 {

@@ -5,6 +5,7 @@
 
 using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Detector.Resources;
+using Tomlyn.Model;
 using Xunit;
 
 namespace Microsoft.Oryx.Detector.Tests
@@ -41,6 +42,37 @@ namespace Microsoft.Oryx.Detector.Tests
                 () => ParserHelper.ParseYamlFile(repo, fileName));
             Assert.Equal(expectedMessage, exception.Message);
             Assert.Equal(fileName, exception.FilePath);
+        }
+
+        [Fact]
+        public void DoesNotThrowFailedToParseException_IfTomlFileHasLessStrictOrdering()
+        {
+            var lessStrictTomlFileContent = 
+                @"baseURL = 'http://example.org/'
+                languageCode = 'en-us'
+                title = 'My New Hugo Site'
+                theme = 'ananke'
+
+                [params.plugins]
+                    URL = 'plugins/bootstrap/bootstrap.min.css'
+
+                [params]
+                home = 'Home'
+            ";
+            // Arrange
+            var fileName = "test.toml";
+            var repo = new MemorySourceRepo();
+            repo.AddFile(lessStrictTomlFileContent, fileName);
+
+            // Act
+            var result = ParserHelper.ParseTomlFile(repo, fileName);
+            var urlContent = ((TomlTable)((TomlTable) result["params"])["plugins"])["URL"];
+            var homeConent = ((TomlTable) result["params"])["home"];
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("plugins/bootstrap/bootstrap.min.css", urlContent);
+            Assert.Equal("Home", homeConent);
         }
     }
 }
