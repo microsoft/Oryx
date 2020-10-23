@@ -135,7 +135,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var commonOptions = new BuildScriptGeneratorOptions();
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
-                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null, EnableNodeMonorepoBuild = true },
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
                     NullLoggerFactory.Instance));
@@ -167,7 +167,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var commonOptions = new BuildScriptGeneratorOptions();
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
-                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null, EnableNodeMonorepoBuild = true },
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
                     NullLoggerFactory.Instance));
@@ -205,7 +205,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var commonOptions = new BuildScriptGeneratorOptions();
             var nodePlatform = CreateNodePlatform(
                 commonOptions,
-                new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here" },
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = "custom command here", EnableNodeMonorepoBuild = true },
                 new NodePlatformInstaller(
                     Options.Create(commonOptions),
                     NullLoggerFactory.Instance));
@@ -227,6 +227,41 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(buildScriptSnippet);
             Assert.Contains("custom command here", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("lerna run build", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_WillNotBuildMonorepo_IfNodeMonorepoOptionNotEnabled()
+        {
+            // Arrange
+            const string lernaJson = @"{
+              ""version"": ""3.22.1"",
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            repo.AddFile(lernaJson, NodeConstants.LernaJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+                HasLernaJsonFile = true,
+                LernaNpmClient = "npm",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.DoesNotContain("lerna bootstrap", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("lerna run build", buildScriptSnippet.BashBuildScriptSnippet);
         }
 
