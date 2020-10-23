@@ -33,13 +33,7 @@ namespace Microsoft.Oryx.Detector
             try
             {
                 // Gets a syntax tree of the TOML text
-                var doc = Toml.Parse(tomlContent); // returns a DocumentSyntax
-                // Check for parsing errors with doc.HasErrors and doc.Diagnostics
-                // doc.HasErrors => throws an exception
-                if (doc.HasErrors)
-                {
-                    throw new Exception("TOML file content has parsing errors.");
-                }
+                var doc = Toml.Parse(tomlContent);
                 // Gets a runtime representation of the syntax tree
                 var table = doc.ToModel();
                 return table;
