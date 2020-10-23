@@ -5,8 +5,6 @@
 
 using Microsoft.Oryx.Detector.Exceptions;
 using Microsoft.Oryx.Detector.Resources;
-using System;
-using Tomlyn;
 using Tomlyn.Model;
 using Xunit;
 
