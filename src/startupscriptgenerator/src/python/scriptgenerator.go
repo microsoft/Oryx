@@ -61,6 +61,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	}
 
 	scriptBuilder.WriteString(fmt.Sprintf("echo 'export APP_PATH=\"%s\"' >> ~/.bashrc\n", gen.getAppPath()))
+	scriptBuilder.WriteString("echo 'cd $APP_PATH' >> ~/.bashrc\n")
 
 	if gen.Configuration.EnableDynamicInstall && !common.PathExists(pythonInstallationRoot) {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.getAppPath()))
@@ -153,7 +154,6 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 
 		scriptBuilder.WriteString(
 			fmt.Sprintf("echo 'export VIRTUALENVIRONMENT_PATH=\"%s\"' >> ~/.bashrc\n", virtualEnvDir))
-		scriptBuilder.WriteString("echo 'cd $APP_PATH' >> ~/.bashrc\n")
 		scriptBuilder.WriteString(fmt.Sprintf("echo '. %s/bin/activate' >> ~/.bashrc\n", virtualEnvironmentName))
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,

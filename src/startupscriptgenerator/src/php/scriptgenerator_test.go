@@ -17,6 +17,8 @@ func ExamplePhpStartupScriptGenerator_GenerateEntrypointScript() {
 	fmt.Println(command)
 	// Output:
 	// #!/bin/sh
+	// echo 'export APP_PATH="abc"' >> ~/.bashrc
+	// echo 'cd $APP_PATH' >> ~/.bashrc
 	// # Enter the source directory to make sure the script runs where the user expects
 	// cd abc
 	// if [ -z "$APACHE_PORT" ]; then

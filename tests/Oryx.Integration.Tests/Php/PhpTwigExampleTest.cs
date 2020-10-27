@@ -93,5 +93,40 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("<h1>Hello World!</h1>", data);
                 });
         }
+
+        [Fact]
+        public async Task CanBuildAndRunAppWhenOutputIsCompressed()
+        {
+            // Arrange
+            var phpVersion = "7.3";
+            var appName = "twig-example";
+            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var appDir = volume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {PhpConstants.PlatformName} " +
+                $"--platform-version {phpVersion} --compress-destination-dir")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
+                .AddCommand(RunScriptPath)
+                .ToString();
+
+            // Act & Assert
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName, _output, new[] { volume, appOutputDirVolume },
+                "/bin/sh", new[] { "-c", buildScript },
+                _imageHelper.GetRuntimeImage("php", phpVersion),
+                ContainerPort,
+                "/bin/sh", new[] { "-c", runScript },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("<h1>Hello World!</h1>", data);
+                });
+        }
     }
 }

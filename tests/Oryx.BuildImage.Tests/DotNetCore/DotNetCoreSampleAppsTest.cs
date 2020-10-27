@@ -887,5 +887,50 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Fact]
+        public void BuildsAppAndCompressesOutputDirectory()
+        {
+            // Arrange
+            var appName = "NetCoreApp31.MvcApp";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var buildDir = "/tmp/int";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -i {buildDir} -o {appOutputDir} --platform dotnet --platform-version 3.1.8" +
+                $" --compress-destination-dir")
+                .AddFileDoesNotExistCheck($"{appOutputDir}/{appName}.dll")
+                .AddFileExistsCheck($"{appOutputDir}/output.tar.gz")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
+                    Assert.Contains(
+                       $"{ManifestFilePropertyKeys.CompressDestinationDir}=\"true\"",
+                       result.StdOut);
+                    Assert.Contains(
+                       $"{ManifestFilePropertyKeys.SourceDirectoryInBuildContainer}=\"{buildDir}\"",
+                       result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
     }
 }

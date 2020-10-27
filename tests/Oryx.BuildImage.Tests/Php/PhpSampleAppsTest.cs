@@ -136,5 +136,53 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Fact]
+        public void BuildsAndCompressesOutputDir()
+        {
+            // Arrange
+            var phpVersion = PhpVersions.Php73Version;
+            var buildImageName = _imageHelper.GetLtsVersionsBuildImage();
+            var appName = "twig-example";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var buildDir = "/tmp/int";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -i {buildDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} " +
+                $"--platform-version {phpVersion} --compress-destination-dir")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/vendor")
+                .AddFileExistsCheck($"{appOutputDir}/output.tar.gz")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
+                Assert.Contains($"Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
+                Assert.Contains(
+                       $"{ManifestFilePropertyKeys.CompressDestinationDir}=\"true\"",
+                       result.StdOut);
+                Assert.Contains(
+                   $"{ManifestFilePropertyKeys.SourceDirectoryInBuildContainer}=\"{buildDir}\"",
+                   result.StdOut);
+            },
+            result.GetDebugInfo());
+        }
     }
 }

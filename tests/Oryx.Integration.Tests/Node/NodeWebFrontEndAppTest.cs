@@ -151,5 +151,50 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Say It Again", data);
                 });
         }
+
+        [Fact]
+        public async Task CanBuildAndRun_NodeWebFrontEndApp_WhenOutputIsCompressed()
+        {
+            // Arrange
+            var appName = "webfrontend";
+            var nodeVersion = "12";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var outputDirVolume = CreateAppOutputDirVolume();
+            var outputDir = outputDirVolume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {outputDir} --platform {NodeConstants.PlatformName} " +
+                $"--platform-version {nodeVersion} --compress-destination-dir")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {outputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new[] { volume, outputDirVolume },
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Say It Again", data);
+                });
+        }
     }
 }

@@ -942,5 +942,47 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Fact]
+        public void BuildsAndCompressesOutputDirectory()
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var subDir = Guid.NewGuid();
+            var buildDir = "/tmp/int";
+            var manifestFile = $"{appOutputDir}/oryx-manifest.toml";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -i {buildDir} -o {appOutputDir} --compress-destination-dir")
+                .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
+                .AddFileExistsCheck($"{appOutputDir}/output.tar.gz")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                       $"{ManifestFilePropertyKeys.CompressDestinationDir}=\"true\"",
+                       result.StdOut);
+                    Assert.Contains(
+                       $"{ManifestFilePropertyKeys.SourceDirectoryInBuildContainer}=\"{buildDir}\"",
+                       result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
     }
 }
