@@ -127,7 +127,8 @@ RUN set -ex \
     && ln -s $NODE8_VERSION 8 \
     && ln -s $NODE10_VERSION 10 \
     && ln -s $NODE12_VERSION 12 \
-    && ln -s 12 lts \
+    && ln -s $NODE14_VERSION 14 \
+    && ln -s 14 lts \
     && npm install -g lerna \
     && cd /opt/yarn \
     && ln -s $YARN_VERSION stable \
