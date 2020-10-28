@@ -3,12 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -35,19 +33,22 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", PortInContainer.ToString())
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -77,20 +78,23 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -120,7 +124,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 await EndToEndTestHelper.RunAndAssertAppAsync(
                     imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
-                    volumes: new List<DockerVolume> { volume },
+                    volumes: new List<DockerVolume> { appOutputDirVolume },
                     environmentVariables: null,
                     port: PortInContainer,
                     link: null,
@@ -143,20 +147,23 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", PortInContainer.ToString())
-                .AddCommand($"mkdir -p {appDir}/node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
+                .AddCommand($"mkdir -p {appOutputDir}/node_modules")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -186,7 +193,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 await EndToEndTestHelper.RunAndAssertAppAsync(
                     imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
-                    volumes: new List<DockerVolume> { volume },
+                    volumes: new List<DockerVolume> { appOutputDirVolume },
                     environmentVariables: null,
                     port: PortInContainer,
                     link: null,
@@ -209,21 +216,24 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir}" +
+               $" --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p /tmp/abcd")
                 .AddCommand("ln -sfn /tmp/abcd ./node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -253,7 +263,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 await EndToEndTestHelper.RunAndAssertAppAsync(
                     imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
-                    volumes: new List<DockerVolume> { volume },
+                    volumes: new List<DockerVolume> { appOutputDirVolume },
                     environmentVariables: null,
                     port: PortInContainer,
                     link: null,
@@ -276,21 +286,24 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir}" +
+               $" --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p /tmp/abcd")
-                .AddCommand($"ln -sfn /tmp/abcd {appDir}/node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
+                .AddCommand($"ln -sfn /tmp/abcd {appOutputDir}/node_modules")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -320,7 +333,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 await EndToEndTestHelper.RunAndAssertAppAsync(
                     imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
-                    volumes: new List<DockerVolume> { volume },
+                    volumes: new List<DockerVolume> { appOutputDirVolume },
                     environmentVariables: null,
                     port: PortInContainer,
                     link: null,
@@ -341,9 +354,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var nodeVersion = "8";
             string compressFormat = "tar-gz";
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
-                .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
@@ -424,9 +435,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var nodeVersion = "9.4";
             string compressFormat = "tar-gz";
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
-                .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
@@ -509,9 +518,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             string compressFormat = "tar-gz";
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
-                .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
@@ -562,19 +569,22 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", PortInContainer.ToString())
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -604,20 +614,23 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -648,7 +661,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 var restartScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand($"cat > {appDir}/{i}.txt")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{appDir}/{i}.txt")
                 .ToString();
@@ -656,7 +669,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 await EndToEndTestHelper.RunAndAssertAppAsync(
                     imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
-                    volumes: new List<DockerVolume> { volume },
+                    volumes: new List<DockerVolume> { appOutputDirVolume },
                     environmentVariables: null,
                     port: PortInContainer,
                     link: null,
@@ -679,21 +692,24 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable("PORT", PortInContainer.ToString())
                 .AddCommand("mkdir -p /tmp/abcd")
                 .AddCommand("ln -sfn /tmp/abcd ./node_modules")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {PortInContainer}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {PortInContainer}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -745,9 +761,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var nodeVersion = "10";
             string compressFormat = "tar-gz";
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
-                .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);
@@ -827,9 +841,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var nodeVersion = "12";
             string compressFormat = "tar-gz";
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
-                .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);
@@ -908,9 +920,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var nodeVersion = "10";
             string compressFormat = "tar-gz";
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
-                .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);
@@ -992,9 +1002,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var nodeVersion = "12";
             string compressFormat = "tar-gz";
             int count = 0;
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
-                .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);
@@ -1076,9 +1084,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             string compressFormat = "tar-gz";
-            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
-                .FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);

@@ -30,9 +30,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp31MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} " +
+               .AddCommand($"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
                $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
@@ -44,7 +45,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp30WebApp,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -74,22 +75,24 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp31MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} " +
+                $"oryx build {appDir} -i /tmpint --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion} " +
-                $"-o {appDir}/output")
+                $"-o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
+                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp30WebApp,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -120,21 +123,23 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} --platform-version {version} " +
-                $"-o {appDir}/output")
+                $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
+                $"--platform-version {version} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
+                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh",
                 new[]
                 {
@@ -169,7 +174,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
             var buildImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} --platform {DotNetCoreConstants.PlatformName} " +
+                $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
                 // Create a 'build.env' file
                 .AddCommand(
@@ -231,7 +236,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp31MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
                .AddCommand($"cd {appDir}")
@@ -246,7 +252,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp31MvcApp,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {
