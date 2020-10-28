@@ -32,23 +32,13 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 
 	logger.LogInformation("Generating script for published output.")
 
-	if gen.Manifest.CompressDestinationDir == "true" {
-		println("Output is compressed. Extracting it...")
-		tarballFile := filepath.Join(gen.AppPath, "output.tar.gz")
-		common.ExtractTarball(tarballFile, gen.Manifest.SourceDirectoryInBuildContainer)
-		println(fmt.Sprintf("App path is set to '%s'", gen.Manifest.SourceDirectoryInBuildContainer))
-	}
-
-	scriptBuilder.WriteString(fmt.Sprintf("echo 'export APP_PATH=\"%s\"' >> ~/.bashrc\n", gen.getAppPath()))
-	scriptBuilder.WriteString("echo 'cd $APP_PATH' >> ~/.bashrc\n")
-
-	common.SetupPreRunScript(scriptBuilder, gen.getAppPath(), gen.Configuration.PreRunCommand)
+	common.SetupPreRunScript(scriptBuilder, gen.AppPath, gen.Configuration.PreRunCommand)
 
 	// Expose the port so that a custom command can use it if needed
 	common.SetEnvironmentVariableInScript(scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 	scriptBuilder.WriteString("export ASPNETCORE_URLS=http://*:$PORT\n\n")
 
-	appPath := gen.getAppPath()
+	appPath := gen.AppPath
 	if gen.RunFromPath != "" {
 		appPath = gen.RunFromPath
 	}
@@ -132,7 +122,7 @@ func (gen *DotnetCoreStartupScriptGenerator) getRuntimeConfigJsonFiles() []strin
 	var appDir *os.File
 	var files []os.FileInfo
 	var err error
-	appDir, err = os.Open(gen.getAppPath())
+	appDir, err = os.Open(gen.AppPath)
 	defer appDir.Close()
 	if err == nil {
 		files, err = appDir.Readdir(-1)
@@ -158,12 +148,4 @@ func (gen *DotnetCoreStartupScriptGenerator) getRuntimeConfigJsonFiles() []strin
 		}
 	}
 	return fileList
-}
-
-func (gen *DotnetCoreStartupScriptGenerator) getAppPath() string {
-	if gen.Manifest.CompressDestinationDir == "true" && gen.Manifest.SourceDirectoryInBuildContainer != "" {
-		return gen.Manifest.SourceDirectoryInBuildContainer
-	}
-
-	return gen.AppPath
 }
