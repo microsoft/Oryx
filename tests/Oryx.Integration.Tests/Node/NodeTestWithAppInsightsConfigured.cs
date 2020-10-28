@@ -281,5 +281,118 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("AppInsights is set to send telemetry!", data);
                 });
         }
+
+        [Theory]
+        [InlineData("10", "~2")]
+        [InlineData("12", "enabled")]
+        // From 1.7.2 onward appinsights sdk have new environment variable "APPLICATIONINSIGHTS_CONNECTION_STRING"
+        // instead  of "APPINSIGHTS_INSTRUMENTATIONKEY"
+        public async Task CanBuildAndRun_NodeApp_AppInsights_With_PreIPA_Configuration(
+            string nodeVersion,
+            string agentExtensionVersionEnvValue)
+        {
+            // Arrange
+            var appName = "linxnodeexpress-appinsights";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
+            var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
+            var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
+            var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
+
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"export {aIEnabled}={agentExtensionVersionEnvValue}")
+                .AddCommand($"export {aIKey}=asdas")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
+                .AddStringExistsInFileCheck(OryxAppInsightsAttachString, $"{appDir}/run.sh")
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { volume },
+                Settings.BuildImageName,
+                "/bin/bash",
+                 new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdas"), new EnvironmentVariable(aIEnabled, "~2") },
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("AppInsights is set to send telemetry!", data);
+                });
+        }
+
+        [Theory]
+        [InlineData("10", "~3")]
+        [InlineData("12", "")]
+        [InlineData("12", "disabled")]
+        public async Task CanBuildAndRun_NodeApp_AppInsights_With_NewIPA_Configuration(
+            string nodeVersion, 
+            string agentExtensionVersionEnvValue)
+        {
+            // Arrange
+            var appName = "linxnodeexpress-appinsights";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
+            var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
+            var aIEnabled = ExtVarNames.UserAppInsightsEnableEnv;
+            var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
+
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"export {aIEnabled}={agentExtensionVersionEnvValue}")
+                .AddCommand($"export {aIKey}=asdas")
+                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
+                .AddStringDoesNotExistInFileCheck(OryxAppInsightsAttachString, $"{appDir}/run.sh")
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new List<DockerVolume> { volume },
+                Settings.BuildImageName,
+                "/bin/bash",
+                 new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdas"), new EnvironmentVariable(aIEnabled, "~2") },
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("AppInsights is not configured!", data);
+                });
+        }
     }
 }
