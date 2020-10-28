@@ -5,8 +5,8 @@
 
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -35,13 +35,16 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
-                $"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -output {RunScriptPath}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
@@ -49,7 +52,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new[] { volume },
+                new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("php", phpVersion),

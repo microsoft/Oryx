@@ -31,7 +31,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             // pre-run command which writes out a file to the output/app directory
             var preRunCmdGeneratedFileName = Guid.NewGuid().ToString("N");
             // Note that we are using MountedHostDir rather than the directory in the container. This allows us to
@@ -39,7 +40,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var expectedFileInOutput = Path.Join(volume.MountedHostDir, "myoutputdir", preRunCmdGeneratedFileName);
 
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform php --platform-version {phpVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform php --platform-version {phpVersion}")
                .ToString();
 
             // split run script to test pre-run command or script and then run the app
@@ -52,7 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName, _output, volume,
+                appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,
@@ -75,7 +77,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             // pre-run script which writes out a file to the output/app directory
             var preRunScriptGeneratedFileName = Guid.NewGuid().ToString("N");
             File.WriteAllText(Path.Join(volume.MountedHostDir, "prerunscript.sh"),
@@ -87,7 +90,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var expectedFileInOutput = Path.Join(volume.MountedHostDir, "myoutputdir", preRunScriptGeneratedFileName);
 
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform php --platform-version {phpVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int " +
+               $"--platform php --platform-version {phpVersion} -o {appOutputDir}")
                .ToString();
 
             // split run script to test pre-run command or script and then run the app
@@ -100,7 +104,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName, _output, volume,
+                appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,
@@ -123,7 +127,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             // pre-run script which writes out a file to the output/app directory
             var preRunScriptGeneratedFileName = Guid.NewGuid().ToString("N");
             File.WriteAllText(Path.Join(volume.MountedHostDir, "prerunscript.sh"),
@@ -137,7 +142,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var expectedFileInOutput = Path.Join(volume.MountedHostDir, "myoutputdir", preRunScriptGeneratedFileName);
 
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform php --platform-version {phpVersion} -o {appOutputDir}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int " +
+               $"--platform php --platform-version {phpVersion} -o {appOutputDir}")
                .ToString();
 
             // split run script to test pre-run command or script and then run the app
@@ -150,7 +156,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName, _output, volume,
+                appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,
@@ -175,16 +181,19 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 // Create a 'build.env' file
                 .AddCommand(
                 $"echo '{FilePaths.PreRunCommandEnvVarName}=\"echo > {expectedFileInOutputDir}\"' > " +
-                $"{appDir}/{BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName}")
+                $"{appOutputDir}/{BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -output {RunScriptPath}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
@@ -192,7 +201,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,
