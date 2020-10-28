@@ -112,9 +112,9 @@ RUN set -ex \
     && $imagesDir/build/installHugo.sh \
     # Install Node
     && . $buildDir/__nodeVersions.sh \
-    && $imagesDir/installPlatform.sh nodejs $NODE8_VERSION \
     && $imagesDir/installPlatform.sh nodejs $NODE10_VERSION \
     && $imagesDir/installPlatform.sh nodejs $NODE12_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $NODE14_VERSION \
     && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
     && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
     && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
@@ -124,7 +124,6 @@ RUN set -ex \
     && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
     && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
     && cd /opt/nodejs \
-    && ln -s $NODE8_VERSION 8 \
     && ln -s $NODE10_VERSION 10 \
     && ln -s $NODE12_VERSION 12 \
     && ln -s $NODE14_VERSION 14 \

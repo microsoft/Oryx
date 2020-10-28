@@ -47,6 +47,7 @@ RUN set -ex \
     && ln -s $DOT_NET_CORE_22_SDK_VERSION 2.2 \
     && cd $imagesDir \ 
     && . $buildDir/__nodeVersions.sh \
+    && $imagesDir/installPlatform.sh nodejs $NODE8_VERSION \
     && $imagesDir/installPlatform.sh nodejs 8.0.0 \
     && $imagesDir/installPlatform.sh nodejs 8.1.4 \
     && $imagesDir/installPlatform.sh nodejs 8.2.1 \
@@ -62,6 +63,7 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh nodejs 10.21.0 \
     && $imagesDir/installPlatform.sh nodejs 12.18.2 \
     && cd /opt/nodejs \
+    && ln -s $NODE8_VERSION 8 \
     && ln -s 8.0.0 8.0 \
     && ln -s 8.1.4 8.1 \
     && ln -s 8.2.1 8.2 \
