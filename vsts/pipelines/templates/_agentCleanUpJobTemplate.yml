@@ -13,7 +13,7 @@ jobs:
 
   steps:
 
-  - script: echo `pwd`; ls -la; chmod +w ./**/coverage.cobertura.xml
+  - script: echo `pwd`; ls -la; find . -type d -name coverage.cobertura.xml -print -exec chmod +w {} \;
     workingDirectory: $(System.DefaultWorkingDirectory)/../..
     displayName: Clean rogue coverage reports
 
