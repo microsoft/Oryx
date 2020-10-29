@@ -13,8 +13,8 @@ jobs:
 
   steps:
 
-  - script: echo `pwd`; ls -la; find . -type d -name coverage.cobertura.xml -print -exec chmod +w {} \;
+  - script: echo Cleaning `pwd`; find . -type d -name coverage.cobertura.xml -print -exec chmod +w {} \;
     workingDirectory: $(System.DefaultWorkingDirectory)/../..
-    displayName: Clean rogue coverage reports
+    displayName: Unlock rogue coverage reports
 
   - template: _cleanImageCacheTemplate.yml
