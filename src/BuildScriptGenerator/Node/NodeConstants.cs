@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string NodeModulesFileBuildProperty = "compressedNodeModulesFile";
         public const string NodeAppInsightsPackageName = "applicationinsights";
         public const string InjectedAppInsights = "injectedAppInsights";
-        public const string NodeLtsVersion = NodeVersions.Node12Version;
+        public const string NodeLtsVersion = NodeVersions.Node14Version;
         public const string InstalledNodeVersionsDir = "/opt/nodejs/";
         public const string NodeVersion = "NODE_VERSION";
         public const string LegacyZipNodeModules = "ENABLE_NODE_MODULES_ZIP";
