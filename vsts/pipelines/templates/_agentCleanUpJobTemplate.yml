@@ -13,8 +13,8 @@ jobs:
 
   steps:
 
-  - template: _cleanImageCacheTemplate.yml
-
-  - script: chmod +w ./**/coverage.cobertura.xml
+  - script: echo `pwd`; ls -la; chmod +w ./**/coverage.cobertura.xml
     workingDirectory: $(System.DefaultWorkingDirectory)
     displayName: Clean rogue coverage reports
+
+  - template: _cleanImageCacheTemplate.yml
