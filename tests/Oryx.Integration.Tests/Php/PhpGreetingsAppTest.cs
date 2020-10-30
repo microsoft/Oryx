@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName, _output, volume,
+                appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,

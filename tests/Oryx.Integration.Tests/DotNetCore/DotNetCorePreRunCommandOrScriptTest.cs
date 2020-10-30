@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp31MvcApp,
                 _output,
-                new[] { volume },
+                new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh",
                 new[]
@@ -111,7 +111,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"--platform-version {runtimeVersion} -o {appOutputDir}")
                .ToString();
 
-
             // split run script to test pre-run command and then run the app
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
@@ -144,7 +143,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp31MvcApp,
                 _output,
-                new[] { volume },
+                new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh",
                 new[]

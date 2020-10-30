@@ -740,7 +740,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 await EndToEndTestHelper.RunAndAssertAppAsync(
                     imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
                     output: _output,
-                    volumes: new List<DockerVolume> { volume },
+                    volumes: new List<DockerVolume> { volume, appOutputDirVolume },
                     environmentVariables: null,
                     port: PortInContainer,
                     link: null,

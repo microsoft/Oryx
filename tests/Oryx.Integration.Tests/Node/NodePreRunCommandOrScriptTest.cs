@@ -108,7 +108,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform nodejs --platform-version {nodeVersion} -o {appOutputDir}")
+                $"--platform nodejs --platform-version {nodeVersion}")
                 .ToString();
 
             // split run script to test pre-run command or script and then run the app
@@ -216,7 +216,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
                     // Verify that the file created using the pre-run command is 
                     // in fact present in the output directory.
-                    Assert.True(File.Exists(Path.Combine(volume.MountedHostDir, expectedFileInOutputDir)));
+                    Assert.True(File.Exists(Path.Combine(appOutputDirVolume.MountedHostDir, expectedFileInOutputDir)));
                 });
         }
     }

@@ -222,7 +222,6 @@ namespace Microsoft.Oryx.Integration.Tests
                $"--platform {PythonConstants.PlatformName} --platform-version 3.7")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appOutputDir}")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -230,7 +229,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {

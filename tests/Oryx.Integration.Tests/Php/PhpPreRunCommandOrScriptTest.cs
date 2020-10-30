@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var preRunCmdGeneratedFileName = Guid.NewGuid().ToString("N");
             // Note that we are using MountedHostDir rather than the directory in the container. This allows us to
             // write an asset from this test to check the host directory itself even after the container is killed.
-            var expectedFileInOutput = Path.Join(volume.MountedHostDir, "myoutputdir", preRunCmdGeneratedFileName);
+            var expectedFileInOutput = Path.Join(appOutputDirVolume.MountedHostDir, preRunCmdGeneratedFileName);
 
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"echo > {preRunScriptGeneratedFileName}\n");
             // Note that we are using MountedHostDir rather than the directory in the container. This allows us to
             // write an asset from this test to check the host directory itself even after the container is killed.
-            var expectedFileInOutput = Path.Join(volume.MountedHostDir, "myoutputdir", preRunScriptGeneratedFileName);
+            var expectedFileInOutput = Path.Join(appOutputDirVolume.MountedHostDir, preRunScriptGeneratedFileName);
 
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -i /tmp/int " +
@@ -139,7 +139,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"apt list --installed > {preRunScriptGeneratedFileName}\n");
             // Note that we are using MountedHostDir rather than the directory in the container. This allows us to
             // write an asset from this test to check the host directory itself even after the container is killed.
-            var expectedFileInOutput = Path.Join(volume.MountedHostDir, "myoutputdir", preRunScriptGeneratedFileName);
+            var expectedFileInOutput = Path.Join(appOutputDirVolume.MountedHostDir, preRunScriptGeneratedFileName);
 
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -i /tmp/int " +
@@ -213,7 +213,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
                     // Verify that the file created using the pre-run command is 
                     // in fact present in the output directory.
-                    Assert.True(File.Exists(Path.Combine(volume.MountedHostDir, expectedFileInOutputDir)));
+                    Assert.True(File.Exists(Path.Combine(appOutputDirVolume.MountedHostDir, expectedFileInOutputDir)));
                 });
         }
     }

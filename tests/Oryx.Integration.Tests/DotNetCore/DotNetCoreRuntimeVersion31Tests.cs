@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -i /tmpint --platform {DotNetCoreConstants.PlatformName} " +
+                $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion} " +
                 $"-o {appOutputDir}")
                .ToString();
