@@ -48,14 +48,15 @@ const inspectParamVariableName = "ORYX_NODE_INSPECT_PARAM"
 // Checks if the application insights needs to be enabled for the current runtime
 func (gen *NodeStartupScriptGenerator) shouldApplicationInsightsBeConfigured() bool {
 	// Check if the application insights environment variables are present
-	if gen.Configuration.AppInsightsAgentExtensionVersion == "" ||
-		gen.Configuration.AppInsightsAgentExtensionVersion == "~3" ||
-		gen.Configuration.AppInsightsAgentExtensionVersion == "disabled" {
+	appInsightsAgentExtensionVersionEnv = gen.Configuration.AppInsightsAgentExtensionVersion
+	if appInsightsAgentExtensionVersionEnv == "" ||
+		appInsightsAgentExtensionVersionEnv == "~3" ||
+		appInsightsAgentExtensionVersionEnv == "disabled" {
 		// We are not going to add anything in the startup logic for appinsights new ipa attach experience
 		fmt.Printf("Environment Variables for Application Insight's IPA Codeless Configuration exists..\n")
 		return false
-	} else if gen.Configuration.AppInsightsAgentExtensionVersion != "" &&
-		gen.Configuration.AppInsightsAgentExtensionVersion != "disabled" {
+	} else if appInsightsAgentExtensionVersionEnv != "" &&
+		appInsightsAgentExtensionVersionEnv != "disabled" {
 		fmt.Printf("Environment Variables for Application Insight's Pre-IPA Codeless Configuration exists..\n")
 		return true
 	}
