@@ -212,6 +212,31 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         }
 
+        [Theory]
+        [InlineData("7.4")]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        public void MySqlnd_Azure_IsInstalled(string imageTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-m", " | grep mysqlnd_azure);" }
+            });
+
+            // Assert
+            var output = result.StdOut.ToString();
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("mysqlnd_azure", output);
+            },
+                result.GetDebugInfo());
+
+        }
+
         [SkippableTheory]
         [InlineData("7.4")]
         [InlineData("7.3")]

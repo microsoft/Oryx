@@ -70,6 +70,14 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         xsl \
     && pecl install imagick && docker-php-ext-enable imagick
 
+# https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
+RUN set -eux; \
+    if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
+        echo "pecl/mysqlnd_azure requires PHP (version >= 7.2.*, version <= 7.99.99)"; \
+        pecl install mysqlnd_azure \
+        && docker-php-ext-enable mysqlnd_azure; \
+    fi
+
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
