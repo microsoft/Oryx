@@ -154,7 +154,7 @@ func getAppInsightsAgentVersion(configuration Configuration) string {
 	// the config file but use regular 'os.Getenv' api to be able to read the lower case environment
 	// variable
 	valueFromViper := configuration.AppInsightsAgentExtensionVersion
-	valueFromEnvVariable := os.Getenv(consts.UserAppInsightsExtensionVersion)
+	valueFromEnvVariable := os.Getenv(consts.UserAppInsightsAgentExtensionVersion)
 	if valueFromEnvVariable == "" {
 		// following represents value from config
 		return valueFromViper

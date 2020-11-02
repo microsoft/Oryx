@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
             var aIKey = appInsightKeyOrConnectionString;
-            var aIEnabled = ExtVarNames.UserAppInsightsExtensionVersion;
+            var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
 
             var buildScript = new ShellScriptBuilder()
@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
             var aIKey = appInsightKeyOrConnectionString;
-            var aIEnabled = ExtVarNames.UserAppInsightsExtensionVersion;
+            var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
 
             var buildScript = new ShellScriptBuilder()

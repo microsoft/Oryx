@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var appDir = volume.ContainerDir;
             var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
             var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
-            var aIEnabled = ExtVarNames.UserAppInsightsExtensionVersion;
+            var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             int containerDebugPort = 8080;
 
             var script = new ShellScriptBuilder()
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
-            var aIEnabled = ExtVarNames.UserAppInsightsExtensionVersion;
+            var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             int containerDebugPort = 8080;
 
             var script = new ShellScriptBuilder()
@@ -133,7 +133,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
-            var aIEnabled = ExtVarNames.UserAppInsightsExtensionVersion;
+            var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             var connectionStringEnv = ExtVarNames.UserAppInsightsConnectionStringEnv;
             int containerDebugPort = 8080;
             var AppInsightsStartUpLegacyPayLoadMessage = "Application Insights was started with setupString";
@@ -187,7 +187,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var appDir = volume.ContainerDir;
             var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
             //agentextension version will be set to '~3' or '' or 'disabled'
-            var agentExtensionVersionEnv = ExtVarNames.UserAppInsightsExtensionVersion;
+            var agentExtensionVersionEnv = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             var connectionStringEnv = ExtVarNames.UserAppInsightsConnectionStringEnv;
             int containerDebugPort = 8080;
             var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";

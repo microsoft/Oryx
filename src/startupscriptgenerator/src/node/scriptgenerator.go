@@ -48,7 +48,7 @@ const inspectParamVariableName = "ORYX_NODE_INSPECT_PARAM"
 // Checks if the application insights needs to be enabled for the current runtime
 func (gen *NodeStartupScriptGenerator) shouldApplicationInsightsBeConfigured() bool {
 	// Check if the application insights environment variables are present
-	appInsightsAgentExtensionVersionEnv = gen.Configuration.AppInsightsAgentExtensionVersion
+	appInsightsAgentExtensionVersionEnv := gen.Configuration.AppInsightsAgentExtensionVersion
 	if appInsightsAgentExtensionVersionEnv == "" ||
 		appInsightsAgentExtensionVersionEnv == "~3" ||
 		appInsightsAgentExtensionVersionEnv == "disabled" {
