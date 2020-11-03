@@ -3,11 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Tests.Common;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -37,27 +37,29 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "linxnodeexpress-appinsights";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
             var aIKey = appInsightKeyOrConnectionString;
             var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
 
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
-                .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules").ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIEnabled}={agentExtensionVersionEnvValue}")
                 .AddCommand($"export {aIKey}=asdas")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
-                .AddStringExistsInFileCheck(OryxAppInsightsAttachString, $"{appDir}/run.sh")
+                .AddStringExistsInFileCheck(OryxAppInsightsAttachString, $"{appOutputDir}/run.sh")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new List<DockerVolume> { volume },
+                new List<DockerVolume> { volume, appOutputDirVolume },
                 Settings.BuildImageName,
                 "/bin/bash",
                  new[]
@@ -99,27 +101,29 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "linxnodeexpress-appinsights";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
             var aIKey = appInsightKeyOrConnectionString;
             var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
 
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appDir} {spcifyNodeVersionCommand} --log-file {appDir}/1.log")
-                .AddDirectoryExistsCheck($"{appDir}/node_modules").ToString();
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} {spcifyNodeVersionCommand} --log-file {appOutputDir}/1.log")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules").ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIEnabled}={agentExtensionVersionEnvValue}")
                 .AddCommand($"export {aIKey}=asdas")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
-                .AddStringDoesNotExistInFileCheck(OryxAppInsightsAttachString, $"{appDir}/run.sh")
+                .AddStringDoesNotExistInFileCheck(OryxAppInsightsAttachString, $"{appOutputDir}/run.sh")
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new List<DockerVolume> { volume },
+                new List<DockerVolume> { volume, appOutputDirVolume },
                 Settings.BuildImageName,
                 "/bin/bash",
                  new[]
