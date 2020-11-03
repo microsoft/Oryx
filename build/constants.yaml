@@ -6,7 +6,7 @@
     scm-commit-id-env-var-name: SCM_COMMIT_ID
     php-origin: PHP_ORIGIN
     user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
-    user-app-insights-enable-env: ApplicationInsightsAgent_EXTENSION_VERSION
+    user-app-insights-agent-extension-version: ApplicationInsightsAgent_EXTENSION_VERSION
     user-app-insights-connection-string-env: APPLICATIONINSIGHTS_CONNECTION_STRING
     python-enable-gunicorn-multi-workers-env-var-name: PYTHON_ENABLE_GUNICORN_MULTIWORKERS
   outputs:
