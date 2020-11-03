@@ -3,14 +3,14 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Php;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Tests.Common;
 using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -48,19 +48,22 @@ namespace Microsoft.Oryx.Integration.Tests
             }
 
             var appName = "wordpress";
-            var volume = DockerVolume.CreateMirror(Path.Combine(hostDir,"wordpress"));
+            var volume = DockerVolume.CreateMirror(Path.Combine(hostDir, "wordpress"));
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpimageVersion[0]}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {PhpConstants.PlatformName} --platform-version {phpimageVersion[0]}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -output {RunScriptPath}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort} -output {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
             // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName, _output, volume,
+                appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("php", phpimageVersion[0]),
                 ContainerPort,
@@ -84,13 +87,16 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var phpimageVersion = phpVersion.Split("-");
 
             // build-script to download wordpress cli and build
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"./wp-cli.phar core download")
-                .AddCommand($"oryx build {appDir} --platform {PhpConstants.PlatformName} --platform-version {phpimageVersion[0]}")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PhpConstants.PlatformName} --platform-version {phpimageVersion[0]}")
                 .ToString();
 
             // run script to finish wordpress configuration and run the app
@@ -98,15 +104,15 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"chmod +x create_wordpress_db.sh && ./create_wordpress_db.sh")
                 .AddCommand($"chmod +x configure_wordpress.sh && ./configure_wordpress.sh")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -output {RunScriptPath}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort} -output {RunScriptPath}")
                 .AddCommand("mkdir -p /home/site/wwwroot")
-                .AddCommand($"cp -a {appDir}/. /home/site/wwwroot")
+                .AddCommand($"cp -a {appOutputDir}/. /home/site/wwwroot")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
             // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName, _output, volume,
+                appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("php", phpimageVersion[0]),
                 ContainerPort,

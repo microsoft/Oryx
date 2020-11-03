@@ -6,9 +6,9 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -35,11 +35,12 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
-                $"oryx build {appDir} --platform nodejs --platform-version {nodeVersion} -o {appOutputDir}")
+                $"oryx build {appDir} -i /tmp/int --platform nodejs --platform-version {nodeVersion} -o {appOutputDir}")
                 .ToString();
 
             // split run script to test pre-run command or script and then run the app
@@ -69,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new[] { volume },
+                new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh",
                 new[]
@@ -100,12 +101,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildScript = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
-                $"oryx build {appDir} --platform nodejs --platform-version {nodeVersion} -o {appOutputDir}")
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform nodejs --platform-version {nodeVersion}")
                 .ToString();
 
             // split run script to test pre-run command or script and then run the app
@@ -139,7 +142,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new[] { volume },
+                new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh",
                 new[]
@@ -170,24 +173,27 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} --platform nodejs --platform-version {nodeVersion}")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform nodejs --platform-version {nodeVersion}")
                 // Create a 'build.env' file
                 .AddCommand(
                 $"echo '{FilePaths.PreRunCommandEnvVarName}=\"echo > {expectedFileInOutputDir}\"' > " +
-                $"{appDir}/{BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName}")
+                $"{appOutputDir}/{BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName}")
                .ToString();
 
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new DockerVolume[] { volume },
+                new[] { volume, appOutputDirVolume },
                 _imageHelper.GetLtsVersionsBuildImage(),
                 "/bin/sh",
                 new[]
@@ -210,7 +216,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
                     // Verify that the file created using the pre-run command is 
                     // in fact present in the output directory.
-                    Assert.True(File.Exists(Path.Combine(volume.MountedHostDir, expectedFileInOutputDir)));
+                    Assert.True(File.Exists(Path.Combine(appOutputDirVolume.MountedHostDir, expectedFileInOutputDir)));
                 });
         }
     }

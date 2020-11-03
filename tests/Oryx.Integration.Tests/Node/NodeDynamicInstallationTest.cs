@@ -4,9 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -33,24 +33,27 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
-                $"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .AddCommand($"oryx setupEnv -appPath {appDir}")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx setupEnv -appPath {appOutputDir}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new[] { volume },
+                new[] { volume, appOutputDirVolume },
                 _imageHelper.GetLtsVersionsBuildImage(),
                 "/bin/sh",
                 new[]
@@ -83,23 +86,26 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
-                $"oryx build {appDir} --platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new[] { volume },
+                new[] { volume, appOutputDirVolume },
                 _imageHelper.GetLtsVersionsBuildImage(),
                 "/bin/sh",
                 new[]

@@ -28,11 +28,14 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "shapely-flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var imageVersion = _imageHelper.GetRuntimeImage("python", pythonVersion);
@@ -40,7 +43,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {
@@ -71,12 +74,15 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "shapely-flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion} -p packagedir={packageDir}")
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion} -p packagedir={packageDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             var imageVersion = _imageHelper.GetRuntimeImage("python", pythonVersion);
@@ -84,7 +90,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {

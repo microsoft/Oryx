@@ -28,18 +28,21 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version 3.6")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {PythonConstants.PlatformName} --platform-version 3.6")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {
@@ -68,19 +71,22 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "tweeter3";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildCommand, "scripts/postbuild.sh")
-                .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version 3.7")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version 3.7")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {
@@ -111,27 +117,30 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             const string virtualEnvName = "antenv";
 
             // Simulate apps that were built using package directory, and then virtual env
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                 .AddBuildCommand(
-                $"{appDir} -p virtualenv_name={virtualEnvName} " +
+                $"{appDir} -i /tmp/int -o {appOutputDir} -p virtualenv_name={virtualEnvName} " +
                 $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
                 .AddDirectoryDoesNotExistCheck("__oryx_packages__")
                 .AddCommand(
-                $"oryx create-script -appPath {appDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
+                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort} -virtualEnvName={virtualEnvName}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", pythonVersion),
@@ -169,21 +178,23 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "flask-setup-py-requirement-txt";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", pythonVersion),
@@ -204,18 +215,21 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -o {appDir}/output --platform {PythonConstants.PlatformName} --platform-version 3.8")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir}" +
+               $" --platform {PythonConstants.PlatformName} --platform-version 3.8")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {
@@ -244,19 +258,22 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appDir}/output --platform {PythonConstants.PlatformName} --platform-version 3.8")
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version 3.8")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir}/output -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {

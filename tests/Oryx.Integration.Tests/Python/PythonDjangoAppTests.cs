@@ -3,11 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -28,19 +28,22 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             const string virtualEnvName = "antenv3.6";
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version 3.6 -p virtualenv_name={virtualEnvName}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version 3.6 -p virtualenv_name={virtualEnvName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {
@@ -78,18 +81,21 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version 3.6")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {PythonConstants.PlatformName} --platform-version 3.6")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {
@@ -128,23 +134,25 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "multilanguage", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"export {BuildScriptGeneratorCli.SettingsKeys.EnableMultiPlatformBuild}=true")
-                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python37Version}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python37Version}")
                 .ToString();
 
             var runAppScript = new ShellScriptBuilder()
                 // User would do this through app settings
                 .AddCommand("export DJANGO_SETTINGS_MODULE=\"reactdjango.settings.local_base\"")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {

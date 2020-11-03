@@ -3,13 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Tests.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -32,18 +32,21 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", pythonVersion),
                 ContainerPort,
@@ -64,19 +67,22 @@ namespace Microsoft.Oryx.Integration.Tests
             var virtualEnvName = "antenv";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
-                $"oryx build {appDir} -p virtualenv_name={virtualEnvName} --platform {PythonConstants.PlatformName} --platform-version 3.7")
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"-p virtualenv_name={virtualEnvName} --platform {PythonConstants.PlatformName} --platform-version 3.7")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {
@@ -110,9 +116,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var virtualEnvName = "antenv";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDirPath = Directory.CreateDirectory(
-                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
@@ -159,9 +163,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var virtualEnvName = "antenv";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDirPath = Directory.CreateDirectory(
-                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var manifestDirPath = Directory.CreateDirectory(
             Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
@@ -213,19 +215,21 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version 3.7")
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {PythonConstants.PlatformName} --platform-version 3.7")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {
@@ -262,9 +266,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "django-app";
             var volume = CreateAppVolume(appName);
-            var appOutputDirPath = Directory.CreateDirectory(
-                Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"))).FullName;
-            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appDir = volume.ContainerDir;
             const string virtualEnvName = "antenv";

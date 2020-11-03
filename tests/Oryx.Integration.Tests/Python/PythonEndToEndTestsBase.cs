@@ -3,8 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.Tests.Common;
 using System.IO;
+using Microsoft.Oryx.Tests.Common;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests

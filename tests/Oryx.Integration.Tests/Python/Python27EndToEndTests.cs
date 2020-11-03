@@ -3,10 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.Tests.Common;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -27,19 +27,23 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "python2-flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var startupFile = "/tmp/startup.sh";
             var buildScript = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version 2.7")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version 2.7")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appDir} -output {startupFile} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} " +
+                $"-output {startupFile} -bindPort {ContainerPort}")
                 .AddCommand(startupFile)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {
@@ -68,22 +72,25 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "python2-flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             const string virtualEnvName = "antenv2.7";
             var buildScript = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} --platform {PythonConstants.PlatformName} --platform-version 2.7 -p virtualenv_name={virtualEnvName}")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version 2.7 -p virtualenv_name={virtualEnvName}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 // Mimic the commands ran by app service in their derived image.
                 .AddCommand("pip install gunicorn")
                 .AddCommand("pip install flask")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {

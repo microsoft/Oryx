@@ -34,11 +34,13 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
                .AddDefaultTestEnvironmentVariables()
                .AddCommand(
-                $"oryx build {appDir} --platform dotnet --platform-version {runtimeVersion} -o {appOutputDir}")
+                $"oryx build {appDir} -i /tmp/int " +
+                $"--platform dotnet --platform-version {runtimeVersion} -o {appOutputDir}")
                .ToString();
 
             // split run script to test pre-run command before running the app.
@@ -67,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp31MvcApp,
                 _output,
-                new[] { volume },
+                new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh",
                 new[]
@@ -99,14 +101,15 @@ namespace Microsoft.Oryx.Integration.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var appOutputDir = $"{appDir}/myoutputdir";
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildImageScript = new ShellScriptBuilder()
                .AddDefaultTestEnvironmentVariables()
                .AddCommand(
-                $"oryx build {appDir} --platform dotnet --platform-version {runtimeVersion} -o {appOutputDir}")
+                $"oryx build {appDir} -i /tmp/int --platform dotnet " +
+                $"--platform-version {runtimeVersion} -o {appOutputDir}")
                .ToString();
-
 
             // split run script to test pre-run command and then run the app
             var runtimeImageScript = new ShellScriptBuilder()
@@ -140,7 +143,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 NetCoreApp31MvcApp,
                 _output,
-                new[] { volume },
+                new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh",
                 new[]

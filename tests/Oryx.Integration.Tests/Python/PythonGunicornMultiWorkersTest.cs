@@ -27,27 +27,30 @@ namespace Microsoft.Oryx.Integration.Tests
             var appName = "http-server-py";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var startupFile = "/tmp/startup.sh";
 
             var buildScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     ExtVarNames.PythonEnableGunicornMultiWorkersEnvVarName,
                     "true")
-                .AddCommand($"oryx build {appDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                 .ToString();
 
             var runScript = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     ExtVarNames.PythonEnableGunicornMultiWorkersEnvVarName,
                     "true")
-                .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(startupFile)
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                volume,
+                new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[]
                 {

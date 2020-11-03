@@ -3,11 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildScriptGenerator.Python;
+using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol;
 using Microsoft.Oryx.Tests.Common;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -32,13 +32,16 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "flask-app";
             var appVolume = CreateAppVolume(appName);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
             var scriptGenDebugPortArg = debugPort.HasValue ? $"-debugPort {debugPort.Value}" : string.Empty;
 
             var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appVolume.ContainerDir} --platform {PythonConstants.PlatformName} --platform-version {pythonVersion} --debug")
+               .AddCommand($"oryx build {appVolume.ContainerDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion} --debug")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appVolume.ContainerDir} -bindPort {ContainerPort}" +
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}" +
                             $" -debugAdapter ptvsd {scriptGenDebugPortArg} -debugWait")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -46,7 +49,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                appVolume,
+                new[] { appVolume, appOutputDirVolume },
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", pythonVersion),
                 debugPort.GetValueOrDefault(DefaultPtvsdPort),

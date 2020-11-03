@@ -38,5 +38,13 @@ namespace Microsoft.Oryx.Integration.Tests
             var bytes = await _httpClient.GetByteArrayAsync(url);
             return Encoding.UTF8.GetString(bytes);
         }
+
+        protected DockerVolume CreateAppOutputDirVolume()
+        {
+            var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
+                .FullName;
+            var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
+            return appOutputDirVolume;
+        }
     }
 }
