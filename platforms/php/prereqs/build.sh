@@ -173,6 +173,12 @@ if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	PHP_INI_DIR=$PHP_INI_DIR php=$INSTALLATION_PREFIX/bin/php /php/docker-php-ext-enable.sh sodium
 fi
 
+if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
+        echo "pecl/mysqlnd_azure requires PHP (version >= 7.2.*, version <= 7.99.99)"; \
+        pecl install mysqlnd_azure \
+        && /php/docker-php-ext-enable.sh mysqlnd_azure; \
+fi
+
 compressedSdkDir="/tmp/compressedSdk"
 mkdir -p $compressedSdkDir
 cd "$INSTALLATION_PREFIX"

@@ -4,8 +4,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class PhpVersions
     {
-        public const string PhpRuntimeBaseTag = "20200826.3";
-        public const string PhpFpmRuntimeBaseTag = "20200825.3";
+        public const string PhpRuntimeBaseTag = "20201102.2";
+        public const string PhpFpmRuntimeBaseTag = "20201102.2";
         public const string ComposerVersion = "1.9.3";
         public const string ComposerSetupSha384 = "572cb359b56ad9ae52f9c23d29d4b19a040af10d6635642e646a7caa7b96de717ce683bd797a92ce99e5929cc51e7d5f";
         public const string Php74Version = "7.4.9";
