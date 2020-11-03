@@ -872,7 +872,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             // Create an app folder with a package.json having the 'appdynamics' package
-            var packageJsonContent = "{\"dependencies\": { \"appdynamics\": \"20.4.0\" }}";
+            var packageJsonContent = "{\"dependencies\": { \"appdynamics\": \"20.10.1\" }}";
             var sampleAppPath = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(sampleAppPath);
             File.WriteAllText(Path.Combine(sampleAppPath, NodeConstants.PackageJsonFileName), packageJsonContent);
@@ -880,7 +880,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/appdynamics")
