@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var compressDestination = compressDestinationDir ? "--compress-destination0dir" : string.Empty;
+            var compressDestination = compressDestinationDir ? "--compress-destination-dir" : string.Empty;
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                $"--platform {PythonConstants.PlatformName} --platform-version 3.6 {compressDestination}")
