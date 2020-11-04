@@ -138,6 +138,9 @@ RUN set -ex \
     # Upgrade system python
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \
+    # https://github.com/microsoft/artifacts-keyring
+    # provides auth for publishing or consuming Python packages to or from Azure Artifacts feeds.
+    && pip install twine keyring artifacts-keyring \
     && . $buildDir/__pythonVersions.sh \
     && $imagesDir/installPlatform.sh python $PYTHON37_VERSION \
     && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \

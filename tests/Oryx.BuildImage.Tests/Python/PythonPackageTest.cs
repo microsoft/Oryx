@@ -197,6 +197,28 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
                 $"Size difference is too big. Oryx build: {oryxTarSize}, Actual PyPi: {pypiTarSize}");
         }
 
+        [Fact]
+        public void InstalledPypiFromArtifactFeeds()
+        {
+            var script = new ShellScriptBuilder()
+                .AddCommand("export ENABLE_DYNAMIC_INSTALL=true")
+                .AddCommand($"twine --version")
+                .ToString();
+
+            // Act
+            var image = Settings.LtsVersionsBuildImageWithRootAccess;
+            var result = _dockerCli.Run(image, "/bin/bash", new[] { "-c", script });
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        "twine version",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
 
         private (IEnumerable<string>, int) ParseTarList(string rawTarList)
         {
