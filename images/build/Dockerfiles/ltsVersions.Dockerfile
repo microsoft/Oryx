@@ -113,9 +113,12 @@ RUN set -ex \
     && $imagesDir/build/installHugo.sh \
     # Install Node
     && . $buildDir/__nodeVersions.sh \
-    && $imagesDir/installPlatform.sh nodejs $NODE10_VERSION \
-    && $imagesDir/installPlatform.sh nodejs $NODE12_VERSION \
-    && $imagesDir/installPlatform.sh nodejs $NODE14_VERSION \
+    && . $buildDir/__sdkStorageConstants.sh \
+    && export DYNAMIC_INSTALL_ROOT_DIR="/opt" \
+    && export SDK_STORAGE_BASE_URL="$DEV_SDK_STORAGE_BASE_URL" \
+    && $imagesDir/installPlatform.sh -p nodejs -v $NODE10_VERSION \
+    && $imagesDir/installPlatform.sh -p nodejs -v $NODE12_VERSION \
+    && $imagesDir/installPlatform.sh -p nodejs -v $NODE14_VERSION \
     && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
     && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
     && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
@@ -143,8 +146,8 @@ RUN set -ex \
     # provides auth for publishing or consuming Python packages to or from Azure Artifacts feeds.
     && pip install twine keyring artifacts-keyring \
     && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON37_VERSION \
-    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
+    && $imagesDir/installPlatform.sh -p python -v $PYTHON37_VERSION \
+    && $imagesDir/installPlatform.sh -p python -v $PYTHON38_VERSION \
     && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
@@ -158,8 +161,8 @@ RUN set -ex \
     && $imagesDir/build/php/prereqs/installPrereqs.sh \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
-    && $imagesDir/installPlatform.sh php $PHP73_VERSION \
-    && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
+    && $imagesDir/installPlatform.sh -p php -v $PHP73_VERSION \
+    && $imagesDir/installPlatform.sh -p php-composer -v $COMPOSER_VERSION \
     && cd /opt/php \
     && ln -s 7.3 7 \
     && ln -s 7 lts \
@@ -172,6 +175,8 @@ RUN set -ex \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && cp -f $imagesDir/build/benv.sh /opt/oryx/benv \
+    && cp -f $imagesDir/installPlatform.sh /opt/oryx/installPlatform \
+    && chmod +x /opt/oryx/installPlatform \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \

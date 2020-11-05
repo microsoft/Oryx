@@ -40,13 +40,16 @@ RUN buildDir="/opt/tmp/build" \
     && cp -rf * "$condaDir" \
     && cd $imagesDir \
     && . $buildDir/__rubyVersions.sh \
-    && ./installPlatform.sh ruby $RUBY27_VERSION \
+    && . $buildDir/__sdkStorageConstants.sh \
+    && export DYNAMIC_INSTALL_ROOT_DIR="/opt" \
+    && export SDK_STORAGE_BASE_URL="$DEV_SDK_STORAGE_BASE_URL" \
+    && ./installPlatform.sh -p ruby -v $RUBY27_VERSION \
     && cd /opt/ruby \
     && ln -s $RUBY27_VERSION /opt/ruby/lts \
     && cd $imagesDir \
     && . $buildDir/__javaVersions.sh \
-    && ./installPlatform.sh java $JAVA_VERSION \
-    && ./installPlatform.sh maven $MAVEN_VERSION \
+    && ./installPlatform.sh -p java -v $JAVA_VERSION \
+    && ./installPlatform.sh -p maven -v $MAVEN_VERSION \
     && cd /opt/java \
     && ln -s $JAVA_VERSION lts \
     && cd /opt/maven \

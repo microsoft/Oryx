@@ -74,7 +74,9 @@ COPY --from=intermediate /opt /opt
 
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
+    && cp -f $tmpDir/images/installPlatform.sh /opt/oryx/installPlatform \
     && chmod +x /opt/oryx/benv \
+    && chmod +x /opt/oryx/installPlatform \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     # Grant read-write permissions to the nuget folder so that dotnet restore

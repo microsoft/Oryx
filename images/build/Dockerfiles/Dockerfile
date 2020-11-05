@@ -47,21 +47,24 @@ RUN set -ex \
     && ln -s $DOT_NET_CORE_22_SDK_VERSION 2.2 \
     && cd $imagesDir \ 
     && . $buildDir/__nodeVersions.sh \
-    && $imagesDir/installPlatform.sh nodejs $NODE8_VERSION \
-    && $imagesDir/installPlatform.sh nodejs 8.0.0 \
-    && $imagesDir/installPlatform.sh nodejs 8.1.4 \
-    && $imagesDir/installPlatform.sh nodejs 8.2.1 \
-    && $imagesDir/installPlatform.sh nodejs 8.8.1 \
-    && $imagesDir/installPlatform.sh nodejs 8.9.4 \
-    && $imagesDir/installPlatform.sh nodejs 8.11.4 \
-    && $imagesDir/installPlatform.sh nodejs 8.12.0 \
-    && $imagesDir/installPlatform.sh nodejs 8.15.1 \
-    && $imagesDir/installPlatform.sh nodejs 9.4.0 \
-    && $imagesDir/installPlatform.sh nodejs 10.1.0 \
-    && $imagesDir/installPlatform.sh nodejs 10.10.0 \
-    && $imagesDir/installPlatform.sh nodejs 10.14.2 \
-    && $imagesDir/installPlatform.sh nodejs 10.21.0 \
-    && $imagesDir/installPlatform.sh nodejs 12.18.2 \
+    && . $buildDir/__sdkStorageConstants.sh \
+    && export DYNAMIC_INSTALL_ROOT_DIR="/opt" \
+    && export SDK_STORAGE_BASE_URL="$DEV_SDK_STORAGE_BASE_URL" \
+    && $imagesDir/installPlatform.sh -p nodejs -v $NODE8_VERSION  \
+    && $imagesDir/installPlatform.sh -p nodejs -v 8.0.0 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 8.1.4 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 8.2.1 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 8.8.1 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 8.9.4 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 8.11.4 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 8.12.0 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 8.15.1 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 9.4.0 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 10.1.0 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 10.10.0 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 10.14.2 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 10.21.0 \
+    && $imagesDir/installPlatform.sh -p nodejs -v 12.18.2 \
     && cd /opt/nodejs \
     && ln -s $NODE8_VERSION 8 \
     && ln -s 8.0.0 8.0 \
@@ -85,8 +88,8 @@ RUN set -ex \
     # Install Python SDKs
     && PYTHONIOENCODING="UTF-8" \
     && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON27_VERSION \
-    && $imagesDir/installPlatform.sh python $PYTHON36_VERSION \
+    && $imagesDir/installPlatform.sh -p python -v $PYTHON27_VERSION \
+    && $imagesDir/installPlatform.sh -p python -v $PYTHON36_VERSION \
     && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
@@ -98,10 +101,10 @@ RUN set -ex \
     && cp $imagesDir/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md \
     # Install PHP SDKs
     && . $buildDir/__phpVersions.sh \
-    && $imagesDir/installPlatform.sh php $PHP56_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP70_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP72_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP74_VERSION \
+    && $imagesDir/installPlatform.sh -p php -v $PHP56_VERSION \
+    && $imagesDir/installPlatform.sh -p php -v $PHP70_VERSION \
+    && $imagesDir/installPlatform.sh -p php -v $PHP72_VERSION \
+    && $imagesDir/installPlatform.sh -p php -v $PHP74_VERSION \
     && cd /opt/php \
     && ln -s 5.6 5 \
     && echo "full" > /opt/oryx/.imagetype
