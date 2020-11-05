@@ -118,8 +118,11 @@ echo "{{ PostBuildCommandEpilogue }}"
 
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
-	echo "Readying output..."
+	echo "Preparing output..."
 
+	{{ ## When compressing destination directory is chosen, we want to copy the source content to a temporary 
+	destination directory first, compress the content there and then copy that content to the final destination 
+	directory ## }}
 	{{ if CompressDestinationDir }}
 	preCompressedDestinationDir="/tmp/_preCompressedDestinationDir"
 	rm -rf $preCompressedDestinationDir
