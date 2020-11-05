@@ -151,8 +151,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRunPythonAppWhenUsingPackageDirSwitch()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanBuildAndRunPythonAppWhenUsingPackageDirSwitch(bool compressDestinationDir)
         {
             // Arrange
             var pythonVersion = "3.7";
@@ -162,12 +164,13 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var packagesDir = ".python_packages/lib/python3.7/site-packages";
+            var compressDestination = compressDestinationDir ? "--compress-destination-dir" : string.Empty;
             var buildScript = new ShellScriptBuilder()
                .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion} " +
-                $"-p packagedir={packagesDir}")
+                $"-p packagedir={packagesDir} {compressDestination}")
                .AddDirectoryExistsCheck($"{appOutputDir}/{packagesDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()

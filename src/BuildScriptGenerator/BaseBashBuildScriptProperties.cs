@@ -84,5 +84,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// files like '.cs' files to destination directory where as in other platforms this is fine to do.
         /// </summary>
         public bool CopySourceDirectoryContentToDestinationDirectory { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value which indicates if the entire output directory (excluding the manifest file) needs
+        /// to be compressed.
+        /// </summary>
+        public bool CompressDestinationDir { get; set; }
     }
 }

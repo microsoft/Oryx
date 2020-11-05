@@ -52,14 +52,25 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n\n")
-	if gen.Configuration.EnableDynamicInstall && !common.PathExists(pythonInstallationRoot) {
-		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.AppPath))
+
+	if gen.Manifest.CompressDestinationDir == "true" {
+		println("Output is compressed. Extracting it...")
+		tarballFile := filepath.Join(gen.AppPath, "output.tar.gz")
+		common.ExtractTarball(tarballFile, gen.Manifest.SourceDirectoryInBuildContainer)
+		println(fmt.Sprintf("App path is set to '%s'", gen.Manifest.SourceDirectoryInBuildContainer))
 	}
 
-	common.SetupPreRunScript(&scriptBuilder, gen.AppPath, gen.Configuration.PreRunCommand)
+	scriptBuilder.WriteString(fmt.Sprintf("echo 'export APP_PATH=\"%s\"' >> ~/.bashrc\n", gen.getAppPath()))
+	scriptBuilder.WriteString("echo 'cd $APP_PATH' >> ~/.bashrc\n")
+
+	if gen.Configuration.EnableDynamicInstall && !common.PathExists(pythonInstallationRoot) {
+		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.getAppPath()))
+	}
+
+	common.SetupPreRunScript(&scriptBuilder, gen.getAppPath(), gen.Configuration.PreRunCommand)
 
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
-	scriptBuilder.WriteString("cd " + gen.AppPath + "\n\n")
+	scriptBuilder.WriteString("cd " + gen.getAppPath() + "\n\n")
 
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "HOST", "", DefaultHost)
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
@@ -77,16 +88,16 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	command := gen.UserStartupCommand // A custom command takes precedence over any framework defaults
 	if command != "" {
-		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.AppPath)
+		isPermissionAdded := common.ParseCommandAndAddExecutionPermission(gen.UserStartupCommand, gen.getAppPath())
 		logger.LogInformation("Permission added: %t", isPermissionAdded)
-		command = common.ExtendPathForCommand(command, gen.AppPath)
+		command = common.ExtendPathForCommand(command, gen.getAppPath())
 	} else {
-		var appFw PyAppFramework = DetectFramework(gen.AppPath, gen.VirtualEnvName)
+		var appFw PyAppFramework = DetectFramework(gen.getAppPath(), gen.VirtualEnvName)
 
 		if appFw != nil {
 			println("Detected an app based on " + appFw.Name())
 			appType = appFw.Name()
-			appDirectory = gen.AppPath
+			appDirectory = gen.getAppPath()
 			appModule = appFw.GetGunicornModuleArg()
 			appDebugModule = appFw.GetDebuggableModule()
 		} else {
@@ -139,7 +150,11 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	}
 
 	if virtualEnvironmentName != "" {
-		virtualEnvDir := filepath.Join(gen.AppPath, virtualEnvironmentName)
+		virtualEnvDir := filepath.Join(gen.getAppPath(), virtualEnvironmentName)
+
+		scriptBuilder.WriteString(
+			fmt.Sprintf("echo 'export VIRTUALENVIRONMENT_PATH=\"%s\"' >> ~/.bashrc\n", virtualEnvDir))
+		scriptBuilder.WriteString(fmt.Sprintf("echo '. %s/bin/activate' >> ~/.bashrc\n", virtualEnvironmentName))
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,
 		// we do not want to extract the compressed file
@@ -188,7 +203,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 	}
 
 	if packageDirName != "" {
-		packageDir := filepath.Join(gen.AppPath, packageDirName)
+		packageDir := filepath.Join(gen.getAppPath(), packageDirName)
 		if common.PathExists(packageDir) {
 			scriptBuilder.WriteString("echo Using package directory '" + packageDir + "'\n")
 			scriptBuilder.WriteString("SITE_PACKAGE_PYTHON_VERSION=$(python -c \"import sys; print(str(sys.version_info.major) + '.' + str(sys.version_info.minor))\")\n")
@@ -221,17 +236,20 @@ func (gen *PythonStartupScriptGenerator) getVenvHandlingScript(virtualEnvName st
 	scriptBuilder.WriteString("export PYTHONPATH=$PYTHONPATH:" + virtualEnvSitePackagesDir + "\n")
 	scriptBuilder.WriteString("echo \"Updated PYTHONPATH to '$PYTHONPATH'\"\n")
 
-	// When pip install is run with virtual environment option in build container, it causes the scripts within the
-	// virtual environment folder to have hard-coded paths to source directory structure of the build container.
-	// Here we are trying to mimic that structure so that activation of the virtual environment in runtime container
-	// does not fail.
-
-	if gen.Manifest.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
-		if gen.Manifest.SourceDirectoryInBuildContainer != "" {
-			scriptBuilder.WriteString("mkdir -p " + gen.Manifest.SourceDirectoryInBuildContainer + "\n")
-			scriptBuilder.WriteString(
-				fmt.Sprintf("ln -sf %s %s\n", virtualEnvDir, gen.Manifest.SourceDirectoryInBuildContainer))
-			scriptBuilder.WriteString(fmt.Sprintf(". %s/bin/activate\n", virtualEnvName))
+	if gen.Manifest.CompressDestinationDir == "true" {
+		scriptBuilder.WriteString(fmt.Sprintf(". %s/bin/activate\n", virtualEnvName))
+	} else {
+		// When pip install is run with virtual environment option in build container, it causes the scripts within the
+		// virtual environment folder to have hard-coded paths to source directory structure of the build container.
+		// Here we are trying to mimic that structure so that activation of the virtual environment in runtime container
+		// does not fail.
+		if gen.Manifest.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
+			if gen.Manifest.SourceDirectoryInBuildContainer != "" {
+				scriptBuilder.WriteString("mkdir -p " + gen.Manifest.SourceDirectoryInBuildContainer + "\n")
+				scriptBuilder.WriteString(
+					fmt.Sprintf("ln -sf %s %s\n", virtualEnvDir, gen.Manifest.SourceDirectoryInBuildContainer))
+				scriptBuilder.WriteString(fmt.Sprintf(". %s/bin/activate\n", virtualEnvName))
+			}
 		}
 	}
 
@@ -300,6 +318,14 @@ func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(moduleAndArg
 		cdcmd, DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
 
 	return cdcmd + pycmd
+}
+
+func (gen *PythonStartupScriptGenerator) getAppPath() string {
+	if gen.Manifest.CompressDestinationDir == "true" && gen.Manifest.SourceDirectoryInBuildContainer != "" {
+		return gen.Manifest.SourceDirectoryInBuildContainer
+	}
+
+	return gen.AppPath
 }
 
 func appendArgs(currentArgs string, argToAppend string) string {

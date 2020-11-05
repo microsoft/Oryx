@@ -65,8 +65,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_Python27App_UsingVirtualEnv()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task CanBuildAndRun_Python27App_UsingVirtualEnv(bool compressDestinationDir)
         {
             // Arrange
             var appName = "python2-flask-app";
@@ -75,9 +77,11 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             const string virtualEnvName = "antenv2.7";
+            var compressDestination = compressDestinationDir ? "--compress-destination-dir" : string.Empty;
             var buildScript = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {PythonConstants.PlatformName} --platform-version 2.7 -p virtualenv_name={virtualEnvName}")
+                $"--platform {PythonConstants.PlatformName} --platform-version 2.7 " +
+                $"-p virtualenv_name={virtualEnvName} {compressDestination}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 // Mimic the commands ran by app service in their derived image.
