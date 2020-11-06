@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .SetEnvironmentVariable(
                     SettingsKeys.DynamicInstallRootDir,
                     BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
-               .AddCommand($"oryx prep --skip-detection --platforms-and-versions dotnet={DotNetCoreRunTimeVersions.NetCoreApp50}")
+               .AddCommand($"oryx prep --skip-detection --platforms-and-versions dotnet=5.0.0-rc.2.20475.5")
                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNet50SdkVersion}")
                .AddCommand($"cd {appDir}")
                .AddCommand($"dotnet publish -c release -r linux-x64 -o {appOutputDir}")
