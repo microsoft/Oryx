@@ -9,6 +9,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string DotNetCore22SdkVersion = "2.2.207";
         public const string DotNetCore30SdkVersion = "3.0.103";
         public const string DotNetCore31SdkVersion = "3.1.403";
-        public const string DotNet50SdkVersion = "5.0.100-rc.2.20479.15";
+        public const string DotNet50SdkVersion = "5.0.100";
     }
 }

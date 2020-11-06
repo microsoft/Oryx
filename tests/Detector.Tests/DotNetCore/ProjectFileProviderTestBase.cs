@@ -65,9 +65,9 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
           </PropertyGroup>
 
           <ItemGroup>
-            <PackageReference Include=""Microsoft.AspNetCore.Components.WebAssembly"" Version=""5.0.0-rc.1.20451.17"" />
-            <PackageReference Include=""Microsoft.AspNetCore.Components.WebAssembly.DevServer"" Version=""5.0.0-rc.1.20451.17"" PrivateAssets=""all"" />
-            <PackageReference Include=""System.Net.Http.Json"" Version=""5.0.0-rc.1.20451.14"" />
+            <PackageReference Include=""Microsoft.AspNetCore.Components.WebAssembly"" Version=""5.0.0"" />
+            <PackageReference Include=""Microsoft.AspNetCore.Components.WebAssembly.DevServer"" Version=""5.0.0"" PrivateAssets=""all"" />
+            <PackageReference Include=""System.Net.Http.Json"" Version=""5.0.0"" />
           </ItemGroup>
 
         </Project>

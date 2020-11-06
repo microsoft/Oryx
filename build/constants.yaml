@@ -22,7 +22,7 @@
     dot-net-core-22-sdk-version: 2.2.207
     dot-net-core-30-sdk-version: 3.0.103
     dot-net-core-31-sdk-version: 3.1.403
-    dot-net-50-sdk-version: 5.0.100-rc.2.20479.15
+    dot-net-50-sdk-version: 5.0.100
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -32,7 +32,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20201013.2
+    dot-net-core-runtime-base-tag: 20201106.1
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
 
@@ -53,10 +53,10 @@
     aspnet-core-app-31: 3.1.9
     aspnet-core-app-31-sha: 86462c61dd71adda38ddb0178fc44591cde13de4357652365e0d5c80d14db98d2e1f14a6fab2455b9deebcb910577174473d86f432dd3cd3d0b4284a9dcf440f
     
-    net-core-app-50: 5.0.0-rc.2.20475.5
-    net-core-app-50-sha: 945d35b5e375a722fba6ae2986ef70bf1940ea3ccfe16f5e2211250354e2585ca4211589e0d14c127675c46c0e66df28046ce8f820ef7a71c9712c19c3f4c13d
-    aspnet-core-app-50: 5.0.0-rc.2.20475.17
-    aspnet-core-app-50-sha: d60f0bd6218d00bb86eb0882fe0c823dbfca464d2647c01d0c8f128e9ca430c4d4fae47b3f961ac93115b0343300e58f8c81dec2f6dbe9f36accc5ea28d2cc7b
+    net-core-app-50: 5.0.0
+    net-core-app-50-sha: D4D67DF5FF5F6DDE0D865A6E87559955BD57429DF396CF7D05FE77F09E6220C67DC5E66439B1801CA4D301A62F81F666122BF4B623B31A46B861677DCAFC62A4
+    aspnet-core-app-50: 5.0.0
+    aspnet-core-app-50-sha: 402046EE144915EF7D75A788CF19552EEA56CF897681721B74BFC403FD366F71EB7E56F6B83EA299B6B812C6B87378C15E7BFE249415427DCD147DFEACD084D0
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore

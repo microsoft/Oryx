@@ -287,7 +287,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
-                $"--platform-version 5.0.0-rc.1.20451.14")
+                $"--platform-version 5.0.0")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
@@ -306,7 +306,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "5.0.100-rc.1.20452.10"), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "5.0.100"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -640,7 +640,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
-                $"--platform-version 5.0.0-rc.1.20451.14")
+                $"--platform-version 5.0.0")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck(
                 ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -664,7 +664,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "5.0.100-rc.1.20452.10"), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "5.0.100"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
