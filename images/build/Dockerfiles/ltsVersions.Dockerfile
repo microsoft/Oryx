@@ -128,6 +128,7 @@ RUN set -ex \
     && ln -s $NODE12_VERSION 12 \
     && ln -s $NODE14_VERSION 14 \
     && ln -s 14 lts \
+    && npm install -g lerna \
     && cd /opt/yarn \
     && ln -s $YARN_VERSION stable \
     && ln -s $YARN_VERSION latest \
@@ -171,7 +172,6 @@ RUN set -ex \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && rm -f /etc/apt/sources.list.d/buster.list \
-    && npm install -g lerna \
     && echo "ltsversions" > /opt/oryx/.imagetype
 
 ENTRYPOINT [ "benv" ]
