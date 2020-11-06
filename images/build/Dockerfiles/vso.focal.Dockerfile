@@ -1,4 +1,4 @@
-FROM githubrunners-buildpackdeps-stretch AS main
+FROM githubrunners-buildpackdeps-focal AS main
 
 # Install basic build tools
 # Configure locale (required for Python)
@@ -6,7 +6,7 @@ FROM githubrunners-buildpackdeps-stretch AS main
 RUN LANG="C.UTF-8" \
     && apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         git \
         make \
         unzip \
@@ -25,23 +25,31 @@ RUN LANG="C.UTF-8" \
         libgdiplus \
         jq \
         # By default pip is not available in the buildpacks image
-        python-pip \
+        python-pip-whl \
         python3-pip \
         # For .NET Core 1.1
-        libcurl3 \
+        libcurl4 \
         libuuid1 \
         libunwind8 \
+        software-properties-common \
     && rm -rf /var/lib/apt/lists/* \
+    # This is the folder containing 'links' to benv and build script generator
+    && apt-get update \
+    && apt-get upgrade -y \
+    && add-apt-repository universe \
+    && apt-get install -y --no-install-recommends python2 \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py \
+    && python2 get-pip.py \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
-    # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
 
 # NOTE: Place only folders whose size does not extrememly effect the perf of building this image
 # since this intermediate stage is copied to final stage.
 # For example, if we put yarn-cache here it is going to impact perf since it more than 500MB
 FROM main AS intermediate
-COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
+COPY --from=support-files-image-for-ubuntu-build /tmp/oryx/ /opt/tmp
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
  
 FROM main AS final
@@ -57,18 +65,6 @@ COPY --from=intermediate /opt /opt
 #
 # Even though this adds a new docker layer we are doing this 
 # because we want to avoid duplication (which is always error-prone)
-ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts"
-
-ENV LANG="C.UTF-8" \
-    ORIGINAL_PATH="$PATH" \
-    PATH="$ORYX_PATHS:$PATH" \
-    NUGET_XMLDOC_MODE="skip" \
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
-    NUGET_PACKAGES="/var/nuget" \
-    ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
-    ENABLE_DYNAMIC_INSTALL="true" \
-    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
-    PYTHONIOENCODING="UTF-8"
 
 RUN set -ex \
     && tmpDir="/opt/tmp" \
@@ -170,8 +166,67 @@ RUN set -ex \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && rm -f /etc/apt/sources.list.d/buster.list \
-    && npm install -g lerna \
-    && echo "ltsversions" > /opt/oryx/.imagetype
+    && rm -f /etc/apt/sources.list.d/buster.list
 
-ENTRYPOINT [ "benv" ]
+ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts::/opt/java/lts/bin:/opt/maven/lts/bin:/opt/ruby/lts/bin"
+
+ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
+    ORIGINAL_PATH="$PATH" \
+    CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh" \
+    RUBY_HOME="/opt/ruby/lts" \
+    JAVA_HOME="/opt/java/lts" \
+    DYNAMIC_INSTALL_ROOT_DIR="/opt"
+
+# Now adding remaining of VSO platform features
+RUN buildDir="/opt/tmp/build" \
+    && imagesDir="/opt/tmp/images" \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        apt-transport-https \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor > conda.gpg \
+    && install -o root -g root -m 644 conda.gpg /usr/share/keyrings/conda-archive-keyring.gpg \
+    && gpg --keyring /usr/share/keyrings/conda-archive-keyring.gpg --no-default-keyring --fingerprint 34161F5BF5EB1D4BFBBB8F0A8AEB4F8B29D82806 \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/conda-archive-keyring.gpg] https://repo.anaconda.com/pkgs/misc/debrepo/conda stable main" > /etc/apt/sources.list.d/conda.list \
+    && . $buildDir/__condaConstants.sh \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        conda=${CONDA_VERSION} \
+    && rm -rf /var/lib/apt/lists/* \
+    && echo $$CONDA_SCRIPT \
+    &&. $CONDA_SCRIPT \
+    && conda config --add channels conda-forge \
+    && conda config --set channel_priority strict \
+    && conda config --set env_prompt '({name})' \
+    && echo "source ${CONDA_SCRIPT}" >> ~/.bashrc \
+    && condaDir="/opt/oryx/conda" \
+    && mkdir -p "$condaDir" \
+    && cd $imagesDir/build/python/conda \
+    && cp -rf * "$condaDir" \
+    && cd $imagesDir \
+    && . $buildDir/__rubyVersions.sh \
+    && ./installPlatform.sh ruby $RUBY27_VERSION \
+    && cd /opt/ruby \
+    && ln -s $RUBY27_VERSION /opt/ruby/lts \
+    && cd $imagesDir \
+    && . $buildDir/__javaVersions.sh \
+    && ./installPlatform.sh java $JAVA_VERSION \
+    && ./installPlatform.sh maven $MAVEN_VERSION \
+    && cd /opt/java \
+    && ln -s $JAVA_VERSION lts \
+    && cd /opt/maven \
+    && ln -s $MAVEN_VERSION lts \
+    && rm -rf /opt/tmp \
+    && npm install -g lerna \
+    && echo "vso-focal" > /opt/oryx/.imagetype
+
+ENV NUGET_XMLDOC_MODE="skip" \
+    # VSO requires user installed tools to be preferred over Oryx installed tools
+    PATH="$ORIGINAL_PATH:$ORYX_PATHS" \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
+    NUGET_PACKAGES="/var/nuget" \
+    ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
+    ENABLE_DYNAMIC_INSTALL="true" \
+    ORYX_PREFER_USER_INSTALLED_SDKS=true \
+    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
+    PYTHONIOENCODING="UTF-8"
