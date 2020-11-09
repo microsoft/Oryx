@@ -148,6 +148,7 @@ echo
 echo "Running custom packaging scripts that might exist..."
 echo
 npm run package || true
+npm run prepublishOnly || true
 echo
 echo "Running 'npm pack'..."
 echo
