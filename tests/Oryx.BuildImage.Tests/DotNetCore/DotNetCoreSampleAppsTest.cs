@@ -888,39 +888,5 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
-
-        [Theory]
-        [InlineData("lts-versions", "3")]
-        [InlineData("vso", "2")]
-        [InlineData("vso-focal", "3")]
-        [InlineData("latest", "2")]
-        [InlineData("latest", "3")]
-        public void JamSpell_CanBe_InstalledInTheBuildImage(string tagName, string pythonVersion)
-        {
-            // Arrange
-            var expectedPackage = "jamspell";
-            string pipVersion = "pip";
-            if (pythonVersion == "3")
-            {
-                pipVersion = "pip3";
-            }
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetBuildImage(tagName),
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", $"{pipVersion} search {expectedPackage}" },
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedPackage, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
     }
 }
