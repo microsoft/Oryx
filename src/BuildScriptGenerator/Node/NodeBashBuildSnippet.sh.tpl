@@ -93,7 +93,11 @@ fi
 
 cd "$SOURCE_DIR"
 
-{{ if CustomRunBuildCommand | IsNotBlank }}
+{{ if CustomBuildCommand | IsNotBlank }}
+	echo
+	echo "Running '{{ CustomBuildCommand }}'..."
+	echo
+{{ else if CustomRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ PackageInstallCommand }}'..."
 	echo

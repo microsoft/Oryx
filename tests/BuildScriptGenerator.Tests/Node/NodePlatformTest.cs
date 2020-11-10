@@ -194,6 +194,40 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
+        public void GeneratedBuildSnippet_CustomBuildCommandWillExecute_WhenOtherCommandsAlsoExist()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomBuildCommand = "custom build command", CustomRunBuildCommand = "custom run command"},
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("custom build command", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("custom run command", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
         public void GeneratedBuildSnippet_CustomRunCommandWillExecute_WhenOtherCommandsAlsoExist()
         {
             // Arrange

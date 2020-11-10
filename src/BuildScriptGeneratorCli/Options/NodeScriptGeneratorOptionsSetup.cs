@@ -23,6 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
         {
             options.NodeVersion = GetStringValue(SettingsKeys.NodeVersion);
             options.CustomRunBuildCommand = GetStringValue(SettingsKeys.CustomRunBuildCommand);
+            options.CustomBuildCommand = GetStringValue(SettingsKeys.CustomBuildCommand);
             options.PruneDevDependencies = GetBooleanValue(SettingsKeys.PruneDevDependencies);
             options.NpmRegistryUrl = GetStringValue(SettingsKeys.NpmRegistryUrl);
             options.EnableNodeMonorepoBuild = GetBooleanValue(SettingsKeys.EnableNodeMonorepoBuild);

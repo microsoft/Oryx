@@ -833,7 +833,86 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void BuildsApp_ByRunningNpmInstall_AndCustomBuildCommand()
+        public void BuildsApp_ByRunningCustomBuildCommand_AndSkipNpmInstallCommand()
+        {
+            // Arrange
+            var appName = "node-makefile-example";
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
+
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, "make")
+                .AddCommand($"oryx build {appDir}")
+                .AddFileExistsCheck($"index.html")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.LtsVersionsBuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        "echo | sed -f main.sed > main.html",
+                        result.StdOut);
+                    Assert.Contains(
+                        "> index.html",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsApp_ByRunningCustomBuildScript_AndSkipNpmInstallCommand()
+        {
+            // Arrange
+            var appName = "node-makefile-example";
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
+
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand("touch customBuildScript.sh")
+                .AddCommand("echo 'make' > customBuildScript.sh")
+                .AddCommand("chmod 755 customBuildScript.sh")
+                .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, "./customBuildScript.sh")
+                .AddCommand($"oryx build {appDir}")
+                .AddFileExistsCheck($"index.html")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.LtsVersionsBuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        "echo | sed -f main.sed > main.html",
+                        result.StdOut);
+                    Assert.Contains(
+                        "> index.html",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsApp_ByRunningNpmInstall_AndCustomRunBuildCommand()
         {
             // Arrange
             var volume = CreateWebFrontEndVolume();
