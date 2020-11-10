@@ -159,6 +159,10 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetVsoBuildImage();
             }
+            else if (string.Equals(tag, _vsoUbuntu))
+            {
+                return GetVsoBuildImage(_vsoUbuntu);
+            }
             else if (string.Equals(tag, _gitHubActions))
             {
                 return GetGitHubActionsBuildImage();

@@ -27,8 +27,15 @@ RUN LANG="C.UTF-8" \
         # By default pip is not available in the buildpacks image
         python-pip-whl \
         python3-pip \
-        # For .NET Core 1.1
-        libcurl4 \
+        #.NET Core related pre-requisites
+        libc6 \
+        libgcc1 \
+        libgssapi-krb5-2 \
+        libncurses5 \
+        liblttng-ust0 \
+        libssl-dev \
+        libstdc++6 \
+        zlib1g \
         libuuid1 \
         libunwind8 \
         software-properties-common \
@@ -71,10 +78,10 @@ RUN set -ex \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
     # https://github.com/docker-library/python/issues/147
-    && PYTHONIOENCODING="UTF-8" \
-    # It's not clear whether these are needed at runtime...
+    && PYTHONIOENCODING="UTF-8" \    
     && apt-get update \
     && apt-get upgrade -y \
+    # It's not clear whether these are needed at runtime...
     && apt-get install -y --no-install-recommends \
         tk-dev \
         uuid-dev \
@@ -134,12 +141,15 @@ RUN set -ex \
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \
     && . $buildDir/__pythonVersions.sh \
+    && $imagesDir/installPlatform.sh python $PYTHON36_VERSION \
     && $imagesDir/installPlatform.sh python $PYTHON37_VERSION \
     && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
+    && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \
+    && ln -s $PYTHON36_VERSION 3.6 \
     && ln -s $PYTHON37_VERSION 3.7 \
     && ln -s $PYTHON38_VERSION 3.8 \
     && ln -s $PYTHON38_VERSION latest \
@@ -149,7 +159,9 @@ RUN set -ex \
     && $imagesDir/build/php/prereqs/installPrereqs.sh \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
+    && $imagesDir/installPlatform.sh php $PHP72_VERSION \
     && $imagesDir/installPlatform.sh php $PHP73_VERSION \
+    && $imagesDir/installPlatform.sh php $PHP74_VERSION \
     && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
     && cd /opt/php \
     && ln -s 7.3 7 \
@@ -219,6 +231,7 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $MAVEN_VERSION lts \
     && rm -rf /opt/tmp \
     && npm install -g lerna \
+    && pecl install -f libsodium \
     && echo "vso-focal" > /opt/oryx/.imagetype
 
 ENV NUGET_XMLDOC_MODE="skip" \

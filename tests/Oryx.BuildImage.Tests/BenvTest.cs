@@ -160,7 +160,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("python3", "/usr/bin/python3")]
         [InlineData("pip", "/usr/local/bin/pip")]
         [InlineData("pip3", "/usr/local/bin/pip3")]
-        [InlineData("python", "/usr/bin/python", "vso-focal")]
         [InlineData("python3", "/usr/bin/python3", "vso-focal")]
         [InlineData("pip", "/usr/local/bin/pip", "vso-focal")]
         [InlineData("pip3", "/usr/local/bin/pip3", "vso-focal")]
@@ -229,7 +228,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddCommand($"chmod +x {userInstalledDotNet}")
                 // The following should add a path in such a way that user installed dotnet does not get affected,
                 // However the specific node version setup by benv should be picked up.
-                .AddCommand($"source benv dotnet={DotNetCoreSdkVersions.DotNetCore21SdkVersion} node=8")
+                .AddCommand($"source benv dotnet={DotNetCoreSdkVersions.DotNetCore21SdkVersion} node=10")
                 .AddCommand("which dotnet")
                 .AddCommand("which node")
                 .ToString();
