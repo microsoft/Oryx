@@ -18,6 +18,7 @@ apt-get update \
         unzip \
         libodbc1 \
         apt-transport-https \
+        swig3.0 \
     && rm -rf /var/lib/apt/lists/*
  
 # Microsoft SQL Server 2017

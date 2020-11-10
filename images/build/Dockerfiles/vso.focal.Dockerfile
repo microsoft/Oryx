@@ -12,6 +12,7 @@ RUN LANG="C.UTF-8" \
         unzip \
         # The tools in this package are used when installing packages for Python
         build-essential \
+        swig3.0 \
         # Required for Microsoft SQL Server
         unixodbc-dev \
         # Required for PostgreSQL

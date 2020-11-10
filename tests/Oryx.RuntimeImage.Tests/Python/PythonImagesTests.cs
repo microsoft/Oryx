@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Linq;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -53,6 +54,41 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdOut);
                     Assert.Contains(gitCommitID, result.StdOut);
                     Assert.Contains(expectedOryxVersion, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("2.7")]
+        [InlineData("3.6")]
+        [InlineData("3.7")]
+        [InlineData("3.8")]
+        [InlineData("3.9")]
+        public void JamSpell_CanBe_InstalledInTheRunTimeImage(string version)
+        {
+            // Arrange
+            var expectedPackage = "jamspell";
+            string pipVersion = "pip";
+            if (version.ElementAt(0) == '3')
+            {
+                pipVersion = "pip3";
+            }
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("python", version),
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", $"{pipVersion} search {expectedPackage}" }
+            });
+            
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedPackage, actualOutput);
                 },
                 result.GetDebugInfo());
         }
