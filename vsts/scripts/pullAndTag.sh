@@ -44,6 +44,7 @@ tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions"
 tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack" 
 tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions"
 tagBuildImageForIntegrationTest "$imagefilter/build" "vso"
+tagBuildImageForIntegrationTest "$imagefilter/build" "vso-focal"
 tagBuildImageForIntegrationTest "$imagefilter/cli" ""
 tagBuildImageForIntegrationTest "$imagefilter/pack" ""
 

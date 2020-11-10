@@ -107,6 +107,15 @@ function createImageNameWithReleaseTag() {
 	fi
 }
 
+function buildGitHubRunnersUbuntuBaseImage() {
+	
+	echo
+	echo "----Building the image which uses GitHub runners' buildpackdeps-focal-scm specific digest----------"
+	docker build -t githubrunners-buildpackdeps-focal \
+		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_FOCAL_DOCKERFILE" \
+		.
+}
+
 function buildGitHubRunnersBaseImage() {
 	echo
 	echo "----Building the image which uses GitHub runners' buildpackdeps-stretch specific digest----------"
@@ -117,12 +126,19 @@ function buildGitHubRunnersBaseImage() {
 
 function buildTemporaryFilesImage() {
 	buildGitHubRunnersBaseImage
-	
+	buildGitHubRunnersUbuntuBaseImage
+
 	# Create the following image so that it's contents can be copied to the rest of the images below
 	echo
 	echo "-------------Creating temporary files image-------------------"
 	docker build -t support-files-image-for-build \
 		-f "$BUILD_IMAGES_SUPPORT_FILES_DOCKERFILE" \
+		.
+
+	echo
+	echo "------Creating temporary files image for Ubuntu Focal-----------"
+	docker build -t support-files-image-for-ubuntu-build \
+		-f "$BUILD_IMAGES_SUPPORT_FILES_UBUNTU_DOCKERFILE" \
 		.
 }
 
@@ -262,6 +278,33 @@ function buildFullImage() {
 		.
 }
 
+function buildVsoFocalImage() {
+	buildBuildScriptGeneratorImage
+	buildGitHubRunnersUbuntuBaseImage
+
+	BuildAndTagStage "$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE" intermediate
+	echo
+	echo "-------------Creating VSO Ubuntu <focal> build image-------------------"
+	local builtImageName="$ACR_BUILD_VSO_FOCAL_IMAGE_NAME"
+	docker build -t $builtImageName \
+		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--label com.microsoft.oryx="$labelContent" \
+		-f "$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE" \
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:vso-focal"
+
+	echo
+	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+}
+
 function buildVsoImage() {
 	buildFullImage
 
@@ -329,6 +372,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildLtsVersionsImage
 	buildFullImage
 	buildVsoImage
+	buildVsoFocalImage
 	buildCliImage
 	buildBuildPackImage
 elif [ "$imageTypeToBuild" == "githubactions" ]; then
@@ -341,13 +385,15 @@ elif [ "$imageTypeToBuild" == "full" ]; then
 	buildFullImage
 elif [ "$imageTypeToBuild" == "vso" ]; then
 	buildVsoImage
+elif [ "$imageTypeToBuild" == "vso-focal" ]; then
+	buildVsoFocalImage
 elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
-githubactions, jamstack, ltsversions, full, vso, cli, buildpack"
+githubactions, jamstack, ltsversions, full, vso, vso-focal, cli, buildpack"
 	exit 1
 fi
 

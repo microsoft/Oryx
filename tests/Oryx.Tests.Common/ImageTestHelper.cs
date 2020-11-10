@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Globalization;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Tests.Common
@@ -21,6 +22,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _azureFunctionsJamStack = "azfunc-jamstack";
         private const string _gitHubActions = "github-actions";
         private const string _vso = "vso";
+        private const string _vsoUbuntu = "vso-focal";
         private const string _buildRepository = "build";
         private const string _packRepository = "pack";
         private const string _cliRepository = "cli";
@@ -157,6 +159,10 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetVsoBuildImage();
             }
+            else if (string.Equals(tag, _vsoUbuntu))
+            {
+                return GetVsoBuildImage(_vsoUbuntu);
+            }
             else if (string.Equals(tag, _gitHubActions))
             {
                 return GetGitHubActionsBuildImage();
@@ -192,8 +198,13 @@ namespace Microsoft.Oryx.Tests.Common
             return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
         }
 
-        public string GetVsoBuildImage()
+        public string GetVsoBuildImage(string debianFlavor=null)
         {
+            if (!string.IsNullOrEmpty(debianFlavor)
+                && string.Equals(debianFlavor.ToLower(), _vsoUbuntu))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_vsoUbuntu}{_tagSuffix}";
+            }
             return $"{_repoPrefix}/{_buildRepository}:{_vso}{_tagSuffix}";
         }
 
