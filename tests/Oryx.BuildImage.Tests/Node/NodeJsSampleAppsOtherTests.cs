@@ -836,13 +836,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsApp_ByRunningCustomBuildCommand_AndSkipNpmInstallCommand()
         {
             // Arrange
-            var appName = "node-makefile-example";
+            var appName = "node-makefile-sample";
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, "make")
                 .AddCommand($"oryx build {appDir}")
+                // 'make' command will simply generate an index.html by using reveal.js template.
                 .AddFileExistsCheck($"index.html")
                 .ToString();
 
@@ -860,12 +861,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        "echo | sed -f main.sed > main.html",
-                        result.StdOut);
-                    Assert.Contains(
-                        "> index.html",
-                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -874,7 +869,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsApp_ByRunningCustomBuildScript_AndSkipNpmInstallCommand()
         {
             // Arrange
-            var appName = "node-makefile-example";
+            var appName = "node-makefile-sample";
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
 
             var appDir = volume.ContainerDir;
@@ -901,12 +896,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        "echo | sed -f main.sed > main.html",
-                        result.StdOut);
-                    Assert.Contains(
-                        "> index.html",
-                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }

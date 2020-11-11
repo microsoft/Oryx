@@ -97,6 +97,7 @@ cd "$SOURCE_DIR"
 	echo
 	echo "Running '{{ CustomBuildCommand }}'..."
 	echo
+	{{ CustomBuildCommand }}
 {{ else if CustomRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ PackageInstallCommand }}'..."
