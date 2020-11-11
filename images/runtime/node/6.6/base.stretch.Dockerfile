@@ -10,7 +10,7 @@ ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 RUN set -ex \
     && . ${BUILD_DIR}/__sdkStorageConstants.sh \
-    && ${IMAGES_DIR}/installPlatform.sh -p nodejs -v $NODE_VERSION -b /usr/local --use-specified-dir \
+    && ${IMAGES_DIR}/installPlatform.sh -p nodejs -v $NODE_VERSION -b /usr/local --use-specified-dir -u "$DEV_SDK_STORAGE_BASE_URL" \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN ${IMAGES_DIR}/runtime/node/installDependencies.sh
 RUN rm -rf /tmp/oryx
