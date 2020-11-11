@@ -20,7 +20,9 @@ ENV NODE_VERSION ${NODE12_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 
 ARG IMAGES_DIR=/tmp/oryx/images
-RUN ${IMAGES_DIR}/installPlatform.sh nodejs $NODE_VERSION --dir /usr/local --links false \
+ARG BUILD_DIR=/tmp/oryx/build
+RUN . ${BUILD_DIR}/__sdkStorageConstants.sh \
+    && ${IMAGES_DIR}/installPlatform.sh -p nodejs -v $NODE_VERSION -b /usr/local --use-specified-dir \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN ${IMAGES_DIR}/runtime/node/installDependencies.sh
 RUN rm -rf /tmp/oryx

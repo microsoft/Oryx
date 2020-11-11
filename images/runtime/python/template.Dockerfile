@@ -16,9 +16,11 @@ RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
 FROM oryx-run-base-${DEBIAN_FLAVOR} AS main
 ARG IMAGES_DIR=/tmp/oryx/images
+ARG BUILD_DIR=/tmp/oryx/build
 ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
 
-RUN ${IMAGES_DIR}/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false
+RUN . ${BUILD_DIR}/__sdkStorageConstants.sh \
+    && ${BUILD_DIR}/installPlatform.sh -p python -v $PYTHON_VERSION
 RUN set -ex \
  && cd /opt/python/ \
  && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \

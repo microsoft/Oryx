@@ -10,7 +10,9 @@ ENV NPM_CONFIG_LOGLEVEL info
 ENV NODE_VERSION 8.0.0
 
 ARG IMAGES_DIR=/tmp/oryx/images
-RUN ${IMAGES_DIR}/installPlatform.sh nodejs $NODE_VERSION --dir /usr/local --links false \
+ARG BUILD_DIR=/tmp/oryx/build
+RUN . ${BUILD_DIR}/__sdkStorageConstants.sh \
+    && ${IMAGES_DIR}/installPlatform.sh -p nodejs -v $NODE_VERSION -b /usr/local --use-specified-dir \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 # This is a way to avoid using caches for the next stages, since we want the remaining steps
