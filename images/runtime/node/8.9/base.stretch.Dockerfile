@@ -22,7 +22,8 @@ ENV NODE_VERSION 8.9.4
 
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
-RUN . ${BUILD_DIR}/__sdkStorageConstants.sh \
+RUN set -ex \
+    && . ${BUILD_DIR}/__sdkStorageConstants.sh \
     && ${IMAGES_DIR}/installPlatform.sh -p nodejs -v $NODE_VERSION -b /usr/local --use-specified-dir \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN ${IMAGES_DIR}/runtime/node/installDependencies.sh

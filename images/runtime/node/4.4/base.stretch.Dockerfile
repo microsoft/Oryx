@@ -7,7 +7,8 @@ ENV NODE_VERSION 4.4.7
 
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
-RUN . ${BUILD_DIR}/__sdkStorageConstants.sh \
+RUN set -ex \
+    && . ${BUILD_DIR}/__sdkStorageConstants.sh \
     && ${IMAGES_DIR}/installPlatform.sh -p nodejs -v $NODE_VERSION -b /usr/local --use-specified-dir
 RUN ${IMAGES_DIR}/runtime/node/installDependencies.sh
 RUN rm -rf /tmp/oryx

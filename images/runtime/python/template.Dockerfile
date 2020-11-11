@@ -19,7 +19,7 @@ ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
 
-RUN . ${BUILD_DIR}/__sdkStorageConstants.sh \
+RUN set -ex \ && . ${BUILD_DIR}/__sdkStorageConstants.sh \
     && ${BUILD_DIR}/installPlatform.sh -p python -v $PYTHON_VERSION
 RUN set -ex \
  && cd /opt/python/ \
