@@ -4,7 +4,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public static class DotNetCoreRunTimeVersions
     {
-        public const string DotNetCoreRuntimeBaseTag = "20201106.1";
+        public const string DotNetCoreRuntimeBaseTag = "20201111.1";
         public const string NetCoreApp10 = "1.0.16";
         public const string NetCoreApp11 = "1.1.13";
         public const string NetCoreApp20 = "2.0.9";
@@ -18,10 +18,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string NetCoreApp30Sha = "3d1f0ba2f293f43e087a8940a0f4736561f43b9f28bc5beda79a61f887e258543aea4dc71e88414a7c6e271dcda984a989afb62fc659a72223707a179cdde9c5";
         public const string AspnetCoreApp30 = "3.0.3";
         public const string AspnetCoreApp30Sha = "d88366ac20204c5acb4b80bc40396d608d6c067b25baeef54204e77dde48fb515bd463743745a0982ba8c9182fc751306a4e796f91060b2d013ffbea7d9a2dc8";
-        public const string NetCoreApp31 = "3.1.9";
-        public const string NetCoreApp31Sha = "dde97e3e95fe4109bcb6a16c23b709e8144a75ec46222e62541bd052c9db734008a8ccf3b2441b9438687bf9d2643f0155e795253c77a7d2eb6030bf1af3bba0";
-        public const string AspnetCoreApp31 = "3.1.9";
-        public const string AspnetCoreApp31Sha = "86462c61dd71adda38ddb0178fc44591cde13de4357652365e0d5c80d14db98d2e1f14a6fab2455b9deebcb910577174473d86f432dd3cd3d0b4284a9dcf440f";
+        public const string NetCoreApp31 = "3.1.10";
+        public const string NetCoreApp31Sha = "7ff09caf2cdff0ae1c75d0ac731267ffa624025137b079134eb9fda15e1ca386af8422ddd3e93ba084853006e7d58bc04bdf232ad3762580e94658ce3dc8f984";
+        public const string AspnetCoreApp31 = "3.1.10";
+        public const string AspnetCoreApp31Sha = "884ec943eefc8397537a193d48d481eae8869eb82a8149f11b8a8bbca0cd75307e82e4db04a2329f03f8a50519afa27c0caa79193fb35a9c776efe1aff2d07a0";
         public const string NetCoreApp50 = "5.0.0";
         public const string NetCoreApp50Sha = "D4D67DF5FF5F6DDE0D865A6E87559955BD57429DF396CF7D05FE77F09E6220C67DC5E66439B1801CA4D301A62F81F666122BF4B623B31A46B861677DCAFC62A4";
         public const string AspnetCoreApp50 = "5.0.0";
