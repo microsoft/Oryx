@@ -116,6 +116,7 @@ RUN set -ex \
     && $imagesDir/build/installHugo.sh \
     # Install Node
     && . $buildDir/__nodeVersions.sh \
+    && . $buildDir/__sdkStorageConstants.sh \
     && export DYNAMIC_INSTALL_ROOT_DIR="/opt" \
     && export SDK_STORAGE_BASE_URL="$DEV_SDK_STORAGE_BASE_URL" \
     && $imagesDir/installPlatform.sh -p nodejs -v $NODE10_VERSION \
