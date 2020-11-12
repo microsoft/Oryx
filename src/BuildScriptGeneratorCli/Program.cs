@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Subcommand(typeof(RunScriptCommand))]
     [Subcommand(typeof(InstallRunTimeCommand))]
     [Subcommand(typeof(ExecCommand))]
+    [Subcommand(typeof(DetectCommand))]
     [Subcommand(typeof(BuildpackDetectCommand))]
     [Subcommand(typeof(BuildpackBuildCommand))]
     [Subcommand(typeof(DockerfileCommand))]
