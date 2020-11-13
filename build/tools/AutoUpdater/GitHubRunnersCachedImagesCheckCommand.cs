@@ -69,7 +69,7 @@ namespace AutoUpdater
             var forkAccountName = Environment.GetEnvironmentVariable("FORK_ACCOUNT_NAME");
             var accessToken = Environment.GetEnvironmentVariable("AUTOUPDATE_PAT");
 
-            var prDescription = PullRequestHelper.GetDescriptionForCreatingPullRequest(newBranchName);
+            var prDescription = PullRequestHelper.GetDescriptionForCreatingPullRequest(forkAccountName, newBranchName);
             var scriptBuilder = new ShellScriptBuilder(cmdSeparator: Environment.NewLine)
                 .AddShebang("/bin/bash")
                 .AddCommand("set -e")
