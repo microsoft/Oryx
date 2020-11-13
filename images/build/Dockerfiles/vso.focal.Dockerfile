@@ -222,6 +222,9 @@ RUN buildDir="/opt/tmp/build" \
     && cp -rf * "$condaDir" \
     && cd $imagesDir \
     && . $buildDir/__rubyVersions.sh \
+    && . $buildDir/__sdkStorageConstants.sh \
+    && export DYNAMIC_INSTALL_ROOT_DIR="/opt" \
+    && export SDK_STORAGE_BASE_URL="$DEV_SDK_STORAGE_BASE_URL" \
     && ./installPlatform.sh -p ruby -v $RUBY27_VERSION \
     && cd /opt/ruby \
     && ln -s $RUBY27_VERSION /opt/ruby/lts \
