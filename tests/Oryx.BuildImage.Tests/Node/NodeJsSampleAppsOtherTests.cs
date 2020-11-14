@@ -844,7 +844,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, "make")
                 .AddCommand($"oryx build {appDir}")
                 // 'make' command will simply generate an index.html by using reveal.js template.
-                .AddFileExistsCheck($"index.html")
+                .AddFileExistsCheck($"{appDir}/index.html")
                 .ToString();
 
             // Act
@@ -861,6 +861,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
+                    Assert.Contains("> index.html", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -874,12 +875,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddCommand("touch customBuildScript.sh")
-                .AddCommand("echo 'make' > customBuildScript.sh")
                 .AddCommand("chmod 755 customBuildScript.sh")
                 .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, "./customBuildScript.sh")
                 .AddCommand($"oryx build {appDir}")
-                .AddFileExistsCheck($"index.html")
+                .AddFileExistsCheck($"{appDir}/index.html")
                 .ToString();
 
             // Act
@@ -896,6 +895,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
+                    Assert.Contains("> index.html", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
