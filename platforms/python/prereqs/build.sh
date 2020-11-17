@@ -9,6 +9,16 @@ set -ex
 wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz -O /python.tar.xz
 wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc -O /python.tar.xz.asc
 
+debianFlavor=$DEBIAN_FLAVOR
+pythonSdkFileName=""
+
+if [ -z "$debianFlavor" ]; then
+	# Use default python sdk file name
+	pythonSdkFileName=python-$version.tar.gz
+else
+	pythonSdkFileName=python-$debianFlavor-$version.tar.gz
+fi
+
 # Try getting the keys 5 times at most
 /tmp/receiveGpgKeys.sh $GPG_KEY
     
@@ -79,4 +89,4 @@ sed -i 's|logger\.debug('\''Cleaning up\.\.\.'\'')|logger\.info('\''Cleaning up\
 compressedSdkDir="/tmp/compressedSdk"
 mkdir -p $compressedSdkDir
 cd "$INSTALLATION_PREFIX"
-tar -zcf $compressedSdkDir/python-$PYTHON_VERSION.tar.gz .
+tar -zcf $compressedSdkDir/$pythonSdkFileName .

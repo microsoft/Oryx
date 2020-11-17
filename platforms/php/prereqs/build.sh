@@ -26,12 +26,22 @@ PHP_ASC_URL="" # "https://secure.php.net/get/php-$PHP_VERSION.tar.xz.asc/from/th
 GPG_KEYS=($GPG_KEYS) # Cast the string to an array
 PHP_MD5=""
 
+debianFlavor=$DEBIAN_FLAVOR
+phpSdkFileName=""
+
+if [ -z "$debianFlavor" ]; then
+	# Use default pnp sdk file name
+	phpSdkFileName=php-$version.tar.gz
+else
+	phpSdkFileName=php-$debianFlavor-$version.tar.gz
+fi
+
 fetchDeps='wget';
 if ! command -v gpg > /dev/null; then
 	fetchDeps="$fetchDeps dirmngr gnupg"
 fi
 
-apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends $fetchDeps
+apt-get update && apt-get upgrade -y && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential $fetchDeps
 rm -rf /var/lib/apt/lists/*
 
 mkdir -p /usr/src
@@ -63,7 +73,7 @@ fi
 
 if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR == '4' ]; then 
 	apt-get update
-	apt-get install -y --no-install-recommends libonig-dev autoconf automake make
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libonig-dev autoconf automake make
 	# libargon2 needs to be compiled for php7.4
 	# https://stackoverflow.com/questions/55636673/installing-php-on-amazon-linux-2-with-argon2-enabled
 	curl -o argon2.tar.gz  https://codeload.github.com/P-H-C/phc-winner-argon2/tar.gz/20190702
@@ -80,13 +90,13 @@ if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR == '4' ]; then
 	cd ..
 else 
 	apt-get update 
-	apt-get install -y --no-install-recommends libargon2-dev 
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libargon2-dev 
 fi
 
 savedAptMark="$(apt-mark showmanual)";
 apt-get update;
 apt-get upgrade -y;
-apt-get install -y --no-install-recommends \
+DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	libcurl4-openssl-dev \
 	libedit-dev \
 	libsqlite3-dev \
@@ -182,4 +192,4 @@ fi
 compressedSdkDir="/tmp/compressedSdk"
 mkdir -p $compressedSdkDir
 cd "$INSTALLATION_PREFIX"
-tar -zcf $compressedSdkDir/php-$PHP_VERSION.tar.gz .
+tar -zcf $compressedSdkDir/$phpSdkFileName .
