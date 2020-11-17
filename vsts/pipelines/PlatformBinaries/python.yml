@@ -4,7 +4,7 @@ variables:
 stages:
 - stage: Build
   jobs:
-  - job: Python
+  - job: Python_Stretch_SDK
     timeoutInMinutes: 250
     pool:
       name: OryxLinux
@@ -12,6 +12,17 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'python'
+        debianFlavor: ''
+
+  - job: Python_Ubuntu_SDK
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'python'
+        debianFlavor: 'focal-scm'
 
 - stage: Release
   dependsOn: Build

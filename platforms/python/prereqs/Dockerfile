@@ -1,5 +1,6 @@
 # Install Python build prerequisites
-FROM buildpack-deps:stretch
+ARG DEBIAN_FLAVOR
+FROM buildpack-deps:${DEBIAN_FLAVOR}
 COPY build/__pythonVersions.sh /tmp/
 
 COPY platforms/python/prereqs/build.sh /tmp/

@@ -10,6 +10,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
 source $REPO_DIR/platforms/__common.sh
 source $REPO_DIR/build/__phpVersions.sh
+debianFlavor=$1
 phpPlatformDir="$REPO_DIR/platforms/php"
 
 builtPhpPrereqs=false
@@ -17,7 +18,10 @@ buildPhpPrereqsImage() {
 	if ! $builtPhpPrereqs; then
 		echo "Building Php pre-requisites image..."
 		echo
-		docker build -f "$phpPlatformDir/prereqs/Dockerfile" -t "php-build-prereqs" $REPO_DIR
+		docker build  \
+			--build-arg DEBIAN_FLAVOR=$debianFlavor \
+			-f "$phpPlatformDir/prereqs/Dockerfile" \
+			-t "php-build-prereqs" $REPO_DIR
 		builtPhpPrereqs=true
 	fi
 }
@@ -28,11 +32,20 @@ buildPhp() {
 	local gpgKeys="$3"
 	local imageName="oryx/php-sdk"
 	local targetDir="$volumeHostDir/php"
+	local phpSdkFileName=""
+
 	mkdir -p "$targetDir"
+	
+	if [ -z "$debianFlavor" ]; then
+			# Use default php sdk file name
+			phpSdkFileName=php-$version.tar.gz
+	else
+			phpSdkFileName=php-$debianFlavor-$version.tar.gz
+	fi
 
 	cp "$phpPlatformDir/defaultVersion.txt" "$targetDir"
 
-	if shouldBuildSdk php php-$version.tar.gz || shouldOverwriteSdk || shouldOverwritePhpSdk; then
+	if shouldBuildSdk php $phpSdkFileName || shouldOverwriteSdk || shouldOverwritePhpSdk; then
 		if ! $builtPhpPrereqs; then
 			buildPhpPrereqsImage
 		fi

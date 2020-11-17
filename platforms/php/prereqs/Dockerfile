@@ -1,4 +1,5 @@
-FROM buildpack-deps:stretch AS php-build-prereqs
+ARG DEBIAN_FLAVOR
+FROM buildpack-deps:${DEBIAN_FLAVOR} AS php-build-prereqs
 COPY platforms/php/prereqs /php
 COPY build/__phpVersions.sh /php/
 COPY platforms/python/prereqs/build.sh /tmp/
