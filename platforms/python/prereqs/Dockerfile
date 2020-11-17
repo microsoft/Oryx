@@ -8,6 +8,18 @@ COPY build/__pythonVersions.sh /tmp/
 COPY platforms/python/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/receiveGpgKeys.sh
+RUN apt-get update && \
+	apt-get upgrade -y && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		libssl-dev \
+		libncurses5-dev \
+		libsqlite3-dev \
+		libreadline-dev \
+		libtk8.5 \
+		libgdm-dev \
+		libdb4o-cil-dev \
+		libpcap-dev
+
 RUN chmod +x /tmp/build.sh && \
 	apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
