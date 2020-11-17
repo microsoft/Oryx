@@ -15,7 +15,6 @@ RUN apt-get update && \
 		libncurses5-dev \
 		libsqlite3-dev \
 		libreadline-dev \
-		libtk8.5 \
 		libgdm-dev \
 		libdb4o-cil-dev \
 		libpcap-dev
