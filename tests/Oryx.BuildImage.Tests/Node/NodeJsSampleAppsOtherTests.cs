@@ -875,8 +875,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddCommand("chmod 755 customBuildScript.sh")
-                .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, "./customBuildScript.sh")
+                .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, $"./customBuildScript.sh")
                 .AddCommand($"oryx build {appDir}")
                 .AddFileExistsCheck($"{appDir}/index.html")
                 .ToString();
