@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path"
 	"strings"
 )
 
@@ -29,6 +30,14 @@ func SetupEnv(script string) {
 }
 
 func GetSetupScript(platformName string, version string, installationDir string) string {
+	dowloadSentinelFileName := ".oryx-sentinel"
+	sentinelFilePath := path.Join(installationDir, dowloadSentinelFileName)
+
+	// Check if the version was already installed
+	if PathExists(sentinelFilePath) {
+		return ""
+	}
+
 	sdkStorageBaseUrl := os.Getenv(consts.SdkStorageBaseUrlKeyName)
 	if sdkStorageBaseUrl == "" {
 		panic("Environment variable " + consts.SdkStorageBaseUrlKeyName + " is required.")
@@ -66,6 +75,7 @@ func GetSetupScript(platformName string, version string, installationDir string)
 	scriptBuilder.WriteString(fmt.Sprintf("rm -f %s\n", tarFile))
 	scriptBuilder.WriteString(fmt.Sprintf("echo Done. Installed at '%s'\n", installationDir))
 	scriptBuilder.WriteString(fmt.Sprintf("rm -f %s\n", tarFile))
+	scriptBuilder.WriteString(fmt.Sprintf("echo > %s\n", sentinelFilePath))
 	scriptBuilder.WriteString("echo\n")
 	return scriptBuilder.String()
 }
