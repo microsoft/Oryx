@@ -30,11 +30,11 @@ debianFlavor=$DEBIAN_FLAVOR
 phpSdkFileName=""
 
 if [ -z "$debianFlavor" ]; then
-	# Use default pnp sdk file name
+	# Use default php sdk file name
 	phpSdkFileName=php-$PHP_VERSION.tar.gz
 else
 	phpSdkFileName=php-$debianFlavor-$PHP_VERSION.tar.gz
-	#dpkg --add-architecture i386
+	# for buster and ubuntu we would need following libraries to build php 
 	apt-get update && \
 	apt-get upgrade -y && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \

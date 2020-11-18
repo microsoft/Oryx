@@ -17,7 +17,7 @@ if [ -z "$debianFlavor" ]; then
 	pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
 else
 	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
-    #dpkg --add-architecture i386
+    # for buster and ubuntu we would need following libraries to build php 
     apt-get update && \
 	apt-get upgrade -y && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \

@@ -41,7 +41,15 @@ eval set -- "$PARAMS"
 PLATFORM_NAME="$1"
 VERSION="$2"
 
+debianFlavor=$DEBBIAN_FLAVOR
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
+if [ -z "$debianFlavor" ]; then
+	# Use default sdk file name
+	fileName=php-$PHP_VERSION.tar.gz
+else
+  fileName=php-$debianFlavor-$PHP_VERSION.tar.gz
+fi
+
 platformDir="/opt/$PLATFORM_NAME"
 
 if [ -z "$targetDir" ]; then
