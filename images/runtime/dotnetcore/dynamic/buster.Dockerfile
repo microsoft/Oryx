@@ -16,6 +16,7 @@ FROM debian:buster-slim
 ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 ENV ${SDK_STORAGE_ENV_NAME} ${SDK_STORAGE_BASE_URL_VALUE}
+ENV ENABLE_DYNAMIC_INSTALL="true"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
