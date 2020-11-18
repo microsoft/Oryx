@@ -46,8 +46,7 @@ else
 		libdb4o-cil-dev \
 		libpcap-dev \
 		libxml2 \
-		libxml2-dev 
-		#libstdc++6:i386
+		libxml2-dev
 fi
 
 fetchDeps='wget';

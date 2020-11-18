@@ -26,10 +26,6 @@ else
 		libsqlite3-dev \
 		libreadline-dev \
 		libgdm-dev
-		#libdb4o-cil-dev \
-		#libpcap-dev \
-        #libxml2
-		#libstdc++6:i386
 fi
 
 # Try getting the keys 5 times at most
