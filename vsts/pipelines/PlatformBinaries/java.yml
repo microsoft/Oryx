@@ -4,7 +4,7 @@ variables:
 stages:
 - stage: Build
   jobs:
-  - job: Java
+  - job: Java_Stretch
     timeoutInMinutes: 250
     pool:
       name: OryxLinux
@@ -12,7 +12,19 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'java'
-  - job: Maven
+        debianFlavor: ''
+
+  - job: Java_Ubuntu
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'java'
+        debianFlavor: 'focal-scm'
+
+  - job: Maven_Stretch
     timeoutInMinutes: 250
     pool:
       name: OryxLinux
@@ -20,7 +32,18 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'maven'
-    
+        debianFlavor: ''
+
+  - job: Maven_Ubuntu
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'maven'
+        debianFlavor: 'focal-scm'
+
 - stage: Release
   dependsOn: Build
   jobs:

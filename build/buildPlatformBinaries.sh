@@ -14,7 +14,7 @@ platformsDir="$REPO_DIR/platforms"
 
 case $PLATFORM_TO_BUILD in
 	'dotnet')
-		"$platformsDir/dotnet/getDotNetSdk.sh"
+		"$platformsDir/dotnet/getDotNetSdk.sh" $DEBIAN_FLAVOR_TO_BUILD
 		;;
 	'python')
 		"$platformsDir/python/buildPython.sh" $DEBIAN_FLAVOR_TO_BUILD
@@ -23,16 +23,16 @@ case $PLATFORM_TO_BUILD in
 		"$platformsDir/php/buildPhp.sh" $DEBIAN_FLAVOR_TO_BUILD
 		;;
 	'nodejs')
-		"$platformsDir/nodejs/getNode.sh"
+		"$platformsDir/nodejs/getNode.sh" $DEBIAN_FLAVOR_TO_BUILD
 		;;
 	'ruby')
-		"$platformsDir/ruby/buildRuby.sh"
+		"$platformsDir/ruby/buildRuby.sh" $DEBIAN_FLAVOR_TO_BUILD
 		;;
 	'java')
-		"$platformsDir/java/getJavaSdk.sh"
+		"$platformsDir/java/getJavaSdk.sh" $DEBIAN_FLAVOR_TO_BUILD
 		;;     
 	'maven')
-		"$platformsDir/java/maven/getMaven.sh"
+		"$platformsDir/java/maven/getMaven.sh" $DEBIAN_FLAVOR_TO_BUILD
 		;;            
 	*) echo "Unknown image directory";;
 esac

@@ -36,7 +36,7 @@ buildPython() {
 	local imageName="oryx/python"
 	local pythonSdkFileName=""
 
-	if [ -z "$debianFlavor" ]; then
+	if [ "$debianFlavor" == "stretch" ]; then
 			# Use default python sdk file name
 			pythonSdkFileName=python-$version.tar.gz
 	else

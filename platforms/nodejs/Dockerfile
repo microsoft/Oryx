@@ -1,4 +1,7 @@
-FROM buildpack-deps:stretch
+ARG DEBIAN_FLAVOR
+FROM buildpack-deps:${DEBIAN_FLAVOR}
+ARG DEBIAN_FLAVOR
+ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         jq \

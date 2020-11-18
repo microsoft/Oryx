@@ -4,7 +4,7 @@ variables:
 stages:
 - stage: Build
   jobs:
-  - job: Ruby
+  - job: Ruby_Stretch
     timeoutInMinutes: 250
     pool:
       name: OryxLinux
@@ -12,7 +12,18 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'ruby'
+        debianFlavor: ''
   
+  - job: Ruby_Ubuntu
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'ruby'
+        debianFlavor: 'focal-scm'
+
 - stage: Release
   dependsOn: Build
   jobs:

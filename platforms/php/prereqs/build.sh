@@ -29,7 +29,7 @@ PHP_MD5=""
 debianFlavor=$DEBIAN_FLAVOR
 phpSdkFileName=""
 
-if [ -z "$debianFlavor" ]; then
+if [ "$debianFlavor" == "stretch" ]; then
 	# Use default php sdk file name
 	phpSdkFileName=php-$PHP_VERSION.tar.gz
 else

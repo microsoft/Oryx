@@ -12,7 +12,7 @@ wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_
 debianFlavor=$DEBIAN_FLAVOR
 pythonSdkFileName=""
 
-if [ -z "$debianFlavor" ]; then
+if [ "$debianFlavor" == "stretch" ]; then
 	# Use default python sdk file name
 	pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
 else

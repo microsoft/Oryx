@@ -36,12 +36,12 @@ buildPhp() {
 
 	mkdir -p "$targetDir"
 	
-	if [ -z "$debianFlavor" ]; then
-			# Use default php sdk file name
-			phpSdkFileName=php-$version.tar.gz
-	else
-			phpSdkFileName=php-$debianFlavor-$version.tar.gz
-	fi
+    if [ "$debianFlavor" == "stretch" ]; then
+        # Use default php sdk file name
+        phpSdkFileName=php-$version.tar.gz
+    else
+        phpSdkFileName=php-$debianFlavor-$version.tar.gz
+    fi
 
 	cp "$phpPlatformDir/defaultVersion.txt" "$targetDir"
 

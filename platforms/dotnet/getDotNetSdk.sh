@@ -12,14 +12,23 @@ source $REPO_DIR/platforms/__common.sh
 
 dotNetPlatformDir="$REPO_DIR/platforms/dotnet"
 targetDir="$volumeHostDir/dotnet"
+debianFlavor="$1"
 mkdir -p "$targetDir"
 
 getDotNetCoreSdk() {
 	local sdkVersion="$1"
 	local sha="$2"
 	local downloadUrl="$3"
+	local downloadedFile=""
 
-	if shouldBuildSdk dotnet dotnet-$sdkVersion.tar.gz || shouldOverwriteSdk || shouldOverwriteDotNetCoreSdk; then
+	if [ "$debianFlavor" == "stretch" ]; then
+			# Use default sdk file name
+			downloadedFile=dotnet-$sdkVersion.tar.gz
+	else
+			downloadedFile=dotnet-$debianFlavor-$sdkVersion.tar.gz
+	fi
+
+	if shouldBuildSdk dotnet $downloadedFile || shouldOverwriteSdk || shouldOverwriteDotNetCoreSdk; then
 		echo "Downloading .NET Core SDK version '$sdkVersion'..."
 		echo
 
@@ -28,8 +37,6 @@ getDotNetCoreSdk() {
 			downloadUrl="https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$sdkVersion/dotnet-sdk-$sdkVersion-linux-x64.tar.gz"
 		fi
 
-		# Follow the format used by all platforms
-		downloadedFile="dotnet-$sdkVersion.tar.gz"
 		tempDir="/tmp/oryx-dotnetInstall"
 		mkdir -p $tempDir
 		cd $tempDir

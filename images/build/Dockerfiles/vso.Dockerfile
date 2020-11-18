@@ -16,6 +16,17 @@ COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 
 RUN buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \
+    # Install .NET Core SDKS
+    && nugetPacakgesDir="/var/nuget" \
+    && mkdir -p $nugetPacakgesDir \
+    && NUGET_PACKAGES="$nugetPacakgesDir" \
+    && . $buildDir/__dotNetCoreSdkVersions.sh \
+    && DOTNET_SDK_VER=$DOT_NET_CORE_50_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
+    && rm -rf /tmp/NuGetScratch \
+    && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
+    && cd /opt/dotnet \
+    && ln -s $DOT_NET_CORE_50_SDK_VERSION 5.0 \
+    # Install Conda and related tools
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         apt-transport-https \
@@ -39,6 +50,7 @@ RUN buildDir="/opt/tmp/build" \
     && cd $imagesDir/build/python/conda \
     && cp -rf * "$condaDir" \
     && cd $imagesDir \
+    # Install Ruby and related tools
     && . $buildDir/__rubyVersions.sh \
     && ./installPlatform.sh ruby $RUBY27_VERSION \
     && cd /opt/ruby \

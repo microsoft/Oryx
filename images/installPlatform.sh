@@ -45,9 +45,9 @@ debianFlavor=$DEBBIAN_FLAVOR
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 if [ -z "$debianFlavor" ]; then
 	# Use default sdk file name
-	fileName=php-$PHP_VERSION.tar.gz
+	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 else
-  fileName=php-$debianFlavor-$PHP_VERSION.tar.gz
+  fileName=fileName="$PLATFORM_NAME-$debianFlavor-$VERSION.tar.gz"
 fi
 
 platformDir="/opt/$PLATFORM_NAME"

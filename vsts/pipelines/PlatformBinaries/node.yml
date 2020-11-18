@@ -12,6 +12,17 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'nodejs'
+        debianFlavor: ''
+  
+  - job: Node_Ubuntu
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'nodejs'
+        debianFlavor: 'focal-scm'
 
 - stage: Release
   dependsOn: Build

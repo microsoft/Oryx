@@ -109,6 +109,9 @@ RUN set -ex \
     && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
+    && DOTNET_SDK_VER=$DOT_NET_CORE_50_SDK_VERSION \
+       INSTALL_PACKAGES="true" \
+       $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPackagesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \

@@ -10,7 +10,16 @@ set -eux
 LANG=C.UTF-8
 RUBY_MAJOR_VERSION=${RUBY_VERSION:0:3}
 INSTALLATION_PREFIX=/opt/ruby/$RUBY_VERSION
+debianFlavor=$DEBIAN_FLAVOR
+rubySdkFileName=""
 
+if [ "$debianFlavor" == "stretch" ]; then
+	# Use default python sdk file name
+	rubySdkFileName=ruby-$RUBY_VERSION.tar.gz
+else
+	rubySdkFileName=ruby-$debianFlavor-$RUBY_VERSION.tar.gz
+fi
+ 
 # skip installing gem documentation
 set -eux; \
 	mkdir -p $INSTALLATION_PREFIX/etc; \
@@ -110,4 +119,4 @@ chmod 777 "$GEM_HOME"
 compressedSdkDir="/tmp/compressedSdk"
 mkdir -p $compressedSdkDir
 cd "$INSTALLATION_PREFIX"
-tar -zcf $compressedSdkDir/ruby-$RUBY_VERSION.tar.gz .
+tar -zcf $compressedSdkDir/$rubySdkFileName .
