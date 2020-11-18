@@ -34,7 +34,7 @@ if [ -z "$debianFlavor" ]; then
 	phpSdkFileName=php-$PHP_VERSION.tar.gz
 else
 	phpSdkFileName=php-$debianFlavor-$PHP_VERSION.tar.gz
-	dpkg --add-architecture i386
+	#dpkg --add-architecture i386
 	apt-get update && \
 	apt-get upgrade -y && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -45,8 +45,9 @@ else
 		libgdm-dev \
 		libdb4o-cil-dev \
 		libpcap-dev \
-		libxml2:i386 \
-		libstdc++6:i386
+		libxml2 \
+		libxml2-dev 
+		#libstdc++6:i386
 fi
 
 fetchDeps='wget';

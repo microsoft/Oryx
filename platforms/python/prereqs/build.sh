@@ -17,7 +17,7 @@ if [ -z "$debianFlavor" ]; then
 	pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
 else
 	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
-    dpkg --add-architecture i386
+    #dpkg --add-architecture i386
     apt-get update && \
 	apt-get upgrade -y && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -25,11 +25,11 @@ else
 		libncurses5-dev \
 		libsqlite3-dev \
 		libreadline-dev \
-		libgdm-dev \
-		libdb4o-cil-dev \
-		libpcap-dev \
-        libxml2 \
-		libstdc++6:i386
+		libgdm-dev
+		#libdb4o-cil-dev \
+		#libpcap-dev \
+        #libxml2
+		#libstdc++6:i386
 fi
 
 # Try getting the keys 5 times at most
