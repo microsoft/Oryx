@@ -28,7 +28,7 @@ else
 		libgdm-dev \
 		libdb4o-cil-dev \
 		libpcap-dev \
-        libxml2:i386 \
+        libxml2 \
 		libstdc++6:i386
 fi
 
