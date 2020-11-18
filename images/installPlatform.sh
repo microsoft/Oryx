@@ -43,7 +43,7 @@ VERSION="$2"
 
 debianFlavor=$DEBBIAN_FLAVOR
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
-if [ -z "$debianFlavor" ]; then
+if [ "$debianFlavor" == "stretch" ]; then
 	# Use default sdk file name
 	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 else

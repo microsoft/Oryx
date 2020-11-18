@@ -11,6 +11,7 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     RUBY_HOME="/opt/ruby/lts" \
     JAVA_HOME="/opt/java/lts" \
     DYNAMIC_INSTALL_ROOT_DIR="/opt"
+    ENV DEBIAN_FLAVOR="stretch"
 
 COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 

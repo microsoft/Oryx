@@ -70,6 +70,7 @@ ENV LANG="C.UTF-8" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
     PYTHONIOENCODING="UTF-8"
+    ENV DEBIAN_FLAVOR="stretch"
 
 RUN set -ex \
     && tmpDir="/opt/tmp" \
