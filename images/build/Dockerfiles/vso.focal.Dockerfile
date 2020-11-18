@@ -1,9 +1,5 @@
 FROM githubrunners-buildpackdeps-focal AS main
 
-# add an environment variable to determine debian_flavor
-# to correctly download platform sdk during platform installation
-ENV DEBIAN_FLAVOR="focal-scm"
-
 # Install basic build tools
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
@@ -67,6 +63,10 @@ COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE
+
+# add an environment variable to determine debian_flavor
+# to correctly download platform sdk during platform installation
+ENV DEBIAN_FLAVOR="focal-scm"
 
 COPY --from=intermediate /opt /opt
 

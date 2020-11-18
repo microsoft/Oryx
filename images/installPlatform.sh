@@ -41,7 +41,7 @@ eval set -- "$PARAMS"
 PLATFORM_NAME="$1"
 VERSION="$2"
 
-debianFlavor=$DEBBIAN_FLAVOR
+debianFlavor=$DEBIAN_FLAVOR
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 if [ "$debianFlavor" == "stretch" ]; then
 	# Use default sdk file name
