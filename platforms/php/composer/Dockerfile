@@ -4,6 +4,8 @@ ARG GPG_KEYS
 ARG PHP_SHA256
 ARG COMPOSER_VERSION
 ARG COMPOSER_SETUP_SHA384
+ARG DEBIAN_FLAVOR
+ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 RUN PHP_VERSION=$PHP_VERSION \
     GPG_KEYS=$GPG_KEYS \
     PHP_SHA256=$PHP_SHA256 \
@@ -19,4 +21,9 @@ RUN set -eux \
  && $phpbin -r "unlink('composer-setup.php');" \
  && compressedSdkDir="/tmp/compressedSdk" \
  && cd "$composerDir" \
- && tar -zcf "$compressedSdkDir/php-composer-$COMPOSER_VERSION.tar.gz" .
+ && composerSdkFile="php-composer-$COMPOSER_VERSION.tar.gz"; \
+ if [ "$DEBIAN_FLAVOR" == "stretch" ]; then \
+    composerSdkFile="php-composer-$DEBIAN_FLAVOR-$COMPOSER_VERSION.tar.gz"; \
+ else \
+    composerSdkFile="php-composer-$COMPOSER_VERSION.tar.gz"; fi \
+ && tar -zcf "$compressedSdkDir/$composerSdkFile" .

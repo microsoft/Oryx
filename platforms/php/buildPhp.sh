@@ -72,11 +72,19 @@ buildPhpComposer() {
 	local sha="$2"
 	local imageName="oryx/php-composer-sdk"
 	local targetDir="$volumeHostDir/php-composer"
+	local composerSdkFileName="php-composer-$version.tar.gz"
 	mkdir -p "$targetDir"
 
 	cp "$phpPlatformDir/composer/defaultVersion.txt" "$targetDir"
 
-	if shouldBuildSdk php-composer php-composer-$version.tar.gz || shouldOverwriteSdk || shouldOverwritePhpComposerSdk; then
+	if [ "$debianFlavor" == "stretch" ]; then
+        # Use default php sdk file name
+        composerSdkFileName=php-composer-$version.tar.gz
+    else
+        composerSdkFileName=php-composer-$debianFlavor-$version.tar.gz
+    fi
+
+	if shouldBuildSdk php-composer $composerSdkFileName || shouldOverwriteSdk || shouldOverwritePhpComposerSdk; then
 		if ! $builtPhpPrereqs; then
 			buildPhpPrereqsImage
 		fi
@@ -89,6 +97,7 @@ buildPhpComposer() {
 		docker build \
 			-f "$phpPlatformDir/composer/Dockerfile" \
 			--build-arg PHP_VERSION="$PHP73_VERSION" \
+			--build-arg DEBIAN_FLAVOR=$debianFlavor \
 			--build-arg PHP_SHA256="$PHP73_TAR_SHA256" \
 			--build-arg GPG_KEYS="$PHP73_KEYS" \
 			--build-arg COMPOSER_VERSION="$version" \
