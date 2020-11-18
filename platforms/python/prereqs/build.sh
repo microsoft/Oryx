@@ -14,9 +14,19 @@ pythonSdkFileName=""
 
 if [ -z "$debianFlavor" ]; then
 	# Use default python sdk file name
-	pythonSdkFileName=python-$version.tar.gz
+	pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
 else
-	pythonSdkFileName=python-$debianFlavor-$version.tar.gz
+	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
+    apt-get update && \
+	apt-get upgrade -y && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		libssl-dev \
+		libncurses5-dev \
+		libsqlite3-dev \
+		libreadline-dev \
+		libgdm-dev \
+		libdb4o-cil-dev \
+		libpcap-dev
 fi
 
 # Try getting the keys 5 times at most

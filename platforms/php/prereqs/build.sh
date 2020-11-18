@@ -31,9 +31,19 @@ phpSdkFileName=""
 
 if [ -z "$debianFlavor" ]; then
 	# Use default pnp sdk file name
-	phpSdkFileName=php-$version.tar.gz
+	phpSdkFileName=php-$PHP_VERSION.tar.gz
 else
-	phpSdkFileName=php-$debianFlavor-$version.tar.gz
+	phpSdkFileName=php-$debianFlavor-$PHP_VERSION.tar.gz
+	apt-get update && \
+	apt-get upgrade -y && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		libssl-dev \
+		libncurses5-dev \
+		libsqlite3-dev \
+		libreadline-dev \
+		libgdm-dev \
+		libdb4o-cil-dev \
+		libpcap-dev
 fi
 
 fetchDeps='wget';
