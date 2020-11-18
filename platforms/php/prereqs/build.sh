@@ -115,6 +115,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	libsqlite3-dev \
 	libxml2-dev \
 	zlib1g-dev \
+	php-pear \
 	$versionDevReqs;
 
 rm -rf /var/lib/apt/lists/*;
