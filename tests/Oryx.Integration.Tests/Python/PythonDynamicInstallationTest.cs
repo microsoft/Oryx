@@ -71,7 +71,10 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData(PythonVersions.Python27Version)]
         [InlineData("3")]
         [InlineData(PythonVersions.Python37Version)]
-        public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage(string pythonVersion)
+        [InlineData(PythonVersions.Python38Version)]
+        [InlineData(PythonVersions.Python39Version)]
+        public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallation(
+            string pythonVersion)
         {
             // Arrange
             var appName = "flask-app";
@@ -88,7 +91,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddCommand($"oryx setupEnv -appPath {appOutputDir}")
+                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -129,7 +132,7 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
+                .AddCommand($"oryx setupEnv -appPath {appOutputDir}")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
