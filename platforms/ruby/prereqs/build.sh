@@ -21,6 +21,9 @@ else
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
 		autoconf \
+		libssl-dev \
+		zlib1g-dev \
+		libreadline-dev \
 		build-essential
 fi
 
