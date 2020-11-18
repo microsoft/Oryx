@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData(NodeVersions.Node10Version)]
         [InlineData(NodeVersions.Node12Version)]
         [InlineData(NodeVersions.Node14Version)]
-        public async Task CanBuildAndRunApp_AfterSettingUpEnvironmentExplicitly(string nodeVersion)
+        public async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(string nodeVersion)
         {
             // Arrange
             var appName = "webfrontend";
@@ -44,8 +44,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .AddCommand($"oryx setupEnv -appPath {appOutputDir}")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();

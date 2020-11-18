@@ -116,6 +116,7 @@ func main() {
 		scriptBuilder.WriteString(script)
 		scriptBuilder.WriteString("echo Installing dependencies...\n")
 		scriptBuilder.WriteString("/opt/node/installDependencies.sh\n")
+		scriptBuilder.WriteString("echo Done installing dependencies.\n")
 		finalScript := scriptBuilder.String()
 		fmt.Println(fmt.Sprintf(
 			"Setting up the environment with 'NodeJS' version '%s'...\n",
