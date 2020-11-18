@@ -43,7 +43,9 @@ else
 		libreadline-dev \
 		libgdm-dev \
 		libdb4o-cil-dev \
-		libpcap-dev
+		libpcap-dev \
+		libxml2:i386 \
+		libstdc++6:i386
 fi
 
 fetchDeps='wget';

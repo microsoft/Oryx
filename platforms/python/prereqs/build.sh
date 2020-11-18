@@ -25,7 +25,7 @@ else
 		libsqlite3-dev \
 		libreadline-dev \
 		libgdm-dev \
-		libdb4o-cil-dev \
+		#libdb4o-cil-dev \
 		libpcap-dev
 fi
 
