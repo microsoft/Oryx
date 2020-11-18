@@ -18,8 +18,11 @@ if [ "$debianFlavor" == "stretch" ]; then
 	rubySdkFileName=ruby-$RUBY_VERSION.tar.gz
 else
 	rubySdkFileName=ruby-$debianFlavor-$RUBY_VERSION.tar.gz
+	apt-get update; \
+	apt-get install -y --no-install-recommends \
+		autoconf
 fi
- 
+
 # skip installing gem documentation
 set -eux; \
 	mkdir -p $INSTALLATION_PREFIX/etc; \
