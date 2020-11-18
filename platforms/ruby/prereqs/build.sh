@@ -20,7 +20,8 @@ else
 	rubySdkFileName=ruby-$debianFlavor-$RUBY_VERSION.tar.gz
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		autoconf
+		autoconf \
+		build-essential
 fi
 
 # skip installing gem documentation
