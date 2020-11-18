@@ -145,7 +145,8 @@ cd "$SOURCE_DIR"
 
 {{ if RunNpmPack }}
 	{{ if PackageDirectory | IsNotBlank }}
-		cd {{ PackageDirectory }}
+	echo "Switching to package directory provided: '{{ PackageDirectory }}'..."
+	cd {{ PackageDirectory }}
 	{{ end }}
 echo
 echo "Running custom packaging scripts that might exist..."
