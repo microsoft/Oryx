@@ -144,6 +144,9 @@ cd "$SOURCE_DIR"
 {{ end }}
 
 {{ if RunNpmPack }}
+	{{ if PackageDirectory | IsNotBlank }}
+		cd {{ PackageDirectory }}
+	{{ end }}
 echo
 echo "Running custom packaging scripts that might exist..."
 echo
@@ -153,6 +156,8 @@ echo "Running 'npm pack'..."
 echo
 npm pack
 {{ end }}
+
+cd "$SOURCE_DIR"
 
 if [ "$PruneDevDependencies" == "true" ] && [ "$HasDevDependencies" == "true" ]
 then
