@@ -10,8 +10,8 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh" \
     RUBY_HOME="/opt/ruby/lts" \
     JAVA_HOME="/opt/java/lts" \
-    DYNAMIC_INSTALL_ROOT_DIR="/opt"
-    ENV DEBIAN_FLAVOR="stretch"
+    DYNAMIC_INSTALL_ROOT_DIR="/opt" \
+    DEBIAN_FLAVOR="stretch"
 
 COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 
@@ -22,11 +22,11 @@ RUN buildDir="/opt/tmp/build" \
     && mkdir -p $nugetPacakgesDir \
     && NUGET_PACKAGES="$nugetPacakgesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_50_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
+    && DOTNET_SDK_VER=$DOT_NET_50_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
-    && ln -s $DOT_NET_CORE_50_SDK_VERSION 5.0 \
+    && ln -s $DOT_NET_50_SDK_VERSION 5.0 \
     # Install Conda and related tools
     && apt-get update \
     && apt-get install -y --no-install-recommends \

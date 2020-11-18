@@ -47,7 +47,7 @@ if [ "$debianFlavor" == "stretch" ]; then
 	# Use default sdk file name
 	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 else
-  fileName=fileName="$PLATFORM_NAME-$debianFlavor-$VERSION.tar.gz"
+  fileName="$PLATFORM_NAME-$debianFlavor-$VERSION.tar.gz"
 fi
 
 platformDir="/opt/$PLATFORM_NAME"

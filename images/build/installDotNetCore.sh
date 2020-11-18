@@ -13,7 +13,16 @@ echo
 echo "Installing .NET Core SDK $DOTNET_SDK_VER ..."
 echo
 
+debianFlavor="$DEBIAN_FLAVOR"
+
 fileName="dotnet.tar.gz"
+if [ "$debianFlavor" == "stretch" ]; then
+	# Use default sdk file name
+	fileName="dotnet-$DOTNET_SDK_VER.tar.gz"
+else
+    fileName="dotnet-$debianFlavor-$DOTNET_SDK_VER.tar.gz"
+fi
+
 downloadFileAndVerifyChecksum dotnet $DOTNET_SDK_VER $fileName
 
 globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
