@@ -12,7 +12,7 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'ruby'
-        debianFlavor: ''
+        debianFlavor: 'stretch'
   
   - job: Ruby_Ubuntu
     timeoutInMinutes: 250

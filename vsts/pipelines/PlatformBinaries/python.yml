@@ -12,7 +12,7 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'python'
-        debianFlavor: ''
+        debianFlavor: 'stretch'
 
   - job: Python_Ubuntu_SDK
     timeoutInMinutes: 250

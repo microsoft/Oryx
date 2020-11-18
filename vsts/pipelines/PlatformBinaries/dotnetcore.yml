@@ -12,7 +12,7 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'dotnet'
-        debianFlavor: ''
+        debianFlavor: 'stretch'
 
   - job: DotNetCore_Ubuntu
     timeoutInMinutes: 250

@@ -12,7 +12,7 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'php'
-        debianFlavor: ''
+        debianFlavor: 'stretch'
   
   - job: Php_Ubuntu_SDK
     timeoutInMinutes: 250

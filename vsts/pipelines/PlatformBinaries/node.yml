@@ -12,7 +12,7 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'nodejs'
-        debianFlavor: ''
+        debianFlavor: 'stretch'
   
   - job: Node_Ubuntu
     timeoutInMinutes: 250

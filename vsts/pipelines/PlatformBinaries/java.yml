@@ -12,7 +12,7 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'java'
-        debianFlavor: ''
+        debianFlavor: 'stretch'
 
   - job: Java_Ubuntu
     timeoutInMinutes: 250
@@ -32,7 +32,7 @@ stages:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
         platformName: 'maven'
-        debianFlavor: ''
+        debianFlavor: 'stretch'
 
   - job: Maven_Ubuntu
     timeoutInMinutes: 250
