@@ -103,6 +103,7 @@ func main() {
 			pythonInstallationRoot)
 		scriptBuilder := strings.Builder{}
 		scriptBuilder.WriteString(script)
+		scriptBuilder.WriteString("echo Installing dependencies...\n")
 		scriptBuilder.WriteString(
 			fmt.Sprintf("echo %s/lib > /etc/ld.so.conf.d/python.conf\n", pythonInstallationRoot))
 		scriptBuilder.WriteString("ldconfig\n")
@@ -122,6 +123,7 @@ func main() {
 		scriptBuilder.WriteString("pip install --upgrade pip\n")
 		scriptBuilder.WriteString("pip install gunicorn\n")
 		scriptBuilder.WriteString("pip install ptvsd\n")
+		scriptBuilder.WriteString("echo Done installing dependencies.\n")
 		finalScript := scriptBuilder.String()
 		fmt.Println(fmt.Sprintf(
 			"Setting up the environment with 'python' version '%s'...\n",

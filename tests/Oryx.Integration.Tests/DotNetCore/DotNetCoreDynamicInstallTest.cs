@@ -73,5 +73,59 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains(expectedResponseContent, data);
                 });
         }
+
+        [Theory]
+        [InlineData("2.1", NetCoreApp21WebApp, "Hello World!")]
+        [InlineData("3.1", NetCoreApp31MvcApp, "Welcome to ASP.NET Core MVC!")]
+        [InlineData("5.0", Net5MvcApp, "Welcome to ASP.NET Core MVC!")]
+        public async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(
+            string runtimeVersion,
+            string appName,
+            string expectedResponseContent)
+        {
+            // Arrange
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var buildImageScript = new ShellScriptBuilder()
+               .AddDefaultTestEnvironmentVariables()
+               .AddCommand(
+                $"oryx build {appDir} -i /tmp/int " +
+                $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} -o {appOutputDir}")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand(
+                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new[] { volume, appOutputDirVolume },
+                _imageHelper.GetGitHubActionsBuildImage(),
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                _imageHelper.GetRuntimeImage("dotnetcore", "dynamic"),
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains(expectedResponseContent, data);
+                });
+        }
     }
 }
