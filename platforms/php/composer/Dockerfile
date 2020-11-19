@@ -26,5 +26,5 @@ RUN set -eux \
     composerSdkFile="php-composer-$COMPOSER_VERSION.tar.gz"; \
  else \
     composerSdkFile="php-composer-$DEBIAN_FLAVOR-$COMPOSER_VERSION.tar.gz"; \
- fi; \
- tar -zcf "$compressedSdkDir/$composerSdkFile" .
+ fi; tar -zcf "$compressedSdkDir/$composerSdkFile" .
+ 
