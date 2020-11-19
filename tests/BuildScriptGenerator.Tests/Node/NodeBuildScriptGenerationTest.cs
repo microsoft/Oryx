@@ -600,7 +600,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Arrange
             var scriptGenerator = GetNodePlatform(
                 defaultNodeVersion: NodeVersions.Node12Version,
-                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1", ShouldPackage = true },
                 new NodeScriptGeneratorOptions());
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
@@ -617,8 +617,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Contains($"Switching to package directory provided: " +
-                 "'{context.Properties[NodePlatform.PackageDirectoryPropertyKey]}'...",
+            Assert.Contains("Switching to package directory provided: " +
+                $"'{context.Properties[NodePlatform.PackageDirectoryPropertyKey]}'...",
                 snippet.BashBuildScriptSnippet);
             Assert.Contains($"cd {context.Properties[NodePlatform.PackageDirectoryPropertyKey]}",
                 snippet.BashBuildScriptSnippet);

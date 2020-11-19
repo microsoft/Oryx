@@ -687,8 +687,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .SetEnvironmentVariable(
                     SettingsKeys.EnableNodeMonorepoBuild,
                     true.ToString())
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p {NodePlatform.PackageDirectoryPropertyKey}=packages/app1")
-                .AddFileExistsCheck($"{appDir}/packages/app1/app1-0.1.0.tgz")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=packages/app1")
+                .AddFileExistsCheck($"{appOutputDir}/packages/app1/app1-0.1.0.tgz")
                 .ToString();
 
              // Act
