@@ -234,9 +234,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var productionOnlyPackageInstallCommand = string.Format(
                 NodeConstants.ProductionOnlyPackageInstallCommandTemplate, packageInstallCommand);
 
-            if (string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand) &&
-                string.IsNullOrEmpty(runBuildLernaCommand) &&
-                string.IsNullOrEmpty(runBuildLageCommand))
+            if (string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomBuildCommand)
+                && string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand) 
+                && string.IsNullOrEmpty(runBuildLernaCommand)
+                && string.IsNullOrEmpty(runBuildLageCommand))
             {
                 var scriptsNode = packageJson?.scripts;
                 if (scriptsNode != null)
@@ -256,6 +257,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             if (IsBuildRequired(ctx)
+                && string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomBuildCommand)
                 && string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand)
                 && string.IsNullOrEmpty(runBuildCommand)
                 && string.IsNullOrEmpty(runBuildAzureCommand)
@@ -330,6 +332,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 AppInsightsLoaderFileName = NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
                 PackageInstallerVersionCommand = packageInstallerVersionCommand,
                 RunNpmPack = _commonOptions.ShouldPackage,
+                CustomBuildCommand = _nodeScriptGeneratorOptions.CustomBuildCommand,
                 CustomRunBuildCommand = _nodeScriptGeneratorOptions.CustomRunBuildCommand,
                 LernaRunBuildCommand = runBuildLernaCommand,
                 InstallLernaCommand = installLernaCommand,

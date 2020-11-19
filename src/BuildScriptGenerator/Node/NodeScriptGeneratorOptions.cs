@@ -13,6 +13,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// </summary>
         public string CustomRunBuildCommand { get; set; }
 
+        /// <summary>
+        /// Gets or sets custom build command or script that will run without 'npm install' in the generated
+        /// build script.
+        /// </summary>
+        public string CustomBuildCommand { get; set; }
+
         public bool PruneDevDependencies { get; set; }
 
         public string NpmRegistryUrl { get; set; }

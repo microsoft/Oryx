@@ -55,5 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string InstallLageCommand { get; set; }
 
         public string LageRunBuildCommand { get; set; }
+
+        public string CustomBuildCommand { get; set; }
     }
 }

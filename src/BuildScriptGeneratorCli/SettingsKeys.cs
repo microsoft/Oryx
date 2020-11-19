@@ -29,6 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string DotNetVersion = "DOTNET_VERSION";
         public const string NodeVersion = "NODE_VERSION";
         public const string CustomRunBuildCommand = "RUN_BUILD_COMMAND";
+        public const string CustomBuildCommand = "CUSTOM_BUILD_COMMAND";
         public const string PythonVersion = "PYTHON_VERSION";
         public const string PhpVersion = "PHP_VERSION";
         public const string PhpComposerVersion = "PHP_COMPOSER_VERSION";
