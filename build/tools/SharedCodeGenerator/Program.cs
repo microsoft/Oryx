@@ -83,7 +83,45 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                 }
             }
 
+            GenerateSupportedPlatformsReadmeFile(outputBasePath);
+
             return ExitSuccess;
+        }
+
+        private static void GenerateSupportedPlatformsReadmeFile(string repoDir)
+        {
+            var platformsDir = Path.Combine(repoDir, "platforms");
+            var targetReadmeFilePath = Path.Combine(repoDir, "doc", "supportedPlatformVerions.md");
+            Console.WriteLine($"Writing file '{targetReadmeFilePath}'");
+            using (var sw = new StreamWriter(File.Open(targetReadmeFilePath, FileMode.Create)))
+            {
+                sw.WriteLine("# Supported platforms and versions");
+                sw.WriteLine();
+                foreach (var subDirPath in Directory.GetDirectories(platformsDir))
+                {
+                    var subDirInfo = new DirectoryInfo(subDirPath);
+                    var platformName = subDirInfo.Name;
+                    sw.WriteLine($"## {platformName}");
+                    sw.WriteLine();
+                    var versionFile = Path.Join(subDirPath, "versionsToBuild.txt");
+                    var versionFileContents = File.ReadAllLines(versionFile);
+                    foreach (var line in versionFileContents)
+                    {
+                        if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#"))
+                        {
+                            continue;
+                        }
+
+                        var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
+                        var versionPart = parts[0];
+                        sw.WriteLine($"- {versionPart}");
+                    }
+
+                    sw.WriteLine();
+                }
+
+                sw.Flush();
+            }
         }
 
         public static string BuildAutogenDisclaimer(string inputFile)
