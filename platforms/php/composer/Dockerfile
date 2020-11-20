@@ -22,11 +22,9 @@ RUN set -eux; \
     compressedSdkDir="/tmp/compressedSdk"; \
     mkdir -p "$compressedSdkDir"; \
     cd "$composerDir"; \
-    composerSdkFile="php-composer-$COMPOSER_VERSION.tar.gz"; \
-    if [ "$DEBIAN_FLAVOR" == "stretch" ] ; then \
-       composerSdkFile="php-composer-$COMPOSER_VERSION.tar.gz"; \
-    else \
-       composerSdkFile="php-composer-$DEBIAN_FLAVOR-$COMPOSER_VERSION.tar.gz"; \
+    composerSdkFile="php-composer-$DEBIAN_FLAVOR-$COMPOSER_VERSION.tar.gz"; \
+    if [ "$DEBIAN_FLAVOR" == "stretch" ]; then \
+       composerSdkFile="php-composer-$COMPOSER_VERSION.tar.gz"; \ 
     fi;  \
     tar -zcf "$compressedSdkDir/$composerSdkFile" .
  
