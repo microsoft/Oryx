@@ -20,10 +20,11 @@ RUN set -eux; \
     $phpbin composer-setup.php --version=$COMPOSER_VERSION --install-dir="$composerDir" ; \
     $phpbin -r "unlink('composer-setup.php');" ; \
     compressedSdkDir="/tmp/compressedSdk"; \
+    mkdir -p "$compressedSdkDir"; \
     cd "$composerDir"; \
     composerSdkFile="php-composer-$COMPOSER_VERSION.tar.gz"; \
     if [ "$DEBIAN_FLAVOR" == "stretch" ] ; then \
-       composerSdkFile="php-composer-$COMPOSER_VERSION.tar.gz" \
+       composerSdkFile="php-composer-$COMPOSER_VERSION.tar.gz"; \
     else \
        composerSdkFile="php-composer-$DEBIAN_FLAVOR-$COMPOSER_VERSION.tar.gz"; \
     fi;  \
