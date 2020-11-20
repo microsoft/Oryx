@@ -104,17 +104,20 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                     sw.WriteLine($"## {platformName}");
                     sw.WriteLine();
                     var versionFile = Path.Join(subDirPath, "versionsToBuild.txt");
-                    var versionFileContents = File.ReadAllLines(versionFile);
-                    foreach (var line in versionFileContents)
+                    using (var reader = new StreamReader(versionFile))
                     {
-                        if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#"))
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
                         {
-                            continue;
-                        }
+                            if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#"))
+                            {
+                                continue;
+                            }
 
-                        var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
-                        var versionPart = parts[0];
-                        sw.WriteLine($"- {versionPart}");
+                            var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
+                            var versionPart = parts[0];
+                            sw.WriteLine($"- {versionPart}");
+                        }
                     }
 
                     sw.WriteLine();
