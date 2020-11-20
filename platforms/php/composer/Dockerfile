@@ -25,7 +25,7 @@ RUN set -eux; \
     echo 'debian flavor is: $DEBIAN_FLAVOR' ; \
     composerSdkFile="php-composer-$DEBIAN_FLAVOR-$COMPOSER_VERSION.tar.gz"; \
     if [ "$DEBIAN_FLAVOR" = "stretch" ]; then \
-       echo 'somehow debian flavor is: $DEBIAN_FLAVOR' \
+       echo 'somehow debian flavor is: $DEBIAN_FLAVOR'; \
        composerSdkFile="php-composer-$COMPOSER_VERSION.tar.gz"; \ 
     fi;  \
     tar -zcf "$compressedSdkDir/$composerSdkFile" .
