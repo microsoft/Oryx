@@ -16,7 +16,10 @@ echo
 debianFlavor="$DEBIAN_FLAVOR"
 
 fileName="dotnet.tar.gz"
-if [ "$debianFlavor" == "stretch" ]; then
+if [ -z "$debianFlavor" ]; then
+  # Use default sdk file name
+	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
+elif [ "$debianFlavor" == "stretch" ]; then
 	# Use default sdk file name
 	fileName="dotnet-$DOTNET_SDK_VER.tar.gz"
 else
