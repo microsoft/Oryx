@@ -12,18 +12,29 @@ source $REPO_DIR/platforms/__common.sh
 
 nodePlatformDir="$REPO_DIR/platforms/nodejs"
 hostNodeArtifactsDir="$volumeHostDir/nodejs"
+debianFlavor="$1"
 mkdir -p "$hostNodeArtifactsDir"
 
 builtNodeImage=false
 getNode() {
 	local version="$1"
+	
+	tarFileName="nodejs-$version.tar.gz"
+    
+    if [ "$debianFlavor" == "stretch" ]; then
+			# Use default sdk file name
+			tarFileName=nodejs-$version.tar.gz
+	else
+			tarFileName=nodejs-$debianFlavor-$version.tar.gz
+	fi
 
-	if shouldBuildSdk nodejs nodejs-$version.tar.gz || shouldOverwriteSdk || shouldOverwriteNodeSdk; then
+	if shouldBuildSdk nodejs $tarFileName || shouldOverwriteSdk || shouldOverwriteNodeSdk; then
 		echo "Getting Node version '$version'..."
 		echo
 
 		if ! $builtNodeImage; then
 			docker build \
+				--build-arg DEBIAN_FLAVOR=$debianFlavor \
 				-f "$nodePlatformDir/Dockerfile" \
 				-t $imageName \
 				$REPO_DIR

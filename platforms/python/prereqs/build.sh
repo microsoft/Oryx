@@ -9,6 +9,25 @@ set -ex
 wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz -O /python.tar.xz
 wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc -O /python.tar.xz.asc
 
+debianFlavor=$DEBIAN_FLAVOR
+pythonSdkFileName=""
+
+if [ "$debianFlavor" == "stretch" ]; then
+	# Use default python sdk file name
+	pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
+else
+	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
+    # for buster and ubuntu we would need following libraries to build php 
+    apt-get update && \
+	apt-get upgrade -y && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		libssl-dev \
+		libncurses5-dev \
+		libsqlite3-dev \
+		libreadline-dev \
+		libgdm-dev
+fi
+
 # Try getting the keys 5 times at most
 /tmp/receiveGpgKeys.sh $GPG_KEY
     
@@ -79,4 +98,4 @@ sed -i 's|logger\.debug('\''Cleaning up\.\.\.'\'')|logger\.info('\''Cleaning up\
 compressedSdkDir="/tmp/compressedSdk"
 mkdir -p $compressedSdkDir
 cd "$INSTALLATION_PREFIX"
-tar -zcf $compressedSdkDir/python-$PYTHON_VERSION.tar.gz .
+tar -zcf $compressedSdkDir/$pythonSdkFileName .

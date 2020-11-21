@@ -64,6 +64,10 @@ FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE
 
+# add an environment variable to determine debian_flavor
+# to correctly download platform sdk during platform installation
+ENV DEBIAN_FLAVOR="focal-scm"
+
 COPY --from=intermediate /opt /opt
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
@@ -103,6 +107,9 @@ RUN set -ex \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
     && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
+       INSTALL_PACKAGES="true" \
+       $imagesDir/build/installDotNetCore.sh \
+    && DOTNET_SDK_VER=$DOT_NET_50_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \

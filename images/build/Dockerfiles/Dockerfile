@@ -15,6 +15,7 @@ ARG RELEASE_TAG_NAME=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
+ENV DEBIAN_FLAVOR="stretch"
 
 RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
 RUN ./build.sh node       /opt/startupcmdgen/nodejs

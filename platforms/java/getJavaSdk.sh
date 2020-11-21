@@ -6,6 +6,7 @@ source $REPO_DIR/platforms/__common.sh
 
 javaPlatformDir="$REPO_DIR/platforms/java"
 hostJavaArtifactsDir="$volumeHostDir/java"
+debianFlavor="$1"
 mkdir -p "$hostJavaArtifactsDir"
 
 rm -rf /tmp/java
@@ -18,6 +19,13 @@ downloadJavaSdk()
     local JDK_BUILD_NUMBER="$2"
 
     tarFileName="java-$JDK_VERSION.tar.gz"
+    
+    if [ "$debianFlavor" == "stretch" ]; then
+			# Use default sdk file name
+			tarFileName=java-$JDK_VERSION.tar.gz
+	else
+			tarFileName=java-$debianFlavor-$JDK_VERSION.tar.gz
+	fi
 
     # Version 8 or 1.8.0 has a different url format than rest of the versions, so special casing it.
     if [ "$JDK_VERSION" == "1.8.0" ]; then

@@ -1,5 +1,6 @@
 parameters:
     platformName: ''
+    debianFlavor: ''
   
 steps:
 - checkout: self
@@ -14,7 +15,7 @@ steps:
   displayName: 'Building platform binaries'
   inputs:
     scriptPath: ./build/buildPlatformBinaries.sh
-    args: ${{ parameters.platformName }}
+    args: ${{ parameters.platformName }} ${{ parameters.debianFlavor }}
 
 - task: CopyFiles@2
   displayName: 'Copy artifacts from source repo to agent artifacts folder'

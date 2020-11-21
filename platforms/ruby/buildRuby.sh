@@ -13,6 +13,7 @@ source $REPO_DIR/build/__rubyVersions.sh
 
 rubyPlatformDir="$REPO_DIR/platforms/ruby"
 targetDir="$volumeHostDir/ruby"
+debianFlavor=$1
 mkdir -p "$targetDir"
 
 builtRubyPrereqs=false
@@ -20,7 +21,10 @@ buildRubyPrereqsImage() {
 	if ! $builtRubyPrereqs; then
 		echo "Building Ruby pre-requisites image..."
 		echo
-		docker build -f "$rubyPlatformDir/prereqs/Dockerfile" -t "ruby-build-prereqs" $REPO_DIR
+		docker build \
+			   --build-arg DEBIAN_FLAVOR=$debianFlavor \
+			   -f "$rubyPlatformDir/prereqs/Dockerfile" \
+			   -t "ruby-build-prereqs" $REPO_DIR
 		builtRubyPrereqs=true
 	fi
 }
@@ -29,8 +33,16 @@ buildRuby() {
 	local version="$1"
 	local sha="$2"
 	local imageName="oryx/ruby"
+	local rubySdkFileName=""
 
-	if shouldBuildSdk ruby ruby-$version.tar.gz || shouldOverwriteSdk || shouldOverwriteRubySdk; then
+	if [ "$debianFlavor" == "stretch" ]; then
+		# Use default python sdk file name
+		rubySdkFileName=ruby-$version.tar.gz
+	else
+		rubySdkFileName=ruby-$debianFlavor-$version.tar.gz
+	fi 
+
+	if shouldBuildSdk ruby $rubySdkFileName || shouldOverwriteSdk || shouldOverwriteRubySdk; then
 		if ! $builtRubyPrereqs; then
 			buildRubyPrereqsImage
 		fi

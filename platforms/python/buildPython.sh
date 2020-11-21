@@ -13,6 +13,7 @@ source $REPO_DIR/build/__pythonVersions.sh
 
 pythonPlatformDir="$REPO_DIR/platforms/python"
 targetDir="$volumeHostDir/python"
+debianFlavor=$1
 mkdir -p "$targetDir"
 
 builtPythonPrereqs=false
@@ -20,7 +21,10 @@ buildPythonPrereqsImage() {
 	if ! $builtPythonPrereqs; then
 		echo "Building Python pre-requisites image..."
 		echo
-		docker build -f "$pythonPlatformDir/prereqs/Dockerfile" -t "python-build-prereqs" $REPO_DIR
+		docker build  \
+			   --build-arg DEBIAN_FLAVOR=$debianFlavor \
+			   -f "$pythonPlatformDir/prereqs/Dockerfile"  \
+			   -t "python-build-prereqs" $REPO_DIR
 		builtPythonPrereqs=true
 	fi
 }
@@ -30,8 +34,16 @@ buildPython() {
 	local gpgKey="$2"
 	local dockerFile="$3"
 	local imageName="oryx/python"
+	local pythonSdkFileName=""
 
-	if shouldBuildSdk python python-$version.tar.gz || shouldOverwriteSdk || shouldOverwritePythonSdk; then
+	if [ "$debianFlavor" == "stretch" ]; then
+			# Use default python sdk file name
+			pythonSdkFileName=python-$version.tar.gz
+	else
+			pythonSdkFileName=python-$debianFlavor-$version.tar.gz
+	fi
+
+	if shouldBuildSdk python $pythonSdkFileName || shouldOverwriteSdk || shouldOverwritePythonSdk; then
 		if ! $builtPythonPrereqs; then
 			buildPythonPrereqsImage
 		fi

@@ -6,6 +6,7 @@ source $REPO_DIR/platforms/__common.sh
 
 mavenPlatformDir="$REPO_DIR/platforms/java/maven"
 hostMavenArtifactsDir="$volumeHostDir/maven"
+debianFlavor="$1"
 mkdir -p "$hostMavenArtifactsDir"
 
 rm -rf /tmp/maven
@@ -17,6 +18,14 @@ downloadMavenBinary()
 {
     local version="$1"
     tarFileName="maven-$version.tar.gz"
+
+    if [ "$debianFlavor" == "stretch" ]; then
+			# Use default sdk file name
+			tarFileName=maven-$version.tar.gz
+	else
+			tarFileName=maven-$debianFlavor-$version.tar.gz
+	fi
+
     if shouldBuildSdk maven $tarFileName || shouldOverwriteSdk || shouldOverwriteMavenBinary; then
         curl -L "$baseUrl/$version/binaries/apache-maven-$version-bin.tar.gz" -o $tarFileName
         rm -rf extracted

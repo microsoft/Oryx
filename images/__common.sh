@@ -5,12 +5,13 @@ function downloadFileAndVerifyChecksum() {
     local platformName="$1"
     local version="$2"
     local downloadedFileName="$3"
+    local downloadableFileName="$3"
     local headersFile="/tmp/headers.txt"
 
     echo "Downloading $platformName version '$version'..."
     curl \
         -D $headersFile \
-        -SL "$DEV_SDK_STORAGE_BASE_URL/$platformName/$platformName-$version.tar.gz" \
+        -SL "$DEV_SDK_STORAGE_BASE_URL/$platformName/$downloadableFileName" \
         --output $downloadedFileName
 
     # Use all lowercase letters to find the header and it's value

@@ -41,7 +41,18 @@ eval set -- "$PARAMS"
 PLATFORM_NAME="$1"
 VERSION="$2"
 
+debianFlavor=$DEBIAN_FLAVOR
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
+if [ -z "$debianFlavor" ]; then
+  # Use default sdk file name
+	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
+elif [ "$debianFlavor" == "stretch" ]; then
+	# Use default sdk file name
+	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
+else
+  fileName="$PLATFORM_NAME-$debianFlavor-$VERSION.tar.gz"
+fi
+
 platformDir="/opt/$PLATFORM_NAME"
 
 if [ -z "$targetDir" ]; then
