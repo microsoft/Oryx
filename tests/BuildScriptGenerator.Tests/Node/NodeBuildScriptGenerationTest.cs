@@ -620,7 +620,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Contains("Switching to package directory provided: " +
                 $"'{context.Properties[NodePlatform.PackageDirectoryPropertyKey]}'...",
                 snippet.BashBuildScriptSnippet);
-            Assert.Contains($"cd {context.Properties[NodePlatform.PackageDirectoryPropertyKey]}",
+            Assert.Contains("cd \"$SOURCE_DIR/$packageDirName\"",
                 snippet.BashBuildScriptSnippet);
         }
 
