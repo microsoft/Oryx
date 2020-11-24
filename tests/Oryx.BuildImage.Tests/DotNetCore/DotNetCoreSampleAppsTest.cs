@@ -861,6 +861,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("github-actions")]
+        [InlineData("github-actions-buster")]
         [InlineData("lts-versions")]
         [InlineData("vso")]
         [InlineData("vso-focal")]

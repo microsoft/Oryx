@@ -64,6 +64,7 @@ tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:$BUILD_DEFINITIONNAME.$RE
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "lts-versions" "lts-versions-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack" "azfunc-jamstack-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions" "github-actions-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-buster" "github-actions-buster-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso" "vso-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-focal-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso-focal" "vso-focal-$RELEASE_TAG_NAME"
 

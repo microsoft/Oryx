@@ -101,6 +101,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("github-actions")]
+        [InlineData("github-actions-buster")]
         [InlineData("lts-versions")]
         [InlineData("latest")]
         public void DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(string imageTag)

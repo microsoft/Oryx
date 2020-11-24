@@ -27,8 +27,10 @@ namespace Microsoft.Oryx.Integration.Tests
             {
                 var data = new TheoryData<string, string>();
                 data.Add("7.3", ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage());
+                data.Add("7.3", ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage("buster"));
                 var imageHelper = new ImageTestHelper();
                 data.Add("7.4", imageHelper.GetGitHubActionsBuildImage());
+                data.Add("7.4", imageHelper.GetGitHubActionsBuildImage("buster"));
                 return data;
             }
         }

@@ -33,6 +33,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("github-actions")]
+        [InlineData("github-actions-buster")]
         [InlineData("latest")]
         public async Task NodeApp_MicrosoftSqlServerDB(string imageTag)
         {
@@ -75,6 +76,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("github-actions")]
+        [InlineData("github-actions-buster")]
         [InlineData("latest")]
         public async Task Python37App_MicrosoftSqlServerDB(string imageTag)
         {
@@ -117,6 +119,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("7.3", "github-actions")]
+        [InlineData("7.3", "github-actions-buster")]
         [InlineData("7.2", "github-actions")]
         [InlineData("7.3", "latest")]
         [InlineData("7.2", "latest")]
