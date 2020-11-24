@@ -147,6 +147,10 @@ cd "$SOURCE_DIR"
 {{ if RunNpmPack }}
 	{{ if PackageDirectory | IsNotBlank }}
 	echo "Switching to package directory provided: '{{ PackageDirectory }}'..."
+	if [ ! -d "$SOURCE_DIR/$packageDirName" ]; then
+		echo "Package directory '$SOURCE_DIR/$packageDirName' does not exist." 1>&2
+		exit 1
+	fi
 	cd "$SOURCE_DIR/$packageDirName"
 	{{ end }}
 echo
