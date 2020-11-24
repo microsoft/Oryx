@@ -88,6 +88,7 @@ RUN set -ex \
 
 FROM main AS final
 ARG SDK_STORAGE_BASE_URL_VALUE
+ARG IMAGES_DIR="/opt/tmp/images"
 ARG AI_KEY
 
 COPY --from=intermediate /opt /opt

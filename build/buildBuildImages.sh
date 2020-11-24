@@ -166,7 +166,7 @@ function buildGitHubActionsImage() {
 	local devImageTag=github-actions
 	local builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
 
-	if [ -z "$debianFlavor" || "$debianFlavor" == "stretch" ]; then
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
 		debianFlavor="stretch"
 	elif  [ "$debianFlavor" == "buster" ]; then
 		debianFlavor="buster"
