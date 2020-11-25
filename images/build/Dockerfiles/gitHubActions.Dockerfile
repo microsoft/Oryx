@@ -104,6 +104,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         curl \
         xz-utils \
         libsodium-dev \
+        libncurses5 \
     --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
     else \
         .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \

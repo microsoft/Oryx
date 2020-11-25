@@ -119,7 +119,7 @@ function buildGitHubRunnersUbuntuBaseImage() {
 function buildGitHubRunnersBusterBaseImage() {
 	
 	echo
-	echo "----Building the image which uses GitHub runners' buildpackdeps-focal-scm specific digest----------"
+	echo "----Building the image which uses GitHub runners' buildpackdeps-buster-scm specific digest----------"
 	docker build -t githubrunners-buildpackdeps-buster \
 		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_BUSTER_DOCKERFILE" \
 		.
@@ -386,6 +386,7 @@ function buildBuildPackImage() {
 }
 
 if [ -z "$imageTypeToBuild" ]; then
+	buildGitHubActionsImage "buster"
 	buildGitHubActionsImage
 	buildJamStackImage
 	buildLtsVersionsImage
