@@ -679,7 +679,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = DockerVolume.CreateMirror(
                 Path.Combine(_hostSamplesDir, "nodejs", "monorepo-lerna-yarn"));
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
@@ -687,8 +686,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .SetEnvironmentVariable(
                     SettingsKeys.EnableNodeMonorepoBuild,
                     true.ToString())
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=packages/app1")
-                .AddFileExistsCheck($"{appOutputDir}/packages/app1/app1-0.1.0.tgz")
+                .AddBuildCommand($"{appDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=packages/app1")
+                .AddFileExistsCheck($"{appDir}/packages/app1/app1-0.1.0.tgz")
                 .ToString();
 
              // Act
@@ -724,7 +723,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     SettingsKeys.EnableNodeMonorepoBuild,
                     true.ToString())
                 .AddBuildCommand($"{appDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=''")
-                .AddFileExistsCheck($"{appDir}/")
+                .AddFileExistsCheck($"{appDir}/lerna-monorepo-post-1.0.0.tgz")
                 .ToString();
 
              // Act
@@ -741,41 +740,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
-        public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir_ExitWhenPackageDirDoesNotExist()
-        {
-            // Arrange
-            var volume = DockerVolume.CreateMirror(
-                Path.Combine(_hostSamplesDir, "nodejs", "monorepo-lerna-yarn"));
-            var appDir = volume.ContainerDir;
-            var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
-                .SetEnvironmentVariable(
-                    SettingsKeys.EnableNodeMonorepoBuild,
-                    true.ToString())
-                .AddBuildCommand($"{appDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=packages/random")
-                .ToString();
-
-             // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.False(result.IsSuccess);
                 },
                 result.GetDebugInfo());
         }

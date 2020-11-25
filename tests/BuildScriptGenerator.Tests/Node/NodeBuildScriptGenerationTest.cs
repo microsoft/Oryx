@@ -624,6 +624,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 snippet.BashBuildScriptSnippet);
         }
 
+        [Fact]
+        public void GeneratedScript_RunsNpmPackCommand_ExitWhenPackageDirectoryDoesNotExist()
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1", ShouldPackage = true },
+                new NodeScriptGeneratorOptions());
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            context.Properties[NodePlatform.PackageDirectoryPropertyKey] = "packages/random";
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Contains("Switching to package directory provided: " +
+                $"'{context.Properties[NodePlatform.PackageDirectoryPropertyKey]}'...",
+                snippet.BashBuildScriptSnippet);
+            Assert.Contains($"Package directory '$SOURCE_DIR/$packageDirName' does not exist.",
+                snippet.BashBuildScriptSnippet);
+        }
+
         private static IProgrammingPlatform GetNodePlatform(
             string defaultNodeVersion,
             BuildScriptGeneratorOptions commonOptions,
