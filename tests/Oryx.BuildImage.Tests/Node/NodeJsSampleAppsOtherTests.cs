@@ -677,17 +677,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var volume = DockerVolume.CreateMirror(
-                Path.Combine(_hostSamplesDir, "nodejs", "monorepo-lerna-yarn"));
+                Path.Combine(_hostSamplesDir, "nodejs", "node-nested-nodemodules"));
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .SetEnvironmentVariable(
-                    SettingsKeys.EnableNodeMonorepoBuild,
-                    true.ToString())
-                .AddBuildCommand($"{appDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=packages/app1")
-                .AddFileExistsCheck($"{appDir}/packages/app1/app1-0.1.0.tgz")
+                .AddBuildCommand($"{appDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=another-directory")
+                .AddFileExistsCheck($"{appDir}/another-directory/kudu-bug-0.0.0.tgz")
                 .ToString();
 
              // Act
