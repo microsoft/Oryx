@@ -34,6 +34,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         RequireBuildPropertyKey,
         "Requires either 'npm run build' or 'yarn run build' or custom run build command  to be run. Default is false. " +
         "If value is not provided, it is assumed to be 'true'.")]
+    [BuildProperty(
+        PackageDirectoryPropertyKey,
+        "When multiple packages exists in a repo, indicates within which package directory it will run "+ 
+        "'npm run pack' command'. If value is not provided, it is assumed to be root directory.")]
     internal class NodePlatform : IProgrammingPlatform
     {
         /// <summary>
@@ -50,6 +54,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// Property key of prune_dev_dependencies.
         /// </summary>
         internal const string PruneDevDependenciesPropertyKey = "prune_dev_dependencies";
+
+        /// <summary>
+        /// Property key of package_directory.
+        /// </summary>
+        internal const string PackageDirectoryPropertyKey = "package_directory";
 
         /// <summary>
         /// Property key of require_build.
@@ -314,9 +323,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
             }
 
+            string packageDir = null;
+            if (ctx.Properties != null)
+            {
+                ctx.Properties.TryGetValue(PackageDirectoryPropertyKey, out packageDir);
+                if (!string.IsNullOrWhiteSpace(packageDir))
+                {
+                    // Write the package directory to the build manifest
+                    manifestFileProperties[$"{PackageDirectoryPropertyKey}"] = packageDir;
+                }
+            }
+
             var scriptProps = new NodeBashBuildSnippetProperties
             {
                 PackageRegistryUrl = customRegistryUrl,
+                PackageDirectory = packageDir,
                 PackageInstallCommand = packageInstallCommand,
                 NpmRunBuildCommand = runBuildCommand,
                 NpmRunBuildAzureCommand = runBuildAzureCommand,

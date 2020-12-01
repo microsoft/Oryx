@@ -29,6 +29,7 @@ prodModulesDirName=".oryx_prod_node_modules"
 PruneDevDependencies={{ PruneDevDependencies }}
 HasProdDependencies={{ HasProdDependencies }}
 HasDevDependencies={{ HasDevDependencies }}
+packageDirName={{ PackageDirectory }}
 
 # if node modules exist separately for dev & prod (like from an earlier build),
 # rename the folders back appropriately for the current build
@@ -149,6 +150,14 @@ cd "$SOURCE_DIR"
 {{ end }}
 
 {{ if RunNpmPack }}
+	{{ if PackageDirectory | IsNotBlank }}
+	echo "Switching to package directory provided: '{{ PackageDirectory }}'..."
+	if [ ! -d "$SOURCE_DIR/$packageDirName" ]; then
+		echo "Package directory '$SOURCE_DIR/$packageDirName' does not exist." 1>&2
+		exit 1
+	fi
+	cd "$SOURCE_DIR/$packageDirName"
+	{{ end }}
 echo
 echo "Running custom packaging scripts that might exist..."
 echo
@@ -159,6 +168,8 @@ echo "Running 'npm pack'..."
 echo
 npm pack
 {{ end }}
+
+cd "$SOURCE_DIR"
 
 if [ "$PruneDevDependencies" == "true" ] && [ "$HasDevDependencies" == "true" ]
 then

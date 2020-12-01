@@ -12,6 +12,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     {
         public string PackageRegistryUrl { get; set; }
 
+        public string PackageDirectory { get; set; }
+
         public string PackageInstallCommand { get; set; }
 
         public string NpmRunBuildCommand { get; set; }

@@ -673,6 +673,75 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir()
+        {
+            // Arrange
+            var volume = DockerVolume.CreateMirror(
+                Path.Combine(_hostSamplesDir, "nodejs", "node-nested-nodemodules"));
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddBuildCommand($"{appDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=another-directory")
+                .AddFileExistsCheck($"{appDir}/another-directory/kudu-bug-0.0.0.tgz")
+                .ToString();
+
+             // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir_WhenPackageDirAndSourceDirAreSame()
+        {
+            // Arrange
+            var volume = DockerVolume.CreateMirror(
+                Path.Combine(_hostSamplesDir, "nodejs", "monorepo-lerna-yarn"));
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .SetEnvironmentVariable(
+                    SettingsKeys.EnableNodeMonorepoBuild,
+                    true.ToString())
+                .AddBuildCommand($"{appDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=''")
+                .AddFileExistsCheck($"{appDir}/lerna-monorepo-post-1.0.0.tgz")
+                .ToString();
+
+             // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.BuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void BuildsNodeApp_AndDoesNotCopyDevDependencies_IfPruneDevDependenciesIsTrue_AndNoProdDependencies()
         {
             // Arrange
