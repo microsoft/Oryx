@@ -200,6 +200,7 @@ function buildGitHubActionsImage() {
 	
 	docker build \
 		-t "$ORYXTESTS_BUILDIMAGE_REPO:$devImageTag" \
+		--build-arg PARENT_IMAGE_BASE=$devImageTag \
 		-f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
 		.
 }
