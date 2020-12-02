@@ -8,6 +8,6 @@ jobs:
     name: OryxLinux
     demands:
     - agent.name -equals ${{ parameters.agentName }}
-  timeoutInMinutes: 30
+  timeoutInMinutes: 50
   steps:
   - template: _cleanImageCacheTemplate.yml
