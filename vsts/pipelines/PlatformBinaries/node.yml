@@ -4,7 +4,17 @@ variables:
 stages:
 - stage: Build
   jobs:
-  - job: Node
+  - job: Node_Buster
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'nodejs'
+        debianFlavor: 'buster'
+
+  - job: Node_Stretch
     timeoutInMinutes: 250
     pool:
       name: OryxLinux
