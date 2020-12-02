@@ -116,6 +116,15 @@ function buildGitHubRunnersUbuntuBaseImage() {
 		.
 }
 
+function buildGitHubRunnersBusterBaseImage() {
+	
+	echo
+	echo "----Building the image which uses GitHub runners' buildpackdeps-buster-scm specific digest----------"
+	docker build -t githubrunners-buildpackdeps-buster \
+		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_BUSTER_DOCKERFILE" \
+		.
+}
+
 function buildGitHubRunnersBaseImage() {
 	echo
 	echo "----Building the image which uses GitHub runners' buildpackdeps-stretch specific digest----------"
@@ -126,19 +135,14 @@ function buildGitHubRunnersBaseImage() {
 
 function buildTemporaryFilesImage() {
 	buildGitHubRunnersBaseImage
+	buildGitHubRunnersBusterBaseImage
 	buildGitHubRunnersUbuntuBaseImage
 
 	# Create the following image so that it's contents can be copied to the rest of the images below
 	echo
-	echo "-------------Creating temporary files image-------------------"
+	echo "------Creating temporary files image-------"
 	docker build -t support-files-image-for-build \
 		-f "$BUILD_IMAGES_SUPPORT_FILES_DOCKERFILE" \
-		.
-
-	echo
-	echo "------Creating temporary files image for Ubuntu Focal-----------"
-	docker build -t support-files-image-for-ubuntu-build \
-		-f "$BUILD_IMAGES_SUPPORT_FILES_UBUNTU_DOCKERFILE" \
 		.
 }
 
@@ -158,14 +162,28 @@ function buildBuildScriptGeneratorImage() {
 }
 
 function buildGitHubActionsImage() {
+	local debianFlavor=$1
+	local devImageTag=github-actions
+	local builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
+
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+		debianFlavor="stretch"
+	elif  [ "$debianFlavor" == "buster" ]; then
+		debianFlavor="buster"
+		devImageTag=$devImageTag-$debianFlavor
+		echo "dev image tag: "$devImageTag
+		builtImageName=$builtImageName-$debianFlavor
+		echo "built image name: "$builtImageName
+	fi
+
 	buildBuildScriptGeneratorImage
 	
 	echo
 	echo "-------------Creating build image for GitHub Actions-------------------"
-	local builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
 		.
@@ -177,10 +195,12 @@ function buildGitHubActionsImage() {
 	docker history $builtImageName
 	echo
 
-	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO:github-actions
+
+	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO:$devImageTag
 	
 	docker build \
-		-t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
+		-t "$ORYXTESTS_BUILDIMAGE_REPO:$devImageTag" \
+		--build-arg PARENT_IMAGE_BASE=$devImageTag \
 		-f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
 		.
 }
@@ -367,6 +387,7 @@ function buildBuildPackImage() {
 }
 
 if [ -z "$imageTypeToBuild" ]; then
+	buildGitHubActionsImage "buster"
 	buildGitHubActionsImage
 	buildJamStackImage
 	buildLtsVersionsImage
@@ -377,6 +398,8 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildBuildPackImage
 elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
+elif [ "$imageTypeToBuild" == "githubactions-buster" ]; then
+	buildGitHubActionsImage "buster"
 elif [ "$imageTypeToBuild" == "jamstack" ]; then
 	buildJamStackImage
 elif [ "$imageTypeToBuild" == "ltsversions" ]; then

@@ -57,7 +57,7 @@ RUN LANG="C.UTF-8" \
 # since this intermediate stage is copied to final stage.
 # For example, if we put yarn-cache here it is going to impact perf since it more than 500MB
 FROM main AS intermediate
-COPY --from=support-files-image-for-ubuntu-build /tmp/oryx/ /opt/tmp
+COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
  
 FROM main AS final

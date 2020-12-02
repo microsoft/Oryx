@@ -21,6 +21,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         private const string _azureFunctionsJamStack = "azfunc-jamstack";
         private const string _gitHubActions = "github-actions";
+        private const string _gitHubActionsBuster = "github-actions-buster";
         private const string _vso = "vso";
         private const string _vsoUbuntu = "vso-focal";
         private const string _buildRepository = "build";
@@ -167,6 +168,10 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetGitHubActionsBuildImage();
             }
+            else if (string.Equals(tag, _gitHubActionsBuster))
+            {
+                return GetGitHubActionsBuildImage(_gitHubActionsBuster);
+            }
 
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
@@ -193,8 +198,13 @@ namespace Microsoft.Oryx.Tests.Common
             return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStack}{_tagSuffix}";
         }
 
-        public string GetGitHubActionsBuildImage()
+        public string GetGitHubActionsBuildImage(string debianFlavor=null)
         {
+            if (!string.IsNullOrEmpty(debianFlavor)
+                && string.Equals(debianFlavor.ToLower(), _gitHubActionsBuster))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBuster}{_tagSuffix}";
+            }
             return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
         }
 

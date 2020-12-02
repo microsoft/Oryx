@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("latest")]
         [InlineData("github-actions")]
+        [InlineData("github-actions-buster")]
         public async Task NodeApp_MySqlDB(string imageTag)
         {
             await RunTestAsync(
@@ -34,10 +35,13 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("mysql-pymysql-sample", "latest")]
         [InlineData("mysql-pymysql-sample", "github-actions")]
+        [InlineData("mysql-pymysql-sample", "github-actions-buster")]
         [InlineData("mysql-mysqlconnector-sample", "latest")]
         [InlineData("mysql-mysqlconnector-sample", "github-actions")]
+        [InlineData("mysql-mysqlconnector-sample", "github-actions-buster")]
         [InlineData("mysql-mysqlclient-sample", "latest")]
         [InlineData("mysql-mysqlclient-sample", "github-actions")]
+        [InlineData("mysql-mysqlclient-sample", "github-actions-buster")]
         public async Task Python37App_MySqlDB_UsingPyMySql_UsingLtsVersionsBuildImage(
             string sampleAppName,
             string imageTag)
@@ -52,6 +56,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("7.3", "latest")]
         [InlineData("7.3", "github-actions")]
+        [InlineData("7.3", "github-actions-buster")]
         [InlineData("7.2", "latest")]
         [InlineData("7.2", "github-actions")]
         [InlineData("7.0", "latest")]

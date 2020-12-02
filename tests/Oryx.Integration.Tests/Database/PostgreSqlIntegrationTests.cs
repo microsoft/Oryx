@@ -21,6 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("github-actions")]
+        [InlineData("github-actions-buster")]
         [InlineData("latest")]
         public async Task NodeApp_PostgreSqlDB(string imageTag)
         {
@@ -33,6 +34,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("github-actions")]
+        [InlineData("github-actions-buster")]
         [InlineData("latest")]
         public async Task Python37App_PostgreSqlDB(string imageTag)
         {

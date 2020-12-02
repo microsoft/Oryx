@@ -1,4 +1,7 @@
-FROM githubrunners-buildpackdeps-stretch AS main
+ARG DEBIAN_FLAVOR
+FROM githubrunners-buildpackdeps-${DEBIAN_FLAVOR} AS main
+ARG DEBIAN_FLAVOR
+ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 # Install basic build tools
 RUN LANG="C.UTF-8" \
     && apt-get update \
@@ -25,19 +28,36 @@ RUN LANG="C.UTF-8" \
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
-        libicu57 \
-        liblttng-ust0 \
-        libssl1.0.2 \
+#        libicu57 \
+#        liblttng-ust0 \
+#        libssl1.0.2 \
         libstdc++6 \
         zlib1g \
         libgdiplus \
         # For .NET Core 1.1
-        libcurl3 \
+#        libcurl3 \
         libuuid1 \
         libunwind8 \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
+
+RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu63 \
+            libcurl4 \ 
+            libssl1.1 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    else \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libcurl3 \
+            libicu57 \
+            liblttng-ust0 \
+            libssl1.0.2 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    fi
 
 # Install Yarn, HUGO
 FROM main AS intermediate
@@ -68,9 +88,27 @@ RUN set -ex \
 
 FROM main AS final
 ARG SDK_STORAGE_BASE_URL_VALUE
+ARG IMAGES_DIR="/opt/tmp/images"
 ARG AI_KEY
 
 COPY --from=intermediate /opt /opt
+
+RUN echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
+# Install PHP pre-reqs	# Install PHP pre-reqs
+RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+    apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y \
+        $PHPIZE_DEPS \
+        ca-certificates \
+        curl \
+        xz-utils \
+        libsodium-dev \
+        libncurses5 \
+    --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
+    else \
+        .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
+    fi 
 
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
@@ -83,7 +121,7 @@ RUN tmpDir="/opt/tmp" \
     && chmod a+rw /var/nuget \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     # Install PHP pre-reqs
-    && $tmpDir/images/build/php/prereqs/installPrereqs.sh \
+    #&& $tmpDir/images/build/php/prereqs/installPrereqs.sh \
     # NOTE: do not include the following lines in prereq installation script as
     # doing so is causing different version of libargon library being installed
     # causing php-composer to fail
