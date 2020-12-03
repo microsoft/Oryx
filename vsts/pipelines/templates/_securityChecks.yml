@@ -35,7 +35,14 @@ steps:
     BinSkim: true
     CredScan: true
 
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-antimalware.AntiMalware@3
+- task: AntiMalware@3
   displayName: 'Run Antimalware Scan'
   inputs:
+    InputType: 'Basic'
+    ScanType: 'CustomScan'
     EnableServices: true
+    TreatSignatureUpdateFailureAs: 'Warning'
+    SupportLogOnError: false
+    FileDirPath: '$(Build.StagingDirectory)'
+    SignatureFreshness: 'UpToDate'
+    TreatStaleSignatureAs: 'Error'
