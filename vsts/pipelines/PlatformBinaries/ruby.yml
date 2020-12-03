@@ -4,6 +4,16 @@ variables:
 stages:
 - stage: Build
   jobs:
+  - job: Ruby_Buster
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'ruby'
+        debianFlavor: 'buster'
+
   - job: Ruby_Stretch
     timeoutInMinutes: 250
     pool:

@@ -4,6 +4,16 @@ variables:
 stages:
 - stage: Build
   jobs:
+  - job: Java_Buster
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'java'
+        debianFlavor: 'buster'
+
   - job: Java_Stretch
     timeoutInMinutes: 250
     pool:
@@ -23,6 +33,16 @@ stages:
       parameters:
         platformName: 'java'
         debianFlavor: 'focal-scm'
+
+  - job: Maven_Buster
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'maven'
+        debianFlavor: 'buster'
 
   - job: Maven_Stretch
     timeoutInMinutes: 250

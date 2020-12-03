@@ -4,6 +4,16 @@ variables:
 stages:
 - stage: Build
   jobs:
+  - job: Python_Buster_SDK
+    timeoutInMinutes: 250
+    pool:
+      name: OryxLinux
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'python'
+        debianFlavor: 'buster'
+
   - job: Python_Stretch_SDK
     timeoutInMinutes: 250
     pool:
