@@ -19,6 +19,13 @@ echo "Building build images for tests..."
 
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
+    --build-arg PARENT_IMAGE_BASE=github-actions \
+    -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
+    .
+
+docker build \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
+    --build-arg PARENT_IMAGE_BASE=github-actions-buster \
     -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
     .
 
