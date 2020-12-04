@@ -4,12 +4,15 @@ and run images too.
 
 # Contents
 
-1. [Base image](#base-image)
-1. [Detect](#detect)
-1. [Build](#build)
-    * [Package manager](#package-manager)
-1. [Run](#run)
-1. [Version support](#version-support)
+- [Contents](#contents)
+- [Base image](#base-image)
+- [Detect](#detect)
+  - [Detect Node Monorepos](#detect-node-monorepos)
+- [Build](#build)
+  - [Build Node Monorepos](#build-node-monorepos)
+  - [Package manager](#package-manager)
+- [Run](#run)
+- [Version support](#version-support)
 
 # Base image
 
@@ -28,16 +31,35 @@ The Node.js toolset is run when the following conditions are met:
     * server.js
     * app.js
 
+## Detect Node Monorepos
+When `ENABLE_NODE_MONOREPO_BUILD=true` is set up and following condition is met:
+
+1. one of these files is found in the root of the repo:
+    * lerna.json
+    * lage.config.js
+
 # Build
 
 The following process is applied for each build.
 
-1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
-1. Run `npm install` without any flags, which includes npm `preinstall` and
+1. Run custom command or script if specified by `PRE_BUILD_COMMAND` or `PRE_BUILD_SCRIPT_PATH`.
+2. Run custom build command if specified by `CUSTOM_BUILD_COMMAND`. This will skip running any package install commands 
+   (`npm install` or `yarn install`) that Oryx originally included.
+3. Run custom run build command if specified by `RUN_BUILD_COMMAND`. This will not skip package install commands.
+4. Run `npm install` without any flags, which includes npm `preinstall` and
    `postinstall` scripts and also installs devDependencies.
-1. Run `npm run build` if a `build` script is specified in your `package.json`.
-1. Run `npm run build:azure` if a `build:azure` script is specified in your `package.json`.
-1. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
+5. Run `npm run build` if a `build` script is specified in your `package.json`.
+6. Run `npm run build:azure` if a `build:azure` script is specified in your `package.json`.
+7. Run custom command or script if specified by `POST_BUILD_COMMAND` or `POST_BUILD_SCRIPT_PATH`.
+
+## Build Node Monorepos
+
+The following process is applied for building monorepos:
+
+1. Run custom command or script if specified by `PRE_BUILD_COMMAND` or `PRE_BUILD_SCRIPT_PATH`.
+2. Run `lerna init`, `lerna bootstrap` and `lerna run build` if lerna.json file is detected.
+3. Run `npm lage run build` or `yarn lage run build` if lage.config.js file is detected.
+4. Run custom command or script if specified by `POST_BUILD_COMMAND` or `POST_BUILD_SCRIPT_PATH`.
 
 > NOTE: As described in [npm docs][], scripts named `prebuild` and `postbuild`
 will run before and after `build` respectively if specified; and `preinstall` and

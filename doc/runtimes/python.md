@@ -7,7 +7,9 @@ details on components and configuration of build and run images too.
 - [Base image](#base-image)
   - [System packages](#system-packages)
 - [Detect](#detect)
+  - [Detect Conda environment and Python JupiterNotebook](#detect-conda-environment-and-python-jupiternotebook)
 - [Build](#build)
+- [Build Conda environment and Python JupiterNotebook](#build-conda-environment-and-python-jupiternotebook)
   - [Package manager](#package-manager)
 - [Run](#run)
     - [Gunicorn multiple workers support](#gunicorn-multiple-workers-support)
@@ -28,6 +30,12 @@ The following system packages are added to the runtime image:
 * default-libmysqlclient-dev
 * unixodbc-dev
 * msodbcsql17
+* libexpat1
+* unzip
+* libodbc1
+* apt-transport-https
+* swig3.0
+* locales
 
 gunicorn (a Python package) is also included.
 
@@ -37,17 +45,39 @@ The Python toolset is run when the following conditions are met:
 
 1. `requirements.txt` in root of repo
 1. `runtime.txt` in root of repo
-1. Files with `.py` extension in root of repo.
+1. Files with `.py` extension in root of repo or in sub-directories if set `DISABLE_RECURSIVE_LOOKUP=false`.
+
+## Detect Conda environment and Python JupiterNotebook
+
+The Python conda is run when the following conditions are met:
+
+1. Conda environment file `environment.yml` or `environment.yaml` is found in root of repo
+1. Files with `.ipynb` extension in root of repo
 
 # Build
 
 The following process is applied for each build.
 
 1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
-1. Run `pip install -r requirements.txt`.
-1. If `manage.py` is found in the root of the repo `manage.py collectstatic` is run. However,
+2. Create python virtual environment if specified by `VIRTUALENV_NAME`.
+3. Run `python -m pip install --cache-dir /usr/local/share/pip-cache --prefer-binary -r requirements.txt` 
+   if `requirements.txt` exists.
+4. Run `python setup.py install` if `setup.py` exists.
+5. Run python package commands and Determine python package wheel.
+6. If `manage.py` is found in the root of the repo `manage.py collectstatic` is run. However,
    if `DISABLE_COLLECTSTATIC` is set to `true` this step is skipped.
-1. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
+7. Compress virtual environment folder if specified by `compress_virtualenv` property key.
+8. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
+
+# Build Conda environment and Python JupiterNotebook
+
+The following process is applied for each build.
+1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
+2. Set up Conda virtual environemnt `conda env create --file $envFile`.
+3. If `requirment.txt` exists, activate environemnt `conda activate $environmentPrefix` and
+   run `pip install --no-cache-dir -r requirements.txt`.
+4. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
+
 
 ## Package manager
 
