@@ -15,6 +15,11 @@ packages required at build-time. The following system packages are also added
 to the Oryx image. If you require additional packages please [open an
 issue][].
 
+Support various versions of build image:
+[Buster](../images/build/Dockerfiles/githubRunner.BuildPackDepsBuster.Dockerfile),
+[Focal](../images/build/Dockerfiles/githubRunner.BuildPackDepsFocal.Dockerfile),
+[Stretch](../images/build/Dockerfiles/githubRunner.BuildPackDepsStretch.Dockerfile) based `buildpack-deps` images.
+
 [open an issue]: https://github.com/Microsoft/Oryx/issues/new/choose
 
 * jq
@@ -40,11 +45,13 @@ or in AppService's language selection.
 # Run
 
 Oryx's run images build on Docker's runtime-specific images for [Node.js][]
-and [Python][]. A start script generator is included. Packages included for
+, [Python][], [Php][] and [Dotnet][]. A start script generator is included. Packages included for
 specific runtimes are described in their documentation.
+The runtime image can be built locally using the [`buildRunTimeImage.sh`](../build/buildRunTimeImage.sh) script.
 
 Runtimes and versions supported by Oryx are listed in [the main
 README](../README.md#supported-platforms).
 
 [Node.js]: https://github.com/nodejs/docker-node
 [Python]: https://github.com/docker-library/python
+[Php]: https://github.com/docker-library/php

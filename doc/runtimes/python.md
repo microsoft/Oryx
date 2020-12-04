@@ -9,7 +9,7 @@ details on components and configuration of build and run images too.
 - [Detect](#detect)
   - [Detect Conda environment and Python JupiterNotebook](#detect-conda-environment-and-python-jupiternotebook)
 - [Build](#build)
-- [Build Conda environment and Python JupiterNotebook](#build-conda-environment-and-python-jupiternotebook)
+  - [Build Conda environment and Python JupiterNotebook](#build-conda-environment-and-python-jupiternotebook)
   - [Package manager](#package-manager)
 - [Run](#run)
     - [Gunicorn multiple workers support](#gunicorn-multiple-workers-support)
@@ -44,8 +44,8 @@ gunicorn (a Python package) is also included.
 The Python toolset is run when the following conditions are met:
 
 1. `requirements.txt` in root of repo
-1. `runtime.txt` in root of repo
-1. Files with `.py` extension in root of repo or in sub-directories if set `DISABLE_RECURSIVE_LOOKUP=false`.
+2. `runtime.txt` in root of repo
+3. Files with `.py` extension in root of repo or in sub-directories if set `DISABLE_RECURSIVE_LOOKUP=false`.
 
 ## Detect Conda environment and Python JupiterNotebook
 
@@ -69,7 +69,7 @@ The following process is applied for each build.
 7. Compress virtual environment folder if specified by `compress_virtualenv` property key.
 8. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
 
-# Build Conda environment and Python JupiterNotebook
+## Build Conda environment and Python JupiterNotebook
 
 The following process is applied for each build.
 1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
