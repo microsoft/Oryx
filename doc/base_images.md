@@ -15,10 +15,10 @@ packages required at build-time. The following system packages are also added
 to the Oryx image. If you require additional packages please [open an
 issue][].
 
-Support various versions of build image:
+Support different version of debian `buildpack-deps` based images:
 [Buster](../images/build/Dockerfiles/githubRunner.BuildPackDepsBuster.Dockerfile),
-[Focal](../images/build/Dockerfiles/githubRunner.BuildPackDepsFocal.Dockerfile),
-[Stretch](../images/build/Dockerfiles/githubRunner.BuildPackDepsStretch.Dockerfile) based `buildpack-deps` images.
+[Ubuntu(focal)](../images/build/Dockerfiles/githubRunner.BuildPackDepsFocal.Dockerfile),
+[Stretch](../images/build/Dockerfiles/githubRunner.BuildPackDepsStretch.Dockerfile)
 
 [open an issue]: https://github.com/Microsoft/Oryx/issues/new/choose
 
