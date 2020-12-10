@@ -203,6 +203,7 @@ The *Run* images are published to MCR (mcr.microsoft.com/oryx/&lt;platform&gt;).
 
 * `build`: scripts for building the script generator and build and runtime images
 * `images`: Dockerfiles for the build and runtime images
+* `platforms`:platform SDK versions to be built
 * `src`: source code for the build and startup script generators
 * `tests`: tests.
 * `vsts`: CI/CD configuration.

@@ -3,13 +3,14 @@ details on components and configuration of build and run images too.
 
 # Contents
 
-1. [Base Image](#base-image)
-    * [System packages](#system-packages)
-1. [Detect](#detect)
-1. [Build](#build)
-    * [Package manager](#package-manager)
-1. [Run](#run)
-1. [Version support](#version-support)
+- [Contents](#contents)
+- [Base image](#base-image)
+  - [System packages](#system-packages)
+- [Detect](#detect)
+- [Build](#build)
+  - [Package manager](#package-manager)
+- [Run](#run)
+- [Version support](#version-support)
 
 # Base image
 
@@ -64,7 +65,7 @@ The PHP toolset is run when a `composer.json` file exists in the root of the rep
 The following process is applied for each build:
 
 1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
-1. Run `php composer.phar install`.
+1. Run `php composer.phar install --ignore-platform-reqs --no-interaction` if composer file found.
 1. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
 
 ## Package manager
@@ -83,7 +84,7 @@ The following process is applied to determine how to start an app:
 # Version support
 
 The PHP project defines this [release schedule][]. Oryx supports all actively supported
-releases (7.2, 7.3), in addition to 5.6 & 7.0.
+releases (7.2, 7.3, 7.4), in addition to 5.6 & 7.0.
 
 We will update the `patch` version of a release at least once every 3 months,
 replacing the previous `patch` version for that release.
