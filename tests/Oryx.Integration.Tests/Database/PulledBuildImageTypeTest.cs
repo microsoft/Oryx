@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData(Settings.WithRootAccessLtsVersionsBuildImageName, "ltsversions")]        
         [InlineData(Settings.GitHubActionsBuildImageName, "githubactions")]
         [InlineData(Settings.CliBuildImageName, "cli")]
+        [InlineData(Settings.CliBusterBuildImageName, "cli")]
         [InlineData(Settings.JamStackBuildImageName, "jamstack")]
         [InlineData(Settings.VsoBuildImageName, "vso")]
         [InlineData(Settings.VsoUbuntuBuildImageName, "vso-focal")]

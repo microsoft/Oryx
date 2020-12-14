@@ -353,12 +353,26 @@ function buildVsoImage() {
 function buildCliImage() {
 	buildBuildScriptGeneratorImage
 	
+	local debianFlavor=$1
+	local devImageTag=cli
+	local builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
+
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+		debianFlavor="stretch"
+	elif  [ "$debianFlavor" == "buster" ]; then
+		debianFlavor="buster"
+		devImageTag=$devImageTag-$debianFlavor
+		echo "dev image tag: "$devImageTag
+		builtImageName=$builtImageName-$debianFlavor
+		echo "built image name: "$builtImageName
+	fi
+
 	echo
 	echo "-------------Creating CLI image-------------------"
-	local builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
 		.
@@ -369,7 +383,7 @@ function buildCliImage() {
 	echo "$builtImageName image history"
 	docker history $builtImageName
 
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:cli"
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:$devImageTag"
 
 	echo
 	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
@@ -394,6 +408,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildFullImage
 	buildVsoImage
 	buildVsoFocalImage
+	buildCliImage "buster"
 	buildCliImage
 	buildBuildPackImage
 elif [ "$imageTypeToBuild" == "githubactions" ]; then
@@ -412,6 +427,8 @@ elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage
 elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
+elif [ "$imageTypeToBuild" == "cli-buster" ]; then
+	buildCliImage "buster"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else

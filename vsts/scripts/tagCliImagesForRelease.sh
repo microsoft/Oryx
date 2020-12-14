@@ -26,6 +26,7 @@ if [ -f "$outNonPmeFile" ]; then
 fi
 
 cliImage="$sourceImageRepo/cli:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+cliBusterImage="$sourceImageRepo/cli-buster:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 echo "Pulling CLI image '$cliImage'..."
 docker pull "$cliImage"
 echo "Retagging CLI image for $prodNonPmeImageRepo with '$RELEASE_TAG_NAME'..."
@@ -36,6 +37,16 @@ echo "Retagging CLI image for $prodPmeImageRepo with '$RELEASE_TAG_NAME'..."
 echo "$prodPmeImageRepo/cli:$RELEASE_TAG_NAME">>"$outPmeFile"
 docker tag "$cliImage" "$prodPmeImageRepo/cli:$RELEASE_TAG_NAME"
 
+echo "Pulling CLI buster image '$cliBusterImage'..."
+docker pull "$cliBusterImage"
+echo "Retagging CLI buster image for $prodNonPmeImageRepo with '$RELEASE_TAG_NAME'..."
+echo "$prodNonPmeImageRepo/cli-buster:$RELEASE_TAG_NAME">>"$outNonPmeFile"
+docker tag "$cliBusterImage" "$prodNonPmeImageRepo/cli-buster:$RELEASE_TAG_NAME"
+
+echo "Retagging CLI buster image for $prodPmeImageRepo with '$RELEASE_TAG_NAME'..."
+echo "$prodPmeImageRepo/cli-buster:$RELEASE_TAG_NAME">>"$outPmeFile"
+docker tag "$cliBusterImage" "$prodPmeImageRepo/cli-buster:$RELEASE_TAG_NAME"
+
 if [ "$sourceBranchName" == "master" ]; then
     echo "Retagging CLI image with 'stable'..."
     docker tag "$cliImage" "$prodNonPmeImageRepo/cli:stable"
@@ -43,6 +54,13 @@ if [ "$sourceBranchName" == "master" ]; then
 
     docker tag "$cliImage" "$prodPmeImageRepo/cli:stable"
     echo "$prodPmeImageRepo/cli:stable">>"$outPmeFile"
+
+    echo "Retagging CLI buster image with 'stable'..."
+    docker tag "$cliBusterImage" "$prodNonPmeImageRepo/cli-buster:stable"
+    echo "$prodNonPmeImageRepo/cli-buster:stable">>"$outNonPmeFile"
+
+    docker tag "$cliBusterImage" "$prodPmeImageRepo/cli-buster:stable"
+    echo "$prodPmeImageRepo/cli-buster:stable">>"$outPmeFile"
 else
     echo "Not creating 'stable' or 'latest' tags as source branch is not 'master'. Current branch is $sourceBranchName"
 fi

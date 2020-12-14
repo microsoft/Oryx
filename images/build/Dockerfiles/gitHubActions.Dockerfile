@@ -28,14 +28,10 @@ RUN LANG="C.UTF-8" \
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
-#        libicu57 \
-#        liblttng-ust0 \
-#        libssl1.0.2 \
         libstdc++6 \
         zlib1g \
         libgdiplus \
         # For .NET Core 1.1
-#        libcurl3 \
         libuuid1 \
         libunwind8 \
     && rm -rf /var/lib/apt/lists/* \
