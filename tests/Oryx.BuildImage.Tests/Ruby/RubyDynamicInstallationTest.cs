@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        [Theory]
+        [SkippableTheory] //Temporarily skipping, workitem#1257778
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string buildImageName)
         {
