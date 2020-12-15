@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
-        [SkippableTheory] //Temporarily skipping, work item id: 1258039
+        [Theory(Skip = "Bug#1258039")]
         [InlineData("2.7")]
         [InlineData("3.6")]
         [InlineData("3.7")]

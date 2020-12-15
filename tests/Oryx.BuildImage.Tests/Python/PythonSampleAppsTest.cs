@@ -1318,7 +1318,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [SkippableTheory] //Temporarily skipping, work item id: 1258039
+        [Theory(Skip = "Bug#1258039")]
         [InlineData("lts-versions", "3")]
         [InlineData("vso", "2")]
         [InlineData("vso-focal", "3")]
