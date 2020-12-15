@@ -1,6 +1,9 @@
-FROM oryxdevmcr.azurecr.io/public/oryx/build:github-actions AS main
+ARG DEBIAN_FLAVOR
+FROM oryxdevmcr.azurecr.io/public/oryx/build:github-${DEBIAN_FLAVOR} AS main
+ARG DEBIAN_FLAVOR
 
-ENV ORYX_BUILDIMAGE_TYPE="jamstack" \
+ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
+    ORYX_BUILDIMAGE_TYPE="jamstack" \
     PATH="/usr/local/go/bin:$PATH"
 
 COPY --from=support-files-image-for-build /tmp/oryx/ /tmp

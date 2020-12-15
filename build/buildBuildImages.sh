@@ -206,16 +206,33 @@ function buildGitHubActionsImage() {
 }
 
 function buildJamStackImage() {
-	buildGitHubActionsImage
+	local debianFlavor=$1
+	local devImageTag=azfunc-jamstack
+	local parentImageTag=github
+	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
+
+	buildGitHubActionsImage $debianFlavor
+
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+		debianFlavor="stretch"
+		parentImageTag=actions
+	elif  [ "$debianFlavor" == "buster" ]; then
+		debianFlavor="buster"
+		parentImageTag=actions-$debianFlavor
+		devImageTag=$devImageTag-$debianFlavor
+		echo "dev image tag: "$devImageTag
+		builtImageName=$builtImageName-$debianFlavor
+		echo "built image name: "$builtImageName
+	fi
 
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
 	echo
 	echo "-------------Creating AzureFunctions JamStack image-------------------"
-	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
 	docker build -t $builtImageName \
 		-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
+		--build-arg DEBIAN_FLAVOR=$parentImageTag \
 		.
 	
 	createImageNameWithReleaseTag $builtImageName
@@ -225,7 +242,7 @@ function buildJamStackImage() {
 	docker history $builtImageName
 	echo
 
-	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO:azfunc-jamstack
+	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO:$devImageTag
 }
 
 function buildLtsVersionsImage() {
@@ -389,6 +406,7 @@ function buildBuildPackImage() {
 if [ -z "$imageTypeToBuild" ]; then
 	buildGitHubActionsImage "buster"
 	buildGitHubActionsImage
+	buildJamStackImage "buster"
 	buildJamStackImage
 	buildLtsVersionsImage
 	buildFullImage
@@ -400,6 +418,8 @@ elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
 elif [ "$imageTypeToBuild" == "githubactions-buster" ]; then
 	buildGitHubActionsImage "buster"
+elif [ "$imageTypeToBuild" == "jamstack-buster" ]; then
+	buildJamStackImage "buster"
 elif [ "$imageTypeToBuild" == "jamstack" ]; then
 	buildJamStackImage
 elif [ "$imageTypeToBuild" == "ltsversions" ]; then
