@@ -26,9 +26,9 @@ namespace Microsoft.Oryx.Integration.Tests
             get
             {
                 var data = new TheoryData<string, string>();
-                data.Add("7.3", ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage());
+                data.Add(PhpVersions.Php73Version, ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage());
                 var imageHelper = new ImageTestHelper();
-                data.Add("7.4", imageHelper.GetGitHubActionsBuildImage());
+                data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage());
                 return data;
             }
         }

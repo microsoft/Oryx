@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddCommand("export ORYX_SDK_STORAGE_BASE_URL=https://oryxsdksdev.blob.core.windows.net")
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
@@ -71,6 +72,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddCommand("export ORYX_SDK_STORAGE_BASE_URL=https://oryxsdksdev.blob.core.windows.net")
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
 
@@ -109,6 +111,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"rm {appDir}/composer.json")
+                .AddCommand("export ORYX_SDK_STORAGE_BASE_URL=https://oryxsdksdev.blob.core.windows.net")
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .AddCommand($"cat {manifestFile}")
@@ -117,7 +120,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = Settings.LtsVersionsBuildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -128,7 +131,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(() =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
                     Assert.Contains($"not running 'composer install'", result.StdOut);
                     Assert.Contains(
                        $"{ManifestFilePropertyKeys.PhpVersion}=\"{phpVersion}\"",

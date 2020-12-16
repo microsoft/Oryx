@@ -5,6 +5,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -32,14 +33,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             if (_versionInfo == null)
             {
+                _versionInfo = _onDiskVersionProvider.GetVersionInfo();
                 if (_options.EnableDynamicInstall)
                 {
-                    return _sdkStorageVersionProvider.GetVersionInfo();
+                    var sdkStorageVersionProviderResult = _sdkStorageVersionProvider.GetVersionInfo();
+                    _versionInfo.SupportedVersions.Union(sdkStorageVersionProviderResult.SupportedVersions);
                 }
-
-                _versionInfo = _onDiskVersionProvider.GetVersionInfo();
             }
-
+            _logger.LogDebug(_versionInfo.SupportedVersions.ToString());
             return _versionInfo;
         }
     }
