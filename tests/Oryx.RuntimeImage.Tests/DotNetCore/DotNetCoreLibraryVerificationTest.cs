@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             {
                 ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", $"dotnet monitor collect" },
+                CommandArguments = new[] { "-c", $"ls opt/dotnetcore-tools/" },
             });
 
             // Assert
@@ -67,6 +67,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
+                    Assert.Contains("dotnet-monitor", actualOutput);
                 },
                 result.GetDebugInfo());
         }
