@@ -47,6 +47,7 @@ tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-buster"
 tagBuildImageForIntegrationTest "$imagefilter/build" "vso"
 tagBuildImageForIntegrationTest "$imagefilter/build" "vso-focal"
 tagBuildImageForIntegrationTest "$imagefilter/cli" ""
+tagBuildImageForIntegrationTest "$imagefilter/cli-buster" ""
 tagBuildImageForIntegrationTest "$imagefilter/pack" ""
 
 

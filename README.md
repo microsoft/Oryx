@@ -76,7 +76,7 @@ script follows.
 # Run these from the root of the repo.
 # build
 docker run --volume $(pwd):/repo \
-    'docker.io/oryxprod/build:latest' \
+    'mcr.microsoft.com/oryx/build:latest' \
     oryx build /repo --output /repo
 
 # run
@@ -86,7 +86,7 @@ docker run --detach --rm \
     --volume $(pwd):/app \
     --env PORT=8080 \
     --publish 8080:8080 \
-    'docker.io/oryxprod/node-10.14:latest' \
+    'mcr.microsoft.com/oryx/node:10' \
     sh -c 'oryx create-script -appPath /app && /run.sh'
 ```
 

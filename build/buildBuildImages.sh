@@ -206,16 +206,33 @@ function buildGitHubActionsImage() {
 }
 
 function buildJamStackImage() {
-	buildGitHubActionsImage
+	local debianFlavor=$1
+	local devImageTag=azfunc-jamstack
+	local parentImageTag=github
+	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
+
+	buildGitHubActionsImage $debianFlavor
+
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+		debianFlavor="stretch"
+		parentImageTag=actions
+	elif  [ "$debianFlavor" == "buster" ]; then
+		debianFlavor="buster"
+		parentImageTag=actions-$debianFlavor
+		devImageTag=$devImageTag-$debianFlavor
+		echo "dev image tag: "$devImageTag
+		builtImageName=$builtImageName-$debianFlavor
+		echo "built image name: "$builtImageName
+	fi
 
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
 	echo
 	echo "-------------Creating AzureFunctions JamStack image-------------------"
-	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
 	docker build -t $builtImageName \
 		-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
+		--build-arg DEBIAN_FLAVOR=$parentImageTag \
 		.
 	
 	createImageNameWithReleaseTag $builtImageName
@@ -225,7 +242,7 @@ function buildJamStackImage() {
 	docker history $builtImageName
 	echo
 
-	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO:azfunc-jamstack
+	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO:$devImageTag
 }
 
 function buildLtsVersionsImage() {
@@ -353,12 +370,26 @@ function buildVsoImage() {
 function buildCliImage() {
 	buildBuildScriptGeneratorImage
 	
+	local debianFlavor=$1
+	local devImageTag=cli
+	local builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
+
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+		debianFlavor="stretch"
+	elif  [ "$debianFlavor" == "buster" ]; then
+		debianFlavor="buster"
+		devImageTag=$devImageTag-$debianFlavor
+		echo "dev image tag: "$devImageTag
+		builtImageName=$builtImageName-$debianFlavor
+		echo "built image name: "$builtImageName
+	fi
+
 	echo
 	echo "-------------Creating CLI image-------------------"
-	local builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
 		.
@@ -369,7 +400,7 @@ function buildCliImage() {
 	echo "$builtImageName image history"
 	docker history $builtImageName
 
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:cli"
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:$devImageTag"
 
 	echo
 	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
@@ -389,17 +420,21 @@ function buildBuildPackImage() {
 if [ -z "$imageTypeToBuild" ]; then
 	buildGitHubActionsImage "buster"
 	buildGitHubActionsImage
+	buildJamStackImage "buster"
 	buildJamStackImage
 	buildLtsVersionsImage
 	buildFullImage
 	buildVsoImage
 	buildVsoFocalImage
+	buildCliImage "buster"
 	buildCliImage
 	buildBuildPackImage
 elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
 elif [ "$imageTypeToBuild" == "githubactions-buster" ]; then
 	buildGitHubActionsImage "buster"
+elif [ "$imageTypeToBuild" == "jamstack-buster" ]; then
+	buildJamStackImage "buster"
 elif [ "$imageTypeToBuild" == "jamstack" ]; then
 	buildJamStackImage
 elif [ "$imageTypeToBuild" == "ltsversions" ]; then
@@ -412,6 +447,8 @@ elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage
 elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
+elif [ "$imageTypeToBuild" == "cli-buster" ]; then
+	buildCliImage "buster"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else

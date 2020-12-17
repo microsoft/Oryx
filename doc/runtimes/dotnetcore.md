@@ -4,11 +4,13 @@ and run images too.
 
 # Contents
 
-1. [Base image](#base-image)
-1. [Detect](#detect)
-1. [Build](#build)
-1. [Run](#run)
-1. [Version support](#version-support)
+- [Contents](#contents)
+- [Base image](#base-image)
+- [Detect](#detect)
+    - [Order of precedence for finding the project file](#order-of-precedence-for-finding-the-project-file)
+- [Build](#build)
+- [Run](#run)
+- [Version support](#version-support)
 
 # Base image
 
@@ -26,7 +28,7 @@ We currently support detecting both `.csproj` ("C# Project") and `.fsproj` ("F# 
 ### Order of precedence for finding the project file
 1. `PROJECT` environment variable with a relative path to a project file.
 2. `.csproj` or `.fsproj` in the root directory.
-3. Look for an ASP.NET or Azure functions project in the subdirectories.
+3. Look for an ASP.NET, Azure functions or Azure Blazor wasm apps in the subdirectories.
 
 # Build
 

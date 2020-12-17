@@ -27,6 +27,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _buildRepository = "build";
         private const string _packRepository = "pack";
         private const string _cliRepository = "cli";
+        private const string _cliBusterRepository = "cli-buster";
         private const string _latestTag = "latest";
         private const string _ltsVersionsTag = "lts-versions";
 
@@ -236,9 +237,15 @@ namespace Microsoft.Oryx.Tests.Common
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
         /// <returns>A 'cli' image that can be pulled for testing.</returns>
-        public string GetCliImage()
+        public string GetCliImage(string debianFlavor = null)
         {
             var tag = GetTestTag();
+            if (!string.IsNullOrEmpty(debianFlavor)
+                && string.Equals(debianFlavor.ToLower(), _cliBusterRepository))
+            {
+                return $"{_repoPrefix}/{_cliBusterRepository}:{tag}";
+            }
+
             return $"{_repoPrefix}/{_cliRepository}:{tag}";
         }
 
