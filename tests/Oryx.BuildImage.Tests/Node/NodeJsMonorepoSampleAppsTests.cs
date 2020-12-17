@@ -21,8 +21,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", sampleAppName));
 
-        [Fact]
-        public void GeneratesScript_AndBuildMonorepoAppUsingLerna_Npm()
+        public static TheoryData<string> ImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string>();
+                data.Add(Settings.LtsVersionsBuildImageName);
+                var imageTestHelper = new ImageTestHelper();
+                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+                return data;
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(ImageNameData))]
+        public void GeneratesScript_AndBuildMonorepoAppUsingLerna_Npm(string buildImageName)
         {
             // Arrange
             var appName = "monorepo-lerna-npm";
@@ -42,7 +55,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetLtsVersionsBuildImage(),
+                ImageId = buildImageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
