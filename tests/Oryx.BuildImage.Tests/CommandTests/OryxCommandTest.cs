@@ -193,7 +193,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     "'{\"engines\": {\"node\": \"" + expectedNodeVersion + "\"}}'")
                 .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}",
                     "'{\"require\": {\"php\": \"" + expectedPhpVersion + "\"}}'")
-                .AddCommand("export ORYX_SDK_STORAGE_BASE_URL=https://oryxsdksdev.blob.core.windows.net")
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
                 .ToString();
 
