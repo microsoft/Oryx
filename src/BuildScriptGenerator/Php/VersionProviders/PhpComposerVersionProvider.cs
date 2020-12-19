@@ -5,6 +5,7 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
@@ -34,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             {
                 if (_options.EnableDynamicInstall)
                 {
-                    return _sdkStorageVersionProvider.GetVersionInfo();
+                    var sdkStorageVersionProviderResult = _sdkStorageVersionProvider.GetVersionInfo();
                 }
 
                 _versionInfo = _onDiskVersionProvider.GetVersionInfo();

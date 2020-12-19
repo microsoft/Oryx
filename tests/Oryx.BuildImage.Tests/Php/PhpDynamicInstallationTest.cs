@@ -26,14 +26,14 @@ namespace Microsoft.Oryx.Integration.Tests
             get
             {
                 var data = new TheoryData<string, string>();
-                data.Add("7.3", ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage());
+                data.Add(PhpVersions.Php73Version, ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage());
                 var imageHelper = new ImageTestHelper();
-                data.Add("7.4", imageHelper.GetGitHubActionsBuildImage());
+                data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage());
                 return data;
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Bug#1259616")]
         [MemberData(nameof(VersionAndImageNameData))]
         public void BuildsAppByInstallingSdkDynamically(string phpVersion, string imageName)
         {
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
             result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "Bug#1259616")]
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange

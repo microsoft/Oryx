@@ -193,6 +193,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     "'{\"engines\": {\"node\": \"" + expectedNodeVersion + "\"}}'")
                 .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}",
                     "'{\"require\": {\"php\": \"" + expectedPhpVersion + "\"}}'")
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
                 .ToString();
 
