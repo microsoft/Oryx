@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Bug#1259616")]
         [MemberData(nameof(VersionAndImageNameData))]
         public void BuildsAppByInstallingSdkDynamically(string phpVersion, string imageName)
         {
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
             result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "Bug#1259616")]
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange
