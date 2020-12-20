@@ -28,10 +28,6 @@ RUN LANG="C.UTF-8" \
         # By default pip is not available in the buildpacks image
         python-pip \
         python3-pip \
-        # For .NET Core 1.1
-        libcurl3 \
-        libuuid1 \
-        libunwind8 \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
@@ -70,7 +66,7 @@ ENV LANG="C.UTF-8" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
     PYTHONIOENCODING="UTF-8" \
-    DEBIAN_FLAVOR="stretch"
+    DEBIAN_FLAVOR="buster"
 
 RUN set -ex \
     && tmpDir="/opt/tmp" \
@@ -97,8 +93,6 @@ RUN set -ex \
     && DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
 	&& NUGET_PACKAGES="$nugetPackagesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
-       INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
     && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
        INSTALL_PACKAGES="true" \
@@ -147,12 +141,22 @@ RUN set -ex \
     && ln -s $PYTHON39_VERSION latest \
     && ln -s $PYTHON39_VERSION stable \
     && ln -s 3.9 3 \
+    && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" \
     # Install PHP pre-reqs
-    && $imagesDir/build/php/prereqs/installPrereqs.sh \
+    && apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        $PHPIZE_DEPS \
+        ca-certificates \
+        curl \
+        xz-utils \
+        libsodium-dev \
+        libncurses5 \
+    && rm -r /var/lib/apt/lists/* \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
     && $imagesDir/installPlatform.sh php $PHP74_VERSION \
-    && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
+    && $imagesDir/installPlatform.sh php-composer $COMPOSER110_VERSION \
     && cd /opt/php \
     && ln -s 7.4 7 \
     && ln -s 7 lts \
@@ -168,7 +172,6 @@ RUN set -ex \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && rm -f /etc/apt/sources.list.d/buster.list \
     && echo "ltsversions" > /opt/oryx/.imagetype
 
 ENTRYPOINT [ "benv" ]

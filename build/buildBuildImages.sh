@@ -168,6 +168,7 @@ function buildGitHubActionsImage() {
 
 	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
 		debianFlavor="stretch"
+		echo "Debian Flavor is: "$debianFlavor
 	elif  [ "$debianFlavor" == "buster" ]; then
 		debianFlavor="buster"
 		devImageTag=$devImageTag-$debianFlavor
@@ -246,19 +247,37 @@ function buildJamStackImage() {
 }
 
 function buildLtsVersionsImage() {
-	buildBuildScriptGeneratorImage
-	buildGitHubRunnersBaseImage
+	ltsBuildImageDockerFile=$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE
+	local debianFlavor=$1
+	local devImageTag=lts-versions
+	local builtImageName="$ACR_BUILD_LTS_VERSIONS_IMAGE_NAME"
+	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
 
-	BuildAndTagStage "$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE" intermediate
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+		echo "dev image tag: "$devImageTag
+		echo "built image name: "$builtImageName
+	else
+		devImageTag=$devImageTag-$debianFlavor
+		builtImageName=$builtImageName-$debianFlavor
+		ltsBuildImageDockerFile="$BUILD_IMAGES_LTS_VERSIONS_BUSTER_DOCKERFILE"
+		testImageName=$testImageName-$devImageTag
+		echo "dev image tag: "$devImageTag
+		echo "built image name: "$builtImageName
+		echo "test image name: "$testImageName
+	fi
+
+	buildBuildScriptGeneratorImage
+	buildGitHubRunnersBaseImage $debianFlavor
+
+	BuildAndTagStage "$ltsBuildImageDockerFile" intermediate
 
 	echo
 	echo "-------------Creating lts versions build image-------------------"
-	local builtImageName="$ACR_BUILD_IMAGES_REPO:lts-versions"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
 		--label com.microsoft.oryx="$labelContent" \
-		-f "$BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE" \
+		-f "$ltsBuildImageDockerFile" \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -268,13 +287,14 @@ function buildLtsVersionsImage() {
 	docker history $builtImageName
 	echo
 
-	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO:lts-versions
+	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO:$devImageTag
 
 	echo
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
-	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
+	
 	docker build -t $testImageName \
+		--build-arg PARENT_IMAGE_BASE=$devImageTag \
 		-f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
 		.
 }
@@ -422,7 +442,8 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildGitHubActionsImage
 	buildJamStackImage "buster"
 	buildJamStackImage
-	buildLtsVersionsImage
+	buildLtsVersionsImage "buster"
+	buildLtsVersionsImage	
 	buildFullImage
 	buildVsoImage
 	buildVsoFocalImage
@@ -439,6 +460,8 @@ elif [ "$imageTypeToBuild" == "jamstack" ]; then
 	buildJamStackImage
 elif [ "$imageTypeToBuild" == "ltsversions" ]; then
 	buildLtsVersionsImage
+elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
+	buildLtsVersionsImage "buster"
 elif [ "$imageTypeToBuild" == "full" ]; then
 	buildFullImage
 elif [ "$imageTypeToBuild" == "vso" ]; then
