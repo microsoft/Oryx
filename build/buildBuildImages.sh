@@ -260,7 +260,7 @@ function buildLtsVersionsImage() {
 		devImageTag=$devImageTag-$debianFlavor
 		builtImageName=$builtImageName-$debianFlavor
 		ltsBuildImageDockerFile="$BUILD_IMAGES_LTS_VERSIONS_BUSTER_DOCKERFILE"
-		testImageName=$testImageName-$devImageTag
+		testImageName=$testImageName-buster
 		echo "dev image tag: "$devImageTag
 		echo "built image name: "$builtImageName
 		echo "test image name: "$testImageName
