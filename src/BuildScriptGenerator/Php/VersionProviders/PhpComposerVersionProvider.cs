@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             {
                 if (_options.EnableDynamicInstall)
                 {
-                    var sdkStorageVersionProviderResult = _sdkStorageVersionProvider.GetVersionInfo();
+                    return _sdkStorageVersionProvider.GetVersionInfo();
                 }
 
                 _versionInfo = _onDiskVersionProvider.GetVersionInfo();
