@@ -156,7 +156,7 @@ RUN set -ex \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
     && $imagesDir/installPlatform.sh php $PHP74_VERSION \
-    && $imagesDir/installPlatform.sh php-composer $COMPOSER110_VERSION \
+    && $imagesDir/installPlatform.sh php-composer $COMPOSER1_10_VERSION \
     && cd /opt/php \
     && ln -s 7.4 7 \
     && ln -s 7 lts \
