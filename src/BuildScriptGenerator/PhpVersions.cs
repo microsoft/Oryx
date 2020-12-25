@@ -8,6 +8,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string PhpFpmRuntimeBaseTag = "20201215.2";
         public const string ComposerVersion = "1.9.3";
         public const string ComposerSetupSha384 = "756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3";
+        public const string Composer19Version = "1.9.3";
+        public const string Composer19SetupSha384 = "756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3";
+        public const string Composer110Version = "1.10.19";
+        public const string Composer110SetupSha384 = "756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3";
+        public const string Composer20Version = "2.0.8";
+        public const string Composer20SetupSha384 = "756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3";
         public const string Php74Version = "7.4.13";
         public const string Php74Keys = "42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312";
         public const string Php74TarSha256 = "aead303e3abac23106529560547baebbedba0bb2943b91d5aa08fff1f41680f4";

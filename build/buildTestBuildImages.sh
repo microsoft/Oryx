@@ -17,14 +17,19 @@ buildImageDebianFlavor="$1"
 echo
 echo "Building build images for tests..."
 
+echo "Building stretch based github action image for tests..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
     --build-arg PARENT_IMAGE_BASE=github-actions \
     -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
     .
 
+echo
+echo
+
+echo "Building buster based github action image for tests..."
 docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-buster" \
     --build-arg PARENT_IMAGE_BASE=github-actions-buster \
     -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
     .
@@ -32,6 +37,7 @@ docker build \
 echo
 echo
 
+echo "Building stretch based full build image for tests..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:latest" \
     -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
@@ -40,8 +46,20 @@ docker build \
 echo
 echo
 
+echo "Building stretch based lts-version image for tests..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions" \
+    --build-arg PARENT_IMAGE_BASE=lts-versions \
+    -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
+    .
+
+echo
+echo
+
+echo "Building buster based lst version image for tests..."
+docker build \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions-buster" \
+    --build-arg PARENT_IMAGE_BASE=lts-versions-buster \
     -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
     .
 

@@ -1,4 +1,5 @@
-FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions
+ARG PARENT_IMAGE_BASE
+FROM oryxdevmcr.azurecr.io/public/oryx/build:${PARENT_IMAGE_BASE}
 
 # Following is a pattern that AppService currently uses
 RUN groupadd -g 1002 oryx_group
