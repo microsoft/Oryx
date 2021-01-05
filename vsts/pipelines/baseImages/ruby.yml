@@ -24,7 +24,7 @@ jobs:
 
 - job: Release_RubyRuntimeBaseImage
   dependsOn: 
-    - Build__Ruby_Stretch_BaseImages
+    - Build_Ruby_Stretch_BaseImages
     - Build_Ruby_Buster_BaseImages
   displayName: Push images to MCR
   timeoutInMinutes: 250
