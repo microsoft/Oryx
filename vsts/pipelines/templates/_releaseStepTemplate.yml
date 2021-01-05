@@ -73,13 +73,6 @@ steps:
   displayName: 'Use .NET Core sdk 3.1.x'
   inputs:
     version: 3.1.x
-    
-- task: ShellScript@2
-  displayName: 'Test runtime images for non-pme staging registry'
-  inputs:
-    scriptPath: ./build/testRunTimeImages.sh
-    args: 'skipBuildingImages ${{ parameters.acrProdName }}.azurecr.io/public/oryx $(RELEASE_TAG_NAME) Category=Release'
-  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test runtime images for pme staging registry'
@@ -89,66 +82,11 @@ steps:
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
 - task: Docker@1
-  displayName: 'Push build image to ACR'
-  inputs:
-    azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
-    command: 'Push an image'
-    pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrProdName }}-build-images-mcr.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: true
-  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
-- task: Docker@1
-  displayName: 'Push buildpack images to ACR'
-  inputs:
-    azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
-    command: 'Push an image'
-    pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrProdName }}-buildpack-images-mcr.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: true
-  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
-- task: Docker@1
-  displayName: 'Push CLI images to ACR'
-  inputs:
-    azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
-    command: 'Push an image'
-    pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrProdName }}-cli-images-mcr.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: true
-  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
-- task: Docker@1
-  displayName: 'Push runtime images to ACR'
-  inputs:
-    azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
-    command: 'Push an image'
-    pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrProdName }}-runtime-images-mcr.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: false
-  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
-
-- task: Docker@1
   displayName: Dev Container registry logout
   inputs:
     command: logout
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrDevName }}
-
-- task: Docker@1
-  displayName: Non-pme Prod Container registry logout
-  inputs:
-    command: logout
-    azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrProdName }}.azurecr.io
     
 - task: Docker@2
   displayName: Login to PME ACR

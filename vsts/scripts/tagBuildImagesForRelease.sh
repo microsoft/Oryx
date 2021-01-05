@@ -38,21 +38,12 @@ function tagBuildImage() {
     docker tag "$devRegistryImageName" "$prodPmeRegistryImageName"
     echo "$prodPmeRegistryImageName">>"$outPmeFileMCR"
     
-    echo "Tagging the source image for $prodNonPmeRegistryRepoName with tag $prodRegistrySpecificTagName..."
-    prodNonPmeRegistryImageName="$prodNonPmeRegistryRepoName:$prodRegistrySpecificTagName"    
-    docker tag "$devRegistryImageName" "$prodNonPmeRegistryImageName"
-    echo "$prodNonPmeRegistryImageName">>"$outNonPmeFileMCR"
-
     if [ "$sourceBranchName" == "master" ]; then
         echo "Tagging the source image for $prodPmeRegistryRepoName with tag $prodRegistryLatestTagName..."
         prodPmeRegistryImageName="$prodPmeRegistryRepoName:$prodRegistryLatestTagName"
         docker tag "$devRegistryImageName" "$prodPmeRegistryRepoName:$prodRegistryLatestTagName"
         echo "$prodPmeRegistryImageName">>"$outPmeFileMCR"
         
-        echo "Tagging the source image for $prodNonPmeRegistryRepoName with tag $prodRegistryLatestTagName..."
-        prodNonPmeRegistryImageName="$prodNonPmeRegistryRepoName:$prodRegistryLatestTagName"
-        docker tag "$devRegistryImageName" "$prodNonPmeRegistryRepoName:$prodRegistryLatestTagName"
-        echo "$prodNonPmeRegistryImageName">>"$outNonPmeFileMCR"
     else
         echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
     fi
@@ -72,7 +63,4 @@ tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-focal-$BUILD_DEFINITI
 
 echo "printing pme tags from $outPmeFileMCR"
 cat $outPmeFileMCR
-echo -------------------------------------------------------------------------------
-echo "printing non-pme tags from $outNonPmeFileMCR"
-cat $outNonPmeFileMCR
 echo -------------------------------------------------------------------------------
