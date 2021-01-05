@@ -22,7 +22,7 @@ jobs:
     artifactsFileName: ruby-runtimeimage-bases-buster.txt
     jobName: Build_Ruby_Buster_BaseImages
 
-- job: Release_RubypRuntimeBaseImage
+- job: Release_RubyRuntimeBaseImage
   dependsOn: 
     - Build__Ruby_Stretch_BaseImages
     - Build_Ruby_Buster_BaseImages
