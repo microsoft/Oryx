@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public string CompressedVirtualEnvFileName { get; set; }
 
-        public bool RunPythonPackageCommand { get; set;}
+        public bool RunPythonPackageCommand { get; set; }
 
         public string PythonPackageWheelProperty { get; set; }
     }

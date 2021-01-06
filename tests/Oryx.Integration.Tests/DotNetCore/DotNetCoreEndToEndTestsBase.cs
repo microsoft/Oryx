@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.Integration.Tests
             return DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", DefaultWebApp));
         }
 
-        protected DockerVolume CreateAppOutputDirVolume()
+        protected new DockerVolume CreateAppOutputDirVolume()
         {
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;

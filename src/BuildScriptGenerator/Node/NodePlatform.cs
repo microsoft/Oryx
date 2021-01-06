@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         "If value is not provided, it is assumed to be 'true'.")]
     [BuildProperty(
         PackageDirectoryPropertyKey,
-        "When multiple packages exists in a repo, indicates within which package directory it will run "+ 
+        "When multiple packages exists in a repo, indicates within which package directory it will run " +
         "'npm run pack' command'. If value is not provided, it is assumed to be root directory.")]
     internal class NodePlatform : IProgrammingPlatform
     {
@@ -192,7 +192,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
             }
 
-            if (_nodeScriptGeneratorOptions.EnableNodeMonorepoBuild) {
+            if (_nodeScriptGeneratorOptions.EnableNodeMonorepoBuild)
+            {
                 // If a 'lerna.json' file exists, override the npm client that lerna chosen to build monorepo.
                 if (nodePlatformDetectorResult.HasLernaJsonFile)
                 {
@@ -244,7 +245,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 NodeConstants.ProductionOnlyPackageInstallCommandTemplate, packageInstallCommand);
 
             if (string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomBuildCommand)
-                && string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand) 
+                && string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand)
                 && string.IsNullOrEmpty(runBuildLernaCommand)
                 && string.IsNullOrEmpty(runBuildLageCommand))
             {

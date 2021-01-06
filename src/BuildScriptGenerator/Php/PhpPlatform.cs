@@ -258,6 +258,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             return tools;
         }
 
+        public string GetMaxSatisfyingPhpComposerVersionAndVerify(string version)
+        {
+            var versionInfo = _phpComposerVersionProvider.GetVersionInfo();
+            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
+                version,
+                versionInfo.SupportedVersions);
+
+            if (string.IsNullOrEmpty(maxSatisfyingVersion))
+            {
+                var exception = new UnsupportedVersionException(
+                    PhpConstants.PhpComposerName,
+                    version,
+                    versionInfo.SupportedVersions);
+                _logger.LogError(
+                    exception,
+                    $"Exception caught, the version '{version}' is not supported for the Node platform.");
+                throw exception;
+            }
+
+            return maxSatisfyingVersion;
+        }
+
         private void InstallPhp(string phpVersion, StringBuilder scriptBuilder)
         {
             if (_phpInstaller.IsVersionAlreadyInstalled(phpVersion))
@@ -306,16 +328,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private void ResolveVersionsUsingHierarchicalRules(PhpPlatformDetectorResult detectorResult)
         {
-            var phpVersion = resolvePhpVersion(detectorResult.PlatformVersion);
+            var phpVersion = ResolvePhpVersion(detectorResult.PlatformVersion);
             phpVersion = GetMaxSatisfyingPhpVersionAndVerify(phpVersion);
 
-            var phpComposerVersion = resolvePhpComposerVersion(detectorResult.PhpComposerVersion);
+            var phpComposerVersion = ResolvePhpComposerVersion(detectorResult.PhpComposerVersion);
             phpComposerVersion = GetMaxSatisfyingPhpComposerVersionAndVerify(phpComposerVersion);
 
             detectorResult.PlatformVersion = phpVersion;
             detectorResult.PhpComposerVersion = phpComposerVersion;
 
-            string resolvePhpVersion(string detectedVersion)
+            string ResolvePhpVersion(string detectedVersion)
             {
                 // Explicitly specified version by user wins over detected version
                 if (!string.IsNullOrEmpty(_phpScriptGeneratorOptions.PhpVersion))
@@ -334,7 +356,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return versionInfo.DefaultVersion;
             }
 
-            string resolvePhpComposerVersion(string detectedVersion)
+            string ResolvePhpComposerVersion(string detectedVersion)
             {
                 // Explicitly specified version by user wins over detected version
                 if (!string.IsNullOrEmpty(_phpScriptGeneratorOptions.PhpComposerVersion))
@@ -385,28 +407,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     exc,
                     $"Exception caught, the version '{version}' is not supported for the PHP platform.");
                 throw exc;
-            }
-
-            return maxSatisfyingVersion;
-        }
-
-        public string GetMaxSatisfyingPhpComposerVersionAndVerify(string version)
-        {
-            var versionInfo = _phpComposerVersionProvider.GetVersionInfo();
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                versionInfo.SupportedVersions);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
-            {
-                var exception = new UnsupportedVersionException(
-                    PhpConstants.PhpComposerName,
-                    version,
-                    versionInfo.SupportedVersions);
-                _logger.LogError(
-                    exception,
-                    $"Exception caught, the version '{version}' is not supported for the Node platform.");
-                throw exception;
             }
 
             return maxSatisfyingVersion;

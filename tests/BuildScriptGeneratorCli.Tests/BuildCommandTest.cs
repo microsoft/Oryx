@@ -76,6 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         }
 
         [Fact]
+        [Obsolete]
         public void IsValidInput_ShowsWarning_WhenDeprecatedOptionUsed()
         {
             // Arrange

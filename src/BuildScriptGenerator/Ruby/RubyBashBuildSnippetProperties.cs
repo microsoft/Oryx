@@ -14,4 +14,4 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 
         public string BundlerVersion { get; set; }
     }
-} 
+}

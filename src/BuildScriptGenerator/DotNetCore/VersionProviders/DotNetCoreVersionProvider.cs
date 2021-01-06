@@ -54,8 +54,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                 // A temporary fix to make building netcoreapp1.0 versions using the 1.1 SDK
                 // This SDK has 2 runtimes: 1.1.13 and 1.0.16
-                _supportedVersions[DotNetCoreRunTimeVersions.NetCoreApp10] 
-                = DotNetCoreSdkVersions.DotNetCore11SdkVersion;
+                _supportedVersions[DotNetCoreRunTimeVersions.NetCoreApp10] =
+                    DotNetCoreSdkVersions.DotNetCore11SdkVersion;
             }
 
             _logger.LogDebug("Got the list of supported versions");
