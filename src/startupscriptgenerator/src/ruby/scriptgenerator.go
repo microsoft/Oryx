@@ -15,9 +15,9 @@ import (
 type RubyStartupScriptGenerator struct {
 	SourcePath                      string
 	UserStartupCommand              string
-	DefaultAppFilePath            	string
+	DefaultAppFilePath              string
 	BindPort                        string
-	RailEnv							string
+	RailEnv                         string
 	Manifest                        common.BuildManifest
 	Configuration                   Configuration
 }

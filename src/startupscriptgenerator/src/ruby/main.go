@@ -76,7 +76,7 @@ func main() {
 			SourcePath:                      fullAppPath,
 			UserStartupCommand:              *userStartupCommandPtr,
 			DefaultAppFilePath:              fullDefaultAppFilePath,
-			RailEnv:						 *railEnvironment,
+			RailEnv:                         *railEnvironment,
 			BindPort:                        *bindPortPtr,
 			Manifest:                        buildManifest,
 			Configuration:                   configuration,

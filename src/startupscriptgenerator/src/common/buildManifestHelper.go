@@ -27,7 +27,7 @@ type BuildManifest struct {
 	DotNetCoreRuntimeVersion        string
 	NodeVersion                     string
 	PythonVersion                   string
-	RubyVersion                   string
+	RubyVersion                     string
 	SourceDirectoryInBuildContainer string
 	CompressDestinationDir          string
 }

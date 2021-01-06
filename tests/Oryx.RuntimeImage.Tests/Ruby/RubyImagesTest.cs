@@ -77,5 +77,31 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Assert
             RunAsserts(() => Assert.Equal(result.ExitCode, exitCodeSentinel), result.GetDebugInfo());
         }
+
+        [Theory]
+        [InlineData("2.5", RubyVersions.Ruby25Version)]
+        [InlineData("2.6", RubyVersions.Ruby26Version)]
+        [InlineData("2.7", RubyVersions.Ruby27Version)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void RubyVersionMatchesImageName(string rubyVersion, string expectedOutput)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("ruby", rubyVersion),
+                CommandToExecuteOnRun = "ruby",
+                CommandArguments = new[] { "--version" }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
     }
 }
