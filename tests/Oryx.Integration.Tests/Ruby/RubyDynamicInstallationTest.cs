@@ -12,6 +12,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
+    [Trait("category", "ruby")]
     public class RubyDynamicInstallationTest : RubyEndToEndTestsBase
     {
         private readonly string DefaultSdksRootDir = "/opt/ruby";
