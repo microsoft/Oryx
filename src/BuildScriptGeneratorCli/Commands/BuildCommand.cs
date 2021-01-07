@@ -49,10 +49,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string IntermediateDir { get; set; }
 
         [Option(
+            OptionTemplates.Language,
             CommandOptionType.SingleValue,
             Description = "The name of the programming platform used in the provided source directory.",
             ShowInHelpText = false)]
-        [Obsolete]
         public string LanguageName
         {
             get => PlatformName;
@@ -64,10 +64,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         }
 
         [Option(
+            OptionTemplates.LanguageVersion,
             CommandOptionType.SingleValue,
             Description = "The version of the programming platform used in the provided source directory.",
             ShowInHelpText = false)]
-        [Obsolete]
         public string LanguageVersion
         {
             get => PlatformVersion;
