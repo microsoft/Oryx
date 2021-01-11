@@ -6,7 +6,6 @@
 
 set -o pipefail
 
-acrNonPmeProdRepo="oryxmcr"
 acrPmeProdRepo="oryxprodmcr"
 
 sourceBranchName=$BUILD_SOURCEBRANCHNAME
@@ -41,10 +40,7 @@ while read sourceImage; do
 
     read -ra repoParts <<< "$repo"
     acrRepoName=${repoParts[0]}
-    acrProdNonPmeRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/"$acrNonPmeProdRepo"/g")
     acrProdPmeRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/"$acrPmeProdRepo"/g")
-    acrNonPmeLatest="$acrProdNonPmeRepo:$version"
-    acrNonPmeSpecific="$acrProdNonPmeRepo:$releaseTagName"
     acrPmeLatest="$acrProdPmeRepo:$version"
     acrPmeSpecific="$acrProdPmeRepo:$releaseTagName"
 
@@ -55,7 +51,7 @@ while read sourceImage; do
     docker tag "$sourceImage" "$acrPmeSpecific"
 
     if [ "$sourceBranchName" == "master" ]; then
-      echo "Tagging the source image with tag $acrNonPmeLatest and $acrPmeLatest..."
+      echo "Tagging the source image with tag $acrPmeLatest..."
       echo "$acrPmeLatest">>"$outFilePmeMCR"
       docker tag "$sourceImage" "$acrPmeLatest"
     else

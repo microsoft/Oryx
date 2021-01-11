@@ -20,7 +20,6 @@ function tagBuildImage() {
     local devRegistryImageName="$1"
     local prodRegistryLatestTagName="$2"
     local prodRegistrySpecificTagName="$3"
-    local prodNonPmeRegistryRepoName="oryxmcr.azurecr.io/public/oryx/build"
     local prodPmeRegistryRepoName="oryxprodmcr.azurecr.io/public/oryx/build"
     sourceBranchName=$BUILD_SOURCEBRANCHNAME
     

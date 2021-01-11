@@ -23,16 +23,12 @@ packImage="$sourceImageRepo/pack:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 echo "Pulling pack image '$packImage'..."
 docker pull "$packImage"
 echo "Retagging pack image with '$RELEASE_TAG_NAME'..."
-echo "$prodNonPmeImageRepo/pack:$RELEASE_TAG_NAME">>"$outNonPmeFile"
-docker tag "$packImage" "$prodNonPmeImageRepo/pack:$RELEASE_TAG_NAME"
 
 echo "$prodPmeImageRepo/pack:$RELEASE_TAG_NAME">>"$outPmeFile"
 docker tag "$packImage" "$prodPmeImageRepo/pack:$RELEASE_TAG_NAME"
 
 if [ "$sourceBranchName" == "master" ]; then
     echo "Retagging pack image with 'stable'..."
-    docker tag "$packImage" "$prodNonPmeImageRepo/pack:stable"
-    echo "$prodNonPmeImageRepo/pack:stable">>"$outNonPmeFile"
 
     docker tag "$packImage" "$prodPmeImageRepo/pack:stable"
     echo "$prodPmeImageRepo/pack:stable">>"$outPmeFile"
