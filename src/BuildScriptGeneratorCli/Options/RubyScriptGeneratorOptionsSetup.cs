@@ -25,4 +25,4 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.RubyVersion = GetStringValue(SettingsKeys.RubyVersion);
         }
     }
-} 
+}

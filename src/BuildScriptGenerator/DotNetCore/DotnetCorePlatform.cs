@@ -261,6 +261,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             dotNetCorePlatformDetectorResult.SdkVersion = sdkVersion;
         }
 
+        /// <inheritdoc/>
+        public IDictionary<string, string> GetToolsToBeSetInPath(
+            RepositoryContext context,
+            PlatformDetectorResult detectorResult)
+        {
+            var dotNetCorePlatformDetectorResult = detectorResult as DotNetCorePlatformDetectorResult;
+            if (dotNetCorePlatformDetectorResult == null)
+            {
+                throw new ArgumentException(
+                    $"Expected '{nameof(detectorResult)}' argument to be of type " +
+                    $"'{typeof(DotNetCorePlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
+            }
+
+            var tools = new Dictionary<string, string>();
+            tools[DotNetCoreConstants.PlatformName] = dotNetCorePlatformDetectorResult.SdkVersion;
+            return tools;
+        }
+
         private string GetSdkVersion(
             RepositoryContext context,
             string runtimeVersion,
@@ -278,24 +296,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             return versionMap[runtimeVersion];
-        }
-
-        /// <inheritdoc/>
-        public IDictionary<string, string> GetToolsToBeSetInPath(
-            RepositoryContext context,
-            PlatformDetectorResult detectorResult)
-        {
-            var dotNetCorePlatformDetectorResult = detectorResult as DotNetCorePlatformDetectorResult;
-            if (dotNetCorePlatformDetectorResult == null)
-            {
-                throw new ArgumentException(
-                    $"Expected '{nameof(detectorResult)}' argument to be of type " +
-                    $"'{typeof(DotNetCorePlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
-            }
-
-            var tools = new Dictionary<string, string>();
-            tools[DotNetCoreConstants.PlatformName] = dotNetCorePlatformDetectorResult.SdkVersion;
-            return tools;
         }
 
         private string GetBuildConfiguration()

@@ -57,6 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     Sdk = new SdkModel
                     {
                         Version = $"{version.Major}.{version.Minor}.100",
+
                         // Get latest feature and patch of the version
                         RollForward = RollForwardPolicy.LatestFeature,
                         AllowPreRelease = true,

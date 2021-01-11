@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         PythonPackageWheelPropertyKey,
         "If provided, package wheels will be built with universal flag. For example," +
         "folder. Option is '" + UniversalWheel + ". Default is to not Non universal wheel. " +
-        "For example, when this property is enabled, wheel build command will be "+
+        "For example, when this property is enabled, wheel build command will be " +
         "'python setup.py bdist_wheel --universal'")]
     internal class PythonPlatform : IProgrammingPlatform
     {
@@ -254,51 +254,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             };
         }
 
-        private BuildScriptSnippet GetBuildScriptSnippetForConda(
-            BuildScriptGeneratorContext context,
-            PythonPlatformDetectorResult detectorResult)
-        {
-            var scriptProperties = new JupyterNotebookBashBuildSnippetProperties();
-            scriptProperties.HasRequirementsTxtFile = detectorResult.HasRequirementsTxtFile;
-
-            if (detectorResult.HasCondaEnvironmentYmlFile)
-            {
-                scriptProperties.EnvironmentYmlFile = CondaConstants.CondaEnvironmentYmlFileName;
-            }
-            else
-            {
-                string pythonVersion;
-                string templateName;
-                var version = new SemVer.Version(detectorResult.PlatformVersion);
-                if (version.Major.Equals(2))
-                {
-                    templateName = CondaConstants.DefaultPython2CondaEnvironmentYmlFileTemplateName;
-
-                    // Conda seems to have a problem with post 2.7.15 version,
-                    // so we by default restrict it to this version
-                    pythonVersion = CondaConstants.DefaultPython2Version;
-                }
-                else
-                {
-                    templateName = CondaConstants.DefaultCondaEnvironmentYmlFileTemplateName;
-                    pythonVersion = detectorResult.PlatformVersion;
-                }
-
-                scriptProperties.EnvironmentTemplateFileName = templateName;
-                scriptProperties.EnvironmentTemplatePythonVersion = pythonVersion;
-            }
-
-            var script = TemplateHelper.Render(
-                TemplateHelper.TemplateResource.PythonJupyterNotebookSnippet,
-                scriptProperties,
-                _logger);
-
-            return new BuildScriptSnippet
-            {
-                BashBuildScriptSnippet = script,
-            };
-        }
-
         /// <inheritdoc/>
         public bool IsCleanRepo(ISourceRepo repo)
         {
@@ -451,6 +406,51 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return packageDir;
         }
 
+        private BuildScriptSnippet GetBuildScriptSnippetForConda(
+            BuildScriptGeneratorContext context,
+            PythonPlatformDetectorResult detectorResult)
+        {
+            var scriptProperties = new JupyterNotebookBashBuildSnippetProperties();
+            scriptProperties.HasRequirementsTxtFile = detectorResult.HasRequirementsTxtFile;
+
+            if (detectorResult.HasCondaEnvironmentYmlFile)
+            {
+                scriptProperties.EnvironmentYmlFile = CondaConstants.CondaEnvironmentYmlFileName;
+            }
+            else
+            {
+                string pythonVersion;
+                string templateName;
+                var version = new SemVer.Version(detectorResult.PlatformVersion);
+                if (version.Major.Equals(2))
+                {
+                    templateName = CondaConstants.DefaultPython2CondaEnvironmentYmlFileTemplateName;
+
+                    // Conda seems to have a problem with post 2.7.15 version,
+                    // so we by default restrict it to this version
+                    pythonVersion = CondaConstants.DefaultPython2Version;
+                }
+                else
+                {
+                    templateName = CondaConstants.DefaultCondaEnvironmentYmlFileTemplateName;
+                    pythonVersion = detectorResult.PlatformVersion;
+                }
+
+                scriptProperties.EnvironmentTemplateFileName = templateName;
+                scriptProperties.EnvironmentTemplatePythonVersion = pythonVersion;
+            }
+
+            var script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.PythonJupyterNotebookSnippet,
+                scriptProperties,
+                _logger);
+
+            return new BuildScriptSnippet
+            {
+                BashBuildScriptSnippet = script,
+            };
+        }
+
         private string GetDefaultVirtualEnvName(PlatformDetectorResult detectorResult)
         {
             string pythonVersion = detectorResult.PlatformVersion;
@@ -565,6 +565,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             return packageWheelProperty;
         }
+
         private string GetMaxSatisfyingVersionAndVerify(string version)
         {
             var supportedVersions = SupportedVersions;

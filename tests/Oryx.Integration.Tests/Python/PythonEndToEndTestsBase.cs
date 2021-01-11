@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         protected DockerVolume CreateAppVolume(string appName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "python", appName));
 
-        protected DockerVolume CreateAppOutputDirVolume()
+        protected new DockerVolume CreateAppOutputDirVolume()
         {
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;

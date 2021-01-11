@@ -106,7 +106,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
                     $"'{typeof(RubyPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            if (!rubyPlatformDetectorResult.GemfileExists) {
+            if (!rubyPlatformDetectorResult.GemfileExists)
+            {
                 throw new InvalidUsageException($"No Gemfile found at the root of the repo. Please provide a Gemfile.");
             }
 
@@ -117,7 +118,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 
             _logger.LogDebug("Selected Ruby version: {rubyVer}", rubyPlatformDetectorResult.PlatformVersion);
 
-            var scriptProps = new RubyBashBuildSnippetProperties { 
+            var scriptProps = new RubyBashBuildSnippetProperties
+            {
                 UseBundlerToInstallDependencies = true,
                 BundlerVersion = rubyPlatformDetectorResult.BundlerVersion,
             };
@@ -250,12 +252,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 
         private void ResolveVersionsUsingHierarchicalRules(RubyPlatformDetectorResult detectorResult)
         {
-            var rubyVersion = resolveRubyVersion(detectorResult.PlatformVersion);
+            var rubyVersion = ResolveRubyVersion(detectorResult.PlatformVersion);
             rubyVersion = GetMaxSatisfyingRubyVersionAndVerify(rubyVersion);
 
             detectorResult.PlatformVersion = rubyVersion;
 
-            string resolveRubyVersion(string detectedVersion)
+            string ResolveRubyVersion(string detectedVersion)
             {
                 // Explicitly specified version by user wins over detected version
                 if (!string.IsNullOrEmpty(_rubyScriptGeneratorOptions.RubyVersion))
