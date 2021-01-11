@@ -10,19 +10,13 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 
 declare -r outPmeFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/oryxprodmcr-cli-images-mcr.txt"
-declare -r outNonPmeFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/oryxmcr-cli-images-mcr.txt"
 declare -r sourceImageRepo="oryxdevmcr.azurecr.io/public/oryx"
 declare -r prodPmeImageRepo="oryxprodmcr.azurecr.io/public/oryx"
-declare -r prodNonPmeImageRepo="oryxmcr.azurecr.io/public/oryx"
 
 sourceBranchName=$BUILD_SOURCEBRANCHNAME
 
 if [ -f "$outPmeFile" ]; then
     rm $outPmeFile
-fi
-
-if [ -f "$outNonPmeFile" ]; then
-    rm $outNonPmeFile
 fi
 
 cliImage="$sourceImageRepo/cli:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
@@ -55,7 +49,4 @@ fi
 
 echo "printing pme tags from $outPmeFile"
 cat $outPmeFile
-echo -------------------------------------------------------------------------------
-echo "printing non-pme tags from $outNonPmeFile"
-cat $outNonPmeFile
 echo -------------------------------------------------------------------------------

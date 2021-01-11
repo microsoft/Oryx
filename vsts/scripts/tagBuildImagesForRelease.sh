@@ -11,21 +11,15 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 
 outPmeFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/oryxprodmcr-build-images-mcr.txt"
-outNonPmeFileMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/oryxmcr-build-images-mcr.txt"
 
 if [ -f "$outPmeFileMCR" ]; then
     rm $outPmeFileMCR
-fi
-
-if [ -f "$outNonPmeFileMCR" ]; then
-    rm $outNonPmeFileMCR
 fi
 
 function tagBuildImage() {
     local devRegistryImageName="$1"
     local prodRegistryLatestTagName="$2"
     local prodRegistrySpecificTagName="$3"
-    local prodNonPmeRegistryRepoName="oryxmcr.azurecr.io/public/oryx/build"
     local prodPmeRegistryRepoName="oryxprodmcr.azurecr.io/public/oryx/build"
     sourceBranchName=$BUILD_SOURCEBRANCHNAME
     

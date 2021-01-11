@@ -6,20 +6,14 @@
 
 set -o pipefail
 
-acrNonPmeProdRepo="oryxmcr"
 acrPmeProdRepo="oryxprodmcr"
 
 sourceBranchName=$BUILD_SOURCEBRANCHNAME
-outFileNonPmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrNonPmeProdRepo-runtime-images-mcr.txt"
 outFilePmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrPmeProdRepo-runtime-images-mcr.txt"
 sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
 
 if [ -f "$outFilePmeMCR" ]; then
     rm $outFilePmeMCR
-fi
-
-if [ -f "$outFileNonPmeMCR" ]; then
-    rm $outFileNonPmeMCR
 fi
 
 while read sourceImage; do
@@ -46,26 +40,18 @@ while read sourceImage; do
 
     read -ra repoParts <<< "$repo"
     acrRepoName=${repoParts[0]}
-    acrProdNonPmeRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/"$acrNonPmeProdRepo"/g")
     acrProdPmeRepo=$(echo $acrRepoName | sed "s/oryxdevmcr/"$acrPmeProdRepo"/g")
-    acrNonPmeLatest="$acrProdNonPmeRepo:$version"
-    acrNonPmeSpecific="$acrProdNonPmeRepo:$releaseTagName"
     acrPmeLatest="$acrProdPmeRepo:$version"
     acrPmeSpecific="$acrProdPmeRepo:$releaseTagName"
 
     echo
-    echo "Tagging the source image with tag $acrNonPmeSpecific and $acrPmeSpecific..."
-    echo "$acrNonPmeSpecific">>"$outFileNonPmeMCR"
-    docker tag "$sourceImage" "$acrNonPmeSpecific"
+    echo "Tagging the source image with tag $acrPmeSpecific..."
     
     echo "$acrPmeSpecific">>"$outFilePmeMCR"
     docker tag "$sourceImage" "$acrPmeSpecific"
 
     if [ "$sourceBranchName" == "master" ]; then
-      echo "Tagging the source image with tag $acrNonPmeLatest and $acrPmeLatest..."
-      echo "$acrNonPmeLatest">>"$outFileNonPmeMCR"
-      docker tag "$sourceImage" "$acrNonPmeLatest"
-      
+      echo "Tagging the source image with tag $acrPmeLatest..."
       echo "$acrPmeLatest">>"$outFilePmeMCR"
       docker tag "$sourceImage" "$acrPmeLatest"
     else
@@ -77,7 +63,4 @@ done <"$sourceFile"
 
 echo "printing pme tags from $outFilePmeMCR"
 cat $outFilePmeMCR
-echo -------------------------------------------------------------------------------
-echo "printing non-pme tags from $outFileNonPmeMCR"
-cat $outFileNonPmeMCR
 echo -------------------------------------------------------------------------------
