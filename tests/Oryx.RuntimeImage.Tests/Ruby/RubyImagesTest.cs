@@ -79,9 +79,9 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("2.5", RubyVersions.Ruby25Version)]
-        [InlineData("2.6", RubyVersions.Ruby26Version)]
-        [InlineData("2.7", RubyVersions.Ruby27Version)]
+        [InlineData("2.5", "ruby " + RubyVersions.Ruby25Version)]
+        [InlineData("2.6", "ruby " + RubyVersions.Ruby26Version)]
+        [InlineData("2.7", "ruby " + RubyVersions.Ruby27Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RubyVersionMatchesImageName(string rubyVersion, string expectedOutput)
         {
@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
+                    Assert.Contains(expectedOutput, actualOutput);
                 },
                 result.GetDebugInfo());
         }

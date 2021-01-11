@@ -24,7 +24,7 @@ RUN set -ex \
  && ln -s 2.7.1 2.7 \
  && ln -s 2.7 2
 
-ENV PATH="/opt/ruby/2.6/bin:${PATH}"
+ENV PATH="/opt/ruby/2.7/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
