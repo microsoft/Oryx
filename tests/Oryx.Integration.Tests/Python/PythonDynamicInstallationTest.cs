@@ -13,6 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
+    [Trait("category", "python")]
     public class PythonDynamicInstallationTest : PythonEndToEndTestsBase
     {
         private readonly string DefaultSdksRootDir = "/opt/python";
