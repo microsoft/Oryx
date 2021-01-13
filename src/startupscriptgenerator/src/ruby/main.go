@@ -99,8 +99,6 @@ func main() {
 			rubyInstallationRoot)
 		scriptBuilder := strings.Builder{}
 		scriptBuilder.WriteString(script)
-		scriptBuilder.WriteString("echo Installing dependencies...\n")
-		scriptBuilder.WriteString("/opt/ruby/install-dependencies.sh\n")
 		scriptBuilder.WriteString(
 			fmt.Sprintf("export PATH=\"%s/bin:${PATH}\"\n", rubyInstallationRoot))
 		finalScript := scriptBuilder.String()

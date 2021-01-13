@@ -67,7 +67,9 @@ func (gen *RubyStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("echo 'Running the command: " + command + "'\n")
 		scriptBuilder.WriteString(command + "\n")
 	} else {
-		command := "bundle exec rails server -b $HOST -e $RAILS_ENV -p $PORT"
+		scriptBuilder.WriteString("echo 'Running the command: bundle install'\n")
+		scriptBuilder.WriteString("bundle install\n")
+		command := "bundle exec rails server"
 		scriptBuilder.WriteString("echo 'Running the command: " + command + "'\n")
 		scriptBuilder.WriteString(command + "\n")
 	}
