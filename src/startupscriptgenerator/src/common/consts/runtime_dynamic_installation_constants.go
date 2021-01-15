@@ -5,5 +5,4 @@ package consts
 const NodeInstallationDir string = "/tmp/oryx/nodejs"
 const DotNetCoreInstallationDir string = "/tmp/oryx/dotnet"
 const PythonInstallationRootDir string = "/opt/python"
-const RubyInstallationRootDir string = "/opt/ruby"
 const SetupScriptLocation string = "/tmp/oryx/setupEnv.sh"
