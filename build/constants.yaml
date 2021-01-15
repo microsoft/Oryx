@@ -197,6 +197,7 @@
     dot-net-core-installation-dir: '/tmp/oryx/dotnet'
     python-installation-root-dir: '/opt/python'
     setup-script-location: '/tmp/oryx/setupEnv.sh'
+    ruby-installation-root-dir: '/opt/ruby'
   outputs:
     - type: go
       directory: src/startupscriptgenerator/src/common/consts
