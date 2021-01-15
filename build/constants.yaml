@@ -127,7 +127,7 @@
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Ruby
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
     - type: shell
       directory: build
       file-name-prefix: __
