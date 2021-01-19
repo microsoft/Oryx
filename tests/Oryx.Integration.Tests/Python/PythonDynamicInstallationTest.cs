@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
+        [Theory(Skip = "Temporarily skip, Bug#1266781")]
         [InlineData("2.7")]
         [InlineData("3.6")]
         [InlineData("3.7")]
@@ -154,7 +154,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Temporarily skip, Bug#1266781")]
         [InlineData(true)]
         [InlineData(false)]
         public async Task CanBuildAndRunPythonAppWhenUsingPackageDirSwitch(bool compressDestinationDir)
