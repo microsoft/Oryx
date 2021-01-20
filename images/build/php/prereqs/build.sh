@@ -83,6 +83,11 @@ else
 	apt-get install -y --no-install-recommends libargon2-dev
 fi
 
+if [ $PHP_MAJOR == '8' ]; then
+	apt-get update
+	apt-get install -y --no-install-recommends libonig-dev
+fi
+
 savedAptMark="$(apt-mark showmanual)";
 apt-get update;
 apt-get upgrade -y;
