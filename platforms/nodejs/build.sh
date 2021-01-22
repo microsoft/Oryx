@@ -18,25 +18,14 @@ else
     tarFileName=nodejs-$debianFlavor-$version.tar.gz
 fi
 
-# Certain versions (ex: 6.4.1) of NPM have issues installing native modules
-# like 'grpc', so upgrading them to a version whch we know works.
 upgradeNpm() {
     local node_ver="$1"
-
     local nodeDir="/usr/local/n/versions/node/$node_ver"
-    local nodeModulesDir="$nodeDir/lib/node_modules"
-    local npm_ver=`jq -r .version $nodeModulesDir/npm/package.json`
-    IFS='.' read -ra versionParts <<< "$npm_ver"
-    local majorPart="${versionParts[0]}"
-    local minorPart="${versionParts[1]}"
 
-    if [ "$majorPart" -eq "6" ] && [ "$minorPart" -lt "9" ] ; then
-        echo "Upgrading node $node_ver's npm version from $npm_ver to 6.9.0"
-        cd $nodeModulesDir
-        PATH="$nodeDir/bin:$PATH" \
-        "$nodeModulesDir/npm/bin/npm-cli.js" install npm@6.9.0
-        echo
-    fi
+    echo "Upgrading node $node_ver's npm version to 7"
+    PATH="$nodeDir/bin:$PATH" \
+    $nodeDir/bin/npm install -g npm@7
+    echo
 }
 
 ~/n/bin/n -d $version
