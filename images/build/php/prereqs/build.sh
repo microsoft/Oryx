@@ -125,6 +125,10 @@ if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	fi
 fi
 
+if [ $PHP_MAJOR == '8' ]; then
+	versionConfigureArgs='--with-password-argon2 --with-sodium=shared --with-pear'
+fi
+
 ./configure \
 		--build="$gnuArch" \
 		--prefix="$INSTALLATION_PREFIX" \

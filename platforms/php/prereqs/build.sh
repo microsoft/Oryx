@@ -143,7 +143,12 @@ if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
 	if [ $PHP_MINOR == '4' ]; then
 	versionConfigureArgs='--with-password-argon2 --with-sodium=shared --with-pear'
+	fi
 fi
+# in PHP 7.4+, the pecl/pear installers are officially deprecated (requiring an explicit "--with-pear") and will be removed in PHP 8+; 
+	# see also https://github.com/docker-library/php/issues/846#issuecomment-505638494
+if [ $PHP_MAJOR == '8' ]; then
+	versionConfigureArgs='--with-password-argon2 --with-sodium=shared --with-pear'
 fi
 
 ./configure \
