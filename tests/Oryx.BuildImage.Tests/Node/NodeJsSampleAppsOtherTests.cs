@@ -1004,6 +1004,36 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void BuildsApp_ByRunningNpm7()
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var subDir = Guid.NewGuid();
+            var script = new ShellScriptBuilder()
+                .AddCommand("npm --v")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetLtsVersionsBuildImage(),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("7.4.3", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void CanBuildAppHavingAppDynamicsNpmPackage()
         {
             // Arrange

@@ -277,6 +277,32 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData("latest")]
         [InlineData("lts-versions")]
+        public void InstalledNpmAreUpgradedTo7(string tag)
+        {
+            // Arrange
+            var script = new ShellScriptBuilder()
+                .AddCommand($"source benv node=14")
+                .AddCommand("which npm")
+                .AddCommand("npm --v")
+                .ToString();
+
+            // Act
+            var image = _imageHelper.GetBuildImage(tag);
+            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("7.4.3", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("latest")]
+        [InlineData("lts-versions")]
         public void InstalledPythonExecutablesAreOnPath(string tag)
         {
             // Arrange
