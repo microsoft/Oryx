@@ -92,7 +92,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("8.0")]
         [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
@@ -217,7 +216,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("8.0")]
         [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]

@@ -68,16 +68,27 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         pdo_odbc \
 # deprecated from 7.4, so should be avoided in general template for all php versions
 #       wddx \
-        xmlrpc \
-        xsl \
-    && pecl install imagick && docker-php-ext-enable imagick \
-    && pecl install mongodb && docker-php-ext-enable mongodb
+#       xmlrpc \
+        xsl
+
+# https://github.com/Imagick/imagick/issues/331
+RUN set -eux; \
+    if [[ $PHP_VERSION != 8.* ]]; then \
+        pecl install imagick && docker-php-ext-enable imagick; \
+    fi
+
+# deprecated from 5.*, so should be avoided 
+RUN set -eux; \
+    if [[ $PHP_VERSION != 5.* ]]; then \
+        echo "pecl/mongodb requires PHP (version >= 7.0.0, version <= 7.99.99)"; \
+        pecl install mongodb && docker-php-ext-enable mongodb; \
+    fi
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.1.* || $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
+    if [[ $PHP_VERSION == 7.1.* || $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
