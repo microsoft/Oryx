@@ -138,5 +138,39 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Theory]
+        [InlineData(PhpVersions.Php80Version)]
+        public void GeneratesScript_AndBuilds_TwigExample_InLtsVersionsBusterImage(string phpVersion)
+        {
+            // Arrange
+            var appName = "twig-example";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetBuildImage("lts-versions-buster"),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(() =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
+                    Assert.Contains($"Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
+                },
+                result.GetDebugInfo());
+        }
     }
 }

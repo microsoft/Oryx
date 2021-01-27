@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string JamStackBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack";
         public const string CliBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/cli";
         public const string CliBusterBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/cli-buster";
+        public const string LtsVerionsBusterBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-buster";
         public const string VsoBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:vso";
         public const string VsoUbuntuBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:vso-focal";
 

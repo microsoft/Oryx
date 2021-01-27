@@ -30,6 +30,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _cliBusterRepository = "cli-buster";
         private const string _latestTag = "latest";
         private const string _ltsVersionsTag = "lts-versions";
+        private const string _ltsVersionsBuster = "lts-versions-buster";
 
         private readonly ITestOutputHelper _output;
         private string _repoPrefix;
@@ -173,7 +174,10 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetGitHubActionsBuildImage(_gitHubActionsBuster);
             }
-
+            else if (string.Equals(tag, _ltsVersionsBuster))
+            {
+                return GetLtsVersionsBuildImage(_ltsVersionsBuster);
+            }
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
 
@@ -217,6 +221,16 @@ namespace Microsoft.Oryx.Tests.Common
                 return $"{_repoPrefix}/{_buildRepository}:{_vsoUbuntu}{_tagSuffix}";
             }
             return $"{_repoPrefix}/{_buildRepository}:{_vso}{_tagSuffix}";
+        }
+
+        public string GetLtsVersionsBuildImage(string debianFlavor = null)
+        {
+            if (!string.IsNullOrEmpty(debianFlavor)
+                && string.Equals(debianFlavor.ToLower(), _ltsVersionsBuster))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_ltsVersionsBuster}{_tagSuffix}";
+            }
+            return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
         }
 
         /// <summary>

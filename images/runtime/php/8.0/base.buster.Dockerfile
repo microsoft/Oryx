@@ -1,6 +1,6 @@
-FROM %PHP_BASE_IMAGE%
+FROM php-8.0
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION %PHP_VERSION%
+ENV PHP_VERSION 8.0.1
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
@@ -70,22 +70,8 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 #       wddx \
         xmlrpc \
         xsl \
-    && pecl install imagick && docker-php-ext-enable imagick
-
-# deprecated from 5.*, so should be avoided 
-RUN set -eux; \
-    if [[ $PHP_VERSION != 5.* ]]; then \
-        echo "pecl/mongodb requires PHP (version >= 7.0.0, version <= 7.99.99)"; \
-        pecl install mongodb && docker-php-ext-enable mongodb; \
-    fi
-
-# https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
-RUN set -eux; \
-    if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
-        echo "pecl/mysqlnd_azure requires PHP (version >= 7.2.*, version <= 7.99.99)"; \
-        pecl install mysqlnd_azure \
-        && docker-php-ext-enable mysqlnd_azure; \
-    fi
+    && pecl install imagick && docker-php-ext-enable imagick \
+    && pecl install mongodb && docker-php-ext-enable mongodb
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
@@ -122,7 +108,7 @@ RUN set -x \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
     && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
-    && docker-php-ext-install odbc \
-    && rm -rf /var/lib/apt/lists/*
+    && docker-php-ext-install odbc
 
-RUN rm -rf /tmp/oryx
+RUN rm -rf /tmp/ \
+    && rm -rf /var/lib/apt/lists/*
