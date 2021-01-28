@@ -143,6 +143,8 @@ RUN set -ex \
     && ln -s 3.9 3 \
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" \
     # Install PHP pre-reqs
+    # Install ca-certificates from bullseye repository: https://github.com/NuGet/Announcements/issues/49
+    echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list \
     && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -153,6 +155,7 @@ RUN set -ex \
         libsodium-dev \
         libncurses5 \
     && rm -r /var/lib/apt/lists/* \
+    && sed -i '$ d' /etc/apt/sources.list \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
     && $imagesDir/installPlatform.sh php $PHP80_VERSION \

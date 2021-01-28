@@ -39,12 +39,16 @@ RUN LANG="C.UTF-8" \
     && mkdir -p /opt/oryx
 
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
-        apt-get update \
+        # Install ca-certificates from bullseye repository: https://github.com/NuGet/Announcements/issues/49
+        echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list \
+        && apt-get update \
         && apt-get install -y --no-install-recommends \
+            ca-certificates \
             libicu63 \
             libcurl4 \ 
             libssl1.1 \
-        && rm -rf /var/lib/apt/lists/* ; \
+        && rm -rf /var/lib/apt/lists/* \
+        && sed -i '$ d' /etc/apt/sources.list ; \
     else \
         apt-get update \
         && apt-get install -y --no-install-recommends \
