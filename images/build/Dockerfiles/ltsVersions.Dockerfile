@@ -177,9 +177,10 @@ RUN set -ex \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && rm -f /etc/apt/sources.list.d/buster.list \
-    && echo "ltsversions" > /opt/oryx/.imagetype \
-    # Install ca-certificates from bullseye repository: https://github.com/NuGet/Announcements/issues/49
-    echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list \
+    && echo "ltsversions" > /opt/oryx/.imagetype
+
+# Install ca-certificates from bullseye repository: https://github.com/NuGet/Announcements/issues/49
+RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
          ca-certificates \
