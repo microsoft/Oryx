@@ -110,14 +110,6 @@ RUN set -ex \
     && ln -s $DOT_NET_CORE_21_SDK_VERSION 2-lts \
     && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s 3-lts lts \
-    # Install ca-certificates from bullseye repository: https://github.com/NuGet/Announcements/issues/49
-    && echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        ca-certificates -o APT::Install-Suggests=0 -o APT::Install-Recommends=0 \
-    && rm -r /var/lib/apt/lists/* \
-    && sed -i '$ d' /etc/apt/sources.list \
     # Install Hugo
     && $imagesDir/build/installHugo.sh \
     # Install Node
@@ -185,6 +177,13 @@ RUN set -ex \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && rm -f /etc/apt/sources.list.d/buster.list \
-    && echo "ltsversions" > /opt/oryx/.imagetype
+    && echo "ltsversions" > /opt/oryx/.imagetype \
+    # Install ca-certificates from bullseye repository: https://github.com/NuGet/Announcements/issues/49
+    echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+         ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && sed -i '$ d' /etc/apt/sources.list
 
 ENTRYPOINT [ "benv" ]
