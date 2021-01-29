@@ -155,11 +155,11 @@ RUN set -ex \
     && rm -r /var/lib/apt/lists/* \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
-    && $imagesDir/installPlatform.sh php $PHP74_VERSION \
+    && $imagesDir/installPlatform.sh php $PHP80_VERSION \
     && $imagesDir/installPlatform.sh php-composer $COMPOSER1_10_VERSION \
     && cd /opt/php \
-    && ln -s 7.4 7 \
-    && ln -s 7 lts \
+    && ln -s 8.0 8 \
+    && ln -s 8 lts \
     && cd /opt/php-composer \
     && ln -sfn 1.10.19 stable \
     && ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar \

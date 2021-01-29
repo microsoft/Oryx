@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(PhpVersions.Php73Version, ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage());
                 var imageHelper = new ImageTestHelper();
                 data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage());
+                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage());
                 return data;
             }
         }

@@ -106,6 +106,11 @@ else
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libargon2-dev 
 fi
 
+if [ $PHP_MAJOR == '8' ]; then
+	apt-get update
+	apt-get install -y --no-install-recommends libonig-dev
+fi
+
 savedAptMark="$(apt-mark showmanual)";
 apt-get update;
 apt-get upgrade -y;
@@ -134,11 +139,12 @@ if [ ! -d /usr/include/curl ]; then
 fi;
 
 versionConfigureArgs=''
-if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
-	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
-	if [ $PHP_MINOR == '4' ]; then
+# in PHP 7.4+, the pecl/pear installers are officially deprecated (requiring an explicit "--with-pear") and will be removed in PHP 8+; 
+# see also https://github.com/docker-library/php/issues/846#issuecomment-505638494
+if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then
 	versionConfigureArgs='--with-password-argon2 --with-sodium=shared --with-pear'
-fi
+else
+	versionConfigureArgs='--with-password-argon2 --with-sodium=shared'
 fi
 
 ./configure \
@@ -196,7 +202,7 @@ if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	PHP_INI_DIR=$PHP_INI_DIR php=$INSTALLATION_PREFIX/bin/php /php/docker-php-ext-enable.sh sodium
 fi
 
-if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
+if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
         echo "pecl/mysqlnd_azure requires PHP (version >= 7.2.*, version <= 7.99.99)"; \
         pecl install mysqlnd_azure \
         && /php/docker-php-ext-enable.sh mysqlnd_azure; \
