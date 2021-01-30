@@ -44,8 +44,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
             libicu63 \
             libcurl4 \ 
             libssl1.1 \
-        && rm -rf /var/lib/apt/lists/* \
-        && sed -i '$ d' /etc/apt/sources.list ; \
+        && rm -rf /var/lib/apt/lists/* ; \
     else \
         apt-get update \
         && apt-get install -y --no-install-recommends \

@@ -14,8 +14,6 @@ ADD build ${BUILD_DIR}
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        ca-certificates \
-        \
         # .NET Core dependencies
         libc6 \
         libgcc1 \
@@ -57,3 +55,11 @@ RUN set -ex \
     && rm aspnetcore.tar.gz \
     && dotnet-sos install \
     && rm -rf ${BUILD_DIR}
+
+# Install ca-certificates from bullseye repository: https://github.com/NuGet/Announcements/issues/49
+RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+         ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && sed -i '$ d' /etc/apt/sources.list
