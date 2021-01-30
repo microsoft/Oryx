@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
     
-        [Fact]
+        [Fact(Skip = "Skipping test temporarily")]
         public async Task CanRun_SelfContainedApp_TargetedForLinux()
         {
             // ****************************************************************

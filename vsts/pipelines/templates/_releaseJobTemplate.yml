@@ -1,5 +1,5 @@
 jobs:
-- job: Release_BuildImage
+- job: Release_BuildImages
   displayName: Push Build Image to MCR
   pool:
     name: OryxLinux
@@ -32,7 +32,8 @@ jobs:
 - job: Release_GitHub
   displayName: Create GitHub release
   dependsOn: 
-    - Release_PlatformSDKs
+    - Release_BuildImages
+    - Release_RuntimeImages
   pool:
     name: OryxLinux
   variables:

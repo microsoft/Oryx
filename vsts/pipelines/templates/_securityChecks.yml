@@ -45,4 +45,4 @@ steps:
     SupportLogOnError: false
     FileDirPath: '$(Build.StagingDirectory)'
     SignatureFreshness: 'UpToDate'
-    TreatStaleSignatureAs: 'Error'
+    TreatStaleSignatureAs: 'Warning'
