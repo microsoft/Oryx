@@ -59,12 +59,12 @@ Setting name for Java apps | Description                                        
 ---------------------------|----------------------------------------------------------------|---------|----------------
 JAVA\_VERSION              | Specify which Java version the app is using                    | ""      | "14.0.2"
 MAVEN\_VERSION             | Specify which Maven version the app is using                   | ""      | "3.6.3"
-DISABLE\_JAVA_\_BUILD      | Do not apply Java build even if repo indicates it              | `false` | `true`, `false`
+DISABLE\_JAVA\_BUILD      | Do not apply Java build even if repo indicates it              | `false` | `true`, `false`
 
 Setting name for Ruby apps | Description                                                    | Default | Example
 ---------------------------|----------------------------------------------------------------|---------|----------------
 RUBY\_VERSION              | Specify which Ruby version the app is using                    | ""      | "2.7.1"
-DISABLE\_RUBY_\_BUILD      | Do not apply Ruby build even if repo indicates it              | `false` | `true`, `false`
+DISABLE\_RUBY\_BUILD      | Do not apply Ruby build even if repo indicates it              | `false` | `true`, `false`
 
 Setting name for Hugo apps | Description                                                    | Default | Example
 ---------------------------|----------------------------------------------------------------|---------|----------------
