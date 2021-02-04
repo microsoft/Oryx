@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Bug #1274414")]
         [InlineData("github-actions")]
         [InlineData("github-actions-buster")]
         [InlineData("latest")]
