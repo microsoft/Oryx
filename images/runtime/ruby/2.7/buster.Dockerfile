@@ -16,12 +16,12 @@ RUN ./build.sh ruby /opt/startupcmdgen/startupcmdgen
 
 FROM oryx-run-base-${DEBIAN_FLAVOR} AS main
 ARG IMAGES_DIR=/tmp/oryx/images
-ENV RUBY_VERSION 2.7.1
+ENV RUBY_VERSION 2.7.2
 
 RUN ${IMAGES_DIR}/installPlatform.sh ruby $RUBY_VERSION --dir /opt/ruby/$RUBY_VERSION --links false
 RUN set -ex \
  && cd /opt/ruby/ \
- && ln -s 2.7.1 2.7 \
+ && ln -s 2.7.2 2.7 \
  && ln -s 2.7 2
 
 ENV PATH="/opt/ruby/2.7/bin:${PATH}"
