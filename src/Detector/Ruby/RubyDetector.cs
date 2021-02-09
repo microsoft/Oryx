@@ -37,6 +37,19 @@ namespace Microsoft.Oryx.Detector.Ruby
             bool gemfileExists = false;
             var sourceRepo = context.SourceRepo;
             string bundlerVersion = string.Empty;
+            bool configYmlFileExists = false;
+            if (!string.IsNullOrEmpty(_options.AppType))
+            {
+                _logger.LogInformation($"{nameof(_options.AppType)} is set to {_options.AppType}");
+
+                var appType = _options.AppType.ToLower();
+                if (appType.Contains(Constants.StaticSiteApplications)
+                    && sourceRepo.FileExists(RubyConstants.ConfigYmlFileName))
+                {
+                    isRubyApp = true;
+                    configYmlFileExists = true;
+                }
+            }
             if (sourceRepo.FileExists(RubyConstants.GemFileName))
             {
                 isRubyApp = true;
@@ -94,6 +107,7 @@ namespace Microsoft.Oryx.Detector.Ruby
                 AppDirectory = appDirectory,
                 GemfileExists = gemfileExists,
                 BundlerVersion = bundlerVersion,
+                ConfigYmlFileExists = configYmlFileExists,
             };
         }
 

@@ -19,5 +19,10 @@ namespace Microsoft.Oryx.Detector.Ruby
         /// Gets or sets the value if a bundler version specified in 'Gemfile.lock' in the repo.
         /// </summary>
         public string BundlerVersion { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value if a bundler version specified in 'Gemfile.lock' in the repo.
+        /// </summary>
+        public bool ConfigYmlFileExists { get; set; }
     }
 }
