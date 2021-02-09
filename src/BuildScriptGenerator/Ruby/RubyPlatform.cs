@@ -108,7 +108,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 
             if (!rubyPlatformDetectorResult.GemfileExists && !rubyPlatformDetectorResult.ConfigYmlFileExists)
             {
-                throw new InvalidUsageException($"No Gemfile found at the root of the repo. Please provide a Gemfile" +
+                throw new InvalidUsageException($"No Gemfile found at the root of the repo. Please provide a Gemfile. " +
                 $"For Jekyll apps, make sure it contains a '{RubyConstants.ConfigYmlFileName}' file and set it as a static web app");
             }
 
