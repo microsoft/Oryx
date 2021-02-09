@@ -1,3 +1,6 @@
-markdown: maruku
-exclude: Gemfile Gemfile.lock Procfile config.ru
 
+exclude:
+    - Procfile
+    - config.ru
+    - Gemfile.lock
+    - Gemfile

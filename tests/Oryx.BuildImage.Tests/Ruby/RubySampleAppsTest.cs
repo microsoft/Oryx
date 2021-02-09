@@ -90,39 +90,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void GeneratesScript_AndBuildJekyllApp()
-        {
-            // Arrange
-            var appName = "Jekyll-app";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetVsoBuildImage(),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains("Ruby version", result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
         public void Builds_JekyllStaticWebApp_When_Apptype_Is_SetAs_StaticSiteApplications()
         {
             // Arrange
@@ -138,6 +105,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddStringExistsInFileCheck(
                 $"{ManifestFilePropertyKeys.PlatformName}=\"{RubyConstants.PlatformName}\"",
                 $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{RubyConstants.DefaultAppLocationDirName}")
                 .ToString();
 
             // Act

@@ -7,6 +7,18 @@ echo "Using Gem version:"
 gem --version
 echo
 
+
+{{ if BundlerVersion | IsNotBlank }}
+    BundlerVersion={{ BundlerVersion }}
+    echo "Running 'gem install bundler:$BundlerVersion'..."
+    echo
+    gem install bundler:$BundlerVersion
+{{ else }}
+    echo "Running 'gem install bundler'..."
+    echo
+    gem install bundler
+{{ end }}
+
 {{ if ConfigYmlFileExists }}
     {{ if GemfileExists }}
     echo "Running 'bundle install'..."
@@ -17,21 +29,12 @@ echo
     echo
     gem install jekyll
     {{ end }}
-echo "Running 'jekyll build'..."
-echo
-jekyll build
-{{ else if UseBundlerToInstallDependencies }}
-    {{ if BundlerVersion | IsNotBlank }}
-    BundlerVersion={{ BundlerVersion }}
-    echo "Running 'gem install bundler:$BundlerVersion'..."
+    echo "Running 'jekyll build'..."
     echo
-    gem install bundler:$BundlerVersion
-    {{ else }}
-    echo "Running 'gem install bundler'..."
+    jekyll build
+{{ else }}
+    echo "Running 'bundle install'..."
     echo
-    gem install bundler
-    {{end}}
-echo "Running 'bundle install'..."
-echo
-bundle install
+    bundle install
 {{ end }}
+
