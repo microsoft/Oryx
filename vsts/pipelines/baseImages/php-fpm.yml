@@ -6,7 +6,7 @@ variables:
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build php runtime base images
+    displayName: Build php stretch runtime base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: php-fpm
     imageDebianFlavor: stretch
@@ -15,7 +15,7 @@ jobs:
 
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build php runtime base images
+    displayName: Build php buster runtime base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: php-fpm
     imageDebianFlavor: buster
