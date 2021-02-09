@@ -124,8 +124,8 @@
   constants:
     gem-version: 3.1.4
     # hashes are for .tar.xz
-    ruby27-version: 2.7.1
-    ruby27-tar-sha256: b224f9844646cc92765df8288a46838511c1cec5b550d8874bd4686a904fcee7
+    ruby27-version: 2.7.2
+    ruby27-tar-sha256: 1b95ab193cc8f5b5e59d2686cb3d5dcf1ddf2a86cb6950e0b4bdaae5040ec0d6
     ruby26-version: 2.6.6
     ruby26-tar-sha256: 5db187882b7ac34016cd48d7032e197f07e4968f406b0690e20193b9b424841f
     ruby25-version: 2.5.8

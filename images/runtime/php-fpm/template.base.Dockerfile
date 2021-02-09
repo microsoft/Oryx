@@ -28,7 +28,7 @@ RUN apt-get update \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* ]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
 		apt-get update \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends apache2-dev \
@@ -67,8 +67,13 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         sysvshm \
         pdo_odbc \
         xmlrpc \
-        xsl \
-    && pecl install imagick && docker-php-ext-enable imagick
+        xsl
+
+# https://github.com/Imagick/imagick/issues/331
+RUN set -eux; \
+    if [[ $PHP_VERSION != 8.* ]]; then \
+        pecl install imagick && docker-php-ext-enable imagick; \
+    fi
 
 # https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
 RUN set -eux; \
