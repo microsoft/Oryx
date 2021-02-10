@@ -14,6 +14,7 @@ ADD build ${BUILD_DIR}
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        ca-certificates \
         # .NET Core dependencies
         libc6 \
         libgcc1 \
@@ -27,7 +28,8 @@ RUN apt-get update \
         file \
         libgdiplus \
     && apt-get upgrade --assume-yes \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && update-ca-certificates 
 
 # Configure web servers to bind to port 80 when present
 ENV ASPNETCORE_URLS=http://+:80 \
