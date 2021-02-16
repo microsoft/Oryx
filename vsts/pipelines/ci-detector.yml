@@ -57,7 +57,7 @@ stages:
     - job: Job_BuildAndTestDetector
       displayName: Build and test detector
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       steps:
       - template: templates/_buildTemplateDetector.yml
       

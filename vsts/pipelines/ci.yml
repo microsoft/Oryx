@@ -9,7 +9,7 @@ stages:
     jobs:
     - job: CreateReleaseTag
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       variables:
         skipComponentGovernanceDetection: true
       steps:
@@ -72,7 +72,7 @@ stages:
       condition: succeeded()
       timeoutInMinutes: 300
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       variables:
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
@@ -98,7 +98,7 @@ stages:
       condition: succeeded()
       timeoutInMinutes: 300
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       variables:
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true

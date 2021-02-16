@@ -122,7 +122,7 @@ for dockerFile in $dockerFiles; do
 
     echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
 
-    # Retag image with build number (for images built in oryxlinux buildAgent)
+    # Retag image with build number (for images built in buildAgent)
     if [ "$AGENT_BUILD" == "true" ]
     then
         # $uniqueTag will follow a similar format to Oryx-CI.20191028.1

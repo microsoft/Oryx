@@ -41,7 +41,7 @@ stages:
     timeoutInMinutes: 250
     displayName: Publish to Azure Blob Storage
     pool:
-      name: OryxLinux
+      vmImage: 'ubuntu-latest'
     steps:
     - template: ../templates/_platformBinariesReleaseTemplate.yml
   

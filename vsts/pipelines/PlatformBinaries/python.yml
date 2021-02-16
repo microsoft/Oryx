@@ -25,9 +25,9 @@ stages:
         debianFlavor: 'stretch'
 
   - job: Python_Ubuntu_SDK
-    vmImage: 'ubuntu-latest'
+    timeoutInMinutes: 250
     pool:
-      name: OryxLinux
+      vmImage: 'ubuntu-latest'
     steps:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
