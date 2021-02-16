@@ -7,7 +7,7 @@ stages:
   - job: Python_Buster_SDK
     timeoutInMinutes: 250
     pool:
-      name: OryxLinux
+      vmImage: 'ubuntu-latest'
     steps:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
@@ -17,7 +17,7 @@ stages:
   - job: Python_Stretch_SDK
     timeoutInMinutes: 250
     pool:
-      name: OryxLinux
+      vmImage: 'ubuntu-latest'
     steps:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
@@ -25,7 +25,7 @@ stages:
         debianFlavor: 'stretch'
 
   - job: Python_Ubuntu_SDK
-    timeoutInMinutes: 250
+    vmImage: 'ubuntu-latest'
     pool:
       name: OryxLinux
     steps:
@@ -41,7 +41,7 @@ stages:
     timeoutInMinutes: 250
     displayName: Publish to Azure Blob Storage
     pool:
-      name: OryxLinux
+      vmImage: 'ubuntu-latest'
     steps:
     - template: ../templates/_platformBinariesReleaseTemplate.yml
 

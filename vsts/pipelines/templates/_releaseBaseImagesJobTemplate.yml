@@ -3,7 +3,7 @@ jobs:
   displayName: Push PHP Runtime Base Image to MCR
   timeoutInMinutes: 250
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -13,7 +13,7 @@ jobs:
   displayName: Push PHP-FPM Runtime Base Image to MCR
   timeoutInMinutes: 250
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -23,7 +23,7 @@ jobs:
   displayName: Push DotNetCore Runtime Base Images to MCR
   timeoutInMinutes: 250
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -33,7 +33,7 @@ jobs:
   displayName: Push Node Base Image to MCR
   timeoutInMinutes: 300
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -43,7 +43,7 @@ jobs:
   displayName: Push Ruby Base Image to MCR
   timeoutInMinutes: 300
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -53,7 +53,7 @@ jobs:
   displayName: Push Yarn Cache Build Base Image to MCR
   timeoutInMinutes: 250
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:

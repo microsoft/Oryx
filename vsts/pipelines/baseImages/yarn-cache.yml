@@ -19,7 +19,7 @@ jobs:
   displayName: Push image to MCR
   timeoutInMinutes: 250
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   steps:
     - template: ../templates/_releaseBaseImagesStepTemplate.yml
       parameters:

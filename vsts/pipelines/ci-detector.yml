@@ -11,7 +11,7 @@ stages:
     - job: ValidatePipeline
       displayName: Validate pipeline
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       variables:
         skipComponentGovernanceDetection: true
       steps:
@@ -68,7 +68,7 @@ stages:
     - job: Release_GitHub
       displayName: Create GitHub release
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       variables:
         skipComponentGovernanceDetection: true
       steps:
