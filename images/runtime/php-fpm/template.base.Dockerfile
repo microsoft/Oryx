@@ -28,7 +28,7 @@ RUN apt-get update \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* ]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
 		apt-get update \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends apache2-dev \
@@ -66,9 +66,15 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         sysvsem \
         sysvshm \
         pdo_odbc \
-        xmlrpc \
-        xsl \
-    && pecl install imagick && docker-php-ext-enable imagick
+# deprecated from 7.4, so should be avoided in general template for all php versions
+#        xmlrpc \
+        xsl
+
+# https://github.com/Imagick/imagick/issues/331
+RUN set -eux; \
+    if [[ $PHP_VERSION != 8.* ]]; then \
+        pecl install imagick && docker-php-ext-enable imagick; \
+    fi
 
 # https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
 RUN set -eux; \
@@ -82,7 +88,7 @@ RUN set -eux; \
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* ]]; then \
+    if [[ $PHP_VERSION == 7.3.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
@@ -105,14 +111,6 @@ RUN { \
                 echo 'date.timezone=UTC'; \
                 echo 'zend_extension=opcache'; \
     } > /usr/local/etc/php/conf.d/php.ini
-
-# Install the Microsoft SQL Server PDO driver on supported versions only.
-#  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
-#  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
-RUN set -eux; \
-        pecl install sqlsrv pdo_sqlsrv \
-        && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
-        && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini;
 
 RUN { \
                 echo 'opcache.memory_consumption=128'; \
