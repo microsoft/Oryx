@@ -240,7 +240,7 @@ namespace Microsoft.Oryx.Detector.Tests.Ruby
         }
 
         [Fact]
-        public void Detect_ReturnsTrue_IfConfigYmlFileExists_AndItsStaticWebApp()
+        public void Detect_ReturnsTrue_IfOnlyConfigYmlFileExists_AndItsStaticWebApp()
         {
             // Arrange
             var options = new DetectorOptions
@@ -281,7 +281,7 @@ namespace Microsoft.Oryx.Detector.Tests.Ruby
         }
 
         [Fact]
-        public void Detect_ReturnsTrue_IfConfigYmlFileAndGemfileExist_AndItsNotStaticWebApp()
+        public void Detect_ReturnsTrue_IfBothConfigYmlFileAndGemfileExist_AndItsNotStaticWebApp()
         {
             // Arrange
             var detector = CreateRubyPlatformDetector();
@@ -300,6 +300,31 @@ namespace Microsoft.Oryx.Detector.Tests.Ruby
             Assert.Equal(string.Empty, result.AppDirectory);
             Assert.True(result.GemfileExists);
             Assert.True(result.ConfigYmlFileExists);
+        }
+
+        [Fact]
+        public void Detect_ReturnsTrue_IfOnlyGemfileExist_AndItsStaticWebApp()
+        {
+            // Arrange
+            var options = new DetectorOptions
+            {
+                AppType = Constants.StaticSiteApplications,
+            };
+            var detector = CreateRubyPlatformDetector();
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", RubyConstants.GemFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = (RubyPlatformDetectorResult)detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(RubyConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
+            Assert.Equal(string.Empty, result.AppDirectory);
+            Assert.True(result.GemfileExists);
+            Assert.False(result.ConfigYmlFileExists);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)

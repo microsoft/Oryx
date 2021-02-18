@@ -169,6 +169,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Ruby
         }
 
         [Fact]
+        public void GeneratedBuildSnippet_DoesNotContainsJekyllCommand_WhenOnlyGemFileExists_ForStaticWebApp()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.AppType = Constants.StaticSiteApplications;
+            var rubyPlatform = CreateRubyPlatform(
+                commonOptions: commonOptions,
+                isRubyVersionAlreadyInstalled: false);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, RubyConstants.GemFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new RubyPlatformDetectorResult
+            {
+                Platform = RubyConstants.PlatformName,
+                PlatformVersion = "2.6.6",
+                GemfileExists = true,
+
+            };
+
+            // Act
+            var buildScriptSnippet = rubyPlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.DoesNotContain("gem install jekyll", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.DoesNotContain("jekyll build", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("bundle install", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
         public void HasRubyInstallScript_IfDynamicInstallIsEnabled_AndRubyVersionIsNotAlreadyInstalled()
         {
             // Arrange
