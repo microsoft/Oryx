@@ -89,15 +89,10 @@ ARG AI_KEY
 
 COPY --from=intermediate /opt /opt
 
-# Install ca-certificates from bullseye repository: https://github.com/NuGet/Announcements/issues/49
-RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-         ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
-    && sed -i '$ d' /etc/apt/sources.list
-
-RUN echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
+# as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
+RUN curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates \
+    && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
+    
 # Install PHP pre-reqs	# Install PHP pre-reqs
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
     apt-get update \

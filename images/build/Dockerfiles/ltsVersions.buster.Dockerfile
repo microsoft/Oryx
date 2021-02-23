@@ -172,14 +172,10 @@ RUN set -ex \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && echo "ltsversions" > /opt/oryx/.imagetype
+    && echo "ltsversions" > /opt/oryx/.imagetype \
+# as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
+    && curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates \
+    && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
 
-# Install ca-certificates from bullseye repository: https://github.com/NuGet/Announcements/issues/49
-RUN echo "deb http://deb.debian.org/debian bullseye main" >> /etc/apt/sources.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends \
-         ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
-    && sed -i '$ d' /etc/apt/sources.list
 
 ENTRYPOINT [ "benv" ]
