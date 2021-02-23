@@ -39,6 +39,8 @@ COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 
 # Install .NET Core
 RUN set -ex \
+# as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
+    && curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates \
     && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
     && curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Runtime/$NET_CORE_APP_50/dotnet-runtime-$NET_CORE_APP_50-linux-x64.tar.gz \
     && echo "$NET_CORE_APP_50_SHA dotnet.tar.gz" | sha512sum -c - \
