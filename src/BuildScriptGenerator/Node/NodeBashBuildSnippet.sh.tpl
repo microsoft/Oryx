@@ -15,11 +15,12 @@ echo
 # Yarn config is per user, and since the build might run with a non-root account, we make sure
 # the yarn cache is set on every build.
 YARN_CACHE_DIR=/usr/local/share/yarn-cache
+yarnCacheFolderName={{ YarnCacheFolderName }}
 if [ -d $YARN_CACHE_DIR ]
 then
 	echo
     echo "Configuring Yarn cache folder..."
-    yarn config set cache-folder $YARN_CACHE_DIR
+    yarn config set $yarnCacheFolderName $YARN_CACHE_DIR
 fi
 {{ end }}
 
@@ -73,6 +74,10 @@ then
 
 	if [ -f "$SOURCE_DIR/.yarnrc" ]; then
 		cp -f "$SOURCE_DIR/.yarnrc" .
+	fi
+
+	if [ -f "$SOURCE_DIR/.yarnrc.yml" ]; then
+		cp -f "$SOURCE_DIR/.yarnrc.yml" .
 	fi
 
 	echo

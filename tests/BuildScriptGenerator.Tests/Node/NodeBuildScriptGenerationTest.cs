@@ -241,6 +241,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
                 ConfigureYarnCache = true,
+                YarnCacheFolderName = "cache-folder",
             };
 
             // Act
@@ -285,6 +286,53 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
                 ConfigureYarnCache = true,
+                YarnCacheFolderName = "cache-folder",
+            };
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Equal(
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Fact]
+        public void GeneratedScript_UsesYarn2InstallAndRunsNpmBuild_IfYarnLockIsPresent()
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions());
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
+            repo.AddFile("", NodeConstants.YarnLockFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+                IsYarnLockFileValidYamlFormat = true,
+            };
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = NodeConstants.Yarn2PackageInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.YarnVersionCommand,
+                NpmRunBuildCommand = "yarn run build",
+                NpmRunBuildAzureCommand = "yarn run build:azure",
+                HasProdDependencies = true,
+                HasDevDependencies = true,
+                ProductionOnlyPackageInstallCommand = string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    NodeConstants.Yarn2PackageInstallCommand),
+                CompressedNodeModulesFileName = null,
+                CompressNodeModulesCommand = null,
+                ConfigureYarnCache = true,
+                YarnCacheFolderName = "cacheFolder",
             };
 
             // Act

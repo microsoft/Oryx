@@ -5,11 +5,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
+using Microsoft.Oryx.Detector.Exceptions;
+using Microsoft.Oryx.Detector.Resources;
 using Newtonsoft.Json;
+using YamlDotNet.RepresentationModel;
 
 namespace Microsoft.Oryx.Detector.Node
 {
@@ -37,6 +41,8 @@ namespace Microsoft.Oryx.Detector.Node
             bool isNodeApp = false;
             bool hasLernaJsonFile = false;
             bool hasLageConfigJSFile = false;
+            bool hasYarnrcYmlFile = false;
+            bool IsYarnLockFileValidYamlFormat = false;
             string appDirectory = string.Empty;
             string lernaNpmClient = string.Empty;
             var sourceRepo = context.SourceRepo;
@@ -52,7 +58,14 @@ namespace Microsoft.Oryx.Detector.Node
                     $"Could not find {NodeConstants.PackageJsonFileName}/{NodeConstants.PackageLockJsonFileName}" +
                     $"/{NodeConstants.YarnLockFileName} in repo");
             }
-
+            if (sourceRepo.FileExists(NodeConstants.YarnrcYmlName))
+            {
+                hasYarnrcYmlFile = true;
+            }
+            if (sourceRepo.FileExists(NodeConstants.YarnLockFileName)
+                && IsYarnLockFileYamlFile(sourceRepo, NodeConstants.YarnLockFileName)) {
+                IsYarnLockFileValidYamlFormat = true;
+            }
             if (sourceRepo.FileExists(NodeConstants.LernaJsonFileName))
             {
                 hasLernaJsonFile = true;
@@ -122,7 +135,24 @@ namespace Microsoft.Oryx.Detector.Node
                 HasLernaJsonFile = hasLernaJsonFile,
                 HasLageConfigJSFile = hasLageConfigJSFile,
                 LernaNpmClient = lernaNpmClient,
+                HasYarnrcYmlFile = hasYarnrcYmlFile,
+                IsYarnLockFileValidYamlFormat = IsYarnLockFileValidYamlFormat,
             };
+        }
+
+        private bool IsYarnLockFileYamlFile(ISourceRepo sourceRepo, string filePath)
+        {
+            var yamlContent = sourceRepo.ReadFile(filePath);
+            var yamlStream = new YamlStream();
+            try
+            {
+                yamlStream.Load(new StringReader(yamlContent));
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            return true;
         }
 
         private string GetVersion(DetectorContext context)
