@@ -753,7 +753,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
+       //[InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
         public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
         {
             // Arrange
