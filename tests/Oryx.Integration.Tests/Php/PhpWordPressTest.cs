@@ -25,7 +25,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8.0-fpm")]
+        //skipping php-8 test as it is not compatible with composer 1.9
+        //[InlineData("8.0-fpm")]
         [InlineData("7.4-fpm")]
         [InlineData("7.3")]
         [InlineData("7.2")]
