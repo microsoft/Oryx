@@ -13,5 +13,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
         public bool UseBundlerToInstallDependencies { get; set; }
 
         public string BundlerVersion { get; set; }
+
+        public bool GemfileExists { get; set; }
+
+        public bool ConfigYmlFileExists { get; set; }
     }
 }

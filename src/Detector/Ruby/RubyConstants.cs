@@ -13,6 +13,7 @@ namespace Microsoft.Oryx.Detector.Ruby
         internal const string GemFileName = "Gemfile";
         internal const string GemFileLockName = "Gemfile.lock";
         internal const string ConfigRubyFileName = "config.ru";
+        internal const string ConfigYmlFileName = "_config.yml";
         public static readonly string[] IisStartupFiles = new[]
         {
             "default.htm", "default.html", "default.asp", "index.htm", "index.html", "iisstart.htm", "default.aspx", "index.php"

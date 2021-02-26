@@ -14,6 +14,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
         public const string GemFileLockName = "Gemfile.lock";
         public const string ConfigRubyFileName = "config.ru";
         public const string RakeFileName = "Rakefile";
+        public const string ConfigYmlFileName = "_config.yml";
+        public const string DefaultAppLocationDirName = "_site";
         public const string RubyVersionEnvVarName = "RUBY_VERSION";
         public const string RubyLtsVersion = Common.RubyVersions.Ruby27Version;
         public const string InstalledRubyVersionsDir = "/opt/ruby/";

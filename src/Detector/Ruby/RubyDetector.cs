@@ -37,6 +37,24 @@ namespace Microsoft.Oryx.Detector.Ruby
             bool gemfileExists = false;
             var sourceRepo = context.SourceRepo;
             string bundlerVersion = string.Empty;
+            bool configYmlFileExists = false;
+            if (sourceRepo.FileExists(RubyConstants.ConfigYmlFileName))
+            {
+                configYmlFileExists = true;
+                _logger.LogInformation($"Found {RubyConstants.ConfigYmlFileName} at the root of the repo. " );
+            }
+            if (!string.IsNullOrEmpty(_options.AppType))
+            {
+                _logger.LogInformation($"{nameof(_options.AppType)} is set to {_options.AppType}");
+
+                var appType = _options.AppType.ToLower();
+                if (appType.Contains(Constants.StaticSiteApplications)
+                    && configYmlFileExists)
+                {
+                    isRubyApp = true;
+                    _logger.LogInformation($"The ruby app was detected as a Jekyll static web app. ");
+                }
+            }
             if (sourceRepo.FileExists(RubyConstants.GemFileName))
             {
                 isRubyApp = true;
@@ -94,6 +112,7 @@ namespace Microsoft.Oryx.Detector.Ruby
                 AppDirectory = appDirectory,
                 GemfileExists = gemfileExists,
                 BundlerVersion = bundlerVersion,
+                ConfigYmlFileExists = configYmlFileExists,
             };
         }
 

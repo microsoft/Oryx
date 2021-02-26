@@ -5,8 +5,9 @@
 
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Microsoft.Oryx.BuildScriptGenerator.Ruby;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -89,7 +90,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void GeneratesScript_AndBuildJekyllApp()
+        public void Builds_JekyllStaticWebApp_When_Apptype_Is_SetAs_StaticSiteApplications()
         {
             // Arrange
             var appName = "Jekyll-app";
@@ -98,7 +99,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} ")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck(
+                $"{ManifestFilePropertyKeys.PlatformName}=\"{RubyConstants.PlatformName}\"",
+                $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{RubyConstants.DefaultAppLocationDirName}")
                 .ToString();
 
             // Act
@@ -110,15 +117,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
             });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains("Ruby version", result.StdOut);
-                },
-                result.GetDebugInfo());
         }
     }
 } 

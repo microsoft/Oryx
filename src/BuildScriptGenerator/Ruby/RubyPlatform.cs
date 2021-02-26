@@ -106,9 +106,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
                     $"'{typeof(RubyPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            if (!rubyPlatformDetectorResult.GemfileExists)
+            if (!rubyPlatformDetectorResult.GemfileExists && !rubyPlatformDetectorResult.ConfigYmlFileExists)
             {
-                throw new InvalidUsageException($"No Gemfile found at the root of the repo. Please provide a Gemfile.");
+                throw new InvalidUsageException($"No Gemfile found at the root of the repo. Please provide a Gemfile. " +
+                $"For Jekyll apps, make sure it contains a '{RubyConstants.ConfigYmlFileName}' file and set it as a static web app");
             }
 
             var buildProperties = new Dictionary<string, string>();
@@ -122,6 +123,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             {
                 UseBundlerToInstallDependencies = true,
                 BundlerVersion = rubyPlatformDetectorResult.BundlerVersion,
+                GemfileExists = rubyPlatformDetectorResult.GemfileExists,
+                ConfigYmlFileExists = rubyPlatformDetectorResult.ConfigYmlFileExists,
             };
 
             string script = TemplateHelper.Render(
