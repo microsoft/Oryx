@@ -173,8 +173,11 @@ RUN set -ex \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && echo "ltsversions" > /opt/oryx/.imagetype \
-# as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
-    && curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates \
+    # based on resolution on https://github.com/NuGet/Announcements/issues/49#issue-795386700
+    && apt-get remove ca-certificates -y \
+    && apt-get purge ca-certificates -y \
+    && apt-get update \
+    && apt-get install -f ca-certificates=20200601~deb10u2 -y --no-install-recommends \
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
 
 

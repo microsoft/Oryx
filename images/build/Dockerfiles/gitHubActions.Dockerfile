@@ -89,8 +89,11 @@ ARG AI_KEY
 
 COPY --from=intermediate /opt /opt
 
-# as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
-RUN curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates \
+# based on resolution on https://github.com/NuGet/Announcements/issues/49#issue-795386700
+RUN apt-get remove ca-certificates -y \
+    && apt-get purge ca-certificates -y \
+    && apt-get update \
+    && apt-get install -f ca-certificates=20200601~deb10u2 -y --no-install-recommends \
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
     
 # Install PHP pre-reqs	# Install PHP pre-reqs
