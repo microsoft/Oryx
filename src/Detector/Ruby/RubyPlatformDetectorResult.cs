@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Detector.Ruby
         public string BundlerVersion { get; set; }
 
         /// <summary>
-        /// Gets or sets the value if a bundler version specified in 'Gemfile.lock' in the repo.
+        /// Gets or sets the value the value indicating if a 'config.yml' file exists in the repo.
         /// </summary>
         public bool ConfigYmlFileExists { get; set; }
     }
