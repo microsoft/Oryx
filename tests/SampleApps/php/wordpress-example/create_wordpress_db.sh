@@ -2,7 +2,7 @@
 
 set -ex
 
-apt-get update && apt-get install mysql-server nano --yes
+apt-get update && apt-get install mariadb-server --yes
 service mysql start
 
 PASSWDDB="Wordpress@123"
