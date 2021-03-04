@@ -25,9 +25,59 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        //skipping php-8 test as it is not compatible with composer 1.9
-        //[InlineData("8.0-fpm")]
+        [InlineData("8.0-fpm")]
         [InlineData("7.4-fpm")]
+        [InlineData("7.3-fpm")]
+        public async Task PhpFpmWithWordPress56(string phpVersion)
+        {
+            // Arrange
+            string hostDir = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
+            var phpimageVersion = phpVersion.Split("-");
+
+            if (!Directory.Exists(hostDir))
+            {
+                Directory.CreateDirectory(hostDir);
+                using (var webClient = new WebClient())
+                {
+                    var wpZipPath = Path.Combine(hostDir, "wp.zip");
+                    webClient.DownloadFile("https://wordpress.org/wordpress-5.6.zip", wpZipPath);
+                    // The ZIP already contains a `wordpress` folder
+                    ZipFile.ExtractToDirectory(wpZipPath, hostDir);
+                }
+            }
+
+            var appName = "wordpress";
+            var volume = DockerVolume.CreateMirror(Path.Combine(hostDir, "wordpress"));
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {PhpConstants.PlatformName} --platform-version {phpimageVersion[0]}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand("mkdir -p /home/site/wwwroot/")
+                .AddCommand($"cp -rf {appOutputDir}/* /home/site/wwwroot/")
+                .AddCommand("ls -la /home/site/wwwroot/")
+                .AddCommand($"oryx create-script -appPath /home/site/wwwroot/ -bindPort {ContainerPort} -output {RunScriptPath}")
+                .AddCommand(RunScriptPath)
+                .ToString();
+
+            // Act & Assert
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName, _output, new[] { volume, appOutputDirVolume },
+                "/bin/sh", new[] { "-c", buildScript },
+                _imageHelper.GetRuntimeImage("php", phpVersion),
+                ContainerPort,
+                "/bin/sh", new[] { "-c", runScript },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("<title>WordPress &rsaquo; Setup Configuration File</title>", data);
+                });
+        }
+
+        [Theory]
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
@@ -67,7 +117,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpimageVersion[0]),
+                _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -77,12 +127,11 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory(Skip = "#1101128, investigate why  this tests are only failing in agent machines")]
+        [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3-fpm")]
-        [InlineData("7.2-fpm")]
-        [InlineData("5.6")]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
         public async Task CanBuildAndRun_Wordpress_SampleApp(string phpVersion)
         {
             // Arrange
@@ -92,32 +141,34 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var phpimageVersion = phpVersion.Split("-");
+            //var phpimageVersion = phpVersion.Split("-");
 
             // build-script to download wordpress cli and build
             var buildScript = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
-                .AddCommand($"./wp-cli.phar core download")
+                .AddCommand($"curl -O https://wordpress.org/latest.tar.gz")
+                .AddCommand($"tar -xvf latest.tar.gz")
+                .AddCommand("cd wordpress")
+                .AddCommand("mv * ..")
+                .AddCommand("cd ..")
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {PhpConstants.PlatformName} --platform-version {phpimageVersion[0]}")
+                $"--platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
 
             // run script to finish wordpress configuration and run the app
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"cd {appDir}")
-                .AddCommand($"chmod +x create_wordpress_db.sh && ./create_wordpress_db.sh")
-                .AddCommand($"chmod +x configure_wordpress.sh && ./configure_wordpress.sh")
+                .AddCommand($"cd {appOutputDir}")
+                .AddCommand($"chmod +x create_wordpress_db.sh && ./create_wordpress_db.sh > /dev/null 2>&1")
+                .AddCommand($"chmod +x configure_wordpress.sh && ./configure_wordpress.sh > /dev/null 2>&1")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort} -output {RunScriptPath}")
-                .AddCommand("mkdir -p /home/site/wwwroot")
-                .AddCommand($"cp -a {appOutputDir}/. /home/site/wwwroot")
-                .AddCommand(RunScriptPath)
+                .AddCommand($"{RunScriptPath} 2>&1 > {appOutputDir}/runlog.txt")
                 .ToString();
 
             // Act & Assert
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpimageVersion[0]),
+                _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -132,7 +183,6 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Powered by WordPress", data);
                     Assert.Contains("Remember Me", data);
                     Assert.Contains("Lost your password?", data);
-                    Assert.Contains("Back to localsite", data);
                 });
         }
     }
