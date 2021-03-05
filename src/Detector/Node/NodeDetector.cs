@@ -10,8 +10,6 @@ using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
-using Microsoft.Oryx.Detector.Exceptions;
-using Microsoft.Oryx.Detector.Resources;
 using Newtonsoft.Json;
 using YamlDotNet.RepresentationModel;
 
@@ -142,17 +140,19 @@ namespace Microsoft.Oryx.Detector.Node
 
         private bool IsYarnLockFileYamlFile(ISourceRepo sourceRepo, string filePath)
         {
-            var yamlContent = sourceRepo.ReadFile(filePath);
-            var yamlStream = new YamlStream();
             try
             {
-                yamlStream.Load(new StringReader(yamlContent));
+                using (var reader = new StringReader(sourceRepo.ReadFile(filePath)))
+                {
+                    var yamlStream = new YamlStream();
+                    yamlStream.Load(reader);
+                }
+                return true;
             }
             catch (Exception ex)
             {
                 return false;
             }
-            return true;
         }
 
         private string GetVersion(DetectorContext context)
