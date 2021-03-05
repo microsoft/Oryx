@@ -72,7 +72,7 @@ stages:
       condition: succeeded()
       timeoutInMinutes: 300
       pool:
-        vmImage: OryxLinux
+        name: OryxLinux
       variables:
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
@@ -98,7 +98,7 @@ stages:
       condition: succeeded()
       timeoutInMinutes: 300
       pool:
-        vmImage: OryxLinux
+        name: OryxLinux
       variables:
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true

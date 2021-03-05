@@ -44,7 +44,7 @@ stages:
       displayName: Build and Test Build Image
       timeoutInMinutes: 300
       pool:
-        vmImage: OryxLinux
+        name: OryxLinux
       variables:
         SignType: 'test'
         skipComponentGovernanceDetection: true
@@ -68,7 +68,7 @@ stages:
       displayName: Build and Test Runtime Images
       timeoutInMinutes: 300
       pool:
-        vmImage: OryxLinux
+        name: OryxLinux
       variables:
         SignType: 'test'
         skipComponentGovernanceDetection: true
@@ -97,7 +97,7 @@ stages:
     - job: Release_BuildImage
       displayName: Push Build Image to MCR
       pool:
-        vmImage: OryxLinux
+        namee: OryxLinux
       variables:
         skipComponentGovernanceDetection: true
       timeoutInMinutes: 300
@@ -112,7 +112,7 @@ stages:
     - job: Release_RuntimeImages
       displayName: Push Runtime Images to MCR
       pool:
-        vmImage: OryxLinux
+        name: OryxLinux
       variables:
         skipComponentGovernanceDetection: true
       timeoutInMinutes: 400

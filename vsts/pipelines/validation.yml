@@ -16,7 +16,7 @@ jobs:
 - job: Job_BuildImage
   displayName: Build and Test Build Images
   pool:
-    vmImage: OryxLinux
+    name: OryxLinux
   timeoutInMinutes: 480
   steps:
   - script: |
@@ -32,7 +32,7 @@ jobs:
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
   pool:
-    vmImage: OryxLinux
+    name: OryxLinux
   timeoutInMinutes: 300
   steps:
   - script: |
