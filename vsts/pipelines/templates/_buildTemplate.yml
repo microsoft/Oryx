@@ -29,6 +29,14 @@ steps:
     startsWith(variables['Build.SourceBranch'],'refs/heads/patch/'),
     startsWith(variables['Build.SourceBranch'],'refs/heads/exp/')))
 
+- script: |
+    sudo rm -rf /usr/share/dotnet
+    sudo rm -rf /opt/ghc
+    sudo rm -rf "/usr/local/share/boost"
+    sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+    docker images && docker system prune -fa && df -h && echo
+  displayName: 'clean docker images'
+
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 3.1.x'
   inputs:
@@ -37,10 +45,6 @@ steps:
 - script: |
     dotnet --version && dotnet msbuild -version && echo
   displayName: 'Print dotnet and msbuild version'
-
-- script: |
-    df -h && echo && docker images && docker system prune -fa && echo
-  displayName: 'clean docker images'
 
 - task: ShellScript@2
   displayName: 'Build Oryx.sln'
@@ -91,6 +95,10 @@ steps:
     scriptPath: ./build/buildRunTimeImages.sh
     args: buster
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
+
+- script: |
+    docker images && docker system prune -f && df -h && echo
+  displayName: 'clean docker unknown layers'
 
 - task: ShellScript@2
   displayName: 'Test build images'
