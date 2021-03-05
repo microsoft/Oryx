@@ -42,9 +42,9 @@ stages:
 
     - job: Job_BuildImage
       displayName: Build and Test Build Image
-      timeoutInMinutes: 300
+      timeoutInMinutes: 480
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       steps:
       - script: |
           echo "##vso[task.setvariable variable=BuildBuildImages;]true"
@@ -62,9 +62,9 @@ stages:
       displayName: Build and Test Runtime Images
       condition: succeeded()
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       # Building runtime images can take a long time due to our PHP images
-      timeoutInMinutes: 300
+      timeoutInMinutes: 480
       steps:
       - script: |
           echo "##vso[task.setvariable variable=BuildBuildImages;]false"
