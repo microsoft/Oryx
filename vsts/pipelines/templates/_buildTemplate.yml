@@ -46,6 +46,10 @@ steps:
     dotnet --version && dotnet msbuild -version && echo
   displayName: 'Print dotnet and msbuild version'
 
+- script: |
+    df -h && echo && docker images && docker system prune -fa && echo
+  displayName: 'clean docker images'
+
 - task: ShellScript@2
   displayName: 'Build Oryx.sln'
   inputs:
