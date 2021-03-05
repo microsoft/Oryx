@@ -5,7 +5,7 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: OryxLinux
   timeoutInMinutes: 300
   variables:
     skipComponentGovernanceDetection: true

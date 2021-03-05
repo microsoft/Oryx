@@ -2,7 +2,7 @@ jobs:
 - job: Release_BuildImages
   displayName: Push Build Image to MCR
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: OryxLinux
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -17,7 +17,7 @@ jobs:
 - job: Release_RuntimeImages
   displayName: Push Runtime Images to MCR
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: OryxLinux
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 400
