@@ -11,12 +11,12 @@ ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 
 WORKDIR /usr/oryx
 COPY build build
-COPY src src
-COPY build/FinalPublicKey.snk build/
-
 # This statement copies signed oryx binaries from during agent build.
 # For local/dev contents of blank/empty directory named binaries are getting copied
 COPY binaries /opt/buildscriptgen/
+COPY src src
+COPY build/FinalPublicKey.snk build/
+
 RUN if [ -z "$AGENTBUILD" ]; then \
         dotnet publish \
             -r linux-x64 \
