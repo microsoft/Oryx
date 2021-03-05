@@ -7,7 +7,7 @@ stages:
   - job: Ruby_Buster
     timeoutInMinutes: 250
     pool:
-      name: OryxLinux
+      vmImage: 'ubuntu-latest'
     steps:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
@@ -17,7 +17,7 @@ stages:
   - job: Ruby_Stretch
     timeoutInMinutes: 250
     pool:
-      name: OryxLinux
+      vmImage: 'ubuntu-latest'
     steps:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
@@ -27,7 +27,7 @@ stages:
   - job: Ruby_Ubuntu
     timeoutInMinutes: 250
     pool:
-      name: OryxLinux
+      vmImage: 'ubuntu-latest'
     steps:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
@@ -41,7 +41,7 @@ stages:
     timeoutInMinutes: 250
     displayName: Publish to Azure Blob Storage
     pool:
-      name: OryxLinux
+      vmImage: 'ubuntu-latest'
     steps:
     - template: ../templates/_platformBinariesReleaseTemplate.yml
   

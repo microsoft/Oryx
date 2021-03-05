@@ -628,7 +628,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "Skipping till we fix Bug#1288173")]
         public void Builds_SingleBlazorWasmProject_Without_Setting_Apptype_Option()
         {
             // Arrange

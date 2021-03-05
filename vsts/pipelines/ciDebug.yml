@@ -9,7 +9,7 @@ stages:
     jobs:
     - job: CreateReleaseTag
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       variables:
         skipComponentGovernanceDetection: true
       steps:
@@ -97,7 +97,7 @@ stages:
     - job: Release_BuildImage
       displayName: Push Build Image to MCR
       pool:
-        name: OryxLinux
+        namee: OryxLinux
       variables:
         skipComponentGovernanceDetection: true
       timeoutInMinutes: 300

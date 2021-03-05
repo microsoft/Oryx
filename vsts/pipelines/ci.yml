@@ -9,7 +9,7 @@ stages:
     jobs:
     - job: CreateReleaseTag
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       variables:
         skipComponentGovernanceDetection: true
       steps:
