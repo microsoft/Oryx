@@ -128,6 +128,13 @@ namespace Microsoft.Oryx.Detector.Tests.Node
           ""npmClient"": ""yarn""
         }";
 
+        private const string SampleValidYAMLYarnLockfile = "name: mynodeapp";
+
+        private const string SampleInvalidYAMLYarnLockfile = @"{
+         abcdefg 1234 - :: []
+            -- 5
+        }";
+
         [Fact]
         public void Detect_ReturnsNull_IfSourceDirectory_DoesNotHaveAnyFiles()
         {
@@ -161,6 +168,67 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             Assert.Equal("nodejs", result.Platform);
             Assert.Null(result.PlatformVersion);
             Assert.Equal(string.Empty, result.AppDirectory);
+        }
+
+        [Fact]
+        public void Detect_Returns_ForSourceRepoHasYarnrcYmlFile_InRootDirectory()
+        {
+            // Arrange
+            var detector = CreateNodePlatformDetector();
+            var repo = new MemorySourceRepo();
+            repo.AddFile(SampleValidYAMLYarnLockfile, NodeConstants.YarnLockFileName);
+            repo.AddFile("", ".yarnrc.yml");
+            var context = CreateContext(repo);
+
+            // Act
+            var result = (NodePlatformDetectorResult)detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Null(result.PlatformVersion);
+            Assert.Equal(string.Empty, result.AppDirectory);
+            Assert.True(result.HasYarnrcYmlFile);
+        }
+
+        [Fact]
+        public void Detect_Returns_ForSourceRepoHasValidyamlYarnlockFile_InRootDirectory()
+        {
+            // Arrange
+            var detector = CreateNodePlatformDetector();
+            var repo = new MemorySourceRepo();
+            repo.AddFile(SampleValidYAMLYarnLockfile, NodeConstants.YarnLockFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = (NodePlatformDetectorResult)detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Null(result.PlatformVersion);
+            Assert.Equal(string.Empty, result.AppDirectory);
+            Assert.True(result.IsYarnLockFileValidYamlFormat);
+        }
+
+        [Fact]
+        public void Detect_ReturnsFalse_ForSourceRepoHasInvalidyamlYarnlockFile()
+        {
+            // Arrange
+            var detector = CreateNodePlatformDetector();
+            var repo = new MemorySourceRepo();
+            repo.AddFile(SampleInvalidYAMLYarnLockfile, NodeConstants.YarnLockFileName);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = (NodePlatformDetectorResult)detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Null(result.PlatformVersion);
+            Assert.Equal(string.Empty, result.AppDirectory);
+            Assert.False(result.IsYarnLockFileValidYamlFormat);
         }
 
         [Fact]

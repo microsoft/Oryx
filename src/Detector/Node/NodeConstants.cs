@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.Detector.Node
         public const string PackageJsonFileName = "package.json";
         public const string PackageLockJsonFileName = "package-lock.json";
         public const string YarnLockFileName = "yarn.lock";
+        public const string YarnrcYmlName = ".yarnrc.yml";
         public const string HugoTomlFileName = "config.toml";
         public const string HugoYamlFileName = "config.yaml";
         public const string HugoJsonFileName = "config.json";

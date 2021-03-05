@@ -23,5 +23,9 @@ namespace Microsoft.Oryx.Detector.Node
         public string LernaNpmClient { get; set; }
 
         public bool HasLageConfigJSFile { get; set; }
+
+        public bool HasYarnrcYmlFile { get; set; }
+
+        public bool IsYarnLockFileValidYamlFormat { get; set; }
     }
 }
