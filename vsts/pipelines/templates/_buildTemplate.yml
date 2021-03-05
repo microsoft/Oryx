@@ -149,7 +149,7 @@ steps:
 
 - script: |
     docker images && docker system prune -fa && docker images && echo
-  displayName: 'clean docker unknown layers and containers'
+  displayName: 'clean docker layers and containers'
   
 - task: CopyFiles@2
   displayName: 'Copy source projects output to artifacts folder'

@@ -147,8 +147,6 @@ function buildTemporaryFilesImage() {
 }
 
 function buildBuildScriptGeneratorImage() {
-	pwd
-	ls -la
 	buildTemporaryFilesImage
 
 	# Create the following image so that it's contents can be copied to the rest of the images below
