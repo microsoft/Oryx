@@ -16,7 +16,7 @@ jobs:
 - job: Job_BuildImage
   displayName: Build and Test Build Images
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   timeoutInMinutes: 480
   steps:
   - script: |
@@ -32,8 +32,8 @@ jobs:
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
   pool:
-    name: OryxLinux
-  timeoutInMinutes: 300
+    vmImage: 'ubuntu-latest'
+  timeoutInMinutes: 480
   steps:
   - script: |
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"

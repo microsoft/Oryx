@@ -17,7 +17,7 @@ declare -r BUILD_NUMBER="$BUILD_BUILDNUMBER"
 declare -r BUILD_CONFIGURATION="${BUILDCONFIGURATION:-Debug}"
 declare -r RELEASE_TAG_NAME="${RELEASE_TAG_NAME:-$BUILD_NUMBER}"
 
-declare -r BUILD_IMAGES_BUILD_CONTEXT_DIR="$REPO_DIR/"
+declare -r BUILD_IMAGES_BUILD_CONTEXT_DIR="$REPO_DIR"
 declare -r BUILD_IMAGES_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/Dockerfile"
 declare -r BUILD_IMAGES_LTS_VERSIONS_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/ltsVersions.Dockerfile"
 declare -r BUILD_IMAGES_LTS_VERSIONS_BUSTER_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/ltsVersions.buster.Dockerfile"
