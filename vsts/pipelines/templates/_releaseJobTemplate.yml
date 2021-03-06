@@ -2,7 +2,7 @@ jobs:
 - job: Release_BuildImages
   displayName: Push Build Image to MCR
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -17,7 +17,7 @@ jobs:
 - job: Release_RuntimeImages
   displayName: Push Runtime Images to MCR
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 400
@@ -35,7 +35,7 @@ jobs:
     - Release_BuildImages
     - Release_RuntimeImages
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   variables:
     skipComponentGovernanceDetection: true
 
@@ -56,4 +56,3 @@ jobs:
       tagSource: manual
       tag: '$(RELEASE_TAG_NAME)'
       assets: $(Build.SourcesDirectory)/artifacts/oryx_linux_x64.tar.gz
-  
