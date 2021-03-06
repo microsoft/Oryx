@@ -152,7 +152,7 @@ jobs:
 - job: Job_DevStorageAccountTest
   displayName: Test Dev Storage Account
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   variables:
     skipComponentGovernanceDetection: true
   steps:
