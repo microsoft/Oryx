@@ -15,6 +15,7 @@ stages:
       steps:
       - checkout: self
         clean: true
+        
       - task: ShellScript@2
         inputs:
           scriptPath: ./vsts/scripts/createReleaseTag.sh
