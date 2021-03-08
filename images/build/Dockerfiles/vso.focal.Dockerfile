@@ -47,8 +47,8 @@ RUN LANG="C.UTF-8" \
     && add-apt-repository universe \
     && apt-get install -y --no-install-recommends python2 \
     && rm -rf /var/lib/apt/lists/* \
-    # 'get-pip.py' has been moved from 'https://bootstrap.pypa.io/get-pip.py' to 'https://bootstrap.pypa.io/2.7/get-pip.py'
-    && curl https://bootstrap.pypa.io/2.7/get-pip.py --output get-pip.py \
+    # 'get-pip.py' has been moved to ' https://bootstrap.pypa.io/pip/2.7/get-pip.py' from 'https://bootstrap.pypa.io/2.7/get-pip.py'
+    && curl  https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
     && python2 get-pip.py \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
