@@ -8,9 +8,6 @@ parameters:
 
 steps:
 
-- checkout: self
-  clean: true
-
 - script: |
     if [ "$(ReleaseBuildImages)" != "true" ] && [ "$(ReleaseRuntimeImages)" != "true" ]
     then
@@ -19,6 +16,17 @@ steps:
       exit 1
     fi
   displayName: 'Validate release pipeline run'
+
+- script: |
+    sudo rm -rf /usr/share/dotnet
+    sudo rm -rf /opt/ghc
+    sudo rm -rf "/usr/local/share/boost"
+    sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+    docker images && docker system prune -fa && docker images && echo
+  displayName: 'clean docker images'
+
+- checkout: self
+  clean: true
 
 - task: Docker@1
   displayName: Container registry login

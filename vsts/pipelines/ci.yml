@@ -13,6 +13,9 @@ stages:
       variables:
         skipComponentGovernanceDetection: true
       steps:
+      - checkout: self
+        clean: true
+        
       - task: ShellScript@2
         inputs:
           scriptPath: ./vsts/scripts/createReleaseTag.sh
@@ -70,9 +73,9 @@ stages:
       displayName: Build and Test Build Image
       dependsOn: Job_SignBinaries
       condition: succeeded()
-      timeoutInMinutes: 300
+      timeoutInMinutes: 480
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       variables:
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
@@ -96,9 +99,9 @@ stages:
       displayName: Build and Test Runtime Images
       dependsOn: Job_SignBinaries
       condition: succeeded()
-      timeoutInMinutes: 300
+      timeoutInMinutes: 480
       pool:
-        name: OryxLinux
+        vmImage: 'ubuntu-latest'
       variables:
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
