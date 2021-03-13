@@ -50,6 +50,17 @@ fi
 		then
 			exit $pythonBuildExitCode
 		fi
+	elif [ -e "pyproject.toml" ]
+	then
+		echo "Running pip install poetry..."
+		pip install poetry
+		echo "Running poetry install..."
+		poetry install
+		pythonBuildExitCode=${PIPESTATUS[0]}
+		if [[ $pythonBuildExitCode != 0 ]]
+		then
+			exit $pythonBuildExitCode
+		fi
 	else
 		echo $REQS_NOT_FOUND_MSG
 	fi
@@ -81,6 +92,20 @@ fi
 
 		echo "Running python setup.py install..."
 		$python setup.py install --user| ts $TS_FMT
+		pythonBuildExitCode=${PIPESTATUS[0]}
+		if [[ $pythonBuildExitCode != 0 ]]
+		then
+			exit $pythonBuildExitCode
+		fi
+	elif [ -e "pyproject.toml" ]
+	then
+		echo "Running pip install poetry..."
+		pip install poetry
+		START_TIME=$SECONDS
+		echo "Running poetry install..."
+		poetry install
+		ELAPSED_TIME=$(($SECONDS - $START_TIME))
+		echo "Done in $ELAPSED_TIME sec(s)."
 		pythonBuildExitCode=${PIPESTATUS[0]}
 		if [[ $pythonBuildExitCode != 0 ]]
 		then

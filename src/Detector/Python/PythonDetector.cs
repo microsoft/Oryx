@@ -39,6 +39,7 @@ namespace Microsoft.Oryx.Detector.Python
             var sourceRepo = context.SourceRepo;
             var appDirectory = string.Empty;
             var hasRequirementsTxtFile = false;
+            var hasPyprojectTomlFile = false;
             if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
                 _logger.LogInformation($"Found {PythonConstants.RequirementsFileName} at the root of the repo.");
@@ -49,7 +50,11 @@ namespace Microsoft.Oryx.Detector.Python
                 _logger.LogInformation(
                     $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo.");
             }
-
+            if (sourceRepo.FileExists(PythonConstants.PyprojectTomlFileName))
+            {
+                _logger.LogInformation($"Found {PythonConstants.PyprojectTomlFileName} at the root of the repo.");
+                hasPyprojectTomlFile = true;
+            }
             var hasCondaEnvironmentYmlFile = false;
             if (sourceRepo.FileExists(PythonConstants.CondaEnvironmentYmlFileName) &&
                 IsCondaEnvironmentFile(sourceRepo, PythonConstants.CondaEnvironmentYmlFileName))
@@ -91,7 +96,8 @@ namespace Microsoft.Oryx.Detector.Python
             if (!hasRequirementsTxtFile &&
                 !hasCondaEnvironmentYmlFile &&
                 !hasJupyterNotebookFiles &&
-                !hasRuntimeTxtFile)
+                !hasRuntimeTxtFile &&
+                !hasPyprojectTomlFile)
             {
                 var searchSubDirectories = !_options.DisableRecursiveLookUp;
                 if (!searchSubDirectories)
@@ -125,6 +131,7 @@ namespace Microsoft.Oryx.Detector.Python
                 HasJupyterNotebookFiles = hasJupyterNotebookFiles,
                 HasCondaEnvironmentYmlFile = hasCondaEnvironmentYmlFile,
                 HasRequirementsTxtFile = hasRequirementsTxtFile,
+                HasPyprojectTomlFile = hasPyprojectTomlFile,
             };
         }
 

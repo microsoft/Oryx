@@ -25,5 +25,10 @@ namespace Microsoft.Oryx.Detector.Python
         /// Gets or sets the value indicating if 'requirements.txt' file exists at the root of the repo.
         /// </summary>
         public bool HasRequirementsTxtFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating if 'pyproject.toml' file exists at the root of the repo.
+        /// </summary>
+        public bool HasPyprojectTomlFile { get; set; }
     }
 }
