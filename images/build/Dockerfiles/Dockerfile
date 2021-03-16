@@ -103,6 +103,5 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh php $PHP72_VERSION \
     && $imagesDir/installPlatform.sh php $PHP74_VERSION \
     && cd /opt/php \
-    && ln -s 5.6 5 \
     && echo "full" > /opt/oryx/.imagetype
 
