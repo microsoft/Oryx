@@ -18,11 +18,11 @@
 - name: dot-net-core-sdk-versions
   constants:
     dot-net-core-11-sdk-version: 1.1.14
-    dot-net-core-21-sdk-version: 2.1.812
+    dot-net-core-21-sdk-version: 2.1.814
     dot-net-core-22-sdk-version: 2.2.207
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.405
-    dot-net-50-sdk-version: 5.0.102
+    dot-net-core-31-sdk-version: 3.1.407
+    dot-net-core-50-sdk-version: 5.0.104
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -38,10 +38,10 @@
 
     net-core-app-20: 2.0.9
 
-    net-core-app-21: 2.1.25
-    net-core-app-21-sha: ab93b5e4117b4f7d3267eef5552d5001e5f0974e2cc3994b80cfdc2dfe56d24f62bd49754b8dcdf0061f7e572e424631ca96d60efc63d6b63fdb2109fbf147f8
-    aspnet-core-app-21: 2.1.25
-    aspnet-core-app-21-sha: fc46e2c23048ad859b01ecd3600f312e6c0eae2a9c88302535a55d0a3d4d22065c53e4bf002fa5f959d488d5aba7dfeb60b15b300a40fae6b118f75ee3ab5918 
+    net-core-app-21: 2.1.26
+    net-core-app-21-sha: 41cc13f14dd7721a079bdd0ab489de40e9d4f32787239a26e7d10fcb0020a8e78d446c3b430b4bf80a557a925b3ca87d7981bfda4bbf9495cc44b1d42d877c40
+    aspnet-core-app-21: 2.1.26
+    aspnet-core-app-21-sha: c3d12b53e5658902d49aae7f4457e785be09859eeb0270b9614f95021f7387f94f78a4d3c72c7cc62a5eefe096fc19c1256439e66676723f8fd2451c70dbb0de 
 
     net-core-app-22: 2.2.8
     net-core-app-22-sha: 954072376698be69acb7e277df2c243f931e10529def21dcbf9ce277609b30d462126bf8b8b3cab36476bec3d63a927b8e44e59e4d4cade23eef45956fba1ffd
@@ -51,15 +51,16 @@
     aspnet-core-app-30: 3.0.3
     aspnet-core-app-30-sha: d88366ac20204c5acb4b80bc40396d608d6c067b25baeef54204e77dde48fb515bd463743745a0982ba8c9182fc751306a4e796f91060b2d013ffbea7d9a2dc8
 
-    net-core-app-31: 3.1.12
-    net-core-app-31-sha: d1a815d26c75d9fe41479efc32626c1c83bdc616cdcde63768ff7480d721c37427a17fd3999366c738aa936afe43c5426162c4b188f923d810762c91230e2d8b
-    aspnet-core-app-31: 3.1.12
-    aspnet-core-app-31-sha: e6d384a4c05bc6a693a85dc1da5f34e26449ad5d9414dee5f46a56805ac53eb304610be06d6a2a683f2d9e1447f316f47abea71fbfd6ee901dcc9da9d7c4e03b
+    net-core-app-31: 3.1.13
+    net-core-app-31-sha: 2559026dd9f6939ae882a925cd44901524673885b94b93d029db414c6be5981302a4dbd6d0e1234957dfab610b79b9a82867defa59dff09b5a99412318a7bd27
+    aspnet-core-app-31: 3.1.13
+    aspnet-core-app-31-sha: 77c5475e0be0ca78a01c728f4dc5b58b57a721605ab4b96aaa9585d5e83a711488edc78a9fcd37bb68b499d711cfe18a9671b4397a591a0632d4f739f02b9f5c
     
-    net-core-app-50: 5.0.3
-    net-core-app-50-sha: 263dbe260123c3d6d706ed8b5f4d510d9384216422e9af0d293df87ed98e84e1e0ffbf0c7dd543c40c5ccc95bd7cd006c8bbbe9f1cd1f060b1eaa2f7a60fea74
-    aspnet-core-app-50: 5.0.3
-    aspnet-core-app-50-sha: 188618b07cd5c97a34c77efccc7c4eba10a52681592ef711a005c82d243e601891418e0dcc27a22aae7dd6ae33d35e0bb7aa9b9fc022746c6c2414bd25cdb110
+    net-core-app-50: 5.0.4
+    net-core-app-50-sha: 1f224778d81ca94d4246e9390d4d15f400eac527ebe50d1e92bd337b0a80bf111d15b0f187f28aa1c9218b2244aca00d3bb4090f73b6ac9ba484241111c74534
+    aspnet-core-app-50: 5.0.4
+    aspnet-core-app-50-sha: 6075649abf4f99ff19f472a3ce6290cf277e7620ab9e65a09d5884a265c50884d50496d6ceb70011b9caaad09ff8428a149cb0aa0b965a17f0a4f5f5e02b920c
+
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -95,12 +96,12 @@
     composer2-0-version: 2.0.8
     composer2-0-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
     # hashes are for .tar.xz
-    php80-version: 8.0.1
+    php80-version: 8.0.2
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: 208b3330af881b44a6a8c6858d569c72db78dab97810332978cc65206b0ec2dc
-    php74-version: 7.4.14
+    php80-tar-sha256: 84dd6e36f48c3a71ff5dceba375c1f6b34b71d4fa9e06b720780127176468ccc
+    php74-version: 7.4.15
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
-    php74-tar-sha256: f9f3c37969fcd9006c1dbb1dd76ab53f28c698a1646fa2dde8547c3f45e02886
+    php74-tar-sha256: 9b859c65f0cf7b3eff9d4a28cfab719fb3d36a1db3c20d874a79b5ec44d43cb8
     php73-version: 7.3.26
     php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
     php73-tar-sha256: d93052f4cb2882090b6a37fd1e0c764be1605a2461152b7f6b8f04fa48875208
@@ -110,9 +111,6 @@
     php70-version: 7.0.33
     php70-keys: 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
     php70-tar-sha256: ab8c5be6e32b1f8d032909dedaaaa4bbb1a209e519abb01a52ce3914f9a13d96
-    php56-version: 5.6.40
-    php56-keys: 0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
-    php56-tar-sha256: 1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator

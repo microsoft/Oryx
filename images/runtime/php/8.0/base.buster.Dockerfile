@@ -1,6 +1,6 @@
 FROM php-8.0
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.0.1
+ENV PHP_VERSION 8.0.2
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
