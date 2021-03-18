@@ -70,7 +70,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
-        [InlineData("5.6")]
         public void GraphicsExtension_Gd_IsInstalled(string imageTag)
         {
             // Arrange & Act
