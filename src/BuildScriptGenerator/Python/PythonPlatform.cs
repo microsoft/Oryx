@@ -628,8 +628,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private bool IsCondaEnvironment(PythonPlatformDetectorResult pythonPlatformDetectorResult)
         {
-            if ((pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile ||
-                pythonPlatformDetectorResult.HasJupyterNotebookFiles)
+            if (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile 
                 && IsCondaInstalledInImage())
             {
                 return true;
