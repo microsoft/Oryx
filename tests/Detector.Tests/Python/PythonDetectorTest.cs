@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsResult_WhenRequirementsFileDoesNotExist_ButDotPyFilesExist()
+        public void Detect_ReturnsResult_WhenRequirementsFileDoesNotExist_ButDotPyFilesExist()
         {
             // Arrange
             var detector = CreatePythonPlatformDetector();
@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsResult_WhenOnlyRequirementsTextFileExists_ButNoPyOrRuntimeFileExists()
+        public void Detect_ReturnsResult_WhenOnlyRequirementsTextFileExists_ButNoPyOrRuntimeFileExists()
         {
             // Arrange
             var detector = CreatePythonPlatformDetector();
@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsResult_WhenNoPyFileExists_ButRuntimeTextFileExists_HavingPythonVersionInIt()
+        public void Detect_ReturnsResult_WhenNoPyFileExists_ButRuntimeTextFileExists_HavingPythonVersionInIt()
         {
             // Arrange
             var expectedVersion = "1000.1000.1000";
@@ -104,7 +104,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         [InlineData("")]
         [InlineData("foo")]
         [InlineData(PythonConstants.PlatformName)]
-        public void Detect_ReutrnsNull_WhenOnlyRuntimeTextFileExists_ButDoesNotHaveTextInExpectedFormat(
+        public void Detect_ReturnsNull_WhenOnlyRuntimeTextFileExists_ButDoesNotHaveTextInExpectedFormat(
             string fileContent)
         {
             // Arrange
@@ -148,7 +148,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsResult_WhenDotPyFilesExistInSubFolders()
+        public void Detect_ReturnsResult_WhenDotPyFilesExistInSubFolders()
         {
             // Arrange
             var detector = CreatePythonPlatformDetector();
@@ -171,7 +171,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsNull_WhenDotPyFilesExistInSubFolders_AndDeepProbingIsDisabled()
+        public void Detect_ReturnsNull_WhenDotPyFilesExistInSubFolders_AndDeepProbingIsDisabled()
         {
             // Arrange
             var options = new DetectorOptions
@@ -195,7 +195,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsResult_WhenRequirementsFileExistsAtRoot_AndDeepProbingIsDisabled()
+        public void Detect_ReturnsResult_WhenRequirementsFileExistsAtRoot_AndDeepProbingIsDisabled()
         {
             // Arrange
             var options = new DetectorOptions
@@ -220,7 +220,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsResult_WhenOnlyJupyterNotebookFilesExist()
+        public void Detect_ReturnsResult_WhenOnlyJupyterNotebookFilesExist()
         {
             // Arrange
             var detector = CreatePythonPlatformDetector();
@@ -243,10 +243,32 @@ namespace Microsoft.Oryx.Detector.Tests.Python
             Assert.False(pythonPlatformResult.HasCondaEnvironmentYmlFile);
         }
 
+        [Fact]
+        public void Detect_ReturnsResult_WhenPyprojectTomlFileExists()
+        {
+            // Arrange
+            var detector = CreatePythonPlatformDetector();
+            var sourceDir = IOHelpers.CreateTempDir(_tempDirRoot);
+            IOHelpers.CreateFile(sourceDir, "", PythonConstants.PyprojectTomlFileName);
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            var pythonPlatformResult = Assert.IsType<PythonPlatformDetectorResult>(result);
+            Assert.Equal(PythonConstants.PlatformName, pythonPlatformResult.Platform);
+            Assert.Null(pythonPlatformResult.PlatformVersion);
+            Assert.False(pythonPlatformResult.HasJupyterNotebookFiles);
+            Assert.False(pythonPlatformResult.HasCondaEnvironmentYmlFile);
+            Assert.True(pythonPlatformResult.HasPyprojectTomlFile);
+        }
+
         [Theory]
         [InlineData(PythonConstants.CondaEnvironmentYmlFileName)]
         [InlineData(PythonConstants.CondaEnvironmentYamlFileName)]
-        public void Detect_ReutrnsResult_WhenValidCondaEnvironmentFileExists(string environmentFileName)
+        public void Detect_ReturnsResult_WhenValidCondaEnvironmentFileExists(string environmentFileName)
         {
             // Arrange
             var detector = CreatePythonPlatformDetector();
@@ -269,7 +291,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         [Theory]
         [InlineData(PythonConstants.CondaEnvironmentYmlFileName)]
         [InlineData(PythonConstants.CondaEnvironmentYamlFileName)]
-        public void Detect_ReutrnsFalse_WhenValidCondaEnvironmentFileDoesNotExist(string environmentFileName)
+        public void Detect_ReturnsFalse_WhenValidCondaEnvironmentFileDoesNotExist(string environmentFileName)
         {
             // Arrange
             var detector = CreatePythonPlatformDetector();
@@ -286,7 +308,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
-        public void Detect_ReutrnsResult_WithAllPropertiesPopulatedWithExpectedInformation()
+        public void Detect_ReturnsResult_WithAllPropertiesPopulatedWithExpectedInformation()
         {
             // Arrange
             var expectedPythonVersion = "3.5.6";
@@ -316,7 +338,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         [Theory]
         [InlineData(PythonConstants.CondaEnvironmentYmlFileName)]
         [InlineData(PythonConstants.CondaEnvironmentYamlFileName)]
-        public void Detect_ReutrnsNull_ForMalformedCondaYamlFiles(string environmentFileName)
+        public void Detect_ReturnsNull_ForMalformedCondaYamlFiles(string environmentFileName)
         {
             // Arrange
             var detector = CreatePythonPlatformDetector();
