@@ -4,8 +4,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class PhpVersions
     {
-        public const string PhpRuntimeBaseTag = "20210127.6";
-        public const string PhpFpmRuntimeBaseTag = "20210209.2";
+        public const string PhpRuntimeBaseTag = "20210318.1";
+        public const string PhpFpmRuntimeBaseTag = "20210318.1";
         public const string ComposerVersion = "2.0.8";
         public const string ComposerSetupSha384 = "756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3";
         public const string Composer19Version = "1.9.3";
@@ -29,5 +29,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Php70Version = "7.0.33";
         public const string Php70Keys = "1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3";
         public const string Php70TarSha256 = "ab8c5be6e32b1f8d032909dedaaaa4bbb1a209e519abb01a52ce3914f9a13d96";
+        public const string Php56Version = "5.6.40";
+        public const string Php56Keys = "0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3";
+        public const string Php56TarSha256 = "1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c";
     }
 }
