@@ -85,8 +85,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20210127.6 
-    php-fpm-runtime-base-tag: 20210209.2
+    php-runtime-base-tag: 20210318.1
+    php-fpm-runtime-base-tag: 20210318.1
     composer-version: 2.0.8
     composer-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
     composer1-9-version: 1.9.3
