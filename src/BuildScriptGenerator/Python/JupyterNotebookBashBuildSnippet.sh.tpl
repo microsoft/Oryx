@@ -6,7 +6,7 @@ conda info
 {{ if EnvironmentYmlFile | IsNotBlank }}
 envFile="{{ EnvironmentYmlFile }}"
 {{ else }}
-envFile="oryx.environment.yml"
+envFile="/opt/oryx/conda/oryx.environment.yml"
 envFileTemplate="/opt/oryx/conda/{{ EnvironmentTemplateFileName }}"
 sed 's/PYTHON_VERSION/{{ EnvironmentTemplatePythonVersion }}/g' "$envFileTemplate" > $envFile
 {{ end }}
