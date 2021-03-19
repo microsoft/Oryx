@@ -120,10 +120,8 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("7.3", "github-actions")]
         [InlineData("7.3", "github-actions-buster")]
-        [InlineData("7.2", "github-actions")]
         [InlineData("7.3", "latest")]
-        [InlineData("7.2", "latest")]
-        // pdo_sqlsrv only supports PHP >= 7.1
+        // pdo_sqlsrv only supports PHP >= 7.3
         public async Task PhpApp_UsingPdo(string phpVersion, string imageTag)
         {
             // Arrange

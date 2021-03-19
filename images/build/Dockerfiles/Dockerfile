@@ -99,10 +99,10 @@ RUN set -ex \
     && cp $imagesDir/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md \
     # Install PHP SDKs
     && . $buildDir/__phpVersions.sh \
-    && $imagesDir/installPlatform.sh php $PHP56_VERSION \
     && $imagesDir/installPlatform.sh php $PHP70_VERSION \
     && $imagesDir/installPlatform.sh php $PHP72_VERSION \
     && $imagesDir/installPlatform.sh php $PHP74_VERSION \
+    && $imagesDir/installPlatform.sh php $PHP56_VERSION \
     && cd /opt/php \
     && ln -s 5.6 5 \
     && echo "full" > /opt/oryx/.imagetype
