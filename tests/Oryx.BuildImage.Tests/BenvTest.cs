@@ -109,16 +109,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("dotnet")]
-        [InlineData("node")]
-        [InlineData("npm")]
-        [InlineData("npx")]
-        [InlineData("yarn")]
-        [InlineData("python")]
-        [InlineData("php")]
-        [InlineData("ruby")]
-        [InlineData("java")]
-        [InlineData("mvn")]
         [InlineData("dotnet", "vso-focal")]
         [InlineData("node", "vso-focal")]
         [InlineData("npm", "vso-focal")]
@@ -156,10 +146,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("python", "/usr/bin/python")]
-        [InlineData("python3", "/usr/bin/python3")]
-        [InlineData("pip", "/usr/local/bin/pip")]
-        [InlineData("pip3", "/usr/local/bin/pip3")]
         [InlineData("python3", "/usr/bin/python3", "vso-focal")]
         [InlineData("pip", "/usr/local/bin/pip", "vso-focal")]
         [InlineData("pip3", "/usr/local/bin/pip3", "vso-focal")]
@@ -215,7 +201,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(null)]
         [InlineData("vso-focal")]
         public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv_InVsoBuildImage(string debianImageFlavor=null)
         {
@@ -380,7 +365,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(null)]
         [InlineData("vso-focal")]
         public void OutOfTheBox_JavaHomeEnvironmentVarialbeIsSetInVSOImage(string debianImageFlavor)
         {
