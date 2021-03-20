@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var imageTestHelper = new ImageTestHelper();
                 data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add(imageTestHelper.GetVsoBuildImage());
+                //data.Add(imageTestHelper.GetVsoBuildImage());
                 data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
                 return data;
             }
@@ -487,7 +487,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var data = new TheoryData<string>();
                 data.Add(Settings.BuildImageName);
                 var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetVsoBuildImage());
+                //data.Add(imageTestHelper.GetVsoBuildImage());
                 data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
                 return data;
             }

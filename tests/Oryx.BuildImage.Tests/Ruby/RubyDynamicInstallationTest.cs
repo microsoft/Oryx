@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetVsoBuildImage());
+                //data.Add(imageTestHelper.GetVsoBuildImage());
                 data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage());
                 return data;
