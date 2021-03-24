@@ -300,44 +300,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void GeneratedBuildSnippet_UsingYarn2Commands()
-        {
-            // Arrange
-            const string packageJson = @"{
-              ""main"": ""server.js"",
-              ""scripts"": {
-              },
-            }";
-            var commonOptions = new BuildScriptGeneratorOptions();
-            var nodePlatform = CreateNodePlatform(
-                commonOptions,
-                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
-                new NodePlatformInstaller(
-                    Options.Create(commonOptions),
-                    NullLoggerFactory.Instance));
-            var repo = new MemorySourceRepo();
-            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
-            repo.AddFile("", NodeConstants.YarnLockFileName);
-            repo.AddFile("", ".yarnrc.yml");
-            var context = CreateContext(repo);
-            var detectorResult = new NodePlatformDetectorResult
-            {
-                Platform = NodeConstants.PlatformName,
-                PlatformVersion = "10.10",
-                HasYarnrcYmlFile = true,
-                IsYarnLockFileValidYamlFormat = true,
-            };
-
-            // Act
-            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
-
-            // Assert
-            Assert.NotNull(buildScriptSnippet);
-            Assert.Contains("yarnCacheFolderName=cacheFolder", buildScriptSnippet.BashBuildScriptSnippet);
-            Assert.Contains("yarn workspaces focus --all --production", buildScriptSnippet.BashBuildScriptSnippet);
-        }
-
-        [Fact]
         public void BuildScript_HasSdkInstallScript_IfDynamicInstallIsEnabled_AndSdkIsNotAlreadyInstalled()
         {
             // Arrange
