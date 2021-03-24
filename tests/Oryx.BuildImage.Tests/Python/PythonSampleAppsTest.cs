@@ -1320,7 +1320,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("lts-versions", "3")]
-        [InlineData("vso", "2")]
         [InlineData("vso-focal", "3")]
         [InlineData("latest", "2")]
         [InlineData("latest", "3")]
