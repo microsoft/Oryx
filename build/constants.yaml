@@ -157,7 +157,6 @@
 - name: node-versions
   constants:
     node-runtime-base-tag: 20201203.2
-    yarn-cache-base-tag: 20210312.1
     yarn-version: 1.22.10
     yarn-minor-version: 1.17
     yarn-major-version: 1

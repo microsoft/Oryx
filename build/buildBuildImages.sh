@@ -12,7 +12,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__sdkStorageConstants.sh
-source $REPO_DIR/build/__nodeVersions.sh # for YARN_CACHE_BASE_TAG
+source $REPO_DIR/build/__nodeVersions.sh
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
@@ -301,11 +301,6 @@ function buildLtsVersionsImage() {
 
 function buildFullImage() {
 	buildLtsVersionsImage
-
-	# Pull and tag the image with the name that this image's Dockerfile expects
-	local yarnImage="mcr.microsoft.com/oryx/base:build-yarn-cache-$YARN_CACHE_BASE_TAG-stretch"
-	docker pull $yarnImage
-	docker tag $yarnImage yarn-cache-base
 
 	echo
 	echo "-------------Creating full build image-------------------"

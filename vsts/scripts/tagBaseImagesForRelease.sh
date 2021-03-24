@@ -62,11 +62,7 @@ fi
 echo "Creating release tags for '$imageName' ..."
 mkdir -p $artifactsDir/$imageName
 
-if [ "$imageName" == "yarn-cache-build" ]
-then
-  echo ""
-  retagImageWithStagingRepository yarn-cache-buildimage-bases-stretch.txt $imageName stretch
-elif [ "$imageName" == "node" ]
+if [ "$imageName" == "node" ]
 then
   echo ""
   retagImageWithStagingRepository node-runtimeimage-bases-buster.txt $imageName buster

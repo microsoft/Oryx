@@ -11,19 +11,6 @@ echo "registry={{ PackageRegistryUrl }}" >> ~/.npmrc
 echo
 {{ end }}
 
-{{ if ConfigureYarnCache }}
-# Yarn config is per user, and since the build might run with a non-root account, we make sure
-# the yarn cache is set on every build.
-YARN_CACHE_DIR=/usr/local/share/yarn-cache
-yarnCacheFolderName={{ YarnCacheFolderName }}
-if [ -d $YARN_CACHE_DIR ]
-then
-	echo
-    echo "Configuring Yarn cache folder..."
-    yarn config set $yarnCacheFolderName $YARN_CACHE_DIR
-fi
-{{ end }}
-
 zippedModulesFileName={{ CompressedNodeModulesFileName }}
 allModulesDirName=".oryx_all_node_modules"
 prodModulesDirName=".oryx_prod_node_modules"

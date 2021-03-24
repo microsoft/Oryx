@@ -48,13 +48,3 @@ jobs:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
       aseImageName: 'ruby'
-
-- job: Release_YarnCacheBuildBaseImage
-  displayName: Push Yarn Cache Build Base Image to MCR
-  timeoutInMinutes: 250
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - template: _releaseBaseImagesStepTemplate.yml
-    parameters:
-      baseImageName: 'yarn-cache-build'
