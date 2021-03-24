@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory(Skip = "Bug#1258039")]
+        [Theory]
         [InlineData("2.7")]
         [InlineData("3.6")]
         [InlineData("3.7")]
@@ -68,18 +68,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange
             var expectedPackage = "jamspell";
-            string pipVersion = "pip";
-            if (version.ElementAt(0) == '3')
-            {
-                pipVersion = "pip3";
-            }
-
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = _imageHelper.GetRuntimeImage("python", version),
                 CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", $"{pipVersion} search {expectedPackage}" }
+                CommandArguments = new[] { "-c", $"wget -O - https://pypi.org/simple/ | grep -i {expectedPackage}" }
             });
             
             // Assert
