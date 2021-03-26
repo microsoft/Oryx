@@ -1318,9 +1318,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory(Skip = "Bug#1258039")]
+        [Theory]
         [InlineData("lts-versions", "3")]
-        [InlineData("vso", "2")]
         [InlineData("vso-focal", "3")]
         [InlineData("latest", "2")]
         [InlineData("latest", "3")]
@@ -1328,17 +1327,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var expectedPackage = "jamspell";
-            string pipVersion = "pip";
-            if (pythonVersion == "3")
-            {
-                pipVersion = "pip3";
-            }
+
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = _imageHelper.GetBuildImage(tagName),
                 CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", $"{pipVersion} search {expectedPackage}" },
+                CommandArguments = new[] { "-c", $"wget -O - https://pypi.org/simple/ | grep -i {expectedPackage}" },
             });
 
             // Assert
