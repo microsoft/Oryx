@@ -26,7 +26,6 @@ RUN ./build.sh python     /opt/startupcmdgen/python
 ###
 
 FROM main AS final
-COPY --from=yarn-cache-base /usr/local/share/yarn-cache /usr/local/share/yarn-cache
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 # https://github.com/docker-library/python/issues/147
@@ -80,9 +79,6 @@ RUN set -ex \
     && ln -s 10.14.2 10.14 \
     && ln -s 10.21.0 10.21 \
     && ln -s 12.18.2 12.18 \
-    # NOTE: Do NOT do recursive permission setup as it is already done through yarn-cache-base image
-    # and slows the build
-    && chmod 777 /usr/local/share/yarn-cache \
     # Install Python SDKs
     && PYTHONIOENCODING="UTF-8" \
     && . $buildDir/__pythonVersions.sh \

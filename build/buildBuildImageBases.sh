@@ -7,7 +7,6 @@
 # This script builds some base images that are needed for the build image:
 # - Python binaries
 # - PHP binaries
-# - Yarn package cache
 #
 
 set -ex
@@ -53,18 +52,6 @@ case $IMAGE_DIR_TO_BUILD in
 
 		docker build -f $BUILD_IMAGES_DIR/python/prereqs/Dockerfile -t "python-build-prereqs" $REPO_DIR
 		buildImages "python"
-		;;
-	'yarn-cache')
-		echo "Building Yarn package cache base image"
-		echo
-
-		imageName="$BASE_IMAGES_REPO:build-yarn-cache$UNIQUE_TAG-$ImageDebianFlavor"
-		docker build \
-			-f $BUILD_IMAGES_DIR/yarn-cache/Dockerfile \
-			-t $imageName \
-			--build-arg DEBIAN_FLAVOR=$ImageDebianFlavor \
-			$REPO_DIR
-		echo "$imageName" >> $ARTIFACTS_FILE
 		;;
 	*) echo "Unknown image directory";;
 esac
