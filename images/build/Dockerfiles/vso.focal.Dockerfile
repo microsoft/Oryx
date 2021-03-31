@@ -39,6 +39,8 @@ RUN LANG="C.UTF-8" \
         zlib1g \
         libuuid1 \
         libunwind8 \
+        sqlite3 \
+        libsqlite3-dev \
         software-properties-common \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator

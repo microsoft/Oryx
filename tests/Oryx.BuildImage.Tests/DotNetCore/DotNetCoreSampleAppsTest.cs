@@ -863,7 +863,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("github-actions")]
         [InlineData("github-actions-buster")]
         [InlineData("lts-versions")]
-        [InlineData("vso")]
         [InlineData("vso-focal")]
         [InlineData("latest")]
         public void GDIPlusLibrary_IsPresentInTheImage(string tagName)

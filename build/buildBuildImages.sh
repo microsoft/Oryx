@@ -440,7 +440,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildLtsVersionsImage "buster"
 	buildLtsVersionsImage	
 	buildFullImage
-	buildVsoImage
+	#buildVsoImage
 	buildVsoFocalImage
 	buildCliImage "buster"
 	buildCliImage
@@ -459,8 +459,8 @@ elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
 	buildLtsVersionsImage "buster"
 elif [ "$imageTypeToBuild" == "full" ]; then
 	buildFullImage
-elif [ "$imageTypeToBuild" == "vso" ]; then
-	buildVsoImage
+#elif [ "$imageTypeToBuild" == "vso" ]; then
+#	buildVsoImage
 elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage
 elif [ "$imageTypeToBuild" == "cli" ]; then
