@@ -66,6 +66,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
+                .AddCommand($"cd {appDir} && bundle update")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
 
