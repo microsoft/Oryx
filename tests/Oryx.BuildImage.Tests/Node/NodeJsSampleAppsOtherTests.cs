@@ -969,6 +969,39 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void  CanBuildAndRunNodeApp_UsingYarn2ForBuild()
+        {
+            // Arrange
+            var appName = "node-makefile-sample";
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
+
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, $"./customBuildScript.sh")
+                .AddCommand($"oryx build {appDir}")
+                .AddFileExistsCheck($"{appDir}/index.html")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.LtsVersionsBuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("> index.html", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void BuildsApp_ByRunningNpmInstall_AndCustomRunBuildCommand()
         {
             // Arrange

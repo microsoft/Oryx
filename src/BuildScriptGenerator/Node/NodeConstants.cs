@@ -35,8 +35,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string HugoVersionCommand = "echo Using Hugo version: && hugo version";
         public const string YarnPackageInstallCommand = "yarn install --prefer-offline";
         public const string Yarn2PackageInstallCommand = "yarn plugin import workspace-tools && yarn workspaces focus --all";
-        public const string Yarn1ConfigFolderName = "cache-folder";
-        public const string Yarn2ConfigFolderName = "cacheFolder";
         public const string ProductionOnlyPackageInstallCommandTemplate = "{0} --production";
         public const string PkgMgrRunBuildCommandTemplate = "{0} run build";
         public const string PkgMgrRunBuildAzureCommandTemplate = "{0} run build:azure";

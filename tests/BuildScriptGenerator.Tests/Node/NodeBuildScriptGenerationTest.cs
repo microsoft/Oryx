@@ -327,8 +327,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 HasProdDependencies = true,
                 HasDevDependencies = true,
                 ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NodeConstants.Yarn2PackageInstallCommand),
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate),
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
                 ConfigureYarnCache = false,
