@@ -941,11 +941,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var appName = "node-makefile-sample";
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
-
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, $"./customBuildScript.sh")
-                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir}")
+                .AddCommand($"oryx build {appDir} -i /tmp/int")
                 .AddFileExistsCheck($"{appDir}/index.html")
                 .ToString();
 
@@ -977,7 +976,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/webfrontend-yarn2-output";
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddCommand($"oryx build {appDir}")
+                .AddCommand($"oryx build {appDir} -o {appOutputDir}")
                 .ToString();
 
             // Act
