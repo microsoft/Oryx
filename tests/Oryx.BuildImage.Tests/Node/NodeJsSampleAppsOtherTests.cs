@@ -945,7 +945,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, $"./customBuildScript.sh")
-                .AddCommand($"oryx build {appDir}")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appDir}/index.html")
                 .ToString();
 
@@ -972,14 +972,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void  CanBuildAndRunNodeApp_UsingYarn2ForBuild()
         {
             // Arrange
-            var appName = "node-makefile-sample";
+            var appName = "webfront-yarn2-sample";
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
-
+            var appOutputDir = "/tmp/webfrontend-yarn2-output";
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, $"./customBuildScript.sh")
                 .AddCommand($"oryx build {appDir}")
-                .AddFileExistsCheck($"{appDir}/index.html")
                 .ToString();
 
             // Act
@@ -996,7 +994,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("> index.html", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
