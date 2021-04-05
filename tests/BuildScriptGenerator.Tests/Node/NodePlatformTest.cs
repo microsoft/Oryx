@@ -333,7 +333,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(buildScriptSnippet);
-            Assert.Contains("yarnCacheFolderName=cacheFolder", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.Contains("yarn workspaces focus --all --production", buildScriptSnippet.BashBuildScriptSnippet);
         }
 
