@@ -1,2 +1,2 @@
 # https://github.com/actions/virtual-environments/blob/master/images/linux/Ubuntu1804-README.md
-FROM buildpack-deps:buster@sha256:b42568b32a4dff4f1f378fd0685aa2a8e6931e744798a481fd6ed6672d7f0c47
+FROM buildpack-deps:buster@sha256:ff6c309ddf5b2021da0f1bbdde5020be3840113058c50863fc05ba840c4db4b3
