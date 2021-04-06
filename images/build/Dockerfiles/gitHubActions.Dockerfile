@@ -63,6 +63,9 @@ ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images"
 RUN ${IMAGES_DIR}/build/installHugo.sh
 RUN set -ex \
+ && yarnCacheFolder="/usr/local/share/yarn-cache" \
+ && mkdir -p $yarnCacheFolder \
+ && chmod 777 $yarnCacheFolder \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \

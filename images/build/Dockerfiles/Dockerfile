@@ -79,6 +79,9 @@ RUN set -ex \
     && ln -s 10.14.2 10.14 \
     && ln -s 10.21.0 10.21 \
     && ln -s 12.18.2 12.18 \
+    && yarnCacheFolder="/usr/local/share/yarn-cache" \
+    && mkdir -p $yarnCacheFolder \
+    && chmod 777 $yarnCacheFolder \
     # Install Python SDKs
     && PYTHONIOENCODING="UTF-8" \
     && . $buildDir/__pythonVersions.sh \
