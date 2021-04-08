@@ -84,22 +84,12 @@ RUN set -eux; \
 COPY docker-php-source /usr/local/bin/
 
 RUN set -eux; \
-    \
-	wget https://github.com/P-H-C/phc-winner-argon2/archive/20190702.tar.gz -O /tmp/argon2.tar.gz; \
-	tar -xf /tmp/argon2.tar.gz; \
-	ls -l; \
-	cd phc-winner-argon2-20190702; \
-	make; \
-	make test; \
-	make install PREFIX=/usr;
-
-RUN set -eux; \
 	\
 	
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		#libargon2-dev \
+		libargon2-dev \
 		libcurl4-openssl-dev \
 		libedit-dev \
 		libonig-dev \
