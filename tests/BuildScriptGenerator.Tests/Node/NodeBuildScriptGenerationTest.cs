@@ -241,7 +241,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
                 ConfigureYarnCache = true,
-                YarnCacheFolderName = "cache-folder",
             };
 
             // Act
@@ -286,7 +285,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
                 ConfigureYarnCache = true,
-                YarnCacheFolderName = "cache-folder",
             };
 
             // Act
@@ -334,7 +332,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
                 ConfigureYarnCache = true,
-                YarnCacheFolderName = NodeConstants.Yarn2ConfigFolderName,
             };
 
             // Act
@@ -381,7 +378,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
                 ConfigureYarnCache = true,
-                YarnCacheFolderName = NodeConstants.Yarn1ConfigFolderName,
             };
 
             // Act
