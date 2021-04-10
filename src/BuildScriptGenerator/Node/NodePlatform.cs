@@ -184,13 +184,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 packageManagerCmd = NodeConstants.YarnCommand;
                 configureYarnCache = true;
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
-                // yarn.lock file is valid YAML in Yarn 2+ and .yarnrc.yml file replaces .yarnrc in Yarn 2+.
+
+                // In Yarn 2+ and .yarnrc.yml file replaces .yarnrc in Yarn 2+.
                 // Applying yarn 2 cache folder name and package install command.
-                if (nodePlatformDetectorResult.HasYarnrcYmlFile
-                    || nodePlatformDetectorResult.IsYarnLockFileValidYamlFormat) {
+                if (nodePlatformDetectorResult.HasYarnrcYmlFile)
+                {
                     yarnCacheFolderName = NodeConstants.Yarn2ConfigFolderName;
                     packageInstallCommand = NodeConstants.Yarn2PackageInstallCommand;
-                } else {
+                }
+                else
+                {
                     yarnCacheFolderName = NodeConstants.Yarn1ConfigFolderName;
                     packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
                 }
