@@ -182,7 +182,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName))
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
-                configureYarnCache = true;
+                configureYarnCache = false;
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
 
                 // In Yarn 2+ and .yarnrc.yml file replaces .yarnrc in Yarn 2+.
@@ -219,7 +219,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                         NodeConstants.YarnCommand, StringComparison.OrdinalIgnoreCase))
                     {
                         packageInstallCommand = NodeConstants.YarnPackageInstallCommand;
-                        configureYarnCache = true;
+                        configureYarnCache = false;
                         packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
                         installLernaCommand = NodeConstants.InstallLernaCommandYarn;
                     }
