@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.0")]
         [InlineData("3.1")]
         [InlineData("5.0")]
+        [InlineData("6.0.0-preview.3")]
         public void DotNetCoreBusterRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -129,6 +130,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30)]
         [InlineData("3.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
         [InlineData("5.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp50)]
+        [InlineData("6.0.0-preview.3", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
