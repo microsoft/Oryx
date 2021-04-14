@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             });
 
             // Assert
-            RunAsserts(() => Assert.False(result.IsSuccess), result.GetDebugInfo());
+            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
         }
 
         [Theory]

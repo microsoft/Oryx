@@ -36,15 +36,7 @@ if [[ $nodeVersionMajor -ge 10  ]]; then
     echo "Version of npm after upgrade: $currentNpmVersion"
 fi
 
-# Do NOT install PM2 from Node 14 onwards
-if [[ $nodeVersionMajor -lt 14 ]]; then
-    echo "Installing PM2..."
-    # PM2 is supported as an option when running the app,
-    # so we need to make sure it is available in our images.
-    npm install -g pm2@$PM2_VERSION -loglevel silent
-else
-    echo "Skipping PM2 installation..."
-fi
+npm install -g pm2 -loglevel silent
 
 # Application-Insights is supported as an option for telemetry when running the app,
 # so we need to make sure it is available in our images.
