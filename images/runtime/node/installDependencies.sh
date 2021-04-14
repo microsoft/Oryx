@@ -36,6 +36,9 @@ if [[ $nodeVersionMajor -ge 10  ]]; then
     echo "Version of npm after upgrade: $currentNpmVersion"
 fi
 
+echo "Installing PM2..."
+# PM2 is supported as an option when running the app,
+# so we need to make sure it is available in our images.
 npm install -g pm2@$PM2_VERSION -loglevel silent
 
 # Application-Insights is supported as an option for telemetry when running the app,
