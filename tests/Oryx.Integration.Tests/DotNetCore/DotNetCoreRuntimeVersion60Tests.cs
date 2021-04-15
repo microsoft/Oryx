@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -69,6 +70,110 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Welcome to ASP.NET Core MVC!", data);
                 });
         }
+
+        
+        [Fact]
+        public async Task CanBuildAndRunApp_FromNestedOutputDirectory()
+        {
+            // Arrange
+            var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand(
+                $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
+                $"--platform-version {dotnetcoreVersion} " +
+                $"-o {appOutputDir}")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp60MvcApp,
+                _output,
+                new[] { volume, appOutputDirVolume },
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Welcome to ASP.NET Core MVC!", data);
+                });
+        }
+
+        [Fact]
+        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
+        {
+            // Arrange
+            var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
+            var buildImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
+                $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
+                // Create a 'build.env' file
+                .AddCommand(
+                $"echo '{FilePaths.PreRunCommandEnvVarName}=\"echo > {expectedFileInOutputDir}\"' > " +
+                $"{appOutputDir}/{BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName}")
+                .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp60MvcApp,
+                _output,
+                new DockerVolume[] { volume, appOutputDirVolume },
+                _imageHelper.GetLtsVersionsBuildImage(),
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Welcome to ASP.NET Core MVC!", data);
+
+                    // Verify that the file created using the pre-run command is 
+                    // in fact present in the output directory.
+                    Assert.True(File.Exists(Path.Combine(appOutputDirVolume.MountedHostDir, expectedFileInOutputDir)));
+                });
+        }
     
         [Fact]
         public async Task CanRun_SelfContainedApp_TargetedForLinux()
@@ -97,7 +202,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SettingsKeys.DynamicInstallRootDir,
                     BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
                .AddCommand($"oryx prep --skip-detection --platforms-and-versions dotnet=6")
-               .Source($"benv dotnet=6")
+               .Source($"benv dotnet=6.0.100-preview.3.21202.5")
                .AddCommand($"cd {appDir}")
                .AddCommand($"dotnet publish -c release -r linux-x64 -o {appOutputDir}")
                .ToString();

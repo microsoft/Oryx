@@ -62,7 +62,6 @@
     aspnet-core-app-50: 5.0.5
     aspnet-core-app-50-sha: 149b378b2377b60980a9bc0fa2f345293439f0da18bc75e8bffadc2faba8c3c175325fdd4edc9faaf898c4836f76a1685d55a0efdb679a5034b9e761450a88a4
 
-
     net-core-app-60: 6.0.0-preview.3.21201.4
     net-core-app-60-sha: 8a6623d4ab32b24ce7cc507582309f38735419e93992f7a0180494c09cf1ec7d597fa1fcc23c90efedf6be1b1a47d36e9061c998d2713e40bbd94b61649f7ff9
     aspnet-core-app-60: 6.0.0-preview.3.21201.13
