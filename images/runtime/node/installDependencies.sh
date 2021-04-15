@@ -36,14 +36,19 @@ if [[ $nodeVersionMajor -ge 10  ]]; then
     echo "Version of npm after upgrade: $currentNpmVersion"
 fi
 
-# Do NOT install PM2 for Node versions below 6 (older than 6)
-if [[ $nodeVersionMajor -ge 6 ]]; then
+currentNodeVersion=$(node --version)
+echo "Current Node version is $currentNodeVersion"
+currentNodeVersion=${currentNodeVersion#?}
+IFS='.' read -ra SPLIT_VERSION <<< "$currentNodeVersion"
+major="${SPLIT_VERSION[0]}"
+
+if [ "$major" -lt "8" ]; then
     echo "Installing PM2..."
     # PM2 is supported as an option when running the app,
     # so we need to make sure it is available in our images.
-    npm install -g pm2@$PM2_VERSION -loglevel silent
+    npm install -g pm2@3.5.1 -loglevel silent
 else
-    echo "Skipping PM2 installation..."
+    npm install -g pm2@$PM2_VERSION -loglevel silent
 fi
 
 # Application-Insights is supported as an option for telemetry when running the app,
