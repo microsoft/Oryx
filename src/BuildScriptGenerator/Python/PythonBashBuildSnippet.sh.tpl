@@ -187,3 +187,9 @@ fi
 		fi
 	{{ end }}
 {{ end }}
+
+{{ if HasPelicanConfiguationFile }}
+	echo "Running `pelican`
+	echo
+	pelican
+{{ end }}
