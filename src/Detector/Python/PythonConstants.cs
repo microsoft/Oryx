@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.Detector.Python
         public const string CondaEnvironmentYamlFileName = "environment.yml";
         public const string CondaEnvironmentYmlFileName = "environment.yaml";
         public const string JupyterNotebookFileExtensionName = "ipynb";
+        public const string PelicanConfiguationFile = "pelicanconf.py";
         public static readonly string[] CondaEnvironmentFileKeys = new[] { "channels", "dependencies" };
     }
 }

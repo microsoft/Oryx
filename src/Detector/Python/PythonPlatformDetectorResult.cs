@@ -30,5 +30,10 @@ namespace Microsoft.Oryx.Detector.Python
         /// Gets or sets the value indicating if 'pyproject.toml' file exists at the root of the repo.
         /// </summary>
         public bool HasPyprojectTomlFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating if 'pyproject.toml' file exists at the root of the repo.
+        /// </summary>
+        public bool HasPelicanConfiguationFile { get; set; }
     }
 }

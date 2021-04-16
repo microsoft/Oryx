@@ -84,6 +84,12 @@ namespace Microsoft.Oryx.Detector.Python
                     $"at the root of the repo.");
                 hasJupyterNotebookFiles = true;
             }
+            var hasPelicanConfiguationFile = false;
+            if (sourceRepo.FileExists(PythonConstants.PelicanConfiguationFile))
+            {
+                _logger.LogInformation($"Found {PythonConstants.PelicanConfiguationFile} at the root of the repo.");
+                hasPelicanConfiguationFile = true;
+            }
 
             // This detects if a runtime.txt file exists and if that is a python file
             var hasRuntimeTxtFile = false;
