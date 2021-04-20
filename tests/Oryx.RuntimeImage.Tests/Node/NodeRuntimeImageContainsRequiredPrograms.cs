@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [InlineData("14")]
-        public void NodeImage_DoesNotContain_PM2(string nodeTag)
+        public void Node14Image_Contains_PM2(string nodeTag)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             });
 
             // Assert
-            RunAsserts(() => Assert.False(result.IsSuccess), result.GetDebugInfo());
+            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
         }
 
         [Theory]
