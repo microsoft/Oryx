@@ -71,6 +71,53 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
+        [Fact]
+        public async Task CanBuildAndRun_NetCore60MvcApp_UsingExplicitStartupCommand()
+        {
+            // Arrange
+            var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var startupCommand = "./NetCoreApp60MvcApp";
+            var buildImageScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {DotNetCoreConstants.PlatformName} " +
+               $"--platform-version {dotnetcoreVersion}")
+               .ToString();
+            var runtimeImageScript = new ShellScriptBuilder()
+                .AddCommand(
+                $"oryx create-script -appPath {appOutputDir} -userStartupCommand {startupCommand} " +
+                $"-bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                NetCoreApp60MvcApp,
+                _output,
+                new[] { volume, appOutputDirVolume },
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    buildImageScript
+                },
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                ContainerPort,
+                "/bin/sh",
+                new[]
+                {
+                    "-c",
+                    runtimeImageScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Welcome to ASP.NET Core MVC!", data);
+                });
+        }
         
         [Fact]
         public async Task CanBuildAndRunApp_FromNestedOutputDirectory()
@@ -98,13 +145,14 @@ namespace Microsoft.Oryx.Integration.Tests
                 NetCoreApp60MvcApp,
                 _output,
                 new[] { volume, appOutputDirVolume },
+                _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", "6.0"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -149,14 +197,14 @@ namespace Microsoft.Oryx.Integration.Tests
                 NetCoreApp60MvcApp,
                 _output,
                 new DockerVolume[] { volume, appOutputDirVolume },
-                _imageHelper.GetLtsVersionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(),
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", "6.0"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
