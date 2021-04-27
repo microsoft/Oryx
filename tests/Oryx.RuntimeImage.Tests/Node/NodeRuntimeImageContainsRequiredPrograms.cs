@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 CommandArguments = new[]
                 {
                     "-c",
-                    "which tar && which unzip && which pm2 && /opt/node-wrapper/node --version"
+                    "which tar && which unzip && which pm2 && cd /opt/node-wrapper && node --version"
                 }
             });
 
