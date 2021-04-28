@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
         public async Task RunNodeAppUsingProcessJson(string nodeVersion)
         {
@@ -157,7 +157,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
         public async Task RunNodeAppUsingConfigYml(string nodeVersion)
         {
@@ -193,7 +193,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 dockerCli: _dockerCli);
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
         public async Task RunNodeAppUsingConfigJs(string nodeVersion)
         {
