@@ -410,7 +410,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
             var expected = new NodeBashBuildSnippetProperties
             {
-                PackageInstallCommand = NpmInstallCommand,
+                PackageInstallCommand = NodeConstants.NpmCiCommand,
                 PackageInstallerVersionCommand = NodeConstants.NpmVersionCommand,
                 NpmRunBuildCommand = null,
                 NpmRunBuildAzureCommand = null,

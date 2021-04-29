@@ -12,6 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string LernaJsonFileName = "lerna.json";
         public const string LageConfigJSFileName = "lage.config.js";
         public const string PackageLockJsonFileName = "package-lock.json";
+        public const string NpmShrinkwrapJsonFileName = "npm-shrinkwrap.json";
         public const string YarnLockFileName = "yarn.lock";
         public const string NodeToolName = "node";
         public const string NpmToolName = "npm";

@@ -200,7 +200,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
             else
             {
-                if (ctx.SourceRepo.FileExists(NodeConstants.PackageLockJsonFileName))
+                // Usage of "npm ci" command:
+                // The project must have an existing package-lock.json or npm-shrinkwrap.json
+                // If dependencies in the package lock do not match those in package.json,
+                // npm ci will exit with an error, instead of updating the package lock.
+                // Can only install entire projects at a time: individual dependencies cannot be added with this command.
+                if (ctx.SourceRepo.FileExists(NodeConstants.PackageLockJsonFileName)
+                    || ctx.SourceRepo.FileExists(NodeConstants.NpmShrinkwrapJsonFileName))
                 {
                     packageInstallCommand = NodeConstants.NpmCiCommand;
                 }
