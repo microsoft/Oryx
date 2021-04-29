@@ -8,13 +8,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     public class NodeScriptGeneratorOptions
     {
         /// <summary>
-        /// Gets or sets the custom 'npm run build' command that is run after 'npm install' is run in the generated
+        /// Gets or sets the custom 'npm run build' command that is run after 'npm ci' is run in the generated
         /// build script.
         /// </summary>
         public string CustomRunBuildCommand { get; set; }
 
         /// <summary>
-        /// Gets or sets custom build command or script that will run without 'npm install' in the generated
+        /// Gets or sets custom build command or script that will run without 'npm ci' in the generated
         /// build script.
         /// </summary>
         public string CustomBuildCommand { get; set; }

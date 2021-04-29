@@ -26,6 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string LernaBootstrapCommand = "lerna bootstrap";
         public const string InstallLernaCommandNpm = "npm install --global lerna";
         public const string NpmPackageInstallCommand = "npm install --unsafe-perm";
+        public const string NpmCiCommand = "npm ci";
         public const string InstallLernaCommandYarn = "npm install --global lerna --no-package-lock";
         public const string InstallLageCommand = "npm install --global lage";
         public const string NpmRunLageBuildCommand = "npm run lage build";

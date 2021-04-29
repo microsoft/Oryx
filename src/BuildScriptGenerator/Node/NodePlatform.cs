@@ -200,8 +200,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
             else
             {
+                if (ctx.SourceRepo.FileExists(NodeConstants.PackageLockJsonFileName))
+                {
+                    packageInstallCommand = NodeConstants.NpmCiCommand;
+                }
+                else
+                {
+                    packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
+                }
                 packageManagerCmd = NodeConstants.NpmCommand;
-                packageInstallCommand = NodeConstants.NpmPackageInstallCommand;
                 packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
             }
 
