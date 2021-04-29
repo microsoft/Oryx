@@ -1,6 +1,8 @@
 jobs:
 - job: Release_PhpRuntimeBaseImage
   displayName: Push PHP Runtime Base Image to MCR
+  pool:
+    vmImage: 'ubuntu-latest'
   timeoutInMinutes: 250
   pool:
     vmImage: 'ubuntu-latest'
@@ -11,6 +13,8 @@ jobs:
 
 - job: Release_PhpFpmNginxRuntimeBaseImage
   displayName: Push PHP-FPM Runtime Base Image to MCR
+  pool:
+    vmImage: 'ubuntu-latest'
   timeoutInMinutes: 250
   pool:
     vmImage: 'ubuntu-latest'
@@ -21,6 +25,8 @@ jobs:
 
 - job: Release_DotNetCoreRuntimeBaseImage
   displayName: Push DotNetCore Runtime Base Images to MCR
+  pool:
+    vmImage: 'ubuntu-latest'
   timeoutInMinutes: 250
   pool:
     vmImage: 'ubuntu-latest'
@@ -31,6 +37,8 @@ jobs:
 
 - job: Release_NodeBaseImage
   displayName: Push Node Base Image to MCR
+  pool:
+    vmImage: 'ubuntu-latest'
   timeoutInMinutes: 300
   pool:
     vmImage: 'ubuntu-latest'
@@ -41,6 +49,8 @@ jobs:
 
 - job: Release_RubyBaseImage
   displayName: Push Ruby Base Image to MCR
+  pool:
+    vmImage: 'ubuntu-latest'
   timeoutInMinutes: 300
   pool:
     vmImage: 'ubuntu-latest'

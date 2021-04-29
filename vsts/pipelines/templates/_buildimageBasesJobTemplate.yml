@@ -9,6 +9,8 @@ parameters:
 jobs:
 - job: ${{ parameters.jobName }}
   displayName: ${{ parameters.displayName }}
+  pool:
+    vmImage: 'ubuntu-latest'
   timeoutInMinutes: 250
   steps:
   - task: ShellScript@2
