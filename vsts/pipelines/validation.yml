@@ -36,6 +36,11 @@ jobs:
   timeoutInMinutes: 480
   steps:
   - script: |
+      docker version
+      docker --version
+      docker ps -a
+    displayName: 'Test Docker'
+  - script: |
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
       echo "##vso[task.setvariable variable=TestRuntimeImages;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
