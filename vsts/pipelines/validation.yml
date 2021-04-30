@@ -20,25 +20,6 @@ jobs:
   timeoutInMinutes: 480
   steps:
   - script: |
-      docker version
-      docker --version
-      docker ps -a
-    displayName: 'Test Docker 1'
-
-  - script: |
-      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-      echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-      sudo apt update
-      sudo apt-get install docker-ce=5:20.10.5~3-0~ubuntu-focal docker-ce-cli=5:20.10.5~3-0~ubuntu-focal containerd.io
-    displayName: 'Install Docker 20.10.5'
-
-  - script: |
-      docker version
-      docker --version
-      docker ps -a
-    displayName: 'Test Docker 2'
-    
-  - script: |
       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
       echo "##vso[task.setvariable variable=TestBuildImages;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
