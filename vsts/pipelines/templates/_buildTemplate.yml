@@ -101,18 +101,25 @@ steps:
     docker images && docker system prune -f && df -h && echo
   displayName: 'clean docker unknown layers'
 
+- script: |
+    docker -v
+    echo "Installing stable version of Docker CE................"
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt update
+    sudo apt-get install docker-ce=5:20.10.5~3-0~ubuntu-focal docker-ce-cli=5:20.10.5~3-0~ubuntu-focal containerd.io
+    echo "After installing ................"
+    docker -v
+  displayName: 'Install Docker 20.10.5'
+  condition: >
+    and(succeeded(),  
+    or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestBuildImages'], 'true')))
+
 - task: ShellScript@2
   displayName: 'Test build images'
   inputs:
     scriptPath: ./build/testBuildImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
-  condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
-
-- script: |
-    docker version
-    docker --version
-    docker ps -a
-  displayName: 'Test Docker in build image test'
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
