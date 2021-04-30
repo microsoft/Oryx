@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory](Skip = "Legacy node versions are out of support")
+        [Theory(Skip = "Legacy node versions are out of support")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
         public async Task RunNodeAppUsingProcessJson(string nodeVersion)
         {
