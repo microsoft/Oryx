@@ -4,7 +4,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public static class DotNetCoreRunTimeVersions
     {
-        public const string DotNetCoreRuntimeBaseTag = "20210409.2";
+        public const string DotNetCoreRuntimeBaseTag = "20210413.3";
         public const string NetCoreApp10 = "1.0.16";
         public const string NetCoreApp11 = "1.1.13";
         public const string NetCoreApp20 = "2.0.9";
@@ -26,5 +26,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string NetCoreApp50Sha = "ce9d3778c9a331b35cf18d7b64f9eec8fc37d9088f1a2208488577f611b2ab0f8b3a82b7f559b331d584ac86e1f09153ee2e255e617239fe9a9382373f873237";
         public const string AspnetCoreApp50 = "5.0.5";
         public const string AspnetCoreApp50Sha = "149b378b2377b60980a9bc0fa2f345293439f0da18bc75e8bffadc2faba8c3c175325fdd4edc9faaf898c4836f76a1685d55a0efdb679a5034b9e761450a88a4";
+        public const string NetCoreApp60 = "6.0.0-preview.3.21201.4";
+        public const string NetCoreApp60Sha = "8a6623d4ab32b24ce7cc507582309f38735419e93992f7a0180494c09cf1ec7d597fa1fcc23c90efedf6be1b1a47d36e9061c998d2713e40bbd94b61649f7ff9";
+        public const string AspnetCoreApp60 = "6.0.0-preview.3.21201.13";
+        public const string AspnetCoreApp60Sha = "05abefd3c1c8f0ffb911e270cf949be144af660e5755af3b1801db4d41beb7234b889ecf1fbb3aeb9f3b51324b4b225c4adc8537fd2f16d61829bd91713f8f1f";
     }
 }
