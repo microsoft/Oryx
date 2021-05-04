@@ -971,9 +971,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void  CanBuildAndRunNodeApp_UsingYarn2ForBuild()
         {
             // Arrange
-            var appName = "webfront-yarn2-sample";
+            var appName = "nextjs-yarn2-example";
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
-            var appOutputDir = "/tmp/webfrontend-yarn2-output";
+            var appOutputDir = "/tmp/nextjs-yarn2-example";
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddCommand($"oryx build {appDir} -o {appOutputDir}")
