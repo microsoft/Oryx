@@ -11,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/hashicorp/go-version"
 )
 
 type DotnetCoreStartupScriptGenerator struct {
@@ -25,6 +27,26 @@ type DotnetCoreStartupScriptGenerator struct {
 
 const DefaultBindPort = "8080"
 const RuntimeConfigJsonExtension = ".runtimeconfig.json"
+
+// Checks if the application insights needs to be enabled for the current runtime
+func (gen *DotnetCoreStartupScriptGenerator) shouldApplicationInsightsBeConfigured() bool {
+	// Check if the application insights environment variables are present
+	appInsightsAgentExtensionVersionEnv := gen.Configuration.AppInsightsAgentExtensionVersion
+	if gen.Manifest.DotNetCoreRuntimeVersion != "" {
+		dotNetRuntimeVersion=gen.Manifest.DotNetCoreRuntimeVersion
+		scriptBuilder.WriteString("echo DotNet Runtime " + dotNetRuntimeVersion + "from manifest file\n")
+	}
+	
+	dotNetAppInsightsSupportedVersion, err := version.NewVersion("6.0")
+	dotNetCurrentVersion, err := version.NewVersion(dotNetRuntimeVersion)
+
+	if dotNetCurrentVersion.GreaterThanOrEqual(dotNetAppInsightsSupportedVersion) &&
+	   appInsightsAgentExtensionVersionEnv != "" &&
+	   appInsightsAgentExtensionVersionEnv == "~3" {
+		   return true
+	}
+	return false
+}
 
 func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuilder *strings.Builder) string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.GenerateEntrypointScript")
@@ -99,6 +121,19 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 				}
 			}
 		}
+	}
+
+	logger.LogInformation("Looking for App-Insights configuration and Enable codeless attach if needed")
+	if gen.shouldApplicationInsightsBeConfigured() {
+		
+		// We are going to set env variables in the startup logic 
+		// for appinsights attach experience only if dotnetcore 6 or newer
+		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists.. \n")
+		fmt.Printf("Setting up Environment Variables for Application Insights for codeless config.. \n")
+		scriptBuilder.WriteString("echo Setting up Application Insights for codeless config.. \n")
+		scriptBuilder.WriteString("export ASPNETCORE_HOSTINGSTARTUPASSEMBLIES="+UserNetcoreHostingstartupAssemblies+"\n")
+		scriptBuilder.WriteString("export DOTNET_STARTUP_HOOKS="+UserDotnetStartupHooks+"\n")
+		fmt.Printf("Setting up Environment Variables for Application Insights is done.. \n")
 	}
 
 	if runDefaultApp && gen.DefaultAppFilePath != "" {

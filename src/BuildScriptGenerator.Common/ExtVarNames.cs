@@ -12,6 +12,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string UserAppInsightsKeyEnv = "APPINSIGHTS_INSTRUMENTATIONKEY";
         public const string UserAppInsightsAgentExtensionVersion = "ApplicationInsightsAgent_EXTENSION_VERSION";
         public const string UserAppInsightsConnectionStringEnv = "APPLICATIONINSIGHTS_CONNECTION_STRING";
+        public const string UserDotnetStartupHooks = "/StartupHook/Microsoft.ApplicationInsights.StartupHook.dll";
+        public const string UserNetcoreHostingstartupAssemblies = "Microsoft.ApplicationInsights.StartupBootstrapper";
         public const string PythonEnableGunicornMultiWorkersEnvVarName = "PYTHON_ENABLE_GUNICORN_MULTIWORKERS";
     }
 }
