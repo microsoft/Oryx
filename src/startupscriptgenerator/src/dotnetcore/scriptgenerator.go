@@ -7,6 +7,7 @@ package main
 
 import (
 	"common"
+	"common/consts"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -33,18 +34,20 @@ func (gen *DotnetCoreStartupScriptGenerator) shouldApplicationInsightsBeConfigur
 	// Check if the application insights environment variables are present
 	appInsightsAgentExtensionVersionEnv := gen.Configuration.AppInsightsAgentExtensionVersion
 	if gen.Manifest.DotNetCoreRuntimeVersion != "" {
-		dotNetRuntimeVersion=gen.Manifest.DotNetCoreRuntimeVersion
-		scriptBuilder.WriteString("echo DotNet Runtime " + dotNetRuntimeVersion + "from manifest file\n")
-	}
-	
-	dotNetAppInsightsSupportedVersion, err := version.NewVersion("6.0")
-	dotNetCurrentVersion, err := version.NewVersion(dotNetRuntimeVersion)
+		dotNetRuntimeVersion := gen.Manifest.DotNetCoreRuntimeVersion
+		//scriptBuilder.WriteString("echo DotNet Runtime " + dotNetRuntimeVersion + "from manifest file\n")
+		dotNetAppInsightsSupportedVersion, err1 := version.NewVersion("6.0")
+	    dotNetCurrentVersion, err2 := version.NewVersion(dotNetRuntimeVersion)
 
-	if dotNetCurrentVersion.GreaterThanOrEqual(dotNetAppInsightsSupportedVersion) &&
-	   appInsightsAgentExtensionVersionEnv != "" &&
-	   appInsightsAgentExtensionVersionEnv == "~3" {
-		   return true
+		_, _ = err1, err2
+
+	    if dotNetCurrentVersion.GreaterThanOrEqual(dotNetAppInsightsSupportedVersion) &&
+	       appInsightsAgentExtensionVersionEnv != "" &&
+	       appInsightsAgentExtensionVersionEnv == "~3" {
+			   return true
+		}
 	}
+		
 	return false
 }
 
@@ -69,6 +72,19 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 
 	if gen.Configuration.EnableDynamicInstall && !common.PathExists(dotnetBinary) {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", appPath))
+	}
+
+	logger.LogInformation("Looking for App-Insights configuration and Enable codeless attach if needed")
+	if gen.shouldApplicationInsightsBeConfigured() {
+		
+		// We are going to set env variables in the startup logic 
+		// for appinsights attach experience only if dotnetcore 6 or newer
+		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists.. \n")
+		fmt.Printf("Setting up Environment Variables for Application Insights for codeless config.. \n")
+		scriptBuilder.WriteString("echo Setting up Application Insights for codeless config.. \n")
+		scriptBuilder.WriteString("export ASPNETCORE_HOSTINGSTARTUPASSEMBLIES="+consts.UserNetcoreHostingstartupAssemblies+"\n")
+		scriptBuilder.WriteString("export DOTNET_STARTUP_HOOKS="+consts.UserDotnetStartupHooks+"\n")
+		fmt.Printf("Setting up Environment Variables for Application Insights is done.. \n")
 	}
 
 	runDefaultApp := false
@@ -121,19 +137,6 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 				}
 			}
 		}
-	}
-
-	logger.LogInformation("Looking for App-Insights configuration and Enable codeless attach if needed")
-	if gen.shouldApplicationInsightsBeConfigured() {
-		
-		// We are going to set env variables in the startup logic 
-		// for appinsights attach experience only if dotnetcore 6 or newer
-		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists.. \n")
-		fmt.Printf("Setting up Environment Variables for Application Insights for codeless config.. \n")
-		scriptBuilder.WriteString("echo Setting up Application Insights for codeless config.. \n")
-		scriptBuilder.WriteString("export ASPNETCORE_HOSTINGSTARTUPASSEMBLIES="+UserNetcoreHostingstartupAssemblies+"\n")
-		scriptBuilder.WriteString("export DOTNET_STARTUP_HOOKS="+UserDotnetStartupHooks+"\n")
-		fmt.Printf("Setting up Environment Variables for Application Insights is done.. \n")
 	}
 
 	if runDefaultApp && gen.DefaultAppFilePath != "" {
