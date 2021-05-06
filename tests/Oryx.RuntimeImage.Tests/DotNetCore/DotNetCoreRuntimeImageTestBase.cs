@@ -11,13 +11,13 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
-    public class NodeRuntimeImageTestBase : TestBase, IClassFixture<TestTempDirTestFixture>
+    public class DotNetCoreRuntimeImageTestBase : TestBase, IClassFixture<TestTempDirTestFixture>
     {
         public readonly string _hostSamplesDir;
         public readonly string _tempRootDir;
         public readonly HttpClient _httpClient = new HttpClient();
 
-        public NodeRuntimeImageTestBase(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture) : base(output)
+        public DotNetCoreRuntimeImageTestBase(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture) : base(output)
         {
             _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
             _tempRootDir = testTempDirTestFixture.RootDirPath;

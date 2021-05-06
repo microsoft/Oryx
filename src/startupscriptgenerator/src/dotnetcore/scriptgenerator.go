@@ -13,7 +13,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hashicorp/go-version"
+	"github.com/Masterminds/semver"
 )
 
 type DotnetCoreStartupScriptGenerator struct {
@@ -33,17 +33,28 @@ const RuntimeConfigJsonExtension = ".runtimeconfig.json"
 func (gen *DotnetCoreStartupScriptGenerator) shouldApplicationInsightsBeConfigured() bool {
 	// Check if the application insights environment variables are present
 	appInsightsAgentExtensionVersionEnv := gen.Configuration.AppInsightsAgentExtensionVersion
+	fmt.Printf("\nAgent extension %s", gen.Configuration.AppInsightsAgentExtensionVersion)
+	fmt.Printf("\nBefore if loop >> DotNet Runtime %s", gen.Manifest.DotNetCoreRuntimeVersion)
 	if gen.Manifest.DotNetCoreRuntimeVersion != "" {
 		dotNetRuntimeVersion := gen.Manifest.DotNetCoreRuntimeVersion
-		//scriptBuilder.WriteString("echo DotNet Runtime " + dotNetRuntimeVersion + "from manifest file\n")
-		dotNetAppInsightsSupportedVersion, err1 := version.NewVersion("6.0")
-	    dotNetCurrentVersion, err2 := version.NewVersion(dotNetRuntimeVersion)
+		fmt.Printf("\nDotNet Runtime %s", dotNetRuntimeVersion)
 
-		_, _ = err1, err2
+		dotNetAppInsightsSupportedVersionConstraint, err := semver.NewConstraint(">= 6.0.0-0")
+		if err != nil {
+    		fmt.Printf("\nError in creating semver constraint %s", err)
+		}
 
-	    if dotNetCurrentVersion.GreaterThanOrEqual(dotNetAppInsightsSupportedVersion) &&
+		dotNetCurrentVersion, err := semver.NewVersion(dotNetRuntimeVersion)
+		if err != nil {
+    		fmt.Printf("\nError in parsing current version to semver version %s", err)
+		}
+		// Check if the version meets the constraints. The a variable will be true.
+		constraintCheckResult := dotNetAppInsightsSupportedVersionConstraint.Check(dotNetCurrentVersion)
+				
+	    if constraintCheckResult &&
 	       appInsightsAgentExtensionVersionEnv != "" &&
 	       appInsightsAgentExtensionVersionEnv == "~3" {
+			   fmt.Printf("\nBefore returning true")
 			   return true
 		}
 	}
