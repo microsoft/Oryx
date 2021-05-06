@@ -941,11 +941,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var appName = "node-makefile-sample";
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
-
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, $"./customBuildScript.sh")
-                .AddCommand($"oryx build {appDir}")
+                .AddCommand($"oryx build {appDir} -i /tmp/int")
                 .AddFileExistsCheck($"{appDir}/index.html")
                 .ToString();
 
@@ -964,6 +963,36 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains("> index.html", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void  CanBuildAndRunNodeApp_UsingYarn2ForBuild()
+        {
+            // Arrange
+            var appName = "nextjs-yarn2-example";
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
+            var appOutputDir = "/tmp/nextjs-yarn2-example";
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.LtsVersionsBuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
                 },
                 result.GetDebugInfo());
         }

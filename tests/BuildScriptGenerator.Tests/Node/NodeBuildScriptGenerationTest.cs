@@ -309,6 +309,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var repo = new MemorySourceRepo();
             repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
             repo.AddFile("", NodeConstants.YarnLockFileName);
+            repo.AddFile("", ".yarnrc.yml");
             var context = CreateScriptGeneratorContext(repo);
             var detectorResult = new NodePlatformDetectorResult
             {
