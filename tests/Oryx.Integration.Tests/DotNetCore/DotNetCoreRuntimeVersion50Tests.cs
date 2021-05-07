@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                NetCoreApp60MvcApp,
+                Net5MvcApp,
                 _output,
                 new DockerVolume[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(),

@@ -23,7 +23,6 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        
         [Fact]
         public async Task CanBuildAndRun_NetCore60MvcApp()
         {

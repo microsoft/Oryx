@@ -28,4 +28,4 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
 
 RUN  mkdir -p /DotNetCoreAgent \
      && curl -o /DotNetCoreAgent/appinsights.zip https://oryxsdks.blob.core.windows.net/appinsights-agent/DotNetCoreAgent.2.8.39.zip \
-     && cd DotNetCoreAgent && unzip appinsights.zip && ls -la
+     && cd DotNetCoreAgent && unzip appinsights.zip && rm appinsights.zip
