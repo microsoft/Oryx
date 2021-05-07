@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var connectionStringEnv = ExtVarNames.UserAppInsightsConnectionStringEnv;
             var OryxAppInsightsAttachString1 = "export ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=";
             var OryxAppInsightsAttachString2 = "export DOTNET_STARTUP_HOOKS=";
-            var appInsightsPackageLink = "https://oryxsdks.blob.core.windows.net/appinsights-agent/Microsoft.ApplicationInsights.StartupHook.dll";
+            
             var buildImageScript = new ShellScriptBuilder()
                .AddDefaultTestEnvironmentVariables()
                .AddCommand(
@@ -94,7 +94,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddCommand($"mkdir -p StartupHook && curl -o /StartupHook/Microsoft.ApplicationInsights.StartupHook.dll {appInsightsPackageLink}")
                 .AddCommand($"export {agentExtensionVersionEnv}=~3")
                 .AddCommand($"export {connectionStringEnv}=alkajsldkajd")
                 .AddCommand(
