@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"echo \"$checksumValue {version}.tar.gz\" | sha512sum -c - >/dev/null 2>&1")
                 .AppendLine("echo Extracting contents...")
                 .AppendLine($"tar -xzf {tarFile} -C .")
-//                .AppendLine($"rm -f {tarFile}")
+                .AppendLine($"rm -f {tarFile}")             
                 .AppendLine("PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))")
                 .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")
@@ -80,11 +80,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"platformName=\"{platformName}\"")
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
-                .AppendLine("mkdir -p  /opt/dotnet/all/sdk")
-                .AppendLine("mkdir -p /opt/dotnet/all/fxr")
-                .AppendLine($"if [ ! -L \"/opt/dotnet/all/sdk/{version}\" ] && [ ! -d \"/opt/dotnet/all/sdk/{version}\" ]; then")
-                .AppendLine($"ln -s /opt/dotnet/{version}/sdk/ /opt/dotnet/all/sdk/{version}")
-                .AppendLine("fi")
+                .AppendLine($"ls -l /opt/tmp && echo \"*****\n\" && ls -l /opt/tmp/build && echo \"*****\n\"")
+                .AppendLine($"./opt/tmp/build/vsoSymlinksDotNetCore.sh")
                 .AppendLine("fi")
 
                 // Write out a sentinel file to indicate downlaod and extraction was successful

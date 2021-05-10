@@ -20,10 +20,23 @@ function createLinks() {
     local sdkVersion="$1"
     
     installedDir="$splitSdksDir/$sdkVersion"
-    cd "$installedDir"
 
-    # Find folders with the name being a version number like 3.1.0 or 3.1.301
-    find . -maxdepth 3 -type d -regex '.*/[0-9]\.[0-9]\.[0-9]+' | while read subPath; do
+    find $installedDir/host/fxr/ -maxdepth 3 -type d -regex $exprOld | while read sPath; do
+	    echo $sPath"\n"
+	    sPath="${sPath:: -1}"
+	    
+	    linkDest="$allSdksDir/host/fxr/$sdkVersion"
+	    linkFromParent=$(dirname $linkDest)
+          
+        mkdir -p "$linkFromParent"
+        linkSource="$sPath"
+
+	    ln -sdf $linkSource $linkDest
+    done
+    
+    cd "$installedDir"
+    # Find directories with the name being a version number like 3.1.0 or 3.1.301 or 3.0.100-preview.3.21202.5
+    find . -maxdepth 2 -type d -regex '.*/[0-9]\.[0-9]\.[0-9]+.*' | while read subPath; do
         # Trim beginning 2 characters from the line which currently looks like, for example, './sdk/2.2.402'
         subPath="${subPath:2}"
         
@@ -32,7 +45,18 @@ function createLinks() {
         mkdir -p "$linkFromParentDir"
 
         linkTo="$installedDir/$subPath"
-        ln -sTf $linkTo $linkFrom
+        
+        if [ -L ${linkTo} ] ; then
+            if [ -e ${linkTo} ] ; then
+                echo "$linkTo already exists"
+            else
+                echo "$linkTo is a Broken link, creating again ..."
+                ln -sTf $linkTo $linkFrom
+            fi
+        else
+            echo "$linkTo is missing, creating ..."
+            ln -sTf $linkTo $linkFrom
+        fi
     done
 }
 

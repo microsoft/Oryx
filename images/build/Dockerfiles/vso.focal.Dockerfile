@@ -122,6 +122,7 @@ RUN set -ex \
     && ln -s $DOT_NET_CORE_21_SDK_VERSION 2-lts \
     && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s 3-lts lts \
+    && . $buildDir/vsoSymlinksDotNetCore.sh \
     # Install Hugo
     && $imagesDir/build/installHugo.sh \
     # Install Node
@@ -240,7 +241,6 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $JAVA_VERSION lts \
     && cd /opt/maven \
     && ln -s $MAVEN_VERSION lts \
-    && rm -rf /opt/tmp \
     && npm install -g lerna \
     && pecl install -f libsodium \
     && echo "vso-focal" > /opt/oryx/.imagetype
