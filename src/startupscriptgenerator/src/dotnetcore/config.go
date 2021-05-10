@@ -6,6 +6,7 @@
 package main
 
 type Configuration struct {
-	EnableDynamicInstall bool
-	PreRunCommand        string
+	AppInsightsAgentExtensionVersion  string
+	EnableDynamicInstall              bool
+	PreRunCommand                     string
 }

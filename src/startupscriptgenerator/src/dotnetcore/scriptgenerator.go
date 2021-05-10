@@ -7,10 +7,13 @@ package main
 
 import (
 	"common"
+	"common/consts"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/Masterminds/semver"
 )
 
 type DotnetCoreStartupScriptGenerator struct {
@@ -25,6 +28,39 @@ type DotnetCoreStartupScriptGenerator struct {
 
 const DefaultBindPort = "8080"
 const RuntimeConfigJsonExtension = ".runtimeconfig.json"
+
+// Checks if the application insights needs to be enabled for the current runtime
+func (gen *DotnetCoreStartupScriptGenerator) shouldApplicationInsightsBeConfigured() bool {
+	// Check if the application insights environment variables are present
+	appInsightsAgentExtensionVersionEnv := gen.Configuration.AppInsightsAgentExtensionVersion
+	fmt.Printf("\nAgent extension %s", gen.Configuration.AppInsightsAgentExtensionVersion)
+	fmt.Printf("\nBefore if loop >> DotNet Runtime %s", gen.Manifest.DotNetCoreRuntimeVersion)
+	if gen.Manifest.DotNetCoreRuntimeVersion != "" {
+		dotNetRuntimeVersion := gen.Manifest.DotNetCoreRuntimeVersion
+		fmt.Printf("\nDotNet Runtime %s", dotNetRuntimeVersion)
+
+		dotNetAppInsightsSupportedVersionConstraint, err := semver.NewConstraint(">= 6.0.0-0")
+		if err != nil {
+    		fmt.Printf("\nError in creating semver constraint %s", err)
+		}
+
+		dotNetCurrentVersion, err := semver.NewVersion(dotNetRuntimeVersion)
+		if err != nil {
+    		fmt.Printf("\nError in parsing current version to semver version %s", err)
+		}
+		// Check if the version meets the constraints. The a variable will be true.
+		constraintCheckResult := dotNetAppInsightsSupportedVersionConstraint.Check(dotNetCurrentVersion)
+				
+	    if constraintCheckResult &&
+	       appInsightsAgentExtensionVersionEnv != "" &&
+	       appInsightsAgentExtensionVersionEnv == "~3" {
+			   fmt.Printf("\nBefore returning true")
+			   return true
+		}
+	}
+		
+	return false
+}
 
 func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuilder *strings.Builder) string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.GenerateEntrypointScript")
@@ -47,6 +83,19 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 
 	if gen.Configuration.EnableDynamicInstall && !common.PathExists(dotnetBinary) {
 		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", appPath))
+	}
+
+	logger.LogInformation("Looking for App-Insights configuration and Enable codeless attach if needed")
+	if gen.shouldApplicationInsightsBeConfigured() {
+		
+		// We are going to set env variables in the startup logic 
+		// for appinsights attach experience only if dotnetcore 6 or newer
+		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists.. \n")
+		fmt.Printf("Setting up Environment Variables for Application Insights for codeless config.. \n")
+		scriptBuilder.WriteString("echo Setting up Application Insights for codeless config.. \n")
+		scriptBuilder.WriteString("export ASPNETCORE_HOSTINGSTARTUPASSEMBLIES="+consts.UserNetcoreHostingstartupAssemblies+"\n")
+		scriptBuilder.WriteString("export DOTNET_STARTUP_HOOKS="+consts.UserDotnetStartupHooks+"\n")
+		fmt.Printf("Setting up Environment Variables for Application Insights is done.. \n")
 	}
 
 	runDefaultApp := false

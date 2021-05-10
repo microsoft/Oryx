@@ -8,6 +8,8 @@
     user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
     user-app-insights-agent-extension-version: ApplicationInsightsAgent_EXTENSION_VERSION
     user-app-insights-connection-string-env: APPLICATIONINSIGHTS_CONNECTION_STRING
+    user-dotnet-startup-hooks: /DotNetCoreAgent/2.8.39/StartupHook/Microsoft.ApplicationInsights.StartupHook.dll
+    user-netcore-hostingstartup-assemblies: Microsoft.ApplicationInsights.StartupBootstrapper
     python-enable-gunicorn-multi-workers-env-var-name: PYTHON_ENABLE_GUNICORN_MULTIWORKERS
   outputs:
     - type: csharp
@@ -24,6 +26,7 @@
     dot-net-core-31-sdk-version: 3.1.407
     dot-net-core-50-sdk-version: 5.0.202
     dot-net-50-sdk-version: 5.0.202
+    dot-net-60-sdk-version: 6.0.100-preview.3.21202.5
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore

@@ -99,6 +99,7 @@ func main() {
 
 		var configuration Configuration
 		viperConfig := common.GetViperConfiguration(fullAppPath)
+		configuration.AppInsightsAgentExtensionVersion = getAppInsightsAgentVersion(configuration)
 		configuration.EnableDynamicInstall = viperConfig.GetBool(consts.EnableDynamicInstallKey)
 		configuration.PreRunCommand = viperConfig.GetString(consts.PreRunCommandEnvVarName)
 
@@ -147,5 +148,22 @@ func main() {
 			"Setting up the environment with '.NET Core' version '%s'...\n",
 			buildManifest.DotNetCoreSdkVersion))
 		common.SetupEnv(finalScript)
+	}
+}
+
+func getAppInsightsAgentVersion(configuration Configuration) string {
+	// viper currently cannot read lower-case based environment variables which is a problem for us
+	// due to the environment variable 'ApplicationInsightsAgent_EXTENSION_VERSION'
+	// https://github.com/spf13/viper/issues/302
+	// As a workaround, for this particular environment variable, we will depend on viper to read from
+	// the config file but use regular 'os.Getenv' api to be able to read the lower case environment
+	// variable
+	valueFromViper := configuration.AppInsightsAgentExtensionVersion
+	valueFromEnvVariable := os.Getenv(consts.UserAppInsightsAgentExtensionVersion)
+	if valueFromEnvVariable == "" {
+		// following represents value from config
+		return valueFromViper
+	} else {
+		return valueFromEnvVariable
 	}
 }

@@ -23,4 +23,9 @@ ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
+    && apt-get install unzip -y \ 
     && apt-get upgrade --assume-yes
+
+RUN  mkdir -p /DotNetCoreAgent \
+     && curl -o /DotNetCoreAgent/appinsights.zip https://oryxsdks.blob.core.windows.net/appinsights-agent/DotNetCoreAgent.2.8.39.zip \
+     && cd DotNetCoreAgent && unzip appinsights.zip && rm appinsights.zip
