@@ -119,5 +119,38 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 CommandArguments = new[] { "-c", script }
             });
         }
+
+        [Theory]
+        [InlineData("vso-focal")]
+        [InlineData("azfunc-jamstack")]
+        public void Builds_JekyllStaticWebApp_UsingCustomBuildCommand(string buildImage)
+        {
+            // Arrange
+            var appName = "Jekyll-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .SetEnvironmentVariable("CUSTOM_BUILD_COMMAND", "touch example.txt")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} ")
+                .AddFileExistsCheck($"{appOutputDir}/example.txt")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck(
+                $"{ManifestFilePropertyKeys.PlatformName}=\"{RubyConstants.PlatformName}\"",
+                $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetBuildImage(buildImage),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+        }
     }
 } 
