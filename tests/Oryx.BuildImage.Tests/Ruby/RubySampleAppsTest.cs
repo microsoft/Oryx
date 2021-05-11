@@ -23,6 +23,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
+        public static TheoryData<string> ImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string>();
+                var imageTestHelper = new ImageTestHelper();
+                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+                data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
+                return data;
+            }
+        }
+
         [Fact]
         public void GeneratesScript_AndBuildSinatraApp()
         {
@@ -121,8 +133,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("vso-focal")]
-        [InlineData("azfunc-jamstack")]
+        [MemberData(nameof(ImageNameData))]
         public void Builds_JekyllStaticWebApp_UsingCustomBuildCommand(string buildImage)
         {
             // Arrange
@@ -145,7 +156,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(buildImage),
+                ImageId = buildImage,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
