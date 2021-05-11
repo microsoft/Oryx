@@ -121,8 +121,7 @@ RUN set -ex \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
     && ln -s $DOT_NET_CORE_21_SDK_VERSION 2-lts \
     && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
-    && ln -s 3-lts lts \
-    && . $buildDir/vsoSymlinksDotNetCore.sh \
+    && ln -s 3-lts lts \    
     # Install Hugo
     && $imagesDir/build/installHugo.sh \
     # Install Node
@@ -244,6 +243,8 @@ RUN buildDir="/opt/tmp/build" \
     && npm install -g lerna \
     && pecl install -f libsodium \
     && echo "vso-focal" > /opt/oryx/.imagetype
+
+RUN ./opt/tmp/build/vsoSymlinksDotNetCore.sh
 
 ENV NUGET_XMLDOC_MODE="skip" \
     # VSO requires user installed tools to be preferred over Oryx installed tools
