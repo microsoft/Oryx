@@ -21,7 +21,7 @@ function createLinks() {
     
     installedDir="$splitSdksDir/$sdkVersion"
 
-    find $installedDir/host/fxr/ -maxdepth 3 -type d -regex $exprOld | while read sPath; do
+    find $installedDir/host/fxr/ -maxdepth 3 -type d -regex '.*/[0-9]\.[0-9]\.[0-9]+.*' | while read sPath; do
 	    echo $sPath"\n"
 	    sPath="${sPath:: -1}"
 	    

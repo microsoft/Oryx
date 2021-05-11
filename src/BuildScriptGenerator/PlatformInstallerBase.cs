@@ -80,7 +80,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"platformName=\"{platformName}\"")
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
-                .AppendLine($"ls -l /opt/tmp && echo \"*****\n\" && ls -l /opt/tmp/build && echo \"*****\n\"")
                 .AppendLine($"./opt/tmp/build/vsoSymlinksDotNetCore.sh")
                 .AppendLine("fi")
 
