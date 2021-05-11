@@ -35,9 +35,32 @@ function createLinks() {
     done
     
     cd "$installedDir"
-    # Find directories with the name being a version number like 3.1.0 or 3.1.301 or 3.0.100-preview.3.21202.5
+    # Find directories with the name being a version number like 3.1.0 or 3.1.301
+    find . -maxdepth 3 -type d -regex '.*/[0-9]\.[0-9]\.[0-9]+' | while read subPath; do
+    # Trim beginning 2 characters from the line which currently looks like, for example, './sdk/2.2.402'
+	subPath="${subPath:2}"
+        linkFrom="$allSdksDir/$subPath"
+
+        linkFromParentDir=$(dirname $linkFrom)
+        mkdir -p "$linkFromParentDir"
+
+        linkTo="$installedDir/$subPath"
+        
+        if [ -L ${linkTo} ] ; then
+            if [ -e ${linkTo} ] ; then
+                echo "$linkTo already exists"
+            else
+                echo "$linkTo is a Broken link, creating again ..."
+                ln -sTf $linkTo $linkFrom
+            fi
+        else
+            echo "$linkTo is missing, creating ..."
+            ln -sTf $linkTo $linkFrom
+        fi
+    done
+
+    # Find directories with the name having a preview version number like 3.0.100-preview.3.21202.5
     find . -maxdepth 2 -type d -regex '.*/[0-9]\.[0-9]\.[0-9]+.*' | while read subPath; do
-        # Trim beginning 2 characters from the line which currently looks like, for example, './sdk/2.2.402'
         subPath="${subPath:2}"
         
         linkFrom="$allSdksDir/$subPath"

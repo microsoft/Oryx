@@ -244,7 +244,17 @@ RUN buildDir="/opt/tmp/build" \
     && pecl install -f libsodium \
     && echo "vso-focal" > /opt/oryx/.imagetype
 
+# install few more tools for VSO
+RUN gem install bundler rake ruby-debug-ide debase
+RUN  yes | pecl install xdebug \
+    && export PHP_LOCATION=$(dirname $(dirname $(which php))) \
+    && echo "zend_extension=$(find ${PHP_LOCATION}/lib/php/extensions/ -name xdebug.so)" > ${PHP_LOCATION}/ini/conf.d/xdebug.ini \
+    && echo "xdebug.mode = debug" >> ${PHP_LOCATION}/ini/conf.d/xdebug.ini \
+    && echo "xdebug.start_with_request = yes" >> ${PHP_LOCATION}/ini/conf.d/xdebug.ini \
+    && echo "xdebug.client_port = 9000" >> ${PHP_LOCATION}/ini/conf.d/xdebug.ini
+ 
 RUN ./opt/tmp/build/vsoSymlinksDotNetCore.sh
+
 
 ENV NUGET_XMLDOC_MODE="skip" \
     # VSO requires user installed tools to be preferred over Oryx installed tools
