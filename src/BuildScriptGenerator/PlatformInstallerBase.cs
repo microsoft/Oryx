@@ -42,7 +42,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             var tarFile = $"{version}.tar.gz";
-
             var snippet = new StringBuilder();
             snippet
                 .AppendLine()
@@ -72,7 +71,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"echo \"$checksumValue {version}.tar.gz\" | sha512sum -c - >/dev/null 2>&1")
                 .AppendLine("echo Extracting contents...")
                 .AppendLine($"tar -xzf {tarFile} -C .")
-                .AppendLine($"rm -f {tarFile}")             
+                .AppendLine($"rm -f {tarFile}")
                 .AppendLine("PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))")
                 .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")
