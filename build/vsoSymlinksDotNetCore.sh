@@ -88,5 +88,3 @@ find /opt/dotnet/*.*.*/sdk -maxdepth 1 -type d -name "*.*.*" | while read SDK_PA
     SDK_VERSION="$(basename ${SDK_PATH})"
     createLinks "$SDK_VERSION"
 done
-
-set +ex
