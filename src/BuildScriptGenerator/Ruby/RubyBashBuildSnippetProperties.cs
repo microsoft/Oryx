@@ -17,5 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
         public bool GemfileExists { get; set; }
 
         public bool ConfigYmlFileExists { get; set; }
+
+        public string CustomBuildCommand { get; set; }
     }
 }

@@ -125,6 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
                 BundlerVersion = rubyPlatformDetectorResult.BundlerVersion,
                 GemfileExists = rubyPlatformDetectorResult.GemfileExists,
                 ConfigYmlFileExists = rubyPlatformDetectorResult.ConfigYmlFileExists,
+                CustomBuildCommand = _rubyScriptGeneratorOptions.CustomBuildCommand,
             };
 
             string script = TemplateHelper.Render(
