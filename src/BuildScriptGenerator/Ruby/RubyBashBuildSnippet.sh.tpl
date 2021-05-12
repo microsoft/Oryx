@@ -19,22 +19,29 @@ echo
     gem install bundler
 {{ end }}
 
-{{ if ConfigYmlFileExists }}
-    {{ if GemfileExists }}
-    echo "Running 'bundle install'..."
-    echo
-    bundle install
-    {{ else }}
-    echo "Running 'gem install jekyll'..."
-    echo
-    gem install jekyll
-    {{ end }}
-    echo "Running 'jekyll build'..."
-    echo
-    jekyll build
+{{ if CustomBuildCommand | IsNotBlank }}
+	echo
+	echo "Running '{{ CustomBuildCommand }}'..."
+	echo
+	{{ CustomBuildCommand }}
 {{ else }}
-    echo "Running 'bundle install'..."
-    echo
-    bundle install
+    {{ if ConfigYmlFileExists }}
+        {{ if GemfileExists }}
+        echo "Running 'bundle install'..."
+        echo
+        bundle install
+        {{ else }}
+        echo "Running 'gem install jekyll'..."
+        echo
+        gem install jekyll
+        {{ end }}
+        echo "Running 'jekyll build'..."
+        echo
+        jekyll build
+    {{ else }}
+        echo "Running 'bundle install'..."
+        echo
+        bundle install
+    {{ end }}
 {{ end }}
 

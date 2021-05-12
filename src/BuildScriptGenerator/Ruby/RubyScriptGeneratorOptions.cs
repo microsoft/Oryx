@@ -8,5 +8,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
     public class RubyScriptGeneratorOptions
     {
         public string RubyVersion { get; set; }
+
+        public string CustomBuildCommand { get; set; }
     }
 }

@@ -23,6 +23,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
+        public static TheoryData<string> ImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string>();
+                var imageTestHelper = new ImageTestHelper();
+                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+                data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
+                return data;
+            }
+        }
+
         [Fact]
         public void GeneratesScript_AndBuildSinatraApp()
         {
@@ -113,6 +125,38 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = _imageHelper.GetVsoBuildImage("vso-focal"),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+        }
+
+        [Theory]
+        [MemberData(nameof(ImageNameData))]
+        public void Builds_JekyllStaticWebApp_UsingCustomBuildCommand(string buildImage)
+        {
+            // Arrange
+            var appName = "Jekyll-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .SetEnvironmentVariable("CUSTOM_BUILD_COMMAND", "touch example.txt")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} ")
+                .AddFileExistsCheck($"{appOutputDir}/example.txt")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck(
+                $"{ManifestFilePropertyKeys.PlatformName}=\"{RubyConstants.PlatformName}\"",
+                $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImage,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
