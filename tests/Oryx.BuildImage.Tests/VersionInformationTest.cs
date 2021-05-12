@@ -80,6 +80,60 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void OryxVsoBuildImage_Contains_PHP_Xdebug()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            string buildImage = imageTestHelper.GetVsoBuildImage("vso-focal");
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImage,
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "--version" }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("with Xdebug", actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("bundler")]
+        [InlineData("rake")]
+        [InlineData("ruby-debug-ide")]
+        [InlineData("debase")]
+        public void OryxVsoBuildImage_Contains_Required_Ruby_Gems(string gemName)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            string buildImage = imageTestHelper.GetVsoBuildImage("vso-focal");
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImage,
+                CommandToExecuteOnRun = "gem",
+                CommandArguments = new[] { "list", gemName }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(gemName, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
         [Theory]
         [InlineData(Settings.BuildImageName)]
         [InlineData(Settings.LtsVersionsBuildImageName)]

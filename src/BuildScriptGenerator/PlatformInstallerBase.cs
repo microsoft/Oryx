@@ -75,6 +75,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))")
                 .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")
+                .AppendLine("oryxImageDetectorFile=\"/opt/oryx/.imagetype\"")
+                .AppendLine($"platformName=\"{platformName}\"")
+                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
+                .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
+                .AppendLine($"source /opt/tmp/build/vsoSymlinksDotNetCore.sh")
+                .AppendLine("fi")
 
                 // Write out a sentinel file to indicate downlaod and extraction was successful
                 .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
