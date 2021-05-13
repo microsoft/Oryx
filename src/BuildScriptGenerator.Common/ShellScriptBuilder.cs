@@ -125,6 +125,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
                 "exit 1; fi");
         }
 
+        public ShellScriptBuilder AddLinkExistsCheck(string file)
+        {
+            return Append(
+                $"if [ ! -L \"{file}\" ]; then " +
+                $"echo Link '{file}' is still present 1>&2 && " +
+                "exit 1; fi");
+        }
+
         public ShellScriptBuilder AddLinkDoesNotExistCheck(string file)
         {
             return Append(
