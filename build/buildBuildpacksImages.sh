@@ -6,11 +6,6 @@
 
 set -ex
 
-declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-
-# Load variables
-source $REPO_DIR/build/__variables.sh
-
 if [ -z $REPO_DIR ]; then
 	declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 fi
