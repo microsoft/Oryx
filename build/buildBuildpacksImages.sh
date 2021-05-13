@@ -6,6 +6,11 @@
 
 set -ex
 
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
+
+# Load variables
+source $REPO_DIR/build/__variables.sh
+
 if [ -z $REPO_DIR ]; then
 	declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 fi
@@ -26,6 +31,7 @@ fi
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
 labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 labels="$labels --label com.microsoft.oryx.release-tag-name=$RELEASE_TAG_NAME"
+labels="$labels --label pack-tool-version=$PACK_TOOL_VERSION"
 
 # Build an image that runs `pack`
 echo "-> Building pack runner image: $ACR_PACK_IMAGE_REPO"
