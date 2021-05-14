@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.Integration.Tests
     {
 
         protected static string NodeVersion = "12";
+
         public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
@@ -36,7 +37,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var manifestDirVolume = DockerVolume.CreateMirror(manifestDirPath);
             var manifestDir = manifestDirVolume.ContainerDir;
-            var nodeVersion = "12";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -85,7 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var nodeVersion = "12";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -184,7 +185,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var nodeVersion = "12";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -234,7 +235,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var nodeVersion = "12";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -280,7 +281,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task NodeStartupScript_UsesPortEnvironmentVariableValue()
         {
             // Arrange
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -327,7 +328,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             // NOTE: this version does not have PM2 installed and so if PM2 was used in the startup script this test
             // will fail.
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -372,7 +373,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task NodeStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresent()
         {
             // Arrange
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -415,7 +416,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "webfrontend-yarnlock";
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var startupFilePath = "/tmp/startup.sh";
@@ -448,7 +449,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "NodeAndTypeScriptHelloWorld";
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -489,7 +490,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "lab2-appservice";
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -573,7 +574,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "create-react-app-sample";
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()

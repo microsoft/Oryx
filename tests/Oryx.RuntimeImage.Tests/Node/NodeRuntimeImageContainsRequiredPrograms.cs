@@ -109,10 +109,10 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             RunAsserts(
                 () =>
                 {
-                    Assert.True(result.IsSuccess),
-                    Assert.Contains(NodeVersions.NpmVersion, result.StdOut.ReplaceNewLine()),
-                    result.GetDebugInfo());
-                }
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(NodeVersions.NpmVersion, result.StdOut.ReplaceNewLine());
+                },
+                result.GetDebugInfo());
         }
     }
 }
