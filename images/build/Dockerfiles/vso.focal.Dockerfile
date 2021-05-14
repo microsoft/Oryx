@@ -207,6 +207,7 @@ RUN buildDir="/opt/tmp/build" \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         apt-transport-https \
+        nano \
     && rm -rf /var/lib/apt/lists/* \
     && curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor > conda.gpg \
     && install -o root -g root -m 644 conda.gpg /usr/share/keyrings/conda-archive-keyring.gpg \
@@ -245,7 +246,7 @@ RUN buildDir="/opt/tmp/build" \
     && echo "vso-focal" > /opt/oryx/.imagetype
 
 # install few more tools for VSO
-RUN gem install bundler rake ruby-debug-ide debase
+RUN gem install bundler rake ruby-debug-ide debase jekyll
 RUN  yes | pecl install xdebug \
     && export PHP_LOCATION=$(dirname $(dirname $(which php))) \
     && echo "zend_extension=$(find ${PHP_LOCATION}/lib/php/extensions/ -name xdebug.so)" > ${PHP_LOCATION}/ini/conf.d/xdebug.ini \

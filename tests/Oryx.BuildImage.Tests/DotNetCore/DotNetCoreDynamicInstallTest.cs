@@ -24,6 +24,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         protected const string NetCoreApp30MvcApp = "NetCoreApp30.MvcApp";
         protected const string NetCoreApp31MvcApp = "NetCoreApp31.MvcApp";
         protected const string NetCoreApp50MvcApp = "NetCoreApp50MvcApp";
+        protected const string NetCore6PreviewWebApp = "NetCore6PreviewWebApp";
         protected const string DefaultWebApp = "DefaultWebApp";
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
@@ -417,6 +418,67 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersion}",
                         result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData(NetCoreApp30MvcApp, "3.0", "3.0.103")]
+        [InlineData(NetCore6PreviewWebApp, "6.0", "6.0.100-preview.3.21202.5")]
+        public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
+            string appName,
+            string runtimeVersion,
+            string sdkVersion)
+        {
+            // Arrange
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var preInstalledSdkLink = $"/home/codespace/.dotnet/sdk";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddDirectoryExistsCheck($"/home/codespace/.dotnet/")
+                .AddLinkExistsCheck($"{preInstalledSdkLink}/2.1.814")
+                .AddLinkExistsCheck($"{preInstalledSdkLink}/3.1.407")
+                .AddLinkExistsCheck($"{preInstalledSdkLink}/5.0.202")
+                .AddLinkDoesNotExistCheck($"{preInstalledSdkLink}/{sdkVersion}")
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
+                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
+                .AddDirectoryExistsCheck($"/opt/dotnet/{sdkVersion}")
+                .AddLinkExistsCheck($"{preInstalledSdkLink}/{sdkVersion}")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
+                .AddCommand("/home/codespace/.dotnet/dotnet --list-sdks")
+                .ToString();
+            var majorPart = runtimeVersion.Split('.')[0];
+            var expectedSdkVersionPrefix = $"{majorPart}.";
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetVsoBuildImage("vso-focal"),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, expectedSdkVersionPrefix), result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersionPrefix}",
+                        result.StdOut);
+                    Assert.Contains("2.1.814 [/home/codespace/.dotnet/sdk]", result.StdOut);
+                    Assert.Contains("3.1.407 [/home/codespace/.dotnet/sdk]", result.StdOut);
+                    Assert.Contains("5.0.202 [/home/codespace/.dotnet/sdk]", result.StdOut);
+                    Assert.Contains($"{sdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
