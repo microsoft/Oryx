@@ -71,7 +71,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8", NodeVersions.Node8Version)]
         [InlineData("8.2", "8.2.1")]
         [InlineData("8.11", "8.11.4")]
-        [InlineData("9", "9.4.0")]
         [InlineData("9.4", "9.4.0")]
         [InlineData("10", NodeVersions.Node10Version)]
         [InlineData("10.10", "10.10.0")]
