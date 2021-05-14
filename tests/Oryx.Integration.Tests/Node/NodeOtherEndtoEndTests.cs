@@ -18,10 +18,13 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "node")]
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
     {
+
+        protected static string NodeVersion = "12";
         public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
+        
 
         [Fact]
         public async Task CanBuildAndRunNodeApp_UsingCustomManifestFileLocation()
@@ -33,7 +36,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var manifestDirVolume = DockerVolume.CreateMirror(manifestDirPath);
             var manifestDir = manifestDirVolume.ContainerDir;
-            var nodeVersion = "10.14";
+            var nodeVersion = "12";
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -82,7 +85,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var nodeVersion = "10.14";
+            var nodeVersion = "12";
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -134,7 +137,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Use a separate volume for output due to rsync errors
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;
-            var nodeVersion = "10";
+            var nodeVersion = "14";
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "node-nested-nodemodules";
@@ -181,7 +184,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var nodeVersion = "10.14";
+            var nodeVersion = "12";
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -231,7 +234,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var nodeVersion = "10.14";
+            var nodeVersion = "12";
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;

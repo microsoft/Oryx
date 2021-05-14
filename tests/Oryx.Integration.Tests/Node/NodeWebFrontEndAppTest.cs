@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_NodeWebFrontEndApp_WhenPruneDevDependenciesIsTrue(string appName)
         {
             // Arrange
-            var nodeVersion = "10";
+            var nodeVersion = "12";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -115,7 +115,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_NodeWebFrontEndApp_AfterRebuild_WhenPruneDevDependenciesIsTrue()
         {
             // Arrange
-            var nodeVersion = "10";
+            var nodeVersion = "12";
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;

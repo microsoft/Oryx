@@ -88,5 +88,31 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Theory]
+        [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
+        public void NodeImages_Contains_Correct_NPM_Version(string nodeTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
+                CommandToExecuteOnRun = "/bin/sh",
+                CommandArguments = new[]
+                {
+                    "-c",
+                    "npm -v"
+                }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess),
+                    Assert.Contains(NodeVersions.NpmVersion, result.StdOut.ReplaceNewLine()),
+                    result.GetDebugInfo());
+                }
+        }
     }
 }

@@ -22,8 +22,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("10", "~2", ExtVarNames.UserAppInsightsKeyEnv)]
-        [InlineData("10", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
+        [InlineData("14", "~2", ExtVarNames.UserAppInsightsKeyEnv)]
+        [InlineData("14", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
         [InlineData("12", "~2", ExtVarNames.UserAppInsightsKeyEnv)]
         [InlineData("12", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
         //Without pre-IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~2'
@@ -84,8 +84,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("10", "~3", ExtVarNames.UserAppInsightsKeyEnv)]
-        [InlineData("10", "~3", ExtVarNames.UserAppInsightsConnectionStringEnv)]
+        [InlineData("14", "~3", ExtVarNames.UserAppInsightsKeyEnv)]
+        [InlineData("14", "~3", ExtVarNames.UserAppInsightsConnectionStringEnv)]
         [InlineData("12", "", ExtVarNames.UserAppInsightsKeyEnv)]
         [InlineData("12", "", ExtVarNames.UserAppInsightsConnectionStringEnv)]
         [InlineData("12", "disabled", ExtVarNames.UserAppInsightsKeyEnv)]

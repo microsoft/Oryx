@@ -69,9 +69,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8")]
-        [InlineData("10")]
         [InlineData("12")]
+        [InlineData("14")]
         public async Task Node_CreateReactAppSample_zippedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -113,7 +112,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             // Use a separate volume for output due to rsync errors
-            var nodeVersion = "10";
+            var nodeVersion = "12";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "webfrontend";
@@ -154,7 +153,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             // Use a separate volume for output due to rsync errors
-            var nodeVersion = "10";
+            var nodeVersion = "12";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "node-nested-nodemodules";
