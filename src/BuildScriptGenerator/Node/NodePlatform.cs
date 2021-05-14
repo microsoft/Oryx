@@ -345,6 +345,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
             }
 
+            if (nodePlatformDetectorResult.Frameworks != null) {
+                // Write the JS front-end frameworks to the build manifest
+                manifestFileProperties[NodeManifestFilePropertyKeys.Framework] = nodePlatformDetectorResult.Frameworks.ToString();
+            } else {
+                manifestFileProperties[NodeManifestFilePropertyKeys.Framework] = "Unknown JS frameworks";
+            }
+
             var scriptProps = new NodeBashBuildSnippetProperties
             {
                 PackageRegistryUrl = customRegistryUrl,

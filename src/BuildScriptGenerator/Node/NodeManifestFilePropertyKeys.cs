@@ -12,5 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// For example, 'dist' or 'public' folder.
         /// </summary>
         public const string OutputDirPath = nameof(OutputDirPath);
+        public const string Framework = nameof(Framework);
+
     }
 }
