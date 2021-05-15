@@ -364,7 +364,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Equal("10.14", nodeVersion);
                     Assert.Contains("Say It Again", data);
                 });
         }
