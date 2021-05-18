@@ -24,7 +24,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData(NodeVersions.Node10Version)]
         [InlineData(NodeVersions.Node12Version)]
         [InlineData(NodeVersions.Node14Version)]
         public async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(string nodeVersion)
@@ -75,7 +74,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData(NodeVersions.Node10Version)]
         [InlineData(NodeVersions.Node12Version)]
         [InlineData(NodeVersions.Node14Version)]
         public async Task CanBuildAndRunApp_UsingScriptCommand(string nodeVersion)

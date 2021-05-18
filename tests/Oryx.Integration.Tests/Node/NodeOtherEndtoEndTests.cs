@@ -18,10 +18,14 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "node")]
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
     {
+
+        protected static string NodeVersion = "12";
+
         public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
         }
+        
 
         [Fact]
         public async Task CanBuildAndRunNodeApp_UsingCustomManifestFileLocation()
@@ -33,7 +37,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var manifestDirVolume = DockerVolume.CreateMirror(manifestDirPath);
             var manifestDir = manifestDirVolume.ContainerDir;
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -82,7 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -134,7 +138,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Use a separate volume for output due to rsync errors
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;
-            var nodeVersion = "10";
+            var nodeVersion = "14";
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "node-nested-nodemodules";
@@ -181,7 +185,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -231,7 +235,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .FullName;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -277,7 +281,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task NodeStartupScript_UsesPortEnvironmentVariableValue()
         {
             // Arrange
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -324,7 +328,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             // NOTE: this version does not have PM2 installed and so if PM2 was used in the startup script this test
             // will fail.
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -360,7 +364,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Equal("10.14", nodeVersion);
                     Assert.Contains("Say It Again", data);
                 });
         }
@@ -369,7 +372,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task NodeStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresent()
         {
             // Arrange
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -412,7 +415,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "webfrontend-yarnlock";
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var startupFilePath = "/tmp/startup.sh";
@@ -445,7 +448,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "NodeAndTypeScriptHelloWorld";
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -486,7 +489,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "lab2-appservice";
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -570,7 +573,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "create-react-app-sample";
-            var nodeVersion = "10.14";
+            var nodeVersion = NodeVersion;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()

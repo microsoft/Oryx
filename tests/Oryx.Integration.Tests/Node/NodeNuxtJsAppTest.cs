@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_HackerNewsNuxtJsApp_WithoutZippingNodeModules()
         {
             // Arrange
-            var nodeVersion = "10";
+            var nodeVersion = "12";
             var volume = CreateAppVolume(AppName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_HackerNewsNuxtJsApp_UsingZippedNodeModules()
         {
             // Arrange
-            var nodeVersion = "10";
+            var nodeVersion = "12";
             string compressFormat = "zip";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;

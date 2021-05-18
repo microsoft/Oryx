@@ -175,6 +175,7 @@
     node14-version: 14.15.1
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
+    npm-version: 6.14.10
   outputs:
     - type: shell
       directory: build

@@ -68,6 +68,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("6.9", "6.9.5")]
         [InlineData("6.10", "6.10.3")]
         [InlineData("6.11", "6.11.5")]
+        [InlineData("8", NodeVersions.Node8Version)]
+        [InlineData("8.2", "8.2.1")]
+        [InlineData("8.11", "8.11.4")]
+        [InlineData("9.4", "9.4.0")]
+        [InlineData("10", NodeVersions.Node10Version)]
+        [InlineData("10.10", "10.10.0")]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void NodeVersionMatchesImageName(string nodeTag, string nodeVersion)
         {
@@ -87,6 +93,33 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Equal(expectedNodeVersion, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("10")]
+        [InlineData("10.1")]
+        [InlineData("10.10")]
+        [InlineData("10.12")]
+        [InlineData("10.14")]
+        public void Node10ImageContains_Correct_NPM_Version(string imageTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("node", imageTag),
+                CommandToExecuteOnRun = "npm",
+                CommandArguments = new[] { "-v" }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(NodeVersions.NpmVersion, actualOutput);
                 },
                 result.GetDebugInfo());
         }

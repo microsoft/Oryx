@@ -21,9 +21,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8")]
-        [InlineData("10")]
         [InlineData("12")]
+        [InlineData("14")]
         public async Task Test_NodeSassExample(string nodeVersion)
         {
             // Arrange
