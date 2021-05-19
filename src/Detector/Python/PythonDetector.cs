@@ -123,16 +123,31 @@ namespace Microsoft.Oryx.Detector.Python
                 }
             }
 
+            var version = GetVersion(context);
+            IEnumerable<FrameworkInfo> detectedFrameworkInfos = null;
+            if (!_options.DisableFrameworkDetection)
+            {
+                detectedFrameworkInfos = DetectFrameworkInfos(context);
+            }
+
             return new PythonPlatformDetectorResult
             {
                 Platform = PythonConstants.PlatformName,
                 PlatformVersion = versionFromRuntimeFile,
                 AppDirectory = appDirectory,
+                Frameworks = detectedFrameworkInfos,
                 HasJupyterNotebookFiles = hasJupyterNotebookFiles,
                 HasCondaEnvironmentYmlFile = hasCondaEnvironmentYmlFile,
                 HasRequirementsTxtFile = hasRequirementsTxtFile,
                 HasPyprojectTomlFile = hasPyprojectTomlFile,
             };
+        }
+
+        private IEnumerable<FrameworkInfo> DetectFrameworkInfos(DetectorContext context)
+        {
+            var detectedFrameworkResult = new List<FrameworkInfo>();
+            
+            return detectedFrameworkResult;
         }
 
         private string DetectPythonVersionFromRuntimeFile(ISourceRepo sourceRepo)

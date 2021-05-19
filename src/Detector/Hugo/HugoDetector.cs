@@ -48,10 +48,23 @@ namespace Microsoft.Oryx.Detector.Hugo
             var isHugoApp = IsHugoApp(context.SourceRepo, out string appDirectory);
             if (isHugoApp)
             {
-                return new PlatformDetectorResult
+                IEnumerable<FrameworkInfo> detectedFrameworkInfos = null;
+                if (!_options.DisableFrameworkDetection)
+                {
+                    detectedFrameworkInfos = new List<FrameworkInfo>();
+                    var frameworkInfo = new FrameworkInfo
+                    {
+                        Framework = nameof(Hugo),
+                        FrameworkVersion = String.Empty(),
+                    };
+                    detectedFrameworkResult.Add(frameworkInfo);
+                }
+
+                return new HugoPlatformDetectorResult
                 {
                     Platform = HugoConstants.PlatformName,
                     AppDirectory = appDirectory,
+                    Frameworks = detectedFrameworkInfos,
                 };
             }
 

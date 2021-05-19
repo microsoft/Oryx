@@ -104,7 +104,22 @@ namespace Microsoft.Oryx.Detector.Ruby
                 _logger.LogDebug("App in repo is not a Ruby app");
                 return null;
             }
+
             var version = GetVersion(context);
+            IEnumerable<FrameworkInfo> detectedFrameworkInfos = null;
+            if (!_options.DisableFrameworkDetection)
+            {
+                if (configYmlFileExists) {
+                    detectedFrameworkInfos = new List<FrameworkInfo>();
+                    var frameworkInfo = new FrameworkInfo
+                    {
+                        Framework = nameof(Jekyll),
+                        FrameworkVersion = version,
+                    };
+                    detectedFrameworkInfos.Add(frameworkInfo);
+                }
+            }
+
             return new RubyPlatformDetectorResult
             {
                 Platform = RubyConstants.PlatformName,
@@ -113,6 +128,7 @@ namespace Microsoft.Oryx.Detector.Ruby
                 GemfileExists = gemfileExists,
                 BundlerVersion = bundlerVersion,
                 ConfigYmlFileExists = configYmlFileExists,
+                Frameworks = detectedFrameworkInfos,
             };
         }
 

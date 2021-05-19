@@ -27,5 +27,10 @@ namespace Microsoft.Oryx.Detector
         /// Gets or sets the directory of the platform that was detected.
         /// </summary>
         public string AppDirectory { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of detected front-end framework information of an application.
+        /// </summary>
+        public IEnumerable<FrameworkInfo> Frameworks { get; set; }
     }
 }

@@ -54,6 +54,19 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             var version = GetVersion(targetFramework);
+            IEnumerable<FrameworkInfo> detectedFrameworkInfos = null;
+            if (!_options.DisableFrameworkDetection)
+            {
+                if (ProjectFileHelpers.IsBlazorWebAssemblyProject(projectFileDoc)) {
+                    detectedFrameworkInfos = new List<FrameworkInfo>();
+                    var frameworkInfo = new FrameworkInfo
+                    {
+                        Framework = nameof(Blazor),
+                        FrameworkVersion = version,
+                    };
+                    detectedFrameworkInfos.Add(frameworkInfo);
+                }
+            }
 
             return new DotNetCorePlatformDetectorResult
             {
@@ -61,6 +74,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 PlatformVersion = version,
                 ProjectFile = projectFile,
                 AppDirectory = appDirectory,
+                Frameworks = detectedFrameworkInfos,
             };
         }
 

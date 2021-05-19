@@ -71,6 +71,7 @@ namespace Microsoft.Oryx.Detector.Node
             { "gridsome", "Gridsome" },
             { "@ionic/angular", "Ionic Angular" },
             { "@ionic/react", "Ionic React" },
+            { "@angular/core", "Angular" },
             { "jquery", "jQuery" },
             { "lit-element", "LitElement" },
             { "marko", "Marko" },
@@ -81,9 +82,11 @@ namespace Microsoft.Oryx.Detector.Node
             { "react", "React" },
             { "nuxt", "Nuxt.js" },
             { "preact", "Preact" },
+            { "vuepress", "Vuepress" },
             { "@scullyio/init", "Scully" },
             { "three", "Three.js" },
-            { "vue", "Vue.js" }
+            { "vue", "Vue.js" },
+            { "contentful", "Contentful" }
         };
     }
 }
