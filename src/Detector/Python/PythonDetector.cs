@@ -102,6 +102,7 @@ namespace Microsoft.Oryx.Detector.Python
             if (!hasRequirementsTxtFile &&
                 !hasCondaEnvironmentYmlFile &&
                 !hasJupyterNotebookFiles &&
+                !hasPelicanConfiguationFile &&
                 !hasRuntimeTxtFile &&
                 !hasPyprojectTomlFile)
             {
@@ -135,6 +136,7 @@ namespace Microsoft.Oryx.Detector.Python
                 PlatformVersion = versionFromRuntimeFile,
                 AppDirectory = appDirectory,
                 HasJupyterNotebookFiles = hasJupyterNotebookFiles,
+                HasPelicanConfiguationFile = hasPelicanConfiguationFile,
                 HasCondaEnvironmentYmlFile = hasCondaEnvironmentYmlFile,
                 HasRequirementsTxtFile = hasRequirementsTxtFile,
                 HasPyprojectTomlFile = hasPyprojectTomlFile,
