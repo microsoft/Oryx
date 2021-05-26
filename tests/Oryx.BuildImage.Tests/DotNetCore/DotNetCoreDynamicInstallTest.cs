@@ -440,8 +440,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddDirectoryExistsCheck($"/home/codespace/.dotnet/")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/2.1.814")
-                .AddLinkExistsCheck($"{preInstalledSdkLink}/3.1.407")
-                .AddLinkExistsCheck($"{preInstalledSdkLink}/5.0.202")
+                .AddLinkExistsCheck($"{preInstalledSdkLink}/3.1.409")
+                .AddLinkExistsCheck($"{preInstalledSdkLink}/5.0.203")
                 .AddLinkDoesNotExistCheck($"{preInstalledSdkLink}/{sdkVersion}")
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
@@ -476,8 +476,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersionPrefix}",
                         result.StdOut);
                     Assert.Contains("2.1.814 [/home/codespace/.dotnet/sdk]", result.StdOut);
-                    Assert.Contains("3.1.407 [/home/codespace/.dotnet/sdk]", result.StdOut);
-                    Assert.Contains("5.0.202 [/home/codespace/.dotnet/sdk]", result.StdOut);
+                    Assert.Contains("3.1.409 [/home/codespace/.dotnet/sdk]", result.StdOut);
+                    Assert.Contains("5.0.203 [/home/codespace/.dotnet/sdk]", result.StdOut);
                     Assert.Contains($"{sdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
                 },
                 result.GetDebugInfo());
