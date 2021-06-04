@@ -26,7 +26,7 @@
     dot-net-core-31-sdk-version: 3.1.409
     dot-net-core-50-sdk-version: 5.0.203
     dot-net-50-sdk-version: 5.0.203
-    dot-net-60-sdk-version: 6.0.100-preview.3.21202.5
+    dot-net-60-sdk-version: 6.0.100-preview.4.21255.9
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -65,10 +65,10 @@
     aspnet-core-app-50: 5.0.6
     aspnet-core-app-50-sha: 07fd5ab0b62e3d68a3099b76e1236550d86a1ec24150a09284d37b58055786595b182662671f0d4602545bfa404da8be0f9ab96036352dca28dbfef0048bb22d
 
-    net-core-app-60: 6.0.0-preview.3.21201.4
-    net-core-app-60-sha: 8a6623d4ab32b24ce7cc507582309f38735419e93992f7a0180494c09cf1ec7d597fa1fcc23c90efedf6be1b1a47d36e9061c998d2713e40bbd94b61649f7ff9
-    aspnet-core-app-60: 6.0.0-preview.3.21201.13
-    aspnet-core-app-60-sha: 05abefd3c1c8f0ffb911e270cf949be144af660e5755af3b1801db4d41beb7234b889ecf1fbb3aeb9f3b51324b4b225c4adc8537fd2f16d61829bd91713f8f1f
+    net-core-app-60: 6.0.0-preview.4.21253.7
+    net-core-app-60-sha: baa7a1f8ea64ff93850b4e9ef44ba3af2e7ea8dd72354e70a73147e630fca97fb8e7f4f7ef963b0f7067baaf26c29e002a330663d32ee2cfe3bd2a0049841f6b
+    aspnet-core-app-60: 6.0.0-preview.4.21253.5
+    aspnet-core-app-60-sha: 249db1382db95b9e60e4068c253c5381b2b37f30cf815471b623584b690a09ae5f04ef4085e02d2a2950041682188997b1f8e39bad6d5ecc05fb239576ffc1f7
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
