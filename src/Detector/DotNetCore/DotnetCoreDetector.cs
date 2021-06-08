@@ -62,8 +62,9 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
             // Any Blazor WebAssembly app on .NET 6 should have the workload installed.
             // https://github.com/microsoft/Oryx/issues/1026
-            var isBlazor = ProjectFileHelpers.IsBlazorWebAssemblyProject(projectFileDoc);
-            if (ProjectFileHelpers.IsBlazorWebAssemblyProject(projectFileDoc) && version.StartsWith("6"))
+            if (ProjectFileHelpers.IsBlazorWebAssemblyProject(projectFileDoc)
+                && !string.IsNullOrEmpty(version)
+                && version.StartsWith("6"))
             {
                 installAOTWorkloads = true;
             }
