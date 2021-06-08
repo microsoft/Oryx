@@ -8,6 +8,8 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
 
 COPY --from=support-files-image-for-build /tmp/oryx/ /tmp
 RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
+    # https://github.com/microsoft/Oryx/issues/1032
+    && oryx prep --skip-detection --platforms-and-versions dotnet=3.1 \
     && echo "jamstack" > /opt/oryx/.imagetype \
     && . /tmp/build/__goVersions.sh \
     && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
