@@ -311,7 +311,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        // This test is necessary once .NET 6 preview 5 come out.
+        [Fact(Skip = "Temporarily skip for issue https://github.com/dotnet/sdk/issues/17865")]
         public void Builds_Net6BlazorWasmApp_RunsAOTCompilationInstallCommands()
         {
             // Arrange
@@ -342,7 +343,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "6.0.0-preview.3.21201.13"), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "6.0.0-preview.4.21220.1"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }

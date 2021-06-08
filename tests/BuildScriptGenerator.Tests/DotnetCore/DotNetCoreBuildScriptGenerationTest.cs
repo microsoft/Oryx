@@ -33,10 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         {
             // Arrange
             var installationScript = "test-script";
-            var commonOptions = new BuildScriptGeneratorOptions();
-            commonOptions.EnableDynamicInstall = true;
             var dotNetCorePlatform = CreateDotNetCorePlatform(
-                commonOptions: commonOptions,
                 isDotNetCoreVersionAlreadyInstalled: true,
                 dotNetCoreInstallationScript: installationScript);
             var repo = new MemorySourceRepo();
@@ -46,6 +43,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             {
                 Platform = DotNetCoreConstants.PlatformName,
                 PlatformVersion = "6.0",
+                InstallAOTWorkloads = true,
+                ProjectFile = "test.csproj",
             };
 
             // Act
