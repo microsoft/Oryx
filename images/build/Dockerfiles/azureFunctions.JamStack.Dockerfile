@@ -7,21 +7,19 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     PATH="/usr/local/go/bin:/opt/dotnet/lts:$PATH"
 
 COPY --from=support-files-image-for-build /tmp/oryx/ /tmp
+
 RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     # https://github.com/microsoft/Oryx/issues/1032
     # Install .NET Core 3 SDKS
-    && tmpDir="/opt/tmp" \
-    && imagesDir="$tmpDir/images" \
-    && buildDir="$tmpDir/build" \
     && nugetPacakgesDir="/var/nuget" \
     && mkdir -p $nugetPacakgesDir \
     && NUGET_PACKAGES="$nugetPacakgesDir" \
-    && . $buildDir/__dotNetCoreSdkVersions.sh \
-    && DOTNET_SDK_VER=$DOT_NET_31_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
+    && . /tmp/build/__dotNetCoreSdkVersions.sh \
+    && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION /tmp/images/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
-    && ln -s $DOT_NET_31_SDK_VERSION 3-lts \
+    && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s 3-lts lts \
     && echo "jamstack" > /opt/oryx/.imagetype \
     && . /tmp/build/__goVersions.sh \
