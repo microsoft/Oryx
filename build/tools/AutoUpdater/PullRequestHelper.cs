@@ -18,7 +18,7 @@ namespace AutoUpdater
                 $"git fetch oryxci {forkBranchName}",
                 $"git checkout {forkBranchName}",
                 "git fetch origin",
-                "git rebase origin/master",
+                "git rebase origin/main",
                 $"git push -u origin {forkBranchName}");
             return description.ToString();
         }

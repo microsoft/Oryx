@@ -29,12 +29,12 @@ stages:
             echo "Build definition name should be Oryx-Detector-CI."
             exit 1
           fi
-          if [[ "$(Build.SourceBranch)" != "refs/heads/master" ]] \
+          if [[ "$(Build.SourceBranch)" != "refs/heads/main" ]] \
           && [[ "$(Build.SourceBranch)" != refs/heads/patch* ]] \
           && [[ "$(Build.SourceBranch)" != refs/heads/exp* ]]; then
             echo
             echo "Invalid configuration."
-            echo 'Only 'master', 'patch/*' and 'exp/*' branches are allowed.'
+            echo 'Only 'main', 'patch/*' and 'exp/*' branches are allowed.'
             exit 1
           fi
         displayName: 'Validate pipeline run'

@@ -32,11 +32,11 @@ steps:
     git config --global user.name \"${FORK_ACCOUNT_NAME}\"
     git remote add upstream https://github.com/microsoft/oryx.git
     git fetch upstream
-    git reset --hard upstream/master
-    git push -uf origin master
+    git reset --hard upstream/main
+    git push -uf origin main
 
     echo "##vso[task.setvariable variable=REPO_DIR;]$repoDir"
-  displayName: 'Clone fork and keep master branch up-to-date with upstream master'
+  displayName: 'Clone fork and keep main branch up-to-date with upstream main'
   env:
     AUTOUPDATE_PAT: $(AUTOUPDATEPAT)
 

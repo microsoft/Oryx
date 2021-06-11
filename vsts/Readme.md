@@ -11,7 +11,7 @@ They represent the build pipelines for this repository.
 
 -   'ci.yml':  
     Pipeline which builds, tests and pushes build images and runtime images.  
-    This pipeline, by default, gets triggered for check-ins into 'master' branch.  
+    This pipeline, by default, gets triggered for check-ins into 'main' branch.  
 	Also it has a scheduled build for releasing signed binaries to images on Saturday mornings.  
 ### PlatformBinaries
 The pipelines for each platform to build and publish platform binaries to Azure Blob Storage.

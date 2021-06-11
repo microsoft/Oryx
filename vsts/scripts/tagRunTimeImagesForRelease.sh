@@ -50,12 +50,12 @@ while read sourceImage; do
     echo "$acrPmeSpecific">>"$outFilePmeMCR"
     docker tag "$sourceImage" "$acrPmeSpecific"
 
-    if [ "$sourceBranchName" == "master" ]; then
+    if [ "$sourceBranchName" == "main" ]; then
       echo "Tagging the source image with tag $acrPmeLatest..."
       echo "$acrPmeLatest">>"$outFilePmeMCR"
       docker tag "$sourceImage" "$acrPmeLatest"
     else
-      echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
+      echo "Not creating 'latest' tag as source branch is not 'main'. Current branch is $sourceBranchName"
     fi
     echo -------------------------------------------------------------------------------
   fi

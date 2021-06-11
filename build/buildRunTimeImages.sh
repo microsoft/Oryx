@@ -127,7 +127,7 @@ for dockerFile in $dockerFiles; do
     then
         # $uniqueTag will follow a similar format to Oryx-CI.20191028.1
         # $BUILD_DEFINITIONNAME is the name of the build (e.g., Oryx-CI)
-        # $RELEASE_TAG_NAME is either the date of the build if the branch is master, or
+        # $RELEASE_TAG_NAME is either the date of the build if the branch is master/main, or
         # the name of the branch the build is against
         uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 

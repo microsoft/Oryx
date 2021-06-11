@@ -32,14 +32,14 @@ function tagBuildImage() {
     docker tag "$devRegistryImageName" "$prodPmeRegistryImageName"
     echo "$prodPmeRegistryImageName">>"$outPmeFileMCR"
     
-    if [ "$sourceBranchName" == "master" ]; then
+    if [ "$sourceBranchName" == "main" ]; then
         echo "Tagging the source image for $prodPmeRegistryRepoName with tag $prodRegistryLatestTagName..."
         prodPmeRegistryImageName="$prodPmeRegistryRepoName:$prodRegistryLatestTagName"
         docker tag "$devRegistryImageName" "$prodPmeRegistryRepoName:$prodRegistryLatestTagName"
         echo "$prodPmeRegistryImageName">>"$outPmeFileMCR"
         
     else
-        echo "Not creating 'latest' tag as source branch is not 'master'. Current branch is $sourceBranchName"
+        echo "Not creating 'latest' tag as source branch is not 'main'. Current branch is $sourceBranchName"
     fi
     
     echo -------------------------------------------------------------------------------

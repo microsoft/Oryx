@@ -49,7 +49,7 @@ trigger:
   batch: true
   branches:
     include:
-    - master
+    - main
   paths:
     exclude:
     - /*
