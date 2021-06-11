@@ -120,7 +120,7 @@ func main() {
 		finalScript := scriptBuilder.String()
 		fmt.Println(fmt.Sprintf(
 			"Setting up the environment with 'NodeJS' version '%s'...\n",
-			buildManifest.PythonVersion))
+			buildManifest.NodeVersion))
 		common.SetupEnv(finalScript)
 	}
 }
