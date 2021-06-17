@@ -38,9 +38,9 @@ func (gen *DotnetCoreStartupScriptGenerator) shouldApplicationInsightsBeConfigur
 	fmt.Printf("\nBefore if loop >> DotNet Runtime %s", gen.Manifest.DotNetCoreRuntimeVersion)
 	
 	if gen.Manifest.DotNetCoreRuntimeVersion != "" {
-		dotNetRuntimeVersion := gen.Manifest.DotNetCoreRuntimeVersion
+		dotNetRuntimeVersion = gen.Manifest.DotNetCoreRuntimeVersion
 	} else {
-		dotNetRuntimeVersion := os.Getenv("DOTNET_VERSION")
+		dotNetRuntimeVersion = os.Getenv("DOTNET_VERSION")
 	}
 	
 	fmt.Printf("\nDotNet Runtime %s", dotNetRuntimeVersion)
