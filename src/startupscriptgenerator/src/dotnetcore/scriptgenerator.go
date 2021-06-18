@@ -33,12 +33,19 @@ const RuntimeConfigJsonExtension = ".runtimeconfig.json"
 func (gen *DotnetCoreStartupScriptGenerator) shouldApplicationInsightsBeConfigured() bool {
 	// Check if the application insights environment variables are present
 	appInsightsAgentExtensionVersionEnv := gen.Configuration.AppInsightsAgentExtensionVersion
+	dotNetRuntimeVersion := ""
 	fmt.Printf("\nAgent extension %s", gen.Configuration.AppInsightsAgentExtensionVersion)
 	fmt.Printf("\nBefore if loop >> DotNet Runtime %s", gen.Manifest.DotNetCoreRuntimeVersion)
+	
 	if gen.Manifest.DotNetCoreRuntimeVersion != "" {
-		dotNetRuntimeVersion := gen.Manifest.DotNetCoreRuntimeVersion
-		fmt.Printf("\nDotNet Runtime %s", dotNetRuntimeVersion)
-
+		dotNetRuntimeVersion = gen.Manifest.DotNetCoreRuntimeVersion
+	} else {
+		dotNetRuntimeVersion = os.Getenv("DOTNET_VERSION")
+	}
+	
+	fmt.Printf("\nDotNet Runtime %s", dotNetRuntimeVersion)
+	
+	if dotNetRuntimeVersion != "" {
 		dotNetAppInsightsSupportedVersionConstraint, err := semver.NewConstraint(">= 6.0.0-0")
 		if err != nil {
     		fmt.Printf("\nError in creating semver constraint %s", err)
