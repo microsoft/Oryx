@@ -40,7 +40,7 @@ const DefaultHost = "0.0.0.0"
 const DefaultBindPort = "80"
 
 func getSupportedDebugAdapters() []string {
-	return []string{"ptvsd", "debugpy"}
+	return []string{"debugpy"}
 }
 
 func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
@@ -114,12 +114,15 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		}
 
 		if appModule != "" {
+			// Patch all legacy ptvsd debug adaptor calls to debugpy
+			if gen.DebugAdapter == "ptvsd" {
+				gen.DebugAdapter = "debugpy"
+			}
+
 			if gen.shouldStartAppInDebugMode() {
 				logger.LogInformation("Generating debug command for appDebugModule.")
 				println(fmt.Sprintf(GeneratingCommandMessage, gen.DebugAdapter, appDebugModule))
 				switch gen.DebugAdapter {
-				case "ptvsd":
-					command = gen.buildPtvsdCommandForModule(appDebugModule, appDirectory)
 				case "debugpy":
 					command = gen.buildDebugPyCommandForModule(appDebugModule, appDirectory)
 				}
@@ -319,23 +322,6 @@ func (gen *PythonStartupScriptGenerator) shouldStartAppInDebugMode() bool {
 	return true
 }
 
-func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(moduleAndArgs string, appDir string) string {
-	waitarg := ""
-	if gen.DebugWait {
-		waitarg = "--wait"
-	}
-
-	cdcmd := ""
-	if appDir != "" {
-		cdcmd = fmt.Sprintf("cd %s && ", appDir)
-	}
-
-	pycmd := fmt.Sprintf("%spython -m ptvsd --host %s --port %s %s -m %s",
-		cdcmd, DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
-
-	return cdcmd + pycmd
-}
-
 func (gen *PythonStartupScriptGenerator) buildDebugPyCommandForModule(moduleAndArgs string, appDir string) string {
 	waitarg := ""
 	if gen.DebugWait {
@@ -347,7 +333,7 @@ func (gen *PythonStartupScriptGenerator) buildDebugPyCommandForModule(moduleAndA
 		cdcmd = fmt.Sprintf("cd %s && ", appDir)
 	}
 
-	pycmd := fmt.Sprintf("%spython -m debupy --listen %s:%s %s -m %s",
+	pycmd := fmt.Sprintf("%spython -m debugpy --listen %s:%s %s -m %s",
 		cdcmd, DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
 
 	return cdcmd + pycmd
