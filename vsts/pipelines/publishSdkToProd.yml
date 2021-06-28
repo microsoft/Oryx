@@ -1,26 +1,29 @@
 variables:
 - group: Oryx
 
-steps:
-- checkout: self
-  clean: true
+jobs:
+    - job: CreateReleaseTag
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+      - checkout: self
+        clean: true
 
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.x'
-  inputs:
-    version: 3.1.x
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk 3.1.x'
+        inputs:
+          version: 3.1.x
 
-- task: ShellScript@2
-  displayName: 'Publish SDKs from dev to prod storage account'
-  env:
-    DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
-    PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
-  inputs:
-    scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh
+      - task: ShellScript@2
+        displayName: 'Publish SDKs from dev to prod storage account'
+        env:
+          DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
+          PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
+        inputs:
+          scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh
     
-- task: ShellScript@2
-  displayName: 'Test Prod storage account'
-  inputs:
-    scriptPath: ./build/testIntegration.sh
-    args: StorageAccountTests=Prod
-  
+      - task: ShellScript@2
+        displayName: 'Test Prod storage account'
+        inputs:
+          scriptPath: ./build/testIntegration.sh
+          args: StorageAccountTests=Prod
