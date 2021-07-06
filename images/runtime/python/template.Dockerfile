@@ -38,7 +38,7 @@ ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN pip install --upgrade pip \
     && pip install gunicorn \
-    && pip install ptvsd \
+    && pip install debugpy \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get upgrade --assume-yes \

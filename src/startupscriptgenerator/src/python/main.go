@@ -34,8 +34,7 @@ func main() {
 		" e.g. 'application:app'.")
 	defaultAppDebugModulePtr := scriptCommand.String("defaultAppDebugModule", "application.py", "Module to run if "+
 		"running the app in debug mode, e.g. 'application.py start_dev_server'. Has no effect if -debugAdapter isn't used.")
-	debugAdapterPtr := scriptCommand.String("debugAdapter", "", "Python debugger adapter. Currently, only 'ptvsd' is "+
-		"supported.")
+	debugAdapterPtr := scriptCommand.String("debugAdapter", "", "Python debugger adapter. Currently, only 'debugpy' is supported.")
 	debugPortPtr := scriptCommand.String("debugPort", "5678", "Port where the debugger will bind to. Has no effect if -debugAdapter isn't used.")
 	debugWaitPtr := scriptCommand.Bool("debugWait", false, "Whether the debugger adapter should pause and wait for a "+
 		"client connection before running the app.")
@@ -122,7 +121,7 @@ func main() {
 			fmt.Sprintf("export PATH=\"%s/bin:${PATH}\"\n", pythonInstallationRoot))
 		scriptBuilder.WriteString("pip install --upgrade pip\n")
 		scriptBuilder.WriteString("pip install gunicorn\n")
-		scriptBuilder.WriteString("pip install ptvsd\n")
+		scriptBuilder.WriteString("pip install debugpy\n")
 		scriptBuilder.WriteString("echo Done installing dependencies.\n")
 		finalScript := scriptBuilder.String()
 		fmt.Println(fmt.Sprintf(

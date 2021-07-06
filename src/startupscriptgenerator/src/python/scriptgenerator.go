@@ -22,7 +22,7 @@ type PythonStartupScriptGenerator struct {
 	DefaultAppPath        string
 	DefaultAppModule      string
 	DefaultAppDebugModule string
-	DebugAdapter          string // Remote debugger adapter to use. Currently, only `ptvsd` is supported.
+	DebugAdapter          string // Remote debugger adapter to use.
 	DebugPort             string
 	DebugWait             bool // Whether debugger adapter should pause and wait for a client
 	//  connection before running the app.
@@ -34,11 +34,14 @@ type PythonStartupScriptGenerator struct {
 	Configuration            Configuration
 }
 
-const SupportedDebugAdapter = "ptvsd" // Not using an array since there's only one at the moment
 const GeneratingCommandMessage = "Generating `%s` command for '%s'"
 
 const DefaultHost = "0.0.0.0"
 const DefaultBindPort = "80"
+
+func getSupportedDebugAdapters() []string {
+	return []string{"debugpy"}
+}
 
 func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("python.scriptgenerator.GenerateEntrypointScript")
@@ -111,10 +114,19 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 		}
 
 		if appModule != "" {
+			// Patch all legacy ptvsd debug adaptor calls to debugpy
+			if gen.DebugAdapter == "ptvsd" {
+				gen.DebugAdapter = "debugpy"
+			}
+
 			if gen.shouldStartAppInDebugMode() {
 				logger.LogInformation("Generating debug command for appDebugModule.")
-				println(fmt.Sprintf(GeneratingCommandMessage, "ptvsd", appDebugModule))
-				command = gen.buildPtvsdCommandForModule(appDebugModule, appDirectory)
+				println(fmt.Sprintf(GeneratingCommandMessage, gen.DebugAdapter, appDebugModule))
+				switch gen.DebugAdapter {
+				case "debugpy":
+					command = gen.buildDebugPyCommandForModule(appDebugModule, appDirectory)
+				}
+
 				appDebugAdapter = gen.DebugAdapter
 			} else {
 				logger.LogInformation("Generating command for appModule.")
@@ -296,7 +308,13 @@ func (gen *PythonStartupScriptGenerator) shouldStartAppInDebugMode() bool {
 		return false
 	}
 
-	if gen.DebugAdapter != SupportedDebugAdapter {
+	isSupported := false
+	for _, adapter := range getSupportedDebugAdapters() {
+		if gen.DebugAdapter == adapter {
+			isSupported = true
+		}
+	}
+	if !isSupported {
 		logger.LogError("Unsupported debug adapter '%s'", gen.DebugAdapter)
 		return false
 	}
@@ -304,10 +322,10 @@ func (gen *PythonStartupScriptGenerator) shouldStartAppInDebugMode() bool {
 	return true
 }
 
-func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(moduleAndArgs string, appDir string) string {
+func (gen *PythonStartupScriptGenerator) buildDebugPyCommandForModule(moduleAndArgs string, appDir string) string {
 	waitarg := ""
 	if gen.DebugWait {
-		waitarg = "--wait"
+		waitarg = "--wait-for-client"
 	}
 
 	cdcmd := ""
@@ -315,7 +333,7 @@ func (gen *PythonStartupScriptGenerator) buildPtvsdCommandForModule(moduleAndArg
 		cdcmd = fmt.Sprintf("cd %s && ", appDir)
 	}
 
-	pycmd := fmt.Sprintf("%spython -m ptvsd --host %s --port %s %s -m %s",
+	pycmd := fmt.Sprintf("%spython -m debugpy --listen %s:%s %s -m %s",
 		cdcmd, DefaultHost, gen.DebugPort, waitarg, moduleAndArgs)
 
 	return cdcmd + pycmd
