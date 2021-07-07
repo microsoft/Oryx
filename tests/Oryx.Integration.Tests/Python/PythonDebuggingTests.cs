@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.Integration.Tests
     [Trait("category", "python")]
     public class PythonDebuggingTests : PythonEndToEndTestsBase
     {
-        private const int DefaultPtvsdPort = 5678;
+        private const int DefaultDebuggerPort = 5678;
 
         public PythonDebuggingTests(ITestOutputHelper output, TestTempDirTestFixture tempDir)
             : base(output, tempDir)
@@ -52,12 +52,55 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { appVolume, appOutputDirVolume },
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", pythonVersion),
-                debugPort.GetValueOrDefault(DefaultPtvsdPort),
+                debugPort.GetValueOrDefault(DefaultDebuggerPort),
                 "/bin/bash", new[] { "-c", runScript },
                 async (ptvsdHostPort) =>
                 {
                     // Send an Initialize request to make sure the debugger is running
                     using (var debugClient = new SimpleDAPClient("127.0.0.1", ptvsdHostPort, "oryxtests"))
+                    {
+                        string initResponse = await debugClient.Initialize();
+                        // Deliberately weak assertion; don't care what's in the response, only that there IS a response
+                        Assert.False(string.IsNullOrEmpty(initResponse));
+                    }
+                });
+        }
+
+        [Theory]
+        [InlineData("2.7")]
+        [InlineData("3.6")]
+        [InlineData("3.7", 5637)] // Test with a non-default port as well
+        public async Task CanBuildAndDebugFlaskAppWithDebugPy(string pythonVersion, int? debugPort = null)
+        {
+            // Arrange
+            var appName = "flask-app";
+            var appVolume = CreateAppVolume(appName);
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var scriptGenDebugPortArg = debugPort.HasValue ? $"-debugPort {debugPort.Value}" : string.Empty;
+
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appVolume.ContainerDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion} --debug")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}" +
+                            $" -debugAdapter debugpy {scriptGenDebugPortArg} -debugWait")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new[] { appVolume, appOutputDirVolume },
+                "/bin/bash", new[] { "-c", buildScript },
+                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                debugPort.GetValueOrDefault(DefaultDebuggerPort),
+                "/bin/bash", new[] { "-c", runScript },
+                async (debugPyHostPort) =>
+                {
+                    // Send an Initialize request to make sure the debugger is running
+                    using (var debugClient = new SimpleDAPClient("127.0.0.1", debugPyHostPort, "oryxtests"))
                     {
                         string initResponse = await debugClient.Initialize();
                         // Deliberately weak assertion; don't care what's in the response, only that there IS a response
