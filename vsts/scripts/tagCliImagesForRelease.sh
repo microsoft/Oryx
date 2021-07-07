@@ -35,7 +35,7 @@ echo "Retagging CLI buster image for $prodPmeImageRepo with '$RELEASE_TAG_NAME'.
 echo "$prodPmeImageRepo/cli-buster:$RELEASE_TAG_NAME">>"$outPmeFile"
 docker tag "$cliBusterImage" "$prodPmeImageRepo/cli-buster:$RELEASE_TAG_NAME"
 
-if [ "$sourceBranchName" == "master" ]; then
+if [ "$sourceBranchName" == "main" ]; then
     echo "Retagging CLI image with 'stable'..."
 
     docker tag "$cliImage" "$prodPmeImageRepo/cli:stable"
@@ -44,7 +44,7 @@ if [ "$sourceBranchName" == "master" ]; then
     docker tag "$cliBusterImage" "$prodPmeImageRepo/cli-buster:stable"
     echo "$prodPmeImageRepo/cli-buster:stable">>"$outPmeFile"
 else
-    echo "Not creating 'stable' or 'latest' tags as source branch is not 'master'. Current branch is $sourceBranchName"
+    echo "Not creating 'stable' or 'latest' tags as source branch is not 'main'. Current branch is $sourceBranchName"
 fi
 
 echo "printing pme tags from $outPmeFile"

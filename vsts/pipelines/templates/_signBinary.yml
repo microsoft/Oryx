@@ -11,7 +11,7 @@ steps:
   condition: >
    and(in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'), 
    or(
-     startsWith(variables['Build.SourceBranch'], 'refs/heads/master'),
+     startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
      startsWith(variables['Build.SourceBranch'], 'refs/heads/patch/'), 
      startsWith(variables['Build.SourceBranch'],'refs/heads/exp/' )))
 
