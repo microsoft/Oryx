@@ -73,6 +73,41 @@ DISABLE\_HUGO\_BUILD       | Do not apply Hugo build even if repo indicates it  
 
 
 
-
-
 [App Settings]: https://docs.microsoft.com/en-us/azure/app-service/web-sites-configure#app-settings
+
+
+
+# Oryx-generated manifest file
+
+`oryx-manifest.toml` is the orxy-generated manifest file involved in 2 stages (build & run). 
+First the build stage will build the application and autogenerate `oryx-manifest.toml`.
+Secondly `oryx-manifest.toml` is used by the startup script at runtime to setup Docker container variables. The following are the supported platforms and their key/values:
+
+> NOTE: In Azure Web Apps, these variables are set as [App Settings]
+
+Node variant manifest file                 | Description                                                    | Default | Example
+-----------------------------|----------------------------------------------------------------|---------|----------------
+NodeVersion          | Platform's version identified by Oryx   | ""      | "14.15.1"
+OutputDirPath          |  Output is in separate volume due to rsync errors  |      | ".nuxt"
+OperationId          | Used to correlate with logs. Which logs??   | "|lTpVCq2KGuY=.e6f14074_"      |
+SourceDirectoryInBuildContainer          | Directory inside Docker container contaiing source code??   |     | "/tmp/sampleapps/nodejs/helloworld-nuxtjs/" 
+PlatformName          | Name of Oryx supported platform name   | ""      | "nodejs"
+CompressDestinationDir          | Determines whether artifact is compressed; allows decompression to occur. To save memory??   | ""      | "false"
+
+Python variant manifest file                 | Description                                                    | Default | Example
+-----------------------------|----------------------------------------------------------------|---------|----------------
+PythonVersion          | Platform's version identified by Oryx   | ""      | "3.8.6"
+virtualEnvName          |  Name of the virtual environmen running in the Docker container  |      | "pythonenv3.8"
+OperationId          | Used to correlate with logs. Which logs??   | "|lTpVCq2KGuY=.e6f14074_"      |
+SourceDirectoryInBuildContainer          | Directory inside Docker container contaiing source code??   |     | "/tmp/sampleapps/python/flask-app/"
+PlatformName          | Name of Oryx supported platform name   | ""      | "python"
+CompressDestinationDir          | Determines whether artifact is compressed; allows decompression to occur. To save memory??   | ""      | "false"
+
+Dotnetcore variant manifest file                 | Description                                                    | Default | Example
+-----------------------------|----------------------------------------------------------------|---------|----------------
+DotNetCoreSdkVersion          | Platform's version identified by Oryx   | ""      | "3.1.406"
+StartupDllFileName          | Executable used to run the application |      | "NetCoreApp31.MvcApp.dll"
+OperationId          | Used to correlate with logs. Which logs??   | "|lTpVCq2KGuY=.e6f14074_"      |
+SourceDirectoryInBuildContainer          | Directory inside Docker container contaiing source code??   |     | "/tmp/sampleapps/DotNetCore/NetCoreApp31.MvcApp/"
+PlatformName          | Name of Oryx supported platform name   | ""      | "python"
+CompressDestinationDir          | Determines whether artifact is compressed; allows decompression to occur. To save memory??   | ""      | "false"
