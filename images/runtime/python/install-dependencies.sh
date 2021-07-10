@@ -19,6 +19,11 @@ apt-get update \
         libodbc1 \
         apt-transport-https \
         swig3.0 \
+        # GIS libraries for GeoDjango (https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/)
+        binutils \
+        libproj-dev \
+        gdal-bin \
+        libgdal-dev \
     && rm -rf /var/lib/apt/lists/*
  
 # Microsoft SQL Server 2017
