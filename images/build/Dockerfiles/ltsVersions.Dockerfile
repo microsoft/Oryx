@@ -32,6 +32,11 @@ RUN LANG="C.UTF-8" \
         libcurl3 \
         libuuid1 \
         libunwind8 \
+        # GIS libraries for GeoDjango (https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/)
+        binutils \
+        libproj-dev \
+        gdal-bin \
+        libgdal-dev \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
