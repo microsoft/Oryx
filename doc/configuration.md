@@ -89,6 +89,9 @@ OperationId                     | Used to correlate with logs. Track telemetries
 SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "/tmp/sampleapps/nodejs/helloworld-nuxtjs/" 
 PlatformName                    | Name of Oryx supported platform name                                                      | "nodejs"       
 CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
+CustomRunBuildCommand           | Custom command that is run after `npm install` is run in the generated build script      | "echo CustomRunBuildCommand" 
+CustomBuildCommand              | Custom build command that will run without `npm install` in the generated build script | "echo CustomBuildCommand" 
+PruneDevDependencies            | When using different intermediate and output folders, only prod dependencies are copied to ouput  | "true", "" (meaning "true"), "false" (default) 
 
 Python fields                   |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
@@ -101,6 +104,7 @@ CompressDestinationDir          | Determines whether app is compressed to allow 
 packagedir *                    | Packages will be downloaded to given directory instead of VM                              | "."
 packagewheel  *                 | Wheels are built with universal flag. `packagedir` parameter is required                 | "universal"
 compress_virtualenv             | Determines if app is compressed. When running the app, virtaul env must be extracted from this file. Default is false | "false"
+* \* Optional fields in oryx-manifest.toml `oryx build python-flask-sample-app/ --package --property packagedir=. --property packagewheel=universal`
 
 Dotnet fields                   |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
@@ -114,10 +118,11 @@ CompressDestinationDir          | Determines whether app is compressed to allow 
 Php fields                      |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
 PhpVersion                      | Platform's version that Oryx will use to run the app                                      | "8.0.3"
-OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         |  "\|lTpVCq2KGuY=.e6f14074_"
-SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   |  "/tmp/sampleapps/nodejs/helloworld-nuxtjs/" 
-PlatformName                    | Name of Oryx supported platform name                                                      |   "php"       
-CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  |   "false" 
+OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         | "\|lTpVCq2KGuY=.e6f14074_"
+SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "/tmp/sampleapps/nodejs/helloworld-nuxtjs/" 
+PlatformName                    | Name of Oryx supported platform name                                                      | "php"       
+CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
+PhpComposerVersion *            | Version of the php composer that was detected                                             | "7.2.15"
 
 Ruby fields                     |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
@@ -135,6 +140,7 @@ OperationId                     | Used to correlate with logs. Track telemetries
 SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "/tmp/sampleapps/nodejs/helloworld-nuxtjs/" 
 PlatformName                    | Name of Oryx supported platform name                                                      | "java"       
 CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
+MavenVersion *                  | Version of Java's build tool  | "3.6.3"
 
 Hugo fields                     |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
