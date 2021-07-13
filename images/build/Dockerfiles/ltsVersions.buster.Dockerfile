@@ -28,6 +28,11 @@ RUN LANG="C.UTF-8" \
         # By default pip is not available in the buildpacks image
         python-pip \
         python3-pip \
+        # GIS libraries for GeoDjango (https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/)
+        binutils \
+        libproj-dev \
+        gdal-bin \
+        libgdal-dev \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
