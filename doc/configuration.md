@@ -92,6 +92,7 @@ CompressDestinationDir          | Determines whether app is compressed to allow 
 CustomRunBuildCommand           | Custom command that is run after `npm install` is run in the generated build script      | "echo CustomRunBuildCommand" 
 CustomBuildCommand              | Custom build command that will run without `npm install` in the generated build script | "echo CustomBuildCommand" 
 PruneDevDependencies            | When using different intermediate and output folders, only prod dependencies are copied to ouput  | "true", "" (meaning "true"), "false" (default) 
+nodejs_npm_registry_url        *          | URL of the npm registry  | "https://foobar.com/" 
 
 Python fields                   |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
@@ -122,7 +123,7 @@ OperationId                     | Used to correlate with logs. Track telemetries
 SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "/tmp/sampleapps/nodejs/helloworld-nuxtjs/" 
 PlatformName                    | Name of Oryx supported platform name                                                      | "php"       
 CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
-PhpComposerVersion *            | Version of the php composer that was detected                                             | "7.2.15"
+PhpComposerVersion *            | Version of the php composer that was detected                                             | "2.0.8"
 
 Ruby fields                     |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
