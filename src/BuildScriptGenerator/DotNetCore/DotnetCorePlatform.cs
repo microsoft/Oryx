@@ -121,6 +121,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion]
                 = dotNetCorePlatformDetectorResult.SdkVersion;
 
+            var outputType = dotNetCorePlatformDetectorResult.OutputType;
+            if (outputType != null)
+            {
+                if (outputType.ToLower() == "library")
+                {
+                    manifestFileProperties[ManifestFilePropertyKeys.OutputType] = "in-process";
+                }
+                else if (outputType.ToLower() == "exe")
+                {
+                    manifestFileProperties[ManifestFilePropertyKeys.OutputType] = "isolated";
+                }
+            }
+
             var projectFile = dotNetCorePlatformDetectorResult.ProjectFile;
             if (string.IsNullOrEmpty(projectFile))
             {

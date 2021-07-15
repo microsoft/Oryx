@@ -61,6 +61,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 PlatformVersion = version,
                 ProjectFile = projectFile,
                 AppDirectory = appDirectory,
+                OutputType = DotNetCoreConstants.OutputType,
             };
         }
 
