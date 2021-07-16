@@ -53,18 +53,11 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 return null;
             }
 
-            //var outputTypeElement = projectFileDoc.XPathSelectElement(
-            //    DotNetCoreConstants.OutputTypeElementXPathExpression);
-            //var outputType = outputTypeElement?.Value;
-            var outputType = "test";
-            
-            if (string.IsNullOrEmpty(outputType))
-            {
-                _logger.LogDebug(
-                    $"Could not find 'outputType' element in the project file.");
-                return null;
-            }
-            else
+            var outputTypeElement = projectFileDoc.XPathSelectElement(
+                DotNetCoreConstants.OutputTypeElementXPathExpression);
+            var outputType = outputTypeElement?.Value;
+
+            if (!string.IsNullOrEmpty(outputType))
             {
                 if (outputType.ToLower() == "library")
                 {
@@ -73,10 +66,6 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 else if (outputType.ToLower() == "exe")
                 {
                     outputType = "isolated";
-                }
-                else
-                {
-                    outputType = $"OUTPUTTYPE: {outputType}";
                 }
             }
 
