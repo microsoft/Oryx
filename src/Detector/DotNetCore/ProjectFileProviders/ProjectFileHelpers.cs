@@ -72,6 +72,28 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             return HasPackageReference(projectFileDoc, DotNetCoreConstants.AzureFunctionsPackageReference);
         }
 
+        //// write a get method that reads the output type 
+        //public static string GetOutputType(XDocument projectFileDoc)
+        //{
+        //    var outputTypeElement = projectFileDoc.XPathSelectElement(
+        //        DotNetCoreConstants.OutputType);
+
+        //    var outputType = outputTypeElement?.Value;
+        //    if (outputType != null)
+        //    {
+        //        if (outputType.ToLower() == "library")
+        //        {
+        //            return "in-process";
+        //        }
+        //        else if (outputType.ToLower() == "exe")
+        //        {
+        //            return "isolated";
+        //        }
+        //    }
+            
+        //    return $"OutputType found {outputType}";
+        //}
+
         public static bool IsBlazorWebAssemblyProject(XDocument projectFileDoc)
         {
             return HasPackageReference(projectFileDoc, DotNetCoreConstants.AzureBlazorWasmPackageReference);

@@ -120,19 +120,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 = dotNetCorePlatformDetectorResult.PlatformVersion;
             manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion]
                 = dotNetCorePlatformDetectorResult.SdkVersion;
+            manifestFileProperties[ManifestFilePropertyKeys.OutputType] = $"OUTPUTTYPE3 {dotNetCorePlatformDetectorResult.OutputType}";
 
-            var outputType = dotNetCorePlatformDetectorResult.OutputType;
-            if (outputType != null)
-            {
-                if (outputType.ToLower() == "library")
-                {
-                    manifestFileProperties[ManifestFilePropertyKeys.OutputType] = "in-process";
-                }
-                else if (outputType.ToLower() == "exe")
-                {
-                    manifestFileProperties[ManifestFilePropertyKeys.OutputType] = "isolated";
-                }
-            }
+            //if (outputtype != null)
+            //{
+            //    if (outputtype.tolower() == "library")
+            //    {
+            //        manifestfileproperties[manifestfilepropertykeys.outputtype] = "in-process";
+            //    }
+            //    else if (outputtype.tolower() == "exe")
+            //    {
+            //        manifestfileproperties[manifestfilepropertykeys.outputtype] = "isolated";
+            //    }
+            //    else
+            //    {
+            //        manifestfileproperties[manifestfilepropertykeys.outputtype] = $"outputtype: {outputtype}";
+            //    }
+            //}
+            //else
+            //{
+            //    manifestfileproperties[manifestfilepropertykeys.outputtype] = $"empty outputtype found {dotnetcoreplatformdetectorresult.outputtype}";
+            //}
 
             var projectFile = dotNetCorePlatformDetectorResult.ProjectFile;
             if (string.IsNullOrEmpty(projectFile))
