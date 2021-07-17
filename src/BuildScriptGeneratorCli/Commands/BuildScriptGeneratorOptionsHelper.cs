@@ -25,6 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             bool? compressDestinationDir = null,
             string[] requiredOsPackages = null,
             string appType = null,
+            string buildCommandsFileName = null,
             bool? scriptOnly = null,
             string[] properties = null)
         {
@@ -68,6 +69,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!string.IsNullOrEmpty(appType))
             {
                 options.AppType = appType.Trim();
+            }
+
+            if (!string.IsNullOrEmpty(buildCommandsFileName))
+            {
+                options.BuildCommandsFileName = buildCommandsFileName.Trim();
             }
 
             if (scriptOnly.HasValue)

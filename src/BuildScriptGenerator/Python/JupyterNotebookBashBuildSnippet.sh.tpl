@@ -19,8 +19,6 @@ COMMAND_MANIFEST_FILE={{ NoteBookBuildCommandsFileName }}
 
 echo "PlatFormWithVersion=python {{ EnvironmentTemplatePythonVersion }}" >> "$COMMAND_MANIFEST_FILE"
 
-declare -a CommandList=('')
-
 environmentPrefix="./venv"
 echo
 echo "Setting up Conda virtual environemnt..."
@@ -28,7 +26,6 @@ echo
 START_TIME=$SECONDS
 CondaEnvCreateCommand="conda env create --file $envFile --prefix $environmentPrefix --quiet"
 echo "BuildCommands=$CondaEnvCreateCommand" >> "$COMMAND_MANIFEST_FILE"
-CommandList=(${CommandList[*]}, $CondaEnvCreateCommand)
 conda env create --file $envFile --prefix $environmentPrefix --quiet
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo "Done in $ELAPSED_TIME sec(s)."
@@ -37,20 +34,17 @@ echo "Done in $ELAPSED_TIME sec(s)."
 	echo
 	echo "Activating environemnt..."
 	CondaActivateCommand= "conda activate $environmentPrefix"
-	echo ", $CondaActivateCommand" >> "$COMMAND_MANIFEST_FILE"
-	CommandList=(${CommandList[*]}, $CondaActivateCommand)
+	printf %s ", $CondaActivateCommand" >> "$COMMAND_MANIFEST_FILE"
 	conda activate $environmentPrefix
 
 	echo
 	echo "Running pip install..."
 	echo
 	PipInstallCommand="pip install --no-cache-dir -r requirements.txt"
-	echo ", $PipInstallCommand" >> "$COMMAND_MANIFEST_FILE"
-	CommandList=(${CommandList[*]}, $PipInstallCommand)
+	printf %s ", $PipInstallCommand" >> "$COMMAND_MANIFEST_FILE"
 	pip install --no-cache-dir -r requirements.txt
 {{ end }}
 
-echo Commands=${CommandList[*]}
 
 ReadImageType=$(cat /opt/oryx/.imagetype)
 

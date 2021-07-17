@@ -47,6 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 SourceRepo = sourceRepoProvider.GetSourceRepo(),
                 Properties = options.Properties,
                 ManifestDir = options.ManifestDir,
+                BuildCommandsFileName = options.BuildCommandsFileName,
             };
         }
 

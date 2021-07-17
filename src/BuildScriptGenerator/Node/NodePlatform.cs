@@ -157,9 +157,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             var manifestFileProperties = new Dictionary<string, string>();
             var nodeCommandManifestFileProperties = new Dictionary<string, string>();
-            var nodeBuildcommandFileName = string.IsNullOrEmpty(ctx.BuildCommandsFile) ? FilePaths.BuildCommandsFileName : ctx.BuildCommandsFile;
-            var manifestDirPath = string.IsNullOrEmpty(ctx.ManifestDir) ? ctx.SourceRepo.RootPath : ctx.ManifestDir;
-            var nodeBuildCommandsFile = Path.Join(manifestDirPath, nodeBuildcommandFileName);
+            var nodeBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.DestinationDir) ?
+                Path.Combine(ctx.SourceRepo.RootPath, _commonOptions.BuildCommandsFileName) : Path.Combine(_commonOptions.DestinationDir, _commonOptions.BuildCommandsFileName);
 
             // Write the platform name and version to the manifest file
             manifestFileProperties[ManifestFilePropertyKeys.NodeVersion] = nodePlatformDetectorResult.PlatformVersion;

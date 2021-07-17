@@ -163,9 +163,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var virtualEnvName = GetVirtualEnvironmentName(context);
             var isPythonPackageCommandEnabled = _commonOptions.ShouldPackage;
             var pythonPackageWheelType = GetPythonPackageWheelType(context);
-            var manifestDirPath = string.IsNullOrEmpty(context.ManifestDir) ? context.SourceRepo.RootPath : context.ManifestDir;
-            var pythonBuildcommandFileName = string.IsNullOrEmpty(context.BuildCommandsFile) ? FilePaths.BuildCommandsFileName : context.BuildCommandsFile;
-            var pythonBuildCommandsFile = Path.Join(manifestDirPath, pythonBuildcommandFileName);
+            var pythonBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.DestinationDir) ?
+                Path.Combine(context.SourceRepo.RootPath, FilePaths.BuildCommandsFileName) : Path.Combine(_commonOptions.DestinationDir, _commonOptions.BuildCommandsFileName);
 
             manifestFileProperties[nameof(pythonBuildCommandsFile)] = pythonBuildCommandsFile;
 
@@ -421,9 +420,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             var scriptProperties = new JupyterNotebookBashBuildSnippetProperties();
             scriptProperties.HasRequirementsTxtFile = detectorResult.HasRequirementsTxtFile;
-            var manifestDirPath = string.IsNullOrEmpty(context.ManifestDir) ? context.SourceRepo.RootPath : context.ManifestDir;
-            var condaBuildcommandFileName = string.IsNullOrEmpty(context.BuildCommandsFile) ? FilePaths.BuildCommandsFileName : context.BuildCommandsFile;
-            var condaBuildCommandsFile = Path.Join(manifestDirPath, condaBuildcommandFileName);
+            var condaBuildCommandsFile = string.IsNullOrEmpty(context.BuildCommandsFileName) ?
+                Path.Combine(context.SourceRepo.RootPath, FilePaths.BuildCommandsFileName) : context.BuildCommandsFileName;
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the platform name and version to the manifest file

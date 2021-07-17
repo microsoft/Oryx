@@ -23,6 +23,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Gets or sets a value of the file where build commands will be written during build.
         /// </summary>
-        public string BuildCommandsFile { get; set; }
+        public string BuildCommandsFileName { get; set; }
     }
 }

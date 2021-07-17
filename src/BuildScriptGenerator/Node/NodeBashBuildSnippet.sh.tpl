@@ -16,10 +16,8 @@ echo
 echo "Using Node version:"
 node --version
 echo
-echo "BuildCommands={{ PackageInstallerVersionCommand }}" >> "$COMMAND_MANIFEST_FILE"
+echo "BuildCommands=" >> "$COMMAND_MANIFEST_FILE"
 {{ PackageInstallerVersionCommand }}
-
-declare -a CommandList=('')
 
 {{ if PackageRegistryUrl | IsNotBlank }}
 echo
@@ -89,10 +87,9 @@ then
 	echo
 	echo "Running '{{ ProductionOnlyPackageInstallCommand }}'..."
 	echo
-	echo ", {{ ProductionOnlyPackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	printf %s ", {{ ProductionOnlyPackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ ProductionOnlyPackageInstallCommand }}
 	
-	CommandList=(${CommandList[*]}, '{{ ProductionOnlyPackageInstallCommand }}')
 
 	if [ -d "node_modules" ]; then
 		echo
@@ -110,20 +107,17 @@ cd "$SOURCE_DIR"
 	echo
 	echo "Running '{{ CustomBuildCommand }}'..."
 	echo
-	echo ", {{ CustomBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	printf %s ", {{ CustomBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ CustomBuildCommand }}
-	CommandList=(${CommandList[*]}, '{{ CustomBuildCommand }}')
 {{ else if CustomRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ PackageInstallCommand }}'..."
 	echo
-	echo ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	printf %s ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ PackageInstallCommand }}
-	CommandList=(${CommandList[*]}, '{{ PackageInstallCommand }}')
 	echo
-	echo ", {{ CustomRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	printf %s ", {{ CustomRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ CustomRunBuildCommand }}
-	CommandList=(${CommandList[*]}, '{{ CustomRunBuildCommand }}')
 	echo
 {{ else if LernaRunBuildCommand | IsNotBlank }}
 	echo
@@ -132,51 +126,44 @@ cd "$SOURCE_DIR"
 	echo
 	echo
 	echo "Running '{{ LernaInitCommand }} & {{ LernaBootstrapCommand }}':"
-	echo ", {{ LernaInitCommand }}', '{{ LernaBootstrapCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	printf %s ", {{ LernaInitCommand }}', '{{ LernaBootstrapCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ LernaInitCommand }}
 	{{ LernaBootstrapCommand }}
-	CommandList=(${CommandList[*]}, '{{ LernaInitCommand }}', '{{ LernaBootstrapCommand }}')
 	echo
 	echo
 	echo "Running '{{ LernaRunBuildCommand }}'..."
 	echo
-	echo ", {{ LernaRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	printf %s ", {{ LernaRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ LernaRunBuildCommand }}
-	CommandList=(${CommandList[*]}, '{{ LernaRunBuildCommand }}')
 {{ else if LageRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running ' {{ InstallLageCommand }} ':"
-	echo ", {{ InstallLageCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	printf %s ", {{ InstallLageCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ InstallLageCommand }}
-	CommandList=(${CommandList[*]}, '{{ InstallLageCommand }}')
 	echo
 	echo
 	echo "Running '{{ LageRunBuildCommand }}'..."
-	echo ", {{ LageRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	printf %s ", {{ LageRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
 	{{ LageRunBuildCommand }}
-	CommandList=(${CommandList[*]}, '{{ LageRunBuildCommand }}')
 {{ else }}
 	echo
 	echo "Running '{{ PackageInstallCommand }}'..."
 	echo
-	echo ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	printf %s ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ PackageInstallCommand }}
-	CommandList=(${CommandList[*]}, '{{ PackageInstallCommand }}')
 	{{ if NpmRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ NpmRunBuildCommand }}'..."
-	echo ", {{ NpmRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	printf %s ", {{ NpmRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
 	{{ NpmRunBuildCommand }}
-	CommandList=(${CommandList[*]}, '{{ NpmRunBuildCommand }}')
 	{{ end }}
 	{{ if NpmRunBuildAzureCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ NpmRunBuildAzureCommand }}'..."
-	echo ", {{ NpmRunBuildAzureCommand }}" >> "$COMMAND_MANIFEST_FILE"
+	printf %s ", {{ NpmRunBuildAzureCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
-	CommandList=(${CommandList[*]}, '{{ NpmRunBuildAzureCommand }}')
 	{{ NpmRunBuildAzureCommand }}
 	{{ end }}
 {{ end }}
@@ -195,18 +182,13 @@ echo "Running custom packaging scripts that might exist..."
 echo
 npm run package || true
 npm run prepublishOnly || true
-echo ", npm run package || true, npm run prepublishOnly || true" >> "$COMMAND_MANIFEST_FILE"
-CommandList=(${CommandList[*]}, 'npm run package || true', 'npm run prepublishOnly || true')
+printf %s ", npm run package || true, npm run prepublishOnly || true" >> "$COMMAND_MANIFEST_FILE"
 echo
 echo "Running 'npm pack'..."
 echo
-echo ", npm pack" >> "$COMMAND_MANIFEST_FILE"
+printf %s ", npm pack" >> "$COMMAND_MANIFEST_FILE"
 npm pack
-CommandList=(${CommandList[*]}, 'npm pack')
 {{ end }}
-
-echo Commands=${CommandList[*]}
-
 
 
 ReadImageType=$(cat /opt/oryx/.imagetype)

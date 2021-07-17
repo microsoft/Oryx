@@ -65,6 +65,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string AppType { get; set; }
 
+        public string BuildCommandsFileName { get; set; }
+
         public bool CompressDestinationDir { get; set; }
     }
 }

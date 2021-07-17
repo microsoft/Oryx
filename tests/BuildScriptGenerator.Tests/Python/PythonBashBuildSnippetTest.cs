@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 enableCollectStatic: true,
                 compressVirtualEnvCommand: null,
                 compressedVirtualEnvFileName: null,
-                pythonManifestFileName: FilePaths.BuildCommandsFileName,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
                 pythonVersion: null,
                 runPythonPackageCommand: false
                 );
@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 enableCollectStatic: true,
                 compressVirtualEnvCommand: null,
                 compressedVirtualEnvFileName: null,
-                pythonManifestFileName: FilePaths.BuildCommandsFileName,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
                 pythonVersion: "3.6",
                 runPythonPackageCommand: false
                 );
@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 enableCollectStatic: false,
                 compressVirtualEnvCommand: null,
                 compressedVirtualEnvFileName: null,
-                pythonManifestFileName: FilePaths.BuildCommandsFileName,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
                 pythonVersion: null,
                 runPythonPackageCommand: false);
 
@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 enableCollectStatic: false,
                 compressVirtualEnvCommand: null,
                 compressedVirtualEnvFileName: null,
-                pythonManifestFileName: FilePaths.BuildCommandsFileName,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
                 pythonVersion: null,
                 runPythonPackageCommand: true);
 
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 compressVirtualEnvCommand: null,
                 compressedVirtualEnvFileName: null,
                 runPythonPackageCommand: false,
-                pythonManifestFileName: FilePaths.BuildCommandsFileName,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
                 pythonVersion: null,
                 pythonPackageWheelProperty: "universal");
 
@@ -147,7 +147,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 compressVirtualEnvCommand: null,
                 compressedVirtualEnvFileName: null,
                 runPythonPackageCommand: true,
-                pythonManifestFileName: FilePaths.BuildCommandsFileName,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
                 pythonVersion: null,
                 pythonPackageWheelProperty: "universal");
 

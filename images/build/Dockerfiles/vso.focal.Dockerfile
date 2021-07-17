@@ -269,6 +269,10 @@ RUN  yes | pecl install xdebug \
  
 RUN ./opt/tmp/build/vsoSymlinksDotNetCore.sh
 
+RUN groupadd -g 1000 codespace
+RUN useradd -u 1000 -g codespace codespace
+RUN chown -R codespace:codespace /home/codespace/
+
 
 ENV NUGET_XMLDOC_MODE="skip" \
     # VSO requires user installed tools to be preferred over Oryx installed tools

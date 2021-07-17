@@ -336,7 +336,7 @@ function buildVsoFocalImage() {
 
 	BuildAndTagStage "$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE" intermediate
 	echo
-	echo "-------------Creating VSO full build image-------------------"
+	echo "-------------Creating VSO focal build image-------------------"
 	local builtImageName="$ACR_BUILD_VSO_FOCAL_IMAGE_NAME"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
@@ -363,7 +363,7 @@ function buildVsoSlimImage() {
 
 	BuildAndTagStage "$BUILD_IMAGES_VSO_SLIM_DOCKERFILE" intermediate
 	echo
-	echo "-------------Creating VSO Slim build image-------------------"
+	echo "-------------Creating Slim VSO focal build image-------------------"
 	local builtImageName="$ACR_BUILD_VSO_SLIM_IMAGE_NAME"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \

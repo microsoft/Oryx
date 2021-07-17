@@ -9,7 +9,6 @@ COMMAND_MANIFEST_FILE={{ PythonBuildCommandsFileName }}
 
 echo "PlatFormWithVersion=python {{ PythonVersion }}" > "$COMMAND_MANIFEST_FILE"
 
-declare -a CommandList=('')
 InstallCommand=""
 
 if [ ! -d "$PIP_CACHE_DIR" ];then
@@ -39,22 +38,19 @@ fi
 	
 	CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
 	echo "BuildCommands=$CreateVenvCommand" >> "$COMMAND_MANIFEST_FILE"
-	CommandList=(${CommandList[*]}, $CreateVenvCommand)
 
 	$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS
 
 	echo Activating virtual environment...
 	printf %s " , $ActivateVenvCommand" >> "$COMMAND_MANIFEST_FILE"
 	ActivateVenvCommand="source $VIRTUALENVIRONMENTNAME/bin/activate"
-	CommandList=(${CommandList[*]}, $ActivateVenvCommand)
 	source $VIRTUALENVIRONMENTNAME/bin/activate
 
 	if [ -e "requirements.txt" ]
 	then
 		echo "Running pip install..."
 		InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT"
-		echo " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-		CommandList=(${CommandList[*]}, $InstallCommand)
+		printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
 		python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT
 		pipInstallExitCode=${PIPESTATUS[0]}
 		if [[ $pipInstallExitCode != 0 ]]
@@ -65,8 +61,7 @@ fi
 	then
 		echo "Running python setup.py install..."
 		InstallCommand="$python setup.py install --user| ts $TS_FMT"
-		echo " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-		CommandList=(${CommandList[*]}, $InstallCommand)
+		printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
 		$python setup.py install --user| ts $TS_FMT
 		pythonBuildExitCode=${PIPESTATUS[0]}
 		if [[ $pythonBuildExitCode != 0 ]]
@@ -77,13 +72,11 @@ fi
 	then
 		echo "Running pip install poetry..."
 		InstallPipCommand="pip install poetry"
-		echo " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
-		CommandList=(${CommandList[*]}, $InstallPipCommand)
+		printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
 		pip install poetry
 		echo "Running poetry install..."
 		InstallPoetryCommand="poetry install"
-		echo " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-		CommandList=(${CommandList[*]}, $InstallPoetryCommand)
+		printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
 		poetry install
 		pythonBuildExitCode=${PIPESTATUS[0]}
 		if [[ $pythonBuildExitCode != 0 ]]
@@ -103,8 +96,7 @@ fi
 		echo Running pip install...
 		START_TIME=$SECONDS
 		InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT"
-		echo " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-		CommandList=(${CommandList[*]}, $InstallCommand)
+		printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
 		$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT
 		pipInstallExitCode=${PIPESTATUS[0]}
 		ELAPSED_TIME=$(($SECONDS - $START_TIME))
@@ -119,16 +111,14 @@ fi
 		echo
 		START_TIME=$SECONDS
 		UpgradeCommand="pip install --upgrade pip"
-		CommandList=(${CommandList[*]}, $UpgradeCommand)
-		echo " , $UpgradeCommand" >> "$COMMAND_MANIFEST_FILE"
+		printf %s " , $UpgradeCommand" >> "$COMMAND_MANIFEST_FILE"
 		pip install --upgrade pip
 		ELAPSED_TIME=$(($SECONDS - $START_TIME))
 		echo "Done in $ELAPSED_TIME sec(s)."
 
 		echo "Running python setup.py install..."
 		InstallCommand="$python setup.py install --user| ts $TS_FMT"
-		echo " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-		CommandList=(${CommandList[*]}, $InstallCommand)
+		printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
 		$python setup.py install --user| ts $TS_FMT
 		pythonBuildExitCode=${PIPESTATUS[0]}
 		if [[ $pythonBuildExitCode != 0 ]]
@@ -139,14 +129,12 @@ fi
 	then
 		echo "Running pip install poetry..."
 		InstallPipCommand="pip install poetry"
-		echo " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
-		CommandList=(${CommandList[*]}, $InstallPipCommand)
+		printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
 		pip install poetry
 		START_TIME=$SECONDS
 		echo "Running poetry install..."
 		InstallPoetryCommand="poetry install"
-		echo " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-		CommandList=(${CommandList[*]}, $InstallPoetryCommand)
+		printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
 		poetry install
 		ELAPSED_TIME=$(($SECONDS - $START_TIME))
 		echo "Done in $ELAPSED_TIME sec(s)."
@@ -197,8 +185,7 @@ fi
 	PackageEggCommand="$python setup.py bdist_egg"
 	
 	echo "Now creating python package egg ...."
-	echo " , $PackageWheelCommand, $PackageEggCommand" >> "$COMMAND_MANIFEST_FILE"
-	CommandList=(${CommandList[*]}, $PackageWheelCommand, $PackageEggCommand)
+	printf %s " , $PackageWheelCommand, $PackageEggCommand" >> "$COMMAND_MANIFEST_FILE"
 	$python setup.py bdist_egg
 	echo
 {{ end }}
@@ -214,8 +201,7 @@ fi
 			echo Running 'collectstatic'...
 			START_TIME=$SECONDS
 			CollectStaticCommand="$python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true "
-			echo " , $CollectStaticCommand" >> "$COMMAND_MANIFEST_FILE"
-			CommandList=(${CommandList[*]}, $CollectStaticCommand)
+			printf %s " , $CollectStaticCommand" >> "$COMMAND_MANIFEST_FILE"
 			$python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true ; 
 			echo "'collectstatic' exited with exit code $EXIT_CODE."
 			ELAPSED_TIME=$(($SECONDS - $START_TIME))
@@ -224,7 +210,6 @@ fi
 	fi
 {{ end }}
 
-echo Commands=${CommandList[*]}
 
 ReadImageType=$(cat /opt/oryx/.imagetype)
 
