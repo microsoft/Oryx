@@ -55,20 +55,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
             var outputTypeElement = projectFileDoc.XPathSelectElement(
                 DotNetCoreConstants.OutputTypeElementXPathExpression);
-            var outputType = outputTypeElement?.Value;
-
-            if (!string.IsNullOrEmpty(outputType))
-            {
-                if (outputType.ToLower() == "library")
-                {
-                    outputType = "in-process";
-                }
-                else if (outputType.ToLower() == "exe")
-                {
-                    outputType = "isolated";
-                }
-            }
-
+            var outputType = GetOutputType(outputTypeElement);
 
             var version = GetVersion(targetFramework);
 
@@ -98,6 +85,24 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             return null;
+        }
+
+        private string GetOutputType(XElement outputTypeElement)
+        {
+            string outputType = outputTypeElement?.Value;
+            string outputTypeResult = null;
+            if (!string.IsNullOrEmpty(outputType))
+            {
+                if (outputType.ToLower() == "library")
+                {
+                    outputTypeResult = "in-process";
+                }
+                else if (outputType.ToLower() == "exe")
+                {
+                    outputTypeResult = "isolated";
+                }
+            }
+            return outputTypeResult;
         }
 
         private string GetVersion(string targetFramework)
