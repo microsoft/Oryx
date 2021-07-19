@@ -163,9 +163,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var virtualEnvName = GetVirtualEnvironmentName(context);
             var isPythonPackageCommandEnabled = _commonOptions.ShouldPackage;
             var pythonPackageWheelType = GetPythonPackageWheelType(context);
-            var pythonBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.DestinationDir) ?
-                Path.Combine(context.SourceRepo.RootPath, FilePaths.BuildCommandsFileName) : Path.Combine(_commonOptions.DestinationDir, _commonOptions.BuildCommandsFileName);
-
+            var pythonBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.BuildCommandsFileName) ?
+                    FilePaths.BuildCommandsFileName : _commonOptions.BuildCommandsFileName;
+            pythonBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.DestinationDir) ?
+                Path.Combine(context.SourceRepo.RootPath, pythonBuildCommandsFile) :
+                Path.Combine(_commonOptions.DestinationDir, pythonBuildCommandsFile);
             manifestFileProperties[nameof(pythonBuildCommandsFile)] = pythonBuildCommandsFile;
 
             if (!isPythonPackageCommandEnabled && !string.IsNullOrWhiteSpace(pythonPackageWheelType))
@@ -420,8 +422,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             var scriptProperties = new JupyterNotebookBashBuildSnippetProperties();
             scriptProperties.HasRequirementsTxtFile = detectorResult.HasRequirementsTxtFile;
-            var condaBuildCommandsFile = string.IsNullOrEmpty(context.BuildCommandsFileName) ?
-                Path.Combine(context.SourceRepo.RootPath, FilePaths.BuildCommandsFileName) : context.BuildCommandsFileName;
+            var condaBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.BuildCommandsFileName) ?
+                FilePaths.BuildCommandsFileName : _commonOptions.BuildCommandsFileName;
+            condaBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.DestinationDir) ?
+                Path.Combine(context.SourceRepo.RootPath, condaBuildCommandsFile) :
+                Path.Combine(_commonOptions.DestinationDir, condaBuildCommandsFile);
             var manifestFileProperties = new Dictionary<string, string>();
 
             // Write the platform name and version to the manifest file
