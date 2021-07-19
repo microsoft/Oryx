@@ -110,6 +110,7 @@ OperationId                     | Used to correlate with logs. Track telemetries
 SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "nodejs/helloworld-nuxtjs/" 
 PlatformName                    | Name of Oryx supported platform name                                                      |   "dotnet"       
 CompressDestinationDir          | Determines whether app is compressed to allow decompression, for performance improvements | "false"
+OutputType                      | Optional field that helps identify isolated a function app, based on app's `.csproj`. Exe/Library .csproj field maps to isolated/in-process respectively. | "in-process" 
 
 Php fields                      |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
