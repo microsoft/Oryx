@@ -78,6 +78,45 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             Assert.Equal(expectedRuntimeVersion, result.PlatformVersion);
         }
 
+        [Theory]
+        [InlineData("Library", "in-process")]
+        [InlineData("Exe", "isolated")]
+        [InlineData("randomText", null)]
+        [InlineData("", null)]
+        public void Detect_ReturnsOutputType(
+            string outputTypeName,
+            string expectedOutputType)
+        {
+            // Arrange
+            // create .csproj
+            var projectFile = "test.csproj";
+            var sourceRepo = new Mock<ISourceRepo>();
+            sourceRepo
+                .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(new[] { projectFile });
+            
+            // set target to ouputtype to find & replace
+            sourceRepo
+                .Setup(repo => repo.ReadFile(It.IsAny<string>()))
+                .Returns(SampleProjectFileContents.ProjectFileWithOutputTypePlaceHolder.Replace(
+                    "#OutputType#",
+                    outputTypeName));
+            
+            // file context containing XML
+            var context = CreateContext(sourceRepo.Object);
+            
+            // initiailize Detector
+            var detector = CreateDetector(projectFile);
+
+            // Act
+            DotNetCorePlatformDetectorResult result = (DotNetCorePlatformDetectorResult)detector.Detect(context);
+
+            Assert.NotNull(result);
+            
+            // check our outputType is there
+            Assert.Equal(expectedOutputType, result.OutputType);
+        }
+
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
         {
             return new DetectorContext
