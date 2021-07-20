@@ -694,22 +694,22 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("flask-app")]
-        [InlineData("django-realworld-example-app")]
-        public void BuildPythonApps_Prints_BuildCommands_In_File(string appName)
+        [InlineData("flask-app", "foo.txt")]
+        [InlineData("django-realworld-example-app", FilePaths.BuildCommandsFileName)]
+        public void BuildPythonApps_Prints_BuildCommands_In_File(string appName, string buildCommandsFileName)
         {
             // Arrange
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app1-output";
-            var commandListFile = $"{appOutputDir}/FilePaths.BuildCommandsFileName";
+            var commandListFile = $"{appOutputDir}/{buildCommandsFileName}";
             var script = new ShellScriptBuilder()
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --manifest-dir {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --buildcommands-file {buildCommandsFileName}")
                 .AddFileExistsCheck($"{commandListFile}")
-                .AddStringExistsInFileCheck("PlatformWithVersion=", $"{commandListFile}")
+                .AddStringExistsInFileCheck("PlatFormWithVersion=", $"{commandListFile}")
                 .AddStringExistsInFileCheck("BuildCommands=", $"{commandListFile}")
                 .ToString();
 

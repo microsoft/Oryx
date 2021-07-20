@@ -547,7 +547,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var data = new TheoryData<string>();
                 data.Add(Settings.BuildImageName);
                 var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetVsoBuildImage("vso-slim"));
+                data.Add(imageTestHelper.GetLtsVersionsBuildImage());
                 data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
                 return data;
             }

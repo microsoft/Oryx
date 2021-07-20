@@ -204,8 +204,8 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     ORIGINAL_PATH="$PATH" \
     PATH="$ORYX_PATHS:$PATH" \
     CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh" \
-    RUBY_HOME="/opt/ruby/current" \
-    JAVA_HOME="/opt/java/current" \
+    RUBY_HOME="/opt/ruby/lts" \
+    JAVA_HOME="/opt/java/lts" \
     DYNAMIC_INSTALL_ROOT_DIR="/opt"
 
 # Now adding remaining of VSO platform features
