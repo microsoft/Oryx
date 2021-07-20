@@ -78,7 +78,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     isMonoRepo.ToString())
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{commandListFile}")
-                .AddStringExistsInFileCheck("PlatformWithVersion=", $"{commandListFile}")
+                .AddStringExistsInFileCheck("PlatFormWithVersion=", $"{commandListFile}")
                 .AddStringExistsInFileCheck("BuildCommands=", $"{commandListFile}")
                 .ToString();
 

@@ -242,9 +242,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --manifest-dir {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{commandListFile}")
-                .AddStringExistsInFileCheck("PlatformWithVersion=", $"{commandListFile}")
+                .AddStringExistsInFileCheck("PlatFormWithVersion=", $"{commandListFile}")
                 .AddStringExistsInFileCheck("BuildCommands=", $"{commandListFile}")
                 .ToString();
 
