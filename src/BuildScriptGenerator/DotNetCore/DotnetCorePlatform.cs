@@ -121,8 +121,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             manifestFileProperties[ManifestFilePropertyKeys.DotNetCoreSdkVersion]
                 = dotNetCorePlatformDetectorResult.SdkVersion;
 
+            // optional field
             string outputType = dotNetCorePlatformDetectorResult.OutputType;
-            AddOutputTypeOptionalField(manifestFileProperties, outputType);
+            if (!string.IsNullOrEmpty(outputType))
+            {
+                manifestFileProperties[ManifestFilePropertyKeys.OutputType] = outputType;
+            }
 
             var projectFile = dotNetCorePlatformDetectorResult.ProjectFile;
             if (string.IsNullOrEmpty(projectFile))
@@ -280,16 +284,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var tools = new Dictionary<string, string>();
             tools[DotNetCoreConstants.PlatformName] = dotNetCorePlatformDetectorResult.SdkVersion;
             return tools;
-        }
-
-        private void AddOutputTypeOptionalField(
-            Dictionary<string, string> manifestFileProperties,
-            string outputType)
-        {
-            if (!string.IsNullOrEmpty(outputType))
-            {
-                manifestFileProperties[ManifestFilePropertyKeys.OutputType] = outputType;
-            }
         }
 
         private string GetSdkVersion(
