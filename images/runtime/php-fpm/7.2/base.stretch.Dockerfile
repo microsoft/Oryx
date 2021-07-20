@@ -70,6 +70,7 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         xsl \
     && pecl install imagick && docker-php-ext-enable imagick
 
+RUN pecl install redis && docker-php-ext-enable redis
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
