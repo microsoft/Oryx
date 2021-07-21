@@ -193,7 +193,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
-        [InlineData("7.0")]
         public void MongoDb_IsInstalled(string imageTag)
         {
             // Arrange & Act
