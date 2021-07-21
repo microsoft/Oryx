@@ -71,7 +71,11 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 #       xmlrpc \
         xsl
 
-RUN pecl install redis && docker-php-ext-enable redis
+# https://github.com/Imagick/imagick/issues/331
+RUN set -eux; \
+    if [[ $PHP_VERSION != 5.* ]]; then \
+        pecl install redis && docker-php-ext-enable redis; \
+    fi
 
 # https://github.com/Imagick/imagick/issues/331
 RUN set -eux; \
@@ -81,8 +85,8 @@ RUN set -eux; \
 
 # deprecated from 5.*, so should be avoided 
 RUN set -eux; \
-    if [[ $PHP_VERSION != 5.* ]]; then \
-        echo "pecl/mongodb requires PHP (version >= 7.0.0, version <= 7.99.99)"; \
+    if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \
+        echo "pecl/mongodb requires PHP (version >= 7.1.0, version <= 7.99.99)"; \
         pecl install mongodb && docker-php-ext-enable mongodb; \
     fi
 
