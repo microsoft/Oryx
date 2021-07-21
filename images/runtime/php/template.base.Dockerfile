@@ -71,7 +71,11 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 #       xmlrpc \
         xsl
 
-RUN pecl install redis && docker-php-ext-enable redis
+# https://github.com/Imagick/imagick/issues/331
+RUN set -eux; \
+    if [[ $PHP_VERSION != 5.* ]]; then \
+        pecl install redis && docker-php-ext-enable redis; \
+    fi
 
 # https://github.com/Imagick/imagick/issues/331
 RUN set -eux; \
