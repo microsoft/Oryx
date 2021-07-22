@@ -215,33 +215,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("8.0")]
-        [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
-        public void Redis_IsInstalled(string imageTag)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
-                CommandToExecuteOnRun = "php",
-                CommandArguments = new[] { "-m", " | grep redis);" }
-            });
-
-            // Assert
-            var output = result.StdOut.ToString();
-            RunAsserts(() =>
-            {
-                Assert.True(result.IsSuccess);
-                Assert.Contains("redis", output);
-            },
-                result.GetDebugInfo());
-
-        }
-
-        [Theory]
         [InlineData("7.4")]
         [InlineData("7.3")]
         [InlineData("7.2")]
@@ -305,6 +278,33 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.Contains(expectedOryxVersion, result.StdOut);
                 },
                 result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("8.0")]
+        [InlineData("7.4")]
+        [InlineData("7.3")]
+        [InlineData("7.2")]
+        [InlineData("7.0")]
+        public void Redis_IsInstalled(string imageTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-m", " | grep redis);" }
+            });
+
+            // Assert
+            var output = result.StdOut.ToString();
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("redis", output);
+            },
+                result.GetDebugInfo());
+
         }
     }
 }
