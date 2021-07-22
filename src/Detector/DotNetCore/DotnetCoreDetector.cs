@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             var outputTypeElement = projectFileDoc.XPathSelectElement(
-                DotNetCoreConstants.OutputTypeElementXPathExpression);
+                DotNetCoreConstants.OutputTypeXPathExpression);
             var outputType = GetOutputType(outputTypeElement);
 
             var version = GetVersion(targetFramework);
