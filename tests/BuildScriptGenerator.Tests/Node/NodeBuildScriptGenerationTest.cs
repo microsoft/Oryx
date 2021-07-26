@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressNodeModulesCommand = null,
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -166,7 +166,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressNodeModulesCommand = null,
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -211,7 +211,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressNodeModulesCommand = null,
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -259,7 +259,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 ConfigureYarnCache = false,
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -308,7 +308,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 ConfigureYarnCache = false,
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -361,7 +361,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 ConfigureYarnCache = false,
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -412,7 +412,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 ConfigureYarnCache = false,
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -459,7 +459,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressNodeModulesCommand = null,
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -506,7 +506,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressNodeModulesCommand = null,
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -557,7 +557,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressNodeModulesCommand = "tar -zcf",
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -610,7 +610,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressNodeModulesCommand = "tar -zcf",
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatormWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -662,7 +662,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressNodeModulesCommand = "zip -y -q -r",
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -715,7 +715,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressNodeModulesCommand = null,
                 NodeBuildProperties = new Dictionary<string, string>
                 {
-                    {"PlatformWithVersion", "nodejs 10.10.10" },
+                    {"PlatformWithVersion", "Nodejs 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
@@ -838,7 +838,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
             
             var commandManifestProperties = new Dictionary<string, string>();
-            commandManifestProperties["PlatformWithVersion"] = "nodejs 10.10.10";
+            commandManifestProperties["PlatformWithVersion"] = "Nodejs 10.10.10";
 
             var expected = new NodeBashBuildSnippetProperties
             {
