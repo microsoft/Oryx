@@ -331,6 +331,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 DirectoriesToExcludeFromCopyToBuildOutputDir = directoriesToExcludeFromCopyToBuildOutputDir,
                 ManifestFileName = FilePaths.BuildManifestFileName,
                 ManifestDir = context.ManifestDir,
+                BuildCommandsFileName = context.BuildCommandsFileName,
                 BuildProperties = buildProperties,
                 BenvPath = FilePaths.Benv,
                 PlatformInstallationScript = installationScript,

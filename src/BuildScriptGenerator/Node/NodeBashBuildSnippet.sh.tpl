@@ -1,7 +1,22 @@
+{{ if NodeBuildCommandsFile | IsNotBlank }}
+COMMAND_MANIFEST_FILE={{ NodeBuildCommandsFile }}
+
+echo "Removing existing manifest file"
+rm -f "$COMMAND_MANIFEST_FILE"
+{{ if NodeBuildProperties != empty }}
+echo "Creating a manifest file..."
+{{ for prop in NodeBuildProperties }}
+echo "{{ prop.Key }}={{ prop.Value }}" >> "$COMMAND_MANIFEST_FILE"
+{{ end }}
+echo "Node Build Command Manifest file created."
+{{ end }}
+{{ end }}
+
 echo
 echo "Using Node version:"
 node --version
 echo
+echo "BuildCommands=" >> "$COMMAND_MANIFEST_FILE"
 {{ PackageInstallerVersionCommand }}
 
 {{ if PackageRegistryUrl | IsNotBlank }}
@@ -72,7 +87,9 @@ then
 	echo
 	echo "Running '{{ ProductionOnlyPackageInstallCommand }}'..."
 	echo
+	printf %s ", {{ ProductionOnlyPackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ ProductionOnlyPackageInstallCommand }}
+	
 
 	if [ -d "node_modules" ]; then
 		echo
@@ -90,13 +107,16 @@ cd "$SOURCE_DIR"
 	echo
 	echo "Running '{{ CustomBuildCommand }}'..."
 	echo
+	printf %s ", {{ CustomBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ CustomBuildCommand }}
 {{ else if CustomRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ PackageInstallCommand }}'..."
 	echo
+	printf %s ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ PackageInstallCommand }}
 	echo
+	printf %s ", {{ CustomRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ CustomRunBuildCommand }}
 	echo
 {{ else if LernaRunBuildCommand | IsNotBlank }}
@@ -106,36 +126,43 @@ cd "$SOURCE_DIR"
 	echo
 	echo
 	echo "Running '{{ LernaInitCommand }} & {{ LernaBootstrapCommand }}':"
+	printf %s ", {{ LernaInitCommand }}', '{{ LernaBootstrapCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ LernaInitCommand }}
 	{{ LernaBootstrapCommand }}
 	echo
 	echo
 	echo "Running '{{ LernaRunBuildCommand }}'..."
 	echo
+	printf %s ", {{ LernaRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ LernaRunBuildCommand }}
 {{ else if LageRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running ' {{ InstallLageCommand }} ':"
+	printf %s ", {{ InstallLageCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ InstallLageCommand }}
 	echo
 	echo
 	echo "Running '{{ LageRunBuildCommand }}'..."
+	printf %s ", {{ LageRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
 	{{ LageRunBuildCommand }}
 {{ else }}
 	echo
 	echo "Running '{{ PackageInstallCommand }}'..."
 	echo
+	printf %s ", {{ PackageInstallCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	{{ PackageInstallCommand }}
 	{{ if NpmRunBuildCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ NpmRunBuildCommand }}'..."
+	printf %s ", {{ NpmRunBuildCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
 	{{ NpmRunBuildCommand }}
 	{{ end }}
 	{{ if NpmRunBuildAzureCommand | IsNotBlank }}
 	echo
 	echo "Running '{{ NpmRunBuildAzureCommand }}'..."
+	printf %s ", {{ NpmRunBuildAzureCommand }}" >> "$COMMAND_MANIFEST_FILE"
 	echo
 	{{ NpmRunBuildAzureCommand }}
 	{{ end }}
@@ -155,11 +182,24 @@ echo "Running custom packaging scripts that might exist..."
 echo
 npm run package || true
 npm run prepublishOnly || true
+printf %s ", npm run package || true, npm run prepublishOnly || true" >> "$COMMAND_MANIFEST_FILE"
 echo
 echo "Running 'npm pack'..."
 echo
+printf %s ", npm pack" >> "$COMMAND_MANIFEST_FILE"
 npm pack
 {{ end }}
+
+
+ReadImageType=$(cat /opt/oryx/.imagetype)
+
+if [ "$ReadImageType" = "vso-focal" ]
+then
+	echo $ReadImageType
+	cat "$COMMAND_MANIFEST_FILE"
+else
+	rm "$COMMAND_MANIFEST_FILE"
+fi
 
 cd "$SOURCE_DIR"
 

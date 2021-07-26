@@ -47,6 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string PythonVirtualEnvironmentName = "VIRTUALENV_NAME";
         public const string OryxSdkStorageBaseUrl = "ORYX_SDK_STORAGE_BASE_URL";
         public const string AppType = "ORYX_APP_TYPE";
+        public const string BuildCommandsFileName = "BUILDCOMMANDS_FILE";
         public const string DynamicInstallRootDir = "DYNAMIC_INSTALL_ROOT_DIR";
         public const string DisableRecursiveLookUp = "DISABLE_RECURSIVE_LOOKUP";
     }

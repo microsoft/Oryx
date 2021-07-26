@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using BuildScriptGeneratorLib = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
@@ -46,6 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.PostBuildCommand = GetStringValue(SettingsKeys.PostBuildCommand);
             options.OryxSdkStorageBaseUrl = GetStringValue(SettingsKeys.OryxSdkStorageBaseUrl);
             options.AppType = GetStringValue(SettingsKeys.AppType);
+            options.BuildCommandsFileName = GetStringValue(SettingsKeys.BuildCommandsFileName);
             options.CompressDestinationDir = GetBooleanValue(SettingsKeys.CompressDestinationDir);
 
             // Dynamic install
