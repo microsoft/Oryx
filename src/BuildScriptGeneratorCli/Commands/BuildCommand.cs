@@ -370,6 +370,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             ManifestDir = string.IsNullOrEmpty(ManifestDir) ? null : Path.GetFullPath(ManifestDir);
             IntermediateDir = string.IsNullOrEmpty(IntermediateDir) ? null : Path.GetFullPath(IntermediateDir);
             DestinationDir = string.IsNullOrEmpty(DestinationDir) ? null : Path.GetFullPath(DestinationDir);
+            BuildCommandsFileName = string.IsNullOrEmpty(BuildCommandsFileName) ?
+                FilePaths.BuildCommandsFileName : BuildCommandsFileName;
             var buildProperties = ProcessProperties(Properties);
 
             // NOTE: Order of the following is important. So a command line provided value has higher precedence
@@ -427,6 +429,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             SetValueIfNotNullOrEmpty(SettingsKeys.AppType, AppType);
             commandLineConfigSource.Set(SettingsKeys.CompressDestinationDir, CompressDestinationDir.ToString());
             SetValueIfNotNullOrEmpty(SettingsKeys.DynamicInstallRootDir, DynamicInstallRootDir);
+            SetValueIfNotNullOrEmpty(SettingsKeys.BuildCommandsFileName, BuildCommandsFileName);
 
             if (buildProperties != null)
             {

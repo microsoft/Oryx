@@ -40,6 +40,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string AppType { get; set; }
 
         [Option(
+            OptionTemplates.BuildCommandsFileName,
+            CommandOptionType.SingleValue,
+            Description = "Name of the file where list of build commands will be printed for node and python applications.")]
+        public string BuildCommandsFileName { get; set; }
+
+        [Option(
             OptionTemplates.CompressDestinationDir,
             CommandOptionType.NoValue,
             Description = "Compresses the destination directory(excluding the manifest file) into a tar ball.")]

@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
@@ -148,8 +149,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     $"'{typeof(PythonPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
+            _logger.LogInformation($"context buildcommandsfilename: {context.BuildCommandsFileName}");
+            _logger.LogInformation($"common option buildcommandsfilename: {_commonOptions.BuildCommandsFileName}");
+
             if (IsCondaEnvironment(pythonPlatformDetectorResult))
             {
+                _logger.LogInformation($" *** conda context buildcommandsfilename: {context.BuildCommandsFileName}");
+                _logger.LogInformation($" *** conda common option buildcommandsfilename: {_commonOptions.BuildCommandsFileName}");
+
                 return GetBuildScriptSnippetForConda(context, pythonPlatformDetectorResult);
             }
 
@@ -162,6 +169,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var virtualEnvName = GetVirtualEnvironmentName(context);
             var isPythonPackageCommandEnabled = _commonOptions.ShouldPackage;
             var pythonPackageWheelType = GetPythonPackageWheelType(context);
+            var pythonBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.BuildCommandsFileName) ?
+                    FilePaths.BuildCommandsFileName : _commonOptions.BuildCommandsFileName;
+            pythonBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.DestinationDir) ?
+                Path.Combine(context.SourceRepo.RootPath, pythonBuildCommandsFile) :
+                Path.Combine(_commonOptions.DestinationDir, pythonBuildCommandsFile);
+            manifestFileProperties[nameof(pythonBuildCommandsFile)] = pythonBuildCommandsFile;
 
             if (!isPythonPackageCommandEnabled && !string.IsNullOrWhiteSpace(pythonPackageWheelType))
             {
@@ -241,7 +254,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 compressVirtualEnvCommand: compressVirtualEnvCommand,
                 compressedVirtualEnvFileName: compressedVirtualEnvFileName,
                 runPythonPackageCommand: isPythonPackageCommandEnabled,
+                pythonBuildCommandsFileName: pythonBuildCommandsFile,
+                pythonVersion: pythonVersion,
                 pythonPackageWheelProperty: pythonPackageWheelType);
+
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,
                 scriptProps,
@@ -412,6 +428,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             var scriptProperties = new JupyterNotebookBashBuildSnippetProperties();
             scriptProperties.HasRequirementsTxtFile = detectorResult.HasRequirementsTxtFile;
+            _logger.LogInformation($"conda context buildcommandsfilename: {context.BuildCommandsFileName}");
+            _logger.LogInformation($"conda common option buildcommandsfilename: {_commonOptions.BuildCommandsFileName}");
+            _logger.LogInformation($"conda common option destination dir: {_commonOptions.DestinationDir}");
+            var condaBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.BuildCommandsFileName) ?
+                FilePaths.BuildCommandsFileName : _commonOptions.BuildCommandsFileName;
+            condaBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.DestinationDir) ?
+                Path.Combine(context.SourceRepo.RootPath, condaBuildCommandsFile) :
+                Path.Combine(this._commonOptions.DestinationDir, condaBuildCommandsFile);
+            _logger.LogInformation($"conda buildcommandsfilename with path: {condaBuildCommandsFile}");
+            var manifestFileProperties = new Dictionary<string, string>();
+
+            // Write the platform name and version to the manifest file
+            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = detectorResult.PlatformVersion;
+            manifestFileProperties[nameof(condaBuildCommandsFile)] = condaBuildCommandsFile;
 
             if (detectorResult.HasCondaEnvironmentYmlFile)
             {
@@ -438,7 +468,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
                 scriptProperties.EnvironmentTemplateFileName = templateName;
                 scriptProperties.EnvironmentTemplatePythonVersion = pythonVersion;
+                scriptProperties.NoteBookBuildCommandsFileName = condaBuildCommandsFile;
             }
+
+            _logger.LogInformation($"script properties of conda buildcommandfilename: {scriptProperties.NoteBookBuildCommandsFileName}");
+            _logger.LogInformation($"script properties of conda templatename: {scriptProperties.EnvironmentTemplateFileName}");
+
 
             var script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonJupyterNotebookSnippet,
@@ -448,6 +483,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return new BuildScriptSnippet
             {
                 BashBuildScriptSnippet = script,
+                BuildProperties = manifestFileProperties,
             };
         }
 
