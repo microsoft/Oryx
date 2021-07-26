@@ -24,6 +24,7 @@ apt-get update \
         libproj-dev \
         gdal-bin \
         libgdal-dev \
+        python3-gdal \
     && rm -rf /var/lib/apt/lists/*
  
 # Microsoft SQL Server 2017

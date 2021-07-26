@@ -149,8 +149,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     $"'{typeof(PythonPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
+            _logger.LogInformation($"context buildcommandsfilename: {context.BuildCommandsFileName}");
+            _logger.LogInformation($"common option buildcommandsfilename: {_commonOptions.BuildCommandsFileName}");
+
             if (IsCondaEnvironment(pythonPlatformDetectorResult))
             {
+                _logger.LogInformation($" *** conda context buildcommandsfilename: {context.BuildCommandsFileName}");
+                _logger.LogInformation($" *** conda common option buildcommandsfilename: {_commonOptions.BuildCommandsFileName}");
+
                 return GetBuildScriptSnippetForConda(context, pythonPlatformDetectorResult);
             }
 
@@ -464,6 +470,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 scriptProperties.EnvironmentTemplatePythonVersion = pythonVersion;
                 scriptProperties.NoteBookBuildCommandsFileName = condaBuildCommandsFile;
             }
+
+            _logger.LogInformation($"script properties of conda buildcommandfilename: {scriptProperties.NoteBookBuildCommandsFileName}");
+            _logger.LogInformation($"script properties of conda templatename: {scriptProperties.EnvironmentTemplateFileName}");
+
 
             var script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonJupyterNotebookSnippet,
