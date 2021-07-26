@@ -7,7 +7,7 @@ PIP_CACHE_DIR=/usr/local/share/pip-cache
 COMMAND_MANIFEST_FILE={{ PythonBuildCommandsFileName }}
 {{ end }}
 
-echo "PlatFormWithVersion=python {{ PythonVersion }}" > "$COMMAND_MANIFEST_FILE"
+echo "PlatformWithVersion=Python {{ PythonVersion }}" > "$COMMAND_MANIFEST_FILE"
 
 InstallCommand=""
 
