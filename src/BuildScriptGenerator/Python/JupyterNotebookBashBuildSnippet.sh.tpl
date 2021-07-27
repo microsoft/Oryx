@@ -17,7 +17,7 @@ echo "{{ NoteBookBuildCommandsFileName }}"
 COMMAND_MANIFEST_FILE={{ NoteBookBuildCommandsFileName }}
 {{ end }}
 
-echo "PlatformWithVersion=python {{ EnvironmentTemplatePythonVersion }}" >> "$COMMAND_MANIFEST_FILE"
+echo "PlatformWithVersion=Python {{ EnvironmentTemplatePythonVersion }}" >> "$COMMAND_MANIFEST_FILE"
 
 environmentPrefix="./venv"
 echo
