@@ -967,7 +967,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip = "Bug#1361539 yarn2 workspace-tools is broken")]
         public void  CanBuildAndRunNodeApp_UsingYarn2ForBuild()
         {
             // Arrange
