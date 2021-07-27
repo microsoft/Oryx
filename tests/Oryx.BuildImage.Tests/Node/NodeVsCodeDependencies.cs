@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                 // Make sure python2 is on the path as node-gyp install of iconv fails otherwise
                 .AddCommand("source benv python=2")
             // Build & package
-                .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir} {osReqsParam}") // Should create a file <name>-<version>.tgz
+                .AddBuildCommand($"{pkgSrcDir} --package --manifest-dir /tmp/temp -o {pkgBuildOutputDir} {osReqsParam}") // Should create a file <name>-<version>.tgz
                 .AddFileExistsCheck(oryxPackOutput)
             // Compute diff between tar contents
                 // Download public NPM build for comparison
