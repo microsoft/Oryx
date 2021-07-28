@@ -9,5 +9,11 @@ pr:
     - tests/Detector.Tests/*
     - vsts/nugetpackages.signproj
     - vsts/pipelines/validation-detector.yml
-steps:
-- template: templates/_buildTemplateDetector.yml
+
+- job: Job_BuildImage
+  displayName: Detector Validation
+  pool:
+    vmImage: 'ubuntu-latest'
+  timeoutInMinutes: 480
+  steps:
+  - template: templates/_buildTemplateDetector.yml
