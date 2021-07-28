@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
 
         private readonly string[] IgnoredTarEntries = new[] { "package/.npmignore", "package", "package/yarn.lock" };
 
-        [Theory]
+        [Theory(Skip = "Bug# 1361701: In agent this test is failing")]
         [MemberData(nameof(SomeVSCodeDependencies))]
         public void CanBuildNpmPackages(
             string pkgName,
@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
                 // Make sure python2 is on the path as node-gyp install of iconv fails otherwise
                 .AddCommand("source benv python=2")
             // Build & package
-                .AddBuildCommand($"{pkgSrcDir} --package -o {pkgBuildOutputDir} {osReqsParam}") // Should create a file <name>-<version>.tgz
+                .AddBuildCommand($"{pkgSrcDir} --package --manifest-dir /tmp/temp -o {pkgBuildOutputDir} {osReqsParam}") // Should create a file <name>-<version>.tgz
                 .AddFileExistsCheck(oryxPackOutput)
             // Compute diff between tar contents
                 // Download public NPM build for comparison
