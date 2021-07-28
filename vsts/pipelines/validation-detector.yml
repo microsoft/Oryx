@@ -10,7 +10,8 @@ pr:
     - vsts/nugetpackages.signproj
     - vsts/pipelines/validation-detector.yml
 
-- job: Job_BuildImage
+jobs:
+- job: Job_Detector
   displayName: Detector Validation
   pool:
     vmImage: 'ubuntu-latest'
