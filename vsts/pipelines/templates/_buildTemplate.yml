@@ -113,7 +113,7 @@ steps:
   displayName: 'Install Docker 20.10.5'
   condition: >
     and(succeeded(),  
-    or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true')))
+    or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true') ))
 
 - task: ShellScript@2
   displayName: 'Test build images'
