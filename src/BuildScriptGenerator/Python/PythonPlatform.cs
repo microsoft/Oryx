@@ -267,6 +267,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
+                OryxBuildSucessfull = true,
             };
         }
 

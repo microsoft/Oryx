@@ -320,6 +320,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var copySourceDirectoryContentToDestinationDirectory = buildScriptSnippets.All(
                 snippet => snippet.CopySourceDirectoryContentToDestinationDirectory);
 
+            var isOryxBuildSucessfull = buildScriptSnippets.All(
+                snippet => snippet.OryxBuildSucessfull);
+
+
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
                 OsPackagesToInstall = _cliOptions.RequiredOsPackages ?? new string[0],
@@ -338,6 +342,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 OutputDirectoryIsNested = outputIsSubDirOfSourceDir,
                 CopySourceDirectoryContentToDestinationDirectory = copySourceDirectoryContentToDestinationDirectory,
                 CompressDestinationDir = _cliOptions.CompressDestinationDir,
+                OryxBuildSucessfull = isOryxBuildSucessfull,
             };
 
             LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);

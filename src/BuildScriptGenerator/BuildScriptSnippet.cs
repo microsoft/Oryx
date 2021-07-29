@@ -33,5 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool IsFullScript { get; set; }
 
         public bool CopySourceDirectoryContentToDestinationDirectory { get; set; } = true;
+
+        public bool OryxBuildSucessfull { get; set; } = false;
     }
 }

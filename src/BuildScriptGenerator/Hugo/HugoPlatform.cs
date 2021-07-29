@@ -89,6 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
+                OryxBuildSucessfull = true,
             };
         }
 
