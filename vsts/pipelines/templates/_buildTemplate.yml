@@ -111,9 +111,7 @@ steps:
     echo "After installing ................"
     docker -v
   displayName: 'Install Docker 20.10.5'
-  condition: >
-    and(succeeded(),  
-    or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true') ))
+  condition: true
 
 - task: ShellScript@2
   displayName: 'Test build images'
@@ -127,13 +125,6 @@ steps:
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
-  condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
-
-- script: |
-    docker version
-    docker --version
-    docker ps -a
-  displayName: 'Test Docker in runtime image test'
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: DownloadBuildArtifacts@0
