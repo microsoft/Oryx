@@ -967,7 +967,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Bug#1361539 yarn2 workspace-tools is broken")]
+        [Fact]
         public void  CanBuildAndRunNodeApp_UsingYarn2ForBuild()
         {
             // Arrange
@@ -976,6 +976,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/nextjs-yarn2-example";
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
+                .AddCommand($"yarn set version berry")
+                .AddCommand($"yarn plugin import workspace-tools@2.2.0)
+                .AddCommand($"yarn set version 2.4.1")
                 .AddCommand($"oryx build {appDir} -o {appOutputDir}")
                 .ToString();
 
