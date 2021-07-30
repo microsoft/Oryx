@@ -976,16 +976,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/nextjs-yarn2-example";
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
                 .AddCommand($"yarn set version berry")
                 .AddCommand($"yarn plugin import workspace-tools@2.2.0")
                 .AddCommand($"yarn set version 2.4.1")
-                .AddCommand($"oryx build {appDir} -o {appOutputDir}")
+                .AddCommand($"oryx build . -o {appOutputDir}")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = Settings.LtsVersionsBuildImageWithRootAccess,
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -1015,7 +1016,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = Settings.LtsVersionsBuildImageWithRootAccess,
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
