@@ -244,7 +244,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{commandListFile}")
-                .AddStringExistsInFileCheck("PlatFormWithVersion=", $"{commandListFile}")
+                .AddStringExistsInFileCheck("PlatformWithVersion=", $"{commandListFile}")
                 .AddStringExistsInFileCheck("BuildCommands=", $"{commandListFile}")
                 .ToString();
 
