@@ -53,6 +53,10 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 return null;
             }
 
+            var outputTypeElement = projectFileDoc.XPathSelectElement(
+                DotNetCoreConstants.OutputTypeXPathExpression);
+            var outputType = GetOutputType(outputTypeElement);
+
             var version = GetVersion(targetFramework);
 
             return new DotNetCorePlatformDetectorResult
@@ -61,6 +65,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 PlatformVersion = version,
                 ProjectFile = projectFile,
                 AppDirectory = appDirectory,
+                OutputType = outputType,
             };
         }
 
@@ -80,6 +85,24 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             return null;
+        }
+
+        private string GetOutputType(XElement outputTypeElement)
+        {
+            string outputType = outputTypeElement?.Value;
+            string outputTypeResult = null;
+            if (!string.IsNullOrEmpty(outputType))
+            {
+                if (outputType.ToLower() == "library")
+                {
+                    outputTypeResult = "in-process";
+                }
+                else if (outputType.ToLower() == "exe")
+                {
+                    outputTypeResult = "isolated";
+                }
+            }
+            return outputTypeResult;
         }
 
         private string GetVersion(string targetFramework)

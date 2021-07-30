@@ -35,5 +35,20 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             <RootNamespace>Microsoft.Oryx.BuildScriptGenerator.Tests</RootNamespace>
           </PropertyGroup>
         </Project>";
+
+        public const string ProjectFileWithOutputTypePlaceHolder = @"
+        <Project Sdk=""Microsoft.NET.Sdk.Web"">
+          <PropertyGroup>
+            <TargetFramework>netcoreapp2.1</TargetFramework>
+            <OutputType>#OutputType#</OutputType>
+          </PropertyGroup>
+        </Project>";
+
+        public const string ProjectFileWithOutOutputTypePlaceHolder = @"
+        <Project Sdk=""Microsoft.NET.Sdk.Web"">
+          <PropertyGroup>
+            <TargetFramework>netcoreapp2.1</TargetFramework>
+          </PropertyGroup>
+        </Project>";
     }
 }
