@@ -967,8 +967,42 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Bug#1361539 yarn2 workspace-tools is broken")]
-        public void  CanBuildAndRunNodeApp_UsingYarn2ForBuild()
+        [Fact]
+        public void  CanBuildAndRunNodeApp_WithWorkspace_UsingYarn2ForBuild()
+        {
+            // Arrange
+            var appName = "nextjs-yarn2-example";
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
+            var appOutputDir = "/tmp/nextjs-yarn2-example";
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddCommand($"cd {appDir}")
+                .AddCommand($"yarn set version berry")
+                .AddCommand($"yarn plugin import workspace-tools@2.2.0")
+                .AddCommand($"yarn set version 2.4.1")
+                .AddCommand($"oryx build . -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.LtsVersionsBuildImageWithRootAccess,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void CanBuildAndRunNodeAppWithoutWorkspace_UsingYarn2ForBuild()
         {
             // Arrange
             var appName = "nextjs-yarn2-example";
@@ -982,7 +1016,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = Settings.LtsVersionsBuildImageWithRootAccess,
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }

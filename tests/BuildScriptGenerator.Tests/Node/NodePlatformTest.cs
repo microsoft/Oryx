@@ -333,7 +333,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(buildScriptSnippet);
-            Assert.Contains("yarn workspaces focus --all --production", buildScriptSnippet.BashBuildScriptSnippet);
+            Assert.Contains("yarn workspaces focus --all", buildScriptSnippet.BashBuildScriptSnippet);
         }
 
         [Fact]
