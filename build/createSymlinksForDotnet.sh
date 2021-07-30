@@ -12,7 +12,7 @@ SYMLINK_DIRECTORY_NAME=""
 if [ -f "$oryxImageDetectorFile" ] && grep -q "vso-focal" "$oryxImageDetectorFile"; then
     echo "image detector file exists, image is vso-focal based.."
     SYMLINK_DIRECTORY_NAME="codespace"
-elif [ -f "$oryxImageDetectorFile" ] && grep -q "vso-focal" "$oryxImageDetectorFile"; then                
+elif [ -f "$oryxImageDetectorFile" ] && grep -q "jamstack" "$oryxImageDetectorFile"; then                
     echo "image detector file exists, image is jamstack based.."
     SYMLINK_DIRECTORY_NAME="jamstack"
 fi
