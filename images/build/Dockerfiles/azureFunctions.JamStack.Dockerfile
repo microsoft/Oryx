@@ -27,3 +27,5 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     && curl -SLsO https://golang.org/dl/$downloadedFileName \
     && tar -C /usr/local -xzf $downloadedFileName \
     && rm -rf $downloadedFileName
+
+RUN ./opt/tmp/build/createSymlinksForDotnet.sh

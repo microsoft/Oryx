@@ -247,7 +247,7 @@ RUN  yes | pecl install xdebug \
     && echo "xdebug.start_with_request = yes" >> ${PHP_LOCATION}/ini/conf.d/xdebug.ini \
     && echo "xdebug.client_port = 9000" >> ${PHP_LOCATION}/ini/conf.d/xdebug.ini
  
-RUN ./opt/tmp/build/vsoSymlinksDotNetCore.sh
+RUN ./opt/tmp/build/createSymlinksForDotnet.sh
 
 RUN groupadd -g 1000 codespace
 RUN useradd -u 1000 -g codespace codespace
