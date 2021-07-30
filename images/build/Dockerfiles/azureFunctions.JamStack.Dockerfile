@@ -15,7 +15,9 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     && mkdir -p $nugetPacakgesDir \
     && NUGET_PACKAGES="$nugetPacakgesDir" \
     && . /tmp/build/__dotNetCoreSdkVersions.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION /tmp/images/build/installDotNetCore.sh \
+    && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
+       INSTALL_PACKAGES="true" \
+       /tmp/images/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
