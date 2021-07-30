@@ -133,7 +133,7 @@ RUN tmpDir="/opt/tmp" \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f /etc/apt/sources.list.d/buster.list \
-    && rm -rf $tmpDir \
+    #&& rm -rf $tmpDir \
     && echo "githubactions" > /opt/oryx/.imagetype
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
