@@ -5,7 +5,7 @@ ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     ORYX_BUILDIMAGE_TYPE="jamstack" \
     DYNAMIC_INSTALL_ROOT_DIR="/opt" \
-    PATH="/usr/local/go/bin:/opt/dotnet/lts:$PATH"
+    PATH="/home/jamstack/.dotnet/:/usr/local/go/bin:/opt/dotnet/lts:$PATH"
 
 COPY --from=support-files-image-for-build /tmp/oryx/ /tmp
 
@@ -28,6 +28,8 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     && curl -SLsO https://golang.org/dl/$downloadedFileName \
     && tar -C /usr/local -xzf $downloadedFileName \
     && rm -rf $downloadedFileName \ 
-    && echo "jamstack" > /opt/oryx/.imagetype
-
-RUN ./opt/tmp/build/createSymlinksForDotnet.sh
+    && echo "jamstack" > /opt/oryx/.imagetype \
+    && ./opt/tmp/build/createSymlinksForDotnet.sh \
+    && ls -la /home/jamstack/ \
+    && ./home/jamstack/.dotnet/dotnet --list-sdks \
+    && source benv dotnet=/home/jamstack/.dotnet/dotnet 

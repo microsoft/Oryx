@@ -80,7 +80,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 foreach (var toolNameAndVersion in toolsToBeSetInPath)
                 {
-                    toolsToVersion[toolNameAndVersion.Key] = toolNameAndVersion.Value;
+                    _logger.LogInformation($"If {toolNameAndVersion.Key} is set as environment, it'll be not be set via benv");
+                    if (!string.IsNullOrEmpty(
+                        Environment.GetEnvironmentVariable(toolNameAndVersion.Key)))
+                    {
+                        _logger.LogInformation($"If {toolNameAndVersion.Key} is set as environment, it'll be not be set via benv");
+
+                    }
+                    else
+                    {
+                        _logger.LogInformation($"If {toolNameAndVersion.Key} is not set as environment, it'll be set to {toolNameAndVersion.Value} via benv");
+                        toolsToVersion[toolNameAndVersion.Key] = toolNameAndVersion.Value;
+                    }
                 }
             }
 

@@ -4,7 +4,7 @@
 #  Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.
 #--------------------------------------------------------------------------------------------------------------
 
-set -ex
+set -e
 
 oryxImageDetectorFile="/opt/oryx/.imagetype"
 SYMLINK_DIRECTORY_NAME=""
