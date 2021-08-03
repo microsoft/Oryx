@@ -15,7 +15,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     *) echo "unsupported architecture"; exit 1 ;; \
   esac
 
-ARG NODE14_VERSION
+ARG NODE16_VERSION
 ENV NODE_VERSION ${NODE16_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 
