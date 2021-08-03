@@ -13,7 +13,7 @@ source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__nodeVersions.sh
 
-declare -r NODE_BUSTER_VERSION_ARRAY=($NODE14_VERSION)
+declare -r NODE_BUSTER_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
@@ -139,6 +139,7 @@ for dockerFile in $dockerFiles; do
         --build-arg NODE10_VERSION=$NODE10_VERSION \
         --build-arg NODE12_VERSION=$NODE12_VERSION \
         --build-arg NODE14_VERSION=$NODE14_VERSION \
+        --build-arg NODE16_VERSION=$NODE16_VERSION \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
         $labels \
         .
