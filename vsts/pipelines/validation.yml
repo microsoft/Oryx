@@ -18,6 +18,18 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   timeoutInMinutes: 480
+  # specific branch
+  pr:
+    paths:
+      exclude:
+      - Detector.sln
+      - src/Detector/*
+      - tests/Detector.Tests/*
+      - vsts/nugetpackages.signproj
+      - vsts/pipelines/validation-detector.yml
+      - build/testDetector.sh
+      include:
+      - /*
   steps:
   - script: |
       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
@@ -34,6 +46,18 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   timeoutInMinutes: 480
+  # specific branch
+  pr:
+    paths:
+      exclude:
+      - Detector.sln
+      - src/Detector/*
+      - tests/Detector.Tests/*
+      - vsts/nugetpackages.signproj
+      - vsts/pipelines/validation-detector.yml
+      - build/testDetector.sh
+      include:
+      - /*
   steps:
   - script: |
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
