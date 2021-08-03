@@ -165,7 +165,7 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20210429.2
+    node-runtime-base-tag: 20210803.4
     yarn-version: 1.22.10
     yarn-minor-version: 1.17
     yarn-major-version: 1
