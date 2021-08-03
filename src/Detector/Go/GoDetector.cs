@@ -5,9 +5,8 @@
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.Common.Extensions;
 using System;
-using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.Oryx.Detector.Go
 {
@@ -32,27 +31,21 @@ namespace Microsoft.Oryx.Detector.Go
 
         public PlatformDetectorResult Detect(DetectorContext context)
         {
-            bool isGoApp = false;
             string appDirectory = string.Empty;
             var sourceRepo = context.SourceRepo;
-            bool goDotModExists = false;
             // check if go.mod exists
-            if (sourceRepo.FileExists(GoConstants.GoDotModFileName))
-            {
-                goDotModExists = true;
-                isGoApp = true;
-                _logger.LogInformation($"Found {GoConstants.GoDotModFileName} at the root of the repo. ");
-            }
-            else
+            if (!sourceRepo.FileExists(GoConstants.GoDotModFileName))
             {
                 _logger.LogDebug(
                     $"Could not find {GoConstants.GoDotModFileName} in repo");
                 return null;
             }
+            _logger.LogInformation($"Found {GoConstants.GoDotModFileName} at the root of the repo. ");
 
-            // TODO: check if go.sum or /cmd/repo_name/*.go exists
-
+            // TODO: check if go.sum or /cmd/repo_name/*.go 
             var version = GetVersion(context);
+
+            // TODO: add additional fields that are helpful
             return new GoPlatformDetectorResult
             {
                 Platform = GoConstants.PlatformName,
@@ -77,21 +70,19 @@ namespace Microsoft.Oryx.Detector.Go
             {
                 var goDotModFileContent = context.SourceRepo.ReadFile(GoConstants.GoDotModFileName);
                 var goDotModFileContentLines = goDotModFileContent.Split('\n');
-
+                var sourceRepo = context.SourceRepo;
                 // Example content of go.mod:
                 // module myModule
                 //
                 // go 1.16
+                Regex regex = new Regex(@"^[\s]*go [0-9]+\.[0-9]+");
                 foreach (var goDotModFileContentLine in goDotModFileContentLines)
                 {
-                    if (goDotModFileContentLine.Trim().StartsWith("go", StringComparison.InvariantCultureIgnoreCase))
+                    var goVersionLine = goDotModFileContentLine.Trim().Split(' ');
+                    Match match = regex.Match(goDotModFileContentLine);
+                    if (match.Success)
                     {
-                        var goVersionLine = goDotModFileContentLine.Trim().Split(' ');
-                        // Make sure it's in valid format
-                        if (goVersionLine.Length == 2)
-                        {
-                            return goVersionLine[1].Trim('\"').Trim('\'');
-                        }
+                        return goVersionLine[1].Trim('\"').Trim('\'');
                     }
                 }
             }
