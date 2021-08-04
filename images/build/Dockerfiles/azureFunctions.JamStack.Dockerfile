@@ -31,6 +31,4 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     && rm -rf $downloadedFileName \ 
     && echo "jamstack" > /opt/oryx/.imagetype
     
-RUN ./opt/tmp/build/createSymlinksForDotnet.sh \
-    && ls -la /home/jamstack/ \
-    && ./home/jamstack/.dotnet/dotnet --list-sdks
+RUN ./opt/tmp/build/createSymlinksForDotnet.sh
