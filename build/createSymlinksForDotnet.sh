@@ -4,11 +4,24 @@
 #  Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.
 #--------------------------------------------------------------------------------------------------------------
 
-set -ex
+set -e
+
+oryxImageDetectorFile="/opt/oryx/.imagetype"
+SYMLINK_DIRECTORY_NAME=""
+
+if [ -f "$oryxImageDetectorFile" ] && grep -q "vso-focal" "$oryxImageDetectorFile"; then
+    echo "image detector file exists, image is vso-focal based.."
+    SYMLINK_DIRECTORY_NAME="codespace"
+elif [ -f "$oryxImageDetectorFile" ] && grep -q "jamstack" "$oryxImageDetectorFile"; then                
+    echo "image detector file exists, image is jamstack based.."
+    SYMLINK_DIRECTORY_NAME="jamstack"
+fi
+
+echo "Symlink directory name: $SYMLINK_DIRECTORY_NAME"
 
 splitSdksDir="/opt/dotnet"
 
-allSdksDir="/home/codespace/.dotnet"
+allSdksDir="/home/$SYMLINK_DIRECTORY_NAME/.dotnet"
 mkdir -p "$allSdksDir"
 
 # Copy latest muxer and license files

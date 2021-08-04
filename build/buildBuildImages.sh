@@ -473,7 +473,7 @@ elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
-githubactions, jamstack, ltsversions, full, vso, vso-focal, cli, buildpack"
+githubactions, jamstack, ltsversions, full, vso-slim, vso-focal, cli, buildpack"
 	exit 1
 fi
 
