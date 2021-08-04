@@ -31,9 +31,10 @@ function blobExistsInProd() {
 function copyDefaultVersionFile() {
     local defaultVersionFile="$1"
     local platformName="$2"
+    echo "prod defaultversion without sas: $PROD_SDK_STORAGE_BASE_URL/$platformName/defaultVersion.txt" 
     "$azCopyDir/azcopy" copy \
         "$defaultVersionFile" \
-        "$PROD_SDK_STORAGE_BASE_URL/$platformName/defaultVersion.txt?$PROD_STORAGE_SAS_TOKEN"
+        "$PROD_SDK_STORAGE_BASE_URL/$platformName/defaultVersion.txt$PROD_STORAGE_SAS_TOKEN"
 }
 
 function copyBlob() {
@@ -46,9 +47,11 @@ function copyBlob() {
     else
         echo
         echo "Blob '$blobName' does not exist in Prod storage container '$platformName'. Copying it..."
+        echo "dev blob without sas: $DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName" 
+        echo "prod blob without sas: $PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName" 
         "$azCopyDir/azcopy" copy \
-            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName?$DEV_STORAGE_SAS_TOKEN" \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName?$PROD_STORAGE_SAS_TOKEN"
+            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
     fi
 }
 
