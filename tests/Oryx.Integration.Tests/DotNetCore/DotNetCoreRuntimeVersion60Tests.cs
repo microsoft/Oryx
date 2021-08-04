@@ -366,7 +366,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     SettingsKeys.DynamicInstallRootDir,
                     BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
                .AddCommand($"oryx prep --skip-detection --platforms-and-versions dotnet=6")
-               .Source($"benv dotnet=6.0.100-preview.5.21302.13")
+               .Source($"benv dotnet=6.0.100-preview.6.21355.2")
                .AddCommand($"cd {appDir}")
                .AddCommand($"dotnet publish -c release -r linux-x64 -o {appOutputDir}")
                .ToString();
