@@ -33,7 +33,7 @@ function copyDefaultVersionFile() {
     local platformName="$2"
     "$azCopyDir/azcopy" copy \
         "$defaultVersionFile" \
-        "$PROD_SDK_STORAGE_BASE_URL/$platformName/defaultVersion.txt?$PROD_STORAGE_SAS_TOKEN"
+        "$PROD_SDK_STORAGE_BASE_URL/$platformName/defaultVersion.txt$PROD_STORAGE_SAS_TOKEN"
 }
 
 function copyBlob() {
@@ -47,8 +47,8 @@ function copyBlob() {
         echo
         echo "Blob '$blobName' does not exist in Prod storage container '$platformName'. Copying it..."
         "$azCopyDir/azcopy" copy \
-            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName?$DEV_STORAGE_SAS_TOKEN" \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName?$PROD_STORAGE_SAS_TOKEN"
+            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
     fi
 }
 
