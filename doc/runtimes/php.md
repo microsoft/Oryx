@@ -44,6 +44,7 @@ The following PHP extensions are installed & enabled in the runtime images:
 * exif
 * gettext
 * imap
+* redis
 * tidy
 * shmop
 * soap

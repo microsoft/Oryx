@@ -69,7 +69,7 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 # deprecated from 7.4, so should be avoided in general template for all php versions
 #        xmlrpc \
         xsl
-
+RUN pecl install redis && docker-php-ext-enable redis
 # https://github.com/Imagick/imagick/issues/331
 RUN set -eux; \
     if [[ $PHP_VERSION != 8.* ]]; then \

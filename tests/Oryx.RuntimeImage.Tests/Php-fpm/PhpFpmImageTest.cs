@@ -149,5 +149,31 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Theory]
+        [InlineData("8.0-fpm")]
+        [InlineData("7.4-fpm")]
+        [InlineData("7.3-fpm")]
+        [InlineData("7.2-fpm")]
+        public void Redis_IsInstalled(string imageTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-m", " | grep redis);" }
+            });
+
+            // Assert
+            var output = result.StdOut.ToString();
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("redis", output);
+            },
+                result.GetDebugInfo());
+
+        }
     }
 }
