@@ -761,7 +761,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(
                 $"{appDir}/ -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.OutputType}=\"isolated\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.OutputType}=\"Exe\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
