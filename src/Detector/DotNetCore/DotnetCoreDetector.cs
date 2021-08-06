@@ -90,18 +90,8 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         private string GetOutputType(XElement outputTypeElement)
         {
             string outputType = outputTypeElement?.Value;
-            string outputTypeResult = null;
-            if (!string.IsNullOrEmpty(outputType))
-            {
-                if (outputType.ToLower() == "library")
-                {
-                    outputTypeResult = "in-process";
-                }
-                else if (outputType.ToLower() == "exe")
-                {
-                    outputTypeResult = "isolated";
-                }
-            }
+            // default OutputType is "Library"
+            string outputTypeResult = string.IsNullOrEmpty(outputType) ? "Library" : outputType;
             return outputTypeResult;
         }
 
