@@ -79,10 +79,10 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("Library", "in-process")]
-        [InlineData("Exe", "isolated")]
-        [InlineData("randomText", null)]
-        [InlineData("", null)]
+        [InlineData("Library", "Library")]
+        [InlineData("Exe", "Exe")]
+        [InlineData("randomText", "randomtext")]
+        [InlineData("", "Library")]
         public void Detect_ReturnsOutputType(
             string outputTypeName,
             string expectedOutputType)
