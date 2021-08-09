@@ -34,13 +34,13 @@ namespace Microsoft.Oryx.Detector.Golang
             string appDirectory = string.Empty;
             var sourceRepo = context.SourceRepo;
             // check if go.mod exists
-            if (!sourceRepo.FileExists(GolangConstants.GoDotModFileName))
+            if (!sourceRepo.FileExists(GolangConstants.GoModFileName))
             {
                 _logger.LogDebug(
-                    $"Could not find {GolangConstants.GoDotModFileName} in repo");
+                    $"Could not find {GolangConstants.GoModFileName} in repo");
                 return null;
             }
-            _logger.LogInformation($"Found {GolangConstants.GoDotModFileName} at the root of the repo. ");
+            _logger.LogInformation($"Found {GolangConstants.GoModFileName} at the root of the repo. ");
 
             var version = GetVersion(context);
 
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.Detector.Golang
         {
             try
             {
-                var goDotModFileContent = context.SourceRepo.ReadFile(GolangConstants.GoDotModFileName);
+                var goDotModFileContent = context.SourceRepo.ReadFile(GolangConstants.GoModFileName);
                 var goDotModFileContentLines = goDotModFileContent.Split('\n');
                 var sourceRepo = context.SourceRepo;
                 // Example content of go.mod:
@@ -75,13 +75,11 @@ namespace Microsoft.Oryx.Detector.Golang
                 //
                 // go 1.16
 
-                // Regex matching:
-                //      invalid version format:
-                //         go 1
-                //      valid version format (MAJOR.MINOR or MAJOR.MINOR.PATCH):
-                //         go 1.1
-                //         gos 1.1.1
-                Regex regex = new Regex(@"^[\s]*go[\s]+([0-9]+)\.([0-9]+)(\.([0-9]))?[\s]*$");
+                // Regex matching valid version format:
+                //      go 1
+                //      go 1.16
+                //      go 1.16.1
+                Regex regex = new Regex(@"^[\s]*go[\s]+[0-9]+(\.([0-9])+)?(\.([0-9])+)?[\s]*$");
                 foreach (var goDotModFileContentLine in goDotModFileContentLines)
                 {
                     var goVersionLine = goDotModFileContentLine.Trim().Split(' ');
@@ -96,7 +94,7 @@ namespace Microsoft.Oryx.Detector.Golang
             {
                 _logger.LogWarning(
                     ex,
-                    $"Exception caught while trying to parse {GolangConstants.GoDotModFileName}. " +
+                    $"Exception caught while trying to parse {GolangConstants.GoModFileName}. " +
                     $"Please check version format is valid. Example: go 1.1 or go 1.1.1 (MAJOR.MINOR or MAJOR.MINOR.PATCH)");
             }
 

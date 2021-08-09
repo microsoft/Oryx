@@ -11,6 +11,6 @@ namespace Microsoft.Oryx.Detector.Golang
         /// <summary>
         /// Gets or sets the value indicating if a 'go.mod' file exists in the repo.
         /// </summary>
-        public bool GoDotModExists { get; set; }
+        public bool GoModExists { get; set; }
     }
 }

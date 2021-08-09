@@ -8,7 +8,7 @@ namespace Microsoft.Oryx.Detector.Golang
     internal static class GolangConstants
     {
         internal const string PlatformName = "golang";
-        internal const string GoDotModFileName = "go.mod";
+        internal const string GoModFileName = "go.mod";
         public static readonly string[] StartupFiles = new[]
         {
             "go.mod"

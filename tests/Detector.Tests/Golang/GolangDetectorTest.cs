@@ -84,7 +84,7 @@ namespace Microsoft.Oryx.Detector.Tests.Golang
             // Arrange
             var detector = CreateGolangPlatformDetector();
             var repo = new MemorySourceRepo();
-            repo.AddFile(GolangModFileWithMajorMinorVersion, GolangConstants.GoDotModFileName);
+            repo.AddFile(GolangModFileWithMajorMinorVersion, GolangConstants.GoModFileName);
             var context = CreateContext(repo);
 
             // Act
@@ -103,7 +103,7 @@ namespace Microsoft.Oryx.Detector.Tests.Golang
             // Arrange
             var detector = CreateGolangPlatformDetector();
             var repo = new MemorySourceRepo();
-            repo.AddFile(GolangModFileWithMajorMinorPatchVersion, GolangConstants.GoDotModFileName);
+            repo.AddFile(GolangModFileWithMajorMinorPatchVersion, GolangConstants.GoModFileName);
             var context = CreateContext(repo);
 
             // Act
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.Detector.Tests.Golang
             // Arrange
             var detector = CreateGolangPlatformDetector();
             var repo = new MemorySourceRepo();
-            repo.AddFile(GolangModFileWithOnlyMajorVersion, GolangConstants.GoDotModFileName);
+            repo.AddFile(GolangModFileWithOnlyMajorVersion, GolangConstants.GoModFileName);
             var context = CreateContext(repo);
 
             // Act
@@ -131,7 +131,7 @@ namespace Microsoft.Oryx.Detector.Tests.Golang
             // Assert
             Assert.NotNull(result);
             Assert.Equal(GolangConstants.PlatformName, result.Platform);
-            Assert.Null(result.PlatformVersion);
+            Assert.Equal("1", result.PlatformVersion);
             Assert.Equal(string.Empty, result.AppDirectory);
         }
 
