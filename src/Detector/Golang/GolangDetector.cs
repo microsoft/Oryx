@@ -8,22 +8,22 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Text.RegularExpressions;
 
-namespace Microsoft.Oryx.Detector.Go
+namespace Microsoft.Oryx.Detector.Golang
 {
     /// <summary>
     /// An implementation of <see cref="IPlatformDetector"/> which detects Go applications.
     /// </summary>
-    class GoDetector : IGoPlatformDetector
+    class GolangDetector : IGolangPlatformDetector
     {
-        private readonly ILogger<GoDetector> _logger;
+        private readonly ILogger<GolangDetector> _logger;
         private readonly DetectorOptions _options;
 
         /// <summary>
-        /// Creates an instance of <see cref="GoDetector"/>.
+        /// Creates an instance of <see cref="GolangDetector"/>.
         /// </summary>
-        /// <param name="logger">The <see cref="ILogger{GoDetector}"/>.</param>
+        /// <param name="logger">The <see cref="ILogger{GolangDetector}"/>.</param>
         /// <param name="options">The <see cref="DetectorOptions"/>.</param>
-        public GoDetector(ILogger<GoDetector> logger, IOptions<DetectorOptions> options)
+        public GolangDetector(ILogger<GolangDetector> logger, IOptions<DetectorOptions> options)
         {
             _logger = logger;
             _options = options.Value;
@@ -34,21 +34,20 @@ namespace Microsoft.Oryx.Detector.Go
             string appDirectory = string.Empty;
             var sourceRepo = context.SourceRepo;
             // check if go.mod exists
-            if (!sourceRepo.FileExists(GoConstants.GoDotModFileName))
+            if (!sourceRepo.FileExists(GolangConstants.GoDotModFileName))
             {
                 _logger.LogDebug(
-                    $"Could not find {GoConstants.GoDotModFileName} in repo");
+                    $"Could not find {GolangConstants.GoDotModFileName} in repo");
                 return null;
             }
-            _logger.LogInformation($"Found {GoConstants.GoDotModFileName} at the root of the repo. ");
+            _logger.LogInformation($"Found {GolangConstants.GoDotModFileName} at the root of the repo. ");
 
-            // TODO: check if go.sum or /cmd/repo_name/*.go 
             var version = GetVersion(context);
 
             // TODO: add additional fields that are helpful
-            return new GoPlatformDetectorResult
+            return new GolangPlatformDetectorResult
             {
-                Platform = GoConstants.PlatformName,
+                Platform = GolangConstants.PlatformName,
                 PlatformVersion = version,
                 AppDirectory = appDirectory,
             };
@@ -68,14 +67,21 @@ namespace Microsoft.Oryx.Detector.Go
         {
             try
             {
-                var goDotModFileContent = context.SourceRepo.ReadFile(GoConstants.GoDotModFileName);
+                var goDotModFileContent = context.SourceRepo.ReadFile(GolangConstants.GoDotModFileName);
                 var goDotModFileContentLines = goDotModFileContent.Split('\n');
                 var sourceRepo = context.SourceRepo;
                 // Example content of go.mod:
                 // module myModule
                 //
                 // go 1.16
-                Regex regex = new Regex(@"^[\s]*go [0-9]+\.[0-9]+");
+
+                // Regex matching:
+                //      invalid version format:
+                //         go 1
+                //      valid version format (MAJOR.MINOR or MAJOR.MINOR.PATCH):
+                //         go 1.1
+                //         gos 1.1.1
+                Regex regex = new Regex(@"^[\s]*go[\s]+([0-9]+)\.([0-9]+)(\.([0-9]))?[\s]*$");
                 foreach (var goDotModFileContentLine in goDotModFileContentLines)
                 {
                     var goVersionLine = goDotModFileContentLine.Trim().Split(' ');
@@ -90,7 +96,8 @@ namespace Microsoft.Oryx.Detector.Go
             {
                 _logger.LogWarning(
                     ex,
-                    $"Exception caught while trying to parse {GoConstants.GoDotModFileName}");
+                    $"Exception caught while trying to parse {GolangConstants.GoDotModFileName}. " +
+                    $"Please check version format is valid. Example: go 1.1 or go 1.1.1 (MAJOR.MINOR or MAJOR.MINOR.PATCH)");
             }
 
             return null;

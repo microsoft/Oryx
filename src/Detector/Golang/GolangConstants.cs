@@ -3,13 +3,15 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-
-namespace Microsoft.Oryx.Detector.Go
+namespace Microsoft.Oryx.Detector.Golang
 {
-    /// <summary>
-    /// Marker interface that is to be implemented by <see cref="GoDetector"/>.
-    /// </summary>
-    public interface IGoPlatformDetector : IPlatformDetector
+    internal static class GolangConstants
     {
+        internal const string PlatformName = "golang";
+        internal const string GoDotModFileName = "go.mod";
+        public static readonly string[] StartupFiles = new[]
+        {
+            "go.mod"
+        };
     }
 }

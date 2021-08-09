@@ -3,15 +3,14 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-namespace Microsoft.Oryx.Detector.Go
+
+namespace Microsoft.Oryx.Detector.Golang
 {
-    internal static class GoConstants
+    public class GolangPlatformDetectorResult : PlatformDetectorResult
     {
-        internal const string PlatformName = "go";
-        internal const string GoDotModFileName = "go.mod";
-        public static readonly string[] IisStartupFiles = new[]
-        {
-            "go.mod"
-        };
+        /// <summary>
+        /// Gets or sets the value indicating if a 'go.mod' file exists in the repo.
+        /// </summary>
+        public bool GoDotModExists { get; set; }
     }
 }

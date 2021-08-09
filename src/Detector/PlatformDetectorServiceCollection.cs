@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.Detector
                 .AddLogging()
                 .AddOptions()
                 .AddDotNetCoreServices()
-                .AddGoServices()
+                .AddGolangServices()
                 .AddNodeServices()
                 .AddPythonServices()
                 .AddPhpServices()

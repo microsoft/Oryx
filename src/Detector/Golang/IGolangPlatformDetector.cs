@@ -4,13 +4,12 @@
 // --------------------------------------------------------------------------------------------
 
 
-namespace Microsoft.Oryx.Detector.Go
+namespace Microsoft.Oryx.Detector.Golang
 {
-    public class GoPlatformDetectorResult : PlatformDetectorResult
+    /// <summary>
+    /// Marker interface that is to be implemented by <see cref="GolangDetector"/>.
+    /// </summary>
+    public interface IGolangPlatformDetector : IPlatformDetector
     {
-        /// <summary>
-        /// Gets or sets the value indicating if a 'go.mod' file exists in the repo.
-        /// </summary>
-        public bool GoDotModExists { get; set; }
     }
 }

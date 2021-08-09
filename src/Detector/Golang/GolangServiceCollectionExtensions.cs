@@ -6,20 +6,20 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Oryx.Detector.Go;
+using Microsoft.Oryx.Detector.Golang;
 
 namespace Microsoft.Oryx.Detector
 {
-    internal static class GoServiceCollectionExtensions
+    internal static class GolangServiceCollectionExtensions
     {
-        public static IServiceCollection AddGoServices(this IServiceCollection services)
+        public static IServiceCollection AddGolangServices(this IServiceCollection services)
         {
-            services.AddSingleton<GoDetector>();
+            services.AddSingleton<GolangDetector>();
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
-            Func<IServiceProvider, GoDetector> factory = (sp) => sp.GetRequiredService<GoDetector>();
-            services.AddSingleton<IGoPlatformDetector, GoDetector>(factory);
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IPlatformDetector, GoDetector>(factory));
+            Func<IServiceProvider, GolangDetector> factory = (sp) => sp.GetRequiredService<GolangDetector>();
+            services.AddSingleton<IGolangPlatformDetector, GolangDetector>(factory);
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IPlatformDetector, GolangDetector>(factory));
             return services;
         }
     }
