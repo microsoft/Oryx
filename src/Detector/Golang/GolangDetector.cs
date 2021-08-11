@@ -86,6 +86,9 @@ namespace Microsoft.Oryx.Detector.Golang
                     Match match = regex.Match(goDotModFileContentLine);
                     if (match.Success)
                     {
+                        // TODO: append patch if no patch is provided
+                        // Example:
+                        //      1.16 -> 1.16.0
                         return goVersionLine[1].Trim('\"').Trim('\'');
                     }
                 }
