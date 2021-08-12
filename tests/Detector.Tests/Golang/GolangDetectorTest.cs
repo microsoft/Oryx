@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.Detector.Tests.Golang
             // Assert
             Assert.NotNull(result);
             Assert.Equal(GolangConstants.PlatformName, result.Platform);
-            Assert.Equal("1.16", result.PlatformVersion);
+            Assert.Equal("~1.16", result.PlatformVersion);
             Assert.Equal(string.Empty, result.AppDirectory);
         }
 
@@ -131,7 +131,7 @@ namespace Microsoft.Oryx.Detector.Tests.Golang
             // Assert
             Assert.NotNull(result);
             Assert.Equal(GolangConstants.PlatformName, result.Platform);
-            Assert.Equal("1", result.PlatformVersion);
+            Assert.Equal("~1", result.PlatformVersion);
             Assert.Equal(string.Empty, result.AppDirectory);
         }
 
