@@ -21,6 +21,8 @@ RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
 RUN ./build.sh node       /opt/startupcmdgen/nodejs
 RUN ./build.sh php        /opt/startupcmdgen/php
 RUN ./build.sh python     /opt/startupcmdgen/python
+RUN ./build.sh golang     /opt/startupcmdgen/golang
+
 ###
 # End build run script generators
 ###
@@ -82,6 +84,12 @@ RUN set -ex \
     && yarnCacheFolder="/usr/local/share/yarn-cache" \
     && mkdir -p $yarnCacheFolder \
     && chmod 777 $yarnCacheFolder \
+    
+    # Install Golang SDKs
+    && . $buildDir/__golangVersions.sh \
+    && $imagesDir/installPlatform.sh golang $GOLANG16_VERSION \
+    && ln -sfn $GOLANG16_VERSION 1.16 \
+
     # Install Python SDKs
     && PYTHONIOENCODING="UTF-8" \
     && . $buildDir/__pythonVersions.sh \

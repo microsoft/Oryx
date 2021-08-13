@@ -76,6 +76,18 @@
     - type: shell
       directory: build
       file-name-prefix: __
+- name: golang-versions
+  constants:
+    # hashes are for .tar.xz
+    golang16-version: 1.16
+    golang16-tar-sha256: 7688063d55656105898f323d90a79a39c378d86fe89ae192eb3b7fc46347c95a
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+    - type: shell
+      directory: build
+      file-name-prefix: __
 - name: python-versions
   constants:
     pip-version: 20.2.3
