@@ -25,6 +25,9 @@ case $PLATFORM_TO_BUILD in
 	'nodejs')
 		"$platformsDir/nodejs/getNode.sh" $DEBIAN_FLAVOR_TO_BUILD
 		;;
+	'golang')
+		"$platformsDir/golang/buildGolang.sh" $DEBIAN_FLAVOR_TO_BUILD
+		;;
 	'ruby')
 		"$platformsDir/ruby/buildRuby.sh" $DEBIAN_FLAVOR_TO_BUILD
 		;;
