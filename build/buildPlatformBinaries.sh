@@ -11,7 +11,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 PLATFORM_TO_BUILD=$1
 DEBIAN_FLAVOR_TO_BUILD=$2
 platformsDir="$REPO_DIR/platforms"
-chmod u+x $platformsDir/golang/buildGolang.sh
+chmod +x $platformsDir/golang/buildGolang.sh
 case $PLATFORM_TO_BUILD in
 	'dotnet')
 		"$platformsDir/dotnet/getDotNetSdk.sh" $DEBIAN_FLAVOR_TO_BUILD
