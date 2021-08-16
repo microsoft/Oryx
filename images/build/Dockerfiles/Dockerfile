@@ -87,8 +87,8 @@ RUN set -ex \
     
     # Install Golang SDKs
     && . $buildDir/__golangVersions.sh \
-    && $imagesDir/installPlatform.sh golang $GOLANG16_VERSION \
-    && ln -sfn $GOLANG16_VERSION 1.16 \
+    && $imagesDir/installPlatform.sh golang $GOLANG_VERSION \
+    && ln -sfn $GOLANG_VERSION 1.16 \
 
     # Install Python SDKs
     && PYTHONIOENCODING="UTF-8" \
