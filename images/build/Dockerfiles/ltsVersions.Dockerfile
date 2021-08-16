@@ -115,6 +115,13 @@ RUN set -ex \
     && ln -s $DOT_NET_CORE_21_SDK_VERSION 2-lts \
     && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s 3-lts lts \
+
+    # Install Golang SDKs
+    && . $buildDir/__golangVersions.sh \
+    && $imagesDir/installPlatform.sh golang $GOLANG16_VERSION \
+    && ln -sfn $GOLANG16_VERSION 1.16 \
+
+
     # Install Hugo
     && $imagesDir/build/installHugo.sh \
     # Install Node

@@ -8,6 +8,9 @@ set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
+ls $REPO_DIR/platforms/
+ls $REPO_DIR/build/
+
 source $REPO_DIR/platforms/__common.sh
 source $REPO_DIR/build/__golangVersions.sh
 

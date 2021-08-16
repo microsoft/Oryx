@@ -86,7 +86,6 @@ RUN set -ex \
     && chmod 777 $yarnCacheFolder \
     
     # Install Golang SDKs
-    && cd $buildDir \ 
     && . $buildDir/__golangVersions.sh \
     && $imagesDir/installPlatform.sh golang $GOLANG16_VERSION \
     && ln -sfn $GOLANG16_VERSION 1.16 \
