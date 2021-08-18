@@ -28,6 +28,13 @@ else
 	echo "debianFlavor is NOT stretch"
 fi
 
+# Try getting the keys 5 times at most
+# /tmp/receiveGpgKeys.sh $GPG_KEY
+
+
+make -j $(nproc)
+make install
+
 compressedSdkDir="/tmp/compressedSdk"
 mkdir -p $compressedSdkDir
 cd "$INSTALLATION_PREFIX"
