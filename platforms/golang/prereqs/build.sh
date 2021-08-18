@@ -32,11 +32,11 @@ fi
 # /tmp/receiveGpgKeys.sh $GPG_KEY
 
 
-ls /opt/
-ls /opt/go/
+# ls /opt/
+# ls /opt/go/
 
 
-compressedSdkDir="/tmp/compressedSdk"
-mkdir -p $compressedSdkDir
-cd "$INSTALLATION_PREFIX"
-tar -zcf $compressedSdkDir/$golangSdkFileName .
+# compressedSdkDir="/tmp/compressedSdk"
+# mkdir -p $compressedSdkDir
+# cd "$INSTALLATION_PREFIX"
+# tar -zcf $compressedSdkDir/$golangSdkFileName .
