@@ -63,8 +63,6 @@ buildGolang() {
 		docker build \
 			-f "$golangPlatformDir/Dockerfile" \
 			--build-arg GOLANG_VERSION=$version \
-            #--build-arg GOLANG_SHA256=$sha \
-			#--build-arg GEM_VERSION=$GEM_VERSION \
 			-t $imageName \
 			$REPO_DIR
 
