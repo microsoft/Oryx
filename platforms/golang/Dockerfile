@@ -1,4 +1,4 @@
-FROM golng-build-prereqs
+FROM golang-build-prereqs
 WORKDIR /usr/src/golang
 ARG GOLANG_VERSION
 ARG GOLANG_SHA256
