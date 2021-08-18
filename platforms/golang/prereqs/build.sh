@@ -32,10 +32,20 @@ fi
 # /tmp/receiveGpgKeys.sh $GPG_KEY
 
 
-# ls /opt/
-# ls /opt/go/
 
+wget https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz
+sudo apt-get install gccgo-5
+sudo update-alternatives --set go /usr/bin/go-5
+GOROOT_BOOTSTRAP=/usr ./make.bash
 
+git clone https://go.googlesource.com/go goroot
+cd goroot
+git checkout 1.16
+
+cd src
+./all.bash
+
+go version
 # compressedSdkDir="/tmp/compressedSdk"
 # mkdir -p $compressedSdkDir
 # cd "$INSTALLATION_PREFIX"
