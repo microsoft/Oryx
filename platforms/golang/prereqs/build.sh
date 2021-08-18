@@ -40,7 +40,7 @@ wget https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz
 
 git clone https://go.googlesource.com/go goroot
 cd goroot
-git checkout 1.16
+git checkout go1.16
 
 cd src
 ./all.bash
