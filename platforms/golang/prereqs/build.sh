@@ -33,18 +33,25 @@ fi
 
 
 
-wget https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz
+# wget https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz
 # apt-get install gccgo-5
 # update-alternatives --set go /usr/bin/go-5
 # GOROOT_BOOTSTRAP=/usr ./make.bash
 
-git clone https://go.googlesource.com/go goroot
-cd goroot
-git fetch --all
-git checkout go1.16
+# git clone https://go.googlesource.com/go goroot
+# cd goroot
+# git fetch --all
+# git checkout go1.16
 
-cd src
-./all.bash
+# cd src
+# ./all.bash
+
+
+whoami
+wget https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
+rm -rf /usr/local/go && tar -C /usr/local -xzf go$GOLANG_VERSION.linux-amd64.tar.gz
+export PATH=$PATH:/usr/local/go/bin
+
 
 go version
 # compressedSdkDir="/tmp/compressedSdk"
