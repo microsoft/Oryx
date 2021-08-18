@@ -32,8 +32,9 @@ fi
 # /tmp/receiveGpgKeys.sh $GPG_KEY
 
 
-make -j $(nproc)
-make install
+ls /opt/
+ls /opt/go/
+
 
 compressedSdkDir="/tmp/compressedSdk"
 mkdir -p $compressedSdkDir
