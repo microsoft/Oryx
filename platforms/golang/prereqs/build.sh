@@ -34,8 +34,8 @@ fi
 
 
 wget https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz
-sudo apt-get install gccgo-5
-sudo update-alternatives --set go /usr/bin/go-5
+apt-get install gccgo-5
+update-alternatives --set go /usr/bin/go-5
 GOROOT_BOOTSTRAP=/usr ./make.bash
 
 git clone https://go.googlesource.com/go goroot
