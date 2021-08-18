@@ -14,7 +14,7 @@ debianFlavor=$DEBIAN_FLAVOR
 golangSdkFileName=""
 
 if [ "$debianFlavor" == "stretch" ]; then
-	# Use default python sdk file name
+	# Use default golang sdk file name
 	echo "debianFlavor is stretch"
 else
 	golangSdkFileName=golang-$debianFlavor-$GOLANG_VERSION.tar.gz
@@ -27,3 +27,8 @@ else
 		build-essential
 	echo "debianFlavor is NOT stretch"
 fi
+
+compressedSdkDir="/tmp/compressedSdk"
+mkdir -p $compressedSdkDir
+cd "$INSTALLATION_PREFIX"
+tar -zcf $compressedSdkDir/$golangSdkFileName .
