@@ -7,6 +7,11 @@ echo "   "
 
 # TODO: add time metrics
 
+
+# TODO: look into go tidy
+#		which removed unused dependencies
+#		look into go vendor, which caches dependencies
+
 echo "building the go application"
 go build
 
