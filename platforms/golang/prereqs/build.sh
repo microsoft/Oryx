@@ -58,6 +58,8 @@ whoami
 # go version
 compressedSdkDir="/tmp/compressedSdk"
 mkdir -p $compressedSdkDir
+ls /opt/
+ls /opt/go/
 cd "$INSTALLATION_PREFIX"
 ls
 tar -zcf $compressedSdkDir/$golangSdkFileName .
