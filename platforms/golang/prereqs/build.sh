@@ -13,20 +13,20 @@ INSTALLATION_PREFIX=/opt/go/$GOLANG_VERSION
 debianFlavor=$DEBIAN_FLAVOR
 golangSdkFileName=go$GOLANG_VERSION.src.tar.gz
 
-if [ "$debianFlavor" == "stretch" ]; then
-	# Use default golang sdk file name
-	echo "debianFlavor is stretch"
-else
-	golangSdkFileName=go-$debianFlavor-$GOLANG_VERSION.tar.gz
-	apt-get update; \
-	apt-get install -y --no-install-recommends \
-		autoconf \
-		libssl-dev \
-		zlib1g-dev \
-		libreadline-dev \
-		build-essential
-	echo "debianFlavor is NOT stretch"
-fi
+# if [ "$debianFlavor" == "stretch" ]; then
+# 	# Use default golang sdk file name
+# 	echo "debianFlavor is stretch"
+# else
+# 	golangSdkFileName=go-$debianFlavor-$GOLANG_VERSION.tar.gz
+# 	apt-get update; \
+# 	apt-get install -y --no-install-recommends \
+# 		autoconf \
+# 		libssl-dev \
+# 		zlib1g-dev \
+# 		libreadline-dev \
+# 		build-essential
+# 	echo "debianFlavor is NOT stretch"
+# fi
 
 # Try getting the keys 5 times at most
 # /tmp/receiveGpgKeys.sh $GPG_KEY
