@@ -11,7 +11,7 @@ LANG=C.UTF-8
 # GOLANG_MAJOR_VERSION=${GOLANG_VERSION:0:3}
 INSTALLATION_PREFIX=/opt/go/$GOLANG_VERSION
 debianFlavor=$DEBIAN_FLAVOR
-golangSdkFileName=go$GOLANG_VERSION.linux-amd64.tar.gz
+golangSdkFileName=go$GOLANG_VERSION.src.tar.gz
 
 if [ "$debianFlavor" == "stretch" ]; then
 	# Use default golang sdk file name
@@ -33,7 +33,7 @@ fi
 
 
 
-# wget https://golang.org/dl/go$GOLANG_VERSION.src.tar.gz
+wget https://golang.org/dl/$golangSdkFileName
 # apt-get install gccgo-5
 # update-alternatives --set go /usr/bin/go-5
 # GOROOT_BOOTSTRAP=/usr ./make.bash

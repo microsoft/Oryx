@@ -46,9 +46,9 @@ buildGolang() {
 	fi 
 
 	if shouldBuildSdk golang $golangSdkFileName || shouldOverwriteSdk || shouldOverwriteGolangSdk; then
-		# if ! $builtGolangPrereqs; then
-		# 	buildGolangPrereqsImage
-		# fi
+		if ! $builtGolangPrereqs; then
+			buildGolangPrereqsImage
+		fi
         
         echo "Building Golang version '$version' in a docker image..."
 		echo
