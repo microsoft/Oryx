@@ -11,7 +11,7 @@ LANG=C.UTF-8
 # GOLANG_MAJOR_VERSION=${GOLANG_VERSION:0:3}
 INSTALLATION_PREFIX=/opt/go/$GOLANG_VERSION
 debianFlavor=$DEBIAN_FLAVOR
-golangSdkFileName=""
+golangSdkFileName=go$GOLANG_VERSION.linux-amd64.tar.gz
 
 if [ "$debianFlavor" == "stretch" ]; then
 	# Use default golang sdk file name
@@ -48,13 +48,14 @@ fi
 
 
 whoami
-wget https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
-rm -rf /usr/local/go && tar -C /usr/local -xzf go$GOLANG_VERSION.linux-amd64.tar.gz
-export PATH=$PATH:/usr/local/go/bin
+
+# rm -rf /usr/local/go && tar -C /usr/local -xzf go$GOLANG_VERSION.linux-amd64.tar.gz
+# export PATH=$PATH:/usr/local/go/bin
 
 
-go version
-# compressedSdkDir="/tmp/compressedSdk"
-# mkdir -p $compressedSdkDir
-# cd "$INSTALLATION_PREFIX"
-# tar -zcf $compressedSdkDir/$golangSdkFileName .
+
+# go version
+compressedSdkDir="/tmp/compressedSdk"
+mkdir -p $compressedSdkDir
+cd "$INSTALLATION_PREFIX"
+tar -zcf $compressedSdkDir/$golangSdkFileName .
