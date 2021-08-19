@@ -17,7 +17,7 @@ if [ "$debianFlavor" == "stretch" ]; then
 	# Use default golang sdk file name
 	echo "debianFlavor is stretch"
 else
-	golangSdkFileName=golang-$debianFlavor-$GOLANG_VERSION.tar.gz
+	golangSdkFileName=go-$debianFlavor-$GOLANG_VERSION.tar.gz
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
 		autoconf \
@@ -34,6 +34,7 @@ fi
 
 
 wget https://golang.org/dl/$golangSdkFileName
+ls
 # apt-get install gccgo-5
 # update-alternatives --set go /usr/bin/go-5
 # GOROOT_BOOTSTRAP=/usr ./make.bash
@@ -58,4 +59,6 @@ whoami
 compressedSdkDir="/tmp/compressedSdk"
 mkdir -p $compressedSdkDir
 cd "$INSTALLATION_PREFIX"
+ls
 tar -zcf $compressedSdkDir/$golangSdkFileName .
+ls
