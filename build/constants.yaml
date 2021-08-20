@@ -79,8 +79,8 @@
 - name: golang-versions
   constants:
     # hashes are for .tar.xz
-    golang16-version: 1.16
-    golang16-tar-sha256: 7688063d55656105898f323d90a79a39c378d86fe89ae192eb3b7fc46347c95a
+    golang16-version: 1.16.7
+    golang16-tar-sha256: 1a9f2894d3d878729f7045072f30becebe243524cf2fce4e0a7b248b1e0654ac
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
