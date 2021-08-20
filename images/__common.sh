@@ -26,7 +26,7 @@ function downloadFileAndVerifyChecksum() {
     echo "Verifying checksum..."
 
     checksumcode="sha512sum"
-    if [ "$platform" == "golang" ];then
+    if [ "$platformName" == "golang" ];then
         checksumcode="sha256sum"
    fi
     echo "$checksumValue $downloadedFileName" | $checksumcode -c -
