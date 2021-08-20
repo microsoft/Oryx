@@ -130,6 +130,10 @@ RUN set -ex \
     && ln -s $YARN_VERSION latest \
     && ln -s $YARN_VERSION $YARN_MINOR_VERSION \
     && ln -s $YARN_MINOR_VERSION $YARN_MAJOR_VERSION \
+    # Install Golang SDKs
+    && . $buildDir/__golangVersions.sh \
+    && $imagesDir/installPlatform.sh golang $GOLANG_VERSION \
+    && ln -sfn $GOLANG_VERSION 1.16.7 \
     # Install Python SDKs
     # Upgrade system python
     && pip install --upgrade cython \
