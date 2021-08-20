@@ -1,7 +1,0 @@
-FROM golang-build-prereqs
-WORKDIR /usr/src/golang
-ARG GOLANG_VERSION
-ARG GOLANG_SHA256
-RUN GOLANG_VERSION=$GOLANG_VERSION \
-    GOLANG_SHA256=$GOLANG_SHA256 \
-    /tmp/build.sh
