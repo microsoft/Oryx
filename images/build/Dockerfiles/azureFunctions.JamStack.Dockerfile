@@ -24,7 +24,7 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s 3-lts lts \
     && echo "jamstack" > /opt/oryx/.imagetype \
-    && . /tmp/build/__golangVersions.sh \
+    && . /tmp/build/__goVersions.sh \
     && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
     && curl -SLsO https://golang.org/dl/$downloadedFileName \
     && tar -C /usr/local -xzf $downloadedFileName \
