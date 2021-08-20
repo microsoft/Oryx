@@ -9,5 +9,5 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 RUN curl -sL https://git.io/n-install | bash -s -- -ny -
 RUN mkdir -p /tmp/scripts
-COPY platforms/golang/buildGolang.sh /tmp/scripts
-RUN chmod +x /tmp/scripts/buildGolang.sh
+COPY platforms/nodejs/build.sh /tmp/scripts
+RUN chmod +x /tmp/scripts/build.sh 
