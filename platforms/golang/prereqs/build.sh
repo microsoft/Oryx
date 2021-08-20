@@ -13,7 +13,7 @@ INSTALLATION_PREFIX=/opt/go/$GOLANG_VERSION
 mkdir -p $INSTALLATION_PREFIX/
 
 debianFlavor=$DEBIAN_FLAVOR
-golangSdkFileName=go$GOLANG_VERSION.src.tar.gz
+golangSdkFileName=go$GOLANG_VERSION.linux-amd64.tar.gz
 
 # if [ "$debianFlavor" == "stretch" ]; then
 # 	# Use default golang sdk file name
