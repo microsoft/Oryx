@@ -43,6 +43,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("python3-config", "/opt/python/")]
         // Php
         [InlineData("php", "/opt/php/")]
+        // Golang
+        [InlineData("go", "/opt/go/")]
         public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InFullBuildImage(
             string executableName,
             string expectedPathPrefix)
@@ -85,6 +87,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         // Php
         [InlineData("php", "/opt/php/")]
         [InlineData("composer.phar", "/opt/php-composer/")]
+        // Golang
+        [InlineData("go", "/opt/go/")]
         public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InLtsVersionsBuildImage(
             string executableName,
             string expectedPathPrefix)
