@@ -76,23 +76,15 @@ namespace Microsoft.Oryx.Detector.Golang
                 // go 1.16
 
                 // Regex matching valid version format:
-                //      go 1
                 //      go 1.16
-                //      go 1.16.1
-                Regex regex = new Regex(@"^[\s]*go[\s]+[0-9]+(\.([0-9])+)?(\.([0-9])+)?[\s]*$");
+                //      go 1.16.7
+                Regex regex = new Regex(@"^[\s]*go[\s]+[0-9]+(\.([0-9])+)+[\s]*$");
                 foreach (var goDotModFileContentLine in goDotModFileContentLines)
                 {
                     Match match = regex.Match(goDotModFileContentLine);
                     if (match.Success)
                     {
-                        var version = goDotModFileContentLine.Trim().Split(' ')[1].Trim('\"').Trim('\'');
-
-                        // prefix with ~ if minor or patch are missing to account for missing minor/patch
-                        // Example:
-                        //      1.16 -> 1.16.0
-                        version = version.Split('.').Length == 3 ? version : $"~{version}";
-
-                        return version;
+                        return goDotModFileContentLine.Trim().Split(' ')[1].Trim('\"').Trim('\'');
                     }
                 }
             }
