@@ -11,6 +11,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
         public const string PlatformName = "golang";
         public const string GoModFileName = "go.mod";
         public const string GolangDefaultVersion = "1.16";
-        public const string InstalledGolangVersionsDir = "/opt/go/";
+        public const string InstalledGolangVersionsDir = "/opt/golang/";
     }
 }
