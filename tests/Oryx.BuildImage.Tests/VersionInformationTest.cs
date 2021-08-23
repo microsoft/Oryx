@@ -432,11 +432,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Trait("platform", "go")]
+        [Trait("platform", "golang")]
         [Theory]
         [InlineData("1.16", "go1.16")]
         [InlineData("1.16.7", "go1.16.7")]
-        [InlineData("1.17", "go1.17")]
         [InlineData("lts", "go1.17")]
         public void Golang_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
