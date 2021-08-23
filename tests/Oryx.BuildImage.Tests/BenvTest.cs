@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         // Php
         [InlineData("php", "/opt/php/")]
         // Golang
-        [InlineData("go", "/opt/go/")]
+        [InlineData("go", "/opt/golang/")]
         public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InFullBuildImage(
             string executableName,
             string expectedPathPrefix)
