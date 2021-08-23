@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("php", "/opt/php/")]
         [InlineData("composer.phar", "/opt/php-composer/")]
         // Golang
-        [InlineData("go", "/opt/go/")]
+        [InlineData("go", "/opt/golang/")]
         public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InLtsVersionsBuildImage(
             string executableName,
             string expectedPathPrefix)
