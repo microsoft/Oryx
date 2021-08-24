@@ -24,5 +24,9 @@ function downloadFileAndVerifyChecksum() {
     rm -f $headersFile
     echo
     echo "Verifying checksum..."
+    checksumcode="sha512sum"
+    if [ "$platformName" == "golang" ];then
+        checksumcode="sha256sum"
+    fi
     echo "$checksumValue $downloadedFileName" | $checksumcode -c -
 }
