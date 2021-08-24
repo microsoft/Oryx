@@ -85,6 +85,9 @@ RUN set -ex \
     && apt-get install -y --no-install-recommends \
         tk-dev \
         uuid-dev \
+    # Install .NET Core SDKs
+    && nugetPackagesDir="/var/nuget" \
+    && mkdir -p $nugetPackagesDir \
     && rm -rf /var/lib/apt/lists/* \
     # Grant read-write permissions to the nuget folder so that dotnet restore
     # can write into it.
