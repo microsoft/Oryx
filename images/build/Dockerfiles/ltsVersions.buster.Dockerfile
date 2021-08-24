@@ -59,7 +59,7 @@ COPY --from=intermediate /opt /opt
 #
 # Even though this adds a new docker layer we are doing this 
 # because we want to avoid duplication (which is always error-prone)
-ENV ORYX_PATHS="/opt/oryx:/opt/golang/go/lts/go/bin:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts"
+ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts"
 
 ENV LANG="C.UTF-8" \
     ORIGINAL_PATH="$PATH" \
@@ -86,17 +86,6 @@ RUN set -ex \
         tk-dev \
         uuid-dev \
     && rm -rf /var/lib/apt/lists/* \
-    # Install Golang SDKs
-    && . $buildDir/__golangVersions.sh \
-    && $imagesDir/installPlatform.sh golang $GOLANG16_VERSION \
-    && ln -sfn $GOLANG16_VERSION 1.16 \
-    && $imagesDir/installPlatform.sh golang $GOLANG17_VERSION \
-    && cd /opt/golang \
-    && . $buildDir/__golangVersions.sh \
-    && ln -sfn $GOLANG17_VERSION lts \
-    # Install .NET Core SDKs
-    && nugetPackagesDir="/var/nuget" \
-    && mkdir -p $nugetPackagesDir \
     # Grant read-write permissions to the nuget folder so that dotnet restore
     # can write into it.
     && chmod a+rw $nugetPackagesDir \

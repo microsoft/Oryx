@@ -432,38 +432,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Trait("platform", "golang")]
-        [Theory]
-        [InlineData("1.16", "go1.16")]
-        [InlineData("1.16.7", "go1.16.7")]
-        [InlineData("lts", "go1.17")]
-        public void Golang_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
-        {
-            // Arrange
-            var script = new ShellScriptBuilder()
-                .Source($"benv golang={specifiedVersion}")
-                .AddCommand("go version")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = Settings.BuildImageName,
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedOutput, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
         [Trait("platform", "python")]
         [Theory]
         [InlineData("latest", Python38VersionInfo)]
