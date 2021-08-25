@@ -226,6 +226,7 @@
   constants:
     node-installation-dir: '/tmp/oryx/nodejs'
     dot-net-core-installation-dir: '/tmp/oryx/dotnet'
+    golang-installation-dir: '/opt/golang'
     python-installation-root-dir: '/opt/python'
     setup-script-location: '/tmp/oryx/setupEnv.sh'
     ruby-installation-root-dir: '/opt/ruby'

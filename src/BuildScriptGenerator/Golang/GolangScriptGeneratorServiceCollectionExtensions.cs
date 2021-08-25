@@ -7,11 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Golang;
 
-namespace Microsoft.Oryx.BuildScriptGenerator.Golang
+namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal static class GolangScriptGeneratorServiceCollectionExtensions
     {
-        public static IServiceCollection AddScriptGeneratorServicesGo(this IServiceCollection services)
+        public static IServiceCollection AddScriptGeneratorServicesGolang(this IServiceCollection services)
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, GolangPlatform>());
             services.AddSingleton<IGolangVersionProvider, GolangVersionProvider>();

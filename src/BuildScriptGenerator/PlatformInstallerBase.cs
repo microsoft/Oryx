@@ -85,6 +85,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
                 .AppendLine($"source /opt/tmp/build/createSymlinksForDotnet.sh")
                 .AppendLine("fi")
+
+                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"golang\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
+                .AppendLine("echo \"image detector file exists, platform is golang..\"")
+                .AppendLine($"mkdir -p /home/codespace/.golang")
+                .AppendLine($"ln -sfn /opt/golang/{version} /home/codespace/.golang/current")
+                .AppendLine($"ls -la /home/codespace/.golang/current")
+                .AppendLine("fi")
+
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"nodejs\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is nodejs..\"")
                 .AppendLine($"mkdir -p /home/codespace/.nodejs")

@@ -5,6 +5,10 @@ echo "   "
 echo "   "
 
 
+ls
+
+ls /opt/
+
 # TODO: add time metrics
 
 
@@ -14,6 +18,8 @@ echo "   "
 
 echo "building the go application"
 go build
+
+# TODO download from storage account
 
 echo "list of module dependencies"
 go list -m
