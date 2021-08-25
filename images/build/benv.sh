@@ -61,6 +61,10 @@ done < <(set | grep -i '^ruby=')
 
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
+done < <(set | grep -i '^golang=')
+
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^java=')
 
 while read benvEnvironmentVariable; do
@@ -291,6 +295,21 @@ benv-resolve() {
     updatePath "$SDK_DIR"
     export dotnet="$SDK_DIR/dotnet"
     
+    return 0
+  fi
+
+  # Resolve Golang versions
+  if matchesName "golang" "$name" || matchesName "golang_version" "$name" && [ "${value::1}" != "/" ]; then
+    platformDir=$(benv-getPlatformDir "golang" "$value" "$_benvDynamicInstallRootDir")
+    if [ "$platformDir" == "NotFound" ]; then
+      benv-showSupportedVersionsErrorInfo "golang" "golang" "$value" "$_benvDynamicInstallRootDir"
+      return 1
+    fi
+
+    local DIR="$platformDir/go/bin"
+    updatePath "$DIR"
+    export golang="$DIR/golang/$value"
+
     return 0
   fi
 

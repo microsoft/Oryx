@@ -35,6 +35,10 @@ uploadFiles() {
         fi
 
         checksum=$(sha512sum $fileToUpload | cut -d " " -f 1)
+        if [ "$platform" == "golang" ];then
+            checksum=$(sha256sum $fileToUpload | cut -d " " -f 1)
+        fi
+        
         az storage blob upload \
             --name $fileName \
             --file "$fileToUpload" \
@@ -49,7 +53,7 @@ uploadFiles() {
     done
 }
 
-platforms=("nodejs" "python" "dotnet" "php" "php-composer" "ruby" "java" "maven")
+platforms=("nodejs" "python" "dotnet" "php" "php-composer" "ruby" "java" "maven" "golang")
 for platform in "${platforms[@]}"
 do
     uploadFiles $platform

@@ -12,6 +12,9 @@ PLATFORM_TO_BUILD=$1
 DEBIAN_FLAVOR_TO_BUILD=$2
 platformsDir="$REPO_DIR/platforms"
 
+# TODO: find a better place for chmod
+chmod +x $platformsDir/golang/getGolangSdk.sh
+
 case $PLATFORM_TO_BUILD in
 	'dotnet')
 		"$platformsDir/dotnet/getDotNetSdk.sh" $DEBIAN_FLAVOR_TO_BUILD
@@ -24,6 +27,9 @@ case $PLATFORM_TO_BUILD in
 		;;
 	'nodejs')
 		"$platformsDir/nodejs/getNode.sh" $DEBIAN_FLAVOR_TO_BUILD
+		;;
+	'golang')
+		"$platformsDir/golang/getGolangSdk.sh" $DEBIAN_FLAVOR_TO_BUILD
 		;;
 	'ruby')
 		"$platformsDir/ruby/buildRuby.sh" $DEBIAN_FLAVOR_TO_BUILD

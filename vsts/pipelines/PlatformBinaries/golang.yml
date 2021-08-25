@@ -1,0 +1,58 @@
+variables:
+  - group: Oryx
+  
+stages:
+- stage: Build
+  jobs:
+  - job: Golang_Buster
+    timeoutInMinutes: 250
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'golang'
+        debianFlavor: 'buster'
+
+  - job: Golang_Stretch
+    timeoutInMinutes: 250
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'golang'
+        debianFlavor: 'stretch'
+  
+  - job: Golang_Ubuntu
+    timeoutInMinutes: 250
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'golang'
+        debianFlavor: 'focal-scm'
+
+- stage: Release
+  dependsOn: Build
+  jobs:
+  - job: Publish_Platform_Binaries
+    timeoutInMinutes: 250
+    displayName: Publish to Azure Blob Storage
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - template: ../templates/_platformBinariesReleaseTemplate.yml
+  
+trigger:
+  batch: true
+  branches:
+    include:
+    - main
+  paths:
+    exclude:
+    - /*
+    include:
+    - platforms/golang
+    - vsts/PlatformBinaries/golang.yml
