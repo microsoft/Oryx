@@ -128,7 +128,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 
         public bool IsEnabled(RepositoryContext ctx)
         {
-            return _commonOptions.EnableGoBuild;
+            return _commonOptions.EnableGolangBuild;
         }
 
         public bool IsCleanRepo(ISourceRepo repo)

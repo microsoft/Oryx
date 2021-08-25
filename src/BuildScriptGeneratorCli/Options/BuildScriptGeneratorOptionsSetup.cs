@@ -33,6 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
             options.EnableCheckers = !GetBooleanValue(SettingsKeys.DisableCheckers);
             options.EnableDotNetCoreBuild = !GetBooleanValue(SettingsKeys.DisableDotNetCoreBuild);
+            options.EnableGolangBuild = !GetBooleanValue(SettingsKeys.DisableGolangeBuild);
             options.EnableNodeJSBuild = !GetBooleanValue(SettingsKeys.DisableNodeJSBuild);
             options.EnablePythonBuild = !GetBooleanValue(SettingsKeys.DisablePythonBuild);
             options.EnablePhpBuild = !GetBooleanValue(SettingsKeys.DisablePhpBuild);
