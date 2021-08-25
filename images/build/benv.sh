@@ -61,6 +61,10 @@ done < <(set | grep -i '^ruby=')
 
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
+done < <(set | grep -i '^golang=')
+
+while read benvEnvironmentVariable; do
+  set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^java=')
 
 while read benvEnvironmentVariable; do
