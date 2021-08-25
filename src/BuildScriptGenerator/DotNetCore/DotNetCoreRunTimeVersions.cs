@@ -8,10 +8,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string NetCoreApp10 = "1.0.16";
         public const string NetCoreApp11 = "1.1.13";
         public const string NetCoreApp20 = "2.0.9";
-        public const string NetCoreApp21 = "2.1.29";
-        public const string NetCoreApp21Sha = "1c78674d48269321258f2a599dd4c1793f72a7238e4984d6c64910aa810660874d186fdbcb3347268db42be0c4a7c774a339d7f1dba11f9af49a63bb83658548";
-        public const string AspnetCoreApp21 = "2.1.29";
-        public const string AspnetCoreApp21Sha = "baae6762d667bdb16530975659fbf9f10a95b22e243cf54e80b57f89ee0aec0de1a63b8ddac5367478c6581a5dce9b1151be09795e32be66c2d7d6153774786a";
+        public const string NetCoreApp21 = "2.1.30";
+        public const string NetCoreApp21Sha = "b7433c9f03f7363759a044b50d8cca9486cfe402fdf62163696ba6a172e9839a140553e3d3298bb75c89dda2f6f4bec294847411f3fc2796fa4881a2b01a7178";
+        public const string AspnetCoreApp21 = "2.1.30";
+        public const string AspnetCoreApp21Sha = "60f65e2e37bb9af54f809ef0f4fe814c4c0dd9c969dea1aa81e94c0dc2433c5011cde39118196310ffac4e248b24924a2c154534194e70a8cdae40dfc81fe3d1";
         public const string NetCoreApp22 = "2.2.8";
         public const string NetCoreApp22Sha = "954072376698be69acb7e277df2c243f931e10529def21dcbf9ce277609b30d462126bf8b8b3cab36476bec3d63a927b8e44e59e4d4cade23eef45956fba1ffd";
         public const string NetCoreApp30 = "3.0.3";
