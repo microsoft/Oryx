@@ -199,7 +199,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 
         public IDictionary<string, string> GetToolsToBeSetInPath(RepositoryContext context, PlatformDetectorResult detectorResult)
         {
-            throw new NotImplementedException();
+            var golangPlatformDetectorResult = detectorResult as GolangPlatformDetectorResult;
+            if (golangPlatformDetectorResult == null)
+            {
+                throw new ArgumentException(
+                    $"Expected '{nameof(detectorResult)}' argument to be of type " +
+                    $"'{typeof(GolangPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
+            }
+
+            var tools = new Dictionary<string, string>();
+            tools[GolangConstants.PlatformName] = golangPlatformDetectorResult.PlatformVersion;
+            return tools;
         }
 
         private void ResolveVersionsUsingHierarchicalRules(GolangPlatformDetectorResult detectorResult)
