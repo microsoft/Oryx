@@ -68,15 +68,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("checksumHeader=$(echo $checksumHeader | tr '[A-Z]' '[a-z]')")
                 .AppendLine("checksumValue=${checksumHeader#\"$headerName: \"}")
                 .AppendLine("rm -f headers.txt")
-                .AppendLine($"echo \"$checksumValue {version}.tar.gz\" | sha512sum -c - >/dev/null 2>&1")
                 .AppendLine("echo Extracting contents...")
                 .AppendLine($"tar -xzf {tarFile} -C .")
+                .AppendLine($"platformName=\"{platformName}\"")
+                // use sha256 for golang and sha512 for all other platforms 
+                .AppendLine($"if [ \"$platformName\" = \"golang\" ]; then")
+                .AppendLine($"echo \"performing sha256sum for : {platformName}...\"")
+                .AppendLine($"echo \"$checksumValue {version}.tar.gz\" | sha256sum -c - >/dev/null 2>&1")
+                .AppendLine("else")
+                .AppendLine($"echo \"performing sha512 checksum for: {platformName}...\"")
+                .AppendLine($"echo \"$checksumValue {version}.tar.gz\" | sha512sum -c - >/dev/null 2>&1")
+                .AppendLine("fi")
+
                 .AppendLine($"rm -f {tarFile}")
                 .AppendLine("PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))")
                 .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")
                 .AppendLine("oryxImageDetectorFile=\"/opt/oryx/.imagetype\"")
-                .AppendLine($"platformName=\"{platformName}\"")
+
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"jamstack\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
                 .AppendLine($"source /opt/tmp/build/createSymlinksForDotnet.sh")
@@ -85,14 +94,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
                 .AppendLine($"source /opt/tmp/build/createSymlinksForDotnet.sh")
                 .AppendLine("fi")
-
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"golang\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
-                .AppendLine("echo \"image detector file exists, platform is golang..\"")
-                .AppendLine($"mkdir -p /home/codespace/.golang")
-                .AppendLine($"ln -sfn /opt/golang/{version} /home/codespace/.golang/current")
-                .AppendLine($"ls -la /home/codespace/.golang/current")
-                .AppendLine("fi")
-
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"nodejs\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is nodejs..\"")
                 .AppendLine($"mkdir -p /home/codespace/.nodejs")
@@ -126,6 +127,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 // Write out a sentinel file to indicate downlaod and extraction was successful
                 .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
+
+            Logger.LogDebug($"\n\n\n\n\n------------------------");
+            Logger.LogDebug(snippet.ToString());
+            Logger.LogDebug($"----------------------------\n\n\n\n\n");
             return snippet.ToString();
         }
 
