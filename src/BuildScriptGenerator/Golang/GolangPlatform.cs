@@ -77,7 +77,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
         }
 
         /// <inheritdoc/>
-        /// TODO: write implementation
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(
             BuildScriptGeneratorContext ctx,
             PlatformDetectorResult detectorResult)
@@ -91,7 +90,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
                     $"'{typeof(GolangPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            // TODO: remove go.mod requirement
             if (!goPlatformDetectorResult.GoModExists)
             {
                 throw new InvalidUsageException("No go.mod found at the root of the repo. Please provide a go.mod file containing the version.");

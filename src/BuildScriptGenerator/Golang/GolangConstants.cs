@@ -7,7 +7,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 {
     public static class GolangConstants
     {
-        // TODO: sort in alphabetic order
         public const string PlatformName = "golang";
         public const string GoModFileName = "go.mod";
         public const string GolangDefaultVersion = "1.16";
