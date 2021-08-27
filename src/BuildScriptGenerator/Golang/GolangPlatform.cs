@@ -242,11 +242,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
         private string GetMaxSatisfyingGoVersionAndVerify(string version)
         {
             var versionInfo = _goVersionProvider.GetVersionInfo();
-            var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                version,
-                versionInfo.SupportedVersions);
-
-            if (string.IsNullOrEmpty(maxSatisfyingVersion))
+            if (!versionInfo.SupportedVersions.Contains(version))
             {
                 var exc = new UnsupportedVersionException(
                     GolangConstants.PlatformName,
@@ -258,7 +254,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
                 throw exc;
             }
 
-            return maxSatisfyingVersion;
+            return version;
         }
 
         private void InstallGolang(string golangVersion, StringBuilder scriptBuilder)
