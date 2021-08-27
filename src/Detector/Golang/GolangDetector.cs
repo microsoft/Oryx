@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.Detector.Golang
             // check if go.mod exists
             if (!sourceRepo.FileExists(GolangConstants.GoModFileName))
             {
-                _logger.LogDebug(
+                _logger.LogError(
                     $"Could not find {GolangConstants.GoModFileName} in repo, please add {GolangConstants.GoModFileName}");
                 return null;
             }
