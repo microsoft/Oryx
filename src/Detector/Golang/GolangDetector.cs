@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.Detector.Golang
             if (!sourceRepo.FileExists(GolangConstants.GoModFileName))
             {
                 _logger.LogDebug(
-                    $"Could not find {GolangConstants.GoModFileName} in repo");
+                    $"Could not find {GolangConstants.GoModFileName} in repo, please add {GolangConstants.GoModFileName}");
                 return null;
             }
             _logger.LogInformation($"Found {GolangConstants.GoModFileName} at the root of the repo. ");
@@ -48,6 +48,7 @@ namespace Microsoft.Oryx.Detector.Golang
             return new GolangPlatformDetectorResult
             {
                 Platform = GolangConstants.PlatformName,
+                GoModExists = true,
                 PlatformVersion = version,
                 AppDirectory = appDirectory,
             };
