@@ -127,6 +127,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 // Write out a sentinel file to indicate downlaod and extraction was successful
                 .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
+
+            return snippet.ToString();
         }
 
         protected bool IsVersionInstalled(string lookupVersion, string builtInDir, string dynamicInstallDir)
