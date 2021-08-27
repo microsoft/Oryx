@@ -20,10 +20,3 @@ go build
 
 echo "list of module dependencies"
 go list -m
-echo "-------------"
-
-## invoke go app
-# echo "getting module name"
-# moduleName=$(awk '$1=="module"{print $2}' go.mod)
-# echo "moduleName:" $moduleName
-#./$moduleName
