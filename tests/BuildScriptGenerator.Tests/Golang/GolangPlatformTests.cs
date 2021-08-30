@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Golang
         {
             // Arrange
             var detectedVersion = "0";
-            var supportedVersion = "1.16";
+            var supportedVersion = "1.17";
             var platform = CreateGolangPlatform(
                 supportedGolangVersions: new[] { supportedVersion },
                 defaultVersion: supportedVersion,
@@ -47,11 +47,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Golang
         public void Detect_ReturnsDefaultVersion_IfNoVersionFoundReturnedByDetector_OrOptions()
         {
             // Arrange
-            var expectedVersion = "1.16";
-            var supportedVersion = "1.16.0";
+            var supportedVersion = "1.17";
             var platform = CreateGolangPlatform(
                 supportedGolangVersions: new[] { supportedVersion },
-                defaultVersion: expectedVersion,
+                defaultVersion: supportedVersion,
                 detectedVersion: null);
             var context = CreateContext();
 
@@ -81,7 +80,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Golang
             var detectedResult = new GolangPlatformDetectorResult
             {
                 Platform = GolangConstants.PlatformName,
-                PlatformVersion = "1.16",
+                PlatformVersion = "1.17",
             };
 
             // Act
