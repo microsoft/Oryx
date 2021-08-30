@@ -8,7 +8,7 @@ set -e
 
 GOLANG_BUILD_START_TIME=$SECONDS
 echo "   "
-echo "Using Go version: "
+echo "Using Golang version: "
 go version
 echo "   " 
 echo "   "
