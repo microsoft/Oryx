@@ -544,12 +544,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             switch (pythonVersion.Split('.')[0])
             {
                 case "2":
-                    virtualEnvModule = "virtualenv";
-                    break;
-
                 case "3":
-                    virtualEnvModule = "venv";
-                    virtualEnvParams = "--copies";
+                    virtualEnvModule = "virtualenv";
                     break;
 
                 default:
