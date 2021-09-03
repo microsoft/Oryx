@@ -53,6 +53,7 @@ fi
 
 	if [ -e "requirements.txt" ]
 	then
+		set +e 
 		echo "Running pip install..."
 		InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT"
 		printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
@@ -60,8 +61,10 @@ fi
 		pipInstallExitCode=${PIPESTATUS[0]}
 		if [[ $pipInstallExitCode != 0 ]]
 		then
+			echo "Error: failed to pip installation command: ${InstallCommand}"
 			exit $pipInstallExitCode
 		fi
+		set -e
 	elif [ -e "setup.py" ]
 	then
 		echo "Running python setup.py install..."
