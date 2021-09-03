@@ -146,7 +146,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 
         public bool IsEnabledForMultiPlatformBuild(RepositoryContext ctx)
         {
-            return true;
+            return false;
         }
 
         /// <inheritdoc/>
