@@ -92,7 +92,7 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    pip-version: 20.2.3
+    pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.13
     python37-version: 3.7.11
