@@ -214,6 +214,8 @@ fi
 			echo "'collectstatic' exited with exit code $EXIT_CODE."
 			ELAPSED_TIME=$(($SECONDS - $START_TIME))
 			echo "Done in $ELAPSED_TIME sec(s)."
+		else
+			echo Warning: missing Django module in "$SOURCE_DIR/requirements.txt"
 		fi
 	fi
 {{ end }}
