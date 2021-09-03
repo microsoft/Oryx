@@ -40,15 +40,36 @@ namespace Microsoft.Oryx.Detector.Python
             var appDirectory = string.Empty;
             var hasRequirementsTxtFile = false;
             var hasPyprojectTomlFile = false;
+
             if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
                 _logger.LogInformation($"Found {PythonConstants.RequirementsFileName} at the root of the repo.");
                 hasRequirementsTxtFile = true;
+
+                // Warning if missing django module
+                bool hasDjangoModule = false;
+                string filePath = $"{sourceRepo.RootPath}/{PythonConstants.RequirementsFileName}";
+                using (var reader = new StreamReader(filePath))
+                {
+                    while (!reader.EndOfStream && !hasDjangoModule)
+                    { 
+                        string line = reader.ReadLine().ToLower();
+                        if (line.StartsWith("django"))
+                        {
+                            hasDjangoModule = true;
+                        }
+                    }
+                }
+                if (!hasDjangoModule)
+                {
+                    _logger.LogWarning($"Missing django module in {PythonConstants.RequirementsFileName}");
+                }
             }
             else
             {
-                _logger.LogInformation(
-                    $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo.");
+                string errorMsg = $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo.";
+                _logger.LogWarning(errorMsg);
+                //throw new FileNotFoundException(errorMsg);
             }
             if (sourceRepo.FileExists(PythonConstants.PyprojectTomlFileName))
             {
