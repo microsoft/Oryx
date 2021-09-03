@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.Detector.Golang
             if (!sourceRepo.FileExists(GolangConstants.GoModFileName))
             {
                 _logger.LogError(
-                    $"Could not find {GolangConstants.GoModFileName} in repo, please add {GolangConstants.GoModFileName}");
+                    $"Could not find {GolangConstants.GoModFileName} in repo");
                 return null;
             }
             _logger.LogInformation($"Found {GolangConstants.GoModFileName} at the root of the repo. ");
@@ -76,22 +76,32 @@ namespace Microsoft.Oryx.Detector.Golang
                 //
                 // go 1.16
 
+                // Match regex:
+                //     - start with 0 or more white spaces
+                //     - match string: go
+                //     - 0 or more white spaces
+                //     - digit(s)
+                //     - (a period followed by digit(s)) once or twice
+                //     - any number of white spaces
                 // Regex matching valid version format:
                 //      go 1.16
                 //      go 1.16.7
-                Regex regex = new Regex(@"^[\s]*go[\s]+[0-9]+(\.([0-9])+)+[\s]*$");
+                Regex regex = new Regex(@"^[\s]*go[\s]+[0-9]+(\.([0-9])+){1,2}[\s]*$");
                 foreach (var goDotModFileContentLine in goDotModFileContentLines)
                 {
                     Match match = regex.Match(goDotModFileContentLine);
                     if (match.Success)
                     {
+                        // After matching regex is found we trim off 'go' and trailing quotes 
+                        // allowing us to only retain the version.
+                        // Example: "go 1.16.7" -> 1.16.7
                         return goDotModFileContentLine.Trim().Split(' ')[1].Trim('\"').Trim('\'');
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(
+                _logger.LogError(
                     ex,
                     $"Exception caught while trying to parse {GolangConstants.GoModFileName}." );
             }
