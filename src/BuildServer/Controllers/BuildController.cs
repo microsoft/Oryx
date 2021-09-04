@@ -24,17 +24,6 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             _logger = logger;
         }
 
-        [Route("/build/Get")]
-        [Route("[controller]/Get")]
-        ////[Route("[controller]/[action]")]
-        [HttpGet]
-        // 
-        // GET: /build/Get
-        public int Get()
-        {
-            return 200;
-        }
-
         [Route("[controller]/[action]")]
         [Route("/build/CheckServerStatus")]
         [Produces("application/json")]
@@ -50,8 +39,11 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             var script = new ShellScriptBuilder()
                         .AddCommand("oryx --version").ToString();
             (exitCode, output, error) = await Task.Run(() => RunOryxCommand(script)).ConfigureAwait(false);
-
-            return StatusCode((int)HttpStatusCode.OK, output);
+            var response = new BuildServerResponse();
+            response.Message = output;
+            response.Status = BuildState.Running.ToString();
+            response.StatusCode = (int)HttpStatusCode.OK;
+            return StatusCode((int)HttpStatusCode.OK, response);
         }
 
         [Route("/build/[action]")]
@@ -88,7 +80,7 @@ namespace Microsoft.Oryx.BuildServer.Controllers
                 _logger.LogDebug($"exitcode {exitCode} and output: {output}");
                 if (exitCode == 0)
                 {
-                    var response = new BuildResponse();
+                    var response = new BuildServerResponse();
                     response.Message = buildManifestFilePath;
                     response.Status = BuildState.Success.ToString();
                     response.StatusCode = (int)HttpStatusCode.OK;
@@ -113,7 +105,7 @@ namespace Microsoft.Oryx.BuildServer.Controllers
                     (exitCode, output, error) = await Task.Run(() => RunOryxCommand(script)).ConfigureAwait(false);
                     if (exitCode == 0)
                     {
-                        var response = new BuildResponse();
+                        var response = new BuildServerResponse();
                         response.Message = "Build failed, Build Log exists but manifest file doesn't.";
                         response.Status = BuildState.Failed.ToString();
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -128,19 +120,18 @@ namespace Microsoft.Oryx.BuildServer.Controllers
 
                     _logger.LogError(ePending.Message);
                     _logger.LogInformation("Unable to find Build log and Build manifest in the destination");
-                    var response = new BuildResponse();
+                    var response = new BuildServerResponse();
                     response.Message = "Unable to find Build log and Build manifest in the destination";
-                    response.Status = BuildState.InProcess.ToString();
+                    response.Status = BuildState.Running.ToString();
                     response.StatusCode = (int)HttpStatusCode.Processing;
                     return StatusCode((int)HttpStatusCode.Processing, response);
-                }
-                _logger.LogError(ex.Message);
-                
+                }               
             }
             
             return NotFound(output);
         }
 
+        [Route("")]
         [HttpPost]
         public async Task<IActionResult> Build([FromBody] BuildServerRequests requestData)
         {

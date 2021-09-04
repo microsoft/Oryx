@@ -4,12 +4,33 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Microsoft.Oryx.BuildServer
 {
+    enum BuildState
+    {
+        Success,
+        Running,
+        Failed
+    }
+    public class BuildServerResponse
+    {
+        public int StatusCode { get; set; }
+        public string Status { get; set; }
+        public string Message { get; set; }
+
+        public BuildServerResponse(int code, string status, string message)
+        {
+            StatusCode = code;
+            Status = status;
+            Message = message;
+        }
+
+        public BuildServerResponse()
+        {
+        }
+    }
+
     public class ErrorResponse
     {
         public string Type { get; set; }
