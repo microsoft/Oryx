@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BuildScriptGenerator\BuildScriptGenerator.csproj" />
+    <ProjectReference Include="..\BuildServer\BuildServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
