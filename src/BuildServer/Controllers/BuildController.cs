@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildServer.Controllers
         [HttpGet]
         // 
         // GET: /build/CheckBuildStatus/ 
-        public async Task<IActionResult> CheckBuildStatus(string destination, string logfile)
+        public async Task<IActionResult> CheckBuildStatus(string manifestfilefullpath, string logfilefullpath)
         {
             int exitCode = 0;
             string output = string.Empty;
@@ -84,10 +84,14 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             var response = new BuildServerResponse();
             var httpRequestObject = _httpContextAccessor.HttpContext.Request;
             response.StatusCheckUrl = GetStatusUrls(httpRequestObject);
+            var defaultMsg = "Unknown Build Info";
+            response.Message = new BuildOutput(string.Empty, defaultMsg);
+            response.Status = BuildState.Unknown.ToString();
+            response.StatusCode = (int)HttpStatusCode.Accepted;
 
-            if (string.IsNullOrEmpty(destination) || string.IsNullOrEmpty(logfile))
+            if (string.IsNullOrEmpty(logfilefullpath))
             {
-                var msg = "Destination and/or build logfile name is empty in requestbody.";
+                var msg = "mlogfilefullpath is empty in requestbody.";
                  _logger.LogError(msg);
                 response.Message = new BuildOutput(String.Empty, msg); ;
                 response.Status = BuildState.Failed.ToString();
@@ -95,8 +99,18 @@ namespace Microsoft.Oryx.BuildServer.Controllers
                 return StatusCode(response.StatusCode, response); ;
             }
 
-            var buildManifestFilePath = Path.Join(destination, FilePaths.BuildManifestFileName);
-            var buildLogFilePath = Path.Join(destination, logfile);
+            if (string.IsNullOrEmpty(manifestfilefullpath))
+            {
+                var msg = "manifestfilefullpath is empty in requestbody.";
+                _logger.LogError(msg);
+                response.Message = new BuildOutput(String.Empty, msg); ;
+                response.Status = BuildState.Failed.ToString();
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return StatusCode(response.StatusCode, response); ;
+            }
+
+            var buildManifestFilePath = manifestfilefullpath;
+            var buildLogFilePath = logfilefullpath;
 
             // Checking for a scenario where build log and manifest file
             // both exists. This means it's a successful build scenario
@@ -110,13 +124,10 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             {
                 (exitCode, output, error) = await Task.Run(() => RunOryxCommand(script)).ConfigureAwait(false);
                 _logger.LogDebug($"exitcode {exitCode} and output: {output}");
-                if (exitCode == 0)
-                {
-                    response.Message = new BuildOutput(buildManifestFilePath, error);
-                    response.Status = BuildState.Success.ToString();
-                    response.StatusCode = (int)HttpStatusCode.OK;
-                    return StatusCode(response.StatusCode, response);
-                }
+                response.Message = new BuildOutput(buildManifestFilePath, error);
+                response.Status = BuildState.Success.ToString();
+                response.StatusCode = (int)HttpStatusCode.OK;
+                return StatusCode(response.StatusCode, response);
             }
             catch (Exception ex)
             {
@@ -133,14 +144,11 @@ namespace Microsoft.Oryx.BuildServer.Controllers
                 {
                     _logger.LogInformation("Checking if manifestfile doesn't exist but build log exists");
                     (exitCode, output, error) = await Task.Run(() => RunOryxCommand(script)).ConfigureAwait(false);
-                    if (exitCode == 0)
-                    {
-                        _logger.LogError(output);
-                        response.Message = new BuildOutput(output, error);
-                        response.Status = BuildState.Failed.ToString();
-                        response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        return StatusCode(response.StatusCode, response);
-                    }
+                    _logger.LogError(output);
+                    response.Message = new BuildOutput(output, error);
+                    response.Status = BuildState.Failed.ToString();
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return StatusCode(response.StatusCode, response);
                 }
                 catch (Exception ePending)
                 {
@@ -156,8 +164,6 @@ namespace Microsoft.Oryx.BuildServer.Controllers
                     return StatusCode(response.StatusCode, response);
                 }
             }
-
-            return StatusCode(response.StatusCode, response);
         }
 
         [Route("")]
@@ -172,21 +178,55 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             var response = new BuildServerResponse();
             var httpRequestObject = _httpContextAccessor.HttpContext.Request;
             response.StatusCheckUrl = GetStatusUrls(httpRequestObject);
+            var msg = string.Empty;
 
             try 
             {
                 string jsonString = System.Text.Json.JsonSerializer.Serialize(requestData);
                 Console.WriteLine(jsonString);
                 _logger.LogInformation($"Request body received: {jsonString}");
-                if (requestData == null
-                    || requestData.Source == null
-                    || requestData.Destination == null
-                    || requestData.Platform == null
-                    || requestData.PlatformVersion == null)
-                {
-                    _logger.LogError("Request Body empty or missing Source, destination, platform and platformversion info.");
 
-                    var msg = "Request Body empty or missing Source, destination, platform and platformversion info.";
+                var emptyRequestString = "is empty/null";
+                if (requestData == null)
+                {
+                    msg = $"Request body {emptyRequestString}";
+                    _logger.LogError(msg);
+                    response.Message = new BuildOutput(string.Empty, msg);
+                    response.Status = BuildState.InvalidRequestParameter.ToString();
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return StatusCode(response.StatusCode, response);
+                }
+                else if (requestData.Source == null)
+                {
+                    msg = $"Source {emptyRequestString}";
+                    _logger.LogError(msg);
+                    response.Message = new BuildOutput(string.Empty, msg);
+                    response.Status = BuildState.InvalidRequestParameter.ToString();
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return StatusCode(response.StatusCode, response);
+                }
+                else if (requestData.Destination == null)
+                {
+                    msg = $"Destination {emptyRequestString}";
+                    _logger.LogError(msg);
+                    response.Message = new BuildOutput(string.Empty, msg);
+                    response.Status = BuildState.InvalidRequestParameter.ToString();
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return StatusCode(response.StatusCode, response);
+                }
+                else if (requestData.Platform == null)
+                {
+                    msg = $"Platform {emptyRequestString}";
+                    _logger.LogError(msg);
+                    response.Message = new BuildOutput(string.Empty, msg);
+                    response.Status = BuildState.InvalidRequestParameter.ToString();
+                    response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return StatusCode(response.StatusCode, response);
+                }
+                else if (requestData.PlatformVersion == null)
+                {
+                    msg = $"PlatformVersion {emptyRequestString}";
+                    _logger.LogError(msg);
                     response.Message = new BuildOutput(string.Empty, msg);
                     response.Status = BuildState.InvalidRequestParameter.ToString();
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -210,7 +250,7 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             catch (Exception e)
             {
                 _logger.LogError(e.Message);
-                string msg = "Unable to Process Oryx Build request...";
+                msg = "Unable to Process Oryx Build request...";
                 response.Status = BuildState.Failed.ToString();
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
                 response.Message = new BuildOutput(msg, e.Message);
@@ -247,7 +287,8 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             var result = new StatusUrl();
             string host = request.Host.Value;
             string scheme = request.Scheme;
-            string buildUrl = string.Concat(scheme, "://", host, "/build/", "CheckBuildStatus");
+            string buildUrlQueryParam = "?manifestfilefullpath=<value>&logfilefullpath=<value>";
+            string buildUrl = string.Concat(scheme, "://", host, "/build/", "CheckBuildStatus", buildUrlQueryParam);
             string serverUrl = string.Concat(scheme, "://", host, "/build/", "CheckServerStatus");
 
             result.BuildStatusCheckUrl = buildUrl;

@@ -12,7 +12,8 @@ namespace Microsoft.Oryx.BuildServer
         Success,
         Running,
         Failed,
-        InvalidRequestParameter
+        InvalidRequestParameter,
+        Unknown
     }
 
     public class StatusUrl
