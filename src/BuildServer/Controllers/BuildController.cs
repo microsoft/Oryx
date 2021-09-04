@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using System;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
@@ -34,10 +33,14 @@ namespace Microsoft.Oryx.BuildServer.Controllers
         [HttpGet]
         public JsonResult Index()
         {
+            var httpRequestObject = _httpContextAccessor.HttpContext.Request;
+            var statusUrls = new StatusUrl();
+            var getStatusCheckUrl = GetStatusUrls(httpRequestObject);
+            Response.Headers.Add(nameof(statusUrls.BuildStatusCheckUrl), getStatusCheckUrl.BuildStatusCheckUrl);
+            Response.Headers.Add(nameof(statusUrls.ServerStatusCheckUrl), getStatusCheckUrl.ServerStatusCheckUrl);
             return Json((int)HttpStatusCode.OK);
         }
 
-        //[Route("[controller]/[action]")]
         [Route("/build/CheckServerStatus")]
         [Produces("application/json")]
         [HttpGet]
@@ -52,7 +55,11 @@ namespace Microsoft.Oryx.BuildServer.Controllers
                         .AddCommand("oryx --version").ToString();
             var response = new BuildServerResponse();
             var httpRequestObject = _httpContextAccessor.HttpContext.Request;
-            response.StatusCheckUrl = GetStatusUrls(httpRequestObject);
+            var statusUrls = new StatusUrl();
+            var getStatusCheckUrl = GetStatusUrls(httpRequestObject);
+            Response.Headers.Add(nameof(statusUrls.BuildStatusCheckUrl), getStatusCheckUrl.BuildStatusCheckUrl);
+            Response.Headers.Add(nameof(statusUrls.ServerStatusCheckUrl), getStatusCheckUrl.ServerStatusCheckUrl);
+            response.StatusCheckUrl = getStatusCheckUrl;
 
             try
             {
@@ -83,7 +90,11 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             string error = string.Empty;
             var response = new BuildServerResponse();
             var httpRequestObject = _httpContextAccessor.HttpContext.Request;
-            response.StatusCheckUrl = GetStatusUrls(httpRequestObject);
+            var statusUrls = new StatusUrl();
+            var getStatusCheckUrl = GetStatusUrls(httpRequestObject);
+            Response.Headers.Add(nameof(statusUrls.BuildStatusCheckUrl), getStatusCheckUrl.BuildStatusCheckUrl);
+            Response.Headers.Add(nameof(statusUrls.ServerStatusCheckUrl), getStatusCheckUrl.ServerStatusCheckUrl);
+            response.StatusCheckUrl = getStatusCheckUrl;
             var defaultMsg = "Unknown Build Info";
             response.Message = new BuildOutput(string.Empty, defaultMsg);
             response.Status = BuildState.Unknown.ToString();
@@ -124,45 +135,60 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             {
                 (exitCode, output, error) = await Task.Run(() => RunOryxCommand(script)).ConfigureAwait(false);
                 _logger.LogDebug($"exitcode {exitCode} and output: {output}");
-                response.Message = new BuildOutput(buildManifestFilePath, error);
-                response.Status = BuildState.Success.ToString();
-                response.StatusCode = (int)HttpStatusCode.OK;
+                if (exitCode == 0)
+                {
+                    response.Message = new BuildOutput(buildManifestFilePath, string.Empty);
+                    response.Status = BuildState.Success.ToString();
+                    response.StatusCode = (int)HttpStatusCode.OK;
+                }
+                else
+                {
+                    // Checking for a scenario where build log exists but
+                    // manifest file doesn't. This means it's a failed build scenario
+                    // http response: 400
+
+                    _logger.LogError(error);
+                    script = new ShellScriptBuilder()
+                    .AddFileDoesNotExistCheck(buildManifestFilePath)
+                    .AddFileExistsCheck(buildLogFilePath)
+                    .ToString();
+
+                    _logger.LogInformation("Checking if manifestfile doesn't exist but build log exists");
+                    (exitCode, output, error) = await Task.Run(() => RunOryxCommand(script)).ConfigureAwait(false);
+                    _logger.LogDebug(output);
+                    _logger.LogDebug(error);
+                    Console.WriteLine(output);
+                    Console.WriteLine(error);
+                    if (exitCode == 0)
+                    {
+                        response.Message = new BuildOutput(string.Empty, error);
+                        response.Status = BuildState.Failed.ToString();
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    }
+                    else
+                    {
+                        // Checking for a scenario where build log and manifest file
+                        // both doesn't exist. This means build is still in process.
+                        // http response: 202
+                        _logger.LogError(error);
+                        var msg = "Unable to find Build log and Build manifest in the destination";
+                        _logger.LogInformation(msg);
+                        response.Message = new BuildOutput(msg, error);
+                        response.Status = BuildState.Running.ToString();
+                        response.StatusCode = (int)HttpStatusCode.Accepted;
+                    }
+                }
                 return StatusCode(response.StatusCode, response);
+
             }
             catch (Exception ex)
             {
-                // Checking for a scenario where build log exists but
-                // manifest file doesn't. This means it's a failed build scenario
-                // http response: 400
-
                 _logger.LogError(ex.Message);
-                script = new ShellScriptBuilder()
-                .AddFileDoesNotExistCheck(buildManifestFilePath)
-                .AddFileExistsCheck(buildLogFilePath)
-                .ToString();
-                try
-                {
-                    _logger.LogInformation("Checking if manifestfile doesn't exist but build log exists");
-                    (exitCode, output, error) = await Task.Run(() => RunOryxCommand(script)).ConfigureAwait(false);
-                    _logger.LogError(output);
-                    response.Message = new BuildOutput(output, error);
-                    response.Status = BuildState.Failed.ToString();
-                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return StatusCode(response.StatusCode, response);
-                }
-                catch (Exception ePending)
-                {
-                    // Checking for a scenario where build log and manifest file
-                    // both doesn't exist. This means build is still in process.
-                    // http response: 202
-                    _logger.LogError(ePending.Message);
-                    var msg = "Unable to find Build log and Build manifest in the destination";
-                    _logger.LogInformation(msg);
-                    response.Message = new BuildOutput(msg, ePending.Message);
-                    response.Status = BuildState.Running.ToString();
-                    response.StatusCode = (int)HttpStatusCode.Accepted;
-                    return StatusCode(response.StatusCode, response);
-                }
+                Console.WriteLine(ex.Message);
+                response.Message = new BuildOutput(String.Empty, "Build Status Unknown"); ;
+                response.Status = BuildState.Unknown.ToString();
+                response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return StatusCode(response.StatusCode, response); ;
             }
         }
 
@@ -177,7 +203,11 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             string error = string.Empty;
             var response = new BuildServerResponse();
             var httpRequestObject = _httpContextAccessor.HttpContext.Request;
-            response.StatusCheckUrl = GetStatusUrls(httpRequestObject);
+            var statusUrls = new StatusUrl();
+            var getStatusCheckUrl = GetStatusUrls(httpRequestObject);
+            Response.Headers.Add(nameof(statusUrls.BuildStatusCheckUrl), getStatusCheckUrl.BuildStatusCheckUrl);
+            Response.Headers.Add(nameof(statusUrls.ServerStatusCheckUrl), getStatusCheckUrl.ServerStatusCheckUrl);
+            response.StatusCheckUrl = getStatusCheckUrl;
             var msg = string.Empty;
 
             try 
