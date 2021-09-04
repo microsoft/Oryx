@@ -14,6 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string EnableDynamicInstall = "ENABLE_DYNAMIC_INSTALL";
         public const string DisableCheckers = "DISABLE_CHECKERS";
         public const string DisableDotNetCoreBuild = "DISABLE_DOTNETCORE_BUILD";
+        public const string DisableGolangeBuild = "DISABLE_GOLANG_BUILD";
         public const string DisableNodeJSBuild = "DISABLE_NODEJS_BUILD";
         public const string DisablePythonBuild = "DISABLE_PYTHON_BUILD";
         public const string DisablePhpBuild = "DISABLE_PHP_BUILD";
@@ -31,6 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string CustomRunBuildCommand = "RUN_BUILD_COMMAND";
         public const string CustomBuildCommand = "CUSTOM_BUILD_COMMAND";
         public const string PythonVersion = "PYTHON_VERSION";
+        public const string GolangVersion = "GOLANG_VERSION";
         public const string PhpVersion = "PHP_VERSION";
         public const string PhpComposerVersion = "PHP_COMPOSER_VERSION";
         public const string HugoVersion = "HUGO_VERSION";

@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.Detector.Tests.Golang
         private const string GolangModFileWithMajorMinorPatchVersion = @"
             module hello
 
-            go 1.16.0
+            go 1.16.7
         ";
 
         private const string GolangFileWithNoVersions = @"
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Detector.Tests.Golang
             // Assert
             Assert.NotNull(result);
             Assert.Equal(GolangConstants.PlatformName, result.Platform);
-            Assert.Equal("1.16.0", result.PlatformVersion);
+            Assert.Equal("1.16.7", result.PlatformVersion);
             Assert.Equal(string.Empty, result.AppDirectory);
         }
 
@@ -131,7 +131,7 @@ namespace Microsoft.Oryx.Detector.Tests.Golang
             // Assert
             Assert.NotNull(result);
             Assert.Equal(GolangConstants.PlatformName, result.Platform);
-            Assert.Equal("1", result.PlatformVersion);
+            Assert.Null(result.PlatformVersion);
             Assert.Equal(string.Empty, result.AppDirectory);
         }
 

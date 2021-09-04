@@ -90,6 +90,14 @@ PlatformName                    | Name of Oryx supported platform name          
 CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
 nodejs_npm_registry_url         | URL of the npm registry                                                                   | "https://foobar.com/" 
 
+Golang fields                   |       Description                                                                         |      Example
+--------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
+GolangVersion                   | Platform's version that Oryx will use to run the app                                      | "1.17"  
+OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         | "\|lTpVCq2KGuY=.e6f14074_"
+SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "golang/hello-world/" 
+PlatformName                    | Name of Oryx supported platform name                                                      | "golang"       
+CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
+
 Python fields                   |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
 PythonVersion                   | Platform's version that Oryx will use to run the app                                      | "3.8.6" 

@@ -62,6 +62,33 @@ namespace Oryx.Integration.Tests
         }
 
         [Fact]
+        public void GolangCoreContainer_HasExpectedListOfBlobs()
+        {
+            // Arrange & Act
+            var platformName = "golang";
+            var actualVersions = GetVersionsFromContainer(platformName, "version");
+            var expectedVersions = GetListOfVersionsToBuild(platformName);
+
+            // Assert
+            foreach (var expectedVersion in expectedVersions)
+            {
+                Assert.Contains(expectedVersion, actualVersions);
+            }
+        }
+
+        [Fact]
+        public void GolangContainer_HasExpectedDefaultVersion()
+        {
+            // Arrange & Act
+            var platformName = "golang";
+            var actualVersion = GetDefaultVersionFromContainer(platformName);
+            var expectedVersion = GetDefaultVersion(platformName);
+
+            // Assert
+            Assert.Equal(expectedVersion, actualVersion);
+        }
+
+        [Fact]
         public void PythonContainer_HasExpectedListOfBlobs()
         {
             // Arrange & Act
