@@ -95,5 +95,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// to be compressed.
         /// </summary>
         public bool CompressDestinationDir { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value which indicates if the build is completed sucessfully (True) or failed (False).
+        /// </summary>
+        public bool OryxBuildSucessfull { get; set; }
     }
 }

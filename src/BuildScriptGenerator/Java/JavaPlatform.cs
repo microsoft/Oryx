@@ -160,6 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
+                OryxBuildSucessfull = true,
             };
         }
 

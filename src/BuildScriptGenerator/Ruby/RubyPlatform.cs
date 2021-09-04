@@ -137,6 +137,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = buildProperties,
+                OryxBuildSucessfull = true,
             };
         }
 

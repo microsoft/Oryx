@@ -393,6 +393,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
+                OryxBuildSucessfull = true,
             };
         }
 

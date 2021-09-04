@@ -15,6 +15,19 @@ fi
 cd $SOURCE_DIR
 SOURCE_DIR=$(pwd -P)
 
+{{ if ManifestFileName | IsNotBlank }}
+MANIFEST_FILE={{ ManifestFileName }}
+
+MANIFEST_DIR={{ ManifestDir }}
+if [ -z "$MANIFEST_DIR" ];then
+	MANIFEST_DIR="$DESTINATION_DIR"
+fi
+mkdir -p "$MANIFEST_DIR"
+
+echo
+echo "Removing existing manifest file"
+rm -f "$MANIFEST_DIR/$MANIFEST_FILE"
+
 if [ -z "$DESTINATION_DIR" ]
 then
     DESTINATION_DIR="$SOURCE_DIR"
@@ -191,23 +204,18 @@ then
 	{{ end }}
 fi
 
-{{ if ManifestFileName | IsNotBlank }}
-MANIFEST_FILE={{ ManifestFileName }}
-
-MANIFEST_DIR={{ ManifestDir }}
-if [ -z "$MANIFEST_DIR" ];then
-	MANIFEST_DIR="$DESTINATION_DIR"
-fi
-mkdir -p "$MANIFEST_DIR"
-
-echo
-echo "Removing existing manifest file"
-rm -f "$MANIFEST_DIR/$MANIFEST_FILE"
 {{ if BuildProperties != empty }}
 echo "Creating a manifest file..."
 {{ for prop in BuildProperties }}
 echo "{{ prop.Key }}=\"{{ prop.Value }}\"" >> "$MANIFEST_DIR/$MANIFEST_FILE"
 {{ end }}
+
+{{ if OryxBuildSucessfull }}
+	echo "buildstatus=success" >> "$MANIFEST_DIR/$MANIFEST_FILE"
+{{ else }}
+	echo "buildstatus=failed" >> "$MANIFEST_DIR/$MANIFEST_FILE"
+{{ end }}
+
 echo "Manifest file created."
 {{ end }}
 {{ end }}

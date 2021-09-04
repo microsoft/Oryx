@@ -154,6 +154,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                 // Setting this to false to avoid copying files like '.cs' to the destination
                 CopySourceDirectoryContentToDestinationDirectory = false,
+                OryxBuildSucessfull = true,
             };
         }
 
