@@ -5,6 +5,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,11 @@ namespace Microsoft.Oryx.BuildServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
+            services.AddMvc();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddSingleton<ILoggerFactory, LoggerFactory>();
+            services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
             services.AddControllers();
 
         }
@@ -48,9 +54,10 @@ namespace Microsoft.Oryx.BuildServer
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    "default",
-                    pattern: "{controller=Build}/{action=Get}/{id?}");
+                endpoints.MapDefaultControllerRoute();
+            //    endpoints.MapControllerRoute(
+            //        "default",
+            //        pattern: "{controller=Build}/{action=Index}/{id?}");
             });
         }
     }
