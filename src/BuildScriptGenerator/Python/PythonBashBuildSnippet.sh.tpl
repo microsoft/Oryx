@@ -1,7 +1,9 @@
+set -e
 declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install'
 echo "Python Version: $python"
 PIP_CACHE_DIR=/usr/local/share/pip-cache
+scriptName="basename $0"
 
 {{ if PythonBuildCommandsFileName | IsNotBlank }}
 COMMAND_MANIFEST_FILE={{ PythonBuildCommandsFileName }}
@@ -61,7 +63,7 @@ fi
 		pipInstallExitCode=${PIPESTATUS[0]}
 		if [[ $pipInstallExitCode != 0 ]]
 		then
-			echo "Error: failed to pip installation command: ${InstallCommand}"
+			echo "Error: failed to pip installation in ${scriptName} with exit code: ${pipInstallExitCode}"
 			exit $pipInstallExitCode
 		fi
 		set -e
@@ -124,6 +126,7 @@ fi
 		ELAPSED_TIME=$(($SECONDS - $START_TIME))
 		echo "Done in $ELAPSED_TIME sec(s)."
 
+		set +e
 		echo "Running python setup.py install..."
 		InstallCommand="$python setup.py install --user| ts $TS_FMT"
 		printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
@@ -131,8 +134,10 @@ fi
 		pythonBuildExitCode=${PIPESTATUS[0]}
 		if [[ $pythonBuildExitCode != 0 ]]
 		then
+			echo "Error: Failure in ${scriptName} with exit status ${pythonBuildExitCode}"
 			exit $pythonBuildExitCode
 		fi
+		set -e
 	elif [ -e "pyproject.toml" ]
 	then
 		echo "Running pip install poetry..."
