@@ -24,6 +24,11 @@ echo
 	echo "Running '{{ CustomBuildCommand }}'..."
 	echo
 	{{ CustomBuildCommand }}
+{{ else if CustomRunBuildCommand | IsNotBlank }}
+	echo
+	printf %s "{{ CustomRunBuildCommand }}"
+	{{ CustomRunBuildCommand }}
+	echo
 {{ else }}
     {{ if ConfigYmlFileExists }}
         {{ if GemfileExists }}

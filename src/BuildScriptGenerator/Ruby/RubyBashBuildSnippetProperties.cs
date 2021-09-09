@@ -10,6 +10,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
     /// </summary>
     internal class RubyBashBuildSnippetProperties
     {
+        public string CustomRunBuildCommand { get; set; }
+
         public bool UseBundlerToInstallDependencies { get; set; }
 
         public string BundlerVersion { get; set; }
