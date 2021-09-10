@@ -5,6 +5,11 @@ echo "Using .NET Core SDK Version: $dotnetCoreVersion"
 {{ # .NET Core 1.1 based projects require restore to be run before publish }}
 dotnet restore "{{ ProjectFile }}"
 
+{{ if CustomRunBuildCommand | IsNotBlank 
+	printf %s "{{ CustomRunBuildCommand }}"
+	{{ CustomRunBuildCommand }}
+{{ end }}
+
 if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
 then
 	dotnet publish "{{ ProjectFile }}" -c {{ Configuration }}
