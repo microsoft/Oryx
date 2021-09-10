@@ -56,6 +56,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
             Assert.Equal(expectedVersion, result.PlatformVersion);
         }
 
+        [Fact]
+        public void GeneratedBuildSnippet_CustomRunBuildCommandWillExecute_WhenOtherCommandsAlsoExist()
+        {
+            // Arrange
+            var expectedVersion = "1.2.3";
+            var detectedVersion = "3.4.5";
+            var hugoScriptGeneratorOptions = new HugoScriptGeneratorOptions
+            {
+                CustomRunBuildCommand = "custom build command",
+                HugoVersion = expectedVersion
+            };
+            var detector = CreateDetector(detectedVersion: detectedVersion);
+            var platform = CreatePlatform(
+                detector,
+                hugoScriptGeneratorOptions: hugoScriptGeneratorOptions);
+            var context = CreateContext();
+
+            // Act
+            var detectorResult = platform.Detect(context);
+            var buildScriptSnippet = platform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(detectorResult);
+            Assert.Contains("custom run build command", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
         private IHugoPlatformDetector CreateDetector(string detectedVersion)
         {
             return new TestHugoPlatformDetector(detectedVersion: detectedVersion);
