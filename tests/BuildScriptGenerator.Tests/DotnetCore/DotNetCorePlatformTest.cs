@@ -77,6 +77,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Equal(expectedSdkVersion, result.PlatformVersion);
         }
 
+        [Fact]
+        public void GeneratedBuildSnippet_CustomRunBuildCommandWillExecute_WhenOtherCommandsAlsoExist()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.AppType = Constants.StaticSiteApplications;
+            var rubyScriptGeneratorOptions = new DotNetCoreScriptGeneratorOptions
+            {
+                CustomRunBuildCommand = "custom build command"
+            };
+            var dotnetCorePlatform = CreateDotNetCorePlatform(
+                dotNetCoreScriptGeneratorOptions: rubyScriptGeneratorOptions,
+                commonOptions: commonOptions);
+            var repo = new MemorySourceRepo();
+            var context = CreateContext(repo);
+            var detectorResult = new DotNetCorePlatformDetectorResult
+            {
+                Platform = DotNetCoreConstants.PlatformName,
+                PlatformVersion = "2.6.6",
+            };
+
+            // Act
+            var buildScriptSnippet = dotnetCorePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(detectorResult);
+            Assert.Contains("custom run build command", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
         {
             sourceRepo = sourceRepo ?? new MemorySourceRepo();
@@ -92,6 +122,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             string detectedProjectFile = null)
         {
             return new TestDotNetCorePlatformDetector(detectedVersion, detectedProjectFile);
+        }
+
+        private DotNetCorePlatform CreateDotNetCorePlatform(
+            string defaultVersion = null,
+            BuildScriptGeneratorOptions commonOptions = null,
+            DotNetCoreScriptGeneratorOptions dotNetCoreScriptGeneratorOptions = null)
+        {
+            defaultVersion = defaultVersion ?? DotNetCoreRunTimeVersions.NetCoreApp31;
+            var supportedVersions =  new Dictionary<string, string>
+            {
+                { defaultVersion, defaultVersion },
+            };
+            commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
+            dotNetCoreScriptGeneratorOptions = dotNetCoreScriptGeneratorOptions ?? new DotNetCoreScriptGeneratorOptions();
+            var versionProvider = new TestDotNetCoreVersionProvider(supportedVersions, defaultVersion);
+            var detector = new TestDotNetCorePlatformDetector(detectedVersion: defaultVersion);
+            var installer = new DotNetCorePlatformInstaller(
+                Options.Create(commonOptions),
+                NullLoggerFactory.Instance);
+            var globalJsonSdkResolver = new GlobalJsonSdkResolver(NullLogger<GlobalJsonSdkResolver>.Instance);
+            return new TestDotNetCorePlatform(
+                versionProvider,
+                detector,
+                Options.Create(commonOptions),
+                Options.Create(dotNetCoreScriptGeneratorOptions),
+                installer,
+                globalJsonSdkResolver);
         }
 
         private DotNetCorePlatform CreatePlatform(
