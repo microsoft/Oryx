@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
         public void Configure(HugoScriptGeneratorOptions options)
         {
+            options.CustomRunBuildCommand = GetStringValue(SettingsKeys.CustomRunBuildCommand);
             options.HugoVersion = GetStringValue(SettingsKeys.HugoVersion);
         }
     }

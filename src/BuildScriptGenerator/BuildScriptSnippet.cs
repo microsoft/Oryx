@@ -17,6 +17,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string BashBuildScriptSnippet { get; set; }
 
         /// <summary>
+        /// Gets or sets the custom run build command, written in bash.
+        /// </summary>
+        public string CustomRunBuildCommand { get; set; }
+
+        /// <summary>
         /// Gets or sets a property bag with a manifest for the build.
         /// </summary>
         /// <remarks>
