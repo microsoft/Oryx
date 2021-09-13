@@ -9,6 +9,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class BuildScriptGeneratorOptions
     {
+        public string CustomRunBuildCommand { get; set; }
+
         public string SourceDir { get; set; }
 
         public string IntermediateDir { get; set; }

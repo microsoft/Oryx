@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             {
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
-                CustomRunBuildCommand = _hugoScriptGeneratorOptions.CustomRunBuildCommand,
+                CustomRunBuildCommand = _commonOptions.CustomRunBuildCommand,
             };
         }
 

@@ -62,15 +62,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
             // Arrange
             var expectedVersion = "1.2.3";
             var detectedVersion = "3.4.5";
-            var hugoScriptGeneratorOptions = new HugoScriptGeneratorOptions
+            var buildScriptGeneratorOptions = new BuildScriptGeneratorOptions
             {
                 CustomRunBuildCommand = "custom build command",
-                HugoVersion = expectedVersion
+                PlatformName = "hugo",
+                PlatformVersion = expectedVersion
             };
             var detector = CreateDetector(detectedVersion: detectedVersion);
             var platform = CreatePlatform(
                 detector,
-                hugoScriptGeneratorOptions: hugoScriptGeneratorOptions);
+                buildScriptGeneratorOptions: buildScriptGeneratorOptions);
             var context = CreateContext();
 
             // Act
