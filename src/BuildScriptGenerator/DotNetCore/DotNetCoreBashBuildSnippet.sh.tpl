@@ -1,24 +1,26 @@
-﻿echo
+﻿echo "THIS IS A NEW COMMAND WILL THIS SHOW UP???"
+
+echo
 dotnetCoreVersion=$(dotnet --version)
 echo "Using .NET Core SDK Version: $dotnetCoreVersion"
 
 {{ # .NET Core 1.1 based projects require restore to be run before publish }}
 dotnet restore "{{ ProjectFile }}"
 
-
-{{ # TODO: check if dotnet restore is part of CustomRunBuildCommand }}
-
-{{ if CustomRunBuildCommand | IsNotBlank }}
-	printf %s "{{ CustomRunBuildCommand }}"
-	{{ CustomRunBuildCommand }}
-{{ end }}
-
-if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
+# $RUN_BUILD_COMMAND support
+echo "This is another commna outside CustomRunBuildCommand if statement"
+if [ ! -z "$RUN_BUILD_COMMAND" ]
 then
-	dotnet publish "{{ ProjectFile }}" -c {{ Configuration }}
+	echo 'Running $RUN_BUILD_COMMAND'
+	${RUN_BUILD_COMMAND}
 else
-	echo
-	echo "Publishing to directory $DESTINATION_DIR..."
-	echo
-	dotnet publish "{{ ProjectFile }}" -c {{ Configuration }} -o "$DESTINATION_DIR"
+	if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
+	then
+		dotnet publish "{{ ProjectFile }}" -c {{ Configuration }}
+	else
+		echo
+		echo "Publishing to directory $DESTINATION_DIR..."
+		echo
+		dotnet publish "{{ ProjectFile }}" -c {{ Configuration }} -o "$DESTINATION_DIR"
+	fi
 fi
