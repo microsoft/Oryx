@@ -10,8 +10,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     /// </summary>
     public class DotNetCoreBashBuildSnippetProperties
     {
-        public string CustomRunBuildCommand { get; set; }
-
         public string ProjectFile { get; set; }
 
         public string Configuration { get; set; }

@@ -7,8 +7,6 @@ echo "Using .NET Core SDK Version: $dotnetCoreVersion"
 {{ # .NET Core 1.1 based projects require restore to be run before publish }}
 dotnet restore "{{ ProjectFile }}"
 
-# $RUN_BUILD_COMMAND support
-echo "This is another commna outside CustomRunBuildCommand if statement"
 if [ ! -z "$RUN_BUILD_COMMAND" ]
 then
 	echo 'Running $RUN_BUILD_COMMAND'

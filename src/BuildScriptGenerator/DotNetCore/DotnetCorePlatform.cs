@@ -156,7 +156,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             return new BuildScriptSnippet
             {
-                CustomRunBuildCommand = _dotNetCoreScriptGeneratorOptions.CustomRunBuildCommand,
                 BashBuildScriptSnippet = script,
                 BuildProperties = manifestFileProperties,
 

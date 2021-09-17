@@ -22,7 +22,5 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         public string SdkVersion { get; set; }
 
         public string OutputType { get; set; }
-        
-        public string RunBuildCommand { get; set; }
     }
 }
