@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -93,6 +94,45 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains("Using Hugo version:", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("hugo-sample")]
+        [InlineData("hugo-sample-json")]
+        [InlineData("hugo-sample-yaml")]
+        [InlineData("hugo-sample-yml")]
+        public void CanBuildHugoApp_RunBuildCommand(string appName)
+        {
+            // Arrange
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            string runBuildCommand = "\"echo test run build command\"";
+            string manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable("RUN_BUILD_COMMAND", runBuildCommand)
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
+                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.RunBuildCommand}={runBuildCommand}", manifestFile)
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetLtsVersionsBuildImage(),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Using Hugo version:", result.StdOut);
+                    Assert.Contains("test run build command", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
