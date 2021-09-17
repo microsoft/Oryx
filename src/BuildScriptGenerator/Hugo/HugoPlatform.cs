@@ -80,6 +80,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             var manifestFileProperties = new Dictionary<string, string>();
             manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = detectorResult.PlatformVersion;
 
+            string runBuildCommand = Environment.GetEnvironmentVariable("RUN_BUILD_COMMAND");
+            if (!String.IsNullOrEmpty(runBuildCommand))
+            {
+                _logger.LogWarning("RUN_BUILD_COMMAND environment variable detected");
+                manifestFileProperties[ManifestFilePropertyKeys.RunBuildCommand] = runBuildCommand;
+            }
+
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.HugoSnippet,
                 model: null,
