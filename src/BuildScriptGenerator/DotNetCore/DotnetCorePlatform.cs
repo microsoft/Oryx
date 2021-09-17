@@ -128,6 +128,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 manifestFileProperties[ManifestFilePropertyKeys.OutputType] = outputType;
             }
 
+            string runBuildCommand = Environment.GetEnvironmentVariable("RUN_BUILD_COMMAND");
+            if ( !String.IsNullOrEmpty(runBuildCommand))
+            {
+                _logger.LogWarning("RUN_BUILD_COMMAND environment variable detected");
+                manifestFileProperties[ManifestFilePropertyKeys.RunBuildCommand] = runBuildCommand;
+            }
+
             var projectFile = dotNetCorePlatformDetectorResult.ProjectFile;
             if (string.IsNullOrEmpty(projectFile))
             {
