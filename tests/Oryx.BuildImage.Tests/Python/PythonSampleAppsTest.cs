@@ -27,7 +27,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(Settings.BuildImageName)]
         [InlineData(Settings.LtsVersionsBuildImageName)]
         public void GeneratesScript_AndBuilds(string buildImageName)
         {
