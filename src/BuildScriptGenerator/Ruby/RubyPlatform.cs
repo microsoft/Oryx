@@ -114,6 +114,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 
             var buildProperties = new Dictionary<string, string>();
 
+            string runBuildCommand = Environment.GetEnvironmentVariable("RUN_BUILD_COMMAND");
+            if (!String.IsNullOrEmpty(runBuildCommand))
+            {
+                _logger.LogWarning("RUN_BUILD_COMMAND environment variable detected");
+                buildProperties[ManifestFilePropertyKeys.RunBuildCommand] = runBuildCommand;
+            }
+
             // Write the platform name and version to the manifest file
             buildProperties[ManifestFilePropertyKeys.RubyVersion] = rubyPlatformDetectorResult.PlatformVersion;
 

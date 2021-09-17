@@ -21,6 +21,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public const string OutputType = nameof(OutputType);
 
+        public const string RunBuildCommand = nameof(RunBuildCommand);
+
         internal const string PythonVersion = nameof(PythonVersion);
 
         internal const string HugoVersion = nameof(HugoVersion);
