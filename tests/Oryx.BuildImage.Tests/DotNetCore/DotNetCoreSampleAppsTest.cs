@@ -74,6 +74,45 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void Builds_NetCore10App_Using_Run_Build_Command_Env_Var()
+        {
+            // Arrange
+            var appName = "aspnetcore10";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/aspnetcore10-output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            string runBuildCommand = "\"echo test run build command\"";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable("RUN_BUILD_COMMAND", runBuildCommand)
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 1.1.13")
+                .AddFileExistsCheck(manifestFile)
+                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.RunBuildCommand}={runBuildCommand}", manifestFile)
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.LtsVersionsBuildImageWithRootAccess,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        "test run build command",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion()
         {
             // Arrange
