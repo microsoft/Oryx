@@ -26,7 +26,7 @@
     dot-net-core-31-sdk-version: 3.1.412
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.400
-    dot-net-60-sdk-version: 6.0.0-rc.1.21451.13
+    dot-net-60-sdk-version: 6.0.100-rc.1.21458.32
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
