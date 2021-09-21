@@ -123,7 +123,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("7.3", "latest")]
         [InlineData("7.4", "github-actions")]
         [InlineData("7.4", "github-actions-buster")]
-        [InlineData("7.4", "latest"]
+        [InlineData("7.4", "latest")]
         [InlineData("8.0", "github-actions")]
         [InlineData("8.0", "github-actions-buster")]
         [InlineData("8.0", "latest")]
