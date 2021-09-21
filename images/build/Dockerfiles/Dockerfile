@@ -3,7 +3,7 @@ FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions AS main
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
 ###
-FROM golang:1.11-stretch as startupScriptGens
+FROM golang:1.12-stretch as startupScriptGens
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
