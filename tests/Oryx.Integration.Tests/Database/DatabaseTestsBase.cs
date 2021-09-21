@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.Integration.Tests
             string platformName,
             string platformVersion,
             string samplePath,
-            int containerPort = 8000,
+            int containerPort = 3000,
             bool specifyBindPortFlag = true,
             string buildImageName = Settings.BuildImageName)
         {
