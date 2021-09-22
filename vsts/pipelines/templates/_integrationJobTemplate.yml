@@ -5,7 +5,7 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   timeoutInMinutes: 300
   variables:
     skipComponentGovernanceDetection: true
@@ -30,7 +30,7 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -55,7 +55,7 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -80,7 +80,7 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -105,7 +105,7 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -130,7 +130,7 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    name: OryxLinux
+    vmImage: 'ubuntu-latest'
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
