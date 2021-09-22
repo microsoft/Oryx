@@ -25,6 +25,7 @@ else
 		libncurses5-dev \
 		libsqlite3-dev \
 		libreadline-dev \
+        libbz2-dev \
 		libgdm-dev
 fi
 
