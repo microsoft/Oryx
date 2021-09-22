@@ -19,8 +19,8 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public static class EndToEndTestHelper
     {
-        private const int MaxRetryCount = 50;
-        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(15);
+        private const int MaxRetryCount = 20;
+        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(10);
 
         public static Task BuildRunAndAssertAppAsync(
             string appName,
@@ -325,7 +325,6 @@ namespace Microsoft.Oryx.Tests.Common
                         (portMapping.Length == 2),
                         "Did not get the port mapping in expected format. StdOut: " + getPortMappingResult.StdOut);
                     var hostPort = Convert.ToInt32(portMapping[1]);
-                    Console.WriteLine("Hostport: ", hostPort);
                     return hostPort;
                 }
                 else if (getPortMappingResult.StdErr.Contains("No such container"))
