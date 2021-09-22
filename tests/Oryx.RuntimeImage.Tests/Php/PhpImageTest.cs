@@ -306,5 +306,30 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
 
         }
+        
+        [Theory]
+        [InlineData("8.0")]
+        [InlineData("7.4")]
+        [InlineData("7.3")]
+        public void SqlSrv_IsInstalled(string imageTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-m", " | grep pdo_sqlsrv);" }
+            });
+
+            // Assert
+            var output = result.StdOut.ToString();
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("pdo_sqlsrv", output);
+            },
+                result.GetDebugInfo());
+
+        }
     }
 }
