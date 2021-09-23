@@ -48,6 +48,8 @@ else
         --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
         --enable-loadable-sqlite-extensions \
         --enable-shared \
+        --enable-optimizations \
+        --with-lto \
         --with-system-expat \
         --with-system-ffi \
         --without-ensurepip
@@ -67,10 +69,8 @@ LD_LIBRARY_PATH=/usr/src/python \
     --no-warn-script-location \
     pip==$PIP_VERSION
 
-if [ "${PYTHON_VERSION::1}" == "2" ]; then
-    LD_LIBRARY_PATH=$INSTALLATION_PREFIX/lib \
-    $INSTALLATION_PREFIX/bin/pip install --no-cache-dir virtualenv
-fi
+LD_LIBRARY_PATH=$INSTALLATION_PREFIX/lib \
+$INSTALLATION_PREFIX/bin/pip install --no-cache-dir -U virtualenv
 
 # Currently only for version '2' of Python, the alias 'python' exists in the 'bin'
 # directory. So to make sure other versions also have this alias, we create the link
