@@ -27,7 +27,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(Settings.BuildImageName)]
         [InlineData(Settings.LtsVersionsBuildImageName)]
         public void GeneratesScript_AndBuilds(string buildImageName)
         {
@@ -59,6 +58,48 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.LtsVersionsBuildImageName)]
+        public void GeneratesScript_AndBuilds_Using_RunBuildCommand(string buildImageName)
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            string runBuildCommand = "\"echo test run build command\"";
+            string manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .SetEnvironmentVariable("RUN_BUILD_COMMAND", runBuildCommand)
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.RunBuildCommand}={runBuildCommand}", manifestFile)
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        result.StdOut);
+                    Assert.Contains("test run build command", result.StdOut);
                 },
                 result.GetDebugInfo());
         }

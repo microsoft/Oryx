@@ -162,6 +162,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             var manifestFileProperties = new Dictionary<string, string>();
 
+            string runBuildCommand = Environment.GetEnvironmentVariable("RUN_BUILD_COMMAND");
+            if (!String.IsNullOrEmpty(runBuildCommand))
+            {
+                _logger.LogWarning("RUN_BUILD_COMMAND environment variable detected");
+                manifestFileProperties[ManifestFilePropertyKeys.RunBuildCommand] = runBuildCommand;
+            }
+
             // Write the platform name and version to the manifest file
             manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = pythonPlatformDetectorResult.PlatformVersion;
 
