@@ -103,6 +103,44 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        public void GeneratesScript_AndBuildRailsApp_Using_RunBuildCommand()
+        {
+            // Arrange
+            var appName = "ruby-on-rails-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            string runBuildCommand = "\"echo test run build command\"";
+            string manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable("RUN_BUILD_COMMAND", runBuildCommand)
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.RunBuildCommand}={runBuildCommand}", manifestFile)
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetLtsVersionsBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Ruby version", result.StdOut);
+                    Assert.Contains("test run build command", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
         public void Builds_JekyllStaticWebApp_When_Apptype_Is_SetAs_StaticSiteApplications()
         {
             // Arrange
