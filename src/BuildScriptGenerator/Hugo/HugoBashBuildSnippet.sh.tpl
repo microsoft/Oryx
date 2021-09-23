@@ -5,4 +5,10 @@ echo
 
 cd "$SOURCE_DIR"
 
-$hugo
+if [ ! -z "$RUN_BUILD_COMMAND" ]
+then
+	echo 'Running $RUN_BUILD_COMMAND'
+	${RUN_BUILD_COMMAND}
+else
+	$hugo
+fi
