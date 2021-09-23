@@ -94,7 +94,7 @@ coreapi==2.3.3
 coreschema==0.0.4
 cryptography==2.4.2
 dj-database-url==0.4.2
-Django==2.0.1
+Django==2.2.24
 django-storages==1.7.1
 djangorestframework==3.7.7
 flake8==3.6.0
@@ -104,7 +104,7 @@ gunicorn==19.7.1
 idna==2.7
 isodate==0.6.0
 itypes==1.1.0
-Jinja2==2.10
+Jinja2==2.10.1
 Markdown==2.6.10
 MarkupSafe==1.1
 mccabe==0.6.1
@@ -112,11 +112,11 @@ msrest==0.6.2
 msrestazure==0.5.1
 oauthlib==2.1.0
 protobuf==3.6.1
-psycopg2==2.7.3.2
+psycopg2==2.9.1
 pycodestyle==2.4.0
 pycparser==2.19
 pyflakes==2.0.0
-Pygments==2.2.0
+Pygments==2.7.4
 PyJWT==1.6.4
 python-dateutil==2.7.5
 python-dotenv==0.9.1
@@ -125,5 +125,5 @@ requests==2.20.0
 requests-oauthlib==1.0.0
 six==1.11.0
 uritemplate==3.0.0
-urllib3==1.24
+urllib3==1.24.2
 whitenoise==3.3.1
