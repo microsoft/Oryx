@@ -9,6 +9,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public const string OperationId = nameof(OperationId);
 
+        public const string GolangVersion = nameof(GolangVersion);
+
         public const string PhpVersion = nameof(PhpVersion);
 
         public const string NodeVersion = nameof(NodeVersion);

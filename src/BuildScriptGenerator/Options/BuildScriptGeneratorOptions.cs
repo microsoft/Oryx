@@ -39,6 +39,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public bool EnableNodeJSBuild { get; set; }
 
+        public bool EnableGolangBuild { get; set; }
+
         public bool EnablePythonBuild { get; set; }
 
         public bool EnablePhpBuild { get; set; }
