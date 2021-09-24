@@ -19,7 +19,7 @@ ORYX\_DISABLE\_TELEMETRY     | Disable Oryx command line tools from collecting a
 ORYX\_APP\_TYPE              | Type of application that the the source directory has.         | ""  | 'functions','static-sites', 'webapps'.
 DISABLE\_RECURSIVE\_LOOKUP   | Indicates if detectors should consider looking into sub-directories for files | `false` | `true`, `false`
 ENABLE\_MULTIPLATFORM\_BUILD | Apply more than one toolset if repo indicates it               | `false` | `true`, `false`
-PLATFORM\_NAME               | Specify which platform the app is using. Possible values are "python", "node", "dotnet".                   | ""      | "python"
+PLATFORM\_NAME               | Specify which platform the app is using. Possible values are: nodejs, hugo, python, dotnet, php, ruby, java.                   | ""      | "python"
 PLATFORM\_VERSION            | Specify which platform version the app is using           | ""      | "3.7.1"
 REQUIRED\_OS\_PACKAGES       | Indicate if it requires OS packages for Node or Python packages | `false` | `true`, `false`
 CREATE\_PACKAGE              | Indicate if it shoud create packages for the app          | `false` | `true`, `false`
