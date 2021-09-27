@@ -6,6 +6,11 @@ steps:
 - checkout: self
   clean: true
 
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection - OSS Compliance'
+  inputs:
+    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+    
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 3.1.x'
   inputs:
