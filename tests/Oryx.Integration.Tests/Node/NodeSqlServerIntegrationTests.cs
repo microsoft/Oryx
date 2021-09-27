@@ -28,7 +28,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("github-actions")]
-        [InlineData("github-actions-buster")]
         [InlineData("latest")]
         public async Task NodeApp_MicrosoftSqlServerDB(string imageTag)
         {

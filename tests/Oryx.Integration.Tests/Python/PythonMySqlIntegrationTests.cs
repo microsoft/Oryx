@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
+        [Theory(Skip = "Bug 1410367") ]
         [InlineData("mysql-pymysql-sample", "latest")]
         [InlineData("mysql-pymysql-sample", "github-actions")]
         [InlineData("mysql-mysqlconnector-sample", "latest")]
@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 buildImageName: _imageHelper.GetBuildImage(imageTag));
         }
 
-        [Theory]
+        [Theory(Skip = "Bug 1410367") ]
         [InlineData("mysql-pymysql-sample", "github-actions-buster")]
         [InlineData("mysql-mysqlconnector-sample", "github-actions-buster")]
         [InlineData("mysql-mysqlclient-sample", "github-actions-buster")]

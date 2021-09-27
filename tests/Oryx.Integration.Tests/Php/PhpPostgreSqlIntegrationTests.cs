@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
+        [Theory(Skip = "Bug 1410367") ]
         [InlineData("7.2")]
         [InlineData("7.3")]
         [InlineData("7.4")]

@@ -22,7 +22,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("latest")]
         [InlineData("github-actions")]
-        [InlineData("github-actions-buster")]
         public async Task NodeApp_MySqlDB(string imageTag)
         {
             await RunTestAsync(

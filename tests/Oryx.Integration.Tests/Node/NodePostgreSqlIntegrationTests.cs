@@ -19,9 +19,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
+        [Theory (Skip = "Bug 1410367")]
         [InlineData("github-actions")]
-        [InlineData("github-actions-buster")]
         [InlineData("latest")]
         public async Task NodeApp_PostgreSqlDB(string imageTag)
         {
