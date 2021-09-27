@@ -13,6 +13,11 @@ steps:
     scriptPath: ./build/buildSln.sh
     args: Detector.sln
 
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection - OSS Compliance'
+  inputs:
+    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+    
 - task: ShellScript@2
   displayName: 'Testing Detector'
   inputs:
