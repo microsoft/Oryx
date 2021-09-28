@@ -25,7 +25,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("3.7")]
-        [InlineData("3.8")]
         public async Task CanBuildAndRunPythonApp(string pythonVersion)
         {
             // Arrange

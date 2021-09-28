@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory (Skip = "Bug 1410367")]
         [InlineData(PythonVersions.Python27Version)]
         [InlineData("3")]
         [InlineData(PythonVersions.Python37Version)]

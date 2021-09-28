@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         
-        [Theory]
+        [Theory (Skip = "Bug 1410367")]
         [InlineData("2.7")]
         [InlineData("3.6")]
         [InlineData("3.7")]
@@ -208,7 +208,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Bug 1410367") ]
         public async Task CanBuildAndRunPythonApp_UsingOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -251,7 +251,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact (Skip = "Bug 1410367")]
         public async Task CanBuildAndRunPythonApp_UsingIntermediateDir_AndNestedOutputDirectory()
         {
             // Arrange
