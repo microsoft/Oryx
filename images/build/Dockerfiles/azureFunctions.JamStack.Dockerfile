@@ -1,14 +1,14 @@
+ARG PARENT_DEBIAN_FLAVOR
+FROM oryxdevmcr.azurecr.io/public/oryx/build:github-${PARENT_DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
-FROM oryxdevmcr.azurecr.io/public/oryx/build:github-${DEBIAN_FLAVOR} AS main
-ARG DEBIAN_FLAVOR
+
+COPY --from=support-files-image-for-build /tmp/oryx/ /tmp
 
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     ORYX_BUILDIMAGE_TYPE="jamstack" \
     DYNAMIC_INSTALL_ROOT_DIR="/opt" \
     PATH="/home/jamstack/.dotnet/:/usr/local/go/bin:/opt/dotnet/lts:$PATH" \
     dotnet="/home/jamstack/.dotnet/dotnet"
-
-COPY --from=support-files-image-for-build /tmp/oryx/ /tmp
 
 RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     # https://github.com/microsoft/Oryx/issues/1032
@@ -17,6 +17,7 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     && mkdir -p $nugetPacakgesDir \
     && NUGET_PACKAGES="$nugetPacakgesDir" \
     && . /tmp/build/__dotNetCoreSdkVersions.sh \
+    && echo "$DEBIAN_FLAVOR" \
     && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION /tmp/images/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
