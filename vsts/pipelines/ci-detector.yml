@@ -15,6 +15,11 @@ stages:
       variables:
         skipComponentGovernanceDetection: true
       steps:
+      - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+        displayName: 'Component Detection - OSS Compliance'
+        inputs:
+          ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+          
       - script: |
           set -x
           if [ "$(Build.Reason)" != "Manual" ]; then
