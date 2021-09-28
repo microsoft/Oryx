@@ -38,39 +38,33 @@ function createLinks() {
     do
        echo "folder: $x"
        linkDest="$allSdksDir/shared/Microsoft.AspNetCore.App/$sdkVersion"
-	   linkFromParent=$(dirname $linkDest)
+       linkFromParent=$(dirname $linkDest)
           
        mkdir -p "$linkFromParent"
        linkSource="$x"
-
-	   ln -sdf $linkSource $linkDest
-
+       ln -sdf $linkSource $linkDest
     done
 
     for y in $(find $installedDir/shared/Microsoft.NETCore.App/ -mindepth 1 -maxdepth 1 -type d | cut -c 1-)
     do
        echo "directory: $y"
        linkDest="$allSdksDir/shared/Microsoft.NETCore.App/$sdkVersion"
-	   linkFromParent=$(dirname $linkDest)
+       linkFromParent=$(dirname $linkDest)
           
        mkdir -p "$linkFromParent"
        linkSource="$y"
-
-	   ln -sdf $linkSource $linkDest
-
+       ln -sdf $linkSource $linkDest
     done
 
     for z in $(find $installedDir/host/fxr/ -mindepth 1 -maxdepth 1 -type d | cut -c 3-)
     do
        echo "folder: $z"
        linkDest="$allSdksDir/host/fxr/$sdkVersion"
-	   linkFromParent=$(dirname $linkDest)
+       linkFromParent=$(dirname $linkDest)
           
        mkdir -p "$linkFromParent"
        linkSource="$z"
-
-	   ln -sdf $linkSource $linkDest
-
+       ln -sdf $linkSource $linkDest
     done
     
     cd "$installedDir"
