@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact]
+        [Fact(Skip = "Bug 1410367") ]
         public async Task CanBuildAndRunPythonApp_UsingPreRunCommand_WithDynamicInstall()
         {
             // Arrange
@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "Bug 1410367") ]
         public async Task CanBuildAndRunPythonApp_UsingPreRunScript_WithDynamicInstall()
         {
             // Arrange
@@ -150,7 +150,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact (Skip = "Bug 1410367")]
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
         {
             // Arrange
