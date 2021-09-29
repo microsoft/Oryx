@@ -2,7 +2,7 @@ steps:
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
   inputs:
-    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+    ignoreDirectories: '$(Build.SourcesDirectory)/tests/SampleApps'
 
 - task: DownloadPipelineArtifact@2
   displayName: 'Download artifact file having release tag name'

@@ -27,7 +27,7 @@ steps:
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
   inputs:
-    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+    ignoreDirectories: '$(Build.SourcesDirectory)/tests/SampleApps'
 
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
   displayName: 'Post Analysis'

@@ -10,6 +10,11 @@ steps:
   inputs:
     version: 3.1.x
 
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection - OSS Compliance'
+  inputs:
+    ignoreDirectories: '$(Build.SourcesDirectory)/tests/SampleApps'
+    
 - script: |
     forkAccountName="kiranongithub"
     outputPath="/tmp/autoupdater"
