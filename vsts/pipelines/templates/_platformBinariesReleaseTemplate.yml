@@ -11,7 +11,7 @@ steps:
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
   inputs:
-    ignoreDirectories: '$(Build.SourcesDirectory)/tests/SampleApps'
+    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
 - task: AzureCLI@1
   displayName: Upload files to Azure Storage
