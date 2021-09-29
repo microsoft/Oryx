@@ -319,13 +319,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appName = "NetCore6BlazorWasmApp";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/NetCore6BlazorWasmApp-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform dotnet " +
+                $"{appDir} --platform dotnet " +
                 $"--platform-version 6")
-                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
             // Act
