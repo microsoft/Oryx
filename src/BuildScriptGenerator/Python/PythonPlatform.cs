@@ -165,7 +165,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string runBuildCommand = Environment.GetEnvironmentVariable("RUN_BUILD_COMMAND");
             if (!String.IsNullOrEmpty(runBuildCommand))
             {
-                _logger.LogWarning("RUN_BUILD_COMMAND environment variable detected");
+                _logger.LogDebug("RUN_BUILD_COMMAND environment variable detected");
                 manifestFileProperties[ManifestFilePropertyKeys.RunBuildCommand] = runBuildCommand;
             }
 
