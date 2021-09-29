@@ -215,12 +215,6 @@ fi
 	fi
 {{ end }}
 
-if [ ! -z "$RUN_BUILD_COMMAND" ]
-then
-	echo 'Running $RUN_BUILD_COMMAND'
-	${RUN_BUILD_COMMAND}
-fi 
-
 ReadImageType=$(cat /opt/oryx/.imagetype)
 
 if [ "$ReadImageType" = "vso-focal" ]
@@ -250,3 +244,9 @@ fi
 		fi
 	{{ end }}
 {{ end }}
+
+if [ ! -z "$RUN_BUILD_COMMAND" ]
+then
+	echo 'Running $RUN_BUILD_COMMAND'
+	${RUN_BUILD_COMMAND}
+fi 
