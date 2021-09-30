@@ -26,10 +26,10 @@ function LogWarning()
 
 function _LogMessage()
 {
-# Logs:
-# Timestamp|{Type}|{FileName}|{Message}
-# Example:
-#       2021-09-28 00:17:12|ERROR|FileName|Error Message
+	# Logs:
+	# Timestamp|{Type}|{FileName}|{Message}
+	# Example:
+	#       2021-09-28 00:17:12|ERROR|FileName|Error Message
     timestamp=$(date '+"%F %T"' --date='TZ="US/Pacific"')
     messageType="$1"
     scriptName="$2"
