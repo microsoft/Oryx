@@ -1,14 +1,10 @@
 set -e
 
-# Load Common methods
-declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
-source $REPO_DIR/src/BuildScriptGeneratorBuild/Common.sh
-
 declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install'
 echo "Python Version: $python"
 PIP_CACHE_DIR=/usr/local/share/pip-cache
-scriptName="basename $0"
+scriptName="$0"
 
 {{ if PythonBuildCommandsFileName | IsNotBlank }}
 COMMAND_MANIFEST_FILE={{ PythonBuildCommandsFileName }}
@@ -108,6 +104,7 @@ fi
 {{ else }}
 	if [ -e "requirements.txt" ]
 	then
+		set +e
 		echo
 		echo Running pip install...
 		START_TIME=$SECONDS
@@ -123,6 +120,7 @@ fi
 			LogError "${scriptName}" "Failed to pip installation with exit code: ${$pipInstallExitCode}"
 			exit $pipInstallExitCode
 		fi
+		set -e
 	elif [ -e "setup.py" ]
 	then
 		echo
