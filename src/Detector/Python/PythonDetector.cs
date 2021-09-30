@@ -68,8 +68,7 @@ namespace Microsoft.Oryx.Detector.Python
             else
             {
                 string errorMsg = $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo.";
-                _logger.LogWarning(errorMsg);
-                //throw new FileNotFoundException(errorMsg);
+                _logger.LogError(errorMsg);
             }
             if (sourceRepo.FileExists(PythonConstants.PyprojectTomlFileName))
             {

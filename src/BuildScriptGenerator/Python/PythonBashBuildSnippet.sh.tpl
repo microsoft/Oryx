@@ -139,7 +139,7 @@ fi
 		pythonBuildExitCode=${PIPESTATUS[0]}
 		if [[ $pythonBuildExitCode != 0 ]]
 		then
-			echo "Error: Failure in ${scriptName} with exit status ${pythonBuildExitCode}"
+			LogError "${scriptName}" "Failed to setup.py with exit status ${pythonBuildExitCode}"
 			exit $pythonBuildExitCode
 		fi
 		set -e
