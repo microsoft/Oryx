@@ -6,6 +6,39 @@ SOURCE_DIR=$1
 DESTINATION_DIR=$2
 INTERMEDIATE_DIR=$3
 
+function LogError()
+{
+    if [ $# -lt 2 ]; then
+       echo "Please provide 2 paremter to LogError: "
+       echo "LogError {scriptName} {errorMessage}"
+    fi
+    _LogMessage "ERROR" "$1" "$2"
+}
+
+function LogWarning()
+{
+    if [ $# -lt 2 ]; then
+       echo "Please provide 2 paremter to LogWarning: "
+       echo "LogWarning {scriptName} {errorMessage}"
+    fi
+    _LogMessage "WARNING" "$1" "$2"
+}
+
+function _LogMessage()
+{
+# Logs:
+# Timestamp|{Type}|{FileName}|{Message}
+# Example:
+#       2021-09-28 00:17:12|ERROR|FileName|Error Message
+    timestamp=$(date '+"%F %T"' --date='TZ="US/Pacific"')
+    messageType="$1"
+    scriptName="$2"
+    errorMessage="$3"
+
+    echo "${timestamp}|${messageType}|${scriptName}|${errorMessage}"
+}
+
+
 if [ ! -d "$SOURCE_DIR" ]; then
     echo "Source directory '$SOURCE_DIR' does not exist." 1>&2
     exit 1
