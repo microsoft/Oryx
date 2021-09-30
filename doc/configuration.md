@@ -48,6 +48,7 @@ PYTHON\_VERSION              | Specify which Python version the app is using    
 DISABLE\_PYTHON\_BUILD       | Do not apply Python build even if repo indicates it            | `false` | `true`, `false`
 VIRTUALENV\_NAME             | Specify Python virtual environment name                        | ""      | "antenv2.7"
 DISABLE\_COLLECTSTATIC       | Disable running `collectstatic` when building Django apps.      | `false` | `true`, `false`
+RUN_BUILD_COMMAND            | Custom command ran at the very end. After virtual envionment, `pip install`, creating python package egg, enabling collecstatic, compresing virtual environment (where applicable)'                                           | ""  | "echo hello world"
 
 Setting name for Php apps    | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
