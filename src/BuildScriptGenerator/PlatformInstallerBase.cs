@@ -88,6 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"jamstack\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
+                .AppendLine($"export dotnet=/opt/dotnet/{version}/dotnet")
                 .AppendLine($"source /opt/tmp/build/createSymlinksForDotnet.sh")
                 .AppendLine("fi")
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
