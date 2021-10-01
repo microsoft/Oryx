@@ -7,7 +7,7 @@ COPY --from=support-files-image-for-build /tmp/oryx/ /tmp
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     ORYX_BUILDIMAGE_TYPE="jamstack" \
     DYNAMIC_INSTALL_ROOT_DIR="/opt" \
-    PATH="/home/jamstack/.dotnet/:/usr/local/go/bin:/opt/dotnet/lts:$PATH" \
+    PATH="/home/jamstack/.dotnet/:/usr/local/go/bin:/opt/dotnet/lts:/opt/python/latest/bin:$PATH" \
     dotnet="/home/jamstack/.dotnet/dotnet" \
     PYTHONIOENCODING="UTF-8" \
     LANG="C.UTF-8"
@@ -32,7 +32,12 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     && curl -SLsO https://golang.org/dl/$downloadedFileName \
     && mkdir -p /usr/local \
     && tar -xzf $downloadedFileName -C /usr/local \
-    && rm -rf $downloadedFileName \ 
+    && rm -rf $downloadedFileName
+
+RUN set -ex \
+    && tmpDir="/opt/tmp" \
+    && imagesDir="$tmpDir/images" \
+    && buildDir="$tmpDir/build" \
     # Install Python SDKs
     # Upgrade system python
     && PYTHONIOENCODING="UTF-8" \
@@ -40,18 +45,23 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
+        build-essential \
+        python3-pip \
+        swig3.0 \
         tk-dev \
         uuid-dev \
     && rm -rf /var/lib/apt/lists/* \
-    && oryx prep --skip-detection --platforms-and-versions python=3.6 \
-    && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && pip3 install pip --upgrade \
+    && pip install --upgrade cython \
+    && pip3 install --upgrade cython \
+    && . $buildDir/__pythonVersions.sh \
+    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
+    && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \
-    && ls -la \
-    && ln -s $PYTHON36_VERSION 3.6 \
-    && ln -s $PYTHON36_VERSION latest \
-    && ln -s $PYTHON36_VERSION stable \
-    #&& ln -s 3.6.12  \
+    && ln -s $PYTHON38_VERSION 3.8 \
+    && ln -s $PYTHON38_VERSION latest \
+    && ln -s $PYTHON38_VERSION stable \
     && echo "jamstack" > /opt/oryx/.imagetype
     
 RUN ./opt/tmp/build/createSymlinksForDotnet.sh

@@ -55,6 +55,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public static readonly string DefaultDotNetCoreSdkVersionsInstallDir = $"/opt/{PlatformName}";
 
-        public const string InstallBlazorWebAssemblyAOTWorkloadCommand = "dotnet workload install wasm-tools";
+        public const string InstallBlazorWebAssemblyAOTWorkloadCommand = "$dotnet workload install wasm-tools";
     }
 }

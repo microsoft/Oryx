@@ -40,7 +40,8 @@ mkdir -p $DOTNET_DIR
 tar -xzf $fileName -C $DOTNET_DIR
 rm $fileName
 
-dotnet=$SDK_DIR/$DOTNET_SDK_VER/dotnet
+declare -x dotnet=$SDK_DIR/$DOTNET_SDK_VER/dotnet
+export dotnet
 
 # Install MVC template based packages
 if [ "$INSTALL_PACKAGES" == "true" ]
