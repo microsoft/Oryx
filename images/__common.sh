@@ -1,5 +1,6 @@
 __CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $__CURRENT_DIR/__sdkStorageConstants.sh
+source $__CURRENT_DIR/build/__common.sh
 
 function downloadFileAndVerifyChecksum() {
     local platformName="$1"
@@ -9,11 +10,11 @@ function downloadFileAndVerifyChecksum() {
     local headersFile="/tmp/headers.txt"
 
     echo "Downloading $platformName version '$version'..."
-    curl \
-        -D $headersFile \
-        -SL "$DEV_SDK_STORAGE_BASE_URL/$platformName/$downloadableFileName" \
-        --output $downloadedFileName
-
+    request="curl 
+        -D $headersFile 
+        -SL $DEV_SDK_STORAGE_BASE_URL/$platformName/$downloadableFileName 
+        --output $downloadedFileName"
+    retry "$request"
     # Use all lowercase letters to find the header and it's value
     headerName="x-ms-meta-checksum"
     # Search the header ignoring case
