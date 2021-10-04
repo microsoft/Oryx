@@ -35,7 +35,7 @@ function downloadFileAndVerifyChecksum() {
     fi
     echo "$checksumValue $downloadedFileName" | $checksumcode -c -
 }
-
+# TODO: remove
 function retry() {
 	# this method will execute a command
 	# and sleep & retry if there's a failure
