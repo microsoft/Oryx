@@ -68,6 +68,6 @@ if [ "$INSTALL_TOOLS" == "true" ]; then
     chmod +x "$toolsDir/dotnet-dump"
     dotnet tool install --tool-path "$toolsDir" dotnet-counters
     chmod +x "$toolsDir/dotnet-counters"
-    dotnet tool install --tool-path "$toolsDir" dotnet-monitor
+    dotnet tool install --tool-path "$toolsDir" dotnet-monitor --add-source https://dnceng.pkgs.visualstudio.com/public/_packaging/dotnet5-transport/nuget/v3/index.json --version 5.0.0-preview.6*
     chmod +x "$toolsDir/dotnet-monitor"
 fi
