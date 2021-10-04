@@ -21,50 +21,14 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             throw new NotImplementedException();
         }
 
-        public (StatusUrl statusUrl, string manifestPath, string logFilePath) GetStatusUrls(HttpRequest requestContext, BuildServerRequests requestBody = null)
+        public StatusUrl GetStatusUrls(HttpRequest requestContext)
         {
             var result = new StatusUrl();
             var host = requestContext.Host.Value;
             var scheme = requestContext.Scheme;
-            var outDir = string.Empty;
-            var logFilePath = string.Empty;
-            var manifestFilePath = "<manifest file full path>";
 
-            if (requestBody != null
-                && requestBody.Destination != null
-                && requestBody.LogFile != null)
-            {
-                outDir = requestBody.Destination;
-                logFilePath = requestBody.LogFile;
-                manifestFilePath = Path.Join(outDir, FilePaths.BuildManifestFileName);
-            }
-
-            string buildUrlQueryParam = $"?manifestfilefullpath='{manifestFilePath}'&logfilefullpath='{logFilePath}'";
-            string buildUrl = string.Concat(scheme, "://", host, "/build/", "CheckBuildStatus", buildUrlQueryParam);
             string serverUrl = string.Concat(scheme, "://", host, "/build/", "CheckServerStatus");
-
-            result.BuildStatusCheckUrl = buildUrl;
             result.ServerStatusCheckUrl = serverUrl;
-
-            return (result, manifestFilePath, logFilePath);
-        }
-
-        public StatusUrl GetBuildStatusUrl(HttpRequest requestContext, string outDir = null)
-        {
-            var result = new StatusUrl();
-            var buildUrlQueryParam = string.Empty;
-            var host = requestContext.Host.Value;
-            var scheme = requestContext.Scheme;
-            var buildUrl = string.Empty;
-            
-            if (outDir != null)
-            {
-                buildUrlQueryParam = $"?outDir='{outDir}'";
-            }
-
-            buildUrl = string.Concat(scheme, "://", host, "/build/", "CheckBuildProcessStatus", buildUrlQueryParam);
-
-            result.BuildStatusCheckUrl = buildUrl;
 
             return result;
         }

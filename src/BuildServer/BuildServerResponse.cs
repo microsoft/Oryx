@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.BuildServer
     enum BuildState
     {
         Success,
-        Running,
+        Building,
         Failed,
         InvalidRequestParameter,
         Unknown

@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.4" />
+    <PackageReference Include="RunProcessAsTask" Version="1.2.4" />
   </ItemGroup>
 
   <ItemGroup>

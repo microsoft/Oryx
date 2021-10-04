@@ -13,8 +13,7 @@ namespace Microsoft.Oryx.BuildServer.Interfaces
     public interface IBuildServerAction
     {
         Task RunCommandAsync();
-        (StatusUrl statusUrl, string manifestPath, string logFilePath) GetStatusUrls(HttpRequest requestContext, BuildServerRequests requestBody = null);
-        StatusUrl GetBuildStatusUrl(HttpRequest requestContext, string outDir = null);
+        StatusUrl GetStatusUrls(HttpRequest requestContext);
         Task<ProcessResults> RunCommandAsync(string script, TimeSpan timeout);
     }
 }

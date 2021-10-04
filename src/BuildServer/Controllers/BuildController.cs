@@ -36,7 +36,6 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             var httpRequestObject = _httpContextAccessor.HttpContext.Request;
             var statusUrls = new StatusUrl();
             var getStatusCheckUrl = GetStatusUrls(httpRequestObject);
-            Response.Headers.Add(nameof(statusUrls.BuildStatusCheckUrl), getStatusCheckUrl.BuildStatusCheckUrl);
             Response.Headers.Add(nameof(statusUrls.ServerStatusCheckUrl), getStatusCheckUrl.ServerStatusCheckUrl);
             return Json((int)HttpStatusCode.OK);
         }
@@ -57,7 +56,6 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             var httpRequestObject = _httpContextAccessor.HttpContext.Request;
             var statusUrls = new StatusUrl();
             var getStatusCheckUrl = GetStatusUrls(httpRequestObject);
-            Response.Headers.Add(nameof(statusUrls.BuildStatusCheckUrl), getStatusCheckUrl.BuildStatusCheckUrl);
             Response.Headers.Add(nameof(statusUrls.ServerStatusCheckUrl), getStatusCheckUrl.ServerStatusCheckUrl);
             response.StatusCheckUrl = getStatusCheckUrl;
 
@@ -65,7 +63,7 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             {
                 (exitCode, output, error) = await Task.Run(() => RunOryxCommand(script)).ConfigureAwait(false);
                 response.Message = new BuildOutput(output, error);
-                response.Status = BuildState.Running.ToString();
+                response.Status = BuildState.Building.ToString();
                 response.StatusCode = (int)HttpStatusCode.OK;
             }
             catch (Exception ex)
@@ -92,7 +90,6 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             var httpRequestObject = _httpContextAccessor.HttpContext.Request;
             var statusUrls = new StatusUrl();
             var getStatusCheckUrl = GetStatusUrls(httpRequestObject);
-            Response.Headers.Add(nameof(statusUrls.BuildStatusCheckUrl), getStatusCheckUrl.BuildStatusCheckUrl);
             Response.Headers.Add(nameof(statusUrls.ServerStatusCheckUrl), getStatusCheckUrl.ServerStatusCheckUrl);
             response.StatusCheckUrl = getStatusCheckUrl;
             var defaultMsg = "Unknown Build Info";
@@ -174,7 +171,7 @@ namespace Microsoft.Oryx.BuildServer.Controllers
                         var msg = "Unable to find Build log and Build manifest in the destination";
                         _logger.LogInformation(msg);
                         response.Message = new BuildOutput(msg, error);
-                        response.Status = BuildState.Running.ToString();
+                        response.Status = BuildState.Building.ToString();
                         response.StatusCode = (int)HttpStatusCode.Accepted;
                     }
                 }
@@ -205,7 +202,6 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             var httpRequestObject = _httpContextAccessor.HttpContext.Request;
             var statusUrls = new StatusUrl();
             var getStatusCheckUrl = GetStatusUrls(httpRequestObject);
-            Response.Headers.Add(nameof(statusUrls.BuildStatusCheckUrl), getStatusCheckUrl.BuildStatusCheckUrl);
             Response.Headers.Add(nameof(statusUrls.ServerStatusCheckUrl), getStatusCheckUrl.ServerStatusCheckUrl);
             response.StatusCheckUrl = getStatusCheckUrl;
             var msg = string.Empty;
@@ -226,36 +222,9 @@ namespace Microsoft.Oryx.BuildServer.Controllers
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     return StatusCode(response.StatusCode, response);
                 }
-                else if (requestData.Source == null)
+                else if (string.IsNullOrEmpty(requestData.command))
                 {
-                    msg = $"Source {emptyRequestString}";
-                    _logger.LogError(msg);
-                    response.Message = new BuildOutput(string.Empty, msg);
-                    response.Status = BuildState.InvalidRequestParameter.ToString();
-                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return StatusCode(response.StatusCode, response);
-                }
-                else if (requestData.Destination == null)
-                {
-                    msg = $"Destination {emptyRequestString}";
-                    _logger.LogError(msg);
-                    response.Message = new BuildOutput(string.Empty, msg);
-                    response.Status = BuildState.InvalidRequestParameter.ToString();
-                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return StatusCode(response.StatusCode, response);
-                }
-                else if (requestData.Platform == null)
-                {
-                    msg = $"Platform {emptyRequestString}";
-                    _logger.LogError(msg);
-                    response.Message = new BuildOutput(string.Empty, msg);
-                    response.Status = BuildState.InvalidRequestParameter.ToString();
-                    response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return StatusCode(response.StatusCode, response);
-                }
-                else if (requestData.PlatformVersion == null)
-                {
-                    msg = $"PlatformVersion {emptyRequestString}";
+                    msg = $"BuildCommand {emptyRequestString}";
                     _logger.LogError(msg);
                     response.Message = new BuildOutput(string.Empty, msg);
                     response.Status = BuildState.InvalidRequestParameter.ToString();
@@ -266,10 +235,7 @@ namespace Microsoft.Oryx.BuildServer.Controllers
                 {
                     _logger.LogDebug("Request Body:", jsonString);
                     var buildScript = new ShellScriptBuilder()
-                        .AddCommand(
-                        $"oryx build {requestData.Source} -i /tmp/int --platform {requestData.Platform} " +
-                        $"--platform-version {requestData.PlatformVersion} -o {requestData.Destination} " +
-                        $"--log-file {requestData.LogFile}").ToString();
+                        .AddCommand( $"{requestData.command}").ToString();
                     (exitCode, output, error) = await Task.Run(() => RunOryxCommand(buildScript)).ConfigureAwait(false);
                     _logger.LogDebug($"exitcode {exitCode} and output: {output}");
                     response.Status = BuildState.Success.ToString();
@@ -317,11 +283,7 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             var result = new StatusUrl();
             string host = request.Host.Value;
             string scheme = request.Scheme;
-            string buildUrlQueryParam = "?manifestfilefullpath=<value>&logfilefullpath=<value>";
-            string buildUrl = string.Concat(scheme, "://", host, "/build/", "CheckBuildStatus", buildUrlQueryParam);
             string serverUrl = string.Concat(scheme, "://", host, "/build/", "CheckServerStatus");
-
-            result.BuildStatusCheckUrl = buildUrl;
             result.ServerStatusCheckUrl = serverUrl;
 
             return result;
