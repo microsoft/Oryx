@@ -20,12 +20,13 @@ else
     # for buster and ubuntu we would need following libraries to build php 
     apt-get update && \
 	apt-get upgrade -y && \
-	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-		libssl-dev \
-		libncurses5-dev \
-		libsqlite3-dev \
-		libreadline-dev \
-		libgdm-dev
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        libssl-dev \
+        libncurses5-dev \
+        libsqlite3-dev \
+        libreadline-dev \
+        libbz2-dev \
+        libgdm-dev
 fi
 
 # Try getting the keys 5 times at most
