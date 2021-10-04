@@ -63,6 +63,17 @@ namespace Microsoft.Oryx.Detector.Python
                 if (!hasDjangoModule)
                 {
                     _logger.LogWarning($"Missing django module in {PythonConstants.RequirementsFileName}");
+                } 
+                else
+                {
+                    // detect django files exist
+                    foreach (string djangoFileName in PythonConstants.DjangoFileNames)
+                    {
+                        if (!sourceRepo.FileExists(djangoFileName))
+                        {
+                            _logger.LogWarning($"Missing {djangoFileName} at the root of the repo.");
+                        }
+                    }
                 }
             }
             else
@@ -74,6 +85,19 @@ namespace Microsoft.Oryx.Detector.Python
             {
                 _logger.LogInformation($"Found {PythonConstants.PyprojectTomlFileName} at the root of the repo.");
                 hasPyprojectTomlFile = true;
+            }
+            else
+            {
+                _logger.LogError($"Missing {PythonConstants.SetupDotPyFileName} at the root of the repo.");
+            }
+            if (sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
+            {
+                _logger.LogInformation($"Found {PythonConstants.SetupDotPyFileName} at the root of the repo.");
+                hasPyprojectTomlFile = true;
+            }
+            else
+            {
+                _logger.LogError($"Missing {PythonConstants.SetupDotPyFileName} at the root of the repo.");
             }
             var hasCondaEnvironmentYmlFile = false;
             if (sourceRepo.FileExists(PythonConstants.CondaEnvironmentYmlFileName) &&
@@ -92,7 +116,6 @@ namespace Microsoft.Oryx.Detector.Python
                     $"Found {PythonConstants.CondaEnvironmentYamlFileName} at the root of the repo.");
                 hasCondaEnvironmentYmlFile = true;
             }
-
             var hasJupyterNotebookFiles = false;
             var notebookFiles = sourceRepo.EnumerateFiles(
                 $"*.{PythonConstants.JupyterNotebookFileExtensionName}",
