@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
-        [Fact]
+        [Fact (Skip="NetCore11 is no longer officially supported")]
         public void Builds_NetCore10App_UsingNetCore11_DotNetSdkVersion()
         {
             // Arrange

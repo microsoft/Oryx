@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddCommand($"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}")
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python37Version}")
+                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName}")
                 // These css files should NOT be available since 'collectstatic' is set off
                 .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/boards.css")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/staticfiles/css/uservoice.css")

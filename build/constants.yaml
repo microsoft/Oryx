@@ -36,7 +36,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20210920.2
+    dot-net-core-runtime-base-tag: 20211001.1
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
 
@@ -97,10 +97,10 @@
   constants:
     pip-version: 20.2.3
     python27-version: 2.7.18
-    python36-version: 3.6.12
-    python37-version: 3.7.9
-    python38-version: 3.8.6
-    python39-version: 3.9.0
+    python36-version: 3.6.15
+    python37-version: 3.7.12
+    python38-version: 3.8.12
+    python39-version: 3.9.7
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
