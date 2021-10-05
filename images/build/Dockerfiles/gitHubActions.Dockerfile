@@ -61,6 +61,7 @@ COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images" 
+RUN ${IMAGES_DIR}/build/installHugo.sh
 RUN set -ex \
  && yarnCacheFolder="/usr/local/share/yarn-cache" \
  && mkdir -p $yarnCacheFolder \
