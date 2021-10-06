@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
-        [Fact]
+        [Fact (Skip="NetCore11 is no longer officially supported")]
         public void Builds_NetCore10App_UsingNetCore11_DotNetSdkVersion()
         {
             // Arrange
@@ -307,6 +307,41 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(string.Format(SdkVersionMessageFormat, "5.0.100"), result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        // This test is necessary once .NET 6 preview 5 come out.
+        [Fact]
+        public void Builds_Net6BlazorWasmApp_RunsAOTCompilationInstallCommands()
+        {
+            // Arrange
+            var appName = "NetCore6BlazorWasmApp";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand(
+                $"{appDir} --platform dotnet " +
+                $"--platform-version 6")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNet60SdkVersion), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -721,15 +756,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir}/MessageFunction -o {appOutputDir} --apptype functions --platform dotnet " +
                 $"--platform-version 3.1.8")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck(
-                $"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"",
-                $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable>
                 {
                     CreateAppNameEnvVar(appName)
@@ -744,7 +776,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion), result.StdOut);
                 },
                 result.GetDebugInfo());
         }

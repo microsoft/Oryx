@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
             var script = scriptBuilder
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python37Version}")
+                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName}")
                 // These css files should be available since 'collectstatic' is run in the script
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/boards.css")
                 .AddFileExistsCheck($"{appOutputDir}/staticfiles/css/uservoice.css")

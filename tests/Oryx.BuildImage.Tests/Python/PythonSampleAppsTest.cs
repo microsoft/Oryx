@@ -1169,8 +1169,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
-                $"--platform-version {PythonVersions.Python37Version}")
+                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName}")
                 .ToString();
 
             // Act

@@ -233,7 +233,8 @@ function buildJamStackImage() {
 	echo "-------------Creating AzureFunctions JamStack image-------------------"
 	docker build -t $builtImageName \
 		-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
-		--build-arg DEBIAN_FLAVOR=$parentImageTag \
+		--build-arg PARENT_DEBIAN_FLAVOR=$parentImageTag \
+		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		.
 	
 	createImageNameWithReleaseTag $builtImageName

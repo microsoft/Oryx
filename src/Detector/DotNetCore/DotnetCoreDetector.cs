@@ -42,6 +42,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
             var sourceRepo = context.SourceRepo;
             var appDirectory = Path.GetDirectoryName(projectFile);
+            var installAOTWorkloads = false;
             var projectFileDoc = XDocument.Load(new StringReader(sourceRepo.ReadFile(projectFile)));
             var targetFrameworkElement = projectFileDoc.XPathSelectElement(
                 DotNetCoreConstants.TargetFrameworkElementXPathExpression);
@@ -59,6 +60,14 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
             var version = GetVersion(targetFramework);
 
+            // Any Blazor WebAssembly app on .NET 6 should have the workload installed.
+            // https://github.com/microsoft/Oryx/issues/1026
+            if (ProjectFileHelpers.IsBlazorWebAssemblyProject(projectFileDoc)
+                && !string.IsNullOrEmpty(version)
+                && version.StartsWith("6"))
+            {
+                installAOTWorkloads = true;
+            }
             return new DotNetCorePlatformDetectorResult
             {
                 Platform = DotNetCoreConstants.PlatformName,
@@ -66,6 +75,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 ProjectFile = projectFile,
                 AppDirectory = appDirectory,
                 OutputType = outputType,
+                InstallAOTWorkloads = installAOTWorkloads,
             };
         }
 

@@ -34,17 +34,37 @@ function createLinks() {
     
     installedDir="$splitSdksDir/$sdkVersion"
 
-    find $installedDir/host/fxr/ -maxdepth 3 -type d -regex '.*/[0-9]\.[0-9]\.[0-9]+*' | while read sPath; do
-	    echo $sPath"\n"
-	    sPath="${sPath:: -1}"
-	    
-	    linkDest="$allSdksDir/host/fxr/$sdkVersion"
-	    linkFromParent=$(dirname $linkDest)
+    for x in $(find $installedDir/shared/Microsoft.AspNetCore.App/ -mindepth 1 -maxdepth 1 -type d | cut -c 1-)
+    do
+       echo "folder: $x"
+       linkDest="$allSdksDir/shared/Microsoft.AspNetCore.App/$sdkVersion"
+       linkFromParent=$(dirname $linkDest)
           
-        mkdir -p "$linkFromParent"
-        linkSource="$sPath"
+       mkdir -p "$linkFromParent"
+       linkSource="$x"
+       ln -sdf $linkSource $linkDest
+    done
 
-	    ln -sdf $linkSource $linkDest
+    for y in $(find $installedDir/shared/Microsoft.NETCore.App/ -mindepth 1 -maxdepth 1 -type d | cut -c 1-)
+    do
+       echo "directory: $y"
+       linkDest="$allSdksDir/shared/Microsoft.NETCore.App/$sdkVersion"
+       linkFromParent=$(dirname $linkDest)
+          
+       mkdir -p "$linkFromParent"
+       linkSource="$y"
+       ln -sdf $linkSource $linkDest
+    done
+
+    for z in $(find $installedDir/host/fxr/ -mindepth 1 -maxdepth 1 -type d | cut -c 1-)
+    do
+       echo "folder: $z"
+       linkDest="$allSdksDir/host/fxr/$sdkVersion"
+       linkFromParent=$(dirname $linkDest)
+          
+       mkdir -p "$linkFromParent"
+       linkSource="$z"
+       ln -sdf $linkSource $linkDest
     done
     
     cd "$installedDir"
