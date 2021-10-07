@@ -8,7 +8,7 @@ INTERMEDIATE_DIR=$3
 
 function LogError()
 {
-    if [ $# -lt 1 ]; then
+    if [ $# -eq 1 ]; then
        echo "Please provide 2 paremter to LogError: "
        echo "LogError {errorMessage}"
     fi
