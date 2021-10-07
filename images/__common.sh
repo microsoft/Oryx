@@ -18,7 +18,7 @@ function downloadFileAndVerifyChecksum() {
         -D $headersFile 
         -SL $DEV_SDK_STORAGE_BASE_URL/$platformName/$downloadableFileName 
         --output $downloadedFileName"
-    /opt/tmp/images/retry.sh "$request"
+    $__CURRENT_DIR/retry.sh "$request"
     # Use all lowercase letters to find the header and it's value
     headerName="x-ms-meta-checksum"
     # Search the header ignoring case
