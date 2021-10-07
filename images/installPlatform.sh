@@ -72,6 +72,12 @@ rm -f "$fileName"
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo "Extracted contents in $ELAPSED_TIME sec(s)."
 
+if [ "$PLATFORM_NAME" == "python" ]
+then
+   [ -d "/opt/python/$VERSION" ] && echo /opt/python/$VERSION/lib >> /etc/ld.so.conf.d/python.conf
+   ldconfig
+fi
+
 if [ "$createLinks" != "false" ]; then
     # Create a link : major.minor => major.minor.patch
     cd "$platformDir"

@@ -56,7 +56,7 @@ function createLinks() {
        ln -sdf $linkSource $linkDest
     done
 
-    for z in $(find $installedDir/host/fxr/ -mindepth 1 -maxdepth 1 -type d | cut -c 3-)
+    for z in $(find $installedDir/host/fxr/ -mindepth 1 -maxdepth 1 -type d | cut -c 1-)
     do
        echo "folder: $z"
        linkDest="$allSdksDir/host/fxr/$sdkVersion"

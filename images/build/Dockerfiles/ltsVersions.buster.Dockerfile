@@ -142,7 +142,7 @@ RUN set -ex \
     && [ -d "/opt/python/$PYTHON39_VERSION" ] && echo /opt/python/$PYTHON39_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \
-    && ln -s $PYTHON37_VERSION 3.9 \
+    && ln -s $PYTHON39_VERSION 3.9 \
     && ln -s $PYTHON39_VERSION latest \
     && ln -s $PYTHON39_VERSION stable \
     && ln -s 3.9 3 \
