@@ -15,12 +15,12 @@ function downloadFileAndVerifyChecksum() {
 
     echo "Downloading $platformName version '$version'..."
     # TODO: remove ls command
-    ls
+    ls /opt/tmp/images/
     request="curl 
         -D $headersFile 
         -SL $DEV_SDK_STORAGE_BASE_URL/$platformName/$downloadableFileName 
         --output $downloadedFileName"
-    retry.sh "$request"
+    /opt/tmp/images/retry.sh "$request"
     # Use all lowercase letters to find the header and it's value
     headerName="x-ms-meta-checksum"
     # Search the header ignoring case
