@@ -14,11 +14,13 @@ function downloadFileAndVerifyChecksum() {
     local headersFile="/tmp/headers.txt"
 
     echo "Downloading $platformName version '$version'..."
+    # TODO: remove ls command
+    ls
     request="curl 
         -D $headersFile 
         -SL $DEV_SDK_STORAGE_BASE_URL/$platformName/$downloadableFileName 
         --output $downloadedFileName"
-    retry "$request"
+    retry.sh "$request"
     # Use all lowercase letters to find the header and it's value
     headerName="x-ms-meta-checksum"
     # Search the header ignoring case
@@ -34,21 +36,4 @@ function downloadFileAndVerifyChecksum() {
         checksumcode="sha256sum"
     fi
     echo "$checksumValue $downloadedFileName" | $checksumcode -c -
-}
-# TODO: remove
-function retry() {
-	# this method will execute a command
-	# and sleep & retry if there's a failure
-	# $1 
-	#	parameter contains the full command to be executed
-	r=0
-	retries=5
-	while [ "$r" -le "$retries" ]
-	do
-	   echo "retry $r"
-	   $1 && break
-	   echo "error executing: $1"
-	   r=$((r+1)) 
-	   sleep 15
-	done
 }
