@@ -14,8 +14,6 @@ function downloadFileAndVerifyChecksum() {
     local headersFile="/tmp/headers.txt"
 
     echo "Downloading $platformName version '$version'..."
-    # TODO: remove ls command
-    ls /opt/tmp/images/
     request="curl 
         -D $headersFile 
         -SL $DEV_SDK_STORAGE_BASE_URL/$platformName/$downloadableFileName 
