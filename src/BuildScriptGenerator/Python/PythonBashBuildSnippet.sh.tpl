@@ -64,7 +64,7 @@ fi
         pipInstallExitCode=${PIPESTATUS[0]}
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "${scriptName}" "Failed to pip installation with exit code: ${pipInstallExitCode}"
+            LogError "Failed to pip installation with exit code: ${pipInstallExitCode}"
             exit $pipInstallExitCode
         fi
         set -e
@@ -77,7 +77,7 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "${scriptName}" "Failed to pip installation with exit code: ${$pythonBuildExitCode}"
+            LogError "Failed to pip installation with exit code: ${$pythonBuildExitCode}"
             exit $pythonBuildExitCode
         fi
     elif [ -e "pyproject.toml" ]
@@ -117,7 +117,7 @@ fi
 
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "${scriptName}" "Failed to pip installation with exit code: ${$pipInstallExitCode}"
+            LogError "Failed to pip installation with exit code: ${$pipInstallExitCode}"
             exit $pipInstallExitCode
         fi
         set -e
@@ -139,7 +139,7 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "${scriptName}" "Failed to setup.py with exit status ${pythonBuildExitCode}"
+            LogError "Failed to setup.py with exit status ${pythonBuildExitCode}"
             exit $pythonBuildExitCode
         fi
         set -e

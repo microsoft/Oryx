@@ -8,34 +8,33 @@ INTERMEDIATE_DIR=$3
 
 function LogError()
 {
-    if [ $# -lt 2 ]; then
+    if [ $# -lt 1 ]; then
        echo "Please provide 2 paremter to LogError: "
-       echo "LogError {scriptName} {errorMessage}"
+       echo "LogError {errorMessage}"
     fi
-    _LogMessage "ERROR" "$1" "$2"
+    _LogMessage "ERROR" "$1"
 }
 
 function LogWarning()
 {
-    if [ $# -lt 2 ]; then
+    if [ $# -lt 1 ]; then
        echo "Please provide 2 paremter to LogWarning: "
-       echo "LogWarning {scriptName} {errorMessage}"
+       echo "LogWarning {errorMessage}"
     fi
-    _LogMessage "WARNING" "$1" "$2"
+    _LogMessage "WARNING" "$1"
 }
 
 function _LogMessage()
 {
 	# Logs:
-	# Timestamp|{Type}|{FileName}|{Message}
+	# Timestamp|{Type}|{Message}
 	# Example:
-	#       2021-09-28 00:17:12|ERROR|FileName|Error Message
+	#       2021-09-28 00:17:12|ERROR|Error Message
     timestamp=$(date '+"%F %T"' --date='TZ="US/Pacific"')
     messageType="$1"
-    scriptName="$2"
-    errorMessage="$3"
+    errorMessage="$2"
 
-    echo "${timestamp}|${messageType}|${scriptName}|${errorMessage}"
+    echo "${timestamp}|${messageType}|${errorMessage}"
 }
 
 
