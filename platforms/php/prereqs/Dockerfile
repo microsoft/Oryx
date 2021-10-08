@@ -1,4 +1,13 @@
 ARG DEBIAN_FLAVOR
+FROM php:${DEBIAN_FLAVOR} as busterLibs
+ARG DEBIAN_FLAVOR
+ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+
+RUN set -ex \
+ && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" \
+ && echo "busterlibs"
+
+ARG DEBIAN_FLAVOR
 FROM buildpack-deps:${DEBIAN_FLAVOR} AS php-build-prereqs
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
@@ -13,7 +22,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
     && apt-get install -y \
         $PHPIZE_DEPS \
         ca-certificates \
-        curl \
+        #curl \
         xz-utils \
         libsodium-dev \
         libncurses5 \
@@ -21,3 +30,5 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
     else \
         . /php/installPrereqs.sh ; \
     fi
+
+COPY --from=busterLibs /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu

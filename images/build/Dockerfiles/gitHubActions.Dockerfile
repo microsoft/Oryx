@@ -42,7 +42,6 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu63 \
-            libcurl4 \ 
             libssl1.1 \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
@@ -85,6 +84,15 @@ RUN set -ex \
  && mkdir -p /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
+ARG DEBIAN_FLAVOR
+FROM php:${DEBIAN_FLAVOR} as busterLibs
+ARG DEBIAN_FLAVOR
+ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+
+RUN set -ex \
+ && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" \
+ && echo "busterlibs" > /usr/lib/x86_64-linux-gnu/.busterlibs
+
 FROM main AS final
 ARG SDK_STORAGE_BASE_URL_VALUE
 ARG IMAGES_DIR="/opt/tmp/images"
@@ -112,8 +120,11 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
     fi 
 
+COPY --from=busterLibs /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
+
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
+    && ls -la /usr/lib/x86_64-linux-gnu | grep .busterlibs \
     && chmod +x /opt/oryx/benv \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
