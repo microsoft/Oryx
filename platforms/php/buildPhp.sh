@@ -20,7 +20,7 @@ buildPhpPrereqsImage() {
         # Use default php sdk file name
         phpFlavor="fpm"
     else
-        phpFlavor=debianFlavor
+        phpFlavor=$debianFlavor
     fi
 
     if ! $builtPhpPrereqs; then
@@ -56,7 +56,7 @@ buildPhp() {
         # Use default php sdk file name
         phpFlavor="fpm"
     else
-        phpFlavor=debianFlavor
+        phpFlavor=$debianFlavor
     fi
 
 	cp "$phpPlatformDir/defaultVersion.txt" "$targetDir"
