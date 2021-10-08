@@ -1,10 +1,10 @@
-ARG DEBIAN_FLAVOR
-FROM php:${DEBIAN_FLAVOR} as busterLibs
-ARG DEBIAN_FLAVOR
-ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+ARG PHP_FLAVOR
+FROM php:${PHP_FLAVOR} as busterLibs
+ARG PHP_FLAVOR
+ENV PHP_FLAVOR=$PHP_FLAVOR
 
 RUN set -ex \
- && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" \
+ && echo "value of PHP_FLAVOR is ${PHP_FLAVOR}" \
  && echo "busterlibs"
 
 ARG DEBIAN_FLAVOR

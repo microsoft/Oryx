@@ -43,6 +43,13 @@ buildPhp() {
         phpSdkFileName=php-$debianFlavor-$version.tar.gz
     fi
 
+    if [ "$debianFlavor" == "focal-scm" ]; then
+        # Use default php sdk file name
+        phpFlavor="fpm"
+    else
+        phpFlavor=debianFlavor
+    fi
+
 	cp "$phpPlatformDir/defaultVersion.txt" "$targetDir"
 
 	if shouldBuildSdk php $phpSdkFileName || shouldOverwriteSdk || shouldOverwritePhpSdk; then
@@ -58,6 +65,8 @@ buildPhp() {
 			--build-arg PHP_VERSION=$version \
 			--build-arg PHP_SHA256=$sha \
 			--build-arg GPG_KEYS="$gpgKeys" \
+			--build-arg DEBIAN_FLAVOR=$debianFlavor \
+			--build-arg PHP_FLAVOR=$phpFlavor \
 			-t $imageName \
 			$REPO_DIR
 
