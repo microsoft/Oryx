@@ -123,6 +123,8 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
 COPY --from=busterLibs /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
 
 RUN tmpDir="/opt/tmp" \
+    && wget http://archive.ubuntu.com/ubuntu/pool/universe/libo/libonig/libonig4_6.7.0-1_amd64.deb \
+    && dpkg -i libonig4_6.7.0-1_amd64.deb \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
     && ls -la /usr/lib/x86_64-linux-gnu | grep .busterlibs \
     && chmod +x /opt/oryx/benv \
