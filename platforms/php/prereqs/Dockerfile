@@ -31,8 +31,8 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         libsodium-dev \
         libncurses5 \
     --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
-    cp -fr /tmp/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu \
-    ls -la /usr/lib/x86_64-linux-gnu | grep .busterlibs \
+    cp -a /tmp/lib/x86_64-linux-gnu/ /usr/lib/x86_64-linux-gnu/ ; \
+    ls -la /usr/lib/x86_64-linux-gnu ; \
     else \
-        . /php/installPrereqs.sh ; \
+        . /tmp/php/installPrereqs.sh ; \
     fi
