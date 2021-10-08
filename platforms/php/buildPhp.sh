@@ -15,15 +15,24 @@ phpPlatformDir="$REPO_DIR/platforms/php"
 
 builtPhpPrereqs=false
 buildPhpPrereqsImage() {
-	if ! $builtPhpPrereqs; then
-		echo "Building Php pre-requisites image..."
-		echo
-		docker build  \
-			--build-arg DEBIAN_FLAVOR=$debianFlavor \
-			-f "$phpPlatformDir/prereqs/Dockerfile" \
-			-t "php-build-prereqs" $REPO_DIR
-		builtPhpPrereqs=true
-	fi
+
+    if [ "$debianFlavor" == "focal-scm" ]; then
+        # Use default php sdk file name
+        phpFlavor="fpm"
+    else
+        phpFlavor=debianFlavor
+    fi
+
+    if ! $builtPhpPrereqs; then
+        echo "Building Php pre-requisites image..."
+        echo
+        docker build  \
+            --build-arg DEBIAN_FLAVOR=$debianFlavor \
+            --build-arg PHP_FLAVOR=$phpFlavor \
+            -f "$phpPlatformDir/prereqs/Dockerfile" \
+            -t "php-build-prereqs" $REPO_DIR
+        builtPhpPrereqs=true
+    fi
 }
 
 buildPhp() {
