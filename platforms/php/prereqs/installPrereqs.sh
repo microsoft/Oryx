@@ -29,6 +29,7 @@ add-apt-repository ppa:xapienz/curl34 -y \
         ca-certificates \
         curl \
         xz-utils \
+        libsodium-dev \ 
         libonig-dev \
     --no-install-recommends && rm -r /var/lib/apt/lists/*
 

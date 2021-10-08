@@ -7,7 +7,8 @@ ENV PHP_FLAVOR=$PHP_FLAVOR
 
 RUN set -ex \
  && echo "value of PHP_FLAVOR is ${PHP_FLAVOR}" \
- && echo "busterlibs"
+ && echo "busterlibs" \
+ && echo "busterlibs" > /usr/lib/x86_64-linux-gnu/.busterlibs
 
 ARG DEBIAN_FLAVOR
 FROM buildpack-deps:${DEBIAN_FLAVOR} AS php-build-prereqs
@@ -18,19 +19,20 @@ COPY build/__phpVersions.sh /php/
 COPY platforms/php/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/*.sh && chmod +x /php/*.sh
+COPY --from=busterLibs /usr/lib/x86_64-linux-gnu /tmp/lib/x86_64-linux-gnu
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
     apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
         $PHPIZE_DEPS \
         ca-certificates \
-        #curl \
+        curl \
         xz-utils \
         libsodium-dev \
         libncurses5 \
     --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
+    cp -fr /tmp/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu \
+    ls -la /usr/lib/x86_64-linux-gnu | grep .busterlibs \
     else \
         . /php/installPrereqs.sh ; \
     fi
-
-COPY --from=busterLibs /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu

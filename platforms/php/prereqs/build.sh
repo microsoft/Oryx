@@ -46,7 +46,8 @@ else
 		libdb4o-cil-dev \
 		libpcap-dev \
 		libxml2 \
-		libxml2-dev
+		libxml2-dev \
+		libsodium-dev
 fi
 
 fetchDeps='wget';
@@ -76,6 +77,12 @@ if [ -n "$PHP_ASC_URL" ]; then
 	command -v gpgconf > /dev/null && gpgconf --kill all;
 	rm -rf "$GNUPGHOME";
 fi;
+
+if [ "$debianFlavor" == "focal-scm" ]; then
+    apt-get upgrade;
+    apt-get update;
+    apt-get install libstdc++6;
+fi
 
 apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps
 
