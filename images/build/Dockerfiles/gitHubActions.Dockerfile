@@ -116,19 +116,17 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         libsodium-dev \
         libncurses5 \
     --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
-    wget http://archive.ubuntu.com/ubuntu/pool/universe/libo/libonig/libonig4_6.7.0-1_amd64.deb \
-    dpkg -i libonig4_6.7.0-1_amd64.deb \
     else \
         .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
     fi 
 
-#COPY --from=busterLibs /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
+COPY --from=busterLibs /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
+RUN wget http://archive.ubuntu.com/ubuntu/pool/universe/libo/libonig/libonig4_6.7.0-1_amd64.deb \
+    && dpkg -i libonig4_6.7.0-1_amd64.deb
 
 RUN tmpDir="/opt/tmp" \
-    && wget http://archive.ubuntu.com/ubuntu/pool/universe/libo/libonig/libonig4_6.7.0-1_amd64.deb \
-    && dpkg -i libonig4_6.7.0-1_amd64.deb \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
-    && ls -la /usr/lib/x86_64-linux-gnu | grep .busterlibs \
+    && ls -la /usr/lib/x86_64-linux-gnu \
     && chmod +x /opt/oryx/benv \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \

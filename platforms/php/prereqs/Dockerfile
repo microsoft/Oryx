@@ -21,18 +21,18 @@ COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/*.sh && chmod +x /php/*.sh
 COPY --from=busterLibs /usr/lib/x86_64-linux-gnu /tmp/lib/x86_64-linux-gnu
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
-    apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y \
-        $PHPIZE_DEPS \
-        ca-certificates \
-        curl \
-        xz-utils \
-        libsodium-dev \
-        libncurses5 \
-    --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
-    cp -a /tmp/lib/x86_64-linux-gnu/ /usr/lib/x86_64-linux-gnu/ ; \
-    ls -la /usr/lib/x86_64-linux-gnu ; \
+      apt-get update \
+      && apt-get upgrade -y \
+      && apt-get install -y \
+          $PHPIZE_DEPS \
+          ca-certificates \
+          curl \
+          xz-utils \
+          libsodium-dev \
+          libncurses5 \
+      --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
+      cp -a /tmp/lib/x86_64-linux-gnu/ /usr/lib/x86_64-linux-gnu/ ; \
+      ls -la /usr/lib/x86_64-linux-gnu ; \
     else \
         ls -la /php/ ; \
         chmod +x /php/installPrereqs.sh ; \
