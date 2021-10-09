@@ -34,5 +34,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
     cp -a /tmp/lib/x86_64-linux-gnu/ /usr/lib/x86_64-linux-gnu/ ; \
     ls -la /usr/lib/x86_64-linux-gnu ; \
     else \
-        . /tmp/php/installPrereqs.sh ; \
+        ls -la /php/ ; \
+        chmod +x /php/installPrereqs.sh ; \
+        . /php/installPrereqs.sh ; \
     fi
