@@ -18,7 +18,7 @@ buildPhpPrereqsImage() {
 
     if [ "$debianFlavor" == "focal-scm" ]; then
         # Use default php sdk file name
-        phpFlavor="buster"
+        phpFlavor="stretch"
     else
         phpFlavor=$debianFlavor
     fi
@@ -54,7 +54,7 @@ buildPhp() {
 
     if [ "$debianFlavor" == "focal-scm" ]; then
         # Use default php sdk file name
-        phpFlavor="buster"
+        phpFlavor="stretch"
     else
         phpFlavor=$debianFlavor
     fi

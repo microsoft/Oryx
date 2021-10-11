@@ -84,14 +84,14 @@ RUN set -ex \
  && mkdir -p /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
 
-#ARG DEBIAN_FLAVOR
-#FROM php:${DEBIAN_FLAVOR} as busterLibs
-#ARG DEBIAN_FLAVOR
-#ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+ARG DEBIAN_FLAVOR
+FROM php:${DEBIAN_FLAVOR} as busterLibs
+ARG DEBIAN_FLAVOR
+ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
-#RUN set -ex \
-# && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" \
-# && echo "busterlibs" > /usr/lib/x86_64-linux-gnu/.busterlibs
+RUN set -ex \
+ && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" \
+ && echo "busterlibs" > /usr/lib/x86_64-linux-gnu/.busterlibs
 
 FROM main AS final
 ARG SDK_STORAGE_BASE_URL_VALUE
@@ -103,7 +103,10 @@ COPY --from=intermediate /opt /opt
 # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
 RUN curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates \
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
-    
+
+COPY --from=busterLibs /usr/lib/x86_64-linux-gnu /tmp/lib/x86_64-linux-gnu
+#COPY --from=busterLibs /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
+
 # Install PHP pre-reqs	# Install PHP pre-reqs
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
     apt-get update \
@@ -111,16 +114,16 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
     && apt-get install -y \
         $PHPIZE_DEPS \
         ca-certificates \
-        curl \
+        #curl \
         xz-utils \
         libsodium-dev \
         libncurses5 \
     --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
+    cp -a /tmp/lib/x86_64-linux-gnu/ /usr/lib/x86_64-linux-gnu/ ; \
     else \
         .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
     fi 
 
-COPY --from=busterLibs /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
 RUN wget http://archive.ubuntu.com/ubuntu/pool/universe/libo/libonig/libonig4_6.7.0-1_amd64.deb \
     && dpkg -i libonig4_6.7.0-1_amd64.deb
 

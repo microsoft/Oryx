@@ -177,6 +177,12 @@ function buildGitHubActionsImage() {
 		echo "built image name: "$builtImageName
 	fi
 
+	if [ "$debianFlavor" == "focal-scm" ]; then
+        phpFlavor="stretch"
+    else
+        phpFlavor=$debianFlavor
+    fi
+
 	buildBuildScriptGeneratorImage
 	
 	echo
@@ -185,6 +191,7 @@ function buildGitHubActionsImage() {
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
+		--build-arg PHP_FLAVOR=$phpFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
 		.
