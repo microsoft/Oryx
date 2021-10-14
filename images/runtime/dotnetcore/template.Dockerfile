@@ -27,11 +27,9 @@ ENV DOTNET_VERSION=%DOTNET_VERSION%
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN echo $USER_DOTNET_AI_VERSION && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
-    && apt-get install unzip -y \ 
-    && apt-get upgrade --assume-yes
-
-RUN apt-get update && apt-get install fastjar -y \
-    mkdir -p /DotNetCoreAgent \
+    && apt-get install unzip fastjar -y \ 
+    && apt-get upgrade --assume-yes \
+    && mkdir -p /DotNetCoreAgent \
     && curl -o /DotNetCoreAgent/appinsights.zip "https://oryxsdksdev.blob.core.windows.net/appinsights-agent/DotNetCoreAgent.$USER_DOTNET_AI_VERSION.zip" \
     && cd DotNetCoreAgent \
-    && jar --help && jar xvf appinsights.zip && rm appinsights.zip
+    && jar xvf appinsights.zip && rm appinsights.zip
