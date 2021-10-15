@@ -154,6 +154,7 @@ RUN set -eux; \
 		libssl-dev \
 		libxml2-dev \
 		zlib1g-dev \
+		libonig4 \
 		${PHP_EXTRA_BUILD_DEPS:-} \
 	; \
 	rm -rf /var/lib/apt/lists/*; \

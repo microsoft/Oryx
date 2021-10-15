@@ -62,6 +62,7 @@ RUN set -eux; \
 		zlib1g-dev \
 		apache2-dev \
 		libsqlite3-dev \
+		libonig4 \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
