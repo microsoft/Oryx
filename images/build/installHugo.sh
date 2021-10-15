@@ -14,7 +14,7 @@ url=$(echo $INSTALLATION_URL_FORMAT | sed "s/#VERSION#/$VERSION/g")
 url=$(echo $url | sed "s/#TAR_FILE#/$fileName/g")
 request="curl -fsSLO --compressed $url"
 # @retry if curl fails
-$__CURRENT_DIR/retry.sh "$request"
+/opt/tmp/images/retry.sh "$request"
 installationDir="$INSTALLED_HUGO_VERSIONS_DIR/${VERSION}"
 mkdir -p "$installationDir"
 tar -xzf "$fileName" -C "$installationDir"
