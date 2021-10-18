@@ -12,6 +12,7 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     PYTHONIOENCODING="UTF-8" \
     LANG="C.UTF-8"
 
+ARG IMAGES_DIR="/opt/tmp/images" 
 RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     # https://github.com/microsoft/Oryx/issues/1032
     # Install .NET Core 3 SDKS
@@ -29,7 +30,7 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     && echo "jamstack" > /opt/oryx/.imagetype \
     && . /tmp/build/__goVersions.sh \
     && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
-    && curl -SLsO https://golang.org/dl/$downloadedFileName \
+    && ${IMAGES_DIR}/retry.sh "curl -SLsO https://golang.org/dl/$downloadedFileName" \
     && mkdir -p /usr/local \
     && tar -xzf $downloadedFileName -C /usr/local \
     && rm -rf $downloadedFileName

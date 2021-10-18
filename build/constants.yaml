@@ -26,7 +26,7 @@
     dot-net-core-31-sdk-version: 3.1.412
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.400
-    dot-net-60-sdk-version: 6.0.100-rc.1.21458.32
+    dot-net-60-sdk-version: 6.0.100-rc.2.21505.57
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -36,7 +36,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20211001.1
+    dot-net-core-runtime-base-tag: 20211011.3
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
 
@@ -65,11 +65,11 @@
     aspnet-core-app-50: 5.0.9
     aspnet-core-app-50-sha: 67ac99b8f631684961aa2e887ed5d6b9cc301b06a1842ac212791860bf6de145831228df5f57eca8a97e16e569e7b5a308fd20d82f11569c375c689fc932dfff
 
-    net-core-app-60: 6.0.0-rc.1.21451.13
-    net-core-app-60-sha: 6c101a93766747deddc97dd3ae9cbd0d0babc292dff2897006e1df8ad6af100aa74063d4961d73e67c82db66662f760cf83f510617559a2538210fc89694d9ea
+    net-core-app-60: 6.0.0-rc.2.21480.5
+    net-core-app-60-sha: 45062417c6111af4d635868927e8f69d43f66c9e0f111cb71c1861eaf5ceda4aefa99d97c6ce3b13fac2bc7c57c435e6f8b2d43c51a3bb3304b42081d98f7047
 
-    aspnet-core-app-60: 6.0.0-rc.1.21452.15
-    aspnet-core-app-60-sha: 9072abaada96efca7761140de6e789d5fb79b59b6f94924806c62e56498d8412aa34b51d8bbba843ae1be52d3f0ed0e8194e01112889d50b589b29f1336f3598
+    aspnet-core-app-60: 6.0.0-rc.2.21480.10
+    aspnet-core-app-60-sha: d48895237644a3999663b2e16baa2303d8b77f66385a04d8edb5601fdffacce18b1b1318827d09f74f6b133ff2c179ef659bd21cf8460289b5f81f404fa8b326
 
 
   outputs:
@@ -110,8 +110,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20210721.5
-    php-fpm-runtime-base-tag: 20210721.3
+    php-runtime-base-tag: 20211007.4
+    php-fpm-runtime-base-tag: 20211007.3
     composer-version: 2.0.8
     composer-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
     composer1-9-version: 1.9.3
@@ -121,12 +121,12 @@
     composer2-0-version: 2.0.8
     composer2-0-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
     # hashes are for .tar.xz
-    php80-version: 8.0.3
+    php80-version: 8.0.11
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: c9816aa9745a9695672951eaff3a35ca5eddcb9cacf87a4f04b9fb1169010251
-    php74-version: 7.4.16
+    php80-tar-sha256: e3e5f764ae57b31eb65244a45512f0b22d7bef05f2052b23989c053901552e16
+    php74-version: 7.4.24
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
-    php74-tar-sha256: 1c16cefaf88ded4c92eed6a8a41eb682bb2ef42429deb55f1c4ba159053fb98b
+    php74-tar-sha256: ff7658ee2f6d8af05b48c21146af5f502e121def4e76e862df5ec9fa06e98734
     php73-version: 7.3.27
     php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
     php73-tar-sha256: 65f616e2d5b6faacedf62830fa047951b0136d5da34ae59e6744cbaf5dca148d
