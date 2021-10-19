@@ -114,6 +114,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
 
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
+    && cp -f $tmpDir/images/build/logger.sh /opt/oryx/ \
     && chmod +x /opt/oryx/benv \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
