@@ -6,8 +6,7 @@ SOURCE_DIR=$1
 DESTINATION_DIR=$2
 INTERMEDIATE_DIR=$3
 
-echo "ls"
-ls
+
 source logger.sh
 
 
