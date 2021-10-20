@@ -6,8 +6,8 @@
 
 function LogError()
 {
-    if [ $# -eq 1 ]; then
-       echo "Please provide 2 paremter to LogError: "
+    if [ $# -ne 1 ]; then
+       echo "Please provide 1 paremter to LogError. Example: "
        echo "LogError {errorMessage}"
     fi
     _LogMessage "ERROR" "$1"
@@ -15,8 +15,8 @@ function LogError()
 
 function LogWarning()
 {
-    if [ $# -lt 1 ]; then
-       echo "Please provide 2 paremter to LogWarning: "
+    if [ $# -ne 1 ]; then
+       echo "Please provide 1 paremter to LogWarning. Example: "
        echo "LogWarning {errorMessage}"
     fi
     _LogMessage "WARNING" "$1"
