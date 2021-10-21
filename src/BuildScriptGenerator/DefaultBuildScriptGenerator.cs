@@ -344,6 +344,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 BuildCommandsFileName = context.BuildCommandsFileName,
                 BuildProperties = buildProperties,
                 BenvPath = FilePaths.Benv,
+                LoggerPath = FilePaths.LoggerPath,
                 PlatformInstallationScript = installationScript,
                 OutputDirectoryIsNested = outputIsSubDirOfSourceDir,
                 CopySourceDirectoryContentToDestinationDirectory = copySourceDirectoryContentToDestinationDirectory,
