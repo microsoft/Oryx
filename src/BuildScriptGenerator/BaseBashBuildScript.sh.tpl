@@ -6,9 +6,7 @@ SOURCE_DIR=$1
 DESTINATION_DIR=$2
 INTERMEDIATE_DIR=$3
 
-ls
-ls /opt/oryx/
-source {{ LoggerPath }}
+source /opt/oryx/logger.sh
 
 if [ ! -d "$SOURCE_DIR" ]; then
     echo "Source directory '$SOURCE_DIR' does not exist." 1>&2
