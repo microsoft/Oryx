@@ -73,11 +73,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string BenvPath { get; set; }
 
         /// <summary>
-        /// Gets or set the path to logger file.
-        /// </summary>
-        public string LoggerPath { get; set; }
-
-        /// <summary>
         /// Gets or sets the bash script which install the platform binaries.
         /// </summary>
         public string PlatformInstallationScript { get; set; }
