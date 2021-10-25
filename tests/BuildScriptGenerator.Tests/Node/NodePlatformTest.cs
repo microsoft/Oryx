@@ -337,6 +337,41 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
+        public void GeneratedBuildSnippet_UsesYarn_WhenEnginesFieldIsSet()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""engines"": {
+                ""node"": { ""version"": ""~1.22.11""}
+              }
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null },
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+                HasYarnrcYmlFile = true,
+                IsYarnLockFileValidYamlFormat = true,
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("yarn workspaces focus --all", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
         public void BuildScript_HasSdkInstallScript_IfDynamicInstallIsEnabled_AndSdkIsNotAlreadyInstalled()
         {
             // Arrange
