@@ -342,7 +342,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Arrange
             const string packageJson = @"{
               ""engines"": {
-                ""node"": { ""version"": ""~1.22.11""}
+                ""yarn"": ""~1.22.11""
               }
             }";
             var commonOptions = new BuildScriptGeneratorOptions();
