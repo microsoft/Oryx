@@ -1,6 +1,6 @@
 # This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
-PIP_VERSION='20.2.3'
+PIP_VERSION='21.2.4'
 PYTHON27_VERSION='2.7.18'
 PYTHON36_VERSION='3.6.15'
 PYTHON37_VERSION='3.7.12'
