@@ -114,8 +114,9 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
 
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
-    && cp -f $tmpDir/images/build/logger.sh /opt/oryx/ \
+    && cp -f $tmpDir/images/build/logger.sh /opt/oryx/logger \
     && chmod +x /opt/oryx/benv \
+    && chmod +x /opt/oryx/logger \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     # Grant read-write permissions to the nuget folder so that dotnet restore
