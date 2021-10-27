@@ -60,18 +60,21 @@ make install
 
 PYTHON_GET_PIP_SHA256="c518250e91a70d7b20cceb15272209a4ded2a0c263ae5776f129e0d9b5674309"
 PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2da64da38f516078c7/public/get-pip.py"
+PYTHON_SETUPTOOLS_VERSION="57.5.0"
 
 # Install pip
 wget "$PYTHON_GET_PIP_URL" -O get-pip.py
-echo "$PYTHON_GET_PIP_SHA256 *get-pip.py" | sha256sum -c -
+#echo "$PYTHON_GET_PIP_SHA256 *get-pip.py" | sha256sum -c -
 echo "$PYTHON_GET_PIP_SHA256 *get-pip.py" | sha256sum --check --strict -
 LD_LIBRARY_PATH=/usr/src/python \
 /usr/src/python/python get-pip.py \
+    --trusted-host pypi.python.org \
     --prefix $INSTALLATION_PREFIX \
     --disable-pip-version-check \
     --no-cache-dir \
     --no-warn-script-location \
-    pip==$PIP_VERSION
+    pip==$PIP_VERSION \
+    "setuptools==$PYTHON_SETUPTOOLS_VERSION" 
 
 if [ "${PYTHON_VERSION::1}" == "2" ]; then
     LD_LIBRARY_PATH=$INSTALLATION_PREFIX/lib \
