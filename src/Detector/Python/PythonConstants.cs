@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.Detector.Python
 {
     internal static class PythonConstants
@@ -17,6 +19,7 @@ namespace Microsoft.Oryx.Detector.Python
         public const string CondaEnvironmentYamlFileName = "environment.yml";
         public const string CondaEnvironmentYmlFileName = "environment.yaml";
         public const string JupyterNotebookFileExtensionName = "ipynb";
+        public static readonly HashSet<string> DjangoFileNames = new HashSet<string> { "manage.py", "wsgi.py", "app.py" };
         public static readonly string[] CondaEnvironmentFileKeys = new[] { "channels", "dependencies" };
     }
 }

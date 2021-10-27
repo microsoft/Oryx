@@ -40,20 +40,64 @@ namespace Microsoft.Oryx.Detector.Python
             var appDirectory = string.Empty;
             var hasRequirementsTxtFile = false;
             var hasPyprojectTomlFile = false;
+
             if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
             {
                 _logger.LogInformation($"Found {PythonConstants.RequirementsFileName} at the root of the repo.");
                 hasRequirementsTxtFile = true;
+
+                // Warning if missing django module
+                bool hasDjangoModule = false;
+                string filePath = $"{sourceRepo.RootPath}/{PythonConstants.RequirementsFileName}";
+                using (var reader = new StreamReader(filePath))
+                {
+                    while (!reader.EndOfStream && !hasDjangoModule)
+                    { 
+                        string line = reader.ReadLine().ToLower();
+                        if (line.StartsWith("django"))
+                        {
+                            hasDjangoModule = true;
+                        }
+                    }
+                }
+                if (!hasDjangoModule)
+                {
+                    _logger.LogWarning($"Missing django module in {PythonConstants.RequirementsFileName}");
+                } 
+                else
+                {
+                    // detect django files exist
+                    foreach (string djangoFileName in PythonConstants.DjangoFileNames)
+                    {
+                        if (!sourceRepo.FileExists(djangoFileName))
+                        {
+                            _logger.LogWarning($"Missing {djangoFileName} at the root of the repo.");
+                        }
+                    }
+                }
             }
             else
             {
-                _logger.LogInformation(
-                    $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo.");
+                string errorMsg = $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo.";
+                _logger.LogError(errorMsg);
             }
             if (sourceRepo.FileExists(PythonConstants.PyprojectTomlFileName))
             {
                 _logger.LogInformation($"Found {PythonConstants.PyprojectTomlFileName} at the root of the repo.");
                 hasPyprojectTomlFile = true;
+            }
+            else
+            {
+                _logger.LogError($"Missing {PythonConstants.SetupDotPyFileName} at the root of the repo.");
+            }
+            if (sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
+            {
+                _logger.LogInformation($"Found {PythonConstants.SetupDotPyFileName} at the root of the repo.");
+                hasPyprojectTomlFile = true;
+            }
+            else
+            {
+                _logger.LogError($"Missing {PythonConstants.SetupDotPyFileName} at the root of the repo.");
             }
             var hasCondaEnvironmentYmlFile = false;
             if (sourceRepo.FileExists(PythonConstants.CondaEnvironmentYmlFileName) &&
@@ -72,7 +116,6 @@ namespace Microsoft.Oryx.Detector.Python
                     $"Found {PythonConstants.CondaEnvironmentYamlFileName} at the root of the repo.");
                 hasCondaEnvironmentYmlFile = true;
             }
-
             var hasJupyterNotebookFiles = false;
             var notebookFiles = sourceRepo.EnumerateFiles(
                 $"*.{PythonConstants.JupyterNotebookFileExtensionName}",
