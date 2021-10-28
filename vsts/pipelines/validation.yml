@@ -6,6 +6,14 @@ variables:
 - group: Oryx
 
 jobs:
+- job: runCfsPackageAnalysis
+  displayName: Validating Packages
+  steps:
+  - task: Package-Ingestion@0
+    inputs:
+      terrapinApiTokens: 'Ingestion Task Tokens-DevDiv'
+      runInDevEnv: true
+      
 - job: Job_Security
   displayName: Security
   pool:
