@@ -193,6 +193,7 @@ RUN set -ex \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && cp -f $imagesDir/build/benv.sh /opt/oryx/benv \
+    && cp -f $imagesDir/build/logger.sh /opt/oryx/logger \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \

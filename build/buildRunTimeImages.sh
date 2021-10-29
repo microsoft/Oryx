@@ -9,6 +9,7 @@ set -ex
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 # Load all variables
+source $REPO_DIR/build/__extVarNames.sh
 source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__sdkStorageConstants.sh
@@ -102,7 +103,7 @@ for dockerFile in $dockerFiles; do
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
 
     cd $REPO_DIR
-
+    
     echo
     docker build \
         -f $dockerFile \
@@ -111,6 +112,7 @@ for dockerFile in $dockerFiles; do
         --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
         --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
+        --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION \
         $args \
         $labels \
         .

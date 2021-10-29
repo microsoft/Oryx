@@ -1,6 +1,7 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
 FROM golang:1.14-${DEBIAN_FLAVOR} as startupCmdGen
+
 # Install dep
 RUN go get -u github.com/golang/dep/cmd/dep
 # GOPATH is set to "/go" in the base image
@@ -18,15 +19,17 @@ FROM %RUNTIME_BASE_IMAGE_NAME%
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
+ARG USER_DOTNET_AI_VERSION
+ENV USER_DOTNET_AI_VERSION=${USER_DOTNET_AI_VERSION}
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 ENV DOTNET_VERSION=%DOTNET_VERSION%
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
-RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
+RUN echo $USER_DOTNET_AI_VERSION && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get install unzip -y \ 
-    && apt-get upgrade --assume-yes
-
-RUN  mkdir -p /DotNetCoreAgent \
-     && curl -o /DotNetCoreAgent/appinsights.zip https://oryxsdks.blob.core.windows.net/appinsights-agent/DotNetCoreAgent.2.8.39.zip \
-     && cd DotNetCoreAgent && unzip appinsights.zip && rm appinsights.zip
+    && apt-get upgrade --assume-yes \
+    && mkdir -p /DotNetCoreAgent \
+    && curl -o /DotNetCoreAgent/appinsights.zip "https://oryxsdksdev.blob.core.windows.net/appinsights-agent/DotNetCoreAgent.$USER_DOTNET_AI_VERSION.zip" \
+    && cd DotNetCoreAgent \
+    && unzip appinsights.zip && rm appinsights.zip
