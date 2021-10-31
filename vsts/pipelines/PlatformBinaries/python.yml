@@ -14,16 +14,6 @@ stages:
         platformName: 'python'
         debianFlavor: 'buster'
 
-  - job: Python_Stretch_SDK
-    timeoutInMinutes: 250
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - template: ../templates/_platformBinariesTemplate.yml
-      parameters:
-        platformName: 'python'
-        debianFlavor: 'stretch'
-
   - job: Python_Ubuntu_SDK
     timeoutInMinutes: 250
     pool:
