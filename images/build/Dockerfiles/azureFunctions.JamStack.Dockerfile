@@ -7,8 +7,7 @@ COPY --from=support-files-image-for-build /tmp/oryx/ /tmp
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     ORYX_BUILDIMAGE_TYPE="jamstack" \
     DYNAMIC_INSTALL_ROOT_DIR="/opt" \
-    PATH="/home/jamstack/.dotnet/:/usr/local/go/bin:/opt/dotnet/lts:/opt/python/latest/bin:$PATH" \
-    dotnet="/home/jamstack/.dotnet/dotnet" \
+    PATH="/usr/local/go/bin:/opt/dotnet/lts:/opt/python/latest/bin:$PATH" \
     PYTHONIOENCODING="UTF-8" \
     LANG="C.UTF-8"
 
@@ -64,5 +63,3 @@ RUN set -ex \
     && ln -s $PYTHON38_VERSION latest \
     && ln -s $PYTHON38_VERSION stable \
     && echo "jamstack" > /opt/oryx/.imagetype
-    
-RUN ./opt/tmp/build/createSymlinksForDotnet.sh
