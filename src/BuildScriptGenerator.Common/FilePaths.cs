@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string RunScriptGeneratorDir = "/opt/startupcmdgen";
         public const string NodeAppInsightsLoaderFileName = "applicationinsights/out/Bootstrap/Oryx.js";
         public const string NodeGlobalModulesPath = "/usr/local/lib/node_modules";
-        public const string LoggerPath = "/opt/oryx/logger";
+        public const string Logger = "/opt/oryx/logger";
         public const string Bash = "/bin/bash";
         public const string Benv = "/opt/oryx/benv";
         public const string PreRunCommandEnvVarName = "PRE_RUN_COMMAND";
