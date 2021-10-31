@@ -10,6 +10,7 @@ wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_
 wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc -O /python.tar.xz.asc
 
 debianFlavor=$DEBIAN_FLAVOR
+debianHackFlavor=$DEBIAN_HACK_FLAVOR
 pythonSdkFileName=""
 PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2da64da38f516078c7/public/get-pip.py"
 
@@ -29,6 +30,8 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
 
 if [ "$debianFlavor" == "stretch" ]; then
 	# Use default python sdk file name
+    echo "Hack flavor is: "$debianHackFlavor
+
     pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
     PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
     PIP_VERSION="20.2.3"
