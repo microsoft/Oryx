@@ -43,12 +43,7 @@ getDotNetCoreSdk() {
 		rm -f "$downloadedFile"
 		curl -SL $downloadUrl --output "$downloadedFile"
 		echo "Verifying archive hash..."
-		if [ "$sha" == "none"]; then
-		    echo "daily builds from dotnet, no sha available"
-		else
-		    echo "$sha $downloadedFile" | sha512sum -c -
-		fi
-
+		echo "$sha $downloadedFile" | sha512sum -c -
 		
 		# Find the runtime version
 		tar -xzf $downloadedFile -C .
