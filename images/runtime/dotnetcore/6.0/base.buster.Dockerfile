@@ -6,7 +6,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --add-source https://dnceng.pkgs.visualstudio.com/public/_packaging/dotnet5-transport/nuget/v3/index.json --version 6.0.0-preview.8*
+RUN dotnet tool install --tool-path /dotnetcore-tools --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-tools%40Local/nuget/v3/index.json --version 6.0.0-rtm.* dotnet-monitor
 
 FROM debian:buster-slim
 ARG BUILD_DIR=/tmp/oryx/build
