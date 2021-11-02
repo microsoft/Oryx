@@ -126,7 +126,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath)
                 .ConfigureServices(services =>
                 {
-                    // Add an empty and default configuration to prevent some commans from breaking since options
+                    // Add an empty and default configuration to prevent some commands from breaking since options
                     // setup expect this from DI.
                     var configuration = new ConfigurationBuilder().Build();
                     services.AddSingleton<IConfiguration>(configuration);

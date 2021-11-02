@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.Detector.Golang
     /// <summary>
     /// An implementation of <see cref="IPlatformDetector"/> which detects Go applications.
     /// </summary>
-    class GolangDetector : IGolangPlatformDetector
+    public class GolangDetector : IGolangPlatformDetector
     {
         private readonly ILogger<GolangDetector> _logger;
         private readonly DetectorOptions _options;
