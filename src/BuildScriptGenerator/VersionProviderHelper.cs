@@ -55,5 +55,48 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             versions.Sort();
             return versions.Select(v => v.ToString());
         }
+
+        /// <summary>
+        ///     This method is specifically for obtaining Major.Minor version (example: 1.16)
+        ///     specifically for Golang since it does not have use semantic-versioning
+        ///     As a result we use RegEx extract version instead of SemVer.
+        /// </summary>
+        internal static IEnumerable<string> GetMajorMinorVersionsFromDirectory(string versionsDir)
+        {
+
+            var listOptions = new EnumerationOptions()
+            {
+                RecurseSubdirectories = false,
+                IgnoreInaccessible = false,
+            };
+
+            IEnumerable<DirectoryInfo> versionDirectories;
+            try
+            {
+                versionDirectories = Directory.EnumerateDirectories(versionsDir, "*", listOptions)
+                    .Select(versionDir => new DirectoryInfo(versionDir));
+            }
+            catch (IOException)
+            {
+                return Enumerable.Empty<string>();
+            }
+
+            var versions = new List<String>();
+            foreach (var versionDir in versionDirectories)
+            {
+                try
+                {
+                    // TODO: use regex to extract correct version format
+                    var version = versionDir.Name;
+                    versions.Add(version);
+                }
+                catch (ArgumentException)
+                {
+                    // Ignore non-Semantic-Versioning based strings like 'latest' or 'lts'
+                }
+            }
+
+            return versions;
+        }
     }
 }
