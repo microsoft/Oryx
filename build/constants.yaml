@@ -102,8 +102,8 @@
   constants:
     pip-version: 21.2.4
     python27-version: 2.7.18
-    python36-version: 3.6.14
-    python37-version: 3.7.11
+    python36-version: 3.6.15
+    python37-version: 3.7.12
     python38-version: 3.8.12
     python39-version: 3.9.7
     python310-version: 3.10.0
