@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string True = "true";
         public const string False = "false";
 
-        public const string TemporaryInstallationDirectoryRoot = "/tmp/oryx/platforms";
+        public const string TemporaryInstallationDirectoryRoot = "/opt/";
         public const string AppType = "apptype";
         public const string BuildCommandsFileName = "buildcommands-file";
         public const string FunctionApplications = "functions";
