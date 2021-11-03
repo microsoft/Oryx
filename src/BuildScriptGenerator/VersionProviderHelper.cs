@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;   
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -86,9 +87,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 try
                 {
-                    // TODO: use regex to extract correct version format
-                    var version = versionDir.Name;
-                    versions.Add(version);
+                    /* Regex will match:
+                     * major.minor
+                     *      where major & minor contains any number of digits
+                     * Valid examples:
+                     *      1.16, 1.17, 0.1, 123.456
+                     * Invalid examples:
+                     *      1.16.1, 1.2.3, 1.2a
+                    */
+                    Regex regex = new Regex(@"^[0-9]+\.[0-9]+$");
+                    string version = versionDir.Name;
+                    Match match = regex.Match(version);
+                    if (match.Success)
+                    {
+                        versions.Add(version);
+                    }
                 }
                 catch (ArgumentException)
                 {
