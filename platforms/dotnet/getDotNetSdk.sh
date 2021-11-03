@@ -44,6 +44,7 @@ getDotNetCoreSdk() {
 		curl -SL $downloadUrl --output "$downloadedFile"
 		echo "Verifying archive hash..."
 		echo "$sha $downloadedFile" | sha512sum -c -
+		
 		# Find the runtime version
 		tar -xzf $downloadedFile -C .
 		runtimeVersionDir=$(find "$tempDir/shared/Microsoft.NETCore.App" -mindepth 1 -maxdepth 1 -type d)

@@ -321,6 +321,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
+                .AddCommand("dotnet nuget add source https://pkgs.dev.azure.com/dnceng/public/_packaging/6.0.100-rtm.21527.11-shipping/nuget/v3/index.json")
                 .AddBuildCommand(
                 $"{appDir} --platform dotnet " +
                 $"--platform-version 6")
@@ -754,7 +755,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
                 $"{appDir}/MessageFunction -o {appOutputDir} --apptype functions --platform dotnet " +
-                $"--platform-version 3.1.8")
+                $"--platform-version 3.1")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
