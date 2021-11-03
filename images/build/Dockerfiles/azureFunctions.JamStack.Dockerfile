@@ -27,7 +27,6 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
     && cd /opt/dotnet \
     && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s 3-lts lts \
-    && echo "jamstack" > /opt/oryx/.imagetype \
     && . /tmp/build/__goVersions.sh \
     && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
     && ${IMAGES_DIR}/retry.sh "curl -SLsO https://golang.org/dl/$downloadedFileName" \
@@ -64,5 +63,5 @@ RUN set -ex \
     && ln -s $PYTHON38_VERSION latest \
     && ln -s $PYTHON38_VERSION stable \
     && echo "jamstack" > /opt/oryx/.imagetype
-    
+
 RUN ./opt/tmp/build/createSymlinksForDotnet.sh

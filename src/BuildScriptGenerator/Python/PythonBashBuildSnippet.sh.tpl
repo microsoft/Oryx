@@ -64,7 +64,7 @@ fi
         pipInstallExitCode=${PIPESTATUS[0]}
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "Failed to pip installation with exit code: ${pipInstallExitCode}"
+            LogError "Failed pip installation with exit code: ${pipInstallExitCode}"
             exit $pipInstallExitCode
         fi
         set -e
@@ -77,7 +77,7 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "Failed to pip installation with exit code: ${$pythonBuildExitCode}"
+            LogError "Failed pip installation with exit code: ${$pythonBuildExitCode}"
             exit $pythonBuildExitCode
         fi
     elif [ -e "pyproject.toml" ]
@@ -117,7 +117,7 @@ fi
 
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "Failed to pip installation with exit code: ${$pipInstallExitCode}"
+            LogError "Failed pip installation with exit code: ${$pipInstallExitCode}"
             exit $pipInstallExitCode
         fi
         set -e
@@ -159,6 +159,7 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         if [[ $pythonBuildExitCode != 0 ]]
         then
+            LogWarning "Failed to install poetry with exist status ${pythonBuildExitCode}"
             exit $pythonBuildExitCode
         fi
     else
@@ -221,11 +222,14 @@ fi
             CollectStaticCommand="$python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true "
             printf %s " , $CollectStaticCommand" >> "$COMMAND_MANIFEST_FILE"
             $python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true ; 
-            echo "'collectstatic' exited with exit code $EXIT_CODE."
+            if [[ $EXIT_CODE != 0 ]]
+            then
+                LogWarning "Failed running 'collectstatic' exited with exit code $EXIT_CODE."
+            fi
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             echo "Done in $ELAPSED_TIME sec(s)."
         else
-            echo Warning: missing Django module in "$SOURCE_DIR/requirements.txt"
+            LogWarning "Warning: missing Django module in $SOURCE_DIR/requirements.txt"
         fi
     fi
 {{ end }}

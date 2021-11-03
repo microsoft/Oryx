@@ -8,13 +8,17 @@
     user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
     user-app-insights-agent-extension-version: ApplicationInsightsAgent_EXTENSION_VERSION
     user-app-insights-connection-string-env: APPLICATIONINSIGHTS_CONNECTION_STRING
-    user-dotnet-startup-hooks: /DotNetCoreAgent/2.8.39/StartupHook/Microsoft.ApplicationInsights.StartupHook.dll
+    user-dotnet-ai-version: 2.8.42
+    user-dotnet-startup-hooks: /DotNetCoreAgent/2.8.42/StartupHook/Microsoft.ApplicationInsights.StartupHook.dll
     user-netcore-hostingstartup-assemblies: Microsoft.ApplicationInsights.StartupBootstrapper
     python-enable-gunicorn-multi-workers-env-var-name: PYTHON_ENABLE_GUNICORN_MULTIWORKERS
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator.Common
       namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+    - type: shell
+      directory: build
+      file-name-prefix: __
     - type: go
       directory: src/startupscriptgenerator/src/common/consts
 - name: dot-net-core-sdk-versions
@@ -27,6 +31,7 @@
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.400
     dot-net-60-sdk-version: 6.0.100-rc.2.21505.57
+    dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -36,7 +41,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20211011.3
+    dot-net-core-runtime-base-tag: 20211031.2
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
 
@@ -65,11 +70,11 @@
     aspnet-core-app-50: 5.0.9
     aspnet-core-app-50-sha: 67ac99b8f631684961aa2e887ed5d6b9cc301b06a1842ac212791860bf6de145831228df5f57eca8a97e16e569e7b5a308fd20d82f11569c375c689fc932dfff
 
-    net-core-app-60: 6.0.0-rc.2.21480.5
-    net-core-app-60-sha: 45062417c6111af4d635868927e8f69d43f66c9e0f111cb71c1861eaf5ceda4aefa99d97c6ce3b13fac2bc7c57c435e6f8b2d43c51a3bb3304b42081d98f7047
+    net-core-app-60: 6.0.0
+    net-core-app-60-sha: 7cc8d93f9495b516e1b33bf82af3af605f1300bcfeabdd065d448cc126bd97ab4da5ec5e95b7775ee70ab4baf899ff43671f5c6f647523fb41cda3d96f334ae5
 
-    aspnet-core-app-60: 6.0.0-rc.2.21480.10
-    aspnet-core-app-60-sha: d48895237644a3999663b2e16baa2303d8b77f66385a04d8edb5601fdffacce18b1b1318827d09f74f6b133ff2c179ef659bd21cf8460289b5f81f404fa8b326
+    aspnet-core-app-60: 6.0.0
+    aspnet-core-app-60-sha: 6a1ae878efdc9f654e1914b0753b710c3780b646ac160fb5a68850b2fd1101675dc71e015dbbea6b4fcf1edac0822d3f7d470e9ed533dd81d0cfbcbbb1745c6c
 
 
   outputs:
@@ -110,8 +115,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20211007.4
-    php-fpm-runtime-base-tag: 20211007.3
+    php-runtime-base-tag: 20211031.1
+    php-fpm-runtime-base-tag: 20211031.1
     composer-version: 2.0.8
     composer-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
     composer1-9-version: 1.9.3
@@ -171,6 +176,7 @@
     run-script-generator-dir: /opt/startupcmdgen
     node-app-insights-loader-file-name: applicationinsights/out/Bootstrap/Oryx.js
     node-global-modules-path: /usr/local/lib/node_modules
+    logger: /opt/oryx/logger
     bash: /bin/bash
     benv: /opt/oryx/benv
     pre-run-command-env-var-name: PRE_RUN_COMMAND
