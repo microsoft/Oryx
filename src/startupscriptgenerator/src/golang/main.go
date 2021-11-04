@@ -9,7 +9,6 @@ import (
 	"common"
 	"common/consts"
 	"flag"
-	"fmt"
 )
 
 func main() {
