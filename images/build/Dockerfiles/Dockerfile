@@ -19,6 +19,7 @@ ENV DEBIAN_FLAVOR="stretch"
 
 RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
 RUN ./build.sh golang     /opt/startupcmdgen/golang
+RUN ./build.sh hugo       /opt/startupcmdgen/hugo
 RUN ./build.sh node       /opt/startupcmdgen/nodejs
 RUN ./build.sh php        /opt/startupcmdgen/php
 RUN ./build.sh python     /opt/startupcmdgen/python
