@@ -25,6 +25,5 @@ else
 	# we copy *.csproj to destination directory so the detector can identify
 	# the desitionation directory as a DotNet application
 	# when running oryx run-script
-	cp ${SOURCE_DIR}/*.csproj ${DESTINATION_DIR} 
- 
+	cp ${SOURCE_DIR}/*.csproj ${DESTINATION_DIR}
 fi
