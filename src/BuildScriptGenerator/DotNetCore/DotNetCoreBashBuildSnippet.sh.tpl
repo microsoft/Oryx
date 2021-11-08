@@ -21,4 +21,10 @@ else
 	echo "Publishing to directory $DESTINATION_DIR..."
 	echo
 	dotnet publish "{{ ProjectFile }}" -c {{ Configuration }} -o "$DESTINATION_DIR"
+
+	# we copy *.csproj to destination directory so the detector can identify
+	# the desitionation directory as a DotNet application
+	# when running oryx run-script
+	cp ${SOURCE_DIR}/*.csproj ${DESTINATION_DIR} 
+ 
 fi
