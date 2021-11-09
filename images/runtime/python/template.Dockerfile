@@ -41,9 +41,7 @@ RUN set -ex \
  && if [ "%PYTHON_MAJOR_VERSION%" = "3" ]; then cd /opt/python/%PYTHON_MAJOR_VERSION%/bin \
  && ln -s idle3 idle \
  && ln -s pydoc3 pydoc \
- && ln -s python3-config python-config; fi \
- && rm -rf /var/lib/apt/lists/* \
- && rm -rf /tmp/oryx
+ && ln -s python3-config python-config; fi
 
 ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 
@@ -57,6 +55,8 @@ RUN pip install --upgrade pip \
     && pip install debugpy \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
-    && apt-get upgrade --assume-yes
+    && apt-get upgrade --assume-yes \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/oryx
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
