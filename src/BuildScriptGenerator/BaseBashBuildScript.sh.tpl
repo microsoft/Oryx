@@ -6,7 +6,6 @@ SOURCE_DIR=$1
 DESTINATION_DIR=$2
 INTERMEDIATE_DIR=$3
 
-
 if [ -f {{ LoggerPath }} ]; then
 	source {{ LoggerPath }}
 fi

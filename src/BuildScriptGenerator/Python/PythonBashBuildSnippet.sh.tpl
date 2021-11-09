@@ -4,7 +4,6 @@ declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install'
 echo "Python Version: $python"
 PIP_CACHE_DIR=/usr/local/share/pip-cache
-scriptName="$0"
 
 {{ if PythonBuildCommandsFileName | IsNotBlank }}
 COMMAND_MANIFEST_FILE={{ PythonBuildCommandsFileName }}

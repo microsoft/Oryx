@@ -23,7 +23,6 @@ func (gen *GolangStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("golang.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
-	logger.LogVerbose("Remove this LogVerbose message")
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n\n")
 	scriptBuilder.WriteString("echo TODO: update with golang script commands")

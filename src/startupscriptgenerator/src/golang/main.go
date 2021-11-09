@@ -17,7 +17,6 @@ func main() {
 	
 	// setup env commands
 	setupEnvCommand := flag.NewFlagSet(consts.SetupEnvCommandName, flag.ExitOnError)
-	// setupEnvAppPathPtr := setupEnvCommand.String("appPath", ".", "The path to the application folder, e.g. '/home/site/wwwroot/'.")
 
 	// setup script commands
 	scriptCommand := flag.NewFlagSet(consts.CreateScriptCommandName, flag.ExitOnError)
@@ -55,11 +54,6 @@ func main() {
 			UserStartupCommand:       *userStartupCommandPtr,
 			BindPort:                 *bindPortPtr,
 			DefaultAppPath:           defaultAppFullPath,
-			// DefaultAppModule:         *defaultAppModulePtr,
-			// DefaultAppDebugModule:    *defaultAppDebugModulePtr,
-			// DebugAdapter:             *debugAdapterPtr,
-			// DebugPort:                *debugPortPtr,
-			// DebugWait:                *debugWaitPtr,
 			Manifest:                 buildManifest,
 			Configuration:            configuration,
 		}
