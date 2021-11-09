@@ -14,35 +14,22 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM python:%PYTHON_VERSION%-${DEBIAN_FLAVOR} as main
+FROM %BASE_TAG% as main
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 
 RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        xz-utils \
-    && rm -rf /var/lib/apt/lists/*
+	&& apt-get upgrade -y \
+	&& apt-get install -y --no-install-recommends \
+		xz-utils \
+	&& rm -rf /var/lib/apt/lists/*
 
 ADD images ${IMAGES_DIR}
 ADD build ${BUILD_DIR}
-
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
-
-# Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
-RUN pip install --upgrade pip \
-    && pip install glibc \
-    && pip install gunicorn \
-    && pip install debugpy \
-    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
-    && apt-get update \
-    && apt-get upgrade --assume-yes
 
 RUN ${IMAGES_DIR}/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false
 RUN set -ex \
@@ -59,5 +46,19 @@ RUN set -ex \
  && rm -rf /tmp/oryx
 
 ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
+
+# Bake Application Insights key from pipeline variable into final image
+ARG AI_KEY
+ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
+RUN pip install --upgrade pip \
+    && pip install glibc \
+    && pip install gunicorn \
+    && pip install debugpy \
+    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
+    && apt-get update \
+    && apt-get upgrade --assume-yes \
+    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /tmp/oryx
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen

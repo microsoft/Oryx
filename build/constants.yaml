@@ -30,7 +30,7 @@
     dot-net-core-31-sdk-version: 3.1.412
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.400
-    dot-net-60-sdk-version: 6.0.100-rc.2.21505.57
+    dot-net-60-sdk-version: 6.0.100
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
   outputs:
     - type: csharp
@@ -116,8 +116,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20211007.4
-    php-fpm-runtime-base-tag: 20211007.3
+    php-runtime-base-tag: 20211031.1
+    php-fpm-runtime-base-tag: 20211031.1
     composer-version: 2.0.8
     composer-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
     composer1-9-version: 1.9.3
@@ -177,7 +177,7 @@
     run-script-generator-dir: /opt/startupcmdgen
     node-app-insights-loader-file-name: applicationinsights/out/Bootstrap/Oryx.js
     node-global-modules-path: /usr/local/lib/node_modules
-    logger-path: /opt/oryx/logger
+    logger: /opt/oryx/logger
     bash: /bin/bash
     benv: /opt/oryx/benv
     pre-run-command-env-var-name: PRE_RUN_COMMAND
