@@ -224,8 +224,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         // sure wouldn't change. Since we cannot update product code with test generator we cannot run this test in
         // a docker container. So we run this test on a Linux OS only as build sets execute permission flag and
         // as well as executes a bash script.
-        [Fact (Skip = "Skipping test temporarily")]
-        //[EnableOnPlatform("LINUX")]
+        [EnableOnPlatform("LINUX")]
         public void OnSuccess_Execute_WritesOnlyBuildOutput_ToStandardOutput()
         {
             // Arrange
