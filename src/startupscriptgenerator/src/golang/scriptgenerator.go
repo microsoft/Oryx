@@ -11,9 +11,9 @@ import (
 )
 
 type GolangStartupScriptGenerator struct {
-	AppPath					 string
-	UserStartupCommand		 string
-	DefaultAppPath			 string
+	AppPath                  string
+	UserStartupCommand       string
+	DefaultAppPath           string
 	BindPort                 string
 	Manifest                 common.BuildManifest
 	Configuration            Configuration
