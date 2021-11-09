@@ -75,7 +75,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 	nodeBinary := fmt.Sprintf("%s/bin/node", consts.NodeInstallationDir)
 	enableDynamicInstall := common.GetBooleanEnvironmentVariable(consts.EnableDynamicInstallKey)
 	if enableDynamicInstall && !common.PathExists(nodeBinary) {
-		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.SourcePath))
+		scriptBuilder.WriteString(fmt.Sprintf("oryx prep --src %s\n", appPath))
 	}
 
 	common.SetupPreRunScript(&scriptBuilder, gen.SourcePath, gen.Configuration.PreRunCommand)
