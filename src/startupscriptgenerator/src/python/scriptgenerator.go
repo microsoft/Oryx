@@ -67,7 +67,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("echo 'cd $APP_PATH' >> ~/.bashrc\n")
 
 	if gen.Configuration.EnableDynamicInstall && !common.PathExists(pythonInstallationRoot) {
-		scriptBuilder.WriteString(fmt.Sprintf("oryx prep --src %s\n", appPath))
+		scriptBuilder.WriteString(fmt.Sprintf("oryx prep --src %s\n", gen.getAppPath()))
 	}
 
 	common.SetupPreRunScript(&scriptBuilder, gen.getAppPath(), gen.Configuration.PreRunCommand)
