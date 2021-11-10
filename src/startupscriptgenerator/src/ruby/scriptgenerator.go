@@ -38,7 +38,7 @@ func (gen *RubyStartupScriptGenerator) GenerateEntrypointScript() string {
 
 	enableDynamicInstall := common.GetBooleanEnvironmentVariable(consts.EnableDynamicInstallKey)
 	if enableDynamicInstall && !common.PathExists(rubyInstallationRoot) {
-		scriptBuilder.WriteString(fmt.Sprintf("oryx prep --src %s\n", gen.SourcePath))
+		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.SourcePath))
 	}
 
 	common.SetupPreRunScript(&scriptBuilder, gen.SourcePath, gen.Configuration.PreRunCommand)

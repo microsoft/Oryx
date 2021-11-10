@@ -89,7 +89,7 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	dotnetBinary := "/usr/share/dotnet/dotnet"
 
 	if gen.Configuration.EnableDynamicInstall && !common.PathExists(dotnetBinary) {
-		scriptBuilder.WriteString(fmt.Sprintf("oryx prep --src %s\n", appPath))
+		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", appPath))
 	}
 
 	logger.LogInformation("Looking for App-Insights configuration and Enable codeless attach if needed")
