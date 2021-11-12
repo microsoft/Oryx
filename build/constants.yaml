@@ -305,7 +305,7 @@
       file-name-prefix: __
 - name: java-versions
   constants:
-    java-version: 11.0.8
+    java-version: 17.0.1
     maven-version: 3.6.3
   outputs:
     - type: shell
