@@ -24,7 +24,7 @@ function blobExistsInProd() {
 	if [ $exitCode -eq 0 ]; then
 		return 0
 	else
-		return 1
+        return 1
 	fi
 }
 
@@ -78,6 +78,8 @@ function copyPlatformBlobsToProd() {
         IFS=',' read -ra LINE_INFO <<< "$line"
         version=$(echo -e "${LINE_INFO[0]}" | sed -e 's/^[[:space:]]*//')
         copyBlob "$platformName" "$platformName-$version.tar.gz"
+        copyBlob "$platformName" "$platformName-focal-scm-$version.tar.gz"
+        copyBlob "$platformName" "$platformName-buster-$version.tar.gz"
 	done 3< "$versionsFile"
 
     copyDefaultVersionFile $defaultVersionFile "$platformName"
