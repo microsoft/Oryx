@@ -26,7 +26,8 @@ downloadJavaSdk()
 	else
 			tarFileName=java-$debianFlavor-$JDK_VERSION.tar.gz
 	fi
-
+    
+    # TODO: refactor to reduce the number of if statements. Workitem #1439235
     # Version 8 or 1.8.0 has a different url format than rest of the versions, so special casing it.
     if [ "$JDK_VERSION" == "1.8.0" ]; then
         local versionUpdate="8u265"
