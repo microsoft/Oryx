@@ -47,10 +47,10 @@ downloadJavaSdk()
     IFS='.' read -ra VERSION_PARTS <<< "$JDK_VERSION"
     majorVersion="${VERSION_PARTS[0]}"
 
-    # Version 17 has a different url format than rest of the versions, so special casing it.
-    if [ "$majorVersion" == "17" ]; then
+    # Version 17.0.1 has a different url format than rest of the versions, so special casing it.
+    if [ "$JDK_VERSION" == "17.0.1" ]; then
         local buildNumber="12"
-        local url="https://download.java.net/java/GA/jdk${JDK_VERSION}/2a2082e5a09d4267845be086888add4f/${buildNumber}/GPL/openjdk-${JDK_VERSION}_linux-x64_bin.tar.gz"
+        local url="https://download.java.net/java/GA/jdk17.0.1/2a2082e5a09d4267845be086888add4f/12/GPL/openjdk-17.0.1_linux-x64_bin.tar.gz"
 
         curl -L "$url" -o $tarFileName
         rm -rf extracted
