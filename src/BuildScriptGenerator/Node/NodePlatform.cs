@@ -188,7 +188,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName) || packageJson?.engines?.yarn != null)
-
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
                 configureYarnCache = false;
