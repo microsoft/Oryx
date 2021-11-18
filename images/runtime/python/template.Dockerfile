@@ -39,6 +39,9 @@ RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN pip install --upgrade pip \
     && pip install gunicorn \
     && pip install debugpy \
+    && pip install viztracer \
+    && pip install vizplugins \
+    && pip install orjson \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get upgrade --assume-yes \
