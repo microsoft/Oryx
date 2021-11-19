@@ -72,8 +72,6 @@ make -j $(nproc)
 
 make install
 
-PYTHON_GET_PIP_SHA256="c518250e91a70d7b20cceb15272209a4ded2a0c263ae5776f129e0d9b5674309"
-
 # Install pip
 wget "$PYTHON_GET_PIP_URL" -O get-pip.py
 
