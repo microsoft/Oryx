@@ -1,6 +1,7 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
 FROM golang:1.14-${DEBIAN_FLAVOR} as startupCmdGen
+ARG DEBIAN_FLAVOR
 # Install dep
 RUN go get -u github.com/golang/dep/cmd/dep
 # GOPATH is set to "/go" in the base image
@@ -17,12 +18,13 @@ RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 FROM %BASE_TAG% as main
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
+ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
 
 RUN apt-get update \
-	&& apt-get upgrade -y \
-	&& apt-get install -y --no-install-recommends \
-		xz-utils \
-	&& rm -rf /var/lib/apt/lists/*
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        xz-utils \
+    && rm -rf /var/lib/apt/lists/*
 
 ADD images ${IMAGES_DIR}
 ADD build ${BUILD_DIR}
@@ -31,7 +33,23 @@ RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
 
-RUN ${IMAGES_DIR}/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false
+COPY build/__pythonVersions.sh ${BUILD_DIR}
+COPY platforms/__common.sh /tmp/
+COPY platforms/python/prereqs/build.sh /tmp/
+COPY platforms/python/versionsToBuild.txt /tmp/
+COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
+
+RUN chmod +x /tmp/receiveGpgKeys.sh
+RUN chmod +x /tmp/build.sh && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential \ 
+        tk-dev \
+        uuid-dev \
+        libgeos-dev
+
+RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR
+
 RUN set -ex \
  && cd /opt/python/ \
  && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
@@ -39,22 +57,17 @@ RUN set -ex \
  && echo /opt/python/%PYTHON_MAJOR_VERSION%/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
  && if [ "%PYTHON_MAJOR_VERSION%" = "3" ]; then cd /opt/python/%PYTHON_MAJOR_VERSION%/bin \
- && ln -s idle3 idle \
- && ln -s pydoc3 pydoc \
- && ln -s python3-config python-config; fi \
- && rm -rf /var/lib/apt/lists/* \
- && rm -rf /tmp/oryx
+ && ln -nsf idle3 idle \
+ && ln -nsf pydoc3 pydoc \
+ && ln -nsf python3-config python-config; fi \
+ && rm -rf /var/lib/apt/lists/*
 
 ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
-RUN pip install --upgrade pip \
-    && pip install glibc \
-    && pip install gunicorn \
-    && pip install debugpy \
+RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get upgrade --assume-yes \

@@ -6,11 +6,15 @@
 
 set -ex
 
-wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz -O /python.tar.xz
-wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc -O /python.tar.xz.asc
+pythonVersion=$PYTHON_VERSION 
+
+wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /python.tar.xz
+wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /python.tar.xz.asc
 
 debianFlavor=$DEBIAN_FLAVOR
 debianHackFlavor=$DEBIAN_HACK_FLAVOR
+gpgKey=$GPG_KEY
+
 pythonSdkFileName=""
 PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2da64da38f516078c7/public/get-pip.py"
 
@@ -40,7 +44,7 @@ else
 fi
 
 # Try getting the keys 5 times at most
-/tmp/receiveGpgKeys.sh $GPG_KEY
+/tmp/receiveGpgKeys.sh $gpgKey
 
 gpg --batch --verify /python.tar.xz.asc /python.tar.xz
 tar -xJf /python.tar.xz --strip-components=1 -C .
