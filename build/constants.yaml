@@ -27,9 +27,9 @@
     dot-net-core-21-sdk-version: 2.1.818
     dot-net-core-22-sdk-version: 2.2.207
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.412
+    dot-net-core-31-sdk-version: 3.1.415
     dot-net-core-50-sdk-version: 5.0.302
-    dot-net-50-sdk-version: 5.0.400
+    dot-net-50-sdk-version: 5.0.403
     dot-net-60-sdk-version: 6.0.100
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
   outputs:
@@ -41,7 +41,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20211117.1
+    dot-net-core-runtime-base-tag: 20211119.3
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
 
