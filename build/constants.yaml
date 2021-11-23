@@ -12,6 +12,7 @@
     user-dotnet-startup-hooks: /DotNetCoreAgent/2.8.42/StartupHook/Microsoft.ApplicationInsights.StartupHook.dll
     user-netcore-hostingstartup-assemblies: Microsoft.ApplicationInsights.StartupBootstrapper
     python-enable-gunicorn-multi-workers-env-var-name: PYTHON_ENABLE_GUNICORN_MULTIWORKERS
+    python-gunicorn-config-path-env-var-name: PYTHON_USE_GUNICORN_CONFIG_FROM_PATH
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator.Common
