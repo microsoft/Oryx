@@ -16,5 +16,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string UserDotnetStartupHooks = "/DotNetCoreAgent/2.8.42/StartupHook/Microsoft.ApplicationInsights.StartupHook.dll";
         public const string UserNetcoreHostingstartupAssemblies = "Microsoft.ApplicationInsights.StartupBootstrapper";
         public const string PythonEnableGunicornMultiWorkersEnvVarName = "PYTHON_ENABLE_GUNICORN_MULTIWORKERS";
+        public const string PythonGunicornConfigPathEnvVarName = "PYTHON_USE_GUNICORN_CONFIG_FROM_PATH";
     }
 }
