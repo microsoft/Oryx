@@ -4,7 +4,6 @@ parameters:
   type: string
   default: Azure Pipelines
   values:
-  - ubuntu-latest
   - Azure Pipelines
 - name: agentName
   displayName: Agent Name
