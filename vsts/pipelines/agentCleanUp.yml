@@ -1,65 +1,26 @@
+parameters:
+- name: poolName
+  displayName: Pool Name
+  type: string
+  default: Azure Pipelines
+  values:
+  - ubuntu-latest
+  - Azure Pipelines
+- name: agentName
+  displayName: Agent Name
+  type: string
+
 variables:
   skipComponentGovernanceDetection: true
 
 stages:
 - stage: CleanAgents
-  displayName: Clean OryxLinux
+  displayName: Clean Oryx Agents
   jobs:
   - template: templates/_agentCleanUpJobTemplate.yml
     parameters:
-      agentName: DDMBLDL004
+      agentName: ${{ parameters.agentName }}
+      poolName: ${{ parameters.poolName }}
       
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL005
-    
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL006
-
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL012
-  
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL013
-      
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL014
-    
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL015
-
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL016
-  
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL017
-      
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL018
-    
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL019
-
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL020
-  
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL021
-      
-  - template: templates/_agentCleanUpJobTemplate.yml
-    parameters:
-      agentName: DDMBLDL022
-
 # trigger is set using vsts UI, cleanup build will run every sundays 10 PM PST/PDT
 trigger: none
