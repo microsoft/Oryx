@@ -78,9 +78,9 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
+        [InlineData("7.3", Skip = "Skipping test temporarily: 1441343")]
+        [InlineData("7.2", Skip = "Skipping test temporarily: 1441343")]
+        [InlineData("7.0", Skip = "Skipping test temporarily: 1441343")]
         public async Task PhpWithWordPress51(string phpVersion)
         {
             // Arrange
