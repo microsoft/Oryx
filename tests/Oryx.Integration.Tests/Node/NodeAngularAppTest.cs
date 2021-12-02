@@ -25,8 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         // Official Node.js version that is supported by Angular CLI 6.0+ is 8.9 or greater
         [Theory]
-        [InlineData("8")]
-        [InlineData("9.4")]
+        [InlineData("14")]
         public async Task CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -74,7 +73,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InRoot_WithoutCompression()
         {
             // Arrange
-            var nodeVersion = "8";
+            var nodeVersion = "14";
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -143,7 +142,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InAppDir_WithoutCompression()
         {
             // Arrange
-            var nodeVersion = "9.4";
+            var nodeVersion = "14";
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -212,7 +211,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InRoot_WithoutCompression()
         {
             // Arrange
-            var nodeVersion = "8";
+            var nodeVersion = "14";
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -282,7 +281,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InAppDir_WithoutCompression()
         {
             // Arrange
-            var nodeVersion = "9.4";
+            var nodeVersion = "14";
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -352,7 +351,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_Dir_Exists_InAppDir_UsingCompression()
         {
             // Arrange
-            var nodeVersion = "8";
+            var nodeVersion = "14";
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -433,7 +432,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_SymLink_Exists_InRootDir_UsingCompression()
         {
             // Arrange
-            var nodeVersion = "9.4";
+            var nodeVersion = "14";
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -512,8 +511,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12")]
-        [InlineData("10")]
+        [InlineData("14")]
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -561,8 +559,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         // Official Node.js version that is supported by Angular CLI 8.0+ is 10.9 or greater
         [Theory]
-        [InlineData("10")]
-        [InlineData("12")]
+        [InlineData("14")]
         public async Task CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -610,7 +607,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_Angular8App_NodeModules_Dir_Exists_InRoot_WithoutCompression()
         {
             // Arrange
-            var nodeVersion = "10";
+            var nodeVersion = "14";
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -688,7 +685,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_Angular8App_NodeModules_SymLink_Exists_InRoot_WithoutCompression()
         {
             // Arrange
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -759,7 +756,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InRoot_UsingCompression()
         {
             // Arrange
-            var nodeVersion = "10";
+            var nodeVersion = "14";
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -839,7 +836,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompression()
         {
             // Arrange
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -918,7 +915,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InRoot_UsingCompression()
         {
             // Arrange
-            var nodeVersion = "10";
+            var nodeVersion = "14";
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -999,7 +996,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression()
         {
             // Arrange
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             string compressFormat = "tar-gz";
             int count = 0;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -1078,8 +1075,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("10")]
-        [InlineData("12")]
+        [InlineData("14")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
             // Arrange
