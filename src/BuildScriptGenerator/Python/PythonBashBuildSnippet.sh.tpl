@@ -1,7 +1,7 @@
 set -e
 
 declare -r TS_FMT='[%T%z] '
-declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install'
+declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install. More information: https://aka.ms/requirements-not-found'
 echo "Python Version: $python"
 PIP_CACHE_DIR=/usr/local/share/pip-cache
 
@@ -63,7 +63,7 @@ fi
         pipInstallExitCode=${PIPESTATUS[0]}
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "Failed pip installation with exit code: ${pipInstallExitCode}"
+            LogError "Failed pip installation with exit code: ${pipInstallExitCode}. More information: https://aka.ms/troubleshoot-python"
             exit $pipInstallExitCode
         fi
         set -e
@@ -76,7 +76,7 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "Failed pip installation with exit code: ${$pythonBuildExitCode}"
+            LogError "Failed pip installation with exit code: ${$pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
             exit $pythonBuildExitCode
         fi
     elif [ -e "pyproject.toml" ]
@@ -92,6 +92,7 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         if [[ $pythonBuildExitCode != 0 ]]
         then
+            LogWarning "Failed to install poetry with exist status ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
             exit $pythonBuildExitCode
         fi
     else
@@ -116,7 +117,7 @@ fi
 
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "Failed pip installation with exit code: ${$pipInstallExitCode}"
+            LogError "Failed pip installation with exit code: ${$pipInstallExitCode}. More information: https://aka.ms/troubleshoot-python"
             exit $pipInstallExitCode
         fi
         set -e
@@ -138,7 +139,7 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "Failed to setup.py with exit status ${pythonBuildExitCode}"
+            LogError "Failed to setup.py with exit status ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
             exit $pythonBuildExitCode
         fi
         set -e
@@ -158,7 +159,7 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogWarning "Failed to install poetry with exist status ${pythonBuildExitCode}"
+            LogWarning "Failed to install poetry with exist status ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
             exit $pythonBuildExitCode
         fi
     else
@@ -223,12 +224,12 @@ fi
             $python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true ; 
             if [[ $EXIT_CODE != 0 ]]
             then
-                LogWarning "Failed running 'collectstatic' exited with exit code $EXIT_CODE."
+                LogWarning "Failed running 'collectstatic' exited with exit code $EXIT_CODE. More information: https://aka.ms/customize-build-automation"
             fi
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             echo "Done in $ELAPSED_TIME sec(s)."
         else
-            LogWarning "Warning: missing Django module in $SOURCE_DIR/requirements.txt"
+            LogWarning "Missing Django module in $SOURCE_DIR/requirements.txt. Add Django to your requirements.txt file."
         fi
     fi
 {{ end }}

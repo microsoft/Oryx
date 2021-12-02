@@ -71,14 +71,14 @@ namespace Microsoft.Oryx.Detector.Python
                     {
                         if (!sourceRepo.FileExists(djangoFileName))
                         {
-                            _logger.LogWarning($"Missing {djangoFileName} at the root of the repo.");
+                            _logger.LogWarning($"Missing {djangoFileName} at the root of the repo. More information: https://aka.ms/missing-django-files");
                         }
                     }
                 }
             }
             else
             {
-                string errorMsg = $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo.";
+                string errorMsg = $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo. More information: https://aka.ms/requirements-not-found";
                 _logger.LogError(errorMsg);
             }
             if (sourceRepo.FileExists(PythonConstants.PyprojectTomlFileName))
@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.Detector.Python
             }
             else
             {
-                _logger.LogError($"Missing {PythonConstants.SetupDotPyFileName} at the root of the repo.");
+                _logger.LogError($"Missing {PythonConstants.SetupDotPyFileName} at the root of the repo. More information: https://aka.ms/requirements-not-found");
             }
             if (sourceRepo.FileExists(PythonConstants.SetupDotPyFileName))
             {
@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.Detector.Python
             }
             else
             {
-                _logger.LogError($"Missing {PythonConstants.SetupDotPyFileName} at the root of the repo.");
+                _logger.LogError($"Missing {PythonConstants.SetupDotPyFileName} at the root of the repo. More information: https://aka.ms/requirements-not-found");
             }
             var hasCondaEnvironmentYmlFile = false;
             if (sourceRepo.FileExists(PythonConstants.CondaEnvironmentYmlFileName) &&
