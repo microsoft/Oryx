@@ -124,6 +124,7 @@ jobs:
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
+
 # Using a second job  for PHP's integration tests
 # 1 job's agent does not contain sufficient disk space
 - job: Job_PhpIntegrationTests2
@@ -174,6 +175,7 @@ jobs:
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
+
 - job: Job_DbIntegrationTests
   displayName: Run Database Integration Tests
   dependsOn:
