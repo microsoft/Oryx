@@ -95,4 +95,8 @@ if [ -d "TestResults" ]; then
     resultsDir="$ARTIFACTS_DIR/$testProjectName.TestResults"
     mkdir -p "$resultsDir"
     cp -rf TestResults/. "$resultsDir/"
+    echo "test results du: "
+    du -hs "$resultsDir/" | sort -rh | head -5
 fi
+echo "current dir du: "
+du -hs * | sort -rh | head -5

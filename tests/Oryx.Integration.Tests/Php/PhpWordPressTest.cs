@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php-2")]
+    [Trait("category", "php-3")]
     public class PhpWordPressTest : PhpEndToEndTestsBase
     {
         public PhpWordPressTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
