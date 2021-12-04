@@ -333,7 +333,7 @@ namespace Microsoft.Oryx.Tests.Common
                 }
             }
 
-            throw new InvalidOperationException("Could not retreive the host port of the container.");
+            throw new InvalidOperationException($"Could not retreive the host port of the container {containerName}:{portInContainer}");
         }
 
         private static async Task RunAssertsAsync(Func<Task> action, DockerResultBase res, ITestOutputHelper output)
