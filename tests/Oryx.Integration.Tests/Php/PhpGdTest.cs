@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php")]
+    [Trait("category", "php-2")]
     public class PhpGdTest : PhpEndToEndTestsBase
     {
         public PhpGdTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
