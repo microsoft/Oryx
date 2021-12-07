@@ -67,8 +67,10 @@ namespace Microsoft.Oryx.Detector.Node
 
         public static readonly Dictionary<string, string> DependencyFrameworkKeyWordToName = new Dictionary<string, string>()
         {
+            { "contentful", "contentful" },
             { "gatsby", "Gatsby" },
             { "gridsome", "Gridsome" },
+            { "@angular/core", "angular" },
             { "@ionic/angular", "Ionic Angular" },
             { "@ionic/react", "Ionic React" },
             { "jquery", "jQuery" },
