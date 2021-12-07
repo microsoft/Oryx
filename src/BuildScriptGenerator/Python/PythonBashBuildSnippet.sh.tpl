@@ -139,7 +139,7 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "Failed to setup.py with exit status ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
+            LogError "Failed to setup.py with exit code ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
             exit $pythonBuildExitCode
         fi
         set -e
@@ -159,7 +159,7 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogWarning "Failed to install poetry with exist status ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
+            LogWarning "Failed to install poetry with exit code ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
             exit $pythonBuildExitCode
         fi
     else
