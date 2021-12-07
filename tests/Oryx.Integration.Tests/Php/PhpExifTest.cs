@@ -29,7 +29,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("7.3")]
         [InlineData("7.2")]
         [InlineData("7.0")]
-        [InlineData("5.6")]
         public async Task ExifExample(string phpVersion)
         {
             // Arrange
