@@ -79,6 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         {
             var manifestFileProperties = new Dictionary<string, string>();
             manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = detectorResult.PlatformVersion;
+            manifestFileProperties["Frameworks"] = "hugo";
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.HugoSnippet,
