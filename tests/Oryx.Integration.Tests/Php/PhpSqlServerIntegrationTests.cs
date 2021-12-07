@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php")]
+    [Trait("category", "php-5")]
     [Trait("db", "sqlserver")]
     public class PhpSqlServerIntegrationTests : PlatformEndToEndTestsBase
     {
