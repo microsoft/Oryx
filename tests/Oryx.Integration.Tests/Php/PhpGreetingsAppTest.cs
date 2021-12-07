@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php")]
+    [Trait("category", "php-8")]
     public class PhpGreetingsAppTest : PhpEndToEndTestsBase
     {
         private const string ExifImageDebianFlavorPng = "3";
