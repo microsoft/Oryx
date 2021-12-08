@@ -190,7 +190,7 @@
 - name: node-versions
   constants:
     node-runtime-base-tag: 20210902.2
-    yarn-version: 1.22.10
+    yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
     node6-version: 6.17.1
