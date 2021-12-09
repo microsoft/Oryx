@@ -439,7 +439,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddDirectoryExistsCheck($"/home/codespace/.dotnet/")
-                .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNetCore21SdkVersion}")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNet50SdkVersion}")
                 .AddLinkDoesNotExistCheck($"{preInstalledSdkLink}/{sdkVersion}")
