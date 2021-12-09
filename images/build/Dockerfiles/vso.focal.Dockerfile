@@ -109,7 +109,7 @@ RUN set -ex \
     && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
-       && DOTNET_SDK_VER=$DOT_NET_60_SDK_VERSION \
+    && DOTNET_SDK_VER=$DOT_NET_60_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
     && DOTNET_SDK_VER=$DOT_NET_50_SDK_VERSION \
