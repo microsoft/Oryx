@@ -212,7 +212,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddCommand($"chmod +x {userInstalledDotNet}")
                 // The following should add a path in such a way that user installed dotnet does not get affected,
                 // However the specific node version setup by benv should be picked up.
-                .AddCommand($"source benv dotnet={DotNetCoreSdkVersions.DotNetCore30SdkVersion} node=10")
+                .AddCommand($"source benv dotnet={DotNetCoreSdkVersions.DotNetCore31SdkVersion} node=10")
                 .AddCommand("which dotnet")
                 .AddCommand("which node")
                 .ToString();
