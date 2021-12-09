@@ -475,7 +475,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersionPrefix}",
                         result.StdOut);
-                    Assert.Contains($"{DotNetCoreSdkVersions.DotNetCore21SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
                     Assert.Contains($"{DotNetCoreSdkVersions.DotNetCore31SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
                     Assert.Contains($"{DotNetCoreSdkVersions.DotNet50SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
                     Assert.Contains($"{sdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
