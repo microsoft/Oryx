@@ -121,7 +121,7 @@ RUN set -ex \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
     && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s $DOT_NET_60_SDK_VERSION 6-lts \
-    && ln -s 3-lts lts \
+    && ln -s 6-lts lts \
     # Install Hugo
     && mkdir -p /home/codespace/.hugo \
     && $imagesDir/build/installHugo.sh \
