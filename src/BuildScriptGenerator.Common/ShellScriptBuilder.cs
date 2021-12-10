@@ -129,7 +129,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         {
             return Append(
                 $"if [ ! -L \"{file}\" ]; then " +
-                $"echo Link '{file}' is still present 1>&2 && " +
+                $"echo Link '{file}' is not present 1>&2 && " +
                 "exit 1; fi");
         }
 
