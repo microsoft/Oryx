@@ -424,7 +424,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(NetCoreApp30MvcApp, "3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-        [InlineData(NetCore6PreviewWebApp, "6.0", DotNetCoreSdkVersions.DotNet60SdkVersion)]
         public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion,
