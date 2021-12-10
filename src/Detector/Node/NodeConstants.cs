@@ -82,6 +82,7 @@ namespace Microsoft.Oryx.Detector.Node
             { "nuxt", "Nuxt.js" },
             { "preact", "Preact" },
             { "@scullyio/init", "Scully" },
+            { "@remix-run", "Remix" },
             { "three", "Three.js" },
             { "vue", "Vue.js" }
         };
