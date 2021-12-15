@@ -276,6 +276,11 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 	// Default to App Service's timeout value (in seconds)
 	args := "--timeout 600 --access-logfile '-' --error-logfile '-'"
 
+	pythonUseGunicornConfigFromPath := os.Getenv(consts.PythonGunicornConfigPathEnvVarName)
+	if pythonUseGunicornConfigFromPath != ""  {
+		args = appendArgs(args, "-c "+pythonUseGunicornConfigFromPath)		
+	}
+	
 	pythonEnableGunicornMultiWorkers := common.GetBooleanEnvironmentVariable(consts.PythonEnableGunicornMultiWorkersEnvVarName)
 	if pythonEnableGunicornMultiWorkers {
 		// 2N+1 number of workers is recommended by Gunicorn docs.

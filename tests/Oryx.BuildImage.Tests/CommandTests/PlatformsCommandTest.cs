@@ -85,6 +85,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(phpPlatform.Versions);
                     Assert.True(phpPlatform.Versions.Any());
                     Assert.True(phpPlatform.Versions.Contains("5.6.40"));
+                    Assert.True(phpPlatform.Versions.Contains("8.1.0"));
 
                     var hugoPlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(HugoConstants.PlatformName))

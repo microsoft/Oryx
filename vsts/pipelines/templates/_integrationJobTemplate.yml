@@ -73,9 +73,10 @@ jobs:
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
-
-- job: Job_PhpIntegrationTests
-  displayName: Run Php Integration Tests
+# Using a multiple jobs  for Node's integration tests
+# 1 job's agent does not contain sufficient disk space (10GB)
+- job: Job_NodeIntegrationTests2
+  displayName: Run NodeJs Integration Tests 2
   dependsOn:
     - Job_BuildImage
     - Job_RuntimeImages
@@ -90,7 +91,211 @@ jobs:
       echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
       echo "##vso[task.setvariable variable=TestBuildImages;]false"
       echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=node-2"
+      echo "##vso[task.setvariable variable=TestIntegration;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+    displayName: 'Set variables'
+  - template: _setReleaseTag.yml
+  - template: _buildTemplate.yml
+
+## Temporarily skip integration tests:
+## Will re-enable in: https://devdiv.visualstudio.com/DevDiv/_boards/board/t/Oryx/Stories/?workitem=1449555
+#- JOB: JOB_PHPINTEGRATIONTESTS
+#  DISPLAYNAME: RUN PHP INTEGRATION TESTS
+#  DEPENDSON:
+#    - JOB_BUILDIMAGE
+#    - JOB_RUNTIMEIMAGES
+#  POOL:
+#    VMIMAGE: 'UBUNTU-LATEST'
+#  VARIABLES:
+#    SKIPCOMPONENTGOVERNANCEDETECTION: TRUE
+#  TIMEOUTINMINUTES: 300
+#  STEPS:
+#  - SCRIPT: |
+#      ECHO "##VSO[TASK.SETVARIABLE VARIABLE=BUILDBUILDIMAGES;]FALSE"
+#      ECHO "##VSO[TASK.SETVARIABLE VARIABLE=BUILDRUNTIMEIMAGES;]FALSE"
+#      ECHO "##VSO[TASK.SETVARIABLE VARIABLE=TESTBUILDIMAGES;]FALSE"
+#      ECHO "##VSO[TASK.SETVARIABLE VARIABLE=TESTRUNTIMEIMAGES;]FALSE"
+#      ECHO "##VSO[TASK.SETVARIABLE VARIABLE=TESTINTEGRATIONCASEFILTER;]CATEGORY=PHP"
+#      ECHO "##VSO[TASK.SETVARIABLE VARIABLE=TESTINTEGRATION;]TRUE"
+#      ECHO "##VSO[TASK.SETVARIABLE VARIABLE=PUSHBUILDIMAGES;]FALSE"
+#      ECHO "##VSO[TASK.SETVARIABLE VARIABLE=PUSHRUNTIMEIMAGES;]FALSE"
+#      ECHO "##VSO[TASK.SETVARIABLE VARIABLE=EMBEDBUILDCONTEXTINIMAGES;]FALSE"
+#    DISPLAYNAME: 'SET VARIABLES'
+#  - TEMPLATE: _SETRELEASETAG.YML
+#  - TEMPLATE: _BUILDTEMPLATE.YML
+
+# Using a multiple jobs  for PHP's integration tests
+# 1 job's agent does not contain sufficient disk space (10GB)
+- job: Job_PhpIntegrationTests2
+  displayName: Run Php Integration Tests 2
+  dependsOn:
+    - Job_BuildImage
+    - Job_RuntimeImages
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    skipComponentGovernanceDetection: true
+  timeoutInMinutes: 300
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestBuildImages;]false"
+      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php-2"
+      echo "##vso[task.setvariable variable=TestIntegration;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+    displayName: 'Set variables'
+  - template: _setReleaseTag.yml
+  - template: _buildTemplate.yml
+
+- job: Job_PhpIntegrationTests3
+  displayName: Run Php Integration Tests 3
+  dependsOn:
+    - Job_BuildImage
+    - Job_RuntimeImages
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    skipComponentGovernanceDetection: true
+  timeoutInMinutes: 300
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestBuildImages;]false"
+      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php-3"
+      echo "##vso[task.setvariable variable=TestIntegration;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+    displayName: 'Set variables'
+  - template: _setReleaseTag.yml
+  - template: _buildTemplate.yml
+
+- job: Job_PhpIntegrationTests4
+  displayName: Run Php Integration Tests 4
+  dependsOn:
+    - Job_BuildImage
+    - Job_RuntimeImages
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    skipComponentGovernanceDetection: true
+  timeoutInMinutes: 300
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestBuildImages;]false"
+      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php-4"
+      echo "##vso[task.setvariable variable=TestIntegration;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+    displayName: 'Set variables'
+  - template: _setReleaseTag.yml
+  - template: _buildTemplate.yml
+
+- job: Job_PhpIntegrationTests5
+  displayName: Run Php Integration Tests 5
+  dependsOn:
+    - Job_BuildImage
+    - Job_RuntimeImages
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    skipComponentGovernanceDetection: true
+  timeoutInMinutes: 300
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestBuildImages;]false"
+      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php-5"
+      echo "##vso[task.setvariable variable=TestIntegration;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+    displayName: 'Set variables'
+  - template: _setReleaseTag.yml
+  - template: _buildTemplate.yml
+
+- job: Job_PhpIntegrationTests6
+  displayName: Run Php Integration Tests 6
+  dependsOn:
+    - Job_BuildImage
+    - Job_RuntimeImages
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    skipComponentGovernanceDetection: true
+  timeoutInMinutes: 300
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestBuildImages;]false"
+      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php-6"
+      echo "##vso[task.setvariable variable=TestIntegration;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+    displayName: 'Set variables'
+  - template: _setReleaseTag.yml
+  - template: _buildTemplate.yml
+
+- job: Job_PhpIntegrationTests7
+  displayName: Run Php Integration Tests 7
+  dependsOn:
+    - Job_BuildImage
+    - Job_RuntimeImages
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    skipComponentGovernanceDetection: true
+  timeoutInMinutes: 300
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestBuildImages;]false"
+      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php-7"
+      echo "##vso[task.setvariable variable=TestIntegration;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+    displayName: 'Set variables'
+  - template: _setReleaseTag.yml
+  - template: _buildTemplate.yml
+
+- job: Job_PhpIntegrationTests8
+  displayName: Run Php Integration Tests 8
+  dependsOn:
+    - Job_BuildImage
+    - Job_RuntimeImages
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    skipComponentGovernanceDetection: true
+  timeoutInMinutes: 300
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestBuildImages;]false"
+      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php-8"
       echo "##vso[task.setvariable variable=TestIntegration;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"

@@ -67,7 +67,14 @@ ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh \
+
+RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
+RUN pip install --upgrade pip \
+    && pip install gunicorn \
+    && pip install debugpy \
+    && if [ "%PYTHON_MAJOR_VERSION%" = "3" ] && [ "%PYTHON_VERSION%" != "3.6" ]; then pip install viztracer \
+    && pip install vizplugins \
+    && pip install orjson; fi \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get upgrade --assume-yes \
