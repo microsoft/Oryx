@@ -62,7 +62,6 @@ make install
 wget https://bootstrap.pypa.io/get-pip.py -O /get-pip.py
 LD_LIBRARY_PATH=/usr/src/python \
 /usr/src/python/python /get-pip.py \
-    --trusted-host=pypi.python.org --trusted-host=pypi.org --trusted-host=files.pythonhosted.org \
     --prefix $INSTALLATION_PREFIX \
     --disable-pip-version-check \
     --no-cache-dir \
