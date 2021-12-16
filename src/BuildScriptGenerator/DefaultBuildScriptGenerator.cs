@@ -347,13 +347,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     var procFile = deserializer.Deserialize<ProcFile>(context.SourceRepo.ReadFile("app.yaml"));
                     if (!string.IsNullOrEmpty(procFile.prebuild))
                     {
-                        _cliOptions.PreBuildCommand = procFile.prebuild;
+                        _cliOptions.PreBuildCommand = procFile.prebuild.Replace("\n",";");
                         _cliOptions.PreBuildScriptPath = null;
                     }
 
                     if (!string.IsNullOrEmpty(procFile.postbuild))
                     {
-                        _cliOptions.PostBuildCommand = procFile.postbuild;
+                        _cliOptions.PostBuildCommand = procFile.postbuild.Replace("\n", ";");
                         _cliOptions.PostBuildScriptPath = null;
                     }
                 }
