@@ -103,8 +103,9 @@ jobs:
 - job: Job_PhpIntegrationTests
   displayName: Run Php Integration Tests
   dependsOn:
-    - Job_BuildImage
-    - Job_RuntimeImages
+    # temporarily skip: this will allow me to test quicker
+    #- Job_BuildImage
+    #- Job_RuntimeImages
   pool:
     vmImage: 'ubuntu-latest'
   variables:
