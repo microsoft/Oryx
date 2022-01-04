@@ -23,9 +23,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
         public async Task ImagickExample(string phpVersion)
         {
             // Arrange
@@ -60,8 +57,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
         public async Task PhpFpmImagickExample(string phpVersion)
         {
             // Arrange

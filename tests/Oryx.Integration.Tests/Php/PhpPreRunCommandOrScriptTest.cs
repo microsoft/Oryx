@@ -176,7 +176,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
         {
             // Arrange
-            var phpVersion = "7.3";
+            var phpVersion = "7.4";
             var appName = "twig-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
