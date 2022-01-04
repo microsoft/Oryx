@@ -103,9 +103,8 @@ jobs:
 - job: Job_PhpIntegrationTests
   displayName: Run Php Integration Tests
   dependsOn:
-    # temporarily skip: this will allow me to test quicker. I will un-comment after testing is done.
-    #- Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_BuildImage
+    - Job_RuntimeImages
   pool:
     vmImage: 'ubuntu-latest'
   variables:
@@ -131,9 +130,8 @@ jobs:
 - job: Job_PhpIntegrationTests2
   displayName: Run Php Integration Tests 2
   dependsOn:
-    # temporarily skip: this will allow me to test quicker. I will un-comment after testing is done.
-    #- Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_BuildImage
+    - Job_RuntimeImages
   pool:
     vmImage: 'ubuntu-latest'
   variables:
@@ -157,8 +155,8 @@ jobs:
 - job: Job_PhpIntegrationTests3
   displayName: Run Php Integration Tests 3
   dependsOn:
-    #- Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_BuildImage
+    - Job_RuntimeImages
   pool:
     vmImage: 'ubuntu-latest'
   variables:
@@ -182,8 +180,8 @@ jobs:
 - job: Job_PhpIntegrationTests4
   displayName: Run Php Integration Tests 4
   dependsOn:
-    #- Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_BuildImage
+    - Job_RuntimeImages
   pool:
     vmImage: 'ubuntu-latest'
   variables:
@@ -207,8 +205,8 @@ jobs:
 - job: Job_PhpIntegrationTests5
   displayName: Run Php Integration Tests 5
   dependsOn:
-    #- Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_BuildImage
+    - Job_RuntimeImages
   pool:
     vmImage: 'ubuntu-latest'
   variables:
@@ -232,8 +230,8 @@ jobs:
 - job: Job_PhpIntegrationTests6
   displayName: Run Php Integration Tests 6
   dependsOn:
-    #- Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_BuildImage
+    - Job_RuntimeImages
   pool:
     vmImage: 'ubuntu-latest'
   variables:
@@ -257,8 +255,8 @@ jobs:
 - job: Job_PhpIntegrationTests7
   displayName: Run Php Integration Tests 7
   dependsOn:
-    #- Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_BuildImage
+    - Job_RuntimeImages
   pool:
     vmImage: 'ubuntu-latest'
   variables:
@@ -282,8 +280,8 @@ jobs:
 - job: Job_PhpIntegrationTests8
   displayName: Run Php Integration Tests 8
   dependsOn:
-    #- Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_BuildImage
+    - Job_RuntimeImages
   pool:
     vmImage: 'ubuntu-latest'
   variables:
