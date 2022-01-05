@@ -25,9 +25,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
+        [InlineData("8.0")]
+        [InlineData("7.4")]
         public async Task PhpWithWordPress51(string phpVersion)
         {
             // Arrange
@@ -77,8 +76,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
         public async Task CanBuildAndRun_Wordpress_SampleApp(string phpVersion)
         {
             // Arrange

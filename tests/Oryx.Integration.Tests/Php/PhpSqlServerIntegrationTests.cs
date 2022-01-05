@@ -27,9 +27,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("7.3", "github-actions")]
-        [InlineData("7.3", "github-actions-buster")]
-        [InlineData("7.3", "latest")]
         [InlineData("7.4", "github-actions")]
         [InlineData("7.4", "github-actions-buster")]
         [InlineData("7.4", "latest")]

@@ -27,7 +27,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0-fpm")]
         [InlineData("7.4-fpm")]
-        [InlineData("7.3-fpm")]
         public async Task PhpFpmWithWordPress56(string phpVersion)
         {
             // Arrange
