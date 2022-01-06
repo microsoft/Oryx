@@ -10,13 +10,23 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php-4")]
     [Trait("db", "mysql")]
     public class PhpMySqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.MySqlDbContainerFixture>
     {
         public PhpMySqlIntegrationTests(ITestOutputHelper output, Fixtures.MySqlDbContainerFixture dbFixture)
             : base(output, dbFixture)
         {
+        }
+
+        // Unique category traits are needed to run each
+        // platform-version in it's own pipeline agent. This is
+        // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-7.4")]
+        public void PipelineTestInvocationsPhp74()
+        {
+            string phpVersion74 = "7.4";
+            PhpApp_UsingMysqli(phpVersion74, "latest");
+            PhpApp_UsingMysqli(phpVersion74, "github-actions");
         }
 
         [Theory]

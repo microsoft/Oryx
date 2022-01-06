@@ -16,12 +16,26 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php-6")]
     public class PhpWordPressFpmTest : PhpEndToEndTestsBase
     {
         public PhpWordPressFpmTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
+        }
+
+        // Unique category traits are needed to run each
+        // platform-version in it's own pipeline agent. This is
+        // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-8.0")]
+        public void PipelineTestInvocationsPhp80()
+        {
+            PhpFpmWithWordPress56("8.0-fpm");
+        }
+
+        [Fact, Trait("category", "php-7.4")]
+        public void PipelineTestInvocationsPhp74()
+        {
+            PhpFpmWithWordPress56("7.4-fpm");
         }
 
         [Theory]
