@@ -21,27 +21,6 @@ using YamlDotNet.Serialization.NamingConventions;
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// Procfile calss to be used for YAML deserialization.
-    /// </summary>
-    public class ProcFile
-    {
-        [YamlMember(Alias = "version", ApplyNamingConventions = false)]
-        public string version { get; set; }
-
-        [YamlMember(Alias = "pre-build", ApplyNamingConventions = false)]
-        public string prebuild { get; set; }
-
-        [YamlMember(Alias = "build", ApplyNamingConventions = false)]
-        public string build { get; set; }
-
-        [YamlMember(Alias = "post-build", ApplyNamingConventions = false)]
-        public string postbuild { get; set; }
-
-        [YamlMember(Alias = "run", ApplyNamingConventions = false)]
-        public string run { get; set; }
-    }
-
-    /// <summary>
     /// Finds and resolves scripts generators based on user input and invokes one of them to generate a script.
     /// </summary>
     internal class DefaultBuildScriptGenerator : IBuildScriptGenerator
@@ -341,19 +320,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 try
                 {
-                    var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
-                        .WithNamingConvention(CamelCaseNamingConvention.Instance)
-                        .Build();
-                    var procFile = deserializer.Deserialize<ProcFile>(context.SourceRepo.ReadFile("app.yaml"));
+                    var procFile = ProcFile.Create(context.SourceRepo.ReadFile("app.yaml"));
                     if (!string.IsNullOrEmpty(procFile.prebuild))
                     {
-                        _cliOptions.PreBuildCommand = procFile.prebuild.Replace("\n",";");
+                        _cliOptions.PreBuildCommand = procFile.prebuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PreBuildScriptPath = null;
                     }
 
                     if (!string.IsNullOrEmpty(procFile.postbuild))
                     {
-                        _cliOptions.PostBuildCommand = procFile.postbuild.Replace("\n", ";");
+                        _cliOptions.PostBuildCommand = procFile.postbuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PostBuildScriptPath = null;
                     }
                 }
