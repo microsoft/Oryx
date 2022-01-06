@@ -13,12 +13,26 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php")]
     public class PhpDynamicInstallationTest : PhpEndToEndTestsBase
     {
         public PhpDynamicInstallationTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
+        }
+
+        // Unique category traits are needed to run each
+        // platform-version in it's own pipeline agent. This is
+        // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-9.0")]
+        public void PipelineTestInvocationsPhp80()
+        {   
+            CanBuildAndRunApp("8.0");
+        }
+
+        [Fact, Trait("category", "php-7.4")]
+        public void PipelineTestInvocationsPhp74()
+        {
+            CanBuildAndRunApp("7.4");
         }
 
         [Theory]

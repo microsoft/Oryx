@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php")]
     public class PhpExifTest : PhpEndToEndTestsBase
     {
         private const string ExifImageTypePng = "3";
@@ -21,6 +20,25 @@ namespace Microsoft.Oryx.Integration.Tests
         public PhpExifTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
+        }
+
+        // Unique category traits are needed to run each
+        // platform-version in it's own pipeline agent. This is
+        // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-8.0")]
+        public void PipelineTestInvocationsPhp80()
+        {   
+            string phpVersion80 = "8.0";
+            ExifExample(phpVersion80);
+            PhpFpmExifExample(phpVersion80);
+        }
+
+        [Fact, Trait("category", "php-7.4")]
+        public void PipelineTestInvocationsPhp74()
+        {
+            string phpVersion74 = "7.4";
+            ExifExample(phpVersion74);
+            PhpFpmExifExample(phpVersion74);
         }
 
         [Theory]

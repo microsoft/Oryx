@@ -13,12 +13,30 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php-2")]
     public class PhpGdTest : PhpEndToEndTestsBase
     {
         public PhpGdTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
+        }
+
+        // Unique category traits are needed to run each
+        // platform-version in it's own pipeline agent. This is
+        // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-8.0")]
+        public void PipelineTestInvocationsPhp80()
+        {   
+            string phpVersion80 = "8.0";
+            GdExample(phpVersion80);
+            PhpFpmGdExample(phpVersion80);
+        }
+
+        [Fact, Trait("category", "php-7.4")]
+        public void PipelineTestInvocationsPhp74()
+        {
+            string phpVersion74 = "7.4";
+            GdExample(phpVersion74);
+            PhpFpmGdExample(phpVersion74);
         }
 
         [Theory]

@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php-7")]
+    [Trait("category", "php-7.4")]
     [Trait("db", "postgres")]
     public class PhpPostgreSqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgreSqlDbContainerFixture>
     {

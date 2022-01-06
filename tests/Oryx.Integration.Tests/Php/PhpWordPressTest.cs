@@ -27,15 +27,19 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Fact, Trait("category", "php-8.0")]
-        public async Task RunPhp80()
+        public void PipelineTestInvocationsPhp80()
         {
-            PhpWithWordPress51("8.0");
+            string phpVersion80 = "8.0";
+            PhpWithWordPress51(phpVersion80);
+            CanBuildAndRun_Wordpress_SampleApp(phpVersion80);
         }
 
         [Fact, Trait("category", "php-7.4")]
-        public async Task RunPhp74()
+        public void  PipelineTestInvocationsPhp74()
         {
-            PhpWithWordPress51("7.4");
+            string phpVersion74 = "7.4";
+            PhpWithWordPress51(phpVersion74);
+            CanBuildAndRun_Wordpress_SampleApp(phpVersion74);
         }
 
         [Theory]
