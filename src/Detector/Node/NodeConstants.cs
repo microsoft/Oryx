@@ -56,10 +56,8 @@ namespace Microsoft.Oryx.Detector.Node
             { "ember-cli", "Ember" },
             { "@glimmer/component", "Glimmer" },
             { "hugo-cli", "Hugo" },
-            { "@angular/*", "Angular" },
             { "knockout", "KnockoutJs" },
             { "polymer-cli", "Polymer" },
-            { "Remix", "@remix-run/*" },
             { "@stencil/core", "Stencil" },
             { "svelte", "Svelte" },
             { "typescript", "Typescript" },
@@ -72,7 +70,6 @@ namespace Microsoft.Oryx.Detector.Node
             { "contentful", "contentful" },
             { "gatsby", "Gatsby" },
             { "gridsome", "Gridsome" },
-            { "@angular/*", "angular" },
             { "@ionic/angular", "Ionic Angular" },
             { "@ionic/react", "Ionic React" },
             { "jquery", "jQuery" },
@@ -89,5 +86,12 @@ namespace Microsoft.Oryx.Detector.Node
             { "three", "Three.js" },
             { "vue", "Vue.js" }
         };
+
+        public static readonly Dictionary<string, string> WildCardDependencies = new Dictionary<string, string>()
+        {
+            { "@angular", "Angular" },
+            { "@remix-run", "Remix" }
+        };
+
     }
 }
