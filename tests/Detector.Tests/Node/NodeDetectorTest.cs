@@ -110,6 +110,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
           ""dependencies"": {
             ""jquery"": ""3.5.1"",
             ""react"": ""16.12.0"",
+            ""@remix-run/testdependency"": ""1.2.3"",
           },
           ""engines"" : { ""npm"" : ""5.4.2"" }
         }";
@@ -461,11 +462,11 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             var detector = CreateNodePlatformDetector(options);
             List<string> expectedFrameworkNames = new List<string>()
             {
-                "Aurelia", "Svelte", "jQuery", "React", "Flutter"
+                "Aurelia", "Svelte", "jQuery", "React", "Remix", "Flutter"
             };
             List<string> expectedFrameworkVersions = new List<string>()
             {
-                "1.3.1", "3.0.0", "3.5.1", "16.12.0", ""
+                "1.3.1", "3.0.0", "3.5.1", "16.12.0", "1.2.3", ""
             };
 
             // Act
