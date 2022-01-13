@@ -63,7 +63,7 @@ fi
         pipInstallExitCode=${PIPESTATUS[0]}
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "Failed pip installation with exit code: ${pipInstallExitCode}. More information: https://aka.ms/troubleshoot-python"
+            LogError "Failed pip installation with exit code: ${pipInstallExitCode}. More information: https://aka.ms/troubleshoot-python" 
             exit $pipInstallExitCode
         fi
         set -e
