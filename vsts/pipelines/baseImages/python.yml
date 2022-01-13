@@ -6,15 +6,6 @@ variables:
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build python runtime stretch base images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: python
-    imageDebianFlavor: stretch
-    artifactsFileName: python-runtimeimage-bases-stretch.txt
-    jobName: Build_Stretch_BaseImages
-
-- template: ../templates/_buildimageBasesJobTemplate.yml
-  parameters:
     displayName: Build python runtime buster base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: python
@@ -24,7 +15,6 @@ jobs:
 
 - job: Release_PythonRuntimeBaseImage
   dependsOn: 
-    - Build_Stretch_BaseImages
     - Build_Buster_BaseImages
   displayName: Push images to MCR
   timeoutInMinutes: 250
