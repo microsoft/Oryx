@@ -4,7 +4,7 @@ from tweeter3.settings.base import *
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ')njwhhlatzp1=%s0q33w*4g4f5pyjhil&gzqgh$c_ira5(2nye'
+SECRET_KEY = 'secret'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
