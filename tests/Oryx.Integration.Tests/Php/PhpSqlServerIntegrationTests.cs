@@ -15,7 +15,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php-5")]
     [Trait("db", "sqlserver")]
     public class PhpSqlServerIntegrationTests : PlatformEndToEndTestsBase
     {
@@ -26,17 +25,34 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
+        // Unique category traits are needed to run each
+        // platform-version in it's own pipeline agent. This is
+        // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-8.0")]
+        public void PipelineTestInvocationsPhp80()
+        {   
+            string phpVersion80 = "8.0";
+            PhpApp_UsingPdo(phpVersion80, "github-actions");
+            PhpApp_UsingPdo(phpVersion80, "github-buster");
+            PhpApp_UsingPdo(phpVersion80, "latest");
+        }
+
+        [Fact, Trait("category", "php-7.4")]
+        public void PipelineTestInvocationsPhp74()
+        {
+            string phpVersion74 = "7.4";
+            PhpApp_UsingPdo(phpVersion74, "github-actions");
+            PhpApp_UsingPdo(phpVersion74, "github-buster");
+            PhpApp_UsingPdo(phpVersion74, "latest");
+        }
+
         [Theory]
-        [InlineData("7.3", "github-actions")]
-        [InlineData("7.3", "github-actions-buster")]
-        [InlineData("7.3", "latest")]
         [InlineData("7.4", "github-actions")]
         [InlineData("7.4", "github-actions-buster")]
         [InlineData("7.4", "latest")]
         [InlineData("8.0", "github-actions")]
         [InlineData("8.0", "github-actions-buster")]
         [InlineData("8.0", "latest")]
-        // pdo_sqlsrv only supports PHP >= 7.3
         public async Task PhpApp_UsingPdo(string phpVersion, string imageTag)
         {
             // Arrange

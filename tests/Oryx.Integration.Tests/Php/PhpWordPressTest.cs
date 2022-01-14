@@ -16,7 +16,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php-3")]
     public class PhpWordPressTest : PhpEndToEndTestsBase
     {
         public PhpWordPressTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -24,10 +23,28 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
+        // Unique category traits are needed to run each
+        // platform-version in it's own pipeline agent. This is
+        // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-8.0")]
+        public void PipelineTestInvocationsPhp80()
+        {
+            string phpVersion80 = "8.0";
+            PhpWithWordPress51(phpVersion80);
+            CanBuildAndRun_Wordpress_SampleApp(phpVersion80);
+        }
+
+        [Fact, Trait("category", "php-7.4")]
+        public void  PipelineTestInvocationsPhp74()
+        {
+            string phpVersion74 = "7.4";
+            PhpWithWordPress51(phpVersion74);
+            CanBuildAndRun_Wordpress_SampleApp(phpVersion74);
+        }
+
         [Theory]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
+        [InlineData("8.0")]
+        [InlineData("7.4")]
         public async Task PhpWithWordPress51(string phpVersion)
         {
             // Arrange
@@ -77,8 +94,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
         public async Task CanBuildAndRun_Wordpress_SampleApp(string phpVersion)
         {
             // Arrange
