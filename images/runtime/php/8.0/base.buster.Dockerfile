@@ -1,6 +1,6 @@
 FROM php-8.0
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.0.3
+ENV PHP_VERSION 8.0.13
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
@@ -71,6 +71,11 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 #       xmlrpc \
         xsl
 
+RUN set -eux; \
+    if [[ $PHP_VERSION != 5.* ]]; then \
+        pecl install redis && docker-php-ext-enable redis; \
+    fi
+
 # https://github.com/Imagick/imagick/issues/331
 RUN set -eux; \
     if [[ $PHP_VERSION != 8.* ]]; then \
@@ -79,16 +84,25 @@ RUN set -eux; \
 
 # deprecated from 5.*, so should be avoided 
 RUN set -eux; \
-    if [[ $PHP_VERSION != 5.* ]]; then \
-        echo "pecl/mongodb requires PHP (version >= 7.0.0, version <= 7.99.99)"; \
+    if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \
+        echo "pecl/mongodb requires PHP (version >= 7.1.0, version <= 7.99.99)"; \
         pecl install mongodb && docker-php-ext-enable mongodb; \
+    fi
+
+# https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
+RUN set -eux; \
+    if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
+        echo "pecl/mysqlnd_azure requires PHP (version >= 7.2.*, version <= 7.99.99)"; \
+        pecl install mysqlnd_azure \
+        && docker-php-ext-enable mysqlnd_azure; \
     fi
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
+# pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 7.3.0)
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
+    if [[ $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
@@ -119,7 +133,7 @@ RUN set -x \
     && sed -ri 's@^ *test +"\$PHP_.*" *= *"no" *&& *PHP_.*=yes *$@#&@g' configure \
     && chmod +x ./configure \
     && ./configure --with-unixODBC=shared,/usr \
-    && docker-php-ext-install odbc
-
-RUN rm -rf /tmp/ \
+    && docker-php-ext-install odbc \
     && rm -rf /var/lib/apt/lists/*
+
+RUN rm -rf /tmp/oryx

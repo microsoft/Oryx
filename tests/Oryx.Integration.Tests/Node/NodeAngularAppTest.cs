@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node")]
+    [Trait("category", "node-2")]
     public class NodeAngularAppTest : NodeEndToEndTestsBase
     {
         public NodeAngularAppTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -512,7 +512,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8")]
+        [InlineData("12")]
         [InlineData("10")]
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {

@@ -12,7 +12,9 @@ source "$__CURRENT_DIR/../../build/__hugoConstants.sh"
 fileName=$(echo $TAR_FILE_NAME_FORMAT | sed "s/#VERSION#/$VERSION/g")
 url=$(echo $INSTALLATION_URL_FORMAT | sed "s/#VERSION#/$VERSION/g")
 url=$(echo $url | sed "s/#TAR_FILE#/$fileName/g")
-curl -fsSLO --compressed "$url"
+request="curl -fsSLO --compressed $url"
+# @retry if curl fails
+/opt/tmp/images/retry.sh "$request"
 installationDir="$INSTALLED_HUGO_VERSIONS_DIR/${VERSION}"
 mkdir -p "$installationDir"
 tar -xzf "$fileName" -C "$installationDir"

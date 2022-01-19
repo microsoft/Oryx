@@ -16,7 +16,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php")]
     public class PhpWordPressTest : PhpEndToEndTestsBase
     {
         public PhpWordPressTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -24,63 +23,28 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
-        [InlineData("8.0-fpm")]
-        [InlineData("7.4-fpm")]
-        [InlineData("7.3-fpm")]
-        public async Task PhpFpmWithWordPress56(string phpVersion)
+        // Unique category traits are needed to run each
+        // platform-version in it's own pipeline agent. This is
+        // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-8.0")]
+        public void PipelineTestInvocationsPhp80()
         {
-            // Arrange
-            string hostDir = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
-            var phpimageVersion = phpVersion.Split("-");
+            string phpVersion80 = "8.0";
+            PhpWithWordPress51(phpVersion80);
+            CanBuildAndRun_Wordpress_SampleApp(phpVersion80);
+        }
 
-            if (!Directory.Exists(hostDir))
-            {
-                Directory.CreateDirectory(hostDir);
-                using (var webClient = new WebClient())
-                {
-                    var wpZipPath = Path.Combine(hostDir, "wp.zip");
-                    webClient.DownloadFile("https://wordpress.org/wordpress-5.6.zip", wpZipPath);
-                    // The ZIP already contains a `wordpress` folder
-                    ZipFile.ExtractToDirectory(wpZipPath, hostDir);
-                }
-            }
-
-            var appName = "wordpress";
-            var volume = DockerVolume.CreateMirror(Path.Combine(hostDir, "wordpress"));
-            var appDir = volume.ContainerDir;
-            var appOutputDirVolume = CreateAppOutputDirVolume();
-            var appOutputDir = appOutputDirVolume.ContainerDir;
-            var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-               $"--platform {PhpConstants.PlatformName} --platform-version {phpimageVersion[0]}")
-               .ToString();
-            var runScript = new ShellScriptBuilder()
-                .AddCommand("mkdir -p /home/site/wwwroot/")
-                .AddCommand($"cp -rf {appOutputDir}/* /home/site/wwwroot/")
-                .AddCommand("ls -la /home/site/wwwroot/")
-                .AddCommand($"oryx create-script -appPath /home/site/wwwroot/ -bindPort {ContainerPort} -output {RunScriptPath}")
-                .AddCommand(RunScriptPath)
-                .ToString();
-
-            // Act & Assert
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName, _output, new[] { volume, appOutputDirVolume },
-                "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
-                ContainerPort,
-                "/bin/sh", new[] { "-c", runScript },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("<title>WordPress &rsaquo; Setup Configuration File</title>", data);
-                });
+        [Fact, Trait("category", "php-7.4")]
+        public void  PipelineTestInvocationsPhp74()
+        {
+            string phpVersion74 = "7.4";
+            PhpWithWordPress51(phpVersion74);
+            CanBuildAndRun_Wordpress_SampleApp(phpVersion74);
         }
 
         [Theory]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
+        [InlineData("8.0")]
+        [InlineData("7.4")]
         public async Task PhpWithWordPress51(string phpVersion)
         {
             // Arrange
@@ -130,8 +94,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
         public async Task CanBuildAndRun_Wordpress_SampleApp(string phpVersion)
         {
             // Arrange

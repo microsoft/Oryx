@@ -26,7 +26,8 @@ downloadJavaSdk()
 	else
 			tarFileName=java-$debianFlavor-$JDK_VERSION.tar.gz
 	fi
-
+    
+    # TODO: refactor to reduce the number of if statements. Workitem #1439235
     # Version 8 or 1.8.0 has a different url format than rest of the versions, so special casing it.
     if [ "$JDK_VERSION" == "1.8.0" ]; then
         local versionUpdate="8u265"
@@ -45,6 +46,20 @@ downloadJavaSdk()
 
     IFS='.' read -ra VERSION_PARTS <<< "$JDK_VERSION"
     majorVersion="${VERSION_PARTS[0]}"
+
+    # Version 17.0.1 has a different url format than rest of the versions, so special casing it.
+    if [ "$JDK_VERSION" == "17.0.1" ]; then
+        local buildNumber="12"
+        local url="https://download.java.net/java/GA/jdk17.0.1/2a2082e5a09d4267845be086888add4f/12/GPL/openjdk-17.0.1_linux-x64_bin.tar.gz"
+
+        curl -L "$url" -o $tarFileName
+        rm -rf extracted
+        mkdir -p extracted
+        tar -xf $tarFileName --directory extracted
+        tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
+		echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        return
+    fi
 
     if shouldBuildSdk java $tarFileName || shouldOverwriteSdk || shouldOverwriteJavaSdk; then
         local baseUrl="https://github.com/AdoptOpenJDK/openjdk${majorVersion}-binaries/releases/download"

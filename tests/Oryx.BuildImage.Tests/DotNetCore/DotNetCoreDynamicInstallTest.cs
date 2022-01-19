@@ -424,7 +424,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(NetCoreApp30MvcApp, "3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-        [InlineData(NetCore6PreviewWebApp, "6.0", DotNetCoreSdkVersions.DotNet60SdkVersion)]
         public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion,
@@ -439,7 +438,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddDirectoryExistsCheck($"/home/codespace/.dotnet/")
-                .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNetCore21SdkVersion}")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNet50SdkVersion}")
                 .AddLinkDoesNotExistCheck($"{preInstalledSdkLink}/{sdkVersion}")
@@ -475,7 +473,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersionPrefix}",
                         result.StdOut);
-                    Assert.Contains($"{DotNetCoreSdkVersions.DotNetCore21SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
                     Assert.Contains($"{DotNetCoreSdkVersions.DotNetCore31SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
                     Assert.Contains($"{DotNetCoreSdkVersions.DotNet50SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
                     Assert.Contains($"{sdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);

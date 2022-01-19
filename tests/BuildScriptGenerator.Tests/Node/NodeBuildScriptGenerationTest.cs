@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
           },
           ""author"": ""Dev"",
           ""license"": ""ISC"",
-          ""engines"" : { ""node"" : ""6.11.0"" }
+          ""engines"" : {""randomPackageManager"": ""0.0.0"" }
         }";
 
         private const string PackageJsonWithNpmVersion = @"{

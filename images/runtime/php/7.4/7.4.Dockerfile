@@ -101,9 +101,9 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
 ENV GPG_KEYS 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
 
-ENV PHP_VERSION 7.4.16
-ENV PHP_URL="https://www.php.net/get/php-7.4.16.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-7.4.16.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="1c16cefaf88ded4c92eed6a8a41eb682bb2ef42429deb55f1c4ba159053fb98b" PHP_MD5=""
+ENV PHP_VERSION 7.4.26
+ENV PHP_URL="https://www.php.net/get/php-7.4.26.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-7.4.26.tar.xz.asc/from/this/mirror"
+ENV PHP_SHA256="e305b3aafdc85fa73a81c53d3ce30578bc94d1633ec376add193a1e85e0f0ef8" PHP_MD5=""
 
 RUN set -eux; \
 	\

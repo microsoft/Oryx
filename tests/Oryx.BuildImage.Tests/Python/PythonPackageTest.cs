@@ -27,21 +27,19 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
         public static IEnumerable<object[]> PythonPackageExamples => new object[][]
         {
             new object[] { "boto3", "1.14.44",
-                "git://github.com/boto/boto3.git" },
+                "https://github.com/boto/boto3.git" },
             new object[] { "botocore", "1.17.44",
-                "git://github.com/boto/botocore.git" },
+                "https://github.com/boto/botocore.git" },
             new object[] { "pyasn1", "0.4.8",
-                "git://github.com/etingof/pyasn1.git", "v0.4.8"},
+                "https://github.com/etingof/pyasn1.git", "v0.4.8"},
             new object[] { "configparser", "5.0.0",
-                "git://github.com/jaraco/configparser.git", "v5.0.0"},
+                "https://github.com/jaraco/configparser.git", "v5.0.0"},
             new object[] { "attrs", "20.2.0",
-                "git://github.com/python-attrs/attrs.git", "20.2.0"},
+                "https://github.com/python-attrs/attrs.git", "20.2.0"},
             new object[] { "pytest-timeout", "1.4.2",
-                "git://github.com/pytest-dev/pytest-timeout.git", "1.4.2"},
+                "https://github.com/pytest-dev/pytest-timeout.git", "1.4.2"},
             new object[] { "matplotlib", "3.3.2",
-                "git://github.com/matplotlib/matplotlib.git", "v3.3.2"},
-            new object[] { "cryptography", "3.1",
-                "git://github.com/pyca/cryptography.git", "3.1"},
+                "https://github.com/matplotlib/matplotlib.git", "v3.3.2"},
         };
 
         private readonly string[] IgnoredTarEntries = new[] { "tutorial.rst", "docs/tutorial.rst" };

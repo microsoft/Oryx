@@ -1,0 +1,34 @@
+{
+    "Registrations": [
+        {
+            "Component": {
+                "pip": {
+                    "Name": "viztracer",
+                    "Version": "0.14.2"
+                },
+                "Type": "pip"
+            },
+            "DevelopmentDependency": false
+        },
+        {
+            "Component": {
+                "pip": {
+                    "Name": "vizplugins",
+                    "Version": "0.1.2"
+                },
+                "Type": "pip"
+            },
+            "DevelopmentDependency": false
+        },
+        {
+            "Component": {
+                "pip": {
+                    "Name": "orjson",
+                    "Version": "3.6.4"
+                },
+                "Type": "pip"
+            },
+            "DevelopmentDependency": false
+        }
+    ]
+}

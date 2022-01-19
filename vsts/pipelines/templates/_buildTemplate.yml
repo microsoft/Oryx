@@ -65,6 +65,10 @@ steps:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrName }}
     
+- script: |
+    docker images && docker system prune -fa && df -h && echo
+  displayName: 'Free up space for oryx layers'
+
 - task: ShellScript@2
   displayName: 'Test build script generator'
   inputs:

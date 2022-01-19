@@ -169,7 +169,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
@@ -481,11 +480,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string argumentName)
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore30SdkVersion;
             var script = new ShellScriptBuilder()
                 //.SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
                 .SetEnvironmentVariable(environmentVariableName, DotNetCoreSdkVersions.DotNetCore31SdkVersion)
-                .Source($"benv {argumentName}={DotNetCoreSdkVersions.DotNetCore21SdkVersion}")
+                .Source($"benv {argumentName}={DotNetCoreSdkVersions.DotNetCore30SdkVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
 
@@ -513,10 +512,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void RunningBenvMultipleTimes_HonorsLastRunArguments()
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
+            var expectedOutput = DotNetCoreSdkVersions.DotNetCore30SdkVersion;
             var script = new ShellScriptBuilder()
                 .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
-                .Source($"benv dotnet_version={DotNetCoreSdkVersions.DotNetCore21SdkVersion}")
+                .Source($"benv dotnet_version={DotNetCoreSdkVersions.DotNetCore30SdkVersion}")
                 // benv should update the PATH environment in such a way that we should version 1
                 .AddCommand("dotnet --version")
                 .ToString();
@@ -615,10 +614,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BenvShouldSetUpEnviroment_WhenMultiplePlatforms_AreSuppliedAsArguments()
         {
             // Arrange
-            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore21SdkVersion;
+            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore30SdkVersion;
             var expectedPythonVersion = Python36VersionInfo;
             var script = new ShellScriptBuilder()
-                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore21SdkVersion} python=3.6")
+                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore30SdkVersion} python=3.6")
                 .AddCommand("dotnet --version")
                 .AddCommand("python --version")
                 .ToString();

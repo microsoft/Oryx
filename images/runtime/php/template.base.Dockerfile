@@ -19,6 +19,12 @@ RUN echo -e '<FilesMatch "\.(?i:ph([[p]?[0-9]*|tm[l]?))$">\n SetHandler applicat
 # Disable Apache2 server signature
 RUN echo -e 'ServerSignature Off' >> /etc/apache2/apache2.conf
 RUN echo -e 'ServerTokens Prod' >> /etc/apache2/apache2.conf
+RUN { \
+   echo '<DirectoryMatch "^/.*/\.git/">'; \
+   echo '   Order deny,allow'; \
+   echo '   Deny from all'; \
+   echo '</DirectoryMatch>'; \
+} >> /etc/apache2/apache2.conf
 
 # Install common PHP extensions
 RUN apt-get update \
@@ -102,7 +108,7 @@ RUN set -eux; \
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 # pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 7.3.0)
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
+    if [[ $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \

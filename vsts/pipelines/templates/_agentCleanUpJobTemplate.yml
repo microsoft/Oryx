@@ -5,7 +5,7 @@ jobs:
 - job: Cleaning_${{ parameters.agentName }}
   displayName: ${{ parameters.agentName }}
   pool:
-    name: OryxLinux
+    name: ${{ parameters.poolName }}
     demands:
     - agent.name -equals ${{ parameters.agentName }}
   timeoutInMinutes: 50

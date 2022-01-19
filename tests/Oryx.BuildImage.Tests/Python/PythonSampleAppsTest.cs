@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
@@ -59,6 +60,47 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void GeneratesScript_AndLoggerFormatCheck()
+        {
+            // Arrange  
+            // Create an app folder with a package.json having the yarn engine
+            var requirementsContent = "invalidModule==0.0.0";
+            var sampleAppPath = Path.Combine(_tempDirRootPath, Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(sampleAppPath);
+            File.WriteAllText(Path.Combine(sampleAppPath, PythonConstants.RequirementsFileName), requirementsContent);
+            var volume = DockerVolume.CreateMirror(sampleAppPath);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
+                .ToString();
+            // Regex will match:
+            // "yyyy-mm-dd hh:mm:ss"|ERROR|Failed pip installation with exit code: 1
+            // Example:
+            // "2021-10-27 07:00:00"|ERROR|Failed to pip installation with exit code: 1
+            Regex regex = new Regex(@"""[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])""\|ERROR\|Failed pip installation with exit code: 1");
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.LtsVersionsBuildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.False(result.IsSuccess);
+                    Match match = regex.Match(result.StdOut);
+                    Assert.True(match.Success);
                 },
                 result.GetDebugInfo());
         }
@@ -1169,8 +1211,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
-                $"--platform-version {PythonVersions.Python37Version}")
+                $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName}")
                 .ToString();
 
             // Act

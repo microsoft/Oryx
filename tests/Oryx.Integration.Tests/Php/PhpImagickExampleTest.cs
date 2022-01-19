@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php")]
     public class PhpImagickExampleTest : PhpEndToEndTestsBase
     {
         public PhpImagickExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -21,12 +20,27 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
+        // Unique category traits are needed to run each
+        // platform-version in it's own pipeline agent. This is
+        // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-8.0")]
+        public void PipelineTestInvocationsPhp80()
+        {   
+            string phpVersion80 = "8.0";
+            ImagickExample(phpVersion80);
+            PhpFpmImagickExample(phpVersion80);
+        }
+
+        [Fact, Trait("category", "php-7.4")]
+        public void PipelineTestInvocationsPhp74()
+        {
+            string phpVersion74 = "7.4";
+            ImagickExample(phpVersion74);
+            PhpFpmImagickExample(phpVersion74);
+        }
+
         [Theory]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
-        [InlineData("5.6")]
         public async Task ImagickExample(string phpVersion)
         {
             // Arrange
@@ -61,8 +75,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
         public async Task PhpFpmImagickExample(string phpVersion)
         {
             // Arrange

@@ -106,10 +106,10 @@ RUN set -ex \
     && DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
 	&& NUGET_PACKAGES="$nugetPackagesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
+    && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
+    && DOTNET_SDK_VER=$DOT_NET_60_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
     && DOTNET_SDK_VER=$DOT_NET_50_SDK_VERSION \
@@ -119,9 +119,9 @@ RUN set -ex \
     && find $nugetPackagesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
-    && ln -s $DOT_NET_CORE_21_SDK_VERSION 2-lts \
     && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
-    && ln -s 3-lts lts \
+    && ln -s $DOT_NET_60_SDK_VERSION 6-lts \
+    && ln -s 6-lts lts \
     # Install Hugo
     && mkdir -p /home/codespace/.hugo \
     && $imagesDir/build/installHugo.sh \
@@ -193,6 +193,7 @@ RUN set -ex \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && cp -f $imagesDir/build/benv.sh /opt/oryx/benv \
+    && cp -f $imagesDir/build/logger.sh /opt/oryx/logger \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
@@ -272,7 +273,7 @@ RUN ./opt/tmp/build/createSymlinksForDotnet.sh
 RUN groupadd -g 1000 codespace
 RUN useradd -u 1000 -g codespace codespace
 RUN chown -R codespace:codespace /home/codespace/
-
+RUN chown -R codespace:codespace /opt/
 
 ENV NUGET_XMLDOC_MODE="skip" \
     # VSO requires user installed tools to be preferred over Oryx installed tools
