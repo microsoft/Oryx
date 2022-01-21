@@ -17,13 +17,33 @@ FROM oryx-run-base-${DEBIAN_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 ENV PYTHON_VERSION 3.10.0
 
+RUN set -eux \
+	&& apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+        zlib1g-dev \
+        libncurses5-dev \
+        libgdbm-dev \
+        libnss3-dev \
+        libssl-dev \
+        libreadline-dev \
+        libffi-dev \
+        libsqlite3-dev \
+        wget \
+        libbz2-dev \
+RUN set -eux; \
+    && cd /opt/python/ \
+    && wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz \
+    && mv Python-3.10.0 3.10.tar.gz \
+    && tar -xf 3.10.tgz \
+    && cd 3.10 \
+    && ./configure --enable-optimizations \
+    && make -j 4 \
+    && make altinstall \
 RUN ${IMAGES_DIR}/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false
-RUN set -ex \
- && cd /opt/python/ \
- && ln -s 3.10.0 3.10 \
- && ln -s 3.10.0
 
- ENV PATH="/opt/python/3.10/bin:${PATH}"
+ENV PATH="/opt/python/3.10/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
