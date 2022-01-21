@@ -17,8 +17,7 @@ FROM oryx-run-base-${DEBIAN_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 ENV PYTHON_VERSION 3.10.0
 
-RUN set -eux; \
-	&& apt-get update \
+RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         build-essential \
@@ -31,12 +30,12 @@ RUN set -eux; \
         libffi-dev \
         libsqlite3-dev \
         wget \
-        libbz2-dev
-RUN set -eux; \
-    && cd /opt/python/ \
+        libbz2-dev \
+    && rm -rf /var/lib/apt/lists/* \
+RUN cd /opt/python/ \
     && wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz \
-    && mv Python-3.10.0 3.10.tar.gz \
-    && tar -xf 3.10.tgz \
+    && tar -xf Python-3.10.0.tgz \
+    && mv Python-3.10.0 3.10 \
     && cd 3.10 \
     && ./configure --enable-optimizations \
     && make -j 4 \
