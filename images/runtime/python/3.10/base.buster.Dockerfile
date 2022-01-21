@@ -48,8 +48,7 @@ ENV PATH="/opt/python/3.10/bin:${PATH}"
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
-RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
-    && apt-get update \
+RUN apt-get update \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/oryx
