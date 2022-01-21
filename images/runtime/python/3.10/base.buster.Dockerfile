@@ -17,7 +17,7 @@ FROM oryx-run-base-${DEBIAN_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 ENV PYTHON_VERSION 3.10.0
 
-RUN set -eux \
+RUN set -eux; \
 	&& apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -31,7 +31,7 @@ RUN set -eux \
         libffi-dev \
         libsqlite3-dev \
         wget \
-        libbz2-dev \
+        libbz2-dev
 RUN set -eux; \
     && cd /opt/python/ \
     && wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz \
@@ -40,7 +40,7 @@ RUN set -eux; \
     && cd 3.10 \
     && ./configure --enable-optimizations \
     && make -j 4 \
-    && make altinstall \
+    && make altinstall
 RUN ${IMAGES_DIR}/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false
 
 ENV PATH="/opt/python/3.10/bin:${PATH}"
