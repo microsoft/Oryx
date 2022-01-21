@@ -12,6 +12,7 @@
     user-dotnet-startup-hooks: /DotNetCoreAgent/2.8.42/StartupHook/Microsoft.ApplicationInsights.StartupHook.dll
     user-netcore-hostingstartup-assemblies: Microsoft.ApplicationInsights.StartupBootstrapper
     python-enable-gunicorn-multi-workers-env-var-name: PYTHON_ENABLE_GUNICORN_MULTIWORKERS
+    python-gunicorn-config-path-env-var-name: PYTHON_USE_GUNICORN_CONFIG_FROM_PATH
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator.Common
@@ -27,10 +28,10 @@
     dot-net-core-21-sdk-version: 2.1.818
     dot-net-core-22-sdk-version: 2.2.207
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.412
+    dot-net-core-31-sdk-version: 3.1.415
     dot-net-core-50-sdk-version: 5.0.302
-    dot-net-50-sdk-version: 5.0.400
-    dot-net-60-sdk-version: 6.0.100-rc.2.21505.57
+    dot-net-50-sdk-version: 5.0.403
+    dot-net-60-sdk-version: 6.0.100
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
   outputs:
     - type: csharp
@@ -41,7 +42,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20211031.2
+    dot-net-core-runtime-base-tag: 20211119.3
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
 
@@ -60,15 +61,15 @@
     aspnet-core-app-30: 3.0.3
     aspnet-core-app-30-sha: d88366ac20204c5acb4b80bc40396d608d6c067b25baeef54204e77dde48fb515bd463743745a0982ba8c9182fc751306a4e796f91060b2d013ffbea7d9a2dc8
 
-    net-core-app-31: 3.1.18
-    net-core-app-31-sha: 6f06dbc4625fa8a0e64f650de7b285b5ffa0cd32ad8d2048fb9269b5f657e369fd28e7f27bfd05d4f422c6aa95847b5089d70760024bdf1100990dbbffce220a
-    aspnet-core-app-31: 3.1.18
-    aspnet-core-app-31-sha: be29a7611941d9b20d5d3ece64d271bddf6814968b5103ce3c2342ba24bf0382eed3625713ce89957fa15671403af16ccb588397fc0b27e7f028952213e08db6
+    net-core-app-31: 3.1.21
+    net-core-app-31-sha: cc4b2fef46e94df88bf0fc11cb15439e79bd48da524561dffde80d3cd6db218133468ad2f6785803cf0c13f000d95ff71eb258cec76dd8eb809676ec1cb38fac
+    aspnet-core-app-31: 3.1.21
+    aspnet-core-app-31-sha: f59252166dbfe11a78373226222d6a34484b9132e24283222aea8a950a5e9657da2e4d4e9ff8cbcc2fd7c7705e13bf42a31232a6012d1e247efc718e3d8e2df1
     
-    net-core-app-50: 5.0.9
-    net-core-app-50-sha: 454a11d87199be6fcd5f97f28b0f9c2f15c0288dd0759dc96ac2c730697b9e6514a19bbfc06185ccb4289dd11681ea5e9cfaf6f3676040e36d21e9b90282af8d
-    aspnet-core-app-50: 5.0.9
-    aspnet-core-app-50-sha: 67ac99b8f631684961aa2e887ed5d6b9cc301b06a1842ac212791860bf6de145831228df5f57eca8a97e16e569e7b5a308fd20d82f11569c375c689fc932dfff
+    net-core-app-50: 5.0.12
+    net-core-app-50-sha: 32b5f86db3b1d4c21e3cf616d22f0e4a7374385dac0cf03cdebf3520dcf846460d9677ec1829a180920740a0237d64f6eaa2421d036a67f4fe9fb15d4f6b1db9
+    aspnet-core-app-50: 5.0.12
+    aspnet-core-app-50-sha: 0529f23ffa651ac2c2807b70d6e5034f6ae4c88204afdaaa76965ef604d6533f9440d68d9f2cdd3a9f2ca37e9140e6c61a9f9207d430c71140094c7d5c33bf79
 
     net-core-app-60: 6.0.0
     net-core-app-60-sha: 7cc8d93f9495b516e1b33bf82af3af605f1300bcfeabdd065d448cc126bd97ab4da5ec5e95b7775ee70ab4baf899ff43671f5c6f647523fb41cda3d96f334ae5
@@ -100,12 +101,13 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    pip-version: 20.2.3
+    pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
     python37-version: 3.7.12
     python38-version: 3.8.12
     python39-version: 3.9.7
+    python310-version: 3.10.0
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -115,8 +117,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20211031.1
-    php-fpm-runtime-base-tag: 20211031.1
+    php-runtime-base-tag: 20211214.1
+    php-fpm-runtime-base-tag: 20211214.1
     composer-version: 2.0.8
     composer-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
     composer1-9-version: 1.9.3
@@ -126,12 +128,15 @@
     composer2-0-version: 2.0.8
     composer2-0-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
     # hashes are for .tar.xz
-    php80-version: 8.0.11
+    php81-version: 8.1.0
+    php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
+    php81-tar-sha256: a1317eff0723a2b3d3122bbfe107a1158570ea2822dc35a5fb360086db0f6bbc
+    php80-version: 8.0.13
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: e3e5f764ae57b31eb65244a45512f0b22d7bef05f2052b23989c053901552e16
-    php74-version: 7.4.24
+    php80-tar-sha256: cd976805ec2e9198417651027dfe16854ba2c2c388151ab9d4d268513d52ed52
+    php74-version: 7.4.26
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
-    php74-tar-sha256: ff7658ee2f6d8af05b48c21146af5f502e121def4e76e862df5ec9fa06e98734
+    php74-tar-sha256: e305b3aafdc85fa73a81c53d3ce30578bc94d1633ec376add193a1e85e0f0ef8
     php73-version: 7.3.27
     php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
     php73-tar-sha256: 65f616e2d5b6faacedf62830fa047951b0136d5da34ae59e6744cbaf5dca148d
@@ -188,8 +193,8 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20210902.2
-    yarn-version: 1.22.10
+    node-runtime-base-tag: 20211208.1
+    yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
     node6-version: 6.17.1
@@ -197,10 +202,10 @@
     node10-version: 10.23.0
     node12-version: 12.22.6
     node14-version: 14.17.6
-    node16-version: 16.8.0
+    node16-version: 16.13.1
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
-    npm-version: 6.14.15
+    npm-version: 8.1.2
   outputs:
     - type: shell
       directory: build
@@ -244,7 +249,7 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: hugo-constants
   constants:
-    version: 0.81.0
+    version: 0.90.1
     platform-name: hugo
     installed-hugo-versions-dir: /opt/hugo
     installation-url-format: https://github.com/gohugoio/hugo/releases/download/v#VERSION#/#TAR_FILE#
@@ -305,7 +310,7 @@
       file-name-prefix: __
 - name: java-versions
   constants:
-    java-version: 11.0.8
+    java-version: 17.0.1
     maven-version: 3.6.3
   outputs:
     - type: shell
