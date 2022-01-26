@@ -14,11 +14,8 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM oryx-run-base-${DEBIAN_FLAVOR} AS main
-ARG IMAGES_DIR=/tmp/oryx/images
-ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
+FROM %RUNTIME_BASE_IMAGE_NAME%
 
-RUN ${IMAGES_DIR}/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false
 RUN set -ex \
  && cd /opt/python/ \
  && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
@@ -35,7 +32,6 @@ ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get upgrade --assume-yes \
