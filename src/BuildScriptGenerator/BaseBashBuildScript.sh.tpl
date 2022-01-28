@@ -26,7 +26,7 @@ fi
 
 if [ -d "$DESTINATION_DIR" ]
 then
-    cd $DESTINATION_DIR
+    cd "$DESTINATION_DIR"
     DESTINATION_DIR=$(pwd -P)
 fi
 
