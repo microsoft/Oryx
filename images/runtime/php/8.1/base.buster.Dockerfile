@@ -1,6 +1,6 @@
-FROM %PHP_BASE_IMAGE%
+FROM php:8.1-buster
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION %PHP_VERSION%
+ENV PHP_VERSION 8.1.0
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
@@ -19,12 +19,6 @@ RUN echo -e '<FilesMatch "\.(?i:ph([[p]?[0-9]*|tm[l]?))$">\n SetHandler applicat
 # Disable Apache2 server signature
 RUN echo -e 'ServerSignature Off' >> /etc/apache2/apache2.conf
 RUN echo -e 'ServerTokens Prod' >> /etc/apache2/apache2.conf
-RUN { \
-   echo '<DirectoryMatch "^/.*/\.git/">'; \
-   echo '   Order deny,allow'; \
-   echo '   Deny from all'; \
-   echo '</DirectoryMatch>'; \
-} >> /etc/apache2/apache2.conf
 
 # Install common PHP extensions
 RUN apt-get update \
