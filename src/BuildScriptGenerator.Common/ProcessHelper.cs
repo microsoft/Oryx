@@ -62,29 +62,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
                     standardOutputHandler,
                     standardErrorHandler);
 
-                if (waitTimeForExit.HasValue)
-                {
-                    var hasExited = process.WaitForExit((int)waitTimeForExit.Value.TotalMilliseconds);
-                    if (!hasExited)
-                    {
-                        throw new InvalidOperationException(
-                            $"Process {process.Id} didn't exit within the allotted time.");
-                    }
+                //if (waitTimeForExit.HasValue)
+                //{
+                //    var hasExited = process.WaitForExit((int)waitTimeForExit.Value.TotalMilliseconds);
+                //    if (!hasExited)
+                //    {
+                //        throw new InvalidOperationException(
+                //            $"Process {process.Id} didn't exit within the allotted time.");
+                //    }
 
-                    if (redirectOutput || redirectError)
-                    {
-                        // From:https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.waitforexit?view=netcore-2.1
-                        // When standard output has been redirected to asynchronous event handlers,
-                        // it is possible that output processing will not have completed when this method returns.
-                        // To ensure that asynchronous eventhandling has been completed, call the WaitForExit()
-                        // overload that takes no parameter after receiving a true from this overload
-                        process.WaitForExit();
-                    }
-                }
-                else
-                {
-                    process.WaitForExit();
-                }
+                //    if (redirectOutput || redirectError)
+                //    {
+                //        // From:https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.process.waitforexit?view=netcore-2.1
+                //        // When standard output has been redirected to asynchronous event handlers,
+                //        // it is possible that output processing will not have completed when this method returns.
+                //        // To ensure that asynchronous eventhandling has been completed, call the WaitForExit()
+                //        // overload that takes no parameter after receiving a true from this overload
+                //        process.WaitForExit();
+                //    }
+                //}
+                //else
+                //{
+                //    process.WaitForExit();
+                //}
 
                 return process.ExitCode;
             }
