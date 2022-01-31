@@ -2,9 +2,9 @@
 set -e
 
 TOTAL_EXECUTION_START_TIME=$SECONDS
-SOURCE_DIR=$1
-DESTINATION_DIR=$2
-INTERMEDIATE_DIR=$3
+SOURCE_DIR="$1"
+DESTINATION_DIR="$2"
+INTERMEDIATE_DIR="$3"
 
 if [ -f {{ LoggerPath }} ]; then
 	source {{ LoggerPath }}
@@ -16,7 +16,7 @@ if [ ! -d "$SOURCE_DIR" ]; then
 fi
 
 {{ # Get full file paths to source and destination directories }}
-cd $SOURCE_DIR
+cd "$SOURCE_DIR"
 SOURCE_DIR=$(pwd -P)
 
 if [ -z "$DESTINATION_DIR" ]
@@ -26,7 +26,7 @@ fi
 
 if [ -d "$DESTINATION_DIR" ]
 then
-    cd $DESTINATION_DIR
+    cd "$DESTINATION_DIR"
     DESTINATION_DIR=$(pwd -P)
 fi
 

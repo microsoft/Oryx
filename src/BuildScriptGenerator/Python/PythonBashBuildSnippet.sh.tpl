@@ -6,7 +6,7 @@ echo "Python Version: $python"
 PIP_CACHE_DIR=/usr/local/share/pip-cache
 
 {{ if PythonBuildCommandsFileName | IsNotBlank }}
-COMMAND_MANIFEST_FILE={{ PythonBuildCommandsFileName }}
+COMMAND_MANIFEST_FILE="{{ PythonBuildCommandsFileName }}"
 {{ end }}
 
 echo "Creating directory for command manifest file if it doesnot exist"
