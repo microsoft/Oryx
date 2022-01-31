@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            Assert.Contains("COMMAND_MANIFEST_FILE=oryx-build-commands.txt", text);
+            Assert.Contains("COMMAND_MANIFEST_FILE=\"oryx-build-commands.txt\"", text);
 
         }
 
