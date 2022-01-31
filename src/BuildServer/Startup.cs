@@ -6,16 +6,15 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using JsonFlatFileDataStore;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+using Microsoft.Oryx.BuildServer.Repositories;
+using Microsoft.Oryx.BuildServer.Services;
+using Microsoft.Oryx.BuildServer.Services.ArtifactBuilders;
 
 namespace Microsoft.Oryx.BuildServer
 {
@@ -31,8 +30,15 @@ namespace Microsoft.Oryx.BuildServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var store = new DataStore("builds.json", keyProperty: "id");
+            Console.WriteLine("** Inside ConfigureServices **");
             services.AddHttpContextAccessor();
             services.AddMvc();
+            services.AddSingleton<IRepository>(x => new BuildRepository(store));
+            services.AddScoped<IArtifactBuilder, Builder>();
+            services.AddScoped<IArtifactBuilderFactory, ArtifactBuilderFactory>();
+            services.AddScoped<IBuildRunner, BuildRunner>();
+            services.AddScoped<IBuildService, BuildService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<ILoggerFactory, LoggerFactory>();
             services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));

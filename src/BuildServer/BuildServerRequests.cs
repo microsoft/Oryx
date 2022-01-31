@@ -11,5 +11,14 @@ namespace Microsoft.Oryx.BuildServer
     {
         [JsonProperty(PropertyName = "command")]
         public string command { get; set; }
+
+        [JsonProperty(PropertyName = "id")]
+        public string id { get; set; }
+
+        [JsonProperty(PropertyName = "status")]
+        public string? Status { get; set; }
+
+        [JsonProperty(PropertyName = "outputPath")]
+        public string OutputPath { get; set; }
     }
 }
