@@ -76,7 +76,7 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
         public void UsingBuildConfigurationFile_PreBuildOnly_Invalid_ReturnsTrue()
         {
             string generatedScript = GenerateScript(BuildConfigurationFileFlags.PreBuild | BuildConfigurationFileFlags.Invalid);
-            Assert.Contains("pre-biuld: ", generatedScript);
+            Assert.DoesNotContain("pre-biuld: ", generatedScript);
         }
 
         [Fact]
@@ -97,7 +97,7 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
         public void UsingBuildConfigurationFile_PostBuildOnly_Invalid_ReturnsTrue()
         {
             string generatedScript = GenerateScript(BuildConfigurationFileFlags.PostBuild | BuildConfigurationFileFlags.Invalid);
-            Assert.Contains("post-build ", generatedScript);
+            Assert.DoesNotContain("post-build ", generatedScript);
         }
 
         private DefaultBuildScriptGenerator CreateDefaultScriptGenerator(
@@ -216,10 +216,18 @@ run: gunicorn myapp.app --workers 5 --foo bar
                     else return string.Empty;
                 else
                 {
-                    
+
                     //
                     // YAML file Header
                     //
+                    if (buildConfigurationFileFlags.HasFlag(BuildConfigurationFileFlags.CRLF))
+                    {
+                        text.Append("version: 1\r\n");
+                    }
+                    else
+                    {
+                        text.Append("version: 1\n");
+                    }
 
                     //
                     // Pre-build
