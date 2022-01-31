@@ -315,21 +315,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             buildProperties[ManifestFilePropertyKeys.CompressDestinationDir] =
                 _cliOptions.CompressDestinationDir.ToString().ToLower();
 
-            // Override the prebuild and postbuild commands if procfile exists
+            // Override the prebuild and postbuild commands if BuildConfigurationFIle exists
             if (context.SourceRepo.FileExists("app.yaml"))
             {
                 try
                 {
-                    var procFile = ProcFile.Create(context.SourceRepo.ReadFile("app.yaml"));
-                    if (!string.IsNullOrEmpty(procFile.prebuild))
+                    BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(context.SourceRepo.ReadFile("app.yaml"));
+                    if (!string.IsNullOrEmpty(buildConfigFile.prebuild))
                     {
-                        _cliOptions.PreBuildCommand = procFile.prebuild.Replace("\r\n", ";").Replace("\n", ";");
+                        _cliOptions.PreBuildCommand = buildConfigFile.prebuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PreBuildScriptPath = null;
                     }
 
-                    if (!string.IsNullOrEmpty(procFile.postbuild))
+                    if (!string.IsNullOrEmpty(buildConfigFile.postbuild))
                     {
-                        _cliOptions.PostBuildCommand = procFile.postbuild.Replace("\r\n", ";").Replace("\n", ";");
+                        _cliOptions.PostBuildCommand = buildConfigFile.postbuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PostBuildScriptPath = null;
                     }
                 }

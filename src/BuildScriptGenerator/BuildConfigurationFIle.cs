@@ -7,9 +7,9 @@ using YamlDotNet.Serialization.NamingConventions;
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// Procfile class to be used for YAML deserialization.
+    /// BuildConfigurationFIle class to be used for YAML deserialization.
     /// </summary>
-    class ProcFile
+    public class BuildConfigurationFIle
     {
         [YamlMember(Alias = "version", ApplyNamingConventions = false)]
         public string version { get; set; }
@@ -26,13 +26,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         [YamlMember(Alias = "run", ApplyNamingConventions = false)]
         public string run { get; set; }
 
-        public static ProcFile Create(string text)
+        public static BuildConfigurationFIle Create(string text)
         {
             var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
                         .WithNamingConvention(CamelCaseNamingConvention.Instance)
                         .Build();
-            var procFile = deserializer.Deserialize<ProcFile>(text);
-            return procFile;
+            var buildConfigFile = deserializer.Deserialize<BuildConfigurationFIle>(text);
+            return buildConfigFile;
         }
     }
 }
