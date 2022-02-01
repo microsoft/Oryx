@@ -1,4 +1,9 @@
-﻿using JsonFlatFileDataStore;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using JsonFlatFileDataStore;
 using Microsoft.Oryx.BuildServer.Models;
 using Microsoft.Oryx.BuildServer.Respositories;
 using System;

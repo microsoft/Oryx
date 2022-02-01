@@ -1,12 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Oryx.BuildServer.Models;
 using Microsoft.Oryx.BuildServer.Respositories;
 using Microsoft.Oryx.BuildServer.Services;
 using System;
 using System.Threading.Tasks;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Microsoft.Oryx.BuildServer.Controllers
 {

@@ -1,4 +1,9 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildServer.Models;
 using System;
 using System.Diagnostics;
