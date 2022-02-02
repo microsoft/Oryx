@@ -14,7 +14,45 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM %RUNTIME_BASE_IMAGE_NAME%
+FROM %BASE_TAG% as main
+ARG IMAGES_DIR=/tmp/oryx/images
+ARG BUILD_DIR=/tmp/oryx/build
+ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
+
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        xz-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+ADD images ${IMAGES_DIR}
+ADD build ${BUILD_DIR}
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+
+ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
+RUN true
+COPY build/__pythonVersions.sh ${BUILD_DIR}
+RUN true
+COPY platforms/__common.sh /tmp/
+RUN true
+COPY platforms/python/prereqs/build.sh /tmp/
+RUN true
+COPY platforms/python/versionsToBuild.txt /tmp/
+RUN true
+COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
+RUN true
+
+RUN chmod +x /tmp/receiveGpgKeys.sh
+RUN chmod +x /tmp/build.sh && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential \ 
+        tk-dev \
+        uuid-dev \
+        libgeos-dev
+
+RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR 
 
 RUN set -ex \
  && cd /opt/python/ \
@@ -23,19 +61,28 @@ RUN set -ex \
  && echo /opt/python/%PYTHON_MAJOR_VERSION%/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
  && if [ "%PYTHON_MAJOR_VERSION%" = "3" ]; then cd /opt/python/%PYTHON_MAJOR_VERSION%/bin \
- && ln -s idle3 idle \
- && ln -s pydoc3 pydoc \
- && ln -s python3-config python-config; fi
+ && ln -nsf idle3 idle \
+ && ln -nsf pydoc3 pydoc \
+ && ln -nsf python3-config python-config; fi \
+ && rm -rf /var/lib/apt/lists/*
 
 ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
-RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
+
+RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
+RUN pip install --upgrade pip \
+    && pip install gunicorn \
+    && pip install debugpy \
+    && if [ "%PYTHON_MAJOR_VERSION%" = "3" ] && [ "%PYTHON_VERSION%" != "3.6" ]; then pip install viztracer \
+    && pip install vizplugins \
+    && pip install orjson; fi \
+    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/oryx
-    
+
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
