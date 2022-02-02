@@ -119,9 +119,6 @@ docker run --detach --rm \
 1. Check server healthcheck
     1. ![Health Check](doc/healthCheck.png)
 
-
-
-
 # Components
 
 Oryx consists of a build image, a collection of runtime images, a build script generator, and a collection of
