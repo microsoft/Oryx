@@ -14,7 +14,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM %BASE_TAG% as main
+FROM oryx-run-base-${DEBIAN_FLAVOR} as main
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
@@ -30,7 +30,7 @@ ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
+ENV PYTHON_VERSION 3.10.0
 RUN true
 COPY build/__pythonVersions.sh ${BUILD_DIR}
 RUN true
@@ -52,21 +52,21 @@ RUN chmod +x /tmp/build.sh && \
         uuid-dev \
         libgeos-dev
 
-RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR 
+RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION
 
 RUN set -ex \
  && cd /opt/python/ \
- && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
- && ln -s %PYTHON_VERSION% %PYTHON_MAJOR_VERSION% \
- && echo /opt/python/%PYTHON_MAJOR_VERSION%/lib >> /etc/ld.so.conf.d/python.conf \
+ && ln -s 3.10.0 3.10 \
+ && ln -s 3.10 3 \
+ && echo /opt/python/3/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
- && if [ "%PYTHON_MAJOR_VERSION%" = "3" ]; then cd /opt/python/%PYTHON_MAJOR_VERSION%/bin \
+ && cd /opt/python/3/bin \
  && ln -nsf idle3 idle \
  && ln -nsf pydoc3 pydoc \
- && ln -nsf python3-config python-config; fi \
+ && ln -nsf python3-config python-config \
  && rm -rf /var/lib/apt/lists/*
 
-ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
+ENV PATH="/opt/python/3/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
@@ -76,9 +76,9 @@ RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN pip install --upgrade pip \
     && pip install gunicorn \
     && pip install debugpy \
-    && if [ "%PYTHON_MAJOR_VERSION%" = "3" ] && [ "%PYTHON_VERSION%" != "3.6" ]; then pip install viztracer \
+    && pip install viztracer \
     && pip install vizplugins \
-    && pip install orjson; fi \
+    && pip install orjson \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get upgrade --assume-yes \
