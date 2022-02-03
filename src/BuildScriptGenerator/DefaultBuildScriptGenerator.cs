@@ -315,9 +315,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             buildProperties[ManifestFilePropertyKeys.CompressDestinationDir] =
                 _cliOptions.CompressDestinationDir.ToString().ToLower();
 
-            // Override the prebuild and postbuild commands if BuildConfigurationFIle exists
+            // Override the prebuild and postbuild commands if BuildConfigurationFile exists
             if (context.SourceRepo.FileExists("app.yaml"))
             {
+                _logger.LogDebug("Found app.yaml");
+                _writer.WriteLine("Found app.yaml");
                 try
                 {
                     BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(context.SourceRepo.ReadFile("app.yaml"));
@@ -325,12 +327,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     {
                         _cliOptions.PreBuildCommand = buildConfigFile.prebuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PreBuildScriptPath = null;
+                        _logger.LogDebug("Overriding the pre-build commands with the app.yaml section");
+                        _logger.LogDebug(_cliOptions.PreBuildCommand.ToString());
+                        _writer.WriteLine("Overriding the pre-build commands with the app.yaml section");
+                        _writer.WriteLine(_cliOptions.PreBuildCommand.ToString());
                     }
 
                     if (!string.IsNullOrEmpty(buildConfigFile.postbuild))
                     {
                         _cliOptions.PostBuildCommand = buildConfigFile.postbuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PostBuildScriptPath = null;
+                        _logger.LogDebug("Overriding the post-build commands with the app.yaml section");
+                        _logger.LogDebug(_cliOptions.PostBuildCommand.ToString());
+                        _writer.WriteLine("Overriding the post-build commands with the app.yaml section");
+                        _writer.WriteLine(_cliOptions.PostBuildCommand.ToString());
                     }
                 }
                 catch (Exception ex)

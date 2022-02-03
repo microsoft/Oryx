@@ -14,11 +14,8 @@ using Xunit;
 
 namespace Oryx.Integration.Tests.BuildConfigurationFile
 {
-
     public class BuildConfigurationReadYaml : IClassFixture<TestTempDirTestFixture>
-    {
-
-        
+    {     
         private string GenerateScript(BuildConfigurationFileFlags flags)//
         {
             // Arrange
@@ -159,19 +156,7 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                 SourceRepo = new TestSourceRepo(),
             };
         }
-        /*
-         * version: 1
 
-pre-build: apt-get install xyz
-
-build: pip install requirements.txt
-  
-post-build: |
-  python manage.py makemigrations
-  python manage.py migrate
-  
-run: gunicorn myapp.app --workers 5 --foo bar
-         * */
         [Flags]
         public enum BuildConfigurationFileFlags
         {
@@ -216,7 +201,6 @@ run: gunicorn myapp.app --workers 5 --foo bar
                     else return string.Empty;
                 else
                 {
-
                     //
                     // YAML file Header
                     //
@@ -261,7 +245,6 @@ run: gunicorn myapp.app --workers 5 --foo bar
                         
                     }
 
-
                     //
                     // Post-build
                     //
@@ -285,14 +268,12 @@ run: gunicorn myapp.app --workers 5 --foo bar
                             {
                                 text.Append("|\n  python manage.py makemigrations\n    python manage.py migrate");
                             }
-
                         }
                         else
                         {
                             text.Append("python manage.py makemigrations");
                         }
                     }
-
                     return text.ToString();
                 }
             }
