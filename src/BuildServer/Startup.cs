@@ -11,10 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using JsonFlatFileDataStore;
-using System;
 using Microsoft.Oryx.BuildServer.Repositories;
 using Microsoft.Oryx.BuildServer.Services;
 using Microsoft.Oryx.BuildServer.Services.ArtifactBuilders;
+using System.IO;
 
 namespace Microsoft.Oryx.BuildServer
 {
@@ -30,8 +30,12 @@ namespace Microsoft.Oryx.BuildServer
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var store = new DataStore("builds.json", keyProperty: "id");
-            Console.WriteLine("** Inside ConfigureServices **");
+            string folderName = "/store";
+            if (!Directory.Exists(folderName))
+            {
+                Directory.CreateDirectory(folderName);
+            }
+            var store = new DataStore("/store/builds.json", keyProperty: "id");
             services.AddHttpContextAccessor();
             services.AddMvc();
             services.AddSingleton<IRepository>(x => new BuildRepository(store));
