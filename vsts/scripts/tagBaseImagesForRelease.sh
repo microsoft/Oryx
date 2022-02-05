@@ -71,6 +71,11 @@ elif [ "$imageName" == "python-build" ]
 then
   echo ""
   retagImageWithStagingRepository python-buildimage-bases.txt $imageName $acrProdRepoPrefix
+elif [ "$imageName" == "python" ]
+then
+  echo ""
+  echo $imageName
+  retagImageWithStagingRepository python-runtimeimage-bases-buster.txt $imageName buster
 elif [ "$imageName" == "php-build" ]
 then
   echo ""

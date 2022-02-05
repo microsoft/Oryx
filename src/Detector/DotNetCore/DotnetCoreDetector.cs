@@ -88,6 +88,13 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 // For handling .NET 5
                 .Replace("net", string.Empty);
 
+            // Support .NET moniker aliases
+            // Ex: "472" => "4.72"
+            //     "48" => "4.8"
+            if (targetFramework.IndexOf('.') == -1) {
+                targetFramework = targetFramework.Insert(1, ".");
+            }
+
             // Ex: "2.2" => 2.2
             if (decimal.TryParse(targetFramework, out var val))
             {

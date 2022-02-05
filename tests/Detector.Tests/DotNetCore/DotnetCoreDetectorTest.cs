@@ -82,6 +82,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         [Theory]
         [InlineData("netcoreapp2.1", "2.1")]
         [InlineData("net5.0", "5.0")]
+        [InlineData("net60", "6.0")]
         public void Detect_ReturnsVersionPartOfTargetFramework(
             string targetFrameworkName,
             string expectedRuntimeVersion)

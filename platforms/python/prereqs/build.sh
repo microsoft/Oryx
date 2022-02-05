@@ -6,18 +6,19 @@
 
 set -ex
 
-wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz -O /python.tar.xz
-wget https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc -O /python.tar.xz.asc
+pythonVersion=$PYTHON_VERSION 
+
+wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /python.tar.xz
+wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /python.tar.xz.asc
 
 debianFlavor=$DEBIAN_FLAVOR
-pythonSdkFileName=""
+debianHackFlavor=$DEBIAN_HACK_FLAVOR
+gpgKey=$GPG_KEY
 
-if [ "$debianFlavor" == "stretch" ]; then
-	# Use default python sdk file name
-	pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
-else
-	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
-    # for buster and ubuntu we would need following libraries to build php 
+pythonSdkFileName=""
+PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2da64da38f516078c7/public/get-pip.py"
+
+# for buster and ubuntu we would need following libraries
     apt-get update && \
 	apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -26,12 +27,25 @@ else
         libsqlite3-dev \
         libreadline-dev \
         libbz2-dev \
-        libgdm-dev
+        libgdm-dev \
+        libbluetooth-dev \
+        tk-dev \
+        uuid-dev
+
+if [ "$debianFlavor" == "stretch" ]; then
+	# Use default python sdk file name
+    echo "Hack flavor is: "$debianHackFlavor
+
+    pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
+    PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
+    PIP_VERSION="20.2.3"
+else
+	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
 fi
 
 # Try getting the keys 5 times at most
-/tmp/receiveGpgKeys.sh $GPG_KEY
-    
+/tmp/receiveGpgKeys.sh $gpgKey
+
 gpg --batch --verify /python.tar.xz.asc /python.tar.xz
 tar -xJf /python.tar.xz --strip-components=1 -C .
 
@@ -59,9 +73,13 @@ make -j $(nproc)
 make install
 
 # Install pip
-wget https://bootstrap.pypa.io/get-pip.py -O /get-pip.py
+wget "$PYTHON_GET_PIP_URL" -O get-pip.py
+
 LD_LIBRARY_PATH=/usr/src/python \
-/usr/src/python/python /get-pip.py \
+/usr/src/python/python get-pip.py \
+    --trusted-host pypi.python.org \
+    --trusted-host pypi.org \
+    --trusted-host files.pythonhosted.org \
     --prefix $INSTALLATION_PREFIX \
     --disable-pip-version-check \
     --no-cache-dir \

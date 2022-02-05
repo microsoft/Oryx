@@ -98,7 +98,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("10")]
         [InlineData("10.1")]
         [InlineData("10.10")]
         [InlineData("10.12")]

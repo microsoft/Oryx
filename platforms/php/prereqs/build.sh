@@ -178,8 +178,12 @@ apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false;
 $INSTALLATION_PREFIX/bin/php --version;
 
 # https://github.com/docker-library/php/issues/443
-$INSTALLATION_PREFIX/bin/pecl update-channels;
-rm -rf /tmp/pear ~/.pearrc
+# in PHP 7.4+, the pecl/pear installers are officially deprecated (requiring an explicit "--with-pear") and will be removed in PHP 8+; 
+# see also https://github.com/docker-library/php/issues/846#issuecomment-505638494
+if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then
+	$INSTALLATION_PREFIX/bin/pecl update-channels;
+	rm -rf /tmp/pear ~/.pearrc
+fi
 
 if [ $PHP_MAJOR == '7' ] && [ $PHP_MINOR != '0' ]; then
 	PHP_INI_DIR=$PHP_INI_DIR php=$INSTALLATION_PREFIX/bin/php /php/docker-php-ext-enable.sh sodium
