@@ -4,7 +4,7 @@
             "Component": {
                 "pip": {
                     "Name": "viztracer",
-                    "Version": "0.14.2"
+                    "Version": "0.14.5"
                 },
                 "Type": "pip"
             },
@@ -24,7 +24,7 @@
             "Component": {
                 "pip": {
                     "Name": "orjson",
-                    "Version": "3.6.4"
+                    "Version": "3.6.6"
                 },
                 "Type": "pip"
             },
