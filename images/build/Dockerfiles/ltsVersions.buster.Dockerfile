@@ -112,7 +112,7 @@ RUN set -ex \
     && $imagesDir/build/installHugo.sh \
     # Install Node
     && . $buildDir/__nodeVersions.sh \
-    && $imagesDir/installPlatform.sh nodejs $NODE14_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $NODE16_VERSION \
     && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
     && ${imagesDir}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
     && ${imagesDir}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
@@ -122,8 +122,8 @@ RUN set -ex \
     && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
     && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
     && cd /opt/nodejs \
-    && ln -s $NODE14_VERSION 14 \
-    && ln -s 14 lts \
+    && ln -s $NODE16_VERSION 16 \
+    && ln -s 16 lts \
     && npm install -g lerna \
     && cd /opt/yarn \
     && ln -s $YARN_VERSION stable \

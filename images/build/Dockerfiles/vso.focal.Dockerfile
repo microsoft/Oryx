@@ -131,6 +131,7 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh nodejs $NODE10_VERSION \
     && $imagesDir/installPlatform.sh nodejs $NODE12_VERSION \
     && $imagesDir/installPlatform.sh nodejs $NODE14_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $NODE16_VERSION \
     && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
     && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
     && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
@@ -143,8 +144,9 @@ RUN set -ex \
     && ln -s $NODE10_VERSION 10 \
     && ln -s $NODE12_VERSION 12 \
     && ln -s $NODE14_VERSION 14 \
-    && ln -s 14 lts \
-    && ln -sfn /opt/nodejs/$NODE14_VERSION /home/codespace/.nodejs/current \
+    && ln -s $NODE16_VERSION 16 \
+    && ln -s 16 lts \
+    && ln -sfn /opt/nodejs/$NODE16_VERSION /home/codespace/.nodejs/current \
     && cd /opt/yarn \
     && ln -s $YARN_VERSION stable \
     && ln -s $YARN_VERSION latest \
