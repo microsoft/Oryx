@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -315,8 +316,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             buildProperties[ManifestFilePropertyKeys.CompressDestinationDir] =
                 _cliOptions.CompressDestinationDir.ToString().ToLower();
 
+            // Construction and checking the file existence here to allow tests to pass
+            string filePathForAppYaml = Path.Combine(sourceDirInBuildContainer, "app.yaml");
+
             // Override the prebuild and postbuild commands if BuildConfigurationFile exists
-            if (context.SourceRepo.FileExists("app.yaml"))
+            if (File.Exists(filePathForAppYaml))
             {
                 _logger.LogDebug("Found app.yaml");
                 _writer.WriteLine("Found app.yaml");
