@@ -63,6 +63,7 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh nodejs 10.14.2 \
     && $imagesDir/installPlatform.sh nodejs 10.21.0 \
     && $imagesDir/installPlatform.sh nodejs 12.18.2 \
+    && $imagesDir/installPlatform.sh nodejs 16.13.1 \
     && cd /opt/nodejs \
     && ln -s $NODE8_VERSION 8 \
     && ln -s 8.0.0 8.0 \
@@ -80,6 +81,7 @@ RUN set -ex \
     && ln -s 10.14.2 10.14 \
     && ln -s 10.21.0 10.21 \
     && ln -s 12.18.2 12.18 \
+    && ln -s 16.13.1 16.13 \
     && yarnCacheFolder="/usr/local/share/yarn-cache" \
     && mkdir -p $yarnCacheFolder \
     && chmod 777 $yarnCacheFolder \
