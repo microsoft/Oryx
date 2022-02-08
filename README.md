@@ -92,7 +92,7 @@ docker run --detach --rm \
 
 ## Build Server Invocation
 1. Build the Oryx solution
-    1. ![Build Solutionpng](doc/buildSolutionpng.png)
+    1. ![Build Solutionpng](doc/buildServer/buildSolution.png)
 1. Create image with oryx and platform binaries
     1. `time build/buildBuildImages.sh -t ltsversion`
 1. Run docker to port map, volume mount a directory, specify the image with `oryx build`, and invoke BuildServer 
@@ -103,9 +103,9 @@ docker run --detach --rm \
         oryxdevmcr.azurecr.io/public/oryx/build:lts-versions \
         /opt/buildscriptgen/BuildServer
         ``` 
-        ![Start](doc/start.png)
+        ![Start](doc/buildServer/start.png)
 1. Invoke build
-    1.  ![Post](doc/post.png)
+    1.  ![Post](doc/buildServer/post.png)
         1. Under the hood `oryx build` is invoked
             ```bash
             oryx build [sourcePath] \
@@ -115,9 +115,9 @@ docker run --detach --rm \
                 --log-file [logPath]
             ```
 1. Check build status with id `1`
-    1. ![Status](doc/status.png)
+    1. ![Status](doc/buildServer/status.png)
 1. Check server healthcheck
-    1. ![Health Check](doc/healthCheck.png)
+    1. ![Health Check](doc/buildServer/healthCheck.png)
 
 # Components
 
