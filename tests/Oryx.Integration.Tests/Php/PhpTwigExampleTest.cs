@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php")]
     public class PhpTwigExampleTest : PhpEndToEndTestsBase
     {
         public PhpTwigExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -21,12 +20,28 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
+        // Unique category traits are needed to run each
+        // platform-version in it's own pipeline agent. This is
+        // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-8.0")]
+        public void PipelineTestInvocationsPhp80()
+        {   
+            string phpVersion80 = "8.0";
+            TwigExample(phpVersion80);
+            PhpFpmTwigExample(phpVersion80);
+        }
+
+        [Fact, Trait("category", "php-7.4")]
+        public void PipelineTestInvocationsPhp74()
+        {
+            string phpVersion74 = "7.4";
+            TwigExample(phpVersion74);
+            PhpFpmTwigExample(phpVersion74);
+        }
+
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
         // Twig does not support PHP < 7
         public async Task TwigExample(string phpVersion)
         {
@@ -63,8 +78,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
         // Twig does not support PHP < 7
         public async Task PhpFpmTwigExample(string phpVersion)
         {

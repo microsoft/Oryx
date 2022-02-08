@@ -1,5 +1,5 @@
 {{ if NodeBuildCommandsFile | IsNotBlank }}
-COMMAND_MANIFEST_FILE={{ NodeBuildCommandsFile }}
+COMMAND_MANIFEST_FILE="{{ NodeBuildCommandsFile }}"
 
 echo "Removing existing manifest file"
 rm -f "$COMMAND_MANIFEST_FILE"

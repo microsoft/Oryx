@@ -19,8 +19,8 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public static class EndToEndTestHelper
     {
-        private const int MaxRetryCount = 20;
-        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(10);
+        private const int MaxRetryCount = 100;
+        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(100);
 
         public static Task BuildRunAndAssertAppAsync(
             string appName,
@@ -333,7 +333,7 @@ namespace Microsoft.Oryx.Tests.Common
                 }
             }
 
-            throw new InvalidOperationException("Could not retreive the host port of the container.");
+            throw new InvalidOperationException($"Could not retreive the host port of the container {containerName}:{portInContainer}");
         }
 
         private static async Task RunAssertsAsync(Func<Task> action, DockerResultBase res, ITestOutputHelper output)
