@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
@@ -15,6 +16,8 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -312,6 +315,44 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             buildProperties[ManifestFilePropertyKeys.CompressDestinationDir] =
                 _cliOptions.CompressDestinationDir.ToString().ToLower();
+
+            // Construction and checking the file existence here to allow tests to pass
+            string filePathForAppYaml = Path.Combine(sourceDirInBuildContainer, "app.yaml");
+
+            // Override the prebuild and postbuild commands if BuildConfigurationFile exists
+            if (File.Exists(filePathForAppYaml))
+            {
+                _logger.LogDebug("Found app.yaml");
+                _writer.WriteLine("Found app.yaml");
+                try
+                {
+                    BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(context.SourceRepo.ReadFile("app.yaml"));
+                    if (!string.IsNullOrEmpty(buildConfigFile.prebuild))
+                    {
+                        _cliOptions.PreBuildCommand = buildConfigFile.prebuild.Replace("\r\n", ";").Replace("\n", ";");
+                        _cliOptions.PreBuildScriptPath = null;
+                        _logger.LogDebug("Overriding the pre-build commands with the app.yaml section");
+                        _logger.LogDebug(_cliOptions.PreBuildCommand.ToString());
+                        _writer.WriteLine("Overriding the pre-build commands with the app.yaml section");
+                        _writer.WriteLine(_cliOptions.PreBuildCommand.ToString());
+                    }
+
+                    if (!string.IsNullOrEmpty(buildConfigFile.postbuild))
+                    {
+                        _cliOptions.PostBuildCommand = buildConfigFile.postbuild.Replace("\r\n", ";").Replace("\n", ";");
+                        _cliOptions.PostBuildScriptPath = null;
+                        _logger.LogDebug("Overriding the post-build commands with the app.yaml section");
+                        _logger.LogDebug(_cliOptions.PostBuildCommand.ToString());
+                        _writer.WriteLine("Overriding the post-build commands with the app.yaml section");
+                        _writer.WriteLine(_cliOptions.PostBuildCommand.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning("Invalid app.yaml format", ex);
+                    _writer.WriteLine("Invalid app.yaml format");
+                }
+            }
 
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
                 context.SourceRepo,
