@@ -55,6 +55,26 @@ placed; if not specified the source directory is used for output as well.
 
 For all options, specify `oryx --help`.
 
+### Support for Build Configuration File
+
+You can provide some extra build related information in an app.yaml in your content
+root directory. The build configuration supports 2 sections
+1. pre-build
+2. post-build
+
+This is how a sample app.yaml looks like
+
+version: 1
+
+pre-build: |
+  apt install curl
+  
+post-build: |
+  python manage.py makemigrations
+  python manage.py migrate
+
+Oryx will read the yaml and run the commands provided for pre-build and post-build.
+
 ### `oryx create-script -appPath`
 
 When `oryx` is run in the runtime images it generates a start script named
