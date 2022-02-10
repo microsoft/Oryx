@@ -22,6 +22,12 @@ if [ ! -d "$PIP_CACHE_DIR" ];then
     mkdir -p $PIP_CACHE_DIR
 fi
 
+{{ if CustomRequirementsTxtPath | IsNotBlank }}
+    REQUIREMENTS_TXT_FILE="{{ CustomRequirementsTxtPath }}"
+{{ else }}
+    REQUIREMENTS_TXT_FILE="requirements.txt"
+{{ end }}
+
 {{ if VirtualEnvironmentName | IsNotBlank }}
     {{ if PackagesDirectory | IsNotBlank }}
         if [ -d "{{ PackagesDirectory }}" ]
@@ -37,7 +43,7 @@ fi
 
     echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
 
-    if [ -e "requirements.txt" ]; then
+    if [ -e "$REQUIREMENTS_TXT_FILE" ]; then
         VIRTUALENVIRONMENTOPTIONS="$VIRTUALENVIRONMENTOPTIONS --system-site-packages"
     fi
 
@@ -53,13 +59,13 @@ fi
     ActivateVenvCommand="source $VIRTUALENVIRONMENTNAME/bin/activate"
     source $VIRTUALENVIRONMENTNAME/bin/activate
 
-    if [ -e "requirements.txt" ]
+    if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
         set +e 
         echo "Running pip install..."
-        InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT"
+        InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT
+        python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT
         pipInstallExitCode=${PIPESTATUS[0]}
         if [[ $pipInstallExitCode != 0 ]]
         then
@@ -102,15 +108,15 @@ fi
     # For virtual environment, we use the actual 'python' alias that as setup by the venv,
     python_bin=python
 {{ else }}
-    if [ -e "requirements.txt" ]
+    if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
         set +e
         echo
         echo Running pip install...
         START_TIME=$SECONDS
-        InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT"
+        InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT
+        $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT
         pipInstallExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
@@ -213,7 +219,7 @@ fi
 {{ if EnableCollectStatic }}
     if [ -e "$SOURCE_DIR/manage.py" ]
     then
-        if grep -iq "Django" "$SOURCE_DIR/requirements.txt"
+        if grep -iq "Django" "$SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
         then
             echo
             echo Content in source directory is a Django app
@@ -229,7 +235,7 @@ fi
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             echo "Done in $ELAPSED_TIME sec(s)."
         else
-            LogWarning "Missing Django module in $SOURCE_DIR/requirements.txt. Add Django to your requirements.txt file."
+            LogWarning "Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE. Add Django to your requirements.txt file."
         fi
     fi
 {{ end }}

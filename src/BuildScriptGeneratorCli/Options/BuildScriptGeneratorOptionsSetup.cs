@@ -50,6 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.AppType = GetStringValue(SettingsKeys.AppType);
             options.BuildCommandsFileName = GetStringValue(SettingsKeys.BuildCommandsFileName);
             options.CompressDestinationDir = GetBooleanValue(SettingsKeys.CompressDestinationDir);
+            options.CustomRequirementsTxtPath = GetStringValue(SettingsKeys.CustomRequirementsTxtPath);
 
             // Dynamic install
             options.EnableDynamicInstall = GetBooleanValue(SettingsKeys.EnableDynamicInstall);

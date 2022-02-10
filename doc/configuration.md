@@ -47,7 +47,8 @@ Setting name for Python apps | Description                                      
 PYTHON\_VERSION              | Specify which Python version the app is using                  | ""      | "2.7.1"
 DISABLE\_PYTHON\_BUILD       | Do not apply Python build even if repo indicates it            | `false` | `true`, `false`
 VIRTUALENV\_NAME             | Specify Python virtual environment name                        | ""      | "antenv2.7"
-DISABLE\_COLLECTSTATIC       | Disable running `collectstatic` when building Django apps.      | `false` | `true`, `false`
+DISABLE\_COLLECTSTATIC       | Disable running `collectstatic` when building Django apps.     | `false` | `true`, `false`
+CUSTOM\_REQUIREMENTSTXT\_PATH| Specify where a requirements.txt is locating. If not set, default is at root of the repo.| ""    | "subdir/requirements.txt"
 
 Setting name for Php apps    | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------

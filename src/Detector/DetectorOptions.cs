@@ -32,5 +32,10 @@ namespace Microsoft.Oryx.Detector
         /// is using. If <c>true</c>, then disable detection for frameworks. Default is <c>false</c>.
         /// </summary>
         public bool DisableFrameworkDetection { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path where a requirements.txt locates.
+        /// </summary>
+        public string CustomRequirementsTxtPath { get; set; }
     }
 }

@@ -40,15 +40,17 @@ namespace Microsoft.Oryx.Detector.Python
             var appDirectory = string.Empty;
             var hasRequirementsTxtFile = false;
             var hasPyprojectTomlFile = false;
+            var customRequirementsTxtPath = _options.CustomRequirementsTxtPath;
+            var requirementsTxtPath = customRequirementsTxtPath == null ? PythonConstants.RequirementsFileName : customRequirementsTxtPath;
 
-            if (sourceRepo.FileExists(PythonConstants.RequirementsFileName))
+            if (sourceRepo.FileExists(requirementsTxtPath))
             {
-                _logger.LogInformation($"Found {PythonConstants.RequirementsFileName} at the root of the repo.");
+                _logger.LogInformation($"Found {requirementsTxtPath} at the root of the repo.");
                 hasRequirementsTxtFile = true;
 
                 // Warning if missing django module
                 bool hasDjangoModule = false;
-                string filePath = $"{sourceRepo.RootPath}/{PythonConstants.RequirementsFileName}";
+                string filePath = $"{sourceRepo.RootPath}/{requirementsTxtPath}";
                 using (var reader = new StreamReader(filePath))
                 {
                     while (!reader.EndOfStream && !hasDjangoModule)
@@ -62,7 +64,7 @@ namespace Microsoft.Oryx.Detector.Python
                 }
                 if (!hasDjangoModule)
                 {
-                    _logger.LogWarning($"Missing django module in {PythonConstants.RequirementsFileName}");
+                    _logger.LogWarning($"Missing django module in {requirementsTxtPath}");
                 } 
                 else
                 {
@@ -78,7 +80,7 @@ namespace Microsoft.Oryx.Detector.Python
             }
             else
             {
-                string errorMsg = $"Cound not find {PythonConstants.RequirementsFileName} at the root of the repo. More information: https://aka.ms/requirements-not-found";
+                string errorMsg = $"Cound not find {requirementsTxtPath} at the root of the repo. More information: https://aka.ms/requirements-not-found";
                 _logger.LogError(errorMsg);
             }
             if (sourceRepo.FileExists(PythonConstants.PyprojectTomlFileName))
