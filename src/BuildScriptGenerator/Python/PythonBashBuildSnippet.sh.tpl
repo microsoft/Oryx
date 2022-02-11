@@ -1,4 +1,5 @@
 set -e
+# TODO: refactor redundant code
 
 declare -r TS_FMT='[%T%z] '
 declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install. More information: https://aka.ms/requirements-not-found'
@@ -53,34 +54,39 @@ fi
     ActivateVenvCommand="source $VIRTUALENVIRONMENTNAME/bin/activate"
     source $VIRTUALENVIRONMENTNAME/bin/activate
 
+    moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "requirements.txt" ]
     then
         set +e 
         echo "Running pip install..."
         InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT
+        StdError=$((eval ${InstallCommand}) 2>&1)
         pipInstallExitCode=${PIPESTATUS[0]}
+        set -e
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "Failed pip installation with exit code: ${pipInstallExitCode}. More information: https://aka.ms/troubleshoot-python" 
+            StdError=$(echo "$StdError" | sed '/^error/I!d')
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}" 
             exit $pipInstallExitCode
         fi
-        set -e
     elif [ -e "setup.py" ]
     then
+        set +e
         echo "Running python setup.py install..."
         InstallCommand="$python setup.py install --user| ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        $python setup.py install --user| ts $TS_FMT
+        StdError=$((eval ${InstallCommand}) 2>&1)
         pythonBuildExitCode=${PIPESTATUS[0]}
+        set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "Failed pip installation with exit code: ${$pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}" 
             exit $pythonBuildExitCode
         fi
     elif [ -e "pyproject.toml" ]
     then
+        set +e
         echo "Running pip install poetry..."
         InstallPipCommand="pip install poetry"
         printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
@@ -90,6 +96,7 @@ fi
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
         poetry install
         pythonBuildExitCode=${PIPESTATUS[0]}
+        set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
             LogWarning "Failed to install poetry with exist status ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
@@ -102,6 +109,7 @@ fi
     # For virtual environment, we use the actual 'python' alias that as setup by the venv,
     python_bin=python
 {{ else }}
+    moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "requirements.txt" ]
     then
         set +e
@@ -110,17 +118,17 @@ fi
         START_TIME=$SECONDS
         InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT
+        StdError=$((eval ${InstallCommand}) 2>&1)
         pipInstallExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
-
+        set -e
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "Failed pip installation with exit code: ${$pipInstallExitCode}. More information: https://aka.ms/troubleshoot-python"
+            StdError=$(echo "$StdError" | sed '/^error/I!d')
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}" 
             exit $pipInstallExitCode
         fi
-        set -e
     elif [ -e "setup.py" ]
     then
         echo
@@ -135,14 +143,14 @@ fi
         echo "Running python setup.py install..."
         InstallCommand="$python setup.py install --user| ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        $python setup.py install --user| ts $TS_FMT
+        StdError=$((eval ${InstallCommand}) 2>&1)
         pythonBuildExitCode=${PIPESTATUS[0]}
+        set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "Failed to setup.py with exit code ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}" 
             exit $pythonBuildExitCode
         fi
-        set -e
     elif [ -e "pyproject.toml" ]
     then
         echo "Running pip install poetry..."
