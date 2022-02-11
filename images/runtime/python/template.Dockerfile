@@ -76,7 +76,7 @@ RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN pip install --upgrade pip \
     && pip install gunicorn \
     && pip install debugpy \
-    && if [ "%PYTHON_MAJOR_VERSION%" = "3" ] && [ "%PYTHON_VERSION%" != "3.6" ]; then pip install viztracer==0.14.5 \
+    && if [ "%PYTHON_MAJOR_VERSION%" = "3" ] && [ "%PYTHON_VERSION%" != "3.6" ]; then pip install viztracer==0.14.3 \
     && pip install vizplugins==0.1.2 \
     && pip install orjson==3.6.6; fi \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \

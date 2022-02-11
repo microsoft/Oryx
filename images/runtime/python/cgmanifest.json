@@ -4,7 +4,7 @@
             "Component": {
                 "pip": {
                     "Name": "viztracer",
-                    "Version": "0.14.5"
+                    "Version": "0.14.3"
                 },
                 "Type": "pip"
             },
