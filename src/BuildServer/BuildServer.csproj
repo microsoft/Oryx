@@ -5,6 +5,7 @@
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
+    <AssemblyName>BuildServer</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
