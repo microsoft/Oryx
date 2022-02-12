@@ -6,6 +6,7 @@
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>BuildServer</AssemblyName>
+    <RootNamespace>Microsoft.Oryx.BuildServer</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
