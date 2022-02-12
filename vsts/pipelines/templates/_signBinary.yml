@@ -52,6 +52,14 @@ steps:
     configuration: '$(BuildConfiguration)'
     condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
+- task: VSBuild@1
+  displayName: 'Sign Build Server Binaries'
+  inputs:
+    solution: 'src/BuildServer/BuildServer.signproj'
+    msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
+    configuration: '$(BuildConfiguration)'
+    condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+
 - task: ArchiveFiles@2
   displayName: 'Create compressed file of Oryx binaries'
   inputs:
