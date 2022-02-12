@@ -10,7 +10,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\BuildServer\BuildServer.csproj" />
-		<FilesToSign Include="$(OutDir)\BuildServer.dll;">
+		<FilesToSign Include="$(OutDir)\BuildServer.dll;&#xD;&#xA;                          $(OutDir)\Microsoft.Oryx.BuildServer.dll;">
 			<Authenticode>Microsoft400</Authenticode>
 			<StrongName>StrongName</StrongName>
 		</FilesToSign>
