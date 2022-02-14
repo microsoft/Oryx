@@ -316,8 +316,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             buildProperties[ManifestFilePropertyKeys.CompressDestinationDir] =
                 _cliOptions.CompressDestinationDir.ToString().ToLower();
 
-            // Construction and checking the file existence here to allow tests to pass
-            string filePathForAppYaml = Path.Combine(sourceDirInBuildContainer, "app.yaml");
+            // Workaround for bug in TestSourceRepo class in validation tests
+            // Should be using context.SourceRepo.FileExists
+            string filePathForAppYaml = Path.Combine(context.SourceRepo.RootPath, "app.yaml");
+
+            _logger.LogDebug("Path to app.yaml " + filePathForAppYaml);
+            _writer.WriteLine("Path to app.yaml " + filePathForAppYaml);
 
             // Override the prebuild and postbuild commands if BuildConfigurationFile exists
             if (File.Exists(filePathForAppYaml))
@@ -352,6 +356,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     _logger.LogWarning("Invalid app.yaml format", ex);
                     _writer.WriteLine("Invalid app.yaml format");
                 }
+            }
+            else
+            {
+                _logger.LogDebug("No app.yaml found");
+                _writer.WriteLine("No app.yaml found");
             }
 
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
