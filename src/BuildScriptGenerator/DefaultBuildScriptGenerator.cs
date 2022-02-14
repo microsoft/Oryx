@@ -324,9 +324,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             _logger.LogDebug("Path to app.yaml " + filePathForAppYaml);
             _writer.WriteLine("Path to app.yaml " + filePathForAppYaml);
 
-            // Construction and checking the file existence here to allow tests to pass
-            string filePathForAppYaml = Path.Combine(sourceDirInBuildContainer, "app.yaml");
-
             // Override the prebuild and postbuild commands if BuildConfigurationFile exists
             if (File.Exists(filePathForAppYaml))
             {
