@@ -61,7 +61,7 @@ fi
         echo "Running pip install..."
         InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdError=$((eval ${InstallCommand}) 2>&1)
+        StdError=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
         set -e
         if [[ $pipInstallExitCode != 0 ]]
@@ -76,7 +76,7 @@ fi
         echo "Running python setup.py install..."
         InstallCommand="$python setup.py install --user| ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdError=$((eval ${InstallCommand}) 2>&1)
+        StdError=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
         if [[ $pythonBuildExitCode != 0 ]]
@@ -118,7 +118,7 @@ fi
         START_TIME=$SECONDS
         InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdError=$((eval ${InstallCommand}) 2>&1)
+        StdError=$( ( $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
@@ -143,7 +143,7 @@ fi
         echo "Running python setup.py install..."
         InstallCommand="$python setup.py install --user| ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdError=$((eval ${InstallCommand}) 2>&1)
+        StdError=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
         if [[ $pythonBuildExitCode != 0 ]]
