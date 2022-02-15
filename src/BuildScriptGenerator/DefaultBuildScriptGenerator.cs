@@ -321,12 +321,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // Should be using context.SourceRepo.FileExists
             string filePathForAppYaml = Path.Combine(context.SourceRepo.RootPath, "app.yaml");
 
-            _writer.LogDebug("Path to app.yaml " + filePathForAppYaml);
+            _logger.LogDebug("Path to app.yaml " + filePathForAppYaml);
 
             // Override the prebuild and postbuild commands if BuildConfigurationFile exists
             if (File.Exists(filePathForAppYaml))
             {
-                _writer.LogDebug("Found app.yaml");
+                _logger.LogDebug("Found app.yaml");
                 try
                 {
                     BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(context.SourceRepo.ReadFile("app.yaml"));
@@ -334,16 +334,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     {
                         _cliOptions.PreBuildCommand = buildConfigFile.prebuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PreBuildScriptPath = null;
-                        _writer.LogDebug("Overriding the pre-build commands with the app.yaml section");
-                        _writer.LogDebug(_cliOptions.PreBuildCommand.ToString());
+                        _logger.LogDebug("Overriding the pre-build commands with the app.yaml section");
+                        _logger.LogDebug(_cliOptions.PreBuildCommand.ToString());
                     }
 
                     if (!string.IsNullOrEmpty(buildConfigFile.postbuild))
                     {
                         _cliOptions.PostBuildCommand = buildConfigFile.postbuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PostBuildScriptPath = null;
-                        _writer.LogDebug("Overriding the post-build commands with the app.yaml section");
-                        _writer.LogDebug(_cliOptions.PostBuildCommand.ToString());
+                        _logger.LogDebug("Overriding the post-build commands with the app.yaml section");
+                        _logger.LogDebug(_cliOptions.PostBuildCommand.ToString());
                     }
                 }
                 catch (Exception ex)
@@ -353,7 +353,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
             else
             {
-               _writer.LogDebug("No app.yaml found");
+                _logger.LogDebug("No app.yaml found");
             }
 
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
