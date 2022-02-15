@@ -321,8 +321,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // Should be using context.SourceRepo.FileExists
             string filePathForAppYaml = Path.Combine(context.SourceRepo.RootPath, "app.yaml");
 
-            _logger.LogDebug("Path to app.yaml " + filePathForAppYaml);
-            _writer.WriteLine("Path to app.yaml " + filePathForAppYaml);
+            _writer.LogDebug("Path to app.yaml " + filePathForAppYaml);
 
             // Override the prebuild and postbuild commands if BuildConfigurationFile exists
             if (File.Exists(filePathForAppYaml))
@@ -360,8 +359,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
             else
             {
-                _logger.LogDebug("No app.yaml found");
-                _writer.WriteLine("No app.yaml found");
+               _writer.LogDebug("No app.yaml found");
             }
 
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
