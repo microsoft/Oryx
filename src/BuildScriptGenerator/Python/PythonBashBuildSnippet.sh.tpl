@@ -1,12 +1,13 @@
 set -e
+# TODO: refactor redundant code. Work-item: 1476457
 
 declare -r TS_FMT='[%T%z] '
-declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install'
+declare -r REQS_NOT_FOUND_MSG='Could not find setup.py or requirements.txt; Not running pip install. More information: https://aka.ms/requirements-not-found'
 echo "Python Version: $python"
 PIP_CACHE_DIR=/usr/local/share/pip-cache
 
 {{ if PythonBuildCommandsFileName | IsNotBlank }}
-COMMAND_MANIFEST_FILE={{ PythonBuildCommandsFileName }}
+COMMAND_MANIFEST_FILE="{{ PythonBuildCommandsFileName }}"
 {{ end }}
 
 echo "Creating directory for command manifest file if it doesnot exist"
@@ -53,34 +54,39 @@ fi
     ActivateVenvCommand="source $VIRTUALENVIRONMENTNAME/bin/activate"
     source $VIRTUALENVIRONMENTNAME/bin/activate
 
+    moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "requirements.txt" ]
     then
         set +e 
         echo "Running pip install..."
         InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT
+        StdError=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
+        set -e
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "Failed pip installation with exit code: ${pipInstallExitCode}"
+            StdError=$(echo "$StdError" | sed '/^error/I!d')
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}" 
             exit $pipInstallExitCode
         fi
-        set -e
     elif [ -e "setup.py" ]
     then
+        set +e
         echo "Running python setup.py install..."
         InstallCommand="$python setup.py install --user| ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        $python setup.py install --user| ts $TS_FMT
+        StdError=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
+        set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "Failed pip installation with exit code: ${$pythonBuildExitCode}"
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}" 
             exit $pythonBuildExitCode
         fi
     elif [ -e "pyproject.toml" ]
     then
+        set +e
         echo "Running pip install poetry..."
         InstallPipCommand="pip install poetry"
         printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
@@ -90,8 +96,10 @@ fi
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
         poetry install
         pythonBuildExitCode=${PIPESTATUS[0]}
+        set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
+            LogWarning "Failed to install poetry with exist status ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
             exit $pythonBuildExitCode
         fi
     else
@@ -101,6 +109,7 @@ fi
     # For virtual environment, we use the actual 'python' alias that as setup by the venv,
     python_bin=python
 {{ else }}
+    moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "requirements.txt" ]
     then
         set +e
@@ -109,17 +118,17 @@ fi
         START_TIME=$SECONDS
         InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT
+        StdError=$( ( $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r requirements.txt --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
-
+        set -e
         if [[ $pipInstallExitCode != 0 ]]
         then
-            LogError "Failed pip installation with exit code: ${$pipInstallExitCode}"
+            StdError=$(echo "$StdError" | sed '/^error/I!d')
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}" 
             exit $pipInstallExitCode
         fi
-        set -e
     elif [ -e "setup.py" ]
     then
         echo
@@ -134,14 +143,14 @@ fi
         echo "Running python setup.py install..."
         InstallCommand="$python setup.py install --user| ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        $python setup.py install --user| ts $TS_FMT
+        StdError=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
+        set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "Failed to setup.py with exit status ${pythonBuildExitCode}"
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}" 
             exit $pythonBuildExitCode
         fi
-        set -e
     elif [ -e "pyproject.toml" ]
     then
         echo "Running pip install poetry..."
@@ -158,7 +167,7 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogWarning "Failed to install poetry with exist status ${pythonBuildExitCode}"
+            LogWarning "Failed to install poetry with exit code ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
             exit $pythonBuildExitCode
         fi
     else
@@ -223,12 +232,12 @@ fi
             $python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true ; 
             if [[ $EXIT_CODE != 0 ]]
             then
-                LogWarning "Failed running 'collectstatic' exited with exit code $EXIT_CODE."
+                LogWarning "Failed running 'collectstatic' exited with exit code $EXIT_CODE. More information: https://aka.ms/customize-build-automation"
             fi
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             echo "Done in $ELAPSED_TIME sec(s)."
         else
-            LogWarning "Warning: missing Django module in $SOURCE_DIR/requirements.txt"
+            LogWarning "Missing Django module in $SOURCE_DIR/requirements.txt. Add Django to your requirements.txt file."
         fi
     fi
 {{ end }}

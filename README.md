@@ -55,6 +55,26 @@ placed; if not specified the source directory is used for output as well.
 
 For all options, specify `oryx --help`.
 
+### Support for Build Configuration File
+
+You can provide some extra build related information in an app.yaml in your content
+root directory. The build configuration supports 2 sections
+1. pre-build
+2. post-build
+
+This is how a sample app.yaml looks like
+
+version: 1
+
+pre-build: |
+  apt install curl
+  
+post-build: |
+  python manage.py makemigrations
+  python manage.py migrate
+
+Oryx will read the yaml and run the commands provided for pre-build and post-build.
+
 ### `oryx create-script -appPath`
 
 When `oryx` is run in the runtime images it generates a start script named
@@ -89,6 +109,35 @@ docker run --detach --rm \
     'mcr.microsoft.com/oryx/node:10' \
     sh -c 'oryx create-script -appPath /app && /run.sh'
 ```
+
+## Build Server Invocation
+1. Build the Oryx solution
+    1. ![Build Solutionpng](doc/buildServer/buildSolution.png)
+1. Create image with oryx and platform binaries
+    1. `time build/buildBuildImages.sh -t ltsversion`
+1. Run docker to port map, volume mount a directory, specify the image with `oryx build`, and invoke BuildServer 
+    1. ```bash
+        docker run -it -p 8086:80 \
+        -v C:\Repo\Oryx\tests\SampleApps\:/tmp/SampleApps \
+        -e "ASPNETCORE_URLS=http://+80" \
+        oryxdevmcr.azurecr.io/public/oryx/build:lts-versions \
+        /opt/buildscriptgen/BuildServer
+        ``` 
+        ![Start](doc/buildServer/start.png)
+1. Invoke build
+    1.  ![Post](doc/buildServer/post.png)
+        1. Under the hood `oryx build` is invoked
+            ```bash
+            oryx build [sourcePath] \
+                --platform [platform] \
+                --platform-version [version] \
+                --output [outputPath] \
+                --log-file [logPath]
+            ```
+1. Check build status with id `1`
+    1. ![Status](doc/buildServer/status.png)
+1. Check server healthcheck
+    1. ![Health Check](doc/buildServer/healthCheck.png)
 
 # Components
 

@@ -18,11 +18,20 @@ mkdir -p "$targetDir"
 
 builtPythonPrereqs=false
 buildPythonPrereqsImage() {
+    debianType=$debianFlavor
+	# stretch is out of support for python, but we still need to build stretch based
+	# binaries because of static sites, they need to move to buster based jamstack image
+	# before we can remove this hack
+    if [ "$debianFlavor" == "stretch" ]; then
+        debianType="focal-scm"
+    fi
+
 	if ! $builtPythonPrereqs; then
 		echo "Building Python pre-requisites image..."
 		echo
 		docker build  \
 			   --build-arg DEBIAN_FLAVOR=$debianFlavor \
+			   --build-arg DEBIAN_HACK_FLAVOR=$debianType \
 			   -f "$pythonPlatformDir/prereqs/Dockerfile"  \
 			   -t "python-build-prereqs" $REPO_DIR
 		builtPythonPrereqs=true
@@ -51,6 +60,7 @@ buildPython() {
 		echo "Building Python version '$version' in a docker image..."
 		echo
 
+        echo "dockerfile is : $pythonPlatformDir/$dockerFile"
 		if [ -z "$dockerFile" ]; then
 			# Use common docker file
 			dockerFile="$pythonPlatformDir/Dockerfile"
@@ -58,6 +68,8 @@ buildPython() {
 			dockerFile="$pythonPlatformDir/$dockerFile"
 		fi
 		
+		cat $dockerFile
+
 		docker build \
 			-f "$dockerFile" \
 			--build-arg VERSION_TO_BUILD=$version \

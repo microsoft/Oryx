@@ -12,7 +12,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php-8")]
     public class PhpGreetingsAppTest : PhpEndToEndTestsBase
     {
         private const string ExifImageDebianFlavorPng = "3";
@@ -22,12 +21,28 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
+        // Unique category traits are needed to run each
+        // platform-version in it's own pipeline agent. This is
+        // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-8.0")]
+        public void PipelineTestInvocationsPhp80()
+        {   
+            string phpVersion80 = "8.0";
+            GreetingsAppTest(phpVersion80);
+            PhpFpmGreetingsAppTest(phpVersion80);
+        }
+
+        [Fact, Trait("category", "php-7.4")]
+        public void PipelineTestInvocationsPhp74()
+        {
+            string phpVersion74 = "7.4";
+            GreetingsAppTest(phpVersion74);
+            PhpFpmGreetingsAppTest(phpVersion74);
+        }
+
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
         public async Task GreetingsAppTest(string phpVersion)
         {
             // Arrange
@@ -64,8 +79,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
         public async Task PhpFpmGreetingsAppTest(string phpVersion)
         {
             // Arrange

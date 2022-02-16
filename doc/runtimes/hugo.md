@@ -26,7 +26,7 @@ The following process is applied for each build:
 # Version support
 
 The Hugo project defines this [release schedule][]. Oryx supports all actively supported
-releases (v0.81.0).
+releases (v0.90.1).
 
 We will update the `patch` version of a release at least once every 3 months,
 replacing the previous `patch` version for that release.

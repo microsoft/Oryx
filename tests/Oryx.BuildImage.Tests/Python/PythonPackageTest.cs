@@ -40,8 +40,6 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
                 "https://github.com/pytest-dev/pytest-timeout.git", "1.4.2"},
             new object[] { "matplotlib", "3.3.2",
                 "https://github.com/matplotlib/matplotlib.git", "v3.3.2"},
-            new object[] { "cryptography", "3.1",
-                "https://github.com/pyca/cryptography.git", "3.1"},
         };
 
         private readonly string[] IgnoredTarEntries = new[] { "tutorial.rst", "docs/tutorial.rst" };
