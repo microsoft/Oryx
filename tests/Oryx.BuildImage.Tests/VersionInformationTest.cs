@@ -40,7 +40,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage());
                 data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
-                data.Add(imageTestHelper.GetVsoBuildImage("vso-slim"));
                 return data;
             }
         }
@@ -83,7 +82,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("vso-focal")]
-        [InlineData("vso-slim")]
         public void OryxVsoBuildImage_Contains_PHP_Xdebug(string imageVersion)
         {
             var imageTestHelper = new ImageTestHelper();
@@ -113,10 +111,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("rake", "vso-focal")]
         [InlineData("ruby-debug-ide", "vso-focal")]
         [InlineData("debase", "vso-focal")]
-        [InlineData("bundler", "vso-slim")]
-        [InlineData("rake", "vso-slim")]
-        [InlineData("ruby-debug-ide", "vso-slim")]
-        [InlineData("debase", "vso-slim")]
         public void OryxVsoBuildImage_Contains_Required_Ruby_Gems(string gemName, string imageVersion)
         {
             var imageTestHelper = new ImageTestHelper();

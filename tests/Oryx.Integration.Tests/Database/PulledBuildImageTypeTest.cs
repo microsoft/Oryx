@@ -43,7 +43,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData(Settings.CliBusterBuildImageName, "cli")]
         [InlineData(Settings.JamStackBuildImageName, "jamstack")]
         [InlineData(Settings.VsoUbuntuBuildImageName, "vso-focal")]
-        [InlineData(Settings.VsoSlimBuildImageName, "vso-focal")]
         public void PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(string buildImageName, string expectedBuildImageType)
         {
             // Arrange and Act
