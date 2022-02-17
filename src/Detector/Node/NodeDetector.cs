@@ -201,11 +201,11 @@ namespace Microsoft.Oryx.Detector.Node
         {
             var detectedFrameworkResult = new List<FrameworkInfo>();
             var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
-            var wildCardDependencies = NodeConstants.WildCardDependencies;
             var monitoredDevDependencies = NodeConstants.DevDependencyFrameworkKeyWordToName;
             
             // dev-dependencies
-            foreach (var dependency in packageJson?.devDependencies)
+            var devDependencies = packageJson?.devDependencies != null ? packageJson.devDependencies : new string[0];
+            foreach (var dependency in devDependencies)
             {
                 string dependencyName = dependency.Name;
 
@@ -223,9 +223,10 @@ namespace Microsoft.Oryx.Detector.Node
                 }
             }
 
-            // dependencies
             var monitoredDependencies = NodeConstants.DependencyFrameworkKeyWordToName;
-            foreach (var dependency in packageJson?.dependencies)
+            // dependencies
+            var dependencies = packageJson?.dependencies != null ? packageJson.dependencies : new string[0];
+            foreach (var dependency in dependencies)
             {
                 string dependencyName = dependency.Name;
 
