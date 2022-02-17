@@ -94,7 +94,7 @@ coreapi==2.3.3
 coreschema==0.0.4
 cryptography==2.4.2
 dj-database-url==0.4.2
-Django==2.2.24
+Django==2.2.27
 django-storages==1.7.1
 djangorestframework==3.7.7
 flake8==3.6.0
@@ -111,7 +111,7 @@ mccabe==0.6.1
 msrest==0.6.2
 msrestazure==0.5.1
 oauthlib==2.1.0
-protobuf==3.6.1
+protobuf==3.15.0
 psycopg2==2.9.1
 pycodestyle==2.4.0
 pycparser==2.19
