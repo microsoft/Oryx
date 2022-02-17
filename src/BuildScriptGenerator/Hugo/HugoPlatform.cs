@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         {
             var manifestFileProperties = new Dictionary<string, string>();
             manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = detectorResult.PlatformVersion;
-            manifestFileProperties["Frameworks"] = "hugo";
+            manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = "hugo";
             _logger.LogInformation("Detected the the following framework(s): hugo");
 
             string script = TemplateHelper.Render(

@@ -272,7 +272,6 @@ namespace Microsoft.Oryx.Detector.Node
             return (isWildCardDependency, wildCardDepencyName);
         }
 
-
         private string GetLernaJsonNpmClient(DetectorContext context)
         {
             var npmClientName = string.Empty;

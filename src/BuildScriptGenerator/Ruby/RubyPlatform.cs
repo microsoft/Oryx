@@ -115,7 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             var buildProperties = new Dictionary<string, string>();
             if (RubyConstants.ConfigYmlFileName != null)
             {
-                buildProperties["Frameworks"] = "jekyll";
+                buildProperties[ManifestFilePropertyKeys.Frameworks] = "jekyll";
                 _logger.LogInformation("Detected the the following framework(s): jekyll");
             }
 

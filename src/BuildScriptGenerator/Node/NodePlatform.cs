@@ -324,7 +324,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 string[] framworks = frameworksObj.Select(p => p.Framework).ToArray();
                 string frameworks = string.Join(",", framworks);
-                manifestFileProperties["Frameworks"] = frameworks;
+                manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = frameworks;
                 _logger.LogInformation($"Detected the following framwork(s): {frameworks}");
             }
 
