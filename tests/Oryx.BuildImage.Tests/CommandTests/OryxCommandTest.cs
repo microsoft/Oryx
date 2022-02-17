@@ -140,10 +140,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.Contains("#!" + expectedBashPath, result.StdOut);
-                    Assert.Contains($"{NodeConstants.PlatformName}={NodeVersions.Node14Version}", result.StdOut);
+                    Assert.Contains($"{NodeConstants.PlatformName}={NodeConstants.NodeLtsVersion}", result.StdOut);
                     Assert.True(result.IsSuccess);
                     // Actual output from `node --version` starts with a 'v'
-                    Assert.Contains($"v{NodeVersions.Node14Version}", result.StdOut);
+                    Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
