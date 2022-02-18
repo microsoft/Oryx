@@ -131,10 +131,10 @@ stages:
   - stage: Release
     displayName: Release Stage
     dependsOn: Build
-    condition: >
-      and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'),
-      startsWith(variables['Build.SourceBranch'],'refs/heads/patch/'),
-      startsWith(variables['Build.SourceBranch'],'refs/heads/exp/')))
+    #condition: >
+    #  and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'),
+    #  startsWith(variables['Build.SourceBranch'],'refs/heads/patch/'),
+    #  startsWith(variables['Build.SourceBranch'],'refs/heads/exp/')))
 
     jobs:
     - template: templates/_releaseJobTemplate.yml
