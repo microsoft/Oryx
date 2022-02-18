@@ -5,6 +5,9 @@
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
+    <AssemblyName>Microsoft.Oryx.BuildServer</AssemblyName>
+    <RootNamespace>Microsoft.Oryx.BuildServer</RootNamespace>
+	<OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,11 +17,6 @@
     <PackageReference Include="JsonFlatFileDataStore" Version="2.2.3" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BuildScriptGenerator.Common\BuildScriptGenerator.Common.csproj" />
-    <ProjectReference Include="..\BuildScriptGenerator\BuildScriptGenerator.csproj" />
   </ItemGroup>
 
 </Project>
