@@ -23,7 +23,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             bool runPythonPackageCommand,
             string pythonVersion,
             string pythonBuildCommandsFileName = null,
-            string pythonPackageWheelProperty = null)
+            string pythonPackageWheelProperty = null,
+            string customRequirementsTxtPath = null)
         {
             VirtualEnvironmentName = virtualEnvironmentName;
             VirtualEnvironmentModule = virtualEnvironmentModule;
@@ -36,6 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             PythonPackageWheelProperty = pythonPackageWheelProperty;
             PythonBuildCommandsFileName = pythonBuildCommandsFileName;
             PythonVersion = pythonVersion;
+            CustomRequirementsTxtPath = customRequirementsTxtPath;
         }
 
         public string VirtualEnvironmentName { get; set; }
@@ -65,5 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public string PythonBuildCommandsFileName { get; set; }
 
         public string PythonPackageWheelProperty { get; set; }
+
+        public string CustomRequirementsTxtPath { get; set; }
     }
 }

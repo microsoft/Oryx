@@ -132,6 +132,46 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
+        public void GeneratedSnippet_HaveInstallScript_IfCustomRequirementsTxtPathSpecified()
+        {
+            // Arrange
+            var pythonScriptGeneratorOptions = new PythonScriptGeneratorOptions() { CustomRequirementsTxtPath = "foo/requirements.txt" };
+            var commonOptions = new BuildScriptGeneratorOptions() 
+            { 
+                EnableDynamicInstall = true,
+                CustomRequirementsTxtPath = "foo/requirements.txt"
+            };
+            var installerScriptSnippet = "##INSTALLER_SCRIPT##";
+            var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var platformInstaller = new TestPythonPlatformInstaller(
+                isVersionAlreadyInstalled: false,
+                installerScript: installerScriptSnippet,
+                Options.Create(commonOptions),
+                NullLoggerFactory.Instance);
+            var platform = CreatePlatform(
+                versionProvider,
+                platformInstaller,
+                commonOptions,
+                pythonScriptGeneratorOptions);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("", "foo/requirements.txt");
+            repo.AddFile("print(1)", "bla.py");
+            var context = new BuildScriptGeneratorContext { SourceRepo = repo };
+            var detectorResult = new PythonPlatformDetectorResult
+            {
+                Platform = PythonConstants.PlatformName,
+                PlatformVersion = "3.7.5",
+                HasRequirementsTxtFile = true,
+            };
+
+            // Act
+            var snippet = platform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+        }
+
+        [Fact]
         public void GeneratedScript_DoesNotUseVenv()
         {
             // Arrange

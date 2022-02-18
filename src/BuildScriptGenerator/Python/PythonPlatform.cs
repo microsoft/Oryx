@@ -563,14 +563,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private void TryLogDependencies(string pythonVersion, ISourceRepo repo)
         {
-            if (!repo.FileExists(PythonConstants.RequirementsFileName))
+            var customRequirementsTxtPath = _pythonScriptGeneratorOptions.CustomRequirementsTxtPath;
+            var requirementsTxtPath = customRequirementsTxtPath == null ? PythonConstants.RequirementsFileName : customRequirementsTxtPath;
+            if (!repo.FileExists(requirementsTxtPath))
             {
                 return;
             }
 
             try
             {
-                var deps = repo.ReadAllLines(PythonConstants.RequirementsFileName)
+                var deps = repo.ReadAllLines(requirementsTxtPath)
                     .Where(line => !line.TrimStart().StartsWith("#"));
                 _logger.LogDependencies(PythonConstants.PlatformName, pythonVersion, deps);
             }
