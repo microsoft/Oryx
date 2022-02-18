@@ -23,7 +23,6 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _gitHubActions = "github-actions";
         private const string _gitHubActionsBuster = "github-actions-buster";
         private const string _vso = "vso";
-        private const string _vsoSlim = "vso-slim";
         private const string _vsoUbuntu = "vso-focal";
         private const string _buildRepository = "build";
         private const string _packRepository = "pack";
@@ -163,10 +162,6 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetVsoBuildImage();
             }
-            else if (string.Equals(tag, _vsoSlim))
-            {
-                return GetVsoBuildImage(_vsoSlim);
-            }
             else if (string.Equals(tag, _vsoUbuntu))
             {
                 return GetVsoBuildImage(_vsoUbuntu);
@@ -220,12 +215,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public string GetVsoBuildImage(string debianFlavor=null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor)
-                && string.Equals(debianFlavor.ToLower(), _vsoUbuntu))
-            {
-                return $"{_repoPrefix}/{_buildRepository}:{_vsoUbuntu}{_tagSuffix}";
-            }
-            return $"{_repoPrefix}/{_buildRepository}:{_vsoSlim}{_tagSuffix}";
+            return $"{_repoPrefix}/{_buildRepository}:{_vsoUbuntu}{_tagSuffix}";
         }
 
         public string GetLtsVersionsBuildImage(string debianFlavor = null)

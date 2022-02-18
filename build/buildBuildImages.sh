@@ -358,33 +358,6 @@ function buildVsoFocalImage() {
 	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 }
 
-function buildVsoSlimImage() {
-	buildBuildScriptGeneratorImage
-	buildGitHubRunnersUbuntuBaseImage
-
-	BuildAndTagStage "$BUILD_IMAGES_VSO_SLIM_DOCKERFILE" intermediate
-	echo
-	echo "-------------Creating Slim VSO focal build image-------------------"
-	local builtImageName="$ACR_BUILD_VSO_SLIM_IMAGE_NAME"
-	docker build -t $builtImageName \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
-		--label com.microsoft.oryx="$labelContent" \
-		-f "$BUILD_IMAGES_VSO_SLIM_DOCKERFILE" \
-		.
-
-	createImageNameWithReleaseTag $builtImageName
-
-	echo
-	echo "$builtImageName image history"
-	docker history $builtImageName
-
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:vso-slim"
-
-	echo
-	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
-}
-
 function buildCliImage() {
 	buildBuildScriptGeneratorImage
 	
@@ -443,7 +416,6 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildLtsVersionsImage "buster"
 	buildLtsVersionsImage	
 	buildFullImage
-	buildVsoSlimImage
 	buildVsoFocalImage
 	buildCliImage "buster"
 	buildCliImage
@@ -462,8 +434,6 @@ elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
 	buildLtsVersionsImage "buster"
 elif [ "$imageTypeToBuild" == "full" ]; then
 	buildFullImage
-elif [ "$imageTypeToBuild" == "vso-slim" ]; then
-	buildVsoSlimImage
 elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage
 elif [ "$imageTypeToBuild" == "cli" ]; then
@@ -474,7 +444,7 @@ elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
-githubactions, jamstack, ltsversions, full, vso-slim, vso-focal, cli, buildpack"
+githubactions, jamstack, ltsversions, full, vso-focal, cli, buildpack"
 	exit 1
 fi
 
