@@ -55,6 +55,11 @@ placed; if not specified the source directory is used for output as well.
 
 For all options, specify `oryx --help`.
 
+### `oryx create-script -appPath`
+
+When `oryx` is run in the runtime images it generates a start script named
+run.sh, by default in the same folder as the compiled artifact.
+
 ### Support for Build Configuration File
 
 You can provide some extra build related information in an app.yaml in your content
@@ -75,10 +80,6 @@ post-build: |
 
 Oryx will read the yaml and run the commands provided for pre-build and post-build.
 
-### `oryx create-script -appPath`
-
-When `oryx` is run in the runtime images it generates a start script named
-run.sh, by default in the same folder as the compiled artifact.
 
 ## Build and run an app
 

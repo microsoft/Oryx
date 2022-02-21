@@ -316,7 +316,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             buildProperties[ManifestFilePropertyKeys.CompressDestinationDir] =
                 _cliOptions.CompressDestinationDir.ToString().ToLower();
 
-
             // Workaround for bug in TestSourceRepo class in validation tests
             // Should be using context.SourceRepo.FileExists
             string filePathForAppYaml = Path.Combine(context.SourceRepo.RootPath, "app.yaml");
@@ -327,6 +326,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (File.Exists(filePathForAppYaml))
             {
                 _logger.LogDebug("Found app.yaml");
+                _writer.WriteLine("Found app.yaml");
                 try
                 {
                     BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(context.SourceRepo.ReadFile("app.yaml"));
@@ -336,6 +336,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         _cliOptions.PreBuildScriptPath = null;
                         _logger.LogDebug("Overriding the pre-build commands with the app.yaml section");
                         _logger.LogDebug(_cliOptions.PreBuildCommand.ToString());
+                        _writer.WriteLine("Overriding the pre-build commands with the app.yaml section");
+                        _writer.WriteLine(_cliOptions.PreBuildCommand.ToString());
                     }
 
                     if (!string.IsNullOrEmpty(buildConfigFile.postbuild))
@@ -344,11 +346,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         _cliOptions.PostBuildScriptPath = null;
                         _logger.LogDebug("Overriding the post-build commands with the app.yaml section");
                         _logger.LogDebug(_cliOptions.PostBuildCommand.ToString());
+                        _writer.WriteLine("Overriding the post-build commands with the app.yaml section");
+                        _writer.WriteLine(_cliOptions.PostBuildCommand.ToString());
                     }
                 }
                 catch (Exception ex)
                 {
                     _logger.LogWarning("Invalid app.yaml format", ex);
+                    _writer.WriteLine("Invalid app.yaml format " + ex);
+
                 }
             }
             else
