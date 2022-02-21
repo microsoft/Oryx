@@ -5,7 +5,9 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   timeoutInMinutes: 300
   variables:
     skipComponentGovernanceDetection: true
@@ -30,7 +32,9 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -55,7 +59,9 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -81,7 +87,9 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -106,7 +114,9 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -131,7 +141,9 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -156,7 +168,9 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -181,7 +195,9 @@ jobs:
     - Job_BuildImage
     - Job_RuntimeImages
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -203,7 +219,9 @@ jobs:
 - job: Job_DevStorageAccountTest
   displayName: Test Dev Storage Account
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   steps:

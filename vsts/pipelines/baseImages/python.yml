@@ -19,7 +19,9 @@ jobs:
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   steps:
     - template: ../templates/_releaseBaseImagesStepTemplate.yml
       parameters:

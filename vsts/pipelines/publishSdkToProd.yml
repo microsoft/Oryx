@@ -4,7 +4,9 @@ variables:
 jobs:
     - job: CreateReleaseTag
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       steps:
       - checkout: self
         clean: true
