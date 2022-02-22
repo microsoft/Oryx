@@ -41,6 +41,7 @@ steps:
     $env:GIT_COMMIT=$(git rev-parse HEAD)
     $env:BUILD_NUMBER=$env:BUILD_BUILDNUMBER
     dotnet publish -r linux-x64 -c Release src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj
+    dotnet publish -r linux-x64 -c Release src\BuildServer\BuildServer.csproj
   displayName: 'dotnet publish and after setting git_commit and build_number as env variable'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
   
@@ -52,13 +53,13 @@ steps:
     configuration: '$(BuildConfiguration)'
     condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
-- task: VSBuild@1
-  displayName: 'Sign Oryx Build Server Binaries'
-  inputs:
-    solution: 'src/BuildServer/BuildServer.signproj'
-    msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
-    configuration: '$(BuildConfiguration)'
-    condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+#- task: VSBuild@1
+#  displayName: 'Sign Oryx Build Server Binaries'
+#  inputs:
+#    solution: 'src/BuildServer/BuildServer.signproj'
+#    msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
+#    configuration: '$(BuildConfiguration)'
+#    condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: ArchiveFiles@2
   displayName: 'Create compressed file of Oryx binaries'
