@@ -7,9 +7,17 @@
     <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>Microsoft.Oryx.BuildServer</AssemblyName>
     <RootNamespace>Microsoft.Oryx.BuildServer</RootNamespace>
-	<OutputType>Exe</OutputType>
+    <OutputType>Exe</OutputType>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AssemblyVersion>0.2</AssemblyVersion>
+    <HighEntropyVA>true</HighEntropyVA>
+  </PropertyGroup>  
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\..\CommonFiles\StyleCop.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-
+  
+  <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
+  
   <ItemGroup>
     <PackageReference Include="JsonFlatFileDataStore" Version="2.2.3" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.4" />
