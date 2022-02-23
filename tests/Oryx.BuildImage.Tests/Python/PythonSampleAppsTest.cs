@@ -1226,13 +1226,19 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
             });
+            // Regex will match:
+            // "yyyy-mm-dd hh:mm:ss"|ERROR|Failed pip installation with exit code: 1
+            // Example:
+            // "2021-10-27 07:00:00"|ERROR|Failed to pip installation with exit code: 1
+            Regex regex = new Regex(@"""[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])""\|WARNING\|.*");
 
             // Assert
             RunAsserts(
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains("'collectstatic' exited with exit code 1.", result.StdOut);
+                    Match match = regex.Match(result.StdOut);
+                    Assert.True(match.Success);
                 },
                 result.GetDebugInfo());
         }
