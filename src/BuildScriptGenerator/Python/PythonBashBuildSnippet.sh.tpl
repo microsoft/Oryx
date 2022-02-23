@@ -159,6 +159,7 @@ fi
         fi
     elif [ -e "pyproject.toml" ]
     then
+        set +e
         echo "Running pip install poetry..."
         InstallPipCommand="pip install poetry"
         printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
@@ -171,11 +172,13 @@ fi
         pythonBuildExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
+        set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
             LogWarning "${StdWarning} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
+        set -e
     else
         echo $REQS_NOT_FOUND_MSG
     fi
@@ -225,6 +228,7 @@ fi
 
 
 {{ if EnableCollectStatic }}
+    set +e
     if [ -e "$SOURCE_DIR/manage.py" ]
     then
         if grep -iq "Django" "$SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
@@ -250,6 +254,7 @@ fi
             LogWarning "${StdWarning} | Exit code: 0 | ${recommendation} | ${moreInformation}"
         fi
     fi
+    set -e
 {{ end }}
 
 
