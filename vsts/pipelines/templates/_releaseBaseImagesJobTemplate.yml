@@ -2,10 +2,10 @@ jobs:
 - job: Release_PhpRuntimeBaseImage
   displayName: Push PHP Runtime Base Image to MCR
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   timeoutInMinutes: 250
-  pool:
-    vmImage: 'ubuntu-latest'
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -14,10 +14,10 @@ jobs:
 - job: Release_PhpFpmNginxRuntimeBaseImage
   displayName: Push PHP-FPM Runtime Base Image to MCR
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   timeoutInMinutes: 250
-  pool:
-    vmImage: 'ubuntu-latest'
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -26,10 +26,10 @@ jobs:
 - job: Release_DotNetCoreRuntimeBaseImage
   displayName: Push DotNetCore Runtime Base Images to MCR
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   timeoutInMinutes: 250
-  pool:
-    vmImage: 'ubuntu-latest'
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -38,10 +38,10 @@ jobs:
 - job: Release_NodeBaseImage
   displayName: Push Node Base Image to MCR
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   timeoutInMinutes: 300
-  pool:
-    vmImage: 'ubuntu-latest'
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:
@@ -50,10 +50,11 @@ jobs:
 - job: Release_RubyBaseImage
   displayName: Push Ruby Base Image to MCR
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   timeoutInMinutes: 300
-  pool:
-    vmImage: 'ubuntu-latest'
+
   steps:
   - template: _releaseBaseImagesStepTemplate.yml
     parameters:

@@ -9,7 +9,9 @@ stages:
     jobs:
     - job: CreateReleaseTag
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         skipComponentGovernanceDetection: true
       steps:
@@ -106,7 +108,9 @@ stages:
       condition: succeeded()
       timeoutInMinutes: 480
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
@@ -132,7 +136,9 @@ stages:
       condition: succeeded()
       timeoutInMinutes: 480
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true

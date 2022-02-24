@@ -14,7 +14,9 @@ jobs:
 - job: Job_Detector
   displayName: Detector Validation
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   timeoutInMinutes: 480
   steps:
   - template: templates/_buildTemplateDetector.yml

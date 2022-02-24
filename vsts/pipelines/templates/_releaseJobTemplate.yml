@@ -2,7 +2,9 @@ jobs:
 - job: Release_BuildImages
   displayName: Push Build Image to MCR
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -17,7 +19,9 @@ jobs:
 - job: Release_RuntimeImages
   displayName: Push Runtime Images to MCR
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 400
@@ -35,7 +39,9 @@ jobs:
     - Release_BuildImages
     - Release_RuntimeImages
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
 
