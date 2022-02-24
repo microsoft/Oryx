@@ -100,12 +100,12 @@ fi
         echo "Running poetry install..."
         InstallPoetryCommand="poetry install"
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        poetry install
+        StdWarning=$( ( poetry install; exit ${PIPESTATUS[0]} ) 2>&1)
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogWarning "Failed to install poetry with exist status ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
+            LogWarning "${StdWarning} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
     else
@@ -159,6 +159,7 @@ fi
         fi
     elif [ -e "pyproject.toml" ]
     then
+        set +e
         echo "Running pip install poetry..."
         InstallPipCommand="pip install poetry"
         printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
@@ -167,13 +168,14 @@ fi
         echo "Running poetry install..."
         InstallPoetryCommand="poetry install"
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        poetry install
+        StdWarning=$( ( poetry install; exit ${PIPESTATUS[0]} ) 2>&1 )
+        pythonBuildExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
-        pythonBuildExitCode=${PIPESTATUS[0]}
+        set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogWarning "Failed to install poetry with exit code ${pythonBuildExitCode}. More information: https://aka.ms/troubleshoot-python"
+            LogWarning "${StdWarning} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
     else
@@ -225,6 +227,7 @@ fi
 
 
 {{ if EnableCollectStatic }}
+    set +e
     if [ -e "$SOURCE_DIR/manage.py" ]
     then
         if grep -iq "Django" "$SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
@@ -233,19 +236,24 @@ fi
             echo Content in source directory is a Django app
             echo Running 'collectstatic'...
             START_TIME=$SECONDS
-            CollectStaticCommand="$python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true "
+            CollectStaticCommand="$python_bin manage.py collectstatic --noinput"
             printf %s " , $CollectStaticCommand" >> "$COMMAND_MANIFEST_FILE"
-            $python_bin manage.py collectstatic --noinput || EXIT_CODE=$? && true ; 
+            StdWarning=$(($python_bin manage.py collectstatic --noinput; exit ${PIPESTATUS[0]}) 2>&1) 
+            EXIT_CODE=${PIPESTATUS[0]}
             if [[ $EXIT_CODE != 0 ]]
             then
-                LogWarning "Failed running 'collectstatic' exited with exit code $EXIT_CODE. More information: https://aka.ms/customize-build-automation"
+                recommendation="Please review message"
+                LogWarning "${StdWarning} | Exit code: ${EXIT_CODE} | ${recommendation} | ${moreInformation}"
             fi
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             echo "Done in $ELAPSED_TIME sec(s)."
         else
-            LogWarning "Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE. Add Django to your requirements.txt file."
+            StdWarning="Missing Django modile in Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
+            recommendation="Add Django to your requirements.txt file."
+            LogWarning "${StdWarning} | Exit code: 0 | ${recommendation} | ${moreInformation}"
         fi
     fi
+    set -e
 {{ end }}
 
 

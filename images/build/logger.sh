@@ -28,7 +28,7 @@ function _LogMessage()
 	# Timestamp|{Type}|{Message}
 	# Example:
 	#       2021-09-28 00:17:12|ERROR|Error Message
-    timestamp=$(date '+"%F %T"' --date='TZ="US/Pacific"')
+    timestamp=$(date '+"%F %T"')  # UTC time-zone
     messageType="$1"
     errorMessage="$2"
 
