@@ -178,7 +178,6 @@ fi
             LogWarning "${StdWarning} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
-        set -e
     else
         echo $REQS_NOT_FOUND_MSG
     fi
