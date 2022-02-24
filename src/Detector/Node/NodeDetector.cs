@@ -201,45 +201,46 @@ namespace Microsoft.Oryx.Detector.Node
         {
             var detectedFrameworkResult = new List<FrameworkInfo>();
             var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
-            if (packageJson?.devDependencies != null)
+            var monitoredDevDependencies = NodeConstants.DevDependencyFrameworkKeyWordToName;
+            
+            // dev-dependencies
+            var devDependencies = packageJson?.devDependencies != null ? packageJson.devDependencies : new string[0];
+            foreach (var dependency in devDependencies)
             {
-                var devDependencyObject = packageJson?.devDependencies;
-                foreach (var keyWordToName in NodeConstants.DevDependencyFrameworkKeyWordToName)
+                string dependencyName = dependency.Name;
+
+                // wild-card dependency
+                (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
+
+                if (monitoredDevDependencies.ContainsKey(dependencyName) || isWildCardDependency) 
                 {
-                    var keyword = keyWordToName.Key;
-                    try
+                    var frameworkInfo = new FrameworkInfo
                     {
-                        var frameworkInfo = new FrameworkInfo
-                        {
-                            Framework = keyWordToName.Value,
-                            FrameworkVersion = devDependencyObject[keyword].Value as string
-                        };
-                        detectedFrameworkResult.Add(frameworkInfo);
-                    } 
-                    catch (RuntimeBinderException)
-                    {
-                    }
+                        Framework = isWildCardDependency ? wildCarddependencyName : monitoredDevDependencies[dependencyName],
+                        FrameworkVersion = dependency.Value.Value
+                    };
+                    detectedFrameworkResult.Add(frameworkInfo);
                 }
             }
 
-            if (packageJson?.dependencies != null)
+            var monitoredDependencies = NodeConstants.DependencyFrameworkKeyWordToName;
+            // dependencies
+            var dependencies = packageJson?.dependencies != null ? packageJson.dependencies : new string[0];
+            foreach (var dependency in dependencies)
             {
-                var dependencyObject = packageJson?.dependencies;
-                foreach (var keyWordToName in NodeConstants.DependencyFrameworkKeyWordToName)
+                string dependencyName = dependency.Name;
+
+                // wild-card dependency
+                (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
+
+                if (monitoredDependencies.ContainsKey(dependencyName) || isWildCardDependency)
                 {
-                    var keyword = keyWordToName.Key;
-                    try
+                    var frameworkInfo = new FrameworkInfo
                     {
-                        var frameworkInfo = new FrameworkInfo
-                        {
-                            Framework = keyWordToName.Value,
-                            FrameworkVersion = dependencyObject[keyword].Value as string
-                        };
-                        detectedFrameworkResult.Add(frameworkInfo);
-                    }
-                    catch (RuntimeBinderException)
-                    {
-                    }
+                        Framework = isWildCardDependency ? wildCarddependencyName : monitoredDependencies[dependencyName],
+                        FrameworkVersion = dependency.Value.Value
+                    };
+                    detectedFrameworkResult.Add(frameworkInfo);
                 }
             }
 
@@ -253,6 +254,23 @@ namespace Microsoft.Oryx.Detector.Node
             }
 
             return detectedFrameworkResult;
+        }
+
+        private (bool, string) GetWildCardDependency(string dependencyName)
+        {
+            // wild-card dependenciy resolution examples:
+            //      @angular/*  --> Angular
+            //      @remix/*    --> Remix
+            var wildCardDependencies = NodeConstants.WildCardDependencies;
+            int forwardSlashIndex = dependencyName.IndexOf('/');
+            bool isWildCardDependency = forwardSlashIndex > 0 &&
+                wildCardDependencies.ContainsKey(dependencyName.Substring(0, forwardSlashIndex));
+            string wildCardDepencyName = "";
+            if (isWildCardDependency)
+            {
+                wildCardDepencyName = wildCardDependencies[dependencyName.Substring(0, forwardSlashIndex)];
+            } 
+            return (isWildCardDependency, wildCardDepencyName);
         }
 
         private string GetLernaJsonNpmClient(DetectorContext context)

@@ -50,12 +50,12 @@ namespace Microsoft.Oryx.Detector.Node
         public static readonly Dictionary<string, string> DevDependencyFrameworkKeyWordToName = new Dictionary<string, string>()
         {
             { "aurelia-cli", "Aurelia" },
+            { "astro", "Astro" },
             { "@11ty/eleventy", "Eleventy" },
             { "elm", "Elm" },
             { "ember-cli", "Ember" },
             { "@glimmer/component", "Glimmer" },
             { "hugo-cli", "Hugo" },
-            { "@angular/cli", "Angular" },
             { "knockout", "KnockoutJs" },
             { "polymer-cli", "Polymer" },
             { "@stencil/core", "Stencil" },
@@ -67,6 +67,7 @@ namespace Microsoft.Oryx.Detector.Node
 
         public static readonly Dictionary<string, string> DependencyFrameworkKeyWordToName = new Dictionary<string, string>()
         {
+            { "contentful", "contentful" },
             { "gatsby", "Gatsby" },
             { "gridsome", "Gridsome" },
             { "@ionic/angular", "Ionic Angular" },
@@ -85,5 +86,12 @@ namespace Microsoft.Oryx.Detector.Node
             { "three", "Three.js" },
             { "vue", "Vue.js" }
         };
+
+        public static readonly Dictionary<string, string> WildCardDependencies = new Dictionary<string, string>()
+        {
+            { "@angular", "Angular" },
+            { "@remix-run", "Remix" }
+        };
+
     }
 }

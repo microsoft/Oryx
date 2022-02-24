@@ -318,6 +318,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     depSpecs.Select(d => d.Key + d.Value), true);
             }
 
+            // add detected frameworks to manifest file
+            var frameworksObj = nodePlatformDetectorResult.Frameworks;
+            if (frameworksObj != null && frameworksObj.Any())
+            {
+                string[] framworks = frameworksObj.Select(p => p.Framework).ToArray();
+                string frameworks = string.Join(",", framworks);
+                manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = frameworks;
+                _logger.LogInformation($"Detected the following framwork(s): {frameworks}");
+            }
+
             string compressNodeModulesCommand = null;
             string compressedNodeModulesFileName = null;
             GetNodeModulesPackOptions(ctx, out compressNodeModulesCommand, out compressedNodeModulesFileName);
