@@ -47,12 +47,12 @@ RUN chmod +x /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/build.sh && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        build-essential \ 
+        build-essential \
         tk-dev \
         uuid-dev \
         libgeos-dev
 
-RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR 
+RUN if [ "%PYTHON_VERSION%" == "3.10" ]; then ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR; else ${IMAGES_DIR}/installPlatform.sh python $PYTHON_VERSION --dir /opt/python/$PYTHON_VERSION --links false; fi
 
 RUN set -ex \
  && cd /opt/python/ \
