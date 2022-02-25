@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory(Skip = "Bug: 1488034")]
+        [Theory]
         [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnv(string pythonVersion)
         {
@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory(Skip = "Bug: 1488034")]
+        [Theory]
         [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRun_ShapelyFlaskApp_PackageDir(string pythonVersion)
         {
