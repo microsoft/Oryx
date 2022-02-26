@@ -15,7 +15,7 @@ version="$1"
 
 buildPythonfromSource()
 {
-    pythonVersion=$PYTHON_VERSION 
+    pythonVersion=$PYTHON_VERSION
 
     if [ ! -z "$1" ]; then
        echo "$1"
@@ -26,7 +26,7 @@ buildPythonfromSource()
        echo "$2"
        gpgKey=$2
     fi
-    
+
     wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /python.tar.xz
     wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /python.tar.xz.asc
 
@@ -36,6 +36,9 @@ buildPythonfromSource()
         apt-get update && \
         apt-get upgrade -y && \
         DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            build-essential \
+            tk-dev \
+            libgeos-dev \
             libssl-dev \
             libncurses5-dev \
             libsqlite3-dev \
@@ -43,7 +46,6 @@ buildPythonfromSource()
             libbz2-dev \
             libgdm-dev \
             libbluetooth-dev \
-            tk-dev \
             uuid-dev
 
     # Try getting the keys 5 times at most
@@ -81,7 +83,7 @@ buildPythonfromSource()
             \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) \
             -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
         \) -exec rm -rf '{}' + \
-    
+
     ldconfig
     python3 --version
 
@@ -93,7 +95,7 @@ buildPythonfromSource()
     ln -s python3-config python-config
 
     PYTHON_GET_PIP_SHA256="c518250e91a70d7b20cceb15272209a4ded2a0c263ae5776f129e0d9b5674309"
-    
+
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O get-pip.py
 
@@ -146,8 +148,10 @@ echo
 echo "Building python 3.10 or newer from source code..."
 
 getPythonGpgByVersion "/tmp/versionsToBuild.txt" $version
+IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
 
-if  [ "$version" == "3.10.0" ];then
+if  [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "10" ]
+then
     buildPythonfromSource $version $pythonVersionGPG
     pip install --upgrade setuptools pip
     pip install gunicorn debugpy
