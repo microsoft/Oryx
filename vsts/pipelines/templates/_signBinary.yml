@@ -95,7 +95,7 @@ steps:
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: CopyFiles@2
-  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/binaries'
+  displayName: 'Copy BuildServer Files to: $(Build.ArtifactStagingDirectory)/binaries'
   inputs:
     SourceFolder: 'src/BuildServer/bin/$(BuildConfiguration)/linux-x64/publish'
     Contents: '**\*'
