@@ -4,7 +4,7 @@
 
 	<PropertyGroup>
 		<OutDir>$(MSBuildThisFileDirectory)bin\$(Configuration)\$(RuntimeIdentifier)\publish</OutDir>
-		<IntermediateOutputPath>obj\$(Configuration)\netcoreapp3.1\$(RuntimeIdentifier)</IntermediateOutputPath>
+		<IntermediateOutputPath>obj\$(Configuration)\$(RuntimeIdentifier)</IntermediateOutputPath>
 		<AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
