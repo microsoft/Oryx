@@ -8,12 +8,12 @@ steps:
    Write-Host "##vso[task.setvariable variable=SignType;isOutput=true]real"
   name: setSignTypeVariable
   displayName: 'Set sign binary variable'
-  #condition: >
-  # and(in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'), 
-  # or(
-  #   startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
-  #   startsWith(variables['Build.SourceBranch'], 'refs/heads/patch/'), 
-  #   startsWith(variables['Build.SourceBranch'],'refs/heads/exp/' )))
+  condition: >
+   and(in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'), 
+   or(
+     startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
+     startsWith(variables['Build.SourceBranch'], 'refs/heads/patch/'), 
+     startsWith(variables['Build.SourceBranch'],'refs/heads/exp/' )))
 
 - script: |
     echo $(setSignTypeVariable.SignType)
@@ -41,7 +41,7 @@ steps:
     $env:GIT_COMMIT=$(git rev-parse HEAD)
     $env:BUILD_NUMBER=$env:BUILD_BUILDNUMBER
     dotnet publish -r linux-x64 -c Release src\BuildScriptGeneratorCLI\BuildScriptGeneratorCli.csproj
-    #dotnet publish -r linux-x64 -c Release src\BuildServer\BuildServer.csproj
+    dotnet publish -r linux-x64 -c Release src\BuildServer\BuildServer.csproj
   displayName: 'dotnet publish and after setting git_commit and build_number as env variable'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
   
@@ -53,13 +53,13 @@ steps:
     configuration: '$(BuildConfiguration)'
     condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
-#- task: VSBuild@1
-#  displayName: 'Sign Oryx Build Server Binaries'
-#  inputs:
-#    solution: 'src/BuildServer/BuildServer.signproj'
-#    msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
-#    configuration: '$(BuildConfiguration)'
-#    condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+- task: VSBuild@1
+  displayName: 'Sign Oryx Build Server Binaries'
+  inputs:
+    solution: 'src/BuildServer/BuildServer.signproj'
+    msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
+    configuration: '$(BuildConfiguration)'
+    condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: ArchiveFiles@2
   displayName: 'Create compressed file of Oryx binaries'
@@ -73,17 +73,17 @@ steps:
     verbose: true
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
-#- task: ArchiveFiles@2
-#  displayName: 'Create compressed file of Oryx Build Server binaries'
-#  inputs:
-#    rootFolderOrFile: 'src\BuildServer\bin\$(BuildConfiguration)\linux-x64\publish'
-#    includeRootFolder: false
-#    archiveType: tar
-#    tarCompression: 'gz'
-#    archiveFile: '$(Build.ArtifactStagingDirectory)/oryx_buildServer_linux_x64.tar.gz'
-#    replaceExistingArchive: true
-#    verbose: true
-#  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+- task: ArchiveFiles@2
+  displayName: 'Create compressed file of Oryx Build Server binaries'
+  inputs:
+    rootFolderOrFile: 'src\BuildServer\bin\$(BuildConfiguration)\linux-x64\publish'
+    includeRootFolder: false
+    archiveType: tar
+    tarCompression: 'gz'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/oryx_buildServer_linux_x64.tar.gz'
+    replaceExistingArchive: true
+    verbose: true
+  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/binaries'
@@ -94,14 +94,14 @@ steps:
     CleanTargetFolder: true
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
-#- task: CopyFiles@2
-#  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/binaries'
-#  inputs:
-#    SourceFolder: 'src/BuildServer/bin/$(BuildConfiguration)/linux-x64/publish'
-#    Contents: '**\*'
-#    TargetFolder: '$(Build.ArtifactStagingDirectory)/binaries'
-#    CleanTargetFolder: true
-#  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+- task: CopyFiles@2
+  displayName: 'Copy BuildServer Files to: $(Build.ArtifactStagingDirectory)/binaries'
+  inputs:
+    SourceFolder: 'src/BuildServer/bin/$(BuildConfiguration)/linux-x64/publish'
+    Contents: '**\*'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/binaries'
+    CleanTargetFolder: true
+  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish Pipeline Artifact'
