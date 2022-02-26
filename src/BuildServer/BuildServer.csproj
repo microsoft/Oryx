@@ -8,6 +8,7 @@
     <AssemblyName>Microsoft.Oryx.BuildServer</AssemblyName>
     <RootNamespace>Microsoft.Oryx.BuildServer</RootNamespace>
 	<OutputType>Exe</OutputType>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
