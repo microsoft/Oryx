@@ -31,4 +31,4 @@ RUN if [ -z "$AGENTBUILD" ]; then \
             src/BuildServer/BuildServer.csproj; \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
-RUN chmod a+x /opt/buildscriptgen/BuildServer
+RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
