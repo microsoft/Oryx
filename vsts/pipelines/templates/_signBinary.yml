@@ -100,7 +100,7 @@ steps:
     SourceFolder: 'src/BuildServer/bin/$(BuildConfiguration)/linux-x64/publish'
     Contents: '**\*'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/binaries'
-    CleanTargetFolder: true
+    CleanTargetFolder: false
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: PublishPipelineArtifact@0
