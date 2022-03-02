@@ -60,23 +60,25 @@ For all options, specify `oryx --help`.
 When `oryx` is run in the runtime images it generates a start script named
 run.sh, by default in the same folder as the compiled artifact.
 
-### Support for Build Configuration File
+## Support for Build Configuration File
 
-You can provide some extra build related information in an app.yaml in your content
+You can provide some extra build related information in an appsvc.yaml in your content
 root directory. The build configuration supports 2 sections
 1. pre-build
 2. post-build
 
-This is how a sample app.yaml looks like
+This is how a sample appsvc.yaml looks like
 
+```bash
 version: 1
 
-pre-build: |
-  apt install curl
+pre-build: | 
+    apt install curl
   
-post-build: |
-  python manage.py makemigrations
-  python manage.py migrate
+post-build: | 
+    python manage.py makemigrations 
+    python manage.py migrate
+```
 
 Oryx will read the yaml and run the commands provided for pre-build and post-build.
 

@@ -318,48 +318,55 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             // Workaround for bug in TestSourceRepo class in validation tests
             // Should be using context.SourceRepo.FileExists
-            string filePathForAppYaml = Path.Combine(context.SourceRepo.RootPath, "app.yaml");
+            string filePathForAppYaml = Path.Combine(context.SourceRepo.RootPath, "appsvc.yaml");
 
-            _logger.LogDebug("Path to app.yaml " + filePathForAppYaml);
+            _logger.LogDebug("Path to appsvc.yaml " + filePathForAppYaml);
 
             // Override the prebuild and postbuild commands if BuildConfigurationFile exists
             if (File.Exists(filePathForAppYaml))
             {
-                _logger.LogDebug("Found app.yaml");
-                _writer.WriteLine("Found app.yaml");
+                _logger.LogDebug("Found BuildConfigurationFile");
+                _writer.WriteLine(Environment.NewLine + "Found BuildConfigurationFile");
                 try
                 {
-                    BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(context.SourceRepo.ReadFile("app.yaml"));
+                    BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(context.SourceRepo.ReadFile("appsvc.yaml"));
                     if (!string.IsNullOrEmpty(buildConfigFile.prebuild))
                     {
                         _cliOptions.PreBuildCommand = buildConfigFile.prebuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PreBuildScriptPath = null;
-                        _logger.LogDebug("Overriding the pre-build commands with the app.yaml section");
+                        _logger.LogDebug("Overriding the pre-build commands with the BuildConfigurationFile section");
                         _logger.LogDebug(_cliOptions.PreBuildCommand.ToString());
-                        _writer.WriteLine("Overriding the pre-build commands with the app.yaml section");
-                        _writer.WriteLine(_cliOptions.PreBuildCommand.ToString());
+                        _writer.WriteLine("Overriding the pre-build commands with the BuildConfigurationFile section");
+                        _writer.WriteLine("\t" + _cliOptions.PreBuildCommand.ToString());
                     }
 
                     if (!string.IsNullOrEmpty(buildConfigFile.postbuild))
                     {
                         _cliOptions.PostBuildCommand = buildConfigFile.postbuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PostBuildScriptPath = null;
-                        _logger.LogDebug("Overriding the post-build commands with the app.yaml section");
+                        _logger.LogDebug("Overriding the post-build commands with the BuildConfigurationFile section");
                         _logger.LogDebug(_cliOptions.PostBuildCommand.ToString());
-                        _writer.WriteLine("Overriding the post-build commands with the app.yaml section");
-                        _writer.WriteLine(_cliOptions.PostBuildCommand.ToString());
+                        _writer.WriteLine("Overriding the post-build commands with the BuildConfigurationFile section");
+                        _writer.WriteLine("\t" + _cliOptions.PostBuildCommand.ToString());
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning("Invalid app.yaml format", ex);
-                    _writer.WriteLine("Invalid app.yaml format " + ex);
-
+                    _logger.LogWarning("Invalid BuildConfigurationFile " + ex.ToString());
+                    _writer.WriteLine(Environment.NewLine + "\"" + DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss") + "\" | WARNING | Invalid BuildConfigurationFile | Exit Code: 1 | Please review your appsvc.yaml | " + Constants.BuildConfigurationFileHelp);
+                    _writer.WriteLine("This is the structure of a valid appsvc.yaml");
+                    _writer.WriteLine("-------------------------------------------");
+                    _writer.WriteLine("version: 1" + Environment.NewLine);
+                    _writer.WriteLine("pre-build: apt-get install xyz" + Environment.NewLine);
+                    _writer.WriteLine("post-build: |");
+                    _writer.WriteLine("  python manage.py makemigrations");
+                    _writer.WriteLine("  python manage.py migrate");
+                    _writer.WriteLine("-------------------------------------------");
                 }
             }
             else
             {
-                _logger.LogDebug("No app.yaml found");
+                _logger.LogDebug("No appsvc.yaml found");
             }
 
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
