@@ -13,12 +13,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string PostBuildScriptPath = "POST_BUILD_SCRIPT_PATH";
 
         /// <summary>
-        /// Represents an line script or a path to a file
+        /// Represents an line script or a path to a file.
         /// </summary>
         public const string PreBuildCommand = "PRE_BUILD_COMMAND";
 
         /// <summary>
-        /// Represents an line script or a path to a file
+        /// Represents an line script or a path to a file.
         /// </summary>
         public const string PostBuildCommand = "POST_BUILD_COMMAND";
 
@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string DisableCollectStatic = "DISABLE_COLLECTSTATIC";
 
         /// <summary>
-        /// Represents the 'Configuration' switch of a build, for example: dotnet build --configuration Release
+        /// Represents the 'Configuration' switch of a build, for example: dotnet build --configuration Release.
         /// </summary>
         public const string MSBuildConfiguration = "MSBUILD_CONFIGURATION";
     }

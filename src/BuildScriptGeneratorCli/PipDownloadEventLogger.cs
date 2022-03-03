@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -21,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         private readonly ILogger _logger;
 
-        private EventStopwatch _currentDownload = null;
+        private EventStopwatch _currentDownload;
 
         public PipDownloadEventLogger(ILogger logger)
         {

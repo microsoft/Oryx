@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
     [OutputType("shell")]
     internal class ShellOutput : IOutputFile
     {
-        private const string NewLine = "\n";
+        private const char NewLine = '\n';
         private ConstantCollection _collection;
         private string _directory;
         private string _fileNamePrefix;

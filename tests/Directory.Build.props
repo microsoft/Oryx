@@ -1,0 +1,12 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Use the below line to run code analysis on projects in the "tests" folder.
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory).., Directory.Build.props))\Directory.Build.props" />
+  -->
+
+  <PropertyGroup>
+    <!-- This property is added as test projects do not require code documentation. -->
+    <DisableDocRequirement>true</DisableDocRequirement>
+  </PropertyGroup>
+
+</Project>

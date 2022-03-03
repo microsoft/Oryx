@@ -11,23 +11,23 @@ namespace Microsoft.Oryx.Detector.Python
     public class PythonPlatformDetectorResult : PlatformDetectorResult
     {
         /// <summary>
-        /// Gets or sets the value indicating if files of extension '.ipynb' exist at the root of the repo.
+        /// Gets or sets a value indicating whether any files of extension '.ipynb' exist at the root of the repo.
         /// </summary>
         public bool HasJupyterNotebookFiles { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating if 'environment.yml' or 'environment.yaml' files
+        /// Gets or sets a value indicating whether 'environment.yml' or 'environment.yaml' files
         /// exist at the root of the repo.
         /// </summary>
         public bool HasCondaEnvironmentYmlFile { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating if 'requirements.txt' file exists at the root of the repo.
+        /// Gets or sets a value indicating whether a 'requirements.txt' file exists at the root of the repo.
         /// </summary>
         public bool HasRequirementsTxtFile { get; set; }
 
         /// <summary>
-        /// Gets or sets the value indicating if 'pyproject.toml' file exists at the root of the repo.
+        /// Gets or sets a value indicating whether a 'pyproject.toml' file exists at the root of the repo.
         /// </summary>
         public bool HasPyprojectTomlFile { get; set; }
     }

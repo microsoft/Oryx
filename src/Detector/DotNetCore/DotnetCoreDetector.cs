@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.Oryx.Detector.DotNetCore
 {
     /// <summary>
-    /// An implementation of <see cref="IPlatformDetector"/> which detects 
+    /// An implementation of <see cref="IPlatformDetector"/> which detects
     /// ASP.NET Core Web Application projects, .NET Core Azure Functions projects and
     /// ASP.NET Core Blazor Client projects.
     /// </summary>
@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         private readonly ILogger<DotNetCoreDetector> _logger;
 
         /// <summary>
-        /// Creates an instance of <see cref="DotNetCoreDetector"/>.
+        /// Initializes a new instance of the <see cref="DotNetCoreDetector"/> class.
         /// </summary>
         /// <param name="projectFileProvider">The <see cref="DefaultProjectFileProvider"/>.</param>
         /// <param name="logger">The <see cref="ILogger{DotNetCoreDetector}"/>.</param>
@@ -68,6 +68,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             {
                 installAOTWorkloads = true;
             }
+
             return new DotNetCorePlatformDetectorResult
             {
                 Platform = DotNetCoreConstants.PlatformName,
@@ -79,19 +80,21 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             };
         }
 
-        internal string DetermineRuntimeVersion(string targetFramework)
+        internal static string DetermineRuntimeVersion(string targetFramework)
         {
             // Ex: "netcoreapp2.2" => "2.2"
             targetFramework = targetFramework
                 .ToLower()
                 .Replace("netcoreapp", string.Empty)
+
                 // For handling .NET 5
                 .Replace("net", string.Empty);
 
             // Support .NET moniker aliases
             // Ex: "472" => "4.72"
             //     "48" => "4.8"
-            if (targetFramework.IndexOf('.') == -1) {
+            if (targetFramework.IndexOf('.') == -1)
+            {
                 targetFramework = targetFramework.Insert(1, ".");
             }
 
@@ -104,9 +107,10 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             return null;
         }
 
-        private string GetOutputType(XElement outputTypeElement)
+        private static string GetOutputType(XElement outputTypeElement)
         {
             string outputType = outputTypeElement?.Value;
+
             // default OutputType is "Library"
             string outputTypeResult = string.IsNullOrEmpty(outputType) ? "Library" : outputType;
             return outputTypeResult;
@@ -119,6 +123,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             {
                 return version;
             }
+
             _logger.LogDebug(
                    $"Could not determine runtime version from target framework. ");
             return null;

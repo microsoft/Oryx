@@ -3,17 +3,20 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildServer.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildServer.Models;
 
 namespace Microsoft.Oryx.BuildServer.Repositories
 {
     public interface IRepository
     {
-        public Task<Build> Insert(Build build);
-        public Task<IEnumerable<Build>> GetAll();
-        public Task<Build> Update(Build build);
-        public Build? GetById(string id);
+        public Task<Build> InsertAsync(Build build);
+
+        public Task<IEnumerable<Build>> GetAllAsync();
+
+        public Task<Build> UpdateAsync(Build build);
+
+        public Build GetById(string id);
     }
 }

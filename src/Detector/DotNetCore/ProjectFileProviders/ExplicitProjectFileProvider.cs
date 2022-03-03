@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 {
     /// <summary>
     /// Gets the relative path to the project file which user requested explicitly through the 'PROJECT'
-    /// environment variable
+    /// environment variable.
     /// </summary>
     internal class ExplicitProjectFileProvider : IProjectFileProvider
     {
@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
         public string GetRelativePathToProjectFile(DetectorContext context)
         {
-            var projectPath = GetProjectInfoFromSettings(context);
+            var projectPath = GetProjectInfoFromSettings();
             if (string.IsNullOrEmpty(projectPath))
             {
                 _logger.LogDebug(
@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             return projectFileWithRelativePath;
         }
 
-        private string GetProjectInfoFromSettings(DetectorContext context)
+        private string GetProjectInfoFromSettings()
         {
             if (!string.IsNullOrEmpty(_options.Value.Project))
             {

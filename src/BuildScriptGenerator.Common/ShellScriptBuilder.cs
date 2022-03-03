@@ -17,9 +17,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         private const string DefaultCommandSeparator = " && ";
         private readonly StringBuilder _scriptBuilder;
         private string _commandSeparator = DefaultCommandSeparator;
-        private bool _contentPresent = false;
+        private bool _contentPresent;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ShellScriptBuilder"/> class.
         /// Builds bash script commands in a single line. Note that this does not add the '#!/bin/bash'.
         /// </summary>
         public ShellScriptBuilder(string cmdSeparator = null)
@@ -56,8 +57,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         /// <summary>
         /// Adds the 'oryx build' command with the supplied <paramref name="argumentsString"/>.
         /// </summary>
-        /// <param name="argumentsString"></param>
-        /// <returns></returns>
+        /// <param name="argumentsString">Arguments to used during the 'oryx build' command.</param>
+        /// <returns>A <see cref="ShellScriptBuilder"/> created for the 'oryx build' command with the provided arguments.</returns>
         public ShellScriptBuilder AddBuildCommand(string argumentsString)
         {
             return Append($"oryx build --debug {argumentsString}");
@@ -66,8 +67,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         /// <summary>
         /// Adds the 'oryx build-script' command with the supplied <paramref name="argumentsString"/>.
         /// </summary>
-        /// <param name="argumentsString"></param>
-        /// <returns></returns>
+        /// <param name="argumentsString">Arguments to used during the 'oryx build-script' command.</param>
+        /// <returns>A <see cref="ShellScriptBuilder"/> created for the 'oryx build-script' command with the provided arguments.</returns>
         public ShellScriptBuilder AddScriptCommand(string argumentsString)
         {
             return Append($"oryx build-script {argumentsString}");

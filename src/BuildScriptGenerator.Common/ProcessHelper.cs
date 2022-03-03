@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class ProcessHelper
     {
-        public static (int exitCode, string output, string error) RunProcess(
+        public static (int ExitCode, string Output, string Error) RunProcess(
             string fileName,
             IEnumerable<string> arguments,
             string workingDirectory,
@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
                 },
                 waitTimeForExit);
 
-            return (exitCode, output: outputBuilder.ToString(), error: errorBuilder.ToString());
+            return (exitCode, Output: outputBuilder.ToString(), Error: errorBuilder.ToString());
         }
 
         public static int RunProcess(
@@ -168,7 +168,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
                     "chmod",
                     new string[] { "+rx", path },
                     workingDir ?? System.IO.Path.GetDirectoryName(path),
-                    null).exitCode;
+                    null).ExitCode;
             }
             catch
             {

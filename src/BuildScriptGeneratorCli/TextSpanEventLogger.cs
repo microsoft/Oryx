@@ -37,16 +37,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var marker = line.Trim();
 
-            if (_beginnings.ContainsKey(marker)) // Start measuring
+            // Start measuring
+            if (_beginnings.ContainsKey(marker))
             {
                 var span = _beginnings[marker];
-                if (!_events.ContainsKey(span)) // Avoid a new measurement for a span already being measured
+
+                // Avoid a new measurement for a span already being measured
+                if (!_events.ContainsKey(span))
                 {
                     _events[span] = _logger.LogTimedEvent(span.Name);
                 }
             }
-            else if (_endings.ContainsKey(marker)) // Stop a running measurement
+            else if (_endings.ContainsKey(marker))
             {
+                // Stop a running measurement
                 var span = _endings[marker];
                 _events.GetValueOrDefault(span)?.Dispose(); // Records the measurement
                 _events.Remove(span); // No need to check if the removal succeeded, because the event might not exist

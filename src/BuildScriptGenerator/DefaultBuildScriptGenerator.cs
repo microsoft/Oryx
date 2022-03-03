@@ -16,8 +16,6 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -87,7 +85,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         Environment.GetEnvironmentVariable(toolNameAndVersion.Key)))
                     {
                         _logger.LogInformation($"If {toolNameAndVersion.Key} is set as environment, it'll be not be set via benv");
-
                     }
                     else
                     {
@@ -122,9 +119,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
             else
             {
-                _logger.LogInformation("Not running checkers - condition evaluates to " +
-                                       "({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
-                                       _checkers != null, checkerMessageSink != null, _cliOptions.EnableCheckers);
+                _logger.LogInformation(
+                    "Not running checkers - condition evaluates to " +
+                    "({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
+                    _checkers != null,
+                    checkerMessageSink != null,
+                    _cliOptions.EnableCheckers);
             }
 
             if (buildScriptSnippets != null)
@@ -169,8 +169,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var checkers = _checkers.WhereApplicable(tools).ToArray();
 
-            _logger.LogInformation("Running {checkerCount} applicable checkers for {toolCount} tools: {toolNames}",
-                checkers.Length, tools.Keys.Count, string.Join(',', tools.Keys));
+            _logger.LogInformation(
+                "Running {checkerCount} applicable checkers for {toolCount} tools: {toolNames}",
+                checkers.Length,
+                tools.Keys.Count,
+                string.Join(',', tools.Keys));
 
             using (var timedEvent = _logger.LogTimedEvent("RunCheckers"))
             {
@@ -183,7 +186,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 timedEvent.AddProperty("repoMsgCount", repoMessages.Count().ToString());
                 timedEvent.AddProperty("toolMsgCount", toolMessages.Count().ToString());
 
-                timedEvent.AddProperty("checkersApplied",
+                timedEvent.AddProperty(
+                    "checkersApplied",
                     string.Join(',', checkers.Select(checker => checker.GetType().Name)));
             }
         }
@@ -243,7 +247,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
                 else
                 {
-                    _logger.LogWarning("{platformType}.GenerateBashBuildScriptSnippet() returned null",
+                    _logger.LogWarning(
+                        "{platformType}.GenerateBashBuildScriptSnippet() returned null",
                         platform.GetType());
                 }
             }
@@ -330,9 +335,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 try
                 {
                     BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(context.SourceRepo.ReadFile("app.yaml"));
-                    if (!string.IsNullOrEmpty(buildConfigFile.prebuild))
+                    if (!string.IsNullOrEmpty(buildConfigFile.Prebuild))
                     {
-                        _cliOptions.PreBuildCommand = buildConfigFile.prebuild.Replace("\r\n", ";").Replace("\n", ";");
+                        _cliOptions.PreBuildCommand = buildConfigFile.Prebuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PreBuildScriptPath = null;
                         _logger.LogDebug("Overriding the pre-build commands with the app.yaml section");
                         _logger.LogDebug(_cliOptions.PreBuildCommand.ToString());
@@ -340,9 +345,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         _writer.WriteLine(_cliOptions.PreBuildCommand.ToString());
                     }
 
-                    if (!string.IsNullOrEmpty(buildConfigFile.postbuild))
+                    if (!string.IsNullOrEmpty(buildConfigFile.Postbuild))
                     {
-                        _cliOptions.PostBuildCommand = buildConfigFile.postbuild.Replace("\r\n", ";").Replace("\n", ";");
+                        _cliOptions.PostBuildCommand = buildConfigFile.Postbuild.Replace("\r\n", ";").Replace("\n", ";");
                         _cliOptions.PostBuildScriptPath = null;
                         _logger.LogDebug("Overriding the post-build commands with the app.yaml section");
                         _logger.LogDebug(_cliOptions.PostBuildCommand.ToString());
@@ -354,7 +359,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 {
                     _logger.LogWarning("Invalid app.yaml format", ex);
                     _writer.WriteLine("Invalid app.yaml format " + ex);
-
                 }
             }
             else
@@ -381,7 +385,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
-                OsPackagesToInstall = _cliOptions.RequiredOsPackages ?? new string[0],
+                OsPackagesToInstall = _cliOptions.RequiredOsPackages ?? Array.Empty<string>(),
                 BuildScriptSnippets = buildScriptSnippets.Select(s => s.BashBuildScriptSnippet),
                 BenvArgs = benvArgs,
                 PreBuildCommand = preBuildCommand,

@@ -19,10 +19,10 @@ namespace Microsoft.Oryx.Detector
         private readonly ILogger<DefaultPlatformDetector> _logger;
 
         /// <summary>
-        /// Creates an instance of <see cref="DefaultPlatformDetector"/>.
+        /// Initializes a new instance of the <see cref="DefaultPlatformDetector"/> class.
         /// </summary>
         /// <param name="platformDetectors">List of <see cref="IPlatformDetector"/>.</param>
-        /// <param name="logger">The <see cref="ILogger{DefaultPlatformDetector}"/></param>
+        /// <param name="logger">The <see cref="ILogger{DefaultPlatformDetector}"/>.</param>
         public DefaultPlatformDetector(
             IEnumerable<IPlatformDetector> platformDetectors,
             ILogger<DefaultPlatformDetector> logger)

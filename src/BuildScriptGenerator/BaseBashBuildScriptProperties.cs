@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 
@@ -22,10 +23,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IEnumerable<string> BuildScriptSnippets { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of OS packages that shuld be installed for this build.
+        /// Gets or sets a list of OS packages that should be installed for this build.
         /// </summary>
         [NotNull]
-        public string[] OsPackagesToInstall { get; set; } = new string[0];
+        public string[] OsPackagesToInstall { get; set; } = Array.Empty<string>();
 
         /// <summary>
         /// Gets or sets the the pre-build script content.
@@ -68,12 +69,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string BuildCommandsFileName { get; set; }
 
         /// <summary>
-        /// Gets or set the path to benv file.
+        /// Gets or sets the path to benv file.
         /// </summary>
         public string BenvPath { get; set; }
 
         /// <summary>
-        /// Gets or set the path to logger file.
+        /// Gets or sets the path to logger file.
         /// </summary>
         public string LoggerPath { get; set; }
 
@@ -83,12 +84,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string PlatformInstallationScript { get; set; }
 
         /// <summary>
-        /// Gets or sets the value which indicates if the output directory is a nested directory of the source.
+        /// Gets a value indicating whether the output directory is a nested directory of the source.
         /// </summary>
         public bool OutputDirectoryIsNested { get; internal set; }
 
         /// <summary>
-        /// Gets or sets the value which indicates if the source directory's content must be copied to the destination
+        /// Gets or sets a value indicating whether the source directory's content must be copied to the destination
         /// directory. <see cref="IProgrammingPlatform"/> set this flag when generating build script.
         /// <see cref="DotNetCore.DotNetCorePlatform"/> sets this as <c>false</c> since we do not want to copy source
         /// files like '.cs' files to destination directory where as in other platforms this is fine to do.
@@ -96,7 +97,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool CopySourceDirectoryContentToDestinationDirectory { get; set; }
 
         /// <summary>
-        /// Gets or sets the value which indicates if the entire output directory (excluding the manifest file) needs
+        /// Gets or sets a value indicating whether the entire output directory (excluding the manifest file) needs
         /// to be compressed.
         /// </summary>
         public bool CompressDestinationDir { get; set; }

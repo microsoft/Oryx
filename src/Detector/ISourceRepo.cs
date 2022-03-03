@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.Detector
     public interface ISourceRepo
     {
         /// <summary>
-        /// The path to the root of the repository in the file system.
+        /// Gets the path to the root of the repository in the file system.
         /// </summary>
         string RootPath { get; }
 

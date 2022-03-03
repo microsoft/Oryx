@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.Detector.Node
             { "svelte", "Svelte" },
             { "typescript", "Typescript" },
             { "vuepress", "VuePress" },
-            { "@vue/cli-service", "Vue.js" }
+            { "@vue/cli-service", "Vue.js" },
         };
 
         public static readonly Dictionary<string, string> DependencyFrameworkKeyWordToName = new Dictionary<string, string>()
@@ -84,14 +84,13 @@ namespace Microsoft.Oryx.Detector.Node
             { "preact", "Preact" },
             { "@scullyio/init", "Scully" },
             { "three", "Three.js" },
-            { "vue", "Vue.js" }
+            { "vue", "Vue.js" },
         };
 
         public static readonly Dictionary<string, string> WildCardDependencies = new Dictionary<string, string>()
         {
             { "@angular", "Angular" },
-            { "@remix-run", "Remix" }
+            { "@remix-run", "Remix" },
         };
-
     }
 }

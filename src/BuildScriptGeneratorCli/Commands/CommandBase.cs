@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal abstract class CommandBase
     {
-        private IServiceProvider _serviceProvider = null;
+        private IServiceProvider _serviceProvider;
 
         [Option(
             "--log-file <file>",
@@ -29,6 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option("--debug", Description = "Print stack traces for exceptions.")]
         public bool DebugMode { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "All arguments are necessary for OnExecute call, even if not used.")]
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
             console.CancelKeyPress += Console_CancelKeyPress;
@@ -126,7 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath)
                 .ConfigureServices(services =>
                 {
-                    // Add an empty and default configuration to prevent some commans from breaking since options
+                    // Add an empty and default configuration to prevent some commands from breaking since options
                     // setup expect this from DI.
                     var configuration = new ConfigurationBuilder().Build();
                     services.AddSingleton<IConfiguration>(configuration);
@@ -135,7 +136,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return serviceProviderBuilder.Build();
         }
 
-        protected string GetBeginningCommandOutputLog()
+        protected static string GetBeginningCommandOutputLog()
         {
             var output = new StringBuilder();
             output.AppendLine("Operation performed by Microsoft Oryx, https://github.com/Microsoft/Oryx");

@@ -40,7 +40,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         /// <param name="mavenVersionProvider">The <see cref="IMavenVersionProvider"/>.</param>
         /// <param name="logger">The logger of Java platform.</param>
         /// <param name="detector">The detector of Java platform.</param>
-        /// <param name="environment">The environment of Java platform.</param>
         /// <param name="javaPlatformInstaller">The <see cref="JavaPlatformInstaller"/>.</param>
         /// <param name="mavenInstaller">The <see cref="MavenInstaller"/>.</param>
         public JavaPlatform(

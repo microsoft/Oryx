@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
         {
             _builder = builder;
         }
+
         public IArtifactBuilder CreateArtifactBuilder(Build build)
         {
             return _builder;

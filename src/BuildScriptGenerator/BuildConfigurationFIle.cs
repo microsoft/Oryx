@@ -12,19 +12,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public class BuildConfigurationFIle
     {
         [YamlMember(Alias = "version", ApplyNamingConventions = false)]
-        public string version { get; set; }
+        public string Version { get; set; }
 
         [YamlMember(Alias = "pre-build", ApplyNamingConventions = false)]
-        public string prebuild { get; set; }
+        public string Prebuild { get; set; }
 
         [YamlMember(Alias = "build", ApplyNamingConventions = false)]
-        public string build { get; set; }
+        public string Build { get; set; }
 
         [YamlMember(Alias = "post-build", ApplyNamingConventions = false)]
-        public string postbuild { get; set; }
+        public string Postbuild { get; set; }
 
         [YamlMember(Alias = "run", ApplyNamingConventions = false)]
-        public string run { get; set; }
+        public string Run { get; set; }
 
         public static BuildConfigurationFIle Create(string text)
         {

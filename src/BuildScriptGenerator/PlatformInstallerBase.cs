@@ -71,7 +71,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo Extracting contents...")
                 .AppendLine($"tar -xzf {tarFile} -C .")
                 .AppendLine($"platformName=\"{platformName}\"")
-                // use sha256 for golang and sha512 for all other platforms 
+
+                // use sha256 for golang and sha512 for all other platforms
                 .AppendLine($"if [ \"$platformName\" = \"golang\" ]; then")
                 .AppendLine($"echo \"performing sha256sum for : {platformName}...\"")
                 .AppendLine($"echo \"$checksumValue {version}.tar.gz\" | sha256sum -c - >/dev/null 2>&1")
@@ -121,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"ln -sfn /opt/ruby/{version} /home/codespace/.ruby/current")
                 .AppendLine("fi")
 
-                // Write out a sentinel file to indicate downlaod and extraction was successful
+                // Write out a sentinel file to indicate download and extraction was successful
                 .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
 
             return snippet.ToString();

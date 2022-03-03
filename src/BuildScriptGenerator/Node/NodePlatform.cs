@@ -237,7 +237,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     }
                 }
 
-                // If a 'lage.config.js' file exits, run build using lage specifc commands.
+                // If a 'lage.config.js' file exits, run build using lage specific commands.
                 if (nodePlatformDetectorResult.HasLageConfigJSFile)
                 {
                     runBuildLageCommand = ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName) ?
@@ -315,7 +315,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 _logger.LogDependencies(
                     _commonOptions.PlatformName,
                     nodePlatformDetectorResult.PlatformVersion,
-                    depSpecs.Select(d => d.Key + d.Value), true);
+                    depSpecs.Select(d => d.Key + d.Value),
+                    devDeps: true);
             }
 
             // add detected frameworks to manifest file
@@ -325,7 +326,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 string[] framworks = frameworksObj.Select(p => p.Framework).ToArray();
                 string frameworks = string.Join(",", framworks);
                 manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = frameworks;
-                _logger.LogInformation($"Detected the following framwork(s): {frameworks}");
+                _logger.LogInformation($"Detected the following framework(s): {frameworks}");
             }
 
             string compressNodeModulesCommand = null;
@@ -609,7 +610,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return isNodeModulesPackaged;
         }
 
-        private void GetAppOutputDirPath(dynamic packageJson, Dictionary<string, string> buildProperties)
+        private static void GetAppOutputDirPath(dynamic packageJson, Dictionary<string, string> buildProperties)
         {
             if (packageJson == null || packageJson.scripts == null || packageJson.scripts["build"] == null)
             {

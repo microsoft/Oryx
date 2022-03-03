@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.Detector.Ruby
     public class RubyPlatformDetectorResult : PlatformDetectorResult
     {
         /// <summary>
-        /// Gets or sets the value indicating if a 'Gemfile' file exists in the repo.
+        /// Gets or sets a value indicating whether a 'Gemfile' file exists in the repo.
         /// </summary>
         public bool GemfileExists { get; set; }
 
@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Detector.Ruby
         public string BundlerVersion { get; set; }
 
         /// <summary>
-        /// Gets or sets the value the value indicating if a 'config.yml' file exists in the repo.
+        /// Gets or sets a value indicating whether a 'config.yml' file exists in the repo.
         /// </summary>
         public bool ConfigYmlFileExists { get; set; }
     }

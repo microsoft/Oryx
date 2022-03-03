@@ -295,6 +295,41 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return tools;
         }
 
+        /// <summary>
+        /// Even though the runtime container has the logic of finding out the startup file based on
+        /// 'runtimeconfig.json' prefix, we still set the name in the manifest file because of the following
+        /// scenario: let's say output directory currently has 'foo.dll' and user made a change to the project
+        /// name or assembly name property to 'bar' which causes 'bar.dll' to be published. If the output
+        /// directory was NOT cleaned, then we would now be having both 'foo.runtimeconfig.json' and
+        /// 'bar.runtimeconfig.json' which causes a problem for runtime container as it cannot figure out the
+        /// right startup DLL. So, to help that scenario we always set the start-up file name in manifest file.
+        /// The runtime container will first look into manifest file to find the startup filename, if the
+        /// file name is not present or if a manifest file is not present at all(ex: in case of VS Publish where
+        /// the build does not happen with Oryx), then the runtime container's logic will fallback to looking at
+        /// runtimeconfig.json prefixes.
+        /// </summary>
+        private static void SetStartupFileNameInfoInManifestFile(
+            BuildScriptGeneratorContext context,
+            string projectFile,
+            IDictionary<string, string> buildProperties)
+        {
+            string startupDllFileName;
+            var projectFileContent = context.SourceRepo.ReadFile(projectFile);
+            var projFileDoc = XDocument.Load(new StringReader(projectFileContent));
+            var assemblyNameElement = projFileDoc.XPathSelectElement(DotNetCoreConstants.AssemblyNameXPathExpression);
+            if (assemblyNameElement == null)
+            {
+                var name = Path.GetFileNameWithoutExtension(projectFile);
+                startupDllFileName = $"{name}.dll";
+            }
+            else
+            {
+                startupDllFileName = $"{assemblyNameElement.Value}.dll";
+            }
+
+            buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
+        }
+
         private string GetSdkVersion(
             RepositoryContext context,
             string runtimeVersion,
@@ -325,41 +360,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return configuration;
         }
 
-        /// <summary>
-        /// Even though the runtime container has the logic of finding out the startup file based on
-        /// 'runtimeconfig.json' prefix, we still set the name in the manifest file because of the following
-        /// scenario: let's say output directory currently has 'foo.dll' and user made a change to the project
-        /// name or assembly name property to 'bar' which causes 'bar.dll' to be published. If the output
-        /// directory was NOT cleaned, then we would now be having both 'foo.runtimeconfig.json' and
-        /// 'bar.runtimeconfig.json' which causes a problem for runtime container as it cannot figure out the
-        /// right startup DLL. So, to help that scenario we always set the start-up file name in manifest file.
-        /// The runtime container will first look into manifest file to find the startup filename, if the
-        /// file name is not present or if a manifest file is not present at all(ex: in case of VS Publish where
-        /// the build does not happen with Oryx), then the runtime container's logic will fallback to looking at
-        /// runtimeconfig.json prefixes.
-        /// </summary>
-        private void SetStartupFileNameInfoInManifestFile(
-            BuildScriptGeneratorContext context,
-            string projectFile,
-            IDictionary<string, string> buildProperties)
-        {
-            string startupDllFileName;
-            var projectFileContent = context.SourceRepo.ReadFile(projectFile);
-            var projFileDoc = XDocument.Load(new StringReader(projectFileContent));
-            var assemblyNameElement = projFileDoc.XPathSelectElement(DotNetCoreConstants.AssemblyNameXPathExpression);
-            if (assemblyNameElement == null)
-            {
-                var name = Path.GetFileNameWithoutExtension(projectFile);
-                startupDllFileName = $"{name}.dll";
-            }
-            else
-            {
-                startupDllFileName = $"{assemblyNameElement.Value}.dll";
-            }
-
-            buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
-        }
-
         private string GetMaxSatisfyingRuntimeVersionAndVerify(string runtimeVersion)
         {
             var versionMap = _versionProvider.GetSupportedVersions();
@@ -381,7 +381,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // NOTE:
                 // Preview versions: 5.0.0-preview.3.20214.6, 5.0.0-preview.2.20160.6, 5.0.0-preview.1.20120.5
                 var previewRuntimeVersions = versionMap.Keys
-                    .Where(version => version.IndexOf("-") >= 0)
+                    .Where(version => version.Contains("-"))
                     .Where(version => version.StartsWith(runtimeVersion))
                     .OrderByDescending(version => version);
                 if (previewRuntimeVersions.Any())

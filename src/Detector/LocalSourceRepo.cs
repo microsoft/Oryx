@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Detector
         private readonly ILogger<LocalSourceRepo> _logger;
 
         /// <summary>
-        /// Creates an instance of <see cref="LocalSourceRepo"/>.
+        /// Initializes a new instance of the <see cref="LocalSourceRepo"/> class.
         /// </summary>
         /// <param name="sourceDirectory">The directory containing the source code of the application.</param>
         public LocalSourceRepo(string sourceDirectory)
@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.Detector
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="LocalSourceRepo"/>.
+        /// Initializes a new instance of the <see cref="LocalSourceRepo"/> class.
         /// </summary>
         /// <param name="sourceDirectory">The directory containing the source code of the application.</param>
         /// <param name="loggerFactory">The <see cref="ILoggerFactory"/>.</param>

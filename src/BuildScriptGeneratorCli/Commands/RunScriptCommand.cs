@@ -13,8 +13,11 @@ using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Generate startup script for an app.",
-        ThrowOnUnexpectedArgument = false, AllowArgumentSeparator = true)]
+    [Command(
+        Name,
+        Description = "Generate startup script for an app.",
+        ThrowOnUnexpectedArgument = false,
+        AllowArgumentSeparator = true)]
     internal class RunScriptCommand : CommandBase
     {
         public const string Name = "run-script";

@@ -42,6 +42,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         /// <inheritdoc/>
         public IEnumerable<string> SupportedVersions => new[] { HugoConstants.Version };
 
+        public static string GetMaxSatisfyingVersionAndVerify(string version)
+        {
+            return version;
+        }
+
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
@@ -147,12 +152,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             }
 
             return installationScriptSnippet;
-        }
-
-        /// <inheritdoc/>
-        public string GetMaxSatisfyingVersionAndVerify(string version)
-        {
-            return version;
         }
 
         /// <inheritdoc/>
