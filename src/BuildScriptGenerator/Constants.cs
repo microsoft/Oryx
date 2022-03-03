@@ -31,5 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// the path to the installed sdks.
         /// </summary>
         public const string BenvDynamicInstallRootDirKey = "dynamic_install_root_dir";
+
+        public const string BuildConfigurationFileHelp = "https://aka.ms/troubleshoot-buildconfig";
     }
 }
