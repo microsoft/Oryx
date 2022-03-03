@@ -115,6 +115,36 @@ namespace Microsoft.Oryx.Detector.Tests.Node
           },
           ""engines"" : { ""npm"" : ""5.4.2"" }
         }";
+
+        private const string PackageJsonWithFrameworksRemovesAngularAndVueJs = @"{
+          ""name"": ""mynodeapp"",
+          ""version"": ""1.0.0"",
+          ""main"": ""server.js"",
+          ""author"": ""Dev"",
+          ""license"": ""ISC"",
+          ""dependencies"": {
+            ""jquery"": ""3.5.1"",
+            ""@angular/testDependency"": ""1.2.3"",
+            ""@angular/duplicateDependency"": ""1.2.3"",
+            ""gatsby"": ""1.2.3"",
+            ""vuepress"": ""4.5.6"",
+            ""vue"": ""4.5.6"",
+          },
+          ""engines"" : { ""npm"" : ""5.4.2"" }
+        }";
+
+        private const string PackageJsonWithFrameworksRemovesReactAndVueJs = @"{
+          ""name"": ""mynodeapp"",
+          ""version"": ""1.0.0"",
+          ""main"": ""server.js"",
+          ""author"": ""Dev"",
+          ""license"": ""ISC"",
+          ""dependencies"": {
+            ""jquery"": ""3.5.1"",
+            ""react"": ""16.12.0"",
+            ""gatsby"": ""1.2.3"",
+            ""vuepress"": ""4.5.6"",
+            ""vue"": ""4.5.6"",
           },
           ""engines"" : { ""npm"" : ""5.4.2"" }
         }";
@@ -473,6 +503,40 @@ namespace Microsoft.Oryx.Detector.Tests.Node
                 "1.3.1", "3.0.0", "3.5.1", "16.12.0", "1.2.3", ""
             };
 
+            // Act
+            var result = (NodePlatformDetectorResult)detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("nodejs", result.Platform);
+            Assert.Null(result.PlatformVersion);
+            Assert.Equal(string.Empty, result.AppDirectory);
+            Assert.Equal(expectedFrameworkNames, result.Frameworks.Select(x => x.Framework).ToList());
+            Assert.Equal(expectedFrameworkVersions, result.Frameworks.Select(x => x.FrameworkVersion).ToList());
+        }
+
+        [Theory]
+        [InlineData(PackageJsonWithFrameworksRemovesAngularAndVueJs)]
+        [InlineData(PackageJsonWithFrameworksRemovesReactAndVueJs)]
+        public void Detect_ReturnsFrameworkInfos_RemovesAngularAndReact(string packageJson)
+        {
+            // Arrange
+            var sourceRepo = new MemorySourceRepo();
+            sourceRepo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(sourceRepo);
+            var options = new DetectorOptions
+            {
+                DisableFrameworkDetection = false,
+            };
+            var detector = CreateNodePlatformDetector(options);
+            List<string> expectedFrameworkNames = new List<string>()
+            {
+                "jQuery", "Gatsby", "VuePress"
+            };
+            List<string> expectedFrameworkVersions = new List<string>()
+            {
+                "3.5.1", "1.2.3", "4.5.6"
+            };
             // Act
             var result = (NodePlatformDetectorResult)detector.Detect(context);
 
