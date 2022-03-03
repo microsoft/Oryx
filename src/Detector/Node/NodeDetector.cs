@@ -199,6 +199,8 @@ namespace Microsoft.Oryx.Detector.Node
 
         private IEnumerable<FrameworkInfo> DetectFrameworkInfos(DetectorContext context)
         {
+            // TODO: consolidate dependency & dev-dependency logic
+            //       work-item 1493329
             var detectedFrameworkResult = new List<FrameworkInfo>();
             var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
             var monitoredDevDependencies = NodeConstants.DevDependencyFrameworkKeyWordToName;
