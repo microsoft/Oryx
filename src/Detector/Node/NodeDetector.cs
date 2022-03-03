@@ -214,8 +214,9 @@ namespace Microsoft.Oryx.Detector.Node
                 // wild-card dependency
                 (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
                 
-                bool isValidDependency = monitoredDevDependencies.ContainsKey(dependencyName) || isWildCardDependency;
-                string frameworkName = isWildCardDependency ? wildCarddependencyName : monitoredDevDependencies[dependencyName];
+                bool isValidDependency = monitoredDevDependencies.ContainsKey(dependencyName);
+                string frameworkName = isValidDependency ? monitoredDevDependencies[dependencyName] : "";
+                frameworkName = isWildCardDependency ? wildCarddependencyName : frameworkName;
                 bool isNotDuplicateFramework= !(frameworksSet.Contains(frameworkName));
                 if (isValidDependency && isNotDuplicateFramework) 
                 {
@@ -239,8 +240,9 @@ namespace Microsoft.Oryx.Detector.Node
                 // wild-card dependency
                 (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
 
-                bool isValidDependency = monitoredDependencies.ContainsKey(dependencyName) || isWildCardDependency;
-                string frameworkName = isWildCardDependency ? wildCarddependencyName : monitoredDependencies[dependencyName];
+                bool isValidDependency = monitoredDependencies.ContainsKey(dependencyName);
+                string frameworkName = isValidDependency ? monitoredDependencies[dependencyName] : "";
+                frameworkName = isWildCardDependency ? wildCarddependencyName : frameworkName; 
                 bool isNotDuplicateFramework = !(frameworksSet.Contains(frameworkName));
                 if (isValidDependency && isNotDuplicateFramework)
                 {
@@ -261,6 +263,17 @@ namespace Microsoft.Oryx.Detector.Node
                     FrameworkVersion = string.Empty
                 };
                 detectedFrameworkResult.Add(frameworkInfo);
+            }
+
+            // remove base frameworks if derived framework exists
+            if (frameworksSet.Contains("Gatsby") || frameworksSet.Contains("Next.js"))
+            {
+                detectedFrameworkResult.RemoveAll(x => x.Framework == "Angular");
+                detectedFrameworkResult.RemoveAll(x => x.Framework == "React");
+            }
+            if (frameworksSet.Contains("VuePress") || frameworksSet.Contains("Nuxt.js"))
+            {
+                detectedFrameworkResult.RemoveAll(x => x.Framework == "Vue.js");
             }
 
             return detectedFrameworkResult;

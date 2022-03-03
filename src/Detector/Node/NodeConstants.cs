@@ -84,6 +84,7 @@ namespace Microsoft.Oryx.Detector.Node
             { "preact", "Preact" },
             { "@scullyio/init", "Scully" },
             { "three", "Three.js" },
+            { "vuepress", "VuePress" },
             { "vue", "Vue.js" }
         };
 
