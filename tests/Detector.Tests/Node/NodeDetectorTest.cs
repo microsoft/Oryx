@@ -110,7 +110,11 @@ namespace Microsoft.Oryx.Detector.Tests.Node
           ""dependencies"": {
             ""jquery"": ""3.5.1"",
             ""react"": ""16.12.0"",
-            ""@remix-run/testdependency"": ""1.2.3"",
+            ""@remix-run/testDependency"": ""1.2.3"",
+            ""@remix-run/duplicateRemixDependency"": ""1.2.3"",
+          },
+          ""engines"" : { ""npm"" : ""5.4.2"" }
+        }";
           },
           ""engines"" : { ""npm"" : ""5.4.2"" }
         }";

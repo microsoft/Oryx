@@ -202,6 +202,8 @@ namespace Microsoft.Oryx.Detector.Node
             var detectedFrameworkResult = new List<FrameworkInfo>();
             var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
             var monitoredDevDependencies = NodeConstants.DevDependencyFrameworkKeyWordToName;
+            // frameworksSet is for preventing duplicates
+            var frameworksSet = new HashSet<string>();
             
             // dev-dependencies
             var devDependencies = packageJson?.devDependencies != null ? packageJson.devDependencies : new string[0];
@@ -211,15 +213,19 @@ namespace Microsoft.Oryx.Detector.Node
 
                 // wild-card dependency
                 (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
-
-                if (monitoredDevDependencies.ContainsKey(dependencyName) || isWildCardDependency) 
+                
+                bool isValidDependency = monitoredDevDependencies.ContainsKey(dependencyName) || isWildCardDependency;
+                string frameworkName = isWildCardDependency ? wildCarddependencyName : monitoredDevDependencies[dependencyName];
+                bool isNotDuplicateFramework= !(frameworksSet.Contains(frameworkName));
+                if (isValidDependency && isNotDuplicateFramework) 
                 {
                     var frameworkInfo = new FrameworkInfo
                     {
-                        Framework = isWildCardDependency ? wildCarddependencyName : monitoredDevDependencies[dependencyName],
+                        Framework = frameworkName,
                         FrameworkVersion = dependency.Value.Value
                     };
                     detectedFrameworkResult.Add(frameworkInfo);
+                    frameworksSet.Add(frameworkName);
                 }
             }
 
@@ -233,14 +239,18 @@ namespace Microsoft.Oryx.Detector.Node
                 // wild-card dependency
                 (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
 
-                if (monitoredDependencies.ContainsKey(dependencyName) || isWildCardDependency)
+                bool isValidDependency = monitoredDependencies.ContainsKey(dependencyName) || isWildCardDependency;
+                string frameworkName = isWildCardDependency ? wildCarddependencyName : monitoredDependencies[dependencyName];
+                bool isNotDuplicateFramework = !(frameworksSet.Contains(frameworkName));
+                if (isValidDependency && isNotDuplicateFramework)
                 {
                     var frameworkInfo = new FrameworkInfo
                     {
-                        Framework = isWildCardDependency ? wildCarddependencyName : monitoredDependencies[dependencyName],
+                        Framework = frameworkName,
                         FrameworkVersion = dependency.Value.Value
                     };
                     detectedFrameworkResult.Add(frameworkInfo);
+                    frameworksSet.Add(frameworkName);
                 }
             }
 
