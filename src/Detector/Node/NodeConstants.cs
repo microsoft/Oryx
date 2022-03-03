@@ -52,21 +52,27 @@ namespace Microsoft.Oryx.Detector.Node
             { "aurelia-cli", "Aurelia" },
             { "astro", "Astro" },
             { "@11ty/eleventy", "Eleventy" },
+            { "contentful", "contentful" },
             { "elm", "Elm" },
             { "ember-cli", "Ember" },
             { "@glimmer/component", "Glimmer" },
             { "hugo-cli", "Hugo" },
             { "knockout", "KnockoutJs" },
+            { "next", "Next.js" },
+            { "nuxt", "Nuxt.js" },
             { "polymer-cli", "Polymer" },
             { "@stencil/core", "Stencil" },
             { "svelte", "Svelte" },
             { "typescript", "Typescript" },
             { "vuepress", "VuePress" },
-            { "@vue/cli-service", "Vue.js" }
+            { "@vue/cli-service", "Vue.js" },
+            { "gatsby", "Gatsby" },
         };
 
         public static readonly Dictionary<string, string> DependencyFrameworkKeyWordToName = new Dictionary<string, string>()
         {
+            { "@11ty/eleventy", "Eleventy" },
+            { "astro", "Astro" },
             { "contentful", "contentful" },
             { "gatsby", "Gatsby" },
             { "gridsome", "Gridsome" },
