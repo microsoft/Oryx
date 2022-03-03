@@ -202,6 +202,7 @@ namespace Microsoft.Oryx.Detector.Node
             var detectedFrameworkResult = new List<FrameworkInfo>();
             var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
             var monitoredDevDependencies = NodeConstants.DevDependencyFrameworkKeyWordToName;
+
             // frameworksSet is for preventing duplicates
             var frameworksSet = new HashSet<string>();
             
@@ -213,12 +214,13 @@ namespace Microsoft.Oryx.Detector.Node
 
                 // wild-card dependency
                 (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
-                
-                bool isValidDependency = monitoredDevDependencies.ContainsKey(dependencyName);
-                string frameworkName = isValidDependency ? monitoredDevDependencies[dependencyName] : "";
-                frameworkName = isWildCardDependency ? wildCarddependencyName : frameworkName;
-                bool isNotDuplicateFramework= !(frameworksSet.Contains(frameworkName));
-                if (isValidDependency && isNotDuplicateFramework) 
+
+                if (!monitoredDevDependencies.ContainsKey(dependencyName) && !isWildCardDependency)
+                {
+                    continue;
+                }
+                string frameworkName = isWildCardDependency ? wildCarddependencyName : monitoredDevDependencies[dependencyName];
+                if (!frameworksSet.Contains(frameworkName))
                 {
                     var frameworkInfo = new FrameworkInfo
                     {
@@ -240,11 +242,12 @@ namespace Microsoft.Oryx.Detector.Node
                 // wild-card dependency
                 (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
 
-                bool isValidDependency = monitoredDependencies.ContainsKey(dependencyName);
-                string frameworkName = isValidDependency ? monitoredDependencies[dependencyName] : "";
-                frameworkName = isWildCardDependency ? wildCarddependencyName : frameworkName; 
-                bool isNotDuplicateFramework = !(frameworksSet.Contains(frameworkName));
-                if (isValidDependency && isNotDuplicateFramework)
+                if (!monitoredDependencies.ContainsKey(dependencyName) && !isWildCardDependency)
+                {
+                    continue;
+                }
+                string frameworkName = isWildCardDependency ? wildCarddependencyName : monitoredDependencies[dependencyName]; 
+                if (!frameworksSet.Contains(frameworkName))
                 {
                     var frameworkInfo = new FrameworkInfo
                     {
@@ -271,6 +274,7 @@ namespace Microsoft.Oryx.Detector.Node
                 detectedFrameworkResult.RemoveAll(x => x.Framework == "Angular");
                 detectedFrameworkResult.RemoveAll(x => x.Framework == "React");
             }
+
             if (frameworksSet.Contains("VuePress") || frameworksSet.Contains("Nuxt.js"))
             {
                 detectedFrameworkResult.RemoveAll(x => x.Framework == "Vue.js");
