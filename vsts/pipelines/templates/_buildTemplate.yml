@@ -34,14 +34,14 @@ steps:
   condition: >
     and(succeeded(),
     or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')),
-    or(startsWith(variables['Build.SourceBranch'], 'refs/heads/main'), 
+    or(startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
     startsWith(variables['Build.SourceBranch'],'refs/heads/patch/'),
     startsWith(variables['Build.SourceBranch'],'refs/heads/exp/')))
 
 - task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.x'
+  displayName: 'Use .NET Core sdk 6.0.x'
   inputs:
-    version: 3.1.x
+    version: 6.0.x
 
 - script: |
     dotnet --version && dotnet msbuild -version && echo
@@ -64,7 +64,7 @@ steps:
     command: login
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrName }}
-    
+
 - script: |
     docker images && docker system prune -fa && df -h && echo
   displayName: 'Free up space for oryx layers'
