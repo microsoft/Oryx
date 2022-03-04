@@ -199,9 +199,14 @@ namespace Microsoft.Oryx.Detector.Node
 
         private IEnumerable<FrameworkInfo> DetectFrameworkInfos(DetectorContext context)
         {
+            // TODO: consolidate dependency & dev-dependency logic
+            //       work-item 1493329
             var detectedFrameworkResult = new List<FrameworkInfo>();
             var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
             var monitoredDevDependencies = NodeConstants.DevDependencyFrameworkKeyWordToName;
+
+            // frameworksSet is for preventing duplicates
+            var frameworksSet = new HashSet<string>();
             
             // dev-dependencies
             var devDependencies = packageJson?.devDependencies != null ? packageJson.devDependencies : new string[0];
@@ -210,16 +215,22 @@ namespace Microsoft.Oryx.Detector.Node
                 string dependencyName = dependency.Name;
 
                 // wild-card dependency
-                (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
+                (bool isWildCardDependency, string wildCardDependencyName) = GetWildCardDependency(dependencyName);
 
-                if (monitoredDevDependencies.ContainsKey(dependencyName) || isWildCardDependency) 
+                if (!monitoredDevDependencies.ContainsKey(dependencyName) && !isWildCardDependency)
+                {
+                    continue;
+                }
+                string frameworkName = isWildCardDependency ? wildCardDependencyName : monitoredDevDependencies[dependencyName];
+                if (!frameworksSet.Contains(frameworkName))
                 {
                     var frameworkInfo = new FrameworkInfo
                     {
-                        Framework = isWildCardDependency ? wildCarddependencyName : monitoredDevDependencies[dependencyName],
+                        Framework = frameworkName,
                         FrameworkVersion = dependency.Value.Value
                     };
                     detectedFrameworkResult.Add(frameworkInfo);
+                    frameworksSet.Add(frameworkName);
                 }
             }
 
@@ -231,16 +242,22 @@ namespace Microsoft.Oryx.Detector.Node
                 string dependencyName = dependency.Name;
 
                 // wild-card dependency
-                (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
+                (bool isWildCardDependency, string wildCardDependencyName) = GetWildCardDependency(dependencyName);
 
-                if (monitoredDependencies.ContainsKey(dependencyName) || isWildCardDependency)
+                if (!monitoredDependencies.ContainsKey(dependencyName) && !isWildCardDependency)
+                {
+                    continue;
+                }
+                string frameworkName = isWildCardDependency ? wildCardDependencyName : monitoredDependencies[dependencyName]; 
+                if (!frameworksSet.Contains(frameworkName))
                 {
                     var frameworkInfo = new FrameworkInfo
                     {
-                        Framework = isWildCardDependency ? wildCarddependencyName : monitoredDependencies[dependencyName],
+                        Framework = frameworkName,
                         FrameworkVersion = dependency.Value.Value
                     };
                     detectedFrameworkResult.Add(frameworkInfo);
+                    frameworksSet.Add(frameworkName);
                 }
             }
 
@@ -251,6 +268,18 @@ namespace Microsoft.Oryx.Detector.Node
                     FrameworkVersion = string.Empty
                 };
                 detectedFrameworkResult.Add(frameworkInfo);
+            }
+
+            // remove base frameworks if derived framework exists
+            if (frameworksSet.Contains("Gatsby") || frameworksSet.Contains("Next.js"))
+            {
+                detectedFrameworkResult.RemoveAll(x => x.Framework == "Angular");
+                detectedFrameworkResult.RemoveAll(x => x.Framework == "React");
+            }
+
+            if (frameworksSet.Contains("VuePress") || frameworksSet.Contains("Nuxt.js"))
+            {
+                detectedFrameworkResult.RemoveAll(x => x.Framework == "Vue.js");
             }
 
             return detectedFrameworkResult;
