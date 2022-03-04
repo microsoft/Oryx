@@ -215,13 +215,13 @@ namespace Microsoft.Oryx.Detector.Node
                 string dependencyName = dependency.Name;
 
                 // wild-card dependency
-                (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
+                (bool isWildCardDependency, string wildCardDependencyName) = GetWildCardDependency(dependencyName);
 
                 if (!monitoredDevDependencies.ContainsKey(dependencyName) && !isWildCardDependency)
                 {
                     continue;
                 }
-                string frameworkName = isWildCardDependency ? wildCarddependencyName : monitoredDevDependencies[dependencyName];
+                string frameworkName = isWildCardDependency ? wildCardDependencyName : monitoredDevDependencies[dependencyName];
                 if (!frameworksSet.Contains(frameworkName))
                 {
                     var frameworkInfo = new FrameworkInfo
@@ -242,13 +242,13 @@ namespace Microsoft.Oryx.Detector.Node
                 string dependencyName = dependency.Name;
 
                 // wild-card dependency
-                (bool isWildCardDependency, string wildCarddependencyName) = GetWildCardDependency(dependencyName);
+                (bool isWildCardDependency, string wildCardDependencyName) = GetWildCardDependency(dependencyName);
 
                 if (!monitoredDependencies.ContainsKey(dependencyName) && !isWildCardDependency)
                 {
                     continue;
                 }
-                string frameworkName = isWildCardDependency ? wildCarddependencyName : monitoredDependencies[dependencyName]; 
+                string frameworkName = isWildCardDependency ? wildCardDependencyName : monitoredDependencies[dependencyName]; 
                 if (!frameworksSet.Contains(frameworkName))
                 {
                     var frameworkInfo = new FrameworkInfo
