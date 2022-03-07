@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     var dotNetCorePlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(DotNetCoreConstants.PlatformName))
                         .FirstOrDefault();
-                    Assert.NotNull(dotNetCorePlatform); 
+                    Assert.NotNull(dotNetCorePlatform);
                     Assert.NotNull(dotNetCorePlatform.Versions);
                     Assert.True(dotNetCorePlatform.Versions.Any());
                     Assert.True(dotNetCorePlatform.Versions.Contains("1.1.13"));
