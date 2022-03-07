@@ -68,6 +68,6 @@ if [ "$INSTALL_TOOLS" == "true" ]; then
     chmod +x "$toolsDir/dotnet-dump"
     dotnet tool install --tool-path "$toolsDir" dotnet-counters
     chmod +x "$toolsDir/dotnet-counters"
-    dotnet tool install --tool-path "$toolsDir" dotnet-monitor --version 6.*
+    dotnet tool install --tool-path "$toolsDir" dotnet-monitor --version 6.1.*
     chmod +x "$toolsDir/dotnet-monitor"
 fi
