@@ -269,7 +269,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsApplication_UsingPreviewVersionOfSdk()
         {
             // Arrange
-            var expectedSdkVersion = "5.0.100-preview.3.20216.6";
+            var expectedSdkVersion = "7.0.100-preview.1.22110.4";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
