@@ -6,7 +6,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 6.*
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 6.1.*
 
 FROM debian:buster-slim
 ARG BUILD_DIR=/tmp/oryx/build
