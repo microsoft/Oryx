@@ -25,6 +25,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         protected const string NetCoreApp31MvcApp = "NetCoreApp31.MvcApp";
         protected const string NetCoreApp50MvcApp = "NetCoreApp50MvcApp";
         protected const string NetCore6PreviewWebApp = "NetCore6PreviewWebApp";
+        protected const string NetCore7PreviewMvcApp = "NetCore7PreviewMvcApp";
         protected const string DefaultWebApp = "DefaultWebApp";
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
@@ -40,6 +41,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
         [InlineData(NetCoreApp50MvcApp, "5.0")]
+        [InlineData(NetCore7PreviewMvcApp, "7.0.0-preview.1.22076.8")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion)
@@ -267,7 +269,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsApplication_UsingPreviewVersionOfSdk()
         {
             // Arrange
-            var expectedSdkVersion = "5.0.100-preview.3.20216.6";
+            var expectedSdkVersion = "7.0.100-preview.1.22110.4";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
