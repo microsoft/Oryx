@@ -33,6 +33,7 @@
     dot-net-50-sdk-version: 5.0.403
     dot-net-60-sdk-version: 6.0.100
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
+    dot-net-70-sdk-version: 7.0.100-preview.1.22110.4
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -42,7 +43,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20220307.1
+    dot-net-core-runtime-base-tag: 20220307.2
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
 
@@ -73,9 +74,13 @@
 
     net-core-app-60: 6.0.0
     net-core-app-60-sha: 7cc8d93f9495b516e1b33bf82af3af605f1300bcfeabdd065d448cc126bd97ab4da5ec5e95b7775ee70ab4baf899ff43671f5c6f647523fb41cda3d96f334ae5
-
     aspnet-core-app-60: 6.0.0
     aspnet-core-app-60-sha: 6a1ae878efdc9f654e1914b0753b710c3780b646ac160fb5a68850b2fd1101675dc71e015dbbea6b4fcf1edac0822d3f7d470e9ed533dd81d0cfbcbbb1745c6c
+
+    net-core-app-70: 7.0.0-preview.1.22076.8
+    net-core-app-70-sha: 8d48436646071c371b862002fcdd24de07addd02ec878ab413cc6c98a5ff6da821f2175c637167462261ad5e47da0d2b83f465949e673462f0e147d62255651c
+    aspnet-core-app-70: 7.0.0-preview.1.22109.13
+    aspnet-core-app-70-sha: 064d65fa3aabe1aa1c7b4142e7ced64b194474cefc0c52710e17aa7f156e3259ed51ae3abacec164c58de29240ac21d51aa7c153ec048c4937104eb3bbb00c74
 
 
   outputs:

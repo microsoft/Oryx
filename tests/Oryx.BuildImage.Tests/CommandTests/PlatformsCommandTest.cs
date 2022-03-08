@@ -58,6 +58,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(dotNetCorePlatform.Versions.Contains("1.1.13"));
                     Assert.True(dotNetCorePlatform.Versions.Contains("5.0.0-preview.3.20214.6"));
                     Assert.True(dotNetCorePlatform.Versions.Contains("6.0.0-rc.1.21451.13"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("7.0.0-preview.1.22076.8"));
 
                     var nodePlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(NodeConstants.PlatformName))
