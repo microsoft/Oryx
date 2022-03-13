@@ -321,6 +321,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
+                .AddCommand($"echo Showing OS...")
+                .AddCommand($"cat /etc/os-release")
+                .AddCommand($"echo Showing environment variables...")
+                .AddCommand($"printenv")
                 .AddCommand("dotnet nuget add source https://pkgs.dev.azure.com/dnceng/public/_packaging/6.0.100-rtm.21527.11-shipping/nuget/v3/index.json")
                 .AddBuildCommand(
                 $"{appDir} --platform dotnet " +
