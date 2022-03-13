@@ -993,6 +993,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/isolatedapp-output";
             var script = new ShellScriptBuilder()
+                .AddCommand($"echo Showing OS...")
+                .AddCommand($"cat /etc/os-release")
+                .AddCommand($"echo Showing environment variables...")
+                .AddCommand($"printenv")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
