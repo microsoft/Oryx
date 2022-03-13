@@ -1016,7 +1016,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(
                 () =>
                 {
-                    Assert.False(result.IsSuccess); // fail on purpose to see the stack trace
                     Assert.True(result.IsSuccess);
                 },
                 result.GetDebugInfo());
