@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-2")]
     public class NodeAngularAppTest : NodeEndToEndTestsBase
     {
         public NodeAngularAppTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -35,41 +34,41 @@ namespace Microsoft.Oryx.Integration.Tests
         [Fact, Trait("category", "node-8")]
         public void PipelineTestInvocationsNode8()
         {
-            string nodeVersion8 = "8";
-            CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(nodeVersion8);
-            CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InRoot_WithoutCompression(nodeVersion8);
+            string nodeVersion = "8";
+            CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(nodeVersion);
+            CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InRoot_WithoutCompression(nodeVersion);
         }
 
         [Fact, Trait("category", "node-9.4")]
         public void PipelineTestInvocationsNode94()
         {
-            string nodeVersion94 = "9.4";
-            CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(nodeVersion94);
-            CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InAppDir_WithoutCompression(nodeVersion94);
+            string nodeVersion = "9.4";
+            CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(nodeVersion);
+            CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InAppDir_WithoutCompression(nodeVersion);
         }
 
         [Fact, Trait("category", "node-10")]
         public void PipelineTestInvocationsNode10()
         {
-            string nodeVersion10 = "10";
-            CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion10);
-            CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(nodeVersion10);
-            CanBuildAndRun_Angular8App_NodeModules_Dir_Exists_InRoot_WithoutCompression(nodeVersion10);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InRoot_UsingCompression(nodeVersion10);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InRoot_UsingCompression(nodeVersion10);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion10);
+            string nodeVersion = "10";
+            CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion);
+            CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(nodeVersion);
+            CanBuildAndRun_Angular8App_NodeModules_Dir_Exists_InRoot_WithoutCompression(nodeVersion);
+            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InRoot_UsingCompression(nodeVersion);
+            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InRoot_UsingCompression(nodeVersion);
+            CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion);
         }
 
         [Fact, Trait("category", "node-12")]
         public void PipelineTestInvocationsNode12()
         {
-            string nodeVersion12 = "12";
-            CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion12);
-            CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(nodeVersion12);
-            CanBuildAndRun_Angular8App_NodeModules_SymLink_Exists_InRoot_WithoutCompression(nodeVersion12);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompression(nodeVersion12);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression(nodeVersion12);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion12);
+            string nodeVersion = "12";
+            CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion);
+            CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(nodeVersion);
+            CanBuildAndRun_Angular8App_NodeModules_SymLink_Exists_InRoot_WithoutCompression(nodeVersion);
+            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompression(nodeVersion);
+            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression(nodeVersion);
+            CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion);
         }
 
         // Official Node.js version that is supported by Angular CLI 6.0+ is 8.9 or greater
