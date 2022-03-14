@@ -117,7 +117,7 @@ jobs:
 # test YAML loop re-factoring
   - ${{ each nodeVersion in parameters.nodeVersions }}:
     - job:
-      displayName: 'Run Node ${{ target }} Integration Tests'
+      displayName: 'Run Node ${{ nodeVersion }} Integration Tests'
       dependsOn:
         - Job_BuildImage
         - Job_RuntimeImages
