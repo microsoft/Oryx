@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node")]
     public class NodeDynamicInstallationTest : NodeEndToEndTestsBase
     {
         private readonly string DefaultSdksRootDir = "/tmp/oryx/nodejs";
@@ -21,6 +20,31 @@ namespace Microsoft.Oryx.Integration.Tests
         public NodeDynamicInstallationTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
             : base(output, fixture)
         {
+        }
+
+        /// <summary>
+        /// IMPORTANT:
+        /// New tests should be included in a corresponding
+        /// method with attribute:
+        ///     [Fact, Trait("category", "<platform>-<version>")]
+        ///
+        /// The pipeline will invoke these integration tests 
+        /// on the matching category attribute.
+        /// </summary>
+        [Fact, Trait("category", "node-12")]
+        public void PipelineTestInvocationsNode12()
+        {
+            string nodeVersion = "12";
+            CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(nodeVersion);
+            CanBuildAndRunApp_UsingScriptCommand(nodeVersion);
+        }
+
+        [Fact, Trait("category", "node-14")]
+        public void PipelineTestInvocationsNode14()
+        {
+            string nodeVersion = "14";
+            CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(nodeVersion);
+            CanBuildAndRunApp_UsingScriptCommand(nodeVersion);
         }
 
         [Theory]

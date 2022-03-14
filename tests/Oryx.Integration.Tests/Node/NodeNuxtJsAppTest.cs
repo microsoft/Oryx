@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node")]
+    [Trait("category", "node-12")]
     public class NodeNuxtJsAppTest : NodeEndToEndTestsBase
     {
         public const string AppName = "helloworld-nuxtjs";

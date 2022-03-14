@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node")]
+    [Trait("category", "node-10.14")]
     [Trait("db", "sqlserver")]
     public class NodeSqlServerIntegrationTests : PlatformEndToEndTestsBase
     {

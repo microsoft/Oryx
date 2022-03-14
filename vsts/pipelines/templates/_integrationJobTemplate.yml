@@ -2,8 +2,13 @@ parameters:
   - name: nodeVersions
     type: object
     default:
+      - 12
+      - 10.14
+      - 12
       - 9.4
       - 8
+      - 12_14_16
+      - legacyVersions
 jobs:
 - job: Job_PythonIntegrationTests
   displayName: Run Python Integration Tests
