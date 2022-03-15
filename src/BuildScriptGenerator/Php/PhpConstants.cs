@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
-    public class PhpConstants
+    public static class PhpConstants
     {
         public const string PlatformName = "php";
         public const string PhpFileNamePattern = "*.php";

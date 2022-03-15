@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.Detector
         public static IServiceCollection AddPythonServices(this IServiceCollection services)
         {
             services.AddSingleton<PythonDetector>();
+
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
             Func<IServiceProvider, PythonDetector> factory = (sp) => sp.GetRequiredService<PythonDetector>();

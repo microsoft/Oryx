@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.Detector
         public static IServiceCollection AddHugoServices(this IServiceCollection services)
         {
             services.AddSingleton<HugoDetector>();
+
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
             Func<IServiceProvider, HugoDetector> factory = (sp) => sp.GetRequiredService<HugoDetector>();

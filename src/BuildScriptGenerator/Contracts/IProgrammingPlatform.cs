@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Resolves the versions returned by a <see cref="IPlatformDetector"/>. The versions returned by a detector
         /// could be partial (for example, major or major.minor) or a detector might not have found a version.
-        /// This platform resolves this result from a detector to get a full version: major.minor.patch
+        /// This platform resolves this result from a detector to get a full version: major.minor.patch.
         /// </summary>
         /// <param name="context">The repository context.</param>
         /// <param name="detectorResult">The <see cref="PlatformDetectorResult"/>.</param>

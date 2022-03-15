@@ -53,8 +53,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string StorageSdkMetadataRuntimeVersionElementName = "Runtime_version";
         public const string StorageSdkMetadataSdkVersionElementName = "Version";
 
-        public static readonly string DefaultDotNetCoreSdkVersionsInstallDir = $"/opt/{PlatformName}";
-
         public const string InstallBlazorWebAssemblyAOTWorkloadCommand = "$dotnet workload install wasm-tools";
+
+        public static readonly string DefaultDotNetCoreSdkVersionsInstallDir = $"/opt/{PlatformName}";
     }
 }

@@ -91,14 +91,13 @@ namespace Microsoft.Oryx.Detector.Node
             { "@scullyio/init", "Scully" },
             { "three", "Three.js" },
             { "vuepress", "VuePress" },
-            { "vue", "Vue.js" }
+            { "vue", "Vue.js" },
         };
 
         public static readonly Dictionary<string, string> WildCardDependencies = new Dictionary<string, string>()
         {
             { "@angular", "Angular" },
-            { "@remix-run", "Remix" }
+            { "@remix-run", "Remix" },
         };
-
     }
 }

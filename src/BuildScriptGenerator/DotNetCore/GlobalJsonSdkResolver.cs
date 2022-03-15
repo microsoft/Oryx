@@ -184,7 +184,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return resolvedVersion;
         }
 
-        private string GetDisable(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
+        private static string GetDisable(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
         {
             // From spec: Doesn't roll forward. Exact match required.
             if (availableSdks.Any(availableSdk => availableSdk.Equals(versionToResolve)))
@@ -195,7 +195,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return null;
         }
 
-        private string GetPatch(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
+        private static string GetPatch(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
         {
             /*
                 Uses the specified version.
@@ -213,7 +213,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
         }
 
-        private string GetFeature(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
+        private static string GetFeature(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
         {
             /*
                 Uses the latest patch level for the specified major, minor, and feature band.
@@ -247,7 +247,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return null;
         }
 
-        private string GetMinor(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
+        private static string GetMinor(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
         {
             /*
                 Uses the latest patch level for the specified major, minor, and feature band.
@@ -284,7 +284,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return null;
         }
 
-        private string GetMajor(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
+        private static string GetMajor(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
         {
             /*
                 Uses the latest patch level for the specified major, minor, and feature band.
@@ -313,7 +313,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return null;
         }
 
-        private string GetLatestPatch(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
+        private static string GetLatestPatch(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
         {
             /*
                 Uses the latest installed patch level that matches the requested major, minor, and feature band
@@ -339,7 +339,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return null;
         }
 
-        private string GetLatestFeature(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
+        private static string GetLatestFeature(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
         {
             /*
                 Uses the highest installed feature band and patch level that matches the requested major and minor
@@ -364,7 +364,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return null;
         }
 
-        private string GetLatestMinor(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
+        private static string GetLatestMinor(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
         {
             /*
                 Uses the highest installed minor, feature band, and patch level that matches the requested major with
@@ -388,7 +388,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return null;
         }
 
-        private string GetLatestMajor(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
+        private static string GetLatestMajor(IEnumerable<SdkVersionInfo> availableSdks, SdkVersionInfo versionToResolve)
         {
             /*
                 Uses the highest installed .NET Core SDK with a major that is greater or equal than the specified value.

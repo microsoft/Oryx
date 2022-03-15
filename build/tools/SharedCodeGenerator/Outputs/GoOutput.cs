@@ -14,20 +14,11 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
     [OutputType("go")]
     internal class GoOutput : IOutputFile
     {
-        private static readonly Template OutputTemplate;
+        private static Template outputTemplate = CreateOutputTemplate();
 
         private ConstantCollection _collection;
         private string _directory;
         private string _package;
-
-        static GoOutput()
-        {
-            var projectOutputDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            using (var templateReader = new StreamReader(Path.Combine(projectOutputDir, "Outputs", "GoConstants.go.tpl")))
-            {
-                OutputTemplate = Template.Parse(templateReader.ReadToEnd());
-            }
-        }
 
         public void Initialize(ConstantCollection constantCollection, Dictionary<string, string> typeInfo)
         {
@@ -49,7 +40,16 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
                 Namespace = _package,
                 Constants = _collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
             };
-            return OutputTemplate.Render(model, member => member.Name);
+            return outputTemplate.Render(model, member => member.Name);
+        }
+
+        private static Template CreateOutputTemplate()
+        {
+            var projectOutputDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            using (var templateReader = new StreamReader(Path.Combine(projectOutputDir, "Outputs", "GoConstants.go.tpl")))
+            {
+                return Template.Parse(templateReader.ReadToEnd());
+            }
         }
     }
 }

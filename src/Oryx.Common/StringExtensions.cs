@@ -14,10 +14,10 @@ namespace Microsoft.Oryx.Common.Extensions
 {
     public static class StringExtensions
     {
-        private static readonly string UrlPattern = @"(https?|ftp|git|git+ssh|git+http|git+https|git+file):\/\/" +
+        private const string UrlPattern = @"(https?|ftp|git|git+ssh|git+http|git+https|git+file):\/\/" +
                                                     @"(?<userinfo>[^\s/$.?#@]+)@[^\s/$.?#].[^\s]*";
 
-        private static readonly string UrlUserInfoReplacement = "***";
+        private const string UrlUserInfoReplacement = "***";
 
         public static bool EqualsIgnoreCase(this string a, string b)
         {

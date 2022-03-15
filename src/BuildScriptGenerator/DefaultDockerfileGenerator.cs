@@ -83,18 +83,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 _logger);
         }
 
-        private IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(DockerfileContext ctx)
-        {
-            return _platformDetector.GetCompatiblePlatforms(ctx);
-        }
-
         /// <summary>
         /// For runtime images, the tag follows the format `{MAJOR}.{MINOR}`, so we need to correctly format the
         /// version that is returned from the detector to ensure we are pulling from a valid tag.
         /// </summary>
         /// <param name="version">The version of the platform returned from the detector.</param>
         /// <returns>A formatted version tag to pull the runtime image from.</returns>
-        private string GenerateRuntimeTag(string version)
+        private static string GenerateRuntimeTag(string version)
         {
             var split = version.Split('.');
             if (split.Length < 3)
@@ -105,7 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return $"{split[0]}.{split[1]}";
         }
 
-        private string ConvertToRuntimeName(string platformName)
+        private static string ConvertToRuntimeName(string platformName)
         {
             if (string.Equals(platformName, DotNetCoreConstants.PlatformName, StringComparison.OrdinalIgnoreCase))
             {
@@ -118,6 +113,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return platformName;
+        }
+
+        private IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(DockerfileContext ctx)
+        {
+            return _platformDetector.GetCompatiblePlatforms(ctx);
         }
     }
 }

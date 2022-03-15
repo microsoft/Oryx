@@ -30,7 +30,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 return new[]
                 {
-                    new CheckerMessage(string.Format(Resources.Labels.ToolVersionCheckerMessageFormat,
+                    new CheckerMessage(string.Format(
+                        Resources.Labels.ToolVersionCheckerMessageFormat,
                         NodeConstants.NodeToolName,
                         used,
                         Constants.OryxGitHubUrl)),

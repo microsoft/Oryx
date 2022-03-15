@@ -19,7 +19,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Checker_DetectsGlobalNpmInstalls()
         {
             // Arrange
-            var checker = new NodePackageScriptsChecker(null);
             var scripts = new Dictionary<string, string>
             {
                 { "preinstall",     "npm i pkg -g # checked and problematic" },
@@ -28,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act & Assert
-            Assert.Single(checker.CheckScriptsForGlobalInstallationAttempts(scripts));
+            Assert.Single(NodePackageScriptsChecker.CheckScriptsForGlobalInstallationAttempts(scripts));
         }
 
         [Theory]

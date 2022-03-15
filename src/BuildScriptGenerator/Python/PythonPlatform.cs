@@ -422,6 +422,94 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return packageDir;
         }
 
+        private static string GetDefaultVirtualEnvName(PlatformDetectorResult detectorResult)
+        {
+            string pythonVersion = detectorResult.PlatformVersion;
+            if (!string.IsNullOrWhiteSpace(pythonVersion))
+            {
+                var versionSplit = pythonVersion.Split('.');
+                if (versionSplit.Length > 1)
+                {
+                    pythonVersion = $"{versionSplit[0]}.{versionSplit[1]}";
+                }
+            }
+
+            return $"pythonenv{pythonVersion}";
+        }
+
+        private static bool GetVirtualEnvPackOptions(
+            BuildScriptGeneratorContext context,
+            string virtualEnvName,
+            out string compressVirtualEnvCommand,
+            out string compressedVirtualEnvFileName)
+        {
+            var isVirtualEnvPackaged = false;
+            compressVirtualEnvCommand = null;
+            compressedVirtualEnvFileName = null;
+            if (context.Properties != null &&
+                context.Properties.TryGetValue(CompressVirtualEnvPropertyKey, out string compressVirtualEnvOption))
+            {
+                // default to tar.gz if the property was provided with no value.
+                if (string.IsNullOrEmpty(compressVirtualEnvOption) ||
+                    compressVirtualEnvOption.EqualsIgnoreCase(TarGzOption))
+                {
+                    compressedVirtualEnvFileName = string.Format(
+                        PythonConstants.TarGzVirtualEnvFileNameFormat,
+                        virtualEnvName);
+                    compressVirtualEnvCommand = $"tar -zcf";
+                    isVirtualEnvPackaged = true;
+                }
+                else if (compressVirtualEnvOption.EqualsIgnoreCase(ZipOption))
+                {
+                    compressedVirtualEnvFileName = string.Format(
+                        PythonConstants.ZipVirtualEnvFileNameFormat,
+                        virtualEnvName);
+                    compressVirtualEnvCommand = $"zip -y -q -r";
+                    isVirtualEnvPackaged = true;
+                }
+            }
+
+            return isVirtualEnvPackaged;
+        }
+
+        private static string GetVirtualEnvironmentName(BuildScriptGeneratorContext context)
+        {
+            if (context.Properties == null ||
+                !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
+            {
+                virtualEnvName = string.Empty;
+            }
+
+            return virtualEnvName;
+        }
+
+        private static string GetPythonPackageWheelType(BuildScriptGeneratorContext context)
+        {
+            if (context.Properties == null ||
+                !context.Properties.TryGetValue(PythonPackageWheelPropertyKey, out var packageWheelProperty))
+            {
+                packageWheelProperty = string.Empty;
+            }
+
+            return packageWheelProperty;
+        }
+
+        private static bool IsCondaEnvironment(PythonPlatformDetectorResult pythonPlatformDetectorResult)
+        {
+            if (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile
+                && IsCondaInstalledInImage())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsCondaInstalledInImage()
+        {
+            return File.Exists(PythonConstants.CondaExecutablePath);
+        }
+
         private BuildScriptSnippet GetBuildScriptSnippetForConda(
             BuildScriptGeneratorContext context,
             PythonPlatformDetectorResult detectorResult)
@@ -474,7 +562,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             _logger.LogInformation($"script properties of conda buildcommandfilename: {scriptProperties.NoteBookBuildCommandsFileName}");
             _logger.LogInformation($"script properties of conda templatename: {scriptProperties.EnvironmentTemplateFileName}");
 
-
             var script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonJupyterNotebookSnippet,
                 scriptProperties,
@@ -487,57 +574,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             };
         }
 
-        private string GetDefaultVirtualEnvName(PlatformDetectorResult detectorResult)
-        {
-            string pythonVersion = detectorResult.PlatformVersion;
-            if (!string.IsNullOrWhiteSpace(pythonVersion))
-            {
-                var versionSplit = pythonVersion.Split('.');
-                if (versionSplit.Length > 1)
-                {
-                    pythonVersion = $"{versionSplit[0]}.{versionSplit[1]}";
-                }
-            }
-
-            return $"pythonenv{pythonVersion}";
-        }
-
-        private bool GetVirtualEnvPackOptions(
-            BuildScriptGeneratorContext context,
-            string virtualEnvName,
-            out string compressVirtualEnvCommand,
-            out string compressedVirtualEnvFileName)
-        {
-            var isVirtualEnvPackaged = false;
-            compressVirtualEnvCommand = null;
-            compressedVirtualEnvFileName = null;
-            if (context.Properties != null &&
-                context.Properties.TryGetValue(CompressVirtualEnvPropertyKey, out string compressVirtualEnvOption))
-            {
-                // default to tar.gz if the property was provided with no value.
-                if (string.IsNullOrEmpty(compressVirtualEnvOption) ||
-                    compressVirtualEnvOption.EqualsIgnoreCase(TarGzOption))
-                {
-                    compressedVirtualEnvFileName = string.Format(
-                        PythonConstants.TarGzVirtualEnvFileNameFormat,
-                        virtualEnvName);
-                    compressVirtualEnvCommand = $"tar -zcf";
-                    isVirtualEnvPackaged = true;
-                }
-                else if (compressVirtualEnvOption.EqualsIgnoreCase(ZipOption))
-                {
-                    compressedVirtualEnvFileName = string.Format(
-                        PythonConstants.ZipVirtualEnvFileNameFormat,
-                        virtualEnvName);
-                    compressVirtualEnvCommand = $"zip -y -q -r";
-                    isVirtualEnvPackaged = true;
-                }
-            }
-
-            return isVirtualEnvPackaged;
-        }
-
-        private (string virtualEnvModule, string virtualEnvParams) GetVirtualEnvModules(string pythonVersion)
+        private (string VirtualEnvModule, string VirtualEnvParams) GetVirtualEnvModules(string pythonVersion)
         {
             string virtualEnvModule;
             string virtualEnvParams = string.Empty;
@@ -580,28 +617,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 _logger.LogWarning(exc, "Exception caught while logging dependencies");
             }
-        }
-
-        private string GetVirtualEnvironmentName(BuildScriptGeneratorContext context)
-        {
-            if (context.Properties == null ||
-                !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
-            {
-                virtualEnvName = string.Empty;
-            }
-
-            return virtualEnvName;
-        }
-
-        private string GetPythonPackageWheelType(BuildScriptGeneratorContext context)
-        {
-            if (context.Properties == null ||
-                !context.Properties.TryGetValue(PythonPackageWheelPropertyKey, out var packageWheelProperty))
-            {
-                packageWheelProperty = string.Empty;
-            }
-
-            return packageWheelProperty;
         }
 
         private string GetMaxSatisfyingVersionAndVerify(string version)
@@ -662,22 +677,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             // Fallback to default version
             var versionInfo = _versionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
-        }
-
-        private bool IsCondaEnvironment(PythonPlatformDetectorResult pythonPlatformDetectorResult)
-        {
-            if (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile 
-                && IsCondaInstalledInImage())
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool IsCondaInstalledInImage()
-        {
-            return File.Exists(PythonConstants.CondaExecutablePath);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal static class PreAndPostBuildCommandHelper
     {
-        public static (string preBuildCommand, string postBuildCommand) GetPreAndPostBuildCommands(
+        public static (string PreBuildCommand, string PostBuildCommand) GetPreAndPostBuildCommands(
             ISourceRepo sourceRepo,
             BuildScriptGeneratorOptions options)
         {
@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 postBuildCommandOrScriptPath = GetCommandOrFilePath(sourceRepo, postBuildCommandOrScriptPath);
             }
 
-            return (preBuildCommand: preBuildCommandOrScriptPath, postBuildCommand: postBuildCommandOrScriptPath);
+            return (PreBuildCommand: preBuildCommandOrScriptPath, PostBuildCommand: postBuildCommandOrScriptPath);
         }
 
         private static string GetCommandOrFilePath(ISourceRepo sourceRepo, string commandOrScriptPath)

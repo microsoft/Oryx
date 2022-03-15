@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return serviceProviderBuilder.Build();
         }
 
-        private string FormatResult(IList<PlatformResult> platforms)
+        private static string FormatResult(IList<PlatformResult> platforms)
         {
             var result = new StringBuilder();
 
@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return result.ToString();
         }
 
-        private IList<string> SortVersions(IEnumerable<string> versions)
+        private static IList<string> SortVersions(IEnumerable<string> versions)
         {
             var result = new List<VersionInfo>();
             foreach (var version in versions)

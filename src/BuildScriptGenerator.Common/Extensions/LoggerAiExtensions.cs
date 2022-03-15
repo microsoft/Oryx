@@ -59,10 +59,10 @@ namespace Microsoft.Extensions.Logging
         /// <summary>
         /// Logs a long message in chunks, with each chunk limited in length to 2^15.
         /// </summary>
-        /// <param name="logger">logger instance</param>
-        /// <param name="level">log level. will apply to all chunks</param>
-        /// <param name="header">chunk header. will be followed by chunk index, a colon, and a line break</param>
-        /// <param name="nonFormattedMessage">long message to be chunkified and logged</param>
+        /// <param name="logger">An instance of an <see cref="ILogger"/>.</param>
+        /// <param name="level">The level of logging; will apply to all chunks.</param>
+        /// <param name="header">The chunk header; will be followed by chunk index, a colon, and a line break.</param>
+        /// <param name="nonFormattedMessage">The long message to be chunkified and logged.</param>
         public static void LogLongMessage(
             this ILogger logger,
             LogLevel level,

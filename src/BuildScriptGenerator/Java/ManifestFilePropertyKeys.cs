@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Java
 {
-    public class ManifestFilePropertyKeys
+    public static class ManifestFilePropertyKeys
     {
         public const string JavaVersion = nameof(JavaVersion);
     }

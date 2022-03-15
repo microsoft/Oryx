@@ -16,7 +16,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Hugo;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
@@ -369,6 +368,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return result;
         }
 
+        private static CustomConfigurationSource GetCommandLineConfigSource()
+        {
+            var commandLineConfigSource = new CustomConfigurationSource();
+            return commandLineConfigSource;
+        }
+
         private bool IsValidInput(IConsole console)
         {
             if (!SkipDetection && string.IsNullOrEmpty(SourceDir))
@@ -386,12 +391,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             return true;
-        }
-
-        private CustomConfigurationSource GetCommandLineConfigSource()
-        {
-            var commandLineConfigSource = new CustomConfigurationSource();
-            return commandLineConfigSource;
         }
     }
 }

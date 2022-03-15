@@ -3,10 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Oryx.BuildServer.Models;
-using Microsoft.Oryx.BuildServer.Services.ArtifactBuilders;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildServer.Models;
+using Microsoft.Oryx.BuildServer.Services.ArtifactBuilders;
 
 namespace Microsoft.Oryx.BuildServer.Services
 {
@@ -18,18 +18,20 @@ namespace Microsoft.Oryx.BuildServer.Services
                 {
                     try
                     {
-                        if(builder.Build(build))
+                        if (builder.Build(build))
                         {
-                            successCallback(build);
-                        } else
-                        {
-                            failureCallback(build);
+                            _ = successCallback(build);
                         }
-                    } catch (Exception ex) {
+                        else
+                        {
+                            _ = failureCallback(build);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
                         Console.WriteLine(ex);
                     }
-                }
-            );
+                });
         }
     }
 }

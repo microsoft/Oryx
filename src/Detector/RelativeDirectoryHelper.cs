@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Microsoft.Oryx.Detector
 {
-    public class RelativeDirectoryHelper
+    public static class RelativeDirectoryHelper
     {
         public static string GetRelativeDirectoryToRoot(string filePath, string repoRoot)
         {

@@ -20,7 +20,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             get
             {
-                if (!_type.HasValue) // Cache needs to be initialized
+                // Cache needs to be initialized
+                if (!_type.HasValue)
                 {
                     foreach (var entry in LoggingConstants.OperationNameSourceEnvVars)
                     {

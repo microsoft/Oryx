@@ -27,7 +27,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public static SdkVersionInfo Parse(string sdkVersion)
         {
+#pragma warning disable CA1806 // Ignore rule to handle boolean result of Try method
             TryParse(sdkVersion, out var result);
+#pragma warning restore CA1806
             return result;
         }
 

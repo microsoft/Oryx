@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Detector.Php
         private readonly ILogger<PhpDetector> _logger;
 
         /// <summary>
-        /// Creates an instance of <see cref="PhpDetector"/>.
+        /// Initializes a new instance of the <see cref="PhpDetector"/> class.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{PhpDetector}"/>.</param>
         public PhpDetector(ILogger<PhpDetector> logger)
@@ -76,6 +76,7 @@ namespace Microsoft.Oryx.Detector.Php
             {
                 return version;
             }
+
             _logger.LogDebug("Could not get version from the composer file. ");
             return null;
         }
