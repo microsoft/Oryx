@@ -84,7 +84,7 @@ jobs:
             echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
             echo "##vso[task.setvariable variable=TestBuildImages;]false"
             echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php-${{ nodeVersion }}"
+            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=node-${{ nodeVersion }}"
             echo "##vso[task.setvariable variable=TestIntegration;]true"
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
