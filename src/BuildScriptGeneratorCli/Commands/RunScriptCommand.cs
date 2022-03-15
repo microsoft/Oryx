@@ -49,14 +49,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            var sourceRepo = new LocalSourceRepo(AppDir, loggerFactory);
+            var sourceRepo = new LocalSourceRepo(this.AppDir, loggerFactory);
 
             var ctx = new RunScriptGeneratorContext
             {
                 SourceRepo = sourceRepo,
-                Platform = PlatformName,
-                PlatformVersion = PlatformVersion,
-                PassThruArguments = RemainingArgs,
+                Platform = this.PlatformName,
+                PlatformVersion = this.PlatformVersion,
+                PassThruArguments = this.RemainingArgs,
             };
 
             var runScriptGenerator = serviceProvider.GetRequiredService<IRunScriptGenerator>();
@@ -67,17 +67,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return ProcessConstants.ExitFailure;
             }
 
-            if (string.IsNullOrWhiteSpace(OutputPath))
+            if (string.IsNullOrWhiteSpace(this.OutputPath))
             {
                 console.WriteLine(script);
             }
             else
             {
-                File.WriteAllText(OutputPath, script);
-                console.WriteLine($"Script written to '{OutputPath}'");
+                File.WriteAllText(this.OutputPath, script);
+                console.WriteLine($"Script written to '{this.OutputPath}'");
 
                 // Try making the script executable
-                ProcessHelper.TrySetExecutableMode(OutputPath);
+                ProcessHelper.TrySetExecutableMode(this.OutputPath);
             }
 
             return ProcessConstants.ExitSuccess;
@@ -85,10 +85,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
-            AppDir = string.IsNullOrEmpty(AppDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(AppDir);
-            if (!Directory.Exists(AppDir))
+            this.AppDir = string.IsNullOrEmpty(this.AppDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(this.AppDir);
+            if (!Directory.Exists(this.AppDir))
             {
-                console.WriteErrorLine($"Could not find the source directory '{AppDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{this.AppDir}'.");
                 return false;
             }
 

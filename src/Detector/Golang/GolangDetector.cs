@@ -15,8 +15,8 @@ namespace Microsoft.Oryx.Detector.Golang
     /// </summary>
     public class GolangDetector : IGolangPlatformDetector
     {
-        private readonly ILogger<GolangDetector> _logger;
-        private readonly DetectorOptions _options;
+        private readonly ILogger<GolangDetector> logger;
+        private readonly DetectorOptions options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GolangDetector"/> class.
@@ -25,8 +25,8 @@ namespace Microsoft.Oryx.Detector.Golang
         /// <param name="options">The <see cref="DetectorOptions"/>.</param>
         public GolangDetector(ILogger<GolangDetector> logger, IOptions<DetectorOptions> options)
         {
-            _logger = logger;
-            _options = options.Value;
+            this.logger = logger;
+            this.options = options.Value;
         }
 
         public PlatformDetectorResult Detect(DetectorContext context)
@@ -37,14 +37,14 @@ namespace Microsoft.Oryx.Detector.Golang
             // check if go.mod exists
             if (!sourceRepo.FileExists(GolangConstants.GoModFileName))
             {
-                _logger.LogError(
+                this.logger.LogError(
                     $"Could not find {GolangConstants.GoModFileName} in repo");
                 return null;
             }
 
-            _logger.LogInformation($"Found {GolangConstants.GoModFileName} at the root of the repo. ");
+            this.logger.LogInformation($"Found {GolangConstants.GoModFileName} at the root of the repo. ");
 
-            var version = GetVersion(context);
+            var version = this.GetVersion(context);
 
             // TODO: add additional fields that are helpful
             return new GolangPlatformDetectorResult
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.Detector.Golang
 
         private string GetVersion(DetectorContext context)
         {
-            var versionFromGoDotMod = GetVersionFromGoDotMod(context);
+            var versionFromGoDotMod = this.GetVersionFromGoDotMod(context);
             if (versionFromGoDotMod != null)
             {
                 return versionFromGoDotMod;
@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.Detector.Golang
             }
             catch (Exception ex)
             {
-                _logger.LogError(
+                this.logger.LogError(
                     ex,
                     $"Exception caught while trying to parse {GolangConstants.GoModFileName}.");
             }

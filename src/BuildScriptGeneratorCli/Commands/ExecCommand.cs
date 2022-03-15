@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var beginningOutputLog = GetBeginningCommandOutputLog();
             console.WriteLine(beginningOutputLog);
 
-            if (string.IsNullOrWhiteSpace(Command))
+            if (string.IsNullOrWhiteSpace(this.Command))
             {
                 logger.LogDebug("Command is empty; exiting");
                 return ProcessConstants.ExitSuccess;
@@ -78,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 scriptBuilder
                     .AddCommand("echo Executing supplied command...")
-                    .AddCommand(Command);
+                    .AddCommand(this.Command);
 
                 // Create temporary file to store script
                 // Get the path where the generated script should be written into.
@@ -90,7 +90,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 timedEvent.AddProperty(nameof(tempScriptPath), tempScriptPath);
 
-                if (DebugMode)
+                if (this.DebugMode)
                 {
                     console.WriteLine($"Temporary script @ {tempScriptPath}:");
                     console.WriteLine("---");
@@ -129,25 +129,25 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
         {
-            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(options, sourceDir: SourceDir);
+            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(options, sourceDir: this.SourceDir);
         }
 
         internal override IServiceProvider TryGetServiceProvider(IConsole console)
         {
             // Gather all the values supplied by the user in command line
-            SourceDir = string.IsNullOrEmpty(SourceDir) ?
-                Directory.GetCurrentDirectory() : Path.GetFullPath(SourceDir);
+            this.SourceDir = string.IsNullOrEmpty(this.SourceDir) ?
+                Directory.GetCurrentDirectory() : Path.GetFullPath(this.SourceDir);
 
             // NOTE: Order of the following is important. So a command line provided value has higher precedence
             // than the value provided in a configuration file of the repo.
             var config = new ConfigurationBuilder()
-                .AddIniFile(Path.Combine(SourceDir, Constants.BuildEnvironmentFileName), optional: true)
+                .AddIniFile(Path.Combine(this.SourceDir, Constants.BuildEnvironmentFileName), optional: true)
                 .AddEnvironmentVariables()
                 .Build();
 
             // Override the GetServiceProvider() call in CommandBase to pass the IConsole instance to
             // ServiceProviderBuilder and allow for writing to the console if needed during this command.
-            var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath, console)
+            var serviceProviderBuilder = new ServiceProviderBuilder(this.LogFilePath, console)
                 .ConfigureServices(services =>
                 {
                     // Configure Options related services
@@ -161,7 +161,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         {
                             // These values are not retrieve through the 'config' api since we do not expect
                             // them to be provided by an end user.
-                            options.SourceDir = SourceDir;
+                            options.SourceDir = this.SourceDir;
                         });
                 });
 

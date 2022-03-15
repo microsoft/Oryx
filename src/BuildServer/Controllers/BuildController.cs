@@ -16,11 +16,11 @@ namespace Microsoft.Oryx.BuildServer.Controllers
     [ApiController]
     public class BuildController : ControllerBase
     {
-        private readonly IBuildService _buildService;
+        private readonly IBuildService buildService;
 
         public BuildController(IBuildService buildService)
         {
-            _buildService = buildService;
+            this.buildService = buildService;
         }
 
         // GET api/<Builds>/5
@@ -28,13 +28,13 @@ namespace Microsoft.Oryx.BuildServer.Controllers
         [ProducesResponseType(typeof(Build), StatusCodes.Status201Created)]
         public async Task<IActionResult> GetAsync(string id)
         {
-            var build = await _buildService.GetBuildAsync(id);
+            var build = await this.buildService.GetBuildAsync(id);
             if (build == null)
             {
-                return NotFound();
+                return this.NotFound();
             }
 
-            return Ok(build);
+            return this.Ok(build);
         }
 
         // POST api/<Builds>
@@ -44,13 +44,13 @@ namespace Microsoft.Oryx.BuildServer.Controllers
         {
             try
             {
-                var createdBuild = await _buildService.StartBuildAsync(build);
+                var createdBuild = await this.buildService.StartBuildAsync(build);
                 string uri = string.Format("api/builds/{0}", createdBuild.Id);
-                return Created(uri, createdBuild);
+                return this.Created(uri, createdBuild);
             }
             catch (ServiceException ex)
             {
-                return BadRequest(ex.Message);
+                return this.BadRequest(ex.Message);
             }
         }
     }

@@ -11,8 +11,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public CheckerMessage(string content, LogLevel level = LogLevel.Warning)
         {
-            Level = level;
-            Content = content;
+            this.Level = level;
+            this.Content = content;
         }
 
         public LogLevel Level { get; }

@@ -22,15 +22,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     /// </summary>
     internal class ServiceProviderBuilder
     {
-        private IServiceCollection _serviceCollection;
+        private IServiceCollection serviceCollection;
 
         public ServiceProviderBuilder(string logFilePath = null, IConsole console = null)
         {
             LogManager.Configuration = BuildNLogConfiguration(logFilePath);
             LogManager.ReconfigExistingLoggers();
 
-            _serviceCollection = new ServiceCollection();
-            _serviceCollection
+            this.serviceCollection = new ServiceCollection();
+            this.serviceCollection
                 .AddBuildScriptGeneratorServices()
                 .AddCliServices(console)
                 .AddLogging(builder =>
@@ -46,19 +46,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public ServiceProviderBuilder ConfigureServices(Action<IServiceCollection> configure)
         {
-            configure(_serviceCollection);
+            configure(this.serviceCollection);
             return this;
         }
 
         public ServiceProviderBuilder ConfigureScriptGenerationOptions(Action<BuildScriptGeneratorOptions> configure)
         {
-            _serviceCollection.Configure<BuildScriptGeneratorOptions>(opts => configure(opts));
+            this.serviceCollection.Configure<BuildScriptGeneratorOptions>(opts => configure(opts));
             return this;
         }
 
         public IServiceProvider Build()
         {
-            return _serviceCollection.BuildServiceProvider();
+            return this.serviceCollection.BuildServiceProvider();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Cannot prematurely dispose of Application insights objects.")]

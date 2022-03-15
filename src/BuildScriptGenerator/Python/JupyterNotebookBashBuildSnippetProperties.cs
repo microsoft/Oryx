@@ -11,11 +11,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     {
         public JupyterNotebookBashBuildSnippetProperties()
         {
-            EnvironmentYmlFile = null;
-            EnvironmentTemplateFileName = null;
-            HasRequirementsTxtFile = false;
-            NoteBookBuildCommandsFileName = FilePaths.BuildCommandsFileName;
-            EnvironmentTemplatePythonVersion = null;
+            this.EnvironmentYmlFile = null;
+            this.EnvironmentTemplateFileName = null;
+            this.HasRequirementsTxtFile = false;
+            this.NoteBookBuildCommandsFileName = FilePaths.BuildCommandsFileName;
+            this.EnvironmentTemplatePythonVersion = null;
         }
 
         public JupyterNotebookBashBuildSnippetProperties(
@@ -25,11 +25,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string environmentTemplatePythonVersion,
             string noteBookBuildCommandsFileName = null)
         {
-            EnvironmentYmlFile = environmentYmlFile;
-            EnvironmentTemplateFileName = environmentTemplateFileName;
-            HasRequirementsTxtFile = hasRequirementsTxtFile;
-            NoteBookBuildCommandsFileName = noteBookBuildCommandsFileName;
-            EnvironmentTemplatePythonVersion = environmentTemplatePythonVersion;
+            this.EnvironmentYmlFile = environmentYmlFile;
+            this.EnvironmentTemplateFileName = environmentTemplateFileName;
+            this.HasRequirementsTxtFile = hasRequirementsTxtFile;
+            this.NoteBookBuildCommandsFileName = noteBookBuildCommandsFileName;
+            this.EnvironmentTemplatePythonVersion = environmentTemplatePythonVersion;
         }
 
         public string EnvironmentYmlFile { get; set; }

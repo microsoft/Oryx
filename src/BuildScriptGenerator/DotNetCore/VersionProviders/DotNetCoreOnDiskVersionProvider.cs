@@ -12,18 +12,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public class DotNetCoreOnDiskVersionProvider : IDotNetCoreVersionProvider
     {
-        private readonly ILogger<DotNetCoreOnDiskVersionProvider> _logger;
+        private readonly ILogger<DotNetCoreOnDiskVersionProvider> logger;
 
         public DotNetCoreOnDiskVersionProvider(ILogger<DotNetCoreOnDiskVersionProvider> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         public string GetDefaultRuntimeVersion()
         {
             var defaultRuntimeVersion = DotNetCoreRunTimeVersions.NetCoreApp31;
 
-            _logger.LogDebug("Default runtime version is {defaultRuntimeVersion}", defaultRuntimeVersion);
+            this.logger.LogDebug("Default runtime version is {defaultRuntimeVersion}", defaultRuntimeVersion);
 
             return defaultRuntimeVersion;
         }
@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             var versionMap = new Dictionary<string, string>();
 
-            _logger.LogDebug(
+            this.logger.LogDebug(
                 "Getting list of supported runtime and their sdk versions from {installationDir}",
                 DotNetCoreConstants.DefaultDotNetCoreSdkVersionsInstallDir);
 

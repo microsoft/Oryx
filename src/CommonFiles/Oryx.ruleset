@@ -5,17 +5,11 @@
     <!-- XML documentation comments must be provided for classes, constructors, etc. -->
     <Rule Id="SA0001" Action="None" />
 
-    <!-- Prefix all local calls with 'this.' -->
-    <Rule Id="SA1101" Action="None" />
-
     <!-- Parameters should not span multiple lines -->
     <Rule Id="SA1118" Action="None" />
 
     <!-- All using directives are placed within a namespace -->
     <Rule Id="SA1200" Action="None" />
-
-    <!-- Field variables should not begin with an underscore -->
-    <Rule Id="SA1309" Action="None" />
 
     <!-- Files must end with a singular newline character -->
     <Rule Id="SA1518" Action="None" />

@@ -13,11 +13,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     [Checker(NodeConstants.NodeToolName)]
     public class NodeVersionChecker : IChecker
     {
-        private readonly ILogger<NodeVersionChecker> _logger;
+        private readonly ILogger<NodeVersionChecker> logger;
 
         public NodeVersionChecker(ILogger<NodeVersionChecker> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         [NotNull]
@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             var used = tools[NodeConstants.NodeToolName];
             var comparison = SemanticVersionResolver.CompareVersions(used, NodeConstants.NodeLtsVersion);
-            _logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
+            this.logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
             if (comparison < 0)
             {
                 return new[]

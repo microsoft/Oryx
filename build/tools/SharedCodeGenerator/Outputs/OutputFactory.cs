@@ -12,14 +12,14 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
 {
     internal class OutputFactory
     {
-        private static readonly Dictionary<string, Type> _outputsByType = CreateOutputsDictionary();
+        private static readonly Dictionary<string, Type> OutputsByType = CreateOutputsDictionary();
 
         public static IOutputFile CreateByType(Dictionary<string, string> typeInfo, ConstantCollection constantCollection)
         {
             string typeName = typeInfo["type"];
             typeInfo.Remove("type");
 
-            IOutputFile outputFile = Activator.CreateInstance(_outputsByType[typeName]) as IOutputFile;
+            IOutputFile outputFile = Activator.CreateInstance(OutputsByType[typeName]) as IOutputFile;
             outputFile.Initialize(constantCollection, typeInfo);
             return outputFile;
         }

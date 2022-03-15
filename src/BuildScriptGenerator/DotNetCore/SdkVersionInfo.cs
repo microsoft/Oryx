@@ -87,47 +87,47 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public int CompareTo(SdkVersionInfo other)
         {
-            var majorComparison = Major.CompareTo(other.Major);
+            var majorComparison = this.Major.CompareTo(other.Major);
             if (majorComparison != 0)
             {
                 return majorComparison;
             }
 
-            var minorComparison = Minor.CompareTo(other.Minor);
+            var minorComparison = this.Minor.CompareTo(other.Minor);
             if (minorComparison != 0)
             {
                 return minorComparison;
             }
 
-            var featureComparison = Feature.CompareTo(other.Feature);
+            var featureComparison = this.Feature.CompareTo(other.Feature);
             if (featureComparison != 0)
             {
                 return featureComparison;
             }
 
-            var patchComparison = Patch.CompareTo(other.Patch);
+            var patchComparison = this.Patch.CompareTo(other.Patch);
             if (patchComparison != 0)
             {
                 return patchComparison;
             }
 
             // 3.1.100-preview1-01445 is lesser than 3.1.100
-            if (IsPrerelease && !other.IsPrerelease)
+            if (this.IsPrerelease && !other.IsPrerelease)
             {
                 return -1;
             }
 
-            if (!IsPrerelease && other.IsPrerelease)
+            if (!this.IsPrerelease && other.IsPrerelease)
             {
                 return 1;
             }
 
-            if (IsPrerelease && other.IsPrerelease)
+            if (this.IsPrerelease && other.IsPrerelease)
             {
                 // We are not parsing the preview part here and are only using string comparison
                 // One more thing to complicate thing is that the preview part format has changed between
                 // 3.* and 5.*, so this comparison is just fine.
-                return string.Compare(PrereleaseVersion, other.PrereleaseVersion, ignoreCase: true);
+                return string.Compare(this.PrereleaseVersion, other.PrereleaseVersion, ignoreCase: true);
             }
 
             return 0;
@@ -135,7 +135,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public bool Equals(SdkVersionInfo other)
         {
-            return CompareTo(other) == 0;
+            return this.CompareTo(other) == 0;
         }
     }
 }

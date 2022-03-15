@@ -20,15 +20,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 
         public virtual string GetInstallerScriptSnippet(string version)
         {
-            return GetInstallerScriptSnippet(GolangConstants.PlatformName, version);
+            return this.GetInstallerScriptSnippet(GolangConstants.PlatformName, version);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)
         {
-            return IsVersionInstalled(
+            return this.IsVersionInstalled(
                 version,
                 builtInDir: GolangConstants.InstalledGolangVersionsDir,
-                dynamicInstallDir: Path.Combine(CommonOptions.DynamicInstallRootDir, GolangConstants.PlatformName));
+                dynamicInstallDir: Path.Combine(this.CommonOptions.DynamicInstallRootDir, GolangConstants.PlatformName));
         }
     }
 }

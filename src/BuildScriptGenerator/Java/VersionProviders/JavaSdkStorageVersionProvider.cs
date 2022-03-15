@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 {
     internal class JavaSdkStorageVersionProvider : SdkStorageVersionProviderBase, IJavaVersionProvider
     {
-        private PlatformVersionInfo _platformVersionInfo;
+        private PlatformVersionInfo platformVersionInfo;
 
         public JavaSdkStorageVersionProvider(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
@@ -24,14 +24,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            if (_platformVersionInfo == null)
+            if (this.platformVersionInfo == null)
             {
-                _platformVersionInfo = GetAvailableVersionsFromStorage(
+                this.platformVersionInfo = this.GetAvailableVersionsFromStorage(
                     platformName: JavaConstants.PlatformName,
                     versionMetadataElementName: "Version");
             }
 
-            return _platformVersionInfo;
+            return this.platformVersionInfo;
         }
     }
 }

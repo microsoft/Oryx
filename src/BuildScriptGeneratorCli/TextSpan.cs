@@ -14,9 +14,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public TextSpan(string name, string beginning, string ending)
         {
-            Name = name;
-            BeginMarker = beginning;
-            EndMarker = ending;
+            this.Name = name;
+            this.BeginMarker = beginning;
+            this.EndMarker = ending;
         }
 
         public string Name { get; }
@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string EndMarker { get; }
 
-        public override int GetHashCode() => Name.GetHashCode();
+        public override int GetHashCode() => this.Name.GetHashCode();
 
         public bool Equals(TextSpan that) => that != null && that.Name == this.Name;
     }

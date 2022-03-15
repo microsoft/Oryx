@@ -11,11 +11,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 {
     internal class RubyVersionProvider : IRubyVersionProvider
     {
-        private readonly BuildScriptGeneratorOptions _options;
-        private readonly RubyOnDiskVersionProvider _onDiskVersionProvider;
-        private readonly RubySdkStorageVersionProvider _sdkStorageVersionProvider;
-        private readonly ILogger<RubyVersionProvider> _logger;
-        private PlatformVersionInfo _versionInfo;
+        private readonly BuildScriptGeneratorOptions options;
+        private readonly RubyOnDiskVersionProvider onDiskVersionProvider;
+        private readonly RubySdkStorageVersionProvider sdkStorageVersionProvider;
+        private readonly ILogger<RubyVersionProvider> logger;
+        private PlatformVersionInfo versionInfo;
 
         public RubyVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
@@ -23,25 +23,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             RubySdkStorageVersionProvider sdkStorageVersionProvider,
             ILogger<RubyVersionProvider> logger)
         {
-            _options = options.Value;
-            _onDiskVersionProvider = onDiskVersionProvider;
-            _sdkStorageVersionProvider = sdkStorageVersionProvider;
-            _logger = logger;
+            this.options = options.Value;
+            this.onDiskVersionProvider = onDiskVersionProvider;
+            this.sdkStorageVersionProvider = sdkStorageVersionProvider;
+            this.logger = logger;
         }
 
         public PlatformVersionInfo GetVersionInfo()
         {
-            if (_versionInfo == null)
+            if (this.versionInfo == null)
             {
-                if (_options.EnableDynamicInstall)
+                if (this.options.EnableDynamicInstall)
                 {
-                    return _sdkStorageVersionProvider.GetVersionInfo();
+                    return this.sdkStorageVersionProvider.GetVersionInfo();
                 }
 
-                _versionInfo = _onDiskVersionProvider.GetVersionInfo();
+                this.versionInfo = this.onDiskVersionProvider.GetVersionInfo();
             }
 
-            return _versionInfo;
+            return this.versionInfo;
         }
     }
 }

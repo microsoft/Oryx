@@ -9,16 +9,16 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
 {
     public class ArtifactBuilderFactory : IArtifactBuilderFactory
     {
-        private IArtifactBuilder _builder;
+        private IArtifactBuilder builder;
 
         public ArtifactBuilderFactory(IArtifactBuilder builder)
         {
-            _builder = builder;
+            this.builder = builder;
         }
 
         public IArtifactBuilder CreateArtifactBuilder(Build build)
         {
-            return _builder;
+            return this.builder;
         }
     }
 }

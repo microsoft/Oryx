@@ -19,8 +19,8 @@ namespace Microsoft.Oryx.Detector.Node
     /// </summary>
     public class NodeDetector : INodePlatformDetector
     {
-        private readonly ILogger<NodeDetector> _logger;
-        private readonly DetectorOptions _options;
+        private readonly ILogger<NodeDetector> logger;
+        private readonly DetectorOptions options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NodeDetector"/> class.
@@ -29,8 +29,8 @@ namespace Microsoft.Oryx.Detector.Node
         /// <param name="options">The <see cref="DetectorOptions"/>.</param>
         public NodeDetector(ILogger<NodeDetector> logger, IOptions<DetectorOptions> options)
         {
-            _logger = logger;
-            _options = options.Value;
+            this.logger = logger;
+            this.options = options.Value;
         }
 
         public PlatformDetectorResult Detect(DetectorContext context)
@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.Detector.Node
             }
             else
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     $"Could not find {NodeConstants.PackageJsonFileName}/{NodeConstants.PackageLockJsonFileName}" +
                     $"/{NodeConstants.YarnLockFileName} in repo");
             }
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.Detector.Node
             if (sourceRepo.FileExists(NodeConstants.LernaJsonFileName))
             {
                 hasLernaJsonFile = true;
-                lernaNpmClient = GetLernaJsonNpmClient(context);
+                lernaNpmClient = this.GetLernaJsonNpmClient(context);
             }
 
             if (sourceRepo.FileExists(NodeConstants.LageConfigJSFileName))
@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.Detector.Node
                     {
                         if (sourceRepo.FileExists(iisStartupFile))
                         {
-                            _logger.LogDebug(
+                            this.logger.LogDebug(
                                 "App in repo is not a Node.js app as it has the file {iisStartupFile}",
                                 iisStartupFile.Hash());
                             return null;
@@ -111,21 +111,21 @@ namespace Microsoft.Oryx.Detector.Node
                 else
                 {
                     // No point in logging the actual file list, as it's constant
-                    _logger.LogDebug("Could not find typical Node.js files in repo");
+                    this.logger.LogDebug("Could not find typical Node.js files in repo");
                 }
             }
 
             if (!isNodeApp)
             {
-                _logger.LogDebug("App in repo is not a NodeJS app");
+                this.logger.LogDebug("App in repo is not a NodeJS app");
                 return null;
             }
 
-            var version = GetVersion(context);
+            var version = this.GetVersion(context);
             IEnumerable<FrameworkInfo> detectedFrameworkInfos = null;
-            if (!_options.DisableFrameworkDetection)
+            if (!this.options.DisableFrameworkDetection)
             {
-                detectedFrameworkInfos = DetectFrameworkInfos(context);
+                detectedFrameworkInfos = this.DetectFrameworkInfos(context);
             }
 
             return new NodePlatformDetectorResult
@@ -205,19 +205,19 @@ namespace Microsoft.Oryx.Detector.Node
 
         private string GetVersion(DetectorContext context)
         {
-            var version = GetVersionFromPackageJson(context);
+            var version = this.GetVersionFromPackageJson(context);
             if (version != null)
             {
                 return version;
             }
 
-            _logger.LogDebug("Could not get version from package Json.");
+            this.logger.LogDebug("Could not get version from package Json.");
             return null;
         }
 
         private string GetVersionFromPackageJson(DetectorContext context)
         {
-            var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
+            var packageJson = GetPackageJsonObject(context.SourceRepo, this.logger);
             return packageJson?.engines?.node?.Value as string;
         }
 
@@ -226,7 +226,7 @@ namespace Microsoft.Oryx.Detector.Node
             // TODO: consolidate dependency & dev-dependency logic
             //       work-item 1493329
             var detectedFrameworkResult = new List<FrameworkInfo>();
-            var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
+            var packageJson = GetPackageJsonObject(context.SourceRepo, this.logger);
             var monitoredDevDependencies = NodeConstants.DevDependencyFrameworkKeyWordToName;
 
             // frameworksSet is for preventing duplicates
@@ -338,7 +338,7 @@ namespace Microsoft.Oryx.Detector.Node
             {
                 // Leave malformed lerna.json files for Node.js to handle.
                 // This prevents Oryx from erroring out when Node.js itself might be able to tolerate the file.
-                _logger.LogWarning(
+                this.logger.LogWarning(
                     exc,
                     $"Exception caught while trying to deserialize {NodeConstants.LernaJsonFileName.Hash()}");
             }

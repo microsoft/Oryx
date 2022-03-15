@@ -9,17 +9,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 {
     public class GolangOnDiskVersionProvider : IGolangVersionProvider
     {
-        private readonly ILogger<GolangOnDiskVersionProvider> _logger;
+        private readonly ILogger<GolangOnDiskVersionProvider> logger;
 
         public GolangOnDiskVersionProvider(ILogger<GolangOnDiskVersionProvider> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            _logger.LogDebug("Getting list of versions from {installDir}", GolangConstants.InstalledGolangVersionsDir);
+            this.logger.LogDebug("Getting list of versions from {installDir}", GolangConstants.InstalledGolangVersionsDir);
 
             var installedVersions = VersionProviderHelper.GetVersionsFromDirectory(
                             GolangConstants.InstalledGolangVersionsDir);

@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal int OnExecute(CommandLineApplication app, IConsole console)
         {
-            if (Version)
+            if (this.Version)
             {
                 var version = GetVersion();
                 var commit = GetMetadataValue(GitCommit);

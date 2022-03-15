@@ -21,19 +21,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             { "eslint-plugin-jsx-ally", "eslint-plugin-jsx-a11y" },
         };
 
-        private readonly ILogger<NodeDependencyChecker> _logger;
+        private readonly ILogger<NodeDependencyChecker> logger;
 
         public NodeDependencyChecker(ILogger<NodeDependencyChecker> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
-            dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, _logger);
+            dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, this.logger);
             if (packageJson == null)
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     $"{NodeConstants.PackageJsonFileName.Hash()} is null; skipping checking for superseded packages");
                 return Enumerable.Empty<ICheckerMessage>();
             }

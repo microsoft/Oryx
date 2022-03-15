@@ -15,8 +15,8 @@ namespace Microsoft.Oryx.Detector
     /// </summary>
     public class DefaultPlatformDetector : IDetector
     {
-        private readonly IEnumerable<IPlatformDetector> _platformDetectors;
-        private readonly ILogger<DefaultPlatformDetector> _logger;
+        private readonly IEnumerable<IPlatformDetector> platformDetectors;
+        private readonly ILogger<DefaultPlatformDetector> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultPlatformDetector"/> class.
@@ -27,8 +27,8 @@ namespace Microsoft.Oryx.Detector
             IEnumerable<IPlatformDetector> platformDetectors,
             ILogger<DefaultPlatformDetector> logger)
         {
-            _platformDetectors = platformDetectors;
-            _logger = logger;
+            this.platformDetectors = platformDetectors;
+            this.logger = logger;
         }
 
         /// <inheritdoc />
@@ -36,11 +36,11 @@ namespace Microsoft.Oryx.Detector
         {
             var detectedPlatforms = new List<PlatformDetectorResult>();
 
-            foreach (var platformDetector in _platformDetectors)
+            foreach (var platformDetector in this.platformDetectors)
             {
-                _logger.LogDebug($"Detecting platform using '{platformDetector.GetType()}'...");
+                this.logger.LogDebug($"Detecting platform using '{platformDetector.GetType()}'...");
 
-                if (IsDetectedPlatform(
+                if (this.IsDetectedPlatform(
                     context,
                     platformDetector,
                     out PlatformDetectorResult platformResult))
@@ -61,18 +61,18 @@ namespace Microsoft.Oryx.Detector
 
             if (platformResult == null)
             {
-                _logger.LogInformation("Could not detect any platform in the given repository.");
+                this.logger.LogInformation("Could not detect any platform in the given repository.");
                 return false;
             }
 
             if (string.IsNullOrEmpty(platformResult.PlatformVersion))
             {
-                _logger.LogInformation(
+                this.logger.LogInformation(
                     $"Platform '{platformResult.Platform}' was detected in the given repository, " +
                     $"but no versions were detected.");
             }
 
-            _logger.LogInformation(
+            this.logger.LogInformation(
                 $"Platform '{platformResult.Platform}' was detected with version '{platformResult.PlatformVersion}'.");
             return true;
         }

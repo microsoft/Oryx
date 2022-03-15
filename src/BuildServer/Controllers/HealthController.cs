@@ -13,17 +13,17 @@ namespace Microsoft.Oryx.BuildServer.Controllers
     [Route("[controller]")]
     public class HealthController : ControllerBase
     {
-        private readonly ILogger<HealthController> _logger;
+        private readonly ILogger<HealthController> logger;
 
         public HealthController(ILogger<HealthController> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         [HttpGet(Name = "health")]
         public HealthStatus Get()
         {
-            _logger.LogInformation("Health check ok");
+            this.logger.LogInformation("Health check ok");
             return new HealthStatus
             {
                 Status = "Ok",

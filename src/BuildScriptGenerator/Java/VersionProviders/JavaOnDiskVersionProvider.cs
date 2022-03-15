@@ -9,17 +9,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 {
     internal class JavaOnDiskVersionProvider : IJavaVersionProvider
     {
-        private readonly ILogger<JavaOnDiskVersionProvider> _logger;
+        private readonly ILogger<JavaOnDiskVersionProvider> logger;
 
         public JavaOnDiskVersionProvider(ILogger<JavaOnDiskVersionProvider> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            _logger.LogDebug("Getting list of versions from {installDir}", JavaConstants.InstalledJavaVersionsDir);
+            this.logger.LogDebug("Getting list of versions from {installDir}", JavaConstants.InstalledJavaVersionsDir);
 
             var installedVersions = VersionProviderHelper.GetVersionsFromDirectory(
                         JavaConstants.InstalledJavaVersionsDir);

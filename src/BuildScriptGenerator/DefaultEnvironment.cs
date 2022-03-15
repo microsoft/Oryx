@@ -14,34 +14,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultEnvironment : IEnvironment
     {
-        private EnvironmentType? _type; // Cache for the Type property
+        private EnvironmentType? type; // Cache for the Type property
 
         public EnvironmentType Type
         {
             get
             {
                 // Cache needs to be initialized
-                if (!_type.HasValue)
+                if (!this.type.HasValue)
                 {
                     foreach (var entry in LoggingConstants.OperationNameSourceEnvVars)
                     {
-                        if (!string.IsNullOrEmpty(GetEnvironmentVariable(entry.Value)))
+                        if (!string.IsNullOrEmpty(this.GetEnvironmentVariable(entry.Value)))
                         {
-                            _type = entry.Key;
-                            return _type.Value;
+                            this.type = entry.Key;
+                            return this.type.Value;
                         }
                     }
 
-                    _type = EnvironmentType.Unknown;
+                    this.type = EnvironmentType.Unknown;
                 }
 
-                return _type.Value;
+                return this.type.Value;
             }
         }
 
         public bool? GetBoolEnvironmentVariable(string name)
         {
-            var variable = GetEnvironmentVariable(name);
+            var variable = this.GetEnvironmentVariable(name);
             if (variable.EqualsIgnoreCase(Constants.True))
             {
                 return true;
@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public IList<string> GetEnvironmentVariableAsList(string name)
         {
             IList<string> ret = null;
-            var values = GetEnvironmentVariable(name);
+            var values = this.GetEnvironmentVariable(name);
             if (!string.IsNullOrWhiteSpace(values))
             {
                 ret = values.Split(",");

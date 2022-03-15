@@ -13,16 +13,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class DefaultRunTimeInstallationScriptGenerator : IRunTimeInstallationScriptGenerator
     {
-        private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
+        private readonly IEnumerable<IProgrammingPlatform> programmingPlatforms;
 
         public DefaultRunTimeInstallationScriptGenerator(IEnumerable<IProgrammingPlatform> programmingPlatforms)
         {
-            _programmingPlatforms = programmingPlatforms;
+            this.programmingPlatforms = programmingPlatforms;
         }
 
         public string GenerateBashScript(string targetPlatformName, RunTimeInstallationScriptGeneratorOptions opts)
         {
-            var targetPlatform = _programmingPlatforms
+            var targetPlatform = this.programmingPlatforms
                 .Where(p => p.Name.EqualsIgnoreCase(targetPlatformName))
                 .FirstOrDefault();
 

@@ -23,14 +23,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
     /// </summary>
     internal class PhpPlatform : IProgrammingPlatform
     {
-        private readonly PhpScriptGeneratorOptions _phpScriptGeneratorOptions;
-        private readonly BuildScriptGeneratorOptions _commonOptions;
-        private readonly IPhpVersionProvider _phpVersionProvider;
-        private readonly IPhpComposerVersionProvider _phpComposerVersionProvider;
-        private readonly ILogger<PhpPlatform> _logger;
-        private readonly IPhpPlatformDetector _detector;
-        private readonly PhpPlatformInstaller _phpInstaller;
-        private readonly PhpComposerInstaller _phpComposerInstaller;
+        private readonly PhpScriptGeneratorOptions phpScriptGeneratorOptions;
+        private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly IPhpVersionProvider phpVersionProvider;
+        private readonly IPhpComposerVersionProvider phpComposerVersionProvider;
+        private readonly ILogger<PhpPlatform> logger;
+        private readonly IPhpPlatformDetector detector;
+        private readonly PhpPlatformInstaller phpInstaller;
+        private readonly PhpComposerInstaller phpComposerInstaller;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PhpPlatform"/> class.
@@ -53,14 +53,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             PhpPlatformInstaller phpInstaller,
             PhpComposerInstaller phpComposerInstaller)
         {
-            _phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
-            _commonOptions = commonOptions.Value;
-            _phpVersionProvider = phpVersionProvider;
-            _phpComposerVersionProvider = phpComposerVersionProvider;
-            _logger = logger;
-            _detector = detector;
-            _phpInstaller = phpInstaller;
-            _phpComposerInstaller = phpComposerInstaller;
+            this.phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
+            this.commonOptions = commonOptions.Value;
+            this.phpVersionProvider = phpVersionProvider;
+            this.phpComposerVersionProvider = phpComposerVersionProvider;
+            this.logger = logger;
+            this.detector = detector;
+            this.phpInstaller = phpInstaller;
+            this.phpComposerInstaller = phpComposerInstaller;
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             get
             {
-                var versionInfo = _phpVersionProvider.GetVersionInfo();
+                var versionInfo = this.phpVersionProvider.GetVersionInfo();
                 return versionInfo.SupportedVersions;
             }
         }
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         /// <returns>The results of language detector operations.</returns>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var detectionResult = _detector.Detect(new DetectorContext
+            var detectionResult = this.detector.Detect(new DetectorContext
             {
                 SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
             });
@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 return null;
             }
 
-            ResolveVersions(context, detectionResult);
+            this.ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 
@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             // Write the platform name and version to the manifest file
             buildProperties[ManifestFilePropertyKeys.PhpVersion] = phpPlatformDetectorResult.PlatformVersion;
 
-            _logger.LogDebug("Selected PHP version: {phpVer}", phpPlatformDetectorResult.PlatformVersion);
+            this.logger.LogDebug("Selected PHP version: {phpVer}", phpPlatformDetectorResult.PlatformVersion);
             bool composerFileExists = false;
 
             if (ctx.SourceRepo.FileExists(PhpConstants.ComposerFileName))
@@ -133,7 +133,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     {
                         Newtonsoft.Json.Linq.JObject deps = composerFile?.require;
                         var depSpecs = deps.ToObject<IDictionary<string, string>>();
-                        _logger.LogDependencies(
+                        this.logger.LogDependencies(
                             this.Name,
                             phpPlatformDetectorResult.PlatformVersion,
                             depSpecs.Select(kv => kv.Key + kv.Value));
@@ -143,19 +143,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 {
                     // Leave malformed composer.json files for Composer to handle.
                     // This prevents Oryx from erroring out when Composer itself might be able to tolerate the file.
-                    _logger.LogWarning(exc, $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName.Hash()}");
+                    this.logger.LogWarning(exc, $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName.Hash()}");
                 }
             }
 
             var props = new PhpBashBuildSnippetProperties { ComposerFileExists = composerFileExists };
-            string snippet = TemplateHelper.Render(TemplateHelper.TemplateResource.PhpBuildSnippet, props, _logger);
+            string snippet = TemplateHelper.Render(TemplateHelper.TemplateResource.PhpBuildSnippet, props, this.logger);
             return new BuildScriptSnippet { BashBuildScriptSnippet = snippet, BuildProperties = buildProperties };
         }
 
         /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
-            return _commonOptions.EnablePhpBuild;
+            return this.commonOptions.EnablePhpBuild;
         }
 
         /// <inheritdoc/>
@@ -199,7 +199,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     $"'{typeof(PhpPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            ResolveVersionsUsingHierarchicalRules(phpPlatformDetectorResult);
+            this.ResolveVersionsUsingHierarchicalRules(phpPlatformDetectorResult);
         }
 
         /// <inheritdoc/>
@@ -215,15 +215,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     $"'{typeof(PhpPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            if (_commonOptions.EnableDynamicInstall)
+            if (this.commonOptions.EnableDynamicInstall)
             {
-                _logger.LogDebug("Dynamic install is enabled.");
+                this.logger.LogDebug("Dynamic install is enabled.");
 
                 var scriptBuilder = new StringBuilder();
 
-                InstallPhp(phpPlatformDetectorResult.PlatformVersion, scriptBuilder);
+                this.InstallPhp(phpPlatformDetectorResult.PlatformVersion, scriptBuilder);
 
-                InstallPhpComposer(phpPlatformDetectorResult.PhpComposerVersion, scriptBuilder);
+                this.InstallPhpComposer(phpPlatformDetectorResult.PhpComposerVersion, scriptBuilder);
 
                 if (scriptBuilder.Length == 0)
                 {
@@ -234,7 +234,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
             else
             {
-                _logger.LogDebug("Dynamic install not enabled.");
+                this.logger.LogDebug("Dynamic install not enabled.");
                 return null;
             }
         }
@@ -260,7 +260,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public string GetMaxSatisfyingPhpComposerVersionAndVerify(string version)
         {
-            var versionInfo = _phpComposerVersionProvider.GetVersionInfo();
+            var versionInfo = this.phpComposerVersionProvider.GetVersionInfo();
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
                 versionInfo.SupportedVersions);
@@ -271,7 +271,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     PhpConstants.PhpComposerName,
                     version,
                     versionInfo.SupportedVersions);
-                _logger.LogError(
+                this.logger.LogError(
                     exception,
                     $"Exception caught, the version '{version}' is not supported for the Node platform.");
                 throw exception;
@@ -282,20 +282,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private void InstallPhp(string phpVersion, StringBuilder scriptBuilder)
         {
-            if (_phpInstaller.IsVersionAlreadyInstalled(phpVersion))
+            if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                    "PHP version {version} is already installed. So skipping installing it again.",
                    phpVersion);
             }
             else
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "PHP version {version} is not installed. " +
                     "So generating an installation script snippet for it.",
                     phpVersion);
 
-                var script = _phpInstaller.GetInstallerScriptSnippet(phpVersion);
+                var script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
                 scriptBuilder.AppendLine(script);
             }
         }
@@ -308,20 +308,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 phpComposerVersion = PhpVersions.ComposerVersion;
             }
 
-            if (_phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
+            if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                    "PHP Composer version {version} is already installed. So skipping installing it again.",
                    phpComposerVersion);
             }
             else
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "PHP Composer version {version} is not installed. " +
                     "So generating an installation script snippet for it.",
                     phpComposerVersion);
 
-                var script = _phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
+                var script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
                 scriptBuilder.AppendLine(script);
             }
         }
@@ -329,10 +329,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private void ResolveVersionsUsingHierarchicalRules(PhpPlatformDetectorResult detectorResult)
         {
             var phpVersion = ResolvePhpVersion(detectorResult.PlatformVersion);
-            phpVersion = GetMaxSatisfyingPhpVersionAndVerify(phpVersion);
+            phpVersion = this.GetMaxSatisfyingPhpVersionAndVerify(phpVersion);
 
             var phpComposerVersion = ResolvePhpComposerVersion(detectorResult.PhpComposerVersion);
-            phpComposerVersion = GetMaxSatisfyingPhpComposerVersionAndVerify(phpComposerVersion);
+            phpComposerVersion = this.GetMaxSatisfyingPhpComposerVersionAndVerify(phpComposerVersion);
 
             detectorResult.PlatformVersion = phpVersion;
             detectorResult.PhpComposerVersion = phpComposerVersion;
@@ -340,9 +340,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             string ResolvePhpVersion(string detectedVersion)
             {
                 // Explicitly specified version by user wins over detected version
-                if (!string.IsNullOrEmpty(_phpScriptGeneratorOptions.PhpVersion))
+                if (!string.IsNullOrEmpty(this.phpScriptGeneratorOptions.PhpVersion))
                 {
-                    return _phpScriptGeneratorOptions.PhpVersion;
+                    return this.phpScriptGeneratorOptions.PhpVersion;
                 }
 
                 // If a version was detected, then use it.
@@ -352,16 +352,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 }
 
                 // Fallback to default version
-                var versionInfo = _phpVersionProvider.GetVersionInfo();
+                var versionInfo = this.phpVersionProvider.GetVersionInfo();
                 return versionInfo.DefaultVersion;
             }
 
             string ResolvePhpComposerVersion(string detectedVersion)
             {
                 // Explicitly specified version by user wins over detected version
-                if (!string.IsNullOrEmpty(_phpScriptGeneratorOptions.PhpComposerVersion))
+                if (!string.IsNullOrEmpty(this.phpScriptGeneratorOptions.PhpComposerVersion))
                 {
-                    return _phpScriptGeneratorOptions.PhpComposerVersion;
+                    return this.phpScriptGeneratorOptions.PhpComposerVersion;
                 }
 
                 // If a version was detected, then use it.
@@ -377,7 +377,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private string GetMaxSatisfyingPhpVersionAndVerify(string version)
         {
-            var supportedVersions = SupportedVersions;
+            var supportedVersions = this.SupportedVersions;
             var nonPreviewRuntimeVersions = supportedVersions.Where(v => !v.Any(c => char.IsLetter(c)));
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
@@ -403,7 +403,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     PhpConstants.PlatformName,
                     version,
                     supportedVersions);
-                _logger.LogError(
+                this.logger.LogError(
                     exc,
                     $"Exception caught, the version '{version}' is not supported for the PHP platform.");
                 throw exc;

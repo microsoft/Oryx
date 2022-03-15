@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.Detector.Php
     /// </summary>
     public class PhpDetector : IPhpPlatformDetector
     {
-        private readonly ILogger<PhpDetector> _logger;
+        private readonly ILogger<PhpDetector> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PhpDetector"/> class.
@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Detector.Php
         /// <param name="logger">The <see cref="ILogger{PhpDetector}"/>.</param>
         public PhpDetector(ILogger<PhpDetector> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -37,24 +37,24 @@ namespace Microsoft.Oryx.Detector.Php
             var appDirectory = string.Empty;
             if (hasComposerFile)
             {
-                _logger.LogDebug($"File '{PhpConstants.ComposerFileName}' exists in source repo");
-                phpVersion = GetVersion(context);
+                this.logger.LogDebug($"File '{PhpConstants.ComposerFileName}' exists in source repo");
+                phpVersion = this.GetVersion(context);
             }
             else
             {
-                _logger.LogDebug($"File '{PhpConstants.ComposerFileName}' does not exist in source repo");
+                this.logger.LogDebug($"File '{PhpConstants.ComposerFileName}' does not exist in source repo");
 
                 var files = sourceRepo.EnumerateFiles(PhpConstants.PhpFileNamePattern, searchSubDirectories: true);
                 if (files != null && files.Any())
                 {
-                    _logger.LogInformation(
+                    this.logger.LogInformation(
                         $"Found files with extension '{PhpConstants.PhpFileNamePattern}' " +
                         $"in the repo.");
                     appDirectory = RelativeDirectoryHelper.GetRelativeDirectoryToRoot(files.FirstOrDefault(), sourceRepo.RootPath);
                 }
                 else
                 {
-                    _logger.LogInformation(
+                    this.logger.LogInformation(
                         $"Could not find any file with extension '{PhpConstants.PhpFileNamePattern}' " +
                         $"in the repo.");
                     return null;
@@ -71,13 +71,13 @@ namespace Microsoft.Oryx.Detector.Php
 
         private string GetVersion(DetectorContext context)
         {
-            var version = GetVersionFromComposerFile(context);
+            var version = this.GetVersionFromComposerFile(context);
             if (version != null)
             {
                 return version;
             }
 
-            _logger.LogDebug("Could not get version from the composer file. ");
+            this.logger.LogDebug("Could not get version from the composer file. ");
             return null;
         }
 
@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.Detector.Php
                 // We just ignore errors, so we leave malformed composer.json files for Composer to handle,
                 // not us. This prevents us from erroring out when Composer itself might be able to tolerate
                 // some errors in the composer.json file.
-                _logger.LogWarning(
+                this.logger.LogWarning(
                     ex,
                     $"Exception caught while trying to deserialize {PhpConstants.ComposerFileName.Hash()}");
             }

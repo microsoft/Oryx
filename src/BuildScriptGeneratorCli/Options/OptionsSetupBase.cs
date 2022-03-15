@@ -10,21 +10,21 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 {
     public abstract class OptionsSetupBase
     {
-        private readonly IConfiguration _config;
+        private readonly IConfiguration config;
 
         public OptionsSetupBase(IConfiguration configuration)
         {
-            _config = configuration;
+            this.config = configuration;
         }
 
         protected string GetStringValue(string key)
         {
-            return _config.GetValue<string>(key);
+            return this.config.GetValue<string>(key);
         }
 
         protected bool GetBooleanValue(string key)
         {
-            var value = GetStringValue(key);
+            var value = this.GetStringValue(key);
             if (string.IsNullOrEmpty(value))
             {
                 return false;

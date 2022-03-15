@@ -16,11 +16,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class BuildScriptGenerator
     {
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IConsole _console;
-        private readonly List<ICheckerMessage> _checkerMessageSink;
-        private readonly ILogger<BuildScriptGenerator> _logger;
-        private readonly string _operationId;
+        private readonly IServiceProvider serviceProvider;
+        private readonly IConsole console;
+        private readonly List<ICheckerMessage> checkerMessageSink;
+        private readonly ILogger<BuildScriptGenerator> logger;
+        private readonly string operationId;
 
         public BuildScriptGenerator(
             IServiceProvider serviceProvider,
@@ -28,11 +28,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             List<ICheckerMessage> checkerMessageSink,
             string operationId)
         {
-            _console = console;
-            _serviceProvider = serviceProvider;
-            _checkerMessageSink = checkerMessageSink;
-            _logger = _serviceProvider.GetRequiredService<ILogger<BuildScriptGenerator>>();
-            _operationId = operationId;
+            this.console = console;
+            this.serviceProvider = serviceProvider;
+            this.checkerMessageSink = checkerMessageSink;
+            this.logger = this.serviceProvider.GetRequiredService<ILogger<BuildScriptGenerator>>();
+            this.operationId = operationId;
         }
 
         public static BuildScriptGeneratorContext CreateContext(IServiceProvider serviceProvider, string operationId)
@@ -58,17 +58,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             try
             {
-                var scriptGenCtx = CreateContext(_serviceProvider, _operationId);
-                var scriptGen = _serviceProvider.GetRequiredService<IBuildScriptGenerator>();
+                var scriptGenCtx = CreateContext(this.serviceProvider, this.operationId);
+                var scriptGen = this.serviceProvider.GetRequiredService<IBuildScriptGenerator>();
 
-                scriptGen.GenerateBashScript(scriptGenCtx, out generatedScript, _checkerMessageSink);
+                scriptGen.GenerateBashScript(scriptGenCtx, out generatedScript, this.checkerMessageSink);
                 return true;
             }
             catch (InvalidUsageException ex)
             {
                 exception = ex;
-                _logger.LogError(ex, "Invalid usage");
-                _console.WriteErrorLine(ex.Message);
+                this.logger.LogError(ex, "Invalid usage");
+                this.console.WriteErrorLine(ex.Message);
                 return false;
             }
         }

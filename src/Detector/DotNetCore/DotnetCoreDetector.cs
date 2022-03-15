@@ -17,8 +17,8 @@ namespace Microsoft.Oryx.Detector.DotNetCore
     /// </summary>
     public class DotNetCoreDetector : IDotNetCorePlatformDetector
     {
-        private readonly DefaultProjectFileProvider _projectFileProvider;
-        private readonly ILogger<DotNetCoreDetector> _logger;
+        private readonly DefaultProjectFileProvider projectFileProvider;
+        private readonly ILogger<DotNetCoreDetector> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DotNetCoreDetector"/> class.
@@ -27,14 +27,14 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         /// <param name="logger">The <see cref="ILogger{DotNetCoreDetector}"/>.</param>
         public DotNetCoreDetector(DefaultProjectFileProvider projectFileProvider, ILogger<DotNetCoreDetector> logger)
         {
-            _projectFileProvider = projectFileProvider;
-            _logger = logger;
+            this.projectFileProvider = projectFileProvider;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(DetectorContext context)
         {
-            var projectFile = _projectFileProvider.GetRelativePathToProjectFile(context);
+            var projectFile = this.projectFileProvider.GetRelativePathToProjectFile(context);
             if (string.IsNullOrEmpty(projectFile))
             {
                 return null;
@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             var targetFramework = targetFrameworkElement?.Value;
             if (string.IsNullOrEmpty(targetFramework))
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     $"Could not find 'TargetFramework' element in the project file.");
                 return null;
             }
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 DotNetCoreConstants.OutputTypeXPathExpression);
             var outputType = GetOutputType(outputTypeElement);
 
-            var version = GetVersion(targetFramework);
+            var version = this.GetVersion(targetFramework);
 
             // Any Blazor WebAssembly app on .NET 6 should have the workload installed.
             // https://github.com/microsoft/Oryx/issues/1026
@@ -124,7 +124,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 return version;
             }
 
-            _logger.LogDebug(
+            this.logger.LogDebug(
                    $"Could not determine runtime version from target framework. ");
             return null;
         }

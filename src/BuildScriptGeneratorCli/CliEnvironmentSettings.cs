@@ -15,32 +15,32 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string GitHubActionsBuildImagePullStartTimeEnvVarName = "GITHUB_ACTIONS_BUILD_IMAGE_PULL_START_TIME";
         public const string GitHubActionsBuildImagePullEndTimeEnvVarName = "GITHUB_ACTIONS_BUILD_IMAGE_PULL_END_TIME";
 
-        private IEnvironment _environment;
+        private IEnvironment environment;
 
         public CliEnvironmentSettings(IEnvironment environment)
         {
-            _environment = environment ?? throw new ArgumentNullException(nameof(environment));
+            this.environment = environment ?? throw new ArgumentNullException(nameof(environment));
         }
 
         // From the GitHub Actions environment variable documentation:
         // GITHUB_ACTIONS: Always set to true when GitHub Actions is running the workflow.
-        public bool GitHubActions => IsEnvVariableTrue(GitHubActionsEnvVarName);
+        public bool GitHubActions => this.IsEnvVariableTrue(GitHubActionsEnvVarName);
 
         /// <summary>
         /// Gets the time when a GitHub action starts to download build images for the container.
         /// </summary>
-        public string GitHubActionsBuildImagePullStartTime => _environment.GetEnvironmentVariable(
+        public string GitHubActionsBuildImagePullStartTime => this.environment.GetEnvironmentVariable(
             GitHubActionsBuildImagePullStartTimeEnvVarName);
 
         /// <summary>
         /// Gets the time when a GitHub action finishes downloading build images and successfully built the container.
         /// </summary>
-        public string GitHubActionsBuildImagePullEndTime => _environment.GetEnvironmentVariable(
+        public string GitHubActionsBuildImagePullEndTime => this.environment.GetEnvironmentVariable(
             GitHubActionsBuildImagePullEndTimeEnvVarName);
 
         private bool IsEnvVariableTrue(string disableEnvVarName)
         {
-            var isDisabledVar = _environment.GetBoolEnvironmentVariable(disableEnvVarName);
+            var isDisabledVar = this.environment.GetBoolEnvironmentVariable(disableEnvVarName);
             if (isDisabledVar == true)
             {
                 // The user has set the variable _and_ its value is true.

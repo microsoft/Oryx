@@ -14,11 +14,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public class GlobalJsonSdkResolver
     {
-        private readonly ILogger<GlobalJsonSdkResolver> _logger;
+        private readonly ILogger<GlobalJsonSdkResolver> logger;
 
         public GlobalJsonSdkResolver(ILogger<GlobalJsonSdkResolver> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         public string GetSatisfyingSdkVersion(
@@ -32,14 +32,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 var globalJsonContent = sourceRepo.ReadFile(
                     Path.Combine(sourceRepo.RootPath, DotNetCoreConstants.GlobalJsonFileName));
 
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "Detected presence of global.json file with content {globalJsonContent}",
                     globalJsonContent);
 
                 var globalJsonModel = JsonConvert.DeserializeObject<GlobalJsonModel>(globalJsonContent);
-                sdkVersion = GetSatisfyingSdkVersion(globalJsonModel, availableSdks);
+                sdkVersion = this.GetSatisfyingSdkVersion(globalJsonModel, availableSdks);
 
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "Resolved sdk version to {resolvedSdkVersion} based on global.json file and available sdk versions",
                     sdkVersion);
             }
@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     },
                 };
 
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "global.json file was not find in the repo, so choosing an sdk version which satisfies the " +
                     "version {defaultSdkVersion}, roll forward policy of {defaultRollForwardPolicy} and " +
                     "allowPrerelease value of {defaultAllowPrerelease}.",
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     globalJsonModel.Sdk.RollForward,
                     globalJsonModel.Sdk.AllowPreRelease);
 
-                sdkVersion = GetSatisfyingSdkVersion(globalJsonModel, availableSdks);
+                sdkVersion = this.GetSatisfyingSdkVersion(globalJsonModel, availableSdks);
             }
 
             return sdkVersion;
@@ -95,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     RollForward = RollForwardPolicy.LatestMajor,
                 };
 
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     $"No 'sdk' provided in global.json. Choosing a version using the " +
                     $"default 'rollForward' policy: {globalJson.Sdk.RollForward}");
             }
@@ -123,7 +123,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             if (unparsedSdkVersions.Count > 0)
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "Unable to parse sdk versions: {unparsedSdkVersions}",
                     string.Join(", ", unparsedSdkVersions));
             }
@@ -166,7 +166,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     resolvedVersion = GetLatestMajor(availableSdkVersions, sdkVersionInGlobalJson);
                     break;
                 default:
-                    _logger.LogDebug(
+                    this.logger.LogDebug(
                         "Value {invalidRollForwardPolicy} is invalid for 'rollFoward' policy.",
                         sdkNodeInGlobalJson.RollForward.ToString());
                     return null;
@@ -174,7 +174,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             if (resolvedVersion == null)
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "Could not resolve a version using roll forward policy {rollForwardPolicy} and available sdk " +
                     "versions {availableSdkVersions}",
                     sdkNodeInGlobalJson.RollForward.ToString(),
