@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 var appType = _options.AppType.ToLower();
                 if (appType.Contains(Constants.FunctionApplications))
                 {
-                    if (azureFunctionsProjects.Count() == 0)
+                    if (azureFunctionsProjects.Count == 0)
                     {
                         return null;
                     }
@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 }
                 else if (appType.Contains(Constants.StaticSiteApplications))
                 {
-                    if (blazorWasmProjects.Count() == 0)
+                    if (blazorWasmProjects.Count == 0)
                     {
                         return null;
                     }
@@ -109,7 +109,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 }
                 else if (appType.Contains(Constants.WebApplications))
                 {
-                    if (webAppProjects.Count() == 0)
+                    if (webAppProjects.Count == 0)
                     {
                         return null;
                     }
@@ -127,21 +127,21 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
                 // If multiple project exists, and appType is not passed
                 // we detect them in following order
-                if (webAppProjects.Count() > 0)
+                if (webAppProjects.Count > 0)
                 {
                     projectFile = GetProject(webAppProjects);
                 }
-                else if (blazorWasmProjects.Count() > 0)
+                else if (blazorWasmProjects.Count > 0)
                 {
                     projectFile = GetProject(blazorWasmProjects);
                 }
-                else if (azureFunctionsProjects.Count() > 0)
+                else if (azureFunctionsProjects.Count > 0)
                 {
                     projectFile = GetProject(azureFunctionsProjects);
                 }
             }
 
-            // After scanning all the project types we stil didn't find any files (e.g. csproj
+            // After scanning all the project types we still didn't find any files (e.g. csproj
             if (projectFile == null)
             {
                 _logger.LogDebug("Could not find a .NET Core project file to build.");
@@ -152,20 +152,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             return _projectFileRelativePath;
         }
 
-        private IEnumerable<string> GetAllProjectFilesInRepo(
-            ISourceRepo sourceRepo,
-            string projectFileExtension)
-        {
-            var searchSubDirectories = !_options.DisableRecursiveLookUp;
-            if (!searchSubDirectories)
-            {
-                _logger.LogDebug("Skipping search for files in sub-directories as it has been disabled.");
-            }
-
-            return sourceRepo.EnumerateFiles($"*.{projectFileExtension}", searchSubDirectories);
-        }
-
-        private string GetProject(List<string> projects)
+        private static string GetProject(List<string> projects)
         {
             if (projects.Count > 1)
             {
@@ -181,6 +168,19 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             return null;
+        }
+
+        private IEnumerable<string> GetAllProjectFilesInRepo(
+            ISourceRepo sourceRepo,
+            string projectFileExtension)
+        {
+            var searchSubDirectories = !_options.DisableRecursiveLookUp;
+            if (!searchSubDirectories)
+            {
+                _logger.LogDebug("Skipping search for files in sub-directories as it has been disabled.");
+            }
+
+            return sourceRepo.EnumerateFiles($"*.{projectFileExtension}", searchSubDirectories);
         }
     }
 }

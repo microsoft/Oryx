@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// Abstraction for executing scripts
+    /// Abstraction for executing scripts.
     /// </summary>
     public interface IScriptExecutor
     {
@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="workingDirectory">The directory under which the supplied script would be run.</param>
         /// <param name="stdOutHandler">The registered handler for capturing standard output messages.</param>
         /// <param name="stdErrHandler">The registered handler for capturing standard error messages.</param>
-        /// <returns>0 if success</returns>
+        /// <returns>0 if success.</returns>
         int ExecuteScript(
             string scriptPath,
             string[] args,

@@ -30,7 +30,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             {
                 return new[]
                 {
-                    new CheckerMessage(string.Format(Resources.Labels.ToolVersionCheckerMessageFormat,
+                    new CheckerMessage(string.Format(
+                        Resources.Labels.ToolVersionCheckerMessageFormat,
                         RubyConstants.PlatformName,
                         used,
                         Constants.OryxGitHubUrl)),

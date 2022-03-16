@@ -3,9 +3,9 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Threading.Tasks;
 using Microsoft.Oryx.BuildServer.Models;
 using Microsoft.Oryx.BuildServer.Services.ArtifactBuilders;
-using System.Threading.Tasks;
 
 namespace Microsoft.Oryx.BuildServer.Services
 {
@@ -13,6 +13,6 @@ namespace Microsoft.Oryx.BuildServer.Services
 
     public interface IBuildRunner
     {
-        void RunInBackground(IArtifactBuilder builder, Build build, Callback successCallback, Callback FailureCallback);
+        void RunInBackground(IArtifactBuilder builder, Build build, Callback successCallback, Callback failureCallback);
     }
 }

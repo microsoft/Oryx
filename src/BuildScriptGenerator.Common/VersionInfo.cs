@@ -10,17 +10,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public class VersionInfo : IComparable<VersionInfo>
     {
-        public string DisplayVersion { get; }
-
-        public SemVer.Version SemanticVersion { get;  }
-
         public VersionInfo(string displayVersion)
         {
             this.DisplayVersion = displayVersion;
-            this.SemanticVersion = this.ToSemanticVersion(this.DisplayVersion);
+            this.SemanticVersion = ToSemanticVersion(this.DisplayVersion);
         }
 
-        private SemVer.Version ToSemanticVersion(string displayVersion)
+        public string DisplayVersion { get; }
+
+        public SemVer.Version SemanticVersion { get; }
+
+        public int CompareTo(VersionInfo other)
+        {
+            return this.SemanticVersion.CompareTo(other.SemanticVersion);
+        }
+
+        private static SemVer.Version ToSemanticVersion(string displayVersion)
         {
             var semanticVersionStr = displayVersion;
 
@@ -37,11 +42,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             index = displayVersion.ToList().FindIndex(c => char.IsLetter(c));
             semanticVersionStr = displayVersion.Insert(index, "-");
             return new SemVer.Version(semanticVersionStr);
-        }
-
-        public int CompareTo(VersionInfo other)
-        {
-            return this.SemanticVersion.CompareTo(other.SemanticVersion);
         }
     }
 }

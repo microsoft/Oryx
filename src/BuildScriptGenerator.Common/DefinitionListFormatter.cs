@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         }
 
         [CanBeNull]
-        private Tuple<string, string> CreateDefTuple([CanBeNull] string title, [CanBeNull] string value)
+        private static Tuple<string, string> CreateDefTuple([CanBeNull] string title, [CanBeNull] string value)
         {
             if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(value))
             {

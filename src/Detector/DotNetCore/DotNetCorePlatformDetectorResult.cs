@@ -15,12 +15,12 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         /// Gets or sets the relative path to the location of the project file.
         /// </summary>
         /// <example>
-        /// "src/ShoppingWeb/ShoppingWeb.csproj"
+        /// "src/ShoppingWeb/ShoppingWeb.csproj".
         /// </example>
         public string ProjectFile { get; set; }
 
         /// <summary>
-        /// Check if it needs to install AOT compilation before running 
+        /// Gets or sets a value indicating whether the script needs to install AOT compilation before running
         /// "dotnet publish" or "dotnet build" when building the Blazor WebAssembly app.
         /// </summary>
         public bool InstallAOTWorkloads { get; set; }

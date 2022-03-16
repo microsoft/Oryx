@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
@@ -22,7 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public JupyterNotebookBashBuildSnippetProperties(
             string environmentYmlFile,
             string environmentTemplateFileName,
-            bool hasRequirementsTxtFile, 
+            bool hasRequirementsTxtFile,
             string environmentTemplatePythonVersion,
             string noteBookBuildCommandsFileName = null)
         {

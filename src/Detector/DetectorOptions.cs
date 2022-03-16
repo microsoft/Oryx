@@ -16,19 +16,19 @@ namespace Microsoft.Oryx.Detector
         public string Project { get; set; }
 
         /// <summary>
-        /// Gets or sets the type of application that the source directory has, 
+        /// Gets or sets the type of application that the source directory has,
         /// for example: 'functions' or 'static-sites' etc.
         /// </summary>
         public string AppType { get; set; }
 
         /// <summary>
-        /// Gets or sets the value which indicates if detectors should consider looking into sub-directories for files.
+        /// Gets or sets a value indicating whether the detectors should consider looking into sub-directories for files.
         /// If <c>true</c>, only the root of the source directory is probed for files. Default is <c>false</c>.
         /// </summary>
         public bool DisableRecursiveLookUp { get; set; }
 
         /// <summary>
-        /// Gets or sets the value which indicates if detectors should detect and outputs the frameworks that the application
+        /// Gets or sets a value indicating whether the detectors should detect and outputs the frameworks that the application
         /// is using. If <c>true</c>, then disable detection for frameworks. Default is <c>false</c>.
         /// </summary>
         public bool DisableFrameworkDetection { get; set; }

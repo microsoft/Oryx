@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
-    public class NodeManifestFilePropertyKeys
+    public static class NodeManifestFilePropertyKeys
     {
         /// <summary>
         /// The name of the property whose value indicates the location of the output directory of a Node app.

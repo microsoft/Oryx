@@ -62,7 +62,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 if (SupersededPackages.ContainsKey(packageName))
                 {
-                    result.Add(new CheckerMessage(string.Format(Resources.Labels.NodeDependencyCheckerMessageFormat,
+                    result.Add(new CheckerMessage(string.Format(
+                        Resources.Labels.NodeDependencyCheckerMessageFormat,
                         packageName,
                         childObjKey,
                         SupersededPackages[packageName])));

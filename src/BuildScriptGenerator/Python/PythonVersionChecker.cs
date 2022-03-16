@@ -30,7 +30,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 return new[]
                 {
-                    new CheckerMessage(string.Format(Resources.Labels.ToolVersionCheckerMessageFormat,
+                    new CheckerMessage(string.Format(
+                        Resources.Labels.ToolVersionCheckerMessageFormat,
                         PythonConstants.PlatformName,
                         used,
                         Constants.OryxGitHubUrl)),

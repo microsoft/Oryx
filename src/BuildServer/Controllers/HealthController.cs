@@ -13,7 +13,6 @@ namespace Microsoft.Oryx.BuildServer.Controllers
     [Route("[controller]")]
     public class HealthController : ControllerBase
     {
-
         private readonly ILogger<HealthController> _logger;
 
         public HealthController(ILogger<HealthController> logger)
@@ -27,7 +26,7 @@ namespace Microsoft.Oryx.BuildServer.Controllers
             _logger.LogInformation("Health check ok");
             return new HealthStatus
             {
-                Status = "Ok"
+                Status = "Ok",
             };
         }
     }

@@ -12,18 +12,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
 {
     internal class OutputFactory
     {
-        private static readonly Dictionary<string, Type> _outputsByType;
-
-        static OutputFactory()
-        {
-            var outputsWithType = from type in Assembly.GetExecutingAssembly().GetTypes()
-                                  where typeof(IOutputFile).IsAssignableFrom(type)
-                                  where !type.IsAbstract && !type.IsInterface
-                                  let attr = type.GetCustomAttributes(typeof(OutputTypeAttribute), false).First() as OutputTypeAttribute
-                                  select KeyValuePair.Create(attr.Type, type);
-
-            _outputsByType = outputsWithType.ToDictionary(pair => pair.Key, pair => pair.Value);
-        }
+        private static readonly Dictionary<string, Type> _outputsByType = CreateOutputsDictionary();
 
         public static IOutputFile CreateByType(Dictionary<string, string> typeInfo, ConstantCollection constantCollection)
         {
@@ -33,6 +22,17 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
             IOutputFile outputFile = Activator.CreateInstance(_outputsByType[typeName]) as IOutputFile;
             outputFile.Initialize(constantCollection, typeInfo);
             return outputFile;
+        }
+
+        private static Dictionary<string, Type> CreateOutputsDictionary()
+        {
+            var outputsWithType = from type in Assembly.GetExecutingAssembly().GetTypes()
+                                  where typeof(IOutputFile).IsAssignableFrom(type)
+                                  where !type.IsAbstract && !type.IsInterface
+                                  let attr = type.GetCustomAttributes(typeof(OutputTypeAttribute), false).First() as OutputTypeAttribute
+                                  select KeyValuePair.Create(attr.Type, type);
+
+            return outputsWithType.ToDictionary(pair => pair.Key, pair => pair.Value);
         }
     }
 }

@@ -13,9 +13,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Check if the two directory paths are the same. Is case-sensitive.
         /// </summary>
-        /// <param name="dir1"></param>
-        /// <param name="dir2"></param>
-        /// <returns></returns>
+        /// <param name="dir1">First directory path for comparison.</param>
+        /// <param name="dir2">Second directory path for comparison.</param>
+        /// <returns>True if the directory paths are the same, false otherwise.</returns>
         public static bool AreSameDirectories(string dir1, string dir2)
         {
             var dir1Path = new DirectoryInfo(dir1).FullName.Trim(Path.DirectorySeparatorChar);
@@ -28,9 +28,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <summary>
         /// Checks if <paramref name="subDir"/> is a sub-directory of <paramref name="parentDir"/>.
         /// </summary>
-        /// <param name="subDir"></param>
-        /// <param name="parentDir"></param>
-        /// <returns></returns>
+        /// <param name="subDir">The path to the directory that is expected to be a sub-directory.</param>
+        /// <param name="parentDir">The path to the parent directory.</param>
+        /// <returns>True if the sub-directory was found in the parent directory.</returns>
         public static bool IsSubDirectory(string subDir, string parentDir)
         {
             var parentDirSegments = parentDir.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);

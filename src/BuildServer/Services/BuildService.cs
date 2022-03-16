@@ -3,10 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Threading.Tasks;
 using Microsoft.Oryx.BuildServer.Models;
 using Microsoft.Oryx.BuildServer.Repositories;
 using Microsoft.Oryx.BuildServer.Services.ArtifactBuilders;
-using System.Threading.Tasks;
 
 namespace Microsoft.Oryx.BuildServer.Services
 {
@@ -23,39 +23,41 @@ namespace Microsoft.Oryx.BuildServer.Services
             _buildRunner = buildRunner;
         }
 
-        public async Task<Build> StartBuild(Build build)
+        public async Task<Build> StartBuildAsync(Build build)
         {
             build.Status = "IN_PROGRESS";
-            await _buildRepository.Insert(build);
+            await _buildRepository.InsertAsync(build);
             var artifactBuilder = _artifactBuilderFactory.CreateArtifactBuilder(build);
-            _buildRunner.RunInBackground(artifactBuilder, build, MarkCompleted, MarkFailed);
+            _buildRunner.RunInBackground(artifactBuilder, build, MarkCompletedAsync, MarkFailedAsync);
             return build;
         }
 
-        public async Task<Build> GetBuild(string id)
+#pragma warning disable CS1998 // Keep asynchronous for backwards-compatibility
+        public async Task<Build> GetBuildAsync(string id)
+#pragma warning restore CS1998
         {
             var build = _buildRepository.GetById(id);
             return build;
         }
 
-        public async Task<Build> MarkCancelled(Build build)
+        public async Task<Build> MarkCancelledAsync(Build build)
         {
             build.Status = "CANCELLED";
-            await _buildRepository.Update(build);
+            await _buildRepository.UpdateAsync(build);
             return build;
         }
 
-        public async Task<Build> MarkCompleted(Build build)
+        public async Task<Build> MarkCompletedAsync(Build build)
         {
             build.Status = "COMPLETED";
-            await _buildRepository.Update(build);
+            await _buildRepository.UpdateAsync(build);
             return build;
         }
 
-        public async Task<Build> MarkFailed(Build build)
+        public async Task<Build> MarkFailedAsync(Build build)
         {
             build.Status = "FAILED";
-            await _buildRepository.Update(build);
+            await _buildRepository.UpdateAsync(build);
             return build;
         }
     }

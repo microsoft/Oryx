@@ -3,12 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Threading.Tasks;
 using Microsoft.Oryx.BuildServer.Models;
 using Microsoft.Oryx.BuildServer.Repositories;
 using Microsoft.Oryx.BuildServer.Services;
 using Microsoft.Oryx.BuildServer.Services.ArtifactBuilders;
 using Moq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildServer.Tests
@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.BuildServer.Tests
     public class BuildServiceTests
     {
         [Fact]
-        public async Task Test_CorrectBuildStatus_OnStartBuild()
+        public async Task Test_CorrectBuildStatus_OnStartBuildAsync()
         {
             // Arrange
             var build = TestBuild();
@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildServer.Tests
                 mockedBuildRepository.Object, mockedArtifactBuilderFactory.Object, mockedBuildRunner.Object);
 
             // Act
-            var buildTest = await testBuildService.StartBuild(build);
+            var buildTest = await testBuildService.StartBuildAsync(build);
 
             // Assert
             Assert.NotNull(buildTest);
@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildServer.Tests
         }
 
         [Fact]
-        public async Task Test_GetById_CorrectBuildStatus()
+        public async Task Test_GetById_CorrectBuildStatusAsync()
         {
             // Arrange
             var build = TestBuild();
@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildServer.Tests
                 mockedBuildRepository.Object, mockedArtifactBuilderFactory.Object, mockedBuildRunner.Object);
 
             // Act
-            var buildTest = await testBuildService.GetBuild(build.Id);
+            var buildTest = await testBuildService.GetBuildAsync(build.Id);
 
             // Assert
             Assert.NotNull(buildTest);
@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.BuildServer.Tests
         }
 
         [Fact]
-        public async Task Test_MarkedCancelled_GetsCorrectBuildStatus()
+        public async Task Test_MarkedCancelled_GetsCorrectBuildStatusAsync()
         {
             // Arrange
             var build = TestBuild();
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.BuildServer.Tests
                 mockedBuildRepository.Object, mockedArtifactBuilderFactory.Object, mockedBuildRunner.Object);
 
             // Act
-            var buildTest = await testBuildService.MarkCancelled(build);
+            var buildTest = await testBuildService.MarkCancelledAsync(build);
 
             // Assert
             Assert.NotNull(buildTest);
@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.BuildServer.Tests
         }
 
         [Fact]
-        public async Task Test_MarkedCompleted_GetsCorrectBuildStatus()
+        public async Task Test_MarkedCompleted_GetsCorrectBuildStatusAsync()
         {
             // Arrange
             var build = TestBuild();
@@ -90,7 +90,7 @@ namespace Microsoft.Oryx.BuildServer.Tests
                 mockedBuildRepository.Object, mockedArtifactBuilderFactory.Object, mockedBuildRunner.Object);
 
             // Act
-            var buildTest = await testBuildService.MarkCompleted(build);
+            var buildTest = await testBuildService.MarkCompletedAsync(build);
 
             // Assert
             Assert.NotNull(buildTest);
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.BuildServer.Tests
         }
 
         [Fact]
-        public async Task Test_MarkedFailed_GetsCorrectBuildStatus()
+        public async Task Test_MarkedFailed_GetsCorrectBuildStatusAsync()
         {
             // Arrange
             var build = TestBuild();
@@ -109,7 +109,7 @@ namespace Microsoft.Oryx.BuildServer.Tests
                 mockedBuildRepository.Object, mockedArtifactBuilderFactory.Object, mockedBuildRunner.Object);
 
             // Act
-            var buildTest = await testBuildService.MarkFailed(build);
+            var buildTest = await testBuildService.MarkFailedAsync(build);
 
             // Assert
             Assert.NotNull(buildTest);

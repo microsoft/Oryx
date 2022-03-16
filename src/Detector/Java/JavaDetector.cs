@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.Detector.Java
         private readonly ILogger<JavaDetector> _logger;
 
         /// <summary>
-        /// Creates an instance of <see cref="JavaDetector"/>.
+        /// Initializes a new instance of the <see cref="JavaDetector"/> class.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{JavaDetector}"/>.</param>
         public JavaDetector(ILogger<JavaDetector> logger)
