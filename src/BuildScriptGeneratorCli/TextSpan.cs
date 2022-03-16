@@ -4,13 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
     /// An abstraction of a segment of text, characterized by a beginning marker and an ending marker.
-    /// Used by <see cref="Microsoft.Oryx.TextSpanEventLogger"/>.
     /// </summary>
     internal class TextSpan : IEquatable<TextSpan>
     {

@@ -13,9 +13,9 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyVersion>0.2</AssemblyVersion>
     <LangVersion>7.3</LangVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\..\CommonFiles\StyleCop.ruleset</CodeAnalysisRuleSet>
+    <!-- Remove when proper XML documentation is added to the project. -->
+    <DisableDocRequirement>true</DisableDocRequirement>
+    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
@@ -30,10 +30,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Scriban.Signed" Version="1.2.9" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="System.CodeDom" Version="4.5.0" />
     <PackageReference Include="YamlDotNet" Version="9.1.4" />
   </ItemGroup>

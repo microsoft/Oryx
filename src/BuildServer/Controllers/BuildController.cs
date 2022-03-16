@@ -3,13 +3,12 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Oryx.BuildServer.Exceptions;
 using Microsoft.Oryx.BuildServer.Models;
-using Microsoft.Oryx.BuildServer.Respositories;
 using Microsoft.Oryx.BuildServer.Services;
-using System;
-using System.Threading.Tasks;
 
 namespace Microsoft.Oryx.BuildServer.Controllers
 {
@@ -27,37 +26,32 @@ namespace Microsoft.Oryx.BuildServer.Controllers
         // GET api/<Builds>/5
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(Build), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Get(string id)
+        public async Task<IActionResult> GetAsync(string id)
         {
-            var build = await _buildService.GetBuild(id);
+            var build = await _buildService.GetBuildAsync(id);
             if (build == null)
             {
                 return NotFound();
             }
+
             return Ok(build);
         }
 
         // POST api/<Builds>
         [HttpPost]
         [ProducesResponseType(typeof(Build), StatusCodes.Status201Created)]
-        public async Task<IActionResult> Post([FromBody] Build build)
+        public async Task<IActionResult> PostAsync([FromBody] Build build)
         {
             try
             {
-                var createdBuild = await _buildService.StartBuild(build);
-                string uri = String.Format("api/builds/{0}", createdBuild.Id);
+                var createdBuild = await _buildService.StartBuildAsync(build);
+                string uri = string.Format("api/builds/{0}", createdBuild.Id);
                 return Created(uri, createdBuild);
             }
             catch (ServiceException ex)
             {
                 return BadRequest(ex.Message);
             }
-        }
-
-        // PUT api/<Builds>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] Build build)
-        {
         }
     }
 }

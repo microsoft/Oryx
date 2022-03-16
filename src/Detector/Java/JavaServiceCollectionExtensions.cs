@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.Detector
         public static IServiceCollection AddJavaServices(this IServiceCollection services)
         {
             services.AddSingleton<JavaDetector>();
+
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
             Func<IServiceProvider, JavaDetector> factory = (sp) => sp.GetRequiredService<JavaDetector>();

@@ -410,6 +410,35 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return serviceProviderBuilder.Build();
         }
 
+        private static string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)
+        {
+            string commitId = env.GetEnvironmentVariable(ExtVarNames.ScmCommitIdEnvVarName);
+
+            if (string.IsNullOrEmpty(commitId))
+            {
+                using (var timedEvent = logger.LogTimedEvent("GetGitCommitId"))
+                {
+                    commitId = repo.GetGitCommitId();
+                    timedEvent.AddProperty(nameof(commitId), commitId);
+                }
+            }
+
+            return commitId;
+        }
+
+        private static string[] GetEnvVarNames([CanBeNull] IEnvironment env)
+        {
+            var envVarKeyCollection = env?.GetEnvironmentVariables()?.Keys;
+            if (envVarKeyCollection == null)
+            {
+                return Array.Empty<string>();
+            }
+
+            string[] envVarNames = new string[envVarKeyCollection.Count];
+            envVarKeyCollection.CopyTo(envVarNames, 0);
+            return envVarNames;
+        }
+
         private CustomConfigurationSource GetCommandLineConfigSource(
             IDictionary<string, string> buildProperties)
         {
@@ -467,35 +496,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     commandLineConfigSource.Set(key, value);
                 }
             }
-        }
-
-        private string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)
-        {
-            string commitId = env.GetEnvironmentVariable(ExtVarNames.ScmCommitIdEnvVarName);
-
-            if (string.IsNullOrEmpty(commitId))
-            {
-                using (var timedEvent = logger.LogTimedEvent("GetGitCommitId"))
-                {
-                    commitId = repo.GetGitCommitId();
-                    timedEvent.AddProperty(nameof(commitId), commitId);
-                }
-            }
-
-            return commitId;
-        }
-
-        private string[] GetEnvVarNames([CanBeNull] IEnvironment env)
-        {
-            var envVarKeyCollection = env?.GetEnvironmentVariables()?.Keys;
-            if (envVarKeyCollection == null)
-            {
-                return new string[] { };
-            }
-
-            string[] envVarNames = new string[envVarKeyCollection.Count];
-            envVarKeyCollection.CopyTo(envVarNames, 0);
-            return envVarNames;
         }
     }
 }

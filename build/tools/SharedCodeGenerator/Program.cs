@@ -12,7 +12,7 @@ using Microsoft.Oryx.SharedCodeGenerator.Outputs;
 
 namespace Microsoft.Oryx.SharedCodeGenerator
 {
-    public class Program
+    public static class Program
     {
         private const int ArgInput = 0;
         private const int ArgOutputBase = 1;
@@ -34,6 +34,12 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             return GenerateSharedCode(args[ArgInput], args[ArgOutputBase]);
         }
 
+        public static string BuildAutogenDisclaimer(string inputFile)
+        {
+            inputFile = Path.GetFileName(inputFile);
+            return $"This file was auto-generated from '{inputFile}'. Changes may be overridden.";
+        }
+
         private static int GenerateSharedCode(string inputPath, string outputBasePath)
         {
             var inputFiles = inputPath.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(path => path.Trim());
@@ -42,7 +48,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             {
                 if (!File.Exists(inputPath))
                 {
-                    errors.AppendLine($"File {inputFile} does not exist.");
+                    _ = errors.AppendLine($"File {inputFile} does not exist.");
                 }
             }
 
@@ -77,7 +83,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                     var filePath = Path.Combine(outputBasePath, output.GetPath());
                     using (var writer = new StreamWriter(filePath))
                     {
-                        Console.WriteLine("Writing file '{0}'", filePath);
+                        Console.WriteLine($"Writing file '{filePath}'");
                         writer.Write(output.GetContent());
                     }
                 }
@@ -125,12 +131,6 @@ namespace Microsoft.Oryx.SharedCodeGenerator
 
                 sw.Flush();
             }
-        }
-
-        public static string BuildAutogenDisclaimer(string inputFile)
-        {
-            inputFile = Path.GetFileName(inputFile);
-            return $"This file was auto-generated from '{inputFile}'. Changes may be overridden.";
         }
 
         private static void ReplaceVariablesWithValues(IDictionary<string, string> dict)

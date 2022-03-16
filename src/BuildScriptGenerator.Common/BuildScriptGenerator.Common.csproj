@@ -9,9 +9,8 @@
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
     <AssemblyVersion>0.2</AssemblyVersion>
-  </PropertyGroup>
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\..\CommonFiles\StyleCop.ruleset</CodeAnalysisRuleSet>
+    <!-- Remove when proper XML documentation is added to the project. -->
+    <DisableDocRequirement>true</DisableDocRequirement>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
@@ -23,10 +22,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.5" />
     <PackageReference Include="SemanticVersioning" Version="1.2.0" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

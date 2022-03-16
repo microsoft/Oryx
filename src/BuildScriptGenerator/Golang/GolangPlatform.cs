@@ -104,7 +104,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 
             var scriptProps = new GolangBashBuildSnippetProperties
             {
-                GoModExists = goPlatformDetectorResult.GoModExists
+                GoModExists = goPlatformDetectorResult.GoModExists,
             };
 
             string script = TemplateHelper.Render(
@@ -115,7 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
             return new BuildScriptSnippet
             {
                 BashBuildScriptSnippet = script,
-                BuildProperties = buildProperties
+                BuildProperties = buildProperties,
             };
         }
 

@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.Detector
         /// </summary>
         /// <param name="context">The <see cref="DetectorContext"/>.</param>
         /// <returns>An instance of <see cref="PlatformDetectorResult"/> if detection was
-        /// successful, <c>null</c> otherwise</returns>
+        /// successful, <c>null</c> otherwise.</returns>
         PlatformDetectorResult Detect(DetectorContext context);
     }
 }

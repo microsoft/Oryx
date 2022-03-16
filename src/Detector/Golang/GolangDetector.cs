@@ -3,23 +3,23 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.Detector.Golang
 {
     /// <summary>
     /// An implementation of <see cref="IPlatformDetector"/> which detects Go applications.
     /// </summary>
-    class GolangDetector : IGolangPlatformDetector
+    public class GolangDetector : IGolangPlatformDetector
     {
         private readonly ILogger<GolangDetector> _logger;
         private readonly DetectorOptions _options;
 
         /// <summary>
-        /// Creates an instance of <see cref="GolangDetector"/>.
+        /// Initializes a new instance of the <see cref="GolangDetector"/> class.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{GolangDetector}"/>.</param>
         /// <param name="options">The <see cref="DetectorOptions"/>.</param>
@@ -33,6 +33,7 @@ namespace Microsoft.Oryx.Detector.Golang
         {
             string appDirectory = string.Empty;
             var sourceRepo = context.SourceRepo;
+
             // check if go.mod exists
             if (!sourceRepo.FileExists(GolangConstants.GoModFileName))
             {
@@ -40,6 +41,7 @@ namespace Microsoft.Oryx.Detector.Golang
                     $"Could not find {GolangConstants.GoModFileName} in repo");
                 return null;
             }
+
             _logger.LogInformation($"Found {GolangConstants.GoModFileName} at the root of the repo. ");
 
             var version = GetVersion(context);
@@ -61,6 +63,7 @@ namespace Microsoft.Oryx.Detector.Golang
             {
                 return versionFromGoDotMod;
             }
+
             return null;
         }
 
@@ -71,6 +74,7 @@ namespace Microsoft.Oryx.Detector.Golang
                 var goDotModFileContent = context.SourceRepo.ReadFile(GolangConstants.GoModFileName);
                 var goDotModFileContentLines = goDotModFileContent.Split('\n');
                 var sourceRepo = context.SourceRepo;
+
                 // Example content of go.mod:
                 // module myModule
                 //
@@ -92,7 +96,7 @@ namespace Microsoft.Oryx.Detector.Golang
                     Match match = regex.Match(goDotModFileContentLine);
                     if (match.Success)
                     {
-                        // After matching regex is found we trim off 'go' and trailing quotes 
+                        // After matching regex is found we trim off 'go' and trailing quotes
                         // allowing us to only retain the version.
                         // Example: "go 1.16.7" -> 1.16.7
                         return goDotModFileContentLine.Trim().Split(' ')[1].Trim('\"').Trim('\'');
@@ -103,7 +107,7 @@ namespace Microsoft.Oryx.Detector.Golang
             {
                 _logger.LogError(
                     ex,
-                    $"Exception caught while trying to parse {GolangConstants.GoModFileName}." );
+                    $"Exception caught while trying to parse {GolangConstants.GoModFileName}.");
             }
 
             return null;

@@ -22,6 +22,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             _env = env;
         }
 
+        [NotNull]
+        public static IEnumerable<ICheckerMessage> CheckScriptsForGlobalInstallationAttempts(
+            [CanBeNull] IDictionary<string, string> scripts)
+        {
+            if (scripts == null || scripts.Count == 0)
+            {
+                return Enumerable.Empty<ICheckerMessage>();
+            }
+
+            var result = new List<ICheckerMessage>();
+            CheckScript(scripts, "preinstall", result);
+            CheckScript(scripts, "install", result);
+            CheckScript(scripts, "postinstall", result);
+            return result;
+        }
+
         public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
             // Installing packages globally is problematic only in the App Service envelope
@@ -41,28 +57,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools) =>
             Enumerable.Empty<ICheckerMessage>();
 
-        [NotNull]
-        public IEnumerable<ICheckerMessage> CheckScriptsForGlobalInstallationAttempts(
-            [CanBeNull] IDictionary<string, string> scripts)
-        {
-            if (scripts == null || scripts.Count == 0)
-            {
-                return Enumerable.Empty<ICheckerMessage>();
-            }
-
-            var result = new List<ICheckerMessage>();
-            CheckScript(scripts, "preinstall", result);
-            CheckScript(scripts, "install", result);
-            CheckScript(scripts, "postinstall", result);
-            return result;
-        }
-
-        private void CheckScript(IDictionary<string, string> scripts, string scriptKey, List<ICheckerMessage> result)
+        private static void CheckScript(IDictionary<string, string> scripts, string scriptKey, List<ICheckerMessage> result)
         {
             scripts.TryGetValue(scriptKey, out var script);
             if (script != null && NpmGlobalPattern.IsMatch(script))
             {
-                result.Add(new CheckerMessage(string.Format(Resources.Labels.NodePackageGlobalInstallMessageFormat,
+                result.Add(new CheckerMessage(string.Format(
+                    Resources.Labels.NodePackageGlobalInstallMessageFormat,
                     scriptKey)));
             }
         }

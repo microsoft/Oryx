@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.Detector
         public static IServiceCollection AddRubyServices(this IServiceCollection services)
         {
             services.AddSingleton<RubyDetector>();
+
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
             Func<IServiceProvider, RubyDetector> factory = (sp) => sp.GetRequiredService<RubyDetector>();

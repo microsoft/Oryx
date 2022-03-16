@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.Detector.Exceptions
     public class FailedToParseFileException : Exception
     {
         /// <summary>
-        /// Creates an instance of <see cref="FailedToParseFileException"/>.
+        /// Initializes a new instance of the <see cref="FailedToParseFileException"/> class.
         /// </summary>
         /// <param name="filePath">The file whose parsing caused this exception.</param>
         /// <param name="message">The message that describes the error.</param>
@@ -27,4 +27,3 @@ namespace Microsoft.Oryx.Detector.Exceptions
         public string FilePath { get; }
     }
 }
-

@@ -9,17 +9,17 @@ using Microsoft.Extensions.Logging;
 namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     /// <summary>
-    /// Extensions to ASP.NET Core's ILogger
+    /// Extensions to ASP.NET Core's ILogger.
     /// </summary>
     public static class ILoggerExtensions
     {
         /// <summary>
         /// Logs message and the supplied properties. The message must not have formatted strings as they are not processed.
         /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="logLevel"></param>
+        /// <param name="logger">An instance of an <see cref="ILogger"/>.</param>
+        /// <param name="logLevel">The level of logging that should be performed.</param>
         /// <param name="nonFormattedMessage">The message without any formatting strings in it.</param>
-        /// <param name="properties"></param>
+        /// <param name="properties">The entity to be written.</param>
         public static void Log(
             this ILogger logger,
             LogLevel logLevel,

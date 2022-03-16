@@ -61,7 +61,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return _serviceCollection.BuildServiceProvider();
         }
 
-        private LoggingConfiguration BuildNLogConfiguration([CanBeNull] string logPath)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Cannot prematurely dispose of Application insights objects.")]
+        private static LoggingConfiguration BuildNLogConfiguration([CanBeNull] string logPath)
         {
             var config = new LoggingConfiguration();
 

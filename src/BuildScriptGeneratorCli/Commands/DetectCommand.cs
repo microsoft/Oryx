@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        private void PrintTableResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)
+        private static void PrintTableResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)
         {
             var defs = new DefinitionListFormatter();
             if (detectedPlatformResults == null || !detectedPlatformResults.Any())
@@ -136,7 +136,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             console.WriteLine(defs.ToString());
         }
 
-        private void PrintJsonResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)
+        private static void PrintJsonResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)
         {
             if (detectedPlatformResults == null || !detectedPlatformResults.Any())
             {

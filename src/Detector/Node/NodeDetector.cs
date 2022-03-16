@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.CSharp.RuntimeBinder;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
@@ -24,7 +23,7 @@ namespace Microsoft.Oryx.Detector.Node
         private readonly DetectorOptions _options;
 
         /// <summary>
-        /// Creates an instance of <see cref="NodeDetector"/>.
+        /// Initializes a new instance of the <see cref="NodeDetector"/> class.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{NodeDetector}"/>.</param>
         /// <param name="options">The <see cref="DetectorOptions"/>.</param>
@@ -40,7 +39,7 @@ namespace Microsoft.Oryx.Detector.Node
             bool hasLernaJsonFile = false;
             bool hasLageConfigJSFile = false;
             bool hasYarnrcYmlFile = false;
-            bool IsYarnLockFileValidYamlFormat = false;
+            bool isYarnLockFileValidYamlFormat = false;
             string appDirectory = string.Empty;
             string lernaNpmClient = string.Empty;
             var sourceRepo = context.SourceRepo;
@@ -56,19 +55,24 @@ namespace Microsoft.Oryx.Detector.Node
                     $"Could not find {NodeConstants.PackageJsonFileName}/{NodeConstants.PackageLockJsonFileName}" +
                     $"/{NodeConstants.YarnLockFileName} in repo");
             }
+
             if (sourceRepo.FileExists(NodeConstants.YarnrcYmlName))
             {
                 hasYarnrcYmlFile = true;
             }
+
             if (sourceRepo.FileExists(NodeConstants.YarnLockFileName)
-                && IsYarnLockFileYamlFile(sourceRepo, NodeConstants.YarnLockFileName)) {
-                IsYarnLockFileValidYamlFormat = true;
+                && IsYarnLockFileYamlFile(sourceRepo, NodeConstants.YarnLockFileName))
+            {
+                isYarnLockFileValidYamlFormat = true;
             }
+
             if (sourceRepo.FileExists(NodeConstants.LernaJsonFileName))
             {
                 hasLernaJsonFile = true;
                 lernaNpmClient = GetLernaJsonNpmClient(context);
             }
+
             if (sourceRepo.FileExists(NodeConstants.LageConfigJSFileName))
             {
                 hasLageConfigJSFile = true;
@@ -134,11 +138,11 @@ namespace Microsoft.Oryx.Detector.Node
                 HasLageConfigJSFile = hasLageConfigJSFile,
                 LernaNpmClient = lernaNpmClient,
                 HasYarnrcYmlFile = hasYarnrcYmlFile,
-                IsYarnLockFileValidYamlFormat = IsYarnLockFileValidYamlFormat,
+                IsYarnLockFileValidYamlFormat = isYarnLockFileValidYamlFormat,
             };
         }
 
-        private bool IsYarnLockFileYamlFile(ISourceRepo sourceRepo, string filePath)
+        private static bool IsYarnLockFileYamlFile(ISourceRepo sourceRepo, string filePath)
         {
             try
             {
@@ -147,32 +151,16 @@ namespace Microsoft.Oryx.Detector.Node
                     var yamlStream = new YamlStream();
                     yamlStream.Load(reader);
                 }
+
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
         }
 
-        private string GetVersion(DetectorContext context)
-        {
-            var version = GetVersionFromPackageJson(context);
-            if (version != null)
-            {
-                return version;
-            }
-            _logger.LogDebug("Could not get version from package Json.");
-            return null;
-        }
-
-        private string GetVersionFromPackageJson(DetectorContext context)
-        {
-            var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
-            return packageJson?.engines?.node?.Value as string;
-        }
-
-        private dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
+        private static dynamic GetPackageJsonObject(ISourceRepo sourceRepo, ILogger logger)
         {
             dynamic packageJson = null;
             try
@@ -191,10 +179,46 @@ namespace Microsoft.Oryx.Detector.Node
             return packageJson;
         }
 
-        private dynamic ReadJsonObjectFromFile(ISourceRepo sourceRepo, string fileName)
+        private static dynamic ReadJsonObjectFromFile(ISourceRepo sourceRepo, string fileName)
         {
             var jsonContent = sourceRepo.ReadFile(fileName);
             return JsonConvert.DeserializeObject(jsonContent);
+        }
+
+        private static (bool IsWildCardDependency, string WildCardDependencyName) GetWildCardDependency(string dependencyName)
+        {
+            // wild-card dependenciy resolution examples:
+            //      @angular/*  --> Angular
+            //      @remix/*    --> Remix
+            var wildCardDependencies = NodeConstants.WildCardDependencies;
+            int forwardSlashIndex = dependencyName.IndexOf('/');
+            bool isWildCardDependency = forwardSlashIndex > 0 &&
+                wildCardDependencies.ContainsKey(dependencyName.Substring(0, forwardSlashIndex));
+            string wildCardDepencyName = string.Empty;
+            if (isWildCardDependency)
+            {
+                wildCardDepencyName = wildCardDependencies[dependencyName.Substring(0, forwardSlashIndex)];
+            }
+
+            return (isWildCardDependency, wildCardDepencyName);
+        }
+
+        private string GetVersion(DetectorContext context)
+        {
+            var version = GetVersionFromPackageJson(context);
+            if (version != null)
+            {
+                return version;
+            }
+
+            _logger.LogDebug("Could not get version from package Json.");
+            return null;
+        }
+
+        private string GetVersionFromPackageJson(DetectorContext context)
+        {
+            var packageJson = GetPackageJsonObject(context.SourceRepo, _logger);
+            return packageJson?.engines?.node?.Value as string;
         }
 
         private IEnumerable<FrameworkInfo> DetectFrameworkInfos(DetectorContext context)
@@ -207,9 +231,9 @@ namespace Microsoft.Oryx.Detector.Node
 
             // frameworksSet is for preventing duplicates
             var frameworksSet = new HashSet<string>();
-            
+
             // dev-dependencies
-            var devDependencies = packageJson?.devDependencies != null ? packageJson.devDependencies : new string[0];
+            var devDependencies = packageJson?.devDependencies != null ? packageJson.devDependencies : Array.Empty<string>();
             foreach (var dependency in devDependencies)
             {
                 string dependencyName = dependency.Name;
@@ -221,13 +245,14 @@ namespace Microsoft.Oryx.Detector.Node
                 {
                     continue;
                 }
+
                 string frameworkName = isWildCardDependency ? wildCardDependencyName : monitoredDevDependencies[dependencyName];
                 if (!frameworksSet.Contains(frameworkName))
                 {
                     var frameworkInfo = new FrameworkInfo
                     {
                         Framework = frameworkName,
-                        FrameworkVersion = dependency.Value.Value
+                        FrameworkVersion = dependency.Value.Value,
                     };
                     detectedFrameworkResult.Add(frameworkInfo);
                     frameworksSet.Add(frameworkName);
@@ -235,8 +260,9 @@ namespace Microsoft.Oryx.Detector.Node
             }
 
             var monitoredDependencies = NodeConstants.DependencyFrameworkKeyWordToName;
+
             // dependencies
-            var dependencies = packageJson?.dependencies != null ? packageJson.dependencies : new string[0];
+            var dependencies = packageJson?.dependencies != null ? packageJson.dependencies : Array.Empty<string>();
             foreach (var dependency in dependencies)
             {
                 string dependencyName = dependency.Name;
@@ -248,24 +274,26 @@ namespace Microsoft.Oryx.Detector.Node
                 {
                     continue;
                 }
-                string frameworkName = isWildCardDependency ? wildCardDependencyName : monitoredDependencies[dependencyName]; 
+
+                string frameworkName = isWildCardDependency ? wildCardDependencyName : monitoredDependencies[dependencyName];
                 if (!frameworksSet.Contains(frameworkName))
                 {
                     var frameworkInfo = new FrameworkInfo
                     {
                         Framework = frameworkName,
-                        FrameworkVersion = dependency.Value.Value
+                        FrameworkVersion = dependency.Value.Value,
                     };
                     detectedFrameworkResult.Add(frameworkInfo);
                     frameworksSet.Add(frameworkName);
                 }
             }
 
-            if (context.SourceRepo.FileExists(NodeConstants.FlutterYamlFileName)) {
+            if (context.SourceRepo.FileExists(NodeConstants.FlutterYamlFileName))
+            {
                 var frameworkInfo = new FrameworkInfo
                 {
                     Framework = NodeConstants.FlutterFrameworkeName,
-                    FrameworkVersion = string.Empty
+                    FrameworkVersion = string.Empty,
                 };
                 detectedFrameworkResult.Add(frameworkInfo);
             }
@@ -285,23 +313,6 @@ namespace Microsoft.Oryx.Detector.Node
             return detectedFrameworkResult;
         }
 
-        private (bool, string) GetWildCardDependency(string dependencyName)
-        {
-            // wild-card dependenciy resolution examples:
-            //      @angular/*  --> Angular
-            //      @remix/*    --> Remix
-            var wildCardDependencies = NodeConstants.WildCardDependencies;
-            int forwardSlashIndex = dependencyName.IndexOf('/');
-            bool isWildCardDependency = forwardSlashIndex > 0 &&
-                wildCardDependencies.ContainsKey(dependencyName.Substring(0, forwardSlashIndex));
-            string wildCardDepencyName = "";
-            if (isWildCardDependency)
-            {
-                wildCardDepencyName = wildCardDependencies[dependencyName.Substring(0, forwardSlashIndex)];
-            } 
-            return (isWildCardDependency, wildCardDepencyName);
-        }
-
         private string GetLernaJsonNpmClient(DetectorContext context)
         {
             var npmClientName = string.Empty;
@@ -319,7 +330,7 @@ namespace Microsoft.Oryx.Detector.Node
                 }
                 else
                 {
-                    //Default Client for Lerna is npm.
+                    // Default Client for Lerna is npm.
                     npmClientName = NodeConstants.NpmToolName;
                 }
             }
@@ -331,6 +342,7 @@ namespace Microsoft.Oryx.Detector.Node
                     exc,
                     $"Exception caught while trying to deserialize {NodeConstants.LernaJsonFileName.Hash()}");
             }
+
             return npmClientName;
         }
     }

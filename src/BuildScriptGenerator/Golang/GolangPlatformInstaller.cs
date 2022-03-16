@@ -9,7 +9,7 @@ using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 {
-    class GolangPlatformInstaller : PlatformInstallerBase
+    public class GolangPlatformInstaller : PlatformInstallerBase
     {
         public GolangPlatformInstaller(
             IOptions<BuildScriptGeneratorOptions> commonOptions,

@@ -9,8 +9,8 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.Detector.Exceptions;
 using Newtonsoft.Json.Linq;
-using YamlDotNet.RepresentationModel;
 using Tomlyn.Model;
+using YamlDotNet.RepresentationModel;
 
 namespace Microsoft.Oryx.Detector.Hugo
 {
@@ -19,8 +19,6 @@ namespace Microsoft.Oryx.Detector.Hugo
     /// </summary>
     public class HugoDetector : IHugoPlatformDetector
     {
-        private readonly ILogger<HugoDetector> _logger;
-
         internal static readonly string[] HugoConfigurationKeys =
         {
             "archetypeDir",
@@ -33,8 +31,10 @@ namespace Microsoft.Oryx.Detector.Hugo
             "theme",
         };
 
+        private readonly ILogger<HugoDetector> _logger;
+
         /// <summary>
-        /// Creates an instance of <see cref="HugoDetector"/>.
+        /// Initializes a new instance of the <see cref="HugoDetector"/> class.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{HugoDetector}"/>.</param>
         public HugoDetector(ILogger<HugoDetector> logger)

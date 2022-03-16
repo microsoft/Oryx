@@ -1,0 +1,21 @@
+<!--
+This build configuration file will be automatically imported by MSBuild in all projects in the solution, because it's placed in the root directory.
+See https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2019
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- StyleCop/FxCop configuration -->
+  <PropertyGroup>
+    <!--
+    Make sure any documentation comments which are included in code get checked for syntax during the build,
+    but do not report warnings for missing comments.
+    
+    CS1570: ..
+    CS1573: Parameter 'parameter' has no matching param tag in the XML comment for 'parameter' (but other parameters do)
+    CS1591: Missing XML comment for publicly visible type or member 'Type_or_Member'
+    CS1712: Type parameter 'type parameter' has no matching typeparam tag in the XML comment on 'type' (but other type parameters do)
+    -->
+    <NoWarn Condition=" '$(DisableDocRequirement)' == 'true' ">$(NoWarn),1570,1573,1591,1712</NoWarn>
+  </PropertyGroup>
+
+</Project>

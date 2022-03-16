@@ -111,7 +111,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             if (exitCode != ProcessConstants.ExitSuccess)
             {
                 _logger.LogError("Generated run script returned exit code '{exitCode}'", exitCode);
+#pragma warning disable CA2201 // Ignoring generic Exception for backwards-compatibility
                 throw new Exception($"{scriptGenPath} failed");
+#pragma warning restore CA2201
             }
 
             return File.ReadAllText(_tempScriptPath);
