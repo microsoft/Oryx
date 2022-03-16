@@ -26,8 +26,6 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
 
         public static IEnumerable<object[]> PythonPackageExamples => new object[][]
         {
-            new object[] { "boto3", "1.14.44",
-                "https://github.com/boto/boto3.git" },
             new object[] { "botocore", "1.17.44",
                 "https://github.com/boto/botocore.git" },
             new object[] { "pyasn1", "0.4.8",
