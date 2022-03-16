@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node")]
+    [Trait("category", "node-legacyVersions")]
     public class NodeLegacyVersionsEndToEndTests : NodeEndToEndTestsBase
     {
         public NodeLegacyVersionsEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
