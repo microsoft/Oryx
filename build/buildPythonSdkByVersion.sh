@@ -27,8 +27,9 @@ buildPythonfromSource()
        gpgKey=$2
     fi
 
-    wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /python.tar.xz
-    wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /python.tar.xz.asc
+    mkdir -p "tmpFiles"
+    wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /tmpFiles/python.tar.xz
+    wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /tmpFiles/python.tar.xz.asc
 
     PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 
@@ -51,8 +52,8 @@ buildPythonfromSource()
     # Try getting the keys 5 times at most
     /tmp/receiveGpgKeys.sh $gpgKey
 
-    gpg --batch --verify /python.tar.xz.asc /python.tar.xz
-    tar -xJf /python.tar.xz --strip-components=1 -C .
+    gpg --batch --verify /tmpFiles/python.tar.xz.asc /tmpFiles/python.tar.xz
+    tar -xJf /tmpFiles/python.tar.xz --strip-components=1 -C .
 
     INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 
@@ -97,9 +98,9 @@ buildPythonfromSource()
     PYTHON_GET_PIP_SHA256="c518250e91a70d7b20cceb15272209a4ded2a0c263ae5776f129e0d9b5674309"
 
     # Install pip
-    wget "$PYTHON_GET_PIP_URL" -O get-pip.py
+    wget "$PYTHON_GET_PIP_URL" -O /tmpFiles/get-pip.py
 
-    python3 get-pip.py \
+    python3 /tmpFiles/get-pip.py \
         --trusted-host pypi.python.org \
         --trusted-host pypi.org \
         --trusted-host files.pythonhosted.org \
@@ -120,6 +121,10 @@ buildPythonfromSource()
         majorAndMinorParts="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
         ln -s $pythonBinDir/python$majorAndMinorParts $pythonBinDir/python
     fi
+
+    rm -rf /configure* /config.* /*.txt /*.md /*.rst /*.toml /*.m4 /tmpFiles
+    rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
+    rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
 }
 
 getPythonGpgByVersion() {
@@ -153,8 +158,6 @@ IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
 if  [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "10" ]
 then
     buildPythonfromSource $version $pythonVersionGPG
-    pip install --upgrade setuptools pip
-    pip install gunicorn debugpy
 else
     source /tmp/oryx/images/installPlatform.sh python $version --dir /opt/python/$version --links false
 fi
