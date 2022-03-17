@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.Integration.Tests
         /// The pipeline will invoke these integration tests 
         /// on the matching category attribute.
         /// </summary>
-        [Fact, Trait("category", "node-12")]
+        [Fact, Trait("category", "node-12-2")]
         public void PipelineTestInvocationsNode12()
         {
             string nodeVersion = "12";

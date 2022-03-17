@@ -12,7 +12,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node")]
     public class NodeSassExampleTest : NodeEndToEndTestsBase
     {
         public NodeSassExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -29,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         /// The pipeline will invoke these integration tests 
         /// on the matching category attribute.
         /// </summary>
-        [Fact, Trait("category", "node-12")]
+        [Fact, Trait("category", "node-12-4")]
         public void PipelineTestInvocationsNode8()
         {
             string nodeVersion = "12";

@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-12_14_16")]
+    [Trait("category", "node-12-4")]
     public class NodePreRunCommandOrScriptTest : NodeEndToEndTestsBase
     {
         private readonly string RunScriptPath = "/tmp/startup.sh";
