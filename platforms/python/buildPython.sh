@@ -52,7 +52,7 @@ buildPython() {
 			pythonSdkFileName=python-$debianFlavor-$version.tar.gz
 	fi
 
-	if shouldBuildSdk python $pythonSdkFileName || shouldOverwriteSdk || shouldOverwritePythonSdk; then
+	if shouldBuildSdk python $pythonSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk python; then
 		if ! $builtPythonPrereqs; then
 			buildPythonPrereqsImage
 		fi
@@ -81,14 +81,6 @@ buildPython() {
 		getSdkFromImage $imageName "$targetDir"
 		
 		echo "Version=$version" >> "$targetDir/python-$version-metadata.txt"
-	fi
-}
-
-shouldOverwritePythonSdk() {
-	if [ "$OVERWRITE_EXISTING_SDKS_PYTHON" == "true" ]; then
-		return 0
-	else
-		return 1
 	fi
 }
 

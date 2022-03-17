@@ -9,6 +9,7 @@ set -ex
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__sdkStorageConstants.sh
+source $REPO_DIR/platforms/__common.sh
 
 azCopyDir="/tmp/azcopy-tool"
 
@@ -40,7 +41,13 @@ function copyBlob() {
     local platformName="$1"
     local blobName="$2"
 
-    if blobExistsInProd $platformName $blobName; then
+    if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName; then
+        echo
+        echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
+        "$azCopyDir/azcopy" copy \
+            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite
+    elif blobExistsInProd $platformName $blobName; then
         echo
         echo "Blob '$blobName' already exists in Prod storage container '$platformName'. Skipping copying it..."
     else
