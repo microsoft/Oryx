@@ -10,7 +10,7 @@ PIP_CACHE_DIR=/usr/local/share/pip-cache
 COMMAND_MANIFEST_FILE="{{ PythonBuildCommandsFileName }}"
 {{ end }}
 
-echo "Creating directory for command manifest file if it doesnot exist"
+echo "Creating directory for command manifest file if it does not exist"
 mkdir -p "$(dirname "$COMMAND_MANIFEST_FILE")"
 echo "Removing existing manifest file"
 rm -f "$COMMAND_MANIFEST_FILE"
