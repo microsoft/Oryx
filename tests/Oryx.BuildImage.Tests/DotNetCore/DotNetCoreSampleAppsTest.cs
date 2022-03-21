@@ -312,7 +312,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         // This test is necessary once .NET 6 preview 5 come out.
-        [Fact(Skip = "1492709")]
+        [Fact]
         public void Builds_Net6BlazorWasmApp_RunsAOTCompilationInstallCommands()
         {
             // Arrange
@@ -957,9 +957,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(expectedLibrary, actualOutput);
                 },
                 result.GetDebugInfo());
-        }=
+        }
 
-        [Fact(Skip = "1492709")]
+        [Fact]
         public void JamstackImage_CanBuild_Dotnet5_Isolated_apps()
         {
             // Arrange
