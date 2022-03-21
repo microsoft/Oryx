@@ -957,32 +957,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(expectedLibrary, actualOutput);
                 },
                 result.GetDebugInfo());
-        }
-
-        [Fact]
-        public void DotNetCoreSDK31_IsPresentInTheJamStackImage()
-        {
-            // Arrange
-            var versionCommand = "dotnet --version";
-            var expectedVersion = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", versionCommand },
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedVersion, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
+        }=
 
         [Fact(Skip = "1492709")]
         public void JamstackImage_CanBuild_Dotnet5_Isolated_apps()
