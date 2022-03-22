@@ -12,9 +12,6 @@ SYMLINK_DIRECTORY_NAME=""
 if [ -f "$oryxImageDetectorFile" ] && grep -q "vso-focal" "$oryxImageDetectorFile"; then
     echo "image detector file exists, image is vso-focal based.."
     SYMLINK_DIRECTORY_NAME="codespace"
-elif [ -f "$oryxImageDetectorFile" ] && grep -q "jamstack" "$oryxImageDetectorFile"; then                
-    echo "image detector file exists, image is jamstack based.."
-    SYMLINK_DIRECTORY_NAME="jamstack"
 fi
 
 echo "Symlink directory name: $SYMLINK_DIRECTORY_NAME"
@@ -31,7 +28,7 @@ cp -f "$splitSdksDir/lts/ThirdPartyNotices.txt" "$allSdksDir"
 
 function createLinks() {
     local sdkVersion="$1"
-    
+
     installedDir="$splitSdksDir/$sdkVersion"
 
     for x in $(find $installedDir/shared/Microsoft.AspNetCore.App/ -mindepth 1 -maxdepth 1 -type d | cut -c 1-)
@@ -39,7 +36,7 @@ function createLinks() {
        echo "folder: $x"
        linkDest="$allSdksDir/shared/Microsoft.AspNetCore.App/$sdkVersion"
        linkFromParent=$(dirname $linkDest)
-          
+
        mkdir -p "$linkFromParent"
        linkSource="$x"
        ln -sdf $linkSource $linkDest
@@ -50,7 +47,7 @@ function createLinks() {
        echo "directory: $y"
        linkDest="$allSdksDir/shared/Microsoft.NETCore.App/$sdkVersion"
        linkFromParent=$(dirname $linkDest)
-          
+
        mkdir -p "$linkFromParent"
        linkSource="$y"
        ln -sdf $linkSource $linkDest
@@ -61,24 +58,24 @@ function createLinks() {
        echo "folder: $z"
        linkDest="$allSdksDir/host/fxr/$sdkVersion"
        linkFromParent=$(dirname $linkDest)
-          
+
        mkdir -p "$linkFromParent"
        linkSource="$z"
        ln -sdf $linkSource $linkDest
     done
-    
+
     cd "$installedDir"
     # Find directories with the name being a version number like 3.1.0 or 3.1.301
     find . -maxdepth 3 -type d -regex '.*/[0-9]\.[0-9]\.[0-9]+' | while read subPath; do
-    # Trim beginning 2 characters from the line which currently looks like, for example, './sdk/2.2.402'
-	subPath="${subPath:2}"
+        # Trim beginning 2 characters from the line which currently looks like, for example, './sdk/2.2.402'
+        subPath="${subPath:2}"
         linkFrom="$allSdksDir/$subPath"
 
         linkFromParentDir=$(dirname $linkFrom)
         mkdir -p "$linkFromParentDir"
 
         linkTo="$installedDir/$subPath"
-        
+
         if [ -L ${linkTo} ] ; then
             if [ -e ${linkTo} ] ; then
                 echo "$linkTo already exists"
@@ -95,13 +92,13 @@ function createLinks() {
     # Find directories with the name having a preview version number like 3.0.100-preview.3.21202.5
     find . -maxdepth 2 -type d -regex '.*/[0-9]\.[0-9]\.[0-9]+.*' | while read subPath; do
         subPath="${subPath:2}"
-        
+
         linkFrom="$allSdksDir/$subPath"
         linkFromParentDir=$(dirname $linkFrom)
         mkdir -p "$linkFromParentDir"
 
         linkTo="$installedDir/$subPath"
-        
+
         if [ -L ${linkTo} ] ; then
             if [ -e ${linkTo} ] ; then
                 echo "$linkTo already exists"

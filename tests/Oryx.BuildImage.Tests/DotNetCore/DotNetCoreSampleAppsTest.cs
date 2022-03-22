@@ -312,7 +312,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         // This test is necessary once .NET 6 preview 5 come out.
-        [Fact(Skip = "1492709")]
+        [Fact]
         public void Builds_Net6BlazorWasmApp_RunsAOTCompilationInstallCommands()
         {
             // Arrange
@@ -321,7 +321,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddCommand("dotnet nuget add source https://pkgs.dev.azure.com/dnceng/public/_packaging/6.0.100-rtm.21527.11-shipping/nuget/v3/index.json")
                 .AddBuildCommand(
                 $"{appDir} --platform dotnet " +
                 $"--platform-version 6")
@@ -777,7 +776,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.417"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -959,36 +958,89 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        /// <summary>
+        /// Tests that a v3 Azure Function app targeting .NET Core 3.1 can be built with the Jamstack image.
+        /// </summary>
+        /// <remarks>Find supported Azure Function app target frameworks here: https://docs.microsoft.com/en-us/azure/static-web-apps/apis</remarks>
         [Fact]
-        public void DotNetCoreSDK31_IsPresentInTheJamStackImage()
+        public void JamstackImage_CanBuild_NetCore31_V3Functions_apps()
         {
             // Arrange
-            var versionCommand = "dotnet --version";
-            var expectedVersion = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
+            var appName = "DotNetCore_HttpTriggerV3Sample";
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "azureFunctionsApps", appName));
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/dotnetcore-functions-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", versionCommand },
+                CommandArguments = new[] { "-c", script }
             });
 
             // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
             RunAsserts(
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedVersion, actualOutput);
                 },
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "1492709")]
-        public void JamstackImage_CanBuild_Dotnet5_Isolated_apps()
+        /// <summary>
+        /// Tests that a v4 Azure Function app targeting .NET 6.0 can be built with the Jamstack image.
+        /// </summary>
+        /// <remarks>Find supported Azure Function app target frameworks here: https://docs.microsoft.com/en-us/azure/static-web-apps/apis</remarks>
+        [Fact]
+        public void JamstackImage_CanBuild_Dotnet6_V4Functions_apps()
         {
             // Arrange
-            var appName = "NetCore50IsolatedApp";
+            var appName = "DotNetCore_HttpTriggerV4Sample";
+            var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "azureFunctionsApps", appName));
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/dotnetcore-functions-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        /// <summary>
+        /// Tests that a v4 isolated Azure Function app targeting .NET 6 can be built with the Jamstack image.
+        /// </summary>
+        /// <remarks>Find supported Azure Function app target frameworks here: https://docs.microsoft.com/en-us/azure/static-web-apps/apis</remarks>
+        [Fact]
+        public void JamstackImage_CanBuild_Dotnet6_Isolated_apps()
+        {
+            // Arrange
+            var appName = "NetCore60IsolatedApp";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/isolatedapp-output";
