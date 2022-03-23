@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-12-6")]
+    [Trait("category", "node-12-8")]
     public class NodeTestUsingZippedNodeModules : NodeEndToEndTestsBase
     {
         public NodeTestUsingZippedNodeModules(ITestOutputHelper output, TestTempDirTestFixture fixture)
