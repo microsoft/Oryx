@@ -4,7 +4,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
-namespace netcore50isolatedapp
+namespace netcore60isolatedapp
 {
     public static class HttpTrigger
     {

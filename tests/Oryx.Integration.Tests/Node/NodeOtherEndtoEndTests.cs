@@ -532,8 +532,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        [Trait("category", "node-12-5")]
+        [Fact(Skip = "bug: 1505700")] 
+        // [Trait("category", "node-12-5")]
         public async Task Node_SoundCloudNgrxApp()
         {
             // Arrange

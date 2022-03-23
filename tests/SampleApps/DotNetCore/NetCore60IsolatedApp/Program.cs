@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Azure.Functions.Worker.Configuration;
 
-namespace netcore50isolatedapp
+namespace netcore60isolatedapp
 {
     public class Program
     {
