@@ -46,7 +46,7 @@ stages:
       displayName: Security
       condition: succeeded()
       pool:
-        name: Hosted VS2017
+        name: windows-2022
       steps:
       - template: templates/_securityChecks.yml
 
