@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
+        [Theory(Skip = "bug: 1505700 may be intermittent")]
         [InlineData("latest")]
         [InlineData("github-actions")]
         public async Task NodeApp_MySqlDB(string imageTag)
