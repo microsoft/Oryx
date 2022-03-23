@@ -38,7 +38,8 @@ stages:
       displayName: Security
       condition: succeeded()
       pool:
-        name: windows-2022
+        name: Azure Pipelines
+        vmImage: windows-2022
       steps:
       - template: templates/_securityChecks.yml
 

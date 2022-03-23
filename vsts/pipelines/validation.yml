@@ -9,7 +9,8 @@ jobs:
 - job: Job_Security
   displayName: Security
   pool:
-    name: windows-2022
+    name: Azure Pipelines
+    vmImage: windows-2022
   steps:
   - template: templates/_securityChecks.yml
 
