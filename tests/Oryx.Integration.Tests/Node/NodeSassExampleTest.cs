@@ -19,32 +19,9 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        /// <summary>
-        /// IMPORTANT:
-        /// New tests should be included in a corresponding
-        /// method with attribute:
-        ///     [Fact, Trait("category", "<platform>-<version>")]
-        ///
-        /// The pipeline will invoke these integration tests 
-        /// on the matching category attribute.
-        /// </summary>
-        [Fact, Trait("category", "node-12-5")]
-        public void PipelineTestInvocationsNode8()
-        {
-            string nodeVersion = "12";
-            Test_NodeSassExample(nodeVersion);
-        }
-
-        [Fact, Trait("category", "node-14")]
-        public void PipelineTestInvocationsNode14()
-        {
-            string nodeVersion = "14";
-            Test_NodeSassExample(nodeVersion);
-        }
-
         [Theory]
-        [InlineData("12")]
-        [InlineData("14")]
+        [InlineData("12"), Trait("category", "node-12-5")]
+        [InlineData("14"), Trait("category", "node-14")]
         public async Task Test_NodeSassExample(string nodeVersion)
         {
             // Arrange

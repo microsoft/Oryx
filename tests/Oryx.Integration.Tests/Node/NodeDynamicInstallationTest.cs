@@ -22,34 +22,9 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        /// <summary>
-        /// IMPORTANT:
-        /// New tests should be included in a corresponding
-        /// method with attribute:
-        ///     [Fact, Trait("category", "<platform>-<version>")]
-        ///
-        /// The pipeline will invoke these integration tests 
-        /// on the matching category attribute.
-        /// </summary>
-        [Fact, Trait("category", "node-12-2")]
-        public void PipelineTestInvocationsNode12()
-        {
-            string nodeVersion = "12";
-            CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(nodeVersion);
-            CanBuildAndRunApp_UsingScriptCommand(nodeVersion);
-        }
-
-        [Fact, Trait("category", "node-14")]
-        public void PipelineTestInvocationsNode14()
-        {
-            string nodeVersion = "14";
-            CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(nodeVersion);
-            CanBuildAndRunApp_UsingScriptCommand(nodeVersion);
-        }
-
         [Theory]
-        [InlineData(NodeVersions.Node12Version)]
-        [InlineData(NodeVersions.Node14Version)]
+        [InlineData(NodeVersions.Node12Version), Trait("category", "node-12-2")]
+        [InlineData(NodeVersions.Node14Version), Trait("category", "node-14")]
         public async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(string nodeVersion)
         {
             // Arrange
@@ -98,8 +73,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData(NodeVersions.Node12Version)]
-        [InlineData(NodeVersions.Node14Version)]
+        [InlineData(NodeVersions.Node12Version), Trait("category", "node-12-2")]
+        [InlineData(NodeVersions.Node14Version), Trait("category", "node-14")]
         public async Task CanBuildAndRunApp_UsingScriptCommand(string nodeVersion)
         {
             // Arrange

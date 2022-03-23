@@ -22,59 +22,10 @@ namespace Microsoft.Oryx.Integration.Tests
 
         public const int PortInContainer = 4200;
 
-        /// <summary>
-        /// IMPORTANT:
-        /// New tests should be included in a corresponding
-        /// method with attribute:
-        ///     [Fact, Trait("category", "<platform>-<version>")]
-        ///
-        /// The pipeline will invoke these integration tests 
-        /// on the matching category attribute.
-        /// </summary>
-        [Fact, Trait("category", "node-8")]
-        public void PipelineTestInvocationsNode8()
-        {
-            string nodeVersion = "8";
-            CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(nodeVersion);
-            CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InRoot_WithoutCompression(nodeVersion);
-        }
-
-        [Fact, Trait("category", "node-9.4")]
-        public void PipelineTestInvocationsNode94()
-        {
-            string nodeVersion = "9.4";
-            CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(nodeVersion);
-            CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InAppDir_WithoutCompression(nodeVersion);
-        }
-
-        [Fact, Trait("category", "node-10")]
-        public void PipelineTestInvocationsNode10()
-        {
-            string nodeVersion = "10";
-            CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion);
-            CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(nodeVersion);
-            CanBuildAndRun_Angular8App_NodeModules_Dir_Exists_InRoot_WithoutCompression(nodeVersion);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InRoot_UsingCompression(nodeVersion);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InRoot_UsingCompression(nodeVersion);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion);
-        }
-
-        [Fact, Trait("category", "node-12")]
-        public void PipelineTestInvocationsNode12()
-        {
-            string nodeVersion = "12";
-            CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion);
-            CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(nodeVersion);
-            CanBuildAndRun_Angular8App_NodeModules_SymLink_Exists_InRoot_WithoutCompression(nodeVersion);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompression(nodeVersion);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression(nodeVersion);
-            CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(nodeVersion);
-        }
-
         // Official Node.js version that is supported by Angular CLI 6.0+ is 8.9 or greater
         [Theory]
-        [InlineData("8")]
-        [InlineData("9.4")]
+        [InlineData("8"), Trait("category", "node-8")]
+        [InlineData("9.4"), Trait("category", "node-9")]
         public async Task CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -119,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8")]
+        [InlineData("8"), Trait("category", "node-8")]
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
             // Arrange
@@ -188,7 +139,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("9.4")]
+        [InlineData("9.4"), Trait("category", "node-9.4")]
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InAppDir_WithoutCompression(string nodeVersion)
         {
             // Arrange
@@ -257,7 +208,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8")]
+        [InlineData("8"), Trait("category", "node-8")]
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
             // Arrange
@@ -327,7 +278,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("9.4")]
+        [InlineData("9.4"), Trait("category", "node-9.4")]
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InAppDir_WithoutCompression(string nodeVersion)
         {
             // Arrange
@@ -397,7 +348,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8")]
+        [InlineData("8"), Trait("category", "node-8")]
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_Dir_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
             // Arrange
@@ -478,7 +429,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("9.4")]
+        [InlineData("9.4"), Trait("category", "node-9.4")]
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_SymLink_Exists_InRootDir_UsingCompression(string nodeVersion)
         {
             // Arrange
@@ -560,8 +511,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12")]
-        [InlineData("10")]
+        [InlineData("12"), Trait("category", "node-12")]
+        [InlineData("10"), Trait("category", "node-10")]
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -609,8 +560,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
         // Official Node.js version that is supported by Angular CLI 8.0+ is 10.9 or greater
         [Theory]
-        [InlineData("10")]
-        [InlineData("12")]
+        [InlineData("10"), Trait("category", "node-10")]
+        [InlineData("12"), Trait("category", "node-12")]
         public async Task CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -655,7 +606,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("10")]
+        [InlineData("10"), Trait("category", "node-10")]
         public async Task CanBuildAndRun_Angular8App_NodeModules_Dir_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
             // Arrange
@@ -733,7 +684,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12")]
+        [InlineData("12"), Trait("category", "node-12")]
         public async Task CanBuildAndRun_Angular8App_NodeModules_SymLink_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
             // Arrange
@@ -804,7 +755,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("10")]
+        [InlineData("10"), Trait("category", "node-10")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InRoot_UsingCompression(string nodeVersion)
         {
             // Arrange
@@ -884,7 +835,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12")]
+        [InlineData("12"), Trait("category", "node-12")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
             // Arrange
@@ -963,7 +914,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("10")]
+        [InlineData("10"), Trait("category", "node-10")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InRoot_UsingCompression(string nodeVersion)
         {
             // Arrange
@@ -1044,7 +995,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12")]
+        [InlineData("12"), Trait("category", "node-12")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
             // Arrange
@@ -1126,8 +1077,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("10")]
-        [InlineData("12")]
+        [InlineData("10"), Trait("category", "node-10")]
+        [InlineData("12"), Trait("category", "node-12")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
             // Arrange
