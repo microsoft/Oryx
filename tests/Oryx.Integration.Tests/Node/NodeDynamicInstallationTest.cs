@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData(NodeVersions.Node12Version), Trait("category", "node-12-2")]
+        [InlineData(NodeVersions.Node12Version), Trait("category", "node-12-3")]
         [InlineData(NodeVersions.Node14Version), Trait("category", "node-14")]
         public async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(string nodeVersion)
         {
@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData(NodeVersions.Node12Version), Trait("category", "node-12-2")]
+        [InlineData(NodeVersions.Node12Version), Trait("category", "node-12-3")]
         [InlineData(NodeVersions.Node14Version), Trait("category", "node-14")]
         public async Task CanBuildAndRunApp_UsingScriptCommand(string nodeVersion)
         {

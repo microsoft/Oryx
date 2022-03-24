@@ -995,7 +995,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12"), Trait("category", "node-12")]
+        [InlineData("12"), Trait("category", "node-12-2")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
             // Arrange
@@ -1078,7 +1078,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("10"), Trait("category", "node-10")]
-        [InlineData("12"), Trait("category", "node-12")]
+        [InlineData("12"), Trait("category", "node-12-2")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
             // Arrange
