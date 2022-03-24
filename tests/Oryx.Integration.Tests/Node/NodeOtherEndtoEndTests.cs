@@ -525,7 +525,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
+        [Fact(Skip = "bug: 1505700")]
         public async Task Node_SoundCloudNgrxApp()
         {
             // Arrange

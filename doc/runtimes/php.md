@@ -59,7 +59,10 @@ The following PHP extensions are installed & enabled in the runtime images:
 
 # Detect
 
-The PHP toolset is run when a `composer.json` file exists in the root of the repository.
+The PHP toolset will run when the following conditions are met:
+1. `composer.json` file exists in the root of the repository.
+
+2. Files with `.php` extension in root of repository or in any sub-directories.
 
 # Build
 
