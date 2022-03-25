@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         // Official Node.js version that is supported by Angular CLI 6.0+ is 8.9 or greater
         [Theory]
         [InlineData("8"), Trait("category", "node-8")]
-        [InlineData("9.4"), Trait("category", "node-9")]
+        [InlineData("9.4"), Trait("category", "node-9.4")]
         public async Task CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(string nodeVersion)
         {
             // Arrange
