@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaulTempDirectoryProvider : ITempDirectoryProvider
     {
-        private readonly string _path;
+        private readonly string path;
 
         public DefaulTempDirectoryProvider()
         {
@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // Example structure:
             // /tmp/BuildScriptGenerator/guid1
             // /tmp/BuildScriptGenerator/guid2
-            _path = Path.Combine(
+            this.path = Path.Combine(
                 Path.GetTempPath(),
                 nameof(BuildScriptGenerator),
                 Guid.NewGuid().ToString("N"));
@@ -27,8 +27,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string GetTempDirectory()
         {
             // Ensure the temp directory is created
-            Directory.CreateDirectory(_path);
-            return _path;
+            Directory.CreateDirectory(this.path);
+            return this.path;
         }
     }
 }

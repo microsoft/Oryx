@@ -12,11 +12,11 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
 {
     public class ArtifactBuilder : IArtifactBuilder
     {
-        private readonly ILogger<ArtifactBuilder> _logger;
+        private readonly ILogger<ArtifactBuilder> logger;
 
         public ArtifactBuilder(ILogger<ArtifactBuilder> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         public bool Build(Build build)
@@ -44,8 +44,8 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
             try
             {
                 process.Start();
-                _logger.LogInformation($"Process has started for command: {cmd}");
-                var outputHandler = new FileOutputHandler(new StreamWriter(logFilePath), _logger);
+                this.logger.LogInformation($"Process has started for command: {cmd}");
+                var outputHandler = new FileOutputHandler(new StreamWriter(logFilePath), this.logger);
                 process.OutputDataReceived += outputHandler.Handle;
                 process.ErrorDataReceived += outputHandler.Handle;
                 process.BeginOutputReadLine();

@@ -17,31 +17,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public class LocalSourceRepo : ISourceRepo
     {
-        private readonly ILogger<LocalSourceRepo> _logger;
+        private readonly ILogger<LocalSourceRepo> logger;
 
         public LocalSourceRepo(string sourceDirectory)
         {
-            RootPath = sourceDirectory;
-            _logger = NullLogger<LocalSourceRepo>.Instance;
+            this.RootPath = sourceDirectory;
+            this.logger = NullLogger<LocalSourceRepo>.Instance;
         }
 
         public LocalSourceRepo(string sourceDirectory, ILoggerFactory loggerFactory)
         {
-            RootPath = sourceDirectory;
-            _logger = loggerFactory.CreateLogger<LocalSourceRepo>();
+            this.RootPath = sourceDirectory;
+            this.logger = loggerFactory.CreateLogger<LocalSourceRepo>();
         }
 
         public string RootPath { get; }
 
         public bool FileExists(params string[] paths)
         {
-            var path = ResolvePath(paths);
+            var path = this.ResolvePath(paths);
             return File.Exists(path);
         }
 
         public bool DirExists(params string[] paths)
         {
-            var path = ResolvePath(paths);
+            var path = this.ResolvePath(paths);
             return Directory.Exists(path);
         }
 
@@ -49,21 +49,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             if (searchSubDirectories)
             {
-                return RootPath.SafeEnumerateFiles(searchPattern);
+                return this.RootPath.SafeEnumerateFiles(searchPattern);
             }
 
-            return Directory.EnumerateFiles(RootPath, searchPattern);
+            return Directory.EnumerateFiles(this.RootPath, searchPattern);
         }
 
         public string ReadFile(params string[] paths)
         {
-            var path = ResolvePath(paths);
+            var path = this.ResolvePath(paths);
             return File.ReadAllText(path);
         }
 
         public string[] ReadAllLines(params string[] paths)
         {
-            var path = ResolvePath(paths);
+            var path = this.ResolvePath(paths);
             return File.ReadAllLines(path);
         }
 
@@ -78,20 +78,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 (exitCode, output, error) = ProcessHelper.RunProcess(
                     "git",
                     new string[] { "rev-parse", "HEAD" },
-                    RootPath,
+                    this.RootPath,
                     TimeSpan.FromSeconds(5));
             }
             catch (Exception ex)
             {
                 // Ignore any exceptions as we do not want them to bubble up to end user as this functionality
                 // is not required for the build to work.
-                _logger.LogError(ex, "An error occurred while trying to get commit ID from repo");
+                this.logger.LogError(ex, "An error occurred while trying to get commit ID from repo");
                 return null;
             }
 
             if (exitCode != 0)
             {
-                _logger.LogWarning(
+                this.logger.LogWarning(
                     "Could not get commit ID from repo. " +
                     "Exit code: {exitCode}, Output: {stdOut}, Error: {stdErr}",
                     exitCode,
@@ -106,7 +106,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private string ResolvePath(params string[] paths)
         {
             var filePathInRepo = Path.Combine(paths);
-            return Path.Combine(RootPath, filePathInRepo);
+            return Path.Combine(this.RootPath, filePathInRepo);
         }
     }
 }

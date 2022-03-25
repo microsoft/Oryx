@@ -20,8 +20,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             ILoggerFactory loggerFactory)
         {
-            CommonOptions = commonOptions.Value;
-            Logger = loggerFactory.CreateLogger(GetType());
+            this.CommonOptions = commonOptions.Value;
+            this.Logger = loggerFactory.CreateLogger(this.GetType());
         }
 
         protected BuildScriptGeneratorOptions CommonOptions { get; }
@@ -33,12 +33,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string version,
             string directoryToInstall = null)
         {
-            var sdkStorageBaseUrl = GetPlatformBinariesStorageBaseUrl();
+            var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
 
             var versionDirInTemp = directoryToInstall;
             if (string.IsNullOrEmpty(versionDirInTemp))
             {
-                versionDirInTemp = Path.Combine(CommonOptions.DynamicInstallRootDir, platformName, version);
+                versionDirInTemp = Path.Combine(this.CommonOptions.DynamicInstallRootDir, platformName, version);
             }
 
             var tarFile = $"{version}.tar.gz";
@@ -132,7 +132,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var versionsFromDisk = VersionProviderHelper.GetVersionsFromDirectory(builtInDir);
             if (HasVersion(versionsFromDisk))
             {
-                Logger.LogDebug(
+                this.Logger.LogDebug(
                     "Version {version} is already installed at directory {installationDir}",
                     lookupVersion,
                     builtInDir);
@@ -153,7 +153,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (File.Exists(sentinelFile))
                 {
-                    Logger.LogDebug(
+                    this.Logger.LogDebug(
                         "Version {version} is already installed at directory {installationDir}",
                         lookupVersion,
                         dynamicInstallDir);
@@ -161,7 +161,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     return true;
                 }
 
-                Logger.LogDebug(
+                this.Logger.LogDebug(
                     "Directory for version {version} was already found at directory {installationDir}, " +
                     "but sentinel file {sentinelFile} was not found.",
                     lookupVersion,
@@ -169,7 +169,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     SdkStorageConstants.SdkDownloadSentinelFileName);
             }
 
-            Logger.LogDebug(
+            this.Logger.LogDebug(
                 "Version {version} was not found to be installed at {builtInDir} or {dynamicInstallDir}",
                 lookupVersion,
                 builtInDir,
@@ -186,7 +186,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         private string GetPlatformBinariesStorageBaseUrl()
         {
-            var platformBinariesStorageBaseUrl = CommonOptions.OryxSdkStorageBaseUrl;
+            var platformBinariesStorageBaseUrl = this.CommonOptions.OryxSdkStorageBaseUrl;
             if (string.IsNullOrEmpty(platformBinariesStorageBaseUrl))
             {
                 throw new InvalidOperationException(

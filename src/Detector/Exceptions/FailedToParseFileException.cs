@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Detector.Exceptions
         public FailedToParseFileException(string filePath, string message, Exception innerException)
             : base(message, innerException)
         {
-            FilePath = filePath;
+            this.FilePath = filePath;
         }
 
         public string FilePath { get; }

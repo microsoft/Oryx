@@ -20,15 +20,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public virtual string GetInstallerScriptSnippet(string version)
         {
-            return GetInstallerScriptSnippet(PythonConstants.PlatformName, version);
+            return this.GetInstallerScriptSnippet(PythonConstants.PlatformName, version);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)
         {
-            return IsVersionInstalled(
+            return this.IsVersionInstalled(
                 version,
                 builtInDir: PythonConstants.InstalledPythonVersionsDir,
-                dynamicInstallDir: Path.Combine(CommonOptions.DynamicInstallRootDir, PythonConstants.PlatformName));
+                dynamicInstallDir: Path.Combine(this.CommonOptions.DynamicInstallRootDir, PythonConstants.PlatformName));
         }
     }
 }

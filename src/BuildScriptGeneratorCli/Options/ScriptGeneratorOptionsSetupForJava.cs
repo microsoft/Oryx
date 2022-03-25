@@ -22,8 +22,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
         public void Configure(ScriptGeneratorOptionsForJava options)
         {
-            options.JavaVersion = GetStringValue(SettingsKeys.JavaVersion);
-            options.MavenVersion = GetStringValue(SettingsKeys.MavenVersion);
+            options.JavaVersion = this.GetStringValue(SettingsKeys.JavaVersion);
+            options.MavenVersion = this.GetStringValue(SettingsKeys.MavenVersion);
         }
     }
 }

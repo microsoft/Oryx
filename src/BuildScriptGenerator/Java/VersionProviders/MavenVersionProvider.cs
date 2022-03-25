@@ -10,11 +10,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 {
     internal class MavenVersionProvider : IMavenVersionProvider
     {
-        private readonly BuildScriptGeneratorOptions _options;
-        private readonly MavenOnDiskVersionProvider _onDiskVersionProvider;
-        private readonly MavenSdkStorageVersionProvider _sdkStorageVersionProvider;
-        private readonly ILogger<JavaVersionProvider> _logger;
-        private PlatformVersionInfo _versionInfo;
+        private readonly BuildScriptGeneratorOptions options;
+        private readonly MavenOnDiskVersionProvider onDiskVersionProvider;
+        private readonly MavenSdkStorageVersionProvider sdkStorageVersionProvider;
+        private readonly ILogger<JavaVersionProvider> logger;
+        private PlatformVersionInfo versionInfo;
 
         public MavenVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
@@ -22,25 +22,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             MavenSdkStorageVersionProvider sdkStorageVersionProvider,
             ILogger<JavaVersionProvider> logger)
         {
-            _options = options.Value;
-            _onDiskVersionProvider = onDiskVersionProvider;
-            _sdkStorageVersionProvider = sdkStorageVersionProvider;
-            _logger = logger;
+            this.options = options.Value;
+            this.onDiskVersionProvider = onDiskVersionProvider;
+            this.sdkStorageVersionProvider = sdkStorageVersionProvider;
+            this.logger = logger;
         }
 
         public PlatformVersionInfo GetVersionInfo()
         {
-            if (_versionInfo == null)
+            if (this.versionInfo == null)
             {
-                if (_options.EnableDynamicInstall)
+                if (this.options.EnableDynamicInstall)
                 {
-                    return _sdkStorageVersionProvider.GetVersionInfo();
+                    return this.sdkStorageVersionProvider.GetVersionInfo();
                 }
 
-                _versionInfo = _onDiskVersionProvider.GetVersionInfo();
+                this.versionInfo = this.onDiskVersionProvider.GetVersionInfo();
             }
 
-            return _versionInfo;
+            return this.versionInfo;
         }
     }
 }

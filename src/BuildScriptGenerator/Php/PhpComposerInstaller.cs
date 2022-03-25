@@ -23,15 +23,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public virtual string GetInstallerScriptSnippet(string version)
         {
-            return GetInstallerScriptSnippet(platformName: "php-composer", version);
+            return this.GetInstallerScriptSnippet(platformName: "php-composer", version);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)
         {
-            return IsVersionInstalled(
+            return this.IsVersionInstalled(
                 version,
                 builtInDir: PhpConstants.InstalledPhpComposerVersionDir,
-                dynamicInstallDir: Path.Combine(CommonOptions.DynamicInstallRootDir, "php-composer"));
+                dynamicInstallDir: Path.Combine(this.CommonOptions.DynamicInstallRootDir, "php-composer"));
         }
     }
 }

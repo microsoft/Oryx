@@ -16,41 +16,41 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
     {
         private static Template outputTemplate = CreateOutputTemplate();
 
-        private ConstantCollection _collection;
-        private string _className;
-        private string _directory;
-        private string _namespace;
-        private string _scope;
+        private ConstantCollection collection;
+        private string className;
+        private string directory;
+        private string namespaceProperty;
+        private string scope;
 
         public void Initialize(ConstantCollection constantCollection, Dictionary<string, string> typeInfo)
         {
-            _collection = constantCollection;
-            _className = _collection.Name.Camelize();
-            _directory = typeInfo["directory"];
-            _namespace = typeInfo["namespace"];
-            typeInfo.TryGetValue("scope", out _scope);
+            this.collection = constantCollection;
+            this.className = this.collection.Name.Camelize();
+            this.directory = typeInfo["directory"];
+            this.namespaceProperty = typeInfo["namespace"];
+            typeInfo.TryGetValue("scope", out this.scope);
         }
 
         public string GetPath()
         {
-            return Path.Combine(_directory, _className + ".cs");
+            return Path.Combine(this.directory, this.className + ".cs");
         }
 
         public string GetContent()
         {
             var scope = "public";
-            if (!string.IsNullOrEmpty(_scope))
+            if (!string.IsNullOrEmpty(this.scope))
             {
-                scope = _scope;
+                scope = this.scope;
             }
 
             var model = new ConstantCollectionTemplateModel
             {
-                AutogenDisclaimer = Program.BuildAutogenDisclaimer(_collection.SourcePath),
-                Namespace = _namespace,
-                Name = _className,
+                AutogenDisclaimer = Program.BuildAutogenDisclaimer(this.collection.SourcePath),
+                Namespace = this.namespaceProperty,
+                Name = this.className,
                 Scope = scope,
-                Constants = _collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
+                Constants = this.collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
             };
 
             return outputTemplate.Render(model, member => member.Name);

@@ -24,13 +24,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     internal class DefaultBuildScriptGenerator : IBuildScriptGenerator
     {
-        private readonly BuildScriptGeneratorOptions _cliOptions;
-        private readonly ICompatiblePlatformDetector _compatiblePlatformDetector;
-        private readonly DefaultPlatformsInformationProvider _platformsInformationProvider;
-        private readonly PlatformsInstallationScriptProvider _environmentSetupScriptProvider;
-        private readonly IEnumerable<IChecker> _checkers;
-        private readonly ILogger<DefaultBuildScriptGenerator> _logger;
-        private readonly IStandardOutputWriter _writer;
+        private readonly BuildScriptGeneratorOptions cliOptions;
+        private readonly ICompatiblePlatformDetector compatiblePlatformDetector;
+        private readonly DefaultPlatformsInformationProvider platformsInformationProvider;
+        private readonly PlatformsInstallationScriptProvider environmentSetupScriptProvider;
+        private readonly IEnumerable<IChecker> checkers;
+        private readonly ILogger<DefaultBuildScriptGenerator> logger;
+        private readonly IStandardOutputWriter writer;
 
         public DefaultBuildScriptGenerator(
             DefaultPlatformsInformationProvider platformsInformationProvider,
@@ -41,14 +41,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             ILogger<DefaultBuildScriptGenerator> logger,
             IStandardOutputWriter writer)
         {
-            _platformsInformationProvider = platformsInformationProvider;
-            _environmentSetupScriptProvider = environmentSetupScriptProvider;
-            _cliOptions = cliOptions.Value;
-            _compatiblePlatformDetector = compatiblePlatformDetector;
-            _logger = logger;
-            _checkers = checkers;
-            _writer = writer;
-            _logger.LogDebug("Available checkers: {checkerCount}", _checkers?.Count() ?? 0);
+            this.platformsInformationProvider = platformsInformationProvider;
+            this.environmentSetupScriptProvider = environmentSetupScriptProvider;
+            this.cliOptions = cliOptions.Value;
+            this.compatiblePlatformDetector = compatiblePlatformDetector;
+            this.logger = logger;
+            this.checkers = checkers;
+            this.writer = writer;
+            this.logger.LogDebug("Available checkers: {checkerCount}", this.checkers?.Count() ?? 0);
         }
 
         public void GenerateBashScript(
@@ -67,9 +67,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // install both these platforms' sdks before actually using any of their commands. So even though a user
             // of Oryx might explicitly supply the platform of the app as .NET Core, we still need to make sure the
             // build environment is setup with detected platforms' sdks.
-            var platformInfos = _platformsInformationProvider.GetPlatformsInfo(context);
+            var platformInfos = this.platformsInformationProvider.GetPlatformsInfo(context);
             var detectionResults = platformInfos.Select(pi => pi.DetectorResult);
-            var installationScript = _environmentSetupScriptProvider.GetBashScriptSnippet(
+            var installationScript = this.environmentSetupScriptProvider.GetBashScriptSnippet(
                 context,
                 detectionResults);
 
@@ -84,19 +84,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     if (!string.IsNullOrEmpty(
                         Environment.GetEnvironmentVariable(toolNameAndVersion.Key)))
                     {
-                        _logger.LogInformation($"If {toolNameAndVersion.Key} is set as environment, it'll be not be set via benv");
+                        this.logger.LogInformation($"If {toolNameAndVersion.Key} is set as environment, it'll be not be set via benv");
                     }
                     else
                     {
-                        _logger.LogInformation($"If {toolNameAndVersion.Key} is not set as environment, it'll be set to {toolNameAndVersion.Value} via benv");
+                        this.logger.LogInformation($"If {toolNameAndVersion.Key} is not set as environment, it'll be set to {toolNameAndVersion.Value} via benv");
                         toolsToVersion[toolNameAndVersion.Key] = toolNameAndVersion.Value;
                     }
                 }
             }
 
-            using (var timedEvent = _logger.LogTimedEvent("GetBuildSnippets"))
+            using (var timedEvent = this.logger.LogTimedEvent("GetBuildSnippets"))
             {
-                buildScriptSnippets = GetBuildSnippets(
+                buildScriptSnippets = this.GetBuildSnippets(
                     context,
                     detectionResults,
                     runDetection: false,
@@ -105,26 +105,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 timedEvent.SetProperties(toolsToVersion);
             }
 
-            if (_checkers != null && checkerMessageSink != null && _cliOptions.EnableCheckers)
+            if (this.checkers != null && checkerMessageSink != null && this.cliOptions.EnableCheckers)
             {
                 try
                 {
-                    _logger.LogDebug("Running checkers");
-                    RunCheckers(context, toolsToVersion, checkerMessageSink);
+                    this.logger.LogDebug("Running checkers");
+                    this.RunCheckers(context, toolsToVersion, checkerMessageSink);
                 }
                 catch (Exception exc)
                 {
-                    _logger.LogError(exc, "Exception caught while running checkers");
+                    this.logger.LogError(exc, "Exception caught while running checkers");
                 }
             }
             else
             {
-                _logger.LogInformation(
+                this.logger.LogInformation(
                     "Not running checkers - condition evaluates to " +
                     "({checkersNotNull} && {sinkNotNull} && {enableCheckers})",
-                    _checkers != null,
+                    this.checkers != null,
                     checkerMessageSink != null,
-                    _cliOptions.EnableCheckers);
+                    this.cliOptions.EnableCheckers);
             }
 
             if (buildScriptSnippets != null)
@@ -145,7 +145,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 directoriesToExcludeFromCopyToIntermediateDir.Add(".git");
                 directoriesToExcludeFromCopyToBuildOutputDir.Add(".git");
 
-                script = BuildScriptFromSnippets(
+                script = this.BuildScriptFromSnippets(
                     context,
                     installationScript,
                     buildScriptSnippets,
@@ -167,15 +167,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IDictionary<string, string> tools,
             [NotNull] List<ICheckerMessage> checkerMessageSink)
         {
-            var checkers = _checkers.WhereApplicable(tools).ToArray();
+            var checkers = this.checkers.WhereApplicable(tools).ToArray();
 
-            _logger.LogInformation(
+            this.logger.LogInformation(
                 "Running {checkerCount} applicable checkers for {toolCount} tools: {toolNames}",
                 checkers.Length,
                 tools.Keys.Count,
                 string.Join(',', tools.Keys));
 
-            using (var timedEvent = _logger.LogTimedEvent("RunCheckers"))
+            using (var timedEvent = this.logger.LogTimedEvent("RunCheckers"))
             {
                 var repoMessages = checkers.SelectMany(checker => checker.CheckSourceRepo(ctx.SourceRepo));
                 checkerMessageSink.AddRange(repoMessages);
@@ -204,11 +204,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IDictionary<IProgrammingPlatform, PlatformDetectorResult> platformsToUse;
             if (runDetection)
             {
-                platformsToUse = _compatiblePlatformDetector.GetCompatiblePlatforms(context);
+                platformsToUse = this.compatiblePlatformDetector.GetCompatiblePlatforms(context);
             }
             else
             {
-                platformsToUse = _compatiblePlatformDetector.GetCompatiblePlatforms(context, detectionResults);
+                platformsToUse = this.compatiblePlatformDetector.GetCompatiblePlatforms(context, detectionResults);
             }
 
             foreach (var platformAndDetectorResult in platformsToUse)
@@ -234,12 +234,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 string cleanOrNot = platform.IsCleanRepo(context.SourceRepo) ? "clean" : "not clean";
-                _logger.LogDebug($"Repo is {cleanOrNot} for {platform.Name}");
+                this.logger.LogDebug($"Repo is {cleanOrNot} for {platform.Name}");
 
                 var snippet = platform.GenerateBashBuildScriptSnippet(context, detectorResult);
                 if (snippet != null)
                 {
-                    _logger.LogDebug(
+                    this.logger.LogDebug(
                         "Platform {platformName} with version {platformVersion} was used.",
                         platform.Name,
                         detectorResult.PlatformVersion);
@@ -247,7 +247,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
                 else
                 {
-                    _logger.LogWarning(
+                    this.logger.LogWarning(
                         "{platformType}.GenerateBashBuildScriptSnippet() returned null",
                         platform.GetType());
                 }
@@ -260,7 +260,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             if (!string.IsNullOrWhiteSpace(scriptPath))
             {
-                _logger.LogInformation("Using {type} script", type);
+                this.logger.LogInformation("Using {type} script", type);
             }
         }
 
@@ -279,7 +279,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             string script;
             string benvArgs = StringExtensions.JoinKeyValuePairs(toolsToVersion);
-            benvArgs = $"{benvArgs} {Constants.BenvDynamicInstallRootDirKey}=\"{_cliOptions.DynamicInstallRootDir}\"";
+            benvArgs = $"{benvArgs} {Constants.BenvDynamicInstallRootDirKey}=\"{this.cliOptions.DynamicInstallRootDir}\"";
 
             Dictionary<string, string> buildProperties = buildScriptSnippets
                 .Where(s => s.BuildProperties != null)
@@ -287,10 +287,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .ToDictionary(p => p.Key, p => p.Value);
             buildProperties[ManifestFilePropertyKeys.OperationId] = context.OperationId;
 
-            var sourceDirInBuildContainer = _cliOptions.SourceDir;
-            if (!string.IsNullOrEmpty(_cliOptions.IntermediateDir))
+            var sourceDirInBuildContainer = this.cliOptions.SourceDir;
+            if (!string.IsNullOrEmpty(this.cliOptions.IntermediateDir))
             {
-                sourceDirInBuildContainer = _cliOptions.IntermediateDir;
+                sourceDirInBuildContainer = this.cliOptions.IntermediateDir;
             }
 
             buildProperties[ManifestFilePropertyKeys.SourceDirectoryInBuildContainer] = sourceDirInBuildContainer;
@@ -302,7 +302,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             foreach (var eachPlatformName in allPlatformNames)
             {
-                _logger.LogInformation($"Build Property Key:{ManifestFilePropertyKeys.PlatformName} value: {eachPlatformName} is written into manifest");
+                this.logger.LogInformation($"Build Property Key:{ManifestFilePropertyKeys.PlatformName} value: {eachPlatformName} is written into manifest");
                 if (buildProperties.ContainsKey(ManifestFilePropertyKeys.PlatformName))
                 {
                     var previousValue = buildProperties[ManifestFilePropertyKeys.PlatformName];
@@ -319,71 +319,71 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             buildProperties[ManifestFilePropertyKeys.CompressDestinationDir] =
-                _cliOptions.CompressDestinationDir.ToString().ToLower();
+                this.cliOptions.CompressDestinationDir.ToString().ToLower();
 
             // Workaround for bug in TestSourceRepo class in validation tests
             // Should be using context.SourceRepo.FileExists
             string filePathForAppYaml = Path.Combine(context.SourceRepo.RootPath, "appsvc.yaml");
 
-            _logger.LogDebug("Path to appsvc.yaml " + filePathForAppYaml);
+            this.logger.LogDebug("Path to appsvc.yaml " + filePathForAppYaml);
 
             // Override the prebuild and postbuild commands if BuildConfigurationFile exists
             if (File.Exists(filePathForAppYaml))
             {
-                _logger.LogDebug("Found BuildConfigurationFile");
-                _writer.WriteLine(Environment.NewLine + "Found BuildConfigurationFile");
+                this.logger.LogDebug("Found BuildConfigurationFile");
+                this.writer.WriteLine(Environment.NewLine + "Found BuildConfigurationFile");
                 try
                 {
                     BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(context.SourceRepo.ReadFile("appsvc.yaml"));
                     if (!string.IsNullOrEmpty(buildConfigFile.Prebuild))
                     {
-                        _cliOptions.PreBuildCommand = buildConfigFile.Prebuild.Replace("\r\n", ";").Replace("\n", ";");
-                        _cliOptions.PreBuildScriptPath = null;
-                        _logger.LogDebug("Overriding the pre-build commands with the BuildConfigurationFile section");
-                        _logger.LogDebug(_cliOptions.PreBuildCommand.ToString());
-                        _writer.WriteLine("Overriding the pre-build commands with the BuildConfigurationFile section");
-                        _writer.WriteLine("\t" + _cliOptions.PreBuildCommand.ToString());
+                        this.cliOptions.PreBuildCommand = buildConfigFile.Prebuild.Replace("\r\n", ";").Replace("\n", ";");
+                        this.cliOptions.PreBuildScriptPath = null;
+                        this.logger.LogDebug("Overriding the pre-build commands with the BuildConfigurationFile section");
+                        this.logger.LogDebug(this.cliOptions.PreBuildCommand.ToString());
+                        this.writer.WriteLine("Overriding the pre-build commands with the BuildConfigurationFile section");
+                        this.writer.WriteLine("\t" + this.cliOptions.PreBuildCommand.ToString());
                     }
 
                     if (!string.IsNullOrEmpty(buildConfigFile.Postbuild))
                     {
-                        _cliOptions.PostBuildCommand = buildConfigFile.Postbuild.Replace("\r\n", ";").Replace("\n", ";");
-                        _cliOptions.PostBuildScriptPath = null;
-                        _logger.LogDebug("Overriding the post-build commands with the BuildConfigurationFile section");
-                        _logger.LogDebug(_cliOptions.PostBuildCommand.ToString());
-                        _writer.WriteLine("Overriding the post-build commands with the BuildConfigurationFile section");
-                        _writer.WriteLine("\t" + _cliOptions.PostBuildCommand.ToString());
+                        this.cliOptions.PostBuildCommand = buildConfigFile.Postbuild.Replace("\r\n", ";").Replace("\n", ";");
+                        this.cliOptions.PostBuildScriptPath = null;
+                        this.logger.LogDebug("Overriding the post-build commands with the BuildConfigurationFile section");
+                        this.logger.LogDebug(this.cliOptions.PostBuildCommand.ToString());
+                        this.writer.WriteLine("Overriding the post-build commands with the BuildConfigurationFile section");
+                        this.writer.WriteLine("\t" + this.cliOptions.PostBuildCommand.ToString());
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogWarning("Invalid BuildConfigurationFile " + ex.ToString());
-                    _writer.WriteLine(Environment.NewLine + "\"" + DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss") + "\" | WARNING | Invalid BuildConfigurationFile | Exit Code: 1 | Please review your appsvc.yaml | " + Constants.BuildConfigurationFileHelp);
-                    _writer.WriteLine("This is the structure of a valid appsvc.yaml");
-                    _writer.WriteLine("-------------------------------------------");
-                    _writer.WriteLine("version: 1" + Environment.NewLine);
-                    _writer.WriteLine("pre-build: apt-get install xyz" + Environment.NewLine);
-                    _writer.WriteLine("post-build: |");
-                    _writer.WriteLine("  python manage.py makemigrations");
-                    _writer.WriteLine("  python manage.py migrate");
-                    _writer.WriteLine("-------------------------------------------");
+                    this.logger.LogWarning("Invalid BuildConfigurationFile " + ex.ToString());
+                    this.writer.WriteLine(Environment.NewLine + "\"" + DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss") + "\" | WARNING | Invalid BuildConfigurationFile | Exit Code: 1 | Please review your appsvc.yaml | " + Constants.BuildConfigurationFileHelp);
+                    this.writer.WriteLine("This is the structure of a valid appsvc.yaml");
+                    this.writer.WriteLine("-------------------------------------------");
+                    this.writer.WriteLine("version: 1" + Environment.NewLine);
+                    this.writer.WriteLine("pre-build: apt-get install xyz" + Environment.NewLine);
+                    this.writer.WriteLine("post-build: |");
+                    this.writer.WriteLine("  python manage.py makemigrations");
+                    this.writer.WriteLine("  python manage.py migrate");
+                    this.writer.WriteLine("-------------------------------------------");
                 }
             }
             else
             {
-                _logger.LogDebug("No appsvc.yaml found");
+                this.logger.LogDebug("No appsvc.yaml found");
             }
 
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
                 context.SourceRepo,
-                _cliOptions);
+                this.cliOptions);
 
             var outputIsSubDirOfSourceDir = false;
-            if (!string.IsNullOrEmpty(_cliOptions.DestinationDir))
+            if (!string.IsNullOrEmpty(this.cliOptions.DestinationDir))
             {
                 outputIsSubDirOfSourceDir = DirectoryHelper.IsSubDirectory(
-                    _cliOptions.DestinationDir,
-                    _cliOptions.SourceDir);
+                    this.cliOptions.DestinationDir,
+                    this.cliOptions.SourceDir);
             }
 
             // Copy the source content to destination only if all the platforms involved in generating the build script
@@ -393,7 +393,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             var buildScriptProps = new BaseBashBuildScriptProperties()
             {
-                OsPackagesToInstall = _cliOptions.RequiredOsPackages ?? Array.Empty<string>(),
+                OsPackagesToInstall = this.cliOptions.RequiredOsPackages ?? Array.Empty<string>(),
                 BuildScriptSnippets = buildScriptSnippets.Select(s => s.BashBuildScriptSnippet),
                 BenvArgs = benvArgs,
                 PreBuildCommand = preBuildCommand,
@@ -409,16 +409,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 PlatformInstallationScript = installationScript,
                 OutputDirectoryIsNested = outputIsSubDirOfSourceDir,
                 CopySourceDirectoryContentToDestinationDirectory = copySourceDirectoryContentToDestinationDirectory,
-                CompressDestinationDir = _cliOptions.CompressDestinationDir,
+                CompressDestinationDir = this.cliOptions.CompressDestinationDir,
             };
 
-            LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);
-            LogScriptIfGiven("post-build", buildScriptProps.PostBuildCommand);
+            this.LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);
+            this.LogScriptIfGiven("post-build", buildScriptProps.PostBuildCommand);
 
             script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.BaseBashScript,
                 buildScriptProps,
-                _logger);
+                this.logger);
             return script;
         }
     }

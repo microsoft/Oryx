@@ -9,16 +9,16 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 {
     public class DefaultProjectFileProvider : IProjectFileProvider
     {
-        private readonly IEnumerable<IProjectFileProvider> _projectFileProviders;
+        private readonly IEnumerable<IProjectFileProvider> projectFileProviders;
 
         public DefaultProjectFileProvider(IEnumerable<IProjectFileProvider> projectFileProviders)
         {
-            _projectFileProviders = projectFileProviders;
+            this.projectFileProviders = projectFileProviders;
         }
 
         public virtual string GetRelativePathToProjectFile(DetectorContext context)
         {
-            foreach (var projectFileProvider in _projectFileProviders)
+            foreach (var projectFileProvider in this.projectFileProviders)
             {
                 var projectFile = projectFileProvider.GetRelativePathToProjectFile(context);
                 if (!string.IsNullOrEmpty(projectFile))

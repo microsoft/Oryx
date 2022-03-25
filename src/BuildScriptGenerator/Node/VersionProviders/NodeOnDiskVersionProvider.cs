@@ -9,17 +9,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     public class NodeOnDiskVersionProvider : INodeVersionProvider
     {
-        private readonly ILogger<NodeOnDiskVersionProvider> _logger;
+        private readonly ILogger<NodeOnDiskVersionProvider> logger;
 
         public NodeOnDiskVersionProvider(ILogger<NodeOnDiskVersionProvider> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            _logger.LogDebug("Getting list of versions from {installDir}", NodeConstants.InstalledNodeVersionsDir);
+            this.logger.LogDebug("Getting list of versions from {installDir}", NodeConstants.InstalledNodeVersionsDir);
 
             var installedVersions = VersionProviderHelper.GetVersionsFromDirectory(
                         NodeConstants.InstalledNodeVersionsDir);

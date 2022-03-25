@@ -12,8 +12,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     public class DefaultStandardOutputWriter : IStandardOutputWriter
     {
-        private readonly Action<string> _write;
-        private readonly Action<string> _writeLine;
+        private readonly Action<string> write;
+        private readonly Action<string> writeLine;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultStandardOutputWriter"/> class.
@@ -21,8 +21,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         public DefaultStandardOutputWriter()
         {
-            _write = (message) => { };
-            _writeLine = (message) => { };
+            this.write = (message) => { };
+            this.writeLine = (message) => { };
         }
 
         /// <summary>
@@ -32,8 +32,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="write">Action that takes a string and writes it to the output.</param>
         public DefaultStandardOutputWriter(Action<string> write)
         {
-            _write = write;
-            _writeLine = (message) => { write(string.Format("{0}\n", message)); };
+            this.write = write;
+            this.writeLine = (message) => { write(string.Format("{0}\n", message)); };
         }
 
         /// <summary>
@@ -43,26 +43,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <param name="writeLine">Action that takes a string and writes it to the output with a line terminator.</param>
         public DefaultStandardOutputWriter(Action<string> write, Action<string> writeLine)
         {
-            _write = write;
-            _writeLine = writeLine;
+            this.write = write;
+            this.writeLine = writeLine;
         }
 
         /// <inheritdoc/>
         public void Write(string message)
         {
-            _write(message);
+            this.write(message);
         }
 
         /// <inheritdoc/>
         public void WriteLine(string message)
         {
-            _writeLine(message);
+            this.writeLine(message);
         }
 
         /// <inheritdoc/>
         public void WriteLine()
         {
-            WriteLine(message: null);
+            this.WriteLine(message: null);
         }
     }
 }

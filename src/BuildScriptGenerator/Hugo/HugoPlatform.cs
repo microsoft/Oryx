@@ -16,11 +16,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 {
     internal class HugoPlatform : IProgrammingPlatform
     {
-        private readonly ILogger<HugoPlatform> _logger;
-        private readonly HugoPlatformInstaller _platformInstaller;
-        private readonly BuildScriptGeneratorOptions _commonOptions;
-        private readonly HugoScriptGeneratorOptions _hugoScriptGeneratorOptions;
-        private readonly IHugoPlatformDetector _detector;
+        private readonly ILogger<HugoPlatform> logger;
+        private readonly HugoPlatformInstaller platformInstaller;
+        private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly HugoScriptGeneratorOptions hugoScriptGeneratorOptions;
+        private readonly IHugoPlatformDetector detector;
 
         public HugoPlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
@@ -29,11 +29,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             HugoPlatformInstaller platformInstaller,
             IHugoPlatformDetector detector)
         {
-            _logger = logger;
-            _platformInstaller = platformInstaller;
-            _commonOptions = commonOptions.Value;
-            _hugoScriptGeneratorOptions = hugoScriptGeneratorOptions.Value;
-            _detector = detector;
+            this.logger = logger;
+            this.platformInstaller = platformInstaller;
+            this.commonOptions = commonOptions.Value;
+            this.hugoScriptGeneratorOptions = hugoScriptGeneratorOptions.Value;
+            this.detector = detector;
         }
 
         /// <inheritdoc/>
@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 
             try
             {
-                detectionResult = _detector.Detect(new DetectorContext
+                detectionResult = this.detector.Detect(new DetectorContext
                 {
                     SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
                 });
@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             {
                 // Make sure to log exception which might contain the exact exception details from the parser which
                 // we can look up in appinsights and tell user if required.
-                _logger.LogError(ex, ex.Message);
+                this.logger.LogError(ex, ex.Message);
 
                 throw new InvalidUsageException(ex.Message);
             }
@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 return null;
             }
 
-            ResolveVersions(context, detectionResult);
+            this.ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 
@@ -85,12 +85,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             var manifestFileProperties = new Dictionary<string, string>();
             manifestFileProperties[ManifestFilePropertyKeys.HugoVersion] = detectorResult.PlatformVersion;
             manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = "hugo";
-            _logger.LogInformation("Detected the the following framework(s): hugo");
+            this.logger.LogInformation("Detected the the following framework(s): hugo");
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.HugoSnippet,
                 model: null,
-                _logger);
+                this.logger);
 
             return new BuildScriptSnippet
             {
@@ -125,30 +125,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             PlatformDetectorResult detectorResult)
         {
             string installationScriptSnippet = null;
-            if (_commonOptions.EnableDynamicInstall)
+            if (this.commonOptions.EnableDynamicInstall)
             {
-                _logger.LogDebug("Dynamic install is enabled.");
+                this.logger.LogDebug("Dynamic install is enabled.");
 
-                if (_platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
+                if (this.platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
                 {
-                    _logger.LogDebug(
+                    this.logger.LogDebug(
                        "Hugo version {version} is already installed. So skipping installing it again.",
                        detectorResult.PlatformVersion);
                 }
                 else
                 {
-                    _logger.LogDebug(
+                    this.logger.LogDebug(
                         "Hugo version {version} is not installed. " +
                         "So generating an installation script snippet for it.",
                         detectorResult.PlatformVersion);
 
-                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
+                    installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
                         detectorResult.PlatformVersion);
                 }
             }
             else
             {
-                _logger.LogDebug("Dynamic install not enabled.");
+                this.logger.LogDebug("Dynamic install not enabled.");
             }
 
             return installationScriptSnippet;
@@ -163,7 +163,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
-            return _commonOptions.EnableHugoBuild;
+            return this.commonOptions.EnableHugoBuild;
         }
 
         /// <inheritdoc/>
@@ -175,7 +175,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         /// <inheritdoc/>
         public void ResolveVersions(RepositoryContext context, PlatformDetectorResult detectorResult)
         {
-            var resolvedVersion = GetVersionUsingHierarchicalRules(detectorResult.PlatformVersion);
+            var resolvedVersion = this.GetVersionUsingHierarchicalRules(detectorResult.PlatformVersion);
             resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
             detectorResult.PlatformVersion = resolvedVersion;
         }
@@ -193,9 +193,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
             // Explicitly specified version by user wins over detected version
-            if (!string.IsNullOrEmpty(_hugoScriptGeneratorOptions.HugoVersion))
+            if (!string.IsNullOrEmpty(this.hugoScriptGeneratorOptions.HugoVersion))
             {
-                return _hugoScriptGeneratorOptions.HugoVersion;
+                return this.hugoScriptGeneratorOptions.HugoVersion;
             }
 
             // If a version was detected, then use it.

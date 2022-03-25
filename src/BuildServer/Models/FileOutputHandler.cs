@@ -11,22 +11,22 @@ namespace Microsoft.Oryx.BuildServer.Models
 {
     public class FileOutputHandler
     {
-        private readonly ILogger _logger;
+        private readonly ILogger logger;
 
-        private StreamWriter _fileStream;
+        private StreamWriter fileStream;
 
         public FileOutputHandler(StreamWriter filestream, ILogger logger)
         {
-            _fileStream = filestream;
-            _logger = logger;
+            this.fileStream = filestream;
+            this.logger = logger;
         }
 
         public void Handle(object sendingProcess, DataReceivedEventArgs outLine)
         {
             if (!string.IsNullOrEmpty(outLine.Data))
             {
-                _fileStream.Write(outLine.Data + "\n");
-                _logger.LogInformation(outLine.Data);
+                this.fileStream.Write(outLine.Data + "\n");
+                this.logger.LogInformation(outLine.Data);
             }
         }
     }

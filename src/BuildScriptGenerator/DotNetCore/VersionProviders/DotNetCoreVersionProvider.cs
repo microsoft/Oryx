@@ -11,12 +11,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     internal class DotNetCoreVersionProvider : IDotNetCoreVersionProvider
     {
-        private readonly BuildScriptGeneratorOptions _cliOptions;
-        private readonly DotNetCoreOnDiskVersionProvider _onDiskVersionProvider;
-        private readonly DotNetCoreSdkStorageVersionProvider _sdkStorageVersionProvider;
-        private readonly ILogger<DotNetCoreVersionProvider> _logger;
-        private string _defaultRuntimeVersion;
-        private Dictionary<string, string> _supportedVersions;
+        private readonly BuildScriptGeneratorOptions cliOptions;
+        private readonly DotNetCoreOnDiskVersionProvider onDiskVersionProvider;
+        private readonly DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider;
+        private readonly ILogger<DotNetCoreVersionProvider> logger;
+        private string defaultRuntimeVersion;
+        private Dictionary<string, string> supportedVersions;
 
         public DotNetCoreVersionProvider(
             IOptions<BuildScriptGeneratorOptions> cliOptions,
@@ -24,43 +24,43 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             DotNetCoreSdkStorageVersionProvider sdkStorageVersionProvider,
             ILogger<DotNetCoreVersionProvider> logger)
         {
-            _cliOptions = cliOptions.Value;
-            _onDiskVersionProvider = onDiskVersionProvider;
-            _sdkStorageVersionProvider = sdkStorageVersionProvider;
-            _logger = logger;
+            this.cliOptions = cliOptions.Value;
+            this.onDiskVersionProvider = onDiskVersionProvider;
+            this.sdkStorageVersionProvider = sdkStorageVersionProvider;
+            this.logger = logger;
         }
 
         public string GetDefaultRuntimeVersion()
         {
-            if (string.IsNullOrEmpty(_defaultRuntimeVersion))
+            if (string.IsNullOrEmpty(this.defaultRuntimeVersion))
             {
-                _defaultRuntimeVersion = _cliOptions.EnableDynamicInstall ?
-                    _sdkStorageVersionProvider.GetDefaultRuntimeVersion() :
-                    _onDiskVersionProvider.GetDefaultRuntimeVersion();
+                this.defaultRuntimeVersion = this.cliOptions.EnableDynamicInstall ?
+                    this.sdkStorageVersionProvider.GetDefaultRuntimeVersion() :
+                    this.onDiskVersionProvider.GetDefaultRuntimeVersion();
             }
 
-            _logger.LogDebug("Default runtime version is {defaultRuntimeVersion}", _defaultRuntimeVersion);
+            this.logger.LogDebug("Default runtime version is {defaultRuntimeVersion}", this.defaultRuntimeVersion);
 
-            return _defaultRuntimeVersion;
+            return this.defaultRuntimeVersion;
         }
 
         public Dictionary<string, string> GetSupportedVersions()
         {
-            if (_supportedVersions == null)
+            if (this.supportedVersions == null)
             {
-                _supportedVersions = _cliOptions.EnableDynamicInstall ?
-                    _sdkStorageVersionProvider.GetSupportedVersions() :
-                    _onDiskVersionProvider.GetSupportedVersions();
+                this.supportedVersions = this.cliOptions.EnableDynamicInstall ?
+                    this.sdkStorageVersionProvider.GetSupportedVersions() :
+                    this.onDiskVersionProvider.GetSupportedVersions();
 
                 // A temporary fix to make building netcoreapp1.0 versions using the 1.1 SDK
                 // This SDK has 2 runtimes: 1.1.13 and 1.0.16
-                _supportedVersions[DotNetCoreRunTimeVersions.NetCoreApp10] =
+                this.supportedVersions[DotNetCoreRunTimeVersions.NetCoreApp10] =
                     DotNetCoreSdkVersions.DotNetCore11SdkVersion;
             }
 
-            _logger.LogDebug("Got the list of supported versions");
+            this.logger.LogDebug("Got the list of supported versions");
 
-            return _supportedVersions;
+            return this.supportedVersions;
         }
     }
 }

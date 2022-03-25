@@ -20,15 +20,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 
         public virtual string GetInstallerScriptSnippet(string version)
         {
-            return GetInstallerScriptSnippet("maven", version);
+            return this.GetInstallerScriptSnippet("maven", version);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)
         {
-            return IsVersionInstalled(
+            return this.IsVersionInstalled(
                 version,
                 builtInDir: JavaConstants.InstalledMavenVersionsDir,
-                dynamicInstallDir: Path.Combine(CommonOptions.DynamicInstallRootDir, "maven"));
+                dynamicInstallDir: Path.Combine(this.CommonOptions.DynamicInstallRootDir, "maven"));
         }
     }
 }

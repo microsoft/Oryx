@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.Detector.Hugo
             "theme",
         };
 
-        private readonly ILogger<HugoDetector> _logger;
+        private readonly ILogger<HugoDetector> logger;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HugoDetector"/> class.
@@ -39,13 +39,13 @@ namespace Microsoft.Oryx.Detector.Hugo
         /// <param name="logger">The <see cref="ILogger{HugoDetector}"/>.</param>
         public HugoDetector(ILogger<HugoDetector> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(DetectorContext context)
         {
-            var isHugoApp = IsHugoApp(context.SourceRepo, out string appDirectory);
+            var isHugoApp = this.IsHugoApp(context.SourceRepo, out string appDirectory);
             if (isHugoApp)
             {
                 return new PlatformDetectorResult
@@ -66,28 +66,28 @@ namespace Microsoft.Oryx.Detector.Hugo
 
             // Search for config.toml
             if (sourceRepo.FileExists(HugoConstants.TomlFileName)
-                && IsHugoTomlFile(sourceRepo, HugoConstants.TomlFileName))
+                && this.IsHugoTomlFile(sourceRepo, HugoConstants.TomlFileName))
             {
                 return true;
             }
 
             // Search for config.yml
             if (sourceRepo.FileExists(HugoConstants.YmlFileName)
-                && IsHugoYamlFile(sourceRepo, HugoConstants.YmlFileName))
+                && this.IsHugoYamlFile(sourceRepo, HugoConstants.YmlFileName))
             {
                 return true;
             }
 
             // Search for config.yaml
             if (sourceRepo.FileExists(HugoConstants.YamlFileName)
-                && IsHugoYamlFile(sourceRepo, HugoConstants.YamlFileName))
+                && this.IsHugoYamlFile(sourceRepo, HugoConstants.YamlFileName))
             {
                 return true;
             }
 
             // Search for config.json
             if (sourceRepo.FileExists(HugoConstants.JsonFileName)
-                && IsHugoYamlFile(sourceRepo, HugoConstants.JsonFileName))
+                && this.IsHugoYamlFile(sourceRepo, HugoConstants.JsonFileName))
             {
                 return true;
             }
@@ -103,7 +103,7 @@ namespace Microsoft.Oryx.Detector.Hugo
                     subDirectoryToSearchUnder: HugoConstants.ConfigFolderName);
                 foreach (var tomlFile in tomlFiles)
                 {
-                    if (IsHugoTomlFile(sourceRepo, tomlFile))
+                    if (this.IsHugoTomlFile(sourceRepo, tomlFile))
                     {
                         return true;
                     }
@@ -116,7 +116,7 @@ namespace Microsoft.Oryx.Detector.Hugo
                     subDirectoryToSearchUnder: HugoConstants.ConfigFolderName);
                 foreach (var yamlFile in yamlFiles)
                 {
-                    if (IsHugoYamlFile(sourceRepo, yamlFile))
+                    if (this.IsHugoYamlFile(sourceRepo, yamlFile))
                     {
                         return true;
                     }
@@ -128,7 +128,7 @@ namespace Microsoft.Oryx.Detector.Hugo
                     subDirectoryToSearchUnder: HugoConstants.ConfigFolderName);
                 foreach (var ymlFile in ymlFiles)
                 {
-                    if (IsHugoYamlFile(sourceRepo, ymlFile))
+                    if (this.IsHugoYamlFile(sourceRepo, ymlFile))
                     {
                         return true;
                     }
@@ -141,7 +141,7 @@ namespace Microsoft.Oryx.Detector.Hugo
                     subDirectoryToSearchUnder: HugoConstants.ConfigFolderName);
                 foreach (var jsonFile in jsonFiles)
                 {
-                    if (IsHugoJsonFile(sourceRepo, jsonFile))
+                    if (this.IsHugoJsonFile(sourceRepo, jsonFile))
                     {
                         return true;
                     }
@@ -163,7 +163,7 @@ namespace Microsoft.Oryx.Detector.Hugo
             }
             catch (FailedToParseFileException ex)
             {
-                _logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
+                this.logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
                 return false;
             }
 
@@ -188,7 +188,7 @@ namespace Microsoft.Oryx.Detector.Hugo
             }
             catch (FailedToParseFileException ex)
             {
-                _logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
+                this.logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
                 return false;
             }
 
@@ -218,7 +218,7 @@ namespace Microsoft.Oryx.Detector.Hugo
             }
             catch (FailedToParseFileException ex)
             {
-                _logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
+                this.logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
                 return false;
             }
 

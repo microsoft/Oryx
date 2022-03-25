@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             private TemplateResource(string name)
             {
-                Name = name;
+                this.Name = name;
             }
 
             public static TemplateResource BaseBashScript

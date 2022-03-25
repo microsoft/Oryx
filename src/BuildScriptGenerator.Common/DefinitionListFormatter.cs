@@ -18,11 +18,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
     {
         private const string HeadingSuffix = ": ";
 
-        private List<Tuple<string, string>> _rows = new List<Tuple<string, string>>();
+        private List<Tuple<string, string>> rows = new List<Tuple<string, string>>();
 
         public int Count
         {
-            get { return _rows.Count; }
+            get { return this.rows.Count; }
         }
 
         public DefinitionListFormatter AddDefinition(string title, string value)
@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             var tuple = CreateDefTuple(title, value);
             if (tuple != null)
             {
-                _rows.Add(tuple);
+                this.rows.Add(tuple);
             }
 
             return this;
@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         {
             if (values != null)
             {
-                _rows.AddRange(values
+                this.rows.AddRange(values
                     .Select(pair => CreateDefTuple(pair.Key, pair.Value))
                     .Where(tuple => tuple != null));
             }
@@ -52,8 +52,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         {
             StringBuilder result = new StringBuilder();
 
-            int headingWidth = _rows.Max(t => t.Item1.Length);
-            foreach (var row in _rows)
+            int headingWidth = this.rows.Max(t => t.Item1.Length);
+            foreach (var row in this.rows)
             {
                 result.Append(row.Item1.PadRight(headingWidth) + HeadingSuffix);
 

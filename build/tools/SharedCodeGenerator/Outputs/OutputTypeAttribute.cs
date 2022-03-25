@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
     {
         public OutputTypeAttribute(string type)
         {
-            Type = type;
+            this.Type = type;
         }
 
         public string Type { get; }

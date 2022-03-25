@@ -47,24 +47,24 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 result = false;
             }
 
-            if (!string.IsNullOrWhiteSpace(PlanPath))
+            if (!string.IsNullOrWhiteSpace(this.PlanPath))
             {
-                PlanPath = Path.GetFullPath(PlanPath);
-                if (!File.Exists(PlanPath))
+                this.PlanPath = Path.GetFullPath(this.PlanPath);
+                if (!File.Exists(this.PlanPath))
                 {
-                    logger?.LogError("Could not find build plan file {planPath}", PlanPath);
-                    console.WriteErrorLine($"Could not find build plan file '{PlanPath}'.");
+                    logger?.LogError("Could not find build plan file {planPath}", this.PlanPath);
+                    console.WriteErrorLine($"Could not find build plan file '{this.PlanPath}'.");
                     result = false;
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(PlatformDir))
+            if (!string.IsNullOrWhiteSpace(this.PlatformDir))
             {
-                PlatformDir = Path.GetFullPath(PlatformDir);
-                if (!Directory.Exists(PlatformDir))
+                this.PlatformDir = Path.GetFullPath(this.PlatformDir);
+                if (!Directory.Exists(this.PlatformDir))
                 {
-                    logger?.LogError("Could not find platform directory {platformDir}", PlatformDir);
-                    console.WriteErrorLine($"Could not find platform directory '{PlatformDir}'.");
+                    logger?.LogError("Could not find platform directory {platformDir}", this.PlatformDir);
+                    console.WriteErrorLine($"Could not find platform directory '{this.PlatformDir}'.");
                     result = false;
                 }
             }
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
                 options,
-                sourceDir: SourceDir,
+                sourceDir: this.SourceDir,
                 destinationDir: null,
                 intermediateDir: null,
                 manifestDir: null,
@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 console.WriteLine(string.Join(' ', compatPlats.Select(pair => $"{pair.Key.Name}=\"{pair.Value}\"")));
 
                 // Write the detected platforms into the build plan as TOML
-                File.WriteAllLines(PlanPath, compatPlats.Select(pair => $"{pair.Key.Name} = {{ version = \"{pair.Value}\" }}"));
+                File.WriteAllLines(this.PlanPath, compatPlats.Select(pair => $"{pair.Key.Name} = {{ version = \"{pair.Value}\" }}"));
 
                 return ProcessConstants.ExitSuccess;
             }

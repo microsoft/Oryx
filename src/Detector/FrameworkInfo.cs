@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Detector
 
         public override string ToString()
         {
-            return Framework + ": " + FrameworkVersion;
+            return this.Framework + ": " + this.FrameworkVersion;
         }
     }
 }

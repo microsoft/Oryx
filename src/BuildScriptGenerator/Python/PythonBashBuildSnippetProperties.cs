@@ -26,18 +26,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string pythonPackageWheelProperty = null,
             string customRequirementsTxtPath = null)
         {
-            VirtualEnvironmentName = virtualEnvironmentName;
-            VirtualEnvironmentModule = virtualEnvironmentModule;
-            VirtualEnvironmentParameters = virtualEnvironmentParameters;
-            PackagesDirectory = packagesDirectory;
-            EnableCollectStatic = enableCollectStatic;
-            CompressVirtualEnvCommand = compressVirtualEnvCommand;
-            CompressedVirtualEnvFileName = compressedVirtualEnvFileName;
-            RunPythonPackageCommand = runPythonPackageCommand;
-            PythonPackageWheelProperty = pythonPackageWheelProperty;
-            PythonBuildCommandsFileName = pythonBuildCommandsFileName;
-            PythonVersion = pythonVersion;
-            CustomRequirementsTxtPath = customRequirementsTxtPath;
+            this.VirtualEnvironmentName = virtualEnvironmentName;
+            this.VirtualEnvironmentModule = virtualEnvironmentModule;
+            this.VirtualEnvironmentParameters = virtualEnvironmentParameters;
+            this.PackagesDirectory = packagesDirectory;
+            this.EnableCollectStatic = enableCollectStatic;
+            this.CompressVirtualEnvCommand = compressVirtualEnvCommand;
+            this.CompressedVirtualEnvFileName = compressedVirtualEnvFileName;
+            this.RunPythonPackageCommand = runPythonPackageCommand;
+            this.PythonPackageWheelProperty = pythonPackageWheelProperty;
+            this.PythonBuildCommandsFileName = pythonBuildCommandsFileName;
+            this.PythonVersion = pythonVersion;
+            this.CustomRequirementsTxtPath = customRequirementsTxtPath;
         }
 
         public string VirtualEnvironmentName { get; set; }

@@ -16,8 +16,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public class DotNetCoreSdkStorageVersionProvider : SdkStorageVersionProviderBase, IDotNetCoreVersionProvider
     {
-        private Dictionary<string, string> _versionMap;
-        private string _defaultRuntimeVersion;
+        private Dictionary<string, string> versionMap;
+        private string defaultRuntimeVersion;
 
         public DotNetCoreSdkStorageVersionProvider(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
@@ -31,22 +31,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public string GetDefaultRuntimeVersion()
         {
-            GetVersionInfo();
-            return _defaultRuntimeVersion;
+            this.GetVersionInfo();
+            return this.defaultRuntimeVersion;
         }
 
         public Dictionary<string, string> GetSupportedVersions()
         {
-            GetVersionInfo();
-            return _versionMap;
+            this.GetVersionInfo();
+            return this.versionMap;
         }
 
         public void GetVersionInfo()
         {
-            if (_versionMap == null)
+            if (this.versionMap == null)
             {
-                var httpClient = HttpClientFactory.CreateClient("general");
-                var sdkStorageBaseUrl = GetPlatformBinariesStorageBaseUrl();
+                var httpClient = this.HttpClientFactory.CreateClient("general");
+                var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
                 var blobList = httpClient
                     .GetStringAsync($"{sdkStorageBaseUrl}/dotnet?restype=container&comp=list&include=metadata")
                     .Result;
@@ -77,8 +77,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     }
                 }
 
-                _versionMap = supportedVersions;
-                _defaultRuntimeVersion = GetDefaultVersion(DotNetCoreConstants.PlatformName, sdkStorageBaseUrl);
+                this.versionMap = supportedVersions;
+                this.defaultRuntimeVersion = this.GetDefaultVersion(DotNetCoreConstants.PlatformName, sdkStorageBaseUrl);
             }
         }
     }

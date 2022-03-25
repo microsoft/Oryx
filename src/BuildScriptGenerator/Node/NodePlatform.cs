@@ -76,13 +76,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// The tar-gz option for node modules.
         /// </summary>
         internal const string TarGzNodeModulesOption = "tar-gz";
-        private readonly BuildScriptGeneratorOptions _commonOptions;
-        private readonly NodeScriptGeneratorOptions _nodeScriptGeneratorOptions;
-        private readonly INodeVersionProvider _nodeVersionProvider;
-        private readonly ILogger<NodePlatform> _logger;
-        private readonly INodePlatformDetector _detector;
-        private readonly IEnvironment _environment;
-        private readonly NodePlatformInstaller _platformInstaller;
+        private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly NodeScriptGeneratorOptions nodeScriptGeneratorOptions;
+        private readonly INodeVersionProvider nodeVersionProvider;
+        private readonly ILogger<NodePlatform> logger;
+        private readonly INodePlatformDetector detector;
+        private readonly IEnvironment environment;
+        private readonly NodePlatformInstaller platformInstaller;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NodePlatform"/> class.
@@ -103,13 +103,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IEnvironment environment,
             NodePlatformInstaller nodePlatformInstaller)
         {
-            _commonOptions = commonOptions.Value;
-            _nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
-            _nodeVersionProvider = nodeVersionProvider;
-            _logger = logger;
-            _detector = detector;
-            _environment = environment;
-            _platformInstaller = nodePlatformInstaller;
+            this.commonOptions = commonOptions.Value;
+            this.nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
+            this.nodeVersionProvider = nodeVersionProvider;
+            this.logger = logger;
+            this.detector = detector;
+            this.environment = environment;
+            this.platformInstaller = nodePlatformInstaller;
         }
 
         /// <inheritdoc/>
@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             get
             {
-                var versionInfo = _nodeVersionProvider.GetVersionInfo();
+                var versionInfo = this.nodeVersionProvider.GetVersionInfo();
                 return versionInfo.SupportedVersions;
             }
         }
@@ -128,7 +128,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var detectionResult = _detector.Detect(new DetectorContext
+            var detectionResult = this.detector.Detect(new DetectorContext
             {
                 SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
             });
@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 return null;
             }
 
-            ResolveVersions(context, detectionResult);
+            this.ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 
@@ -157,17 +157,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             var manifestFileProperties = new Dictionary<string, string>();
             var nodeCommandManifestFileProperties = new Dictionary<string, string>();
-            var nodeBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.BuildCommandsFileName) ?
-                    FilePaths.BuildCommandsFileName : _commonOptions.BuildCommandsFileName;
-            nodeBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.ManifestDir) ?
+            var nodeBuildCommandsFile = string.IsNullOrEmpty(this.commonOptions.BuildCommandsFileName) ?
+                    FilePaths.BuildCommandsFileName : this.commonOptions.BuildCommandsFileName;
+            nodeBuildCommandsFile = string.IsNullOrEmpty(this.commonOptions.ManifestDir) ?
                 Path.Combine(ctx.SourceRepo.RootPath, nodeBuildCommandsFile) :
-                Path.Combine(_commonOptions.ManifestDir, nodeBuildCommandsFile);
+                Path.Combine(this.commonOptions.ManifestDir, nodeBuildCommandsFile);
 
             // Write the platform name and version to the manifest file
             manifestFileProperties[ManifestFilePropertyKeys.NodeVersion] = nodePlatformDetectorResult.PlatformVersion;
             manifestFileProperties[nameof(nodeBuildCommandsFile)] = nodeBuildCommandsFile;
             nodeCommandManifestFileProperties["PlatformWithVersion"] = "Node.js " + nodePlatformDetectorResult.PlatformVersion;
-            var packageJson = GetPackageJsonObject(ctx.SourceRepo, _logger);
+            var packageJson = GetPackageJsonObject(ctx.SourceRepo, this.logger);
             string runBuildCommand = null;
             string runBuildAzureCommand = null;
             string runBuildLernaCommand = null;
@@ -178,11 +178,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string packageInstallCommand = null;
             string packageInstallerVersionCommand = null;
 
-            if (_nodeScriptGeneratorOptions.EnableNodeMonorepoBuild &&
+            if (this.nodeScriptGeneratorOptions.EnableNodeMonorepoBuild &&
                 nodePlatformDetectorResult.HasLernaJsonFile &&
                 nodePlatformDetectorResult.HasLageConfigJSFile)
             {
-                _logger.LogError(
+                this.logger.LogError(
                 "Could not build monorepo with multiple package management tools. Both 'lerna.json' and 'lage.config.js' files are found.");
                 throw new InvalidUsageException("Multiple monorepo package management tools are found, please choose to use either Lerna or Lage.");
             }
@@ -211,7 +211,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 packageInstallerVersionCommand = NodeConstants.NpmVersionCommand;
             }
 
-            if (_nodeScriptGeneratorOptions.EnableNodeMonorepoBuild)
+            if (this.nodeScriptGeneratorOptions.EnableNodeMonorepoBuild)
             {
                 // If a 'lerna.json' file exists, override the npm client that lerna chosen to build monorepo.
                 if (nodePlatformDetectorResult.HasLernaJsonFile)
@@ -245,7 +245,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 }
             }
 
-            _logger.LogInformation("Using {packageManager}", packageManagerCmd);
+            this.logger.LogInformation("Using {packageManager}", packageManagerCmd);
 
             var hasProdDependencies = false;
             if (packageJson?.dependencies != null)
@@ -263,8 +263,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var productionOnlyPackageInstallCommand = string.Format(
                 NodeConstants.ProductionOnlyPackageInstallCommandTemplate, packageInstallCommand);
 
-            if (string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomBuildCommand)
-                && string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand)
+            if (string.IsNullOrEmpty(this.nodeScriptGeneratorOptions.CustomBuildCommand)
+                && string.IsNullOrEmpty(this.nodeScriptGeneratorOptions.CustomRunBuildCommand)
                 && string.IsNullOrEmpty(runBuildLernaCommand)
                 && string.IsNullOrEmpty(runBuildLageCommand))
             {
@@ -276,7 +276,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                         runBuildCommand = string.Format(NodeConstants.PkgMgrRunBuildCommandTemplate, packageManagerCmd);
                     }
 
-                    if (scriptsNode["build:azure"] != null && !_commonOptions.ShouldPackage)
+                    if (scriptsNode["build:azure"] != null && !this.commonOptions.ShouldPackage)
                     {
                         runBuildAzureCommand = string.Format(
                             NodeConstants.PkgMgrRunBuildAzureCommandTemplate,
@@ -286,8 +286,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             if (IsBuildRequired(ctx)
-                && string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomBuildCommand)
-                && string.IsNullOrEmpty(_nodeScriptGeneratorOptions.CustomRunBuildCommand)
+                && string.IsNullOrEmpty(this.nodeScriptGeneratorOptions.CustomBuildCommand)
+                && string.IsNullOrEmpty(this.nodeScriptGeneratorOptions.CustomRunBuildCommand)
                 && string.IsNullOrEmpty(runBuildCommand)
                 && string.IsNullOrEmpty(runBuildAzureCommand)
                 && string.IsNullOrEmpty(runBuildLernaCommand)
@@ -303,8 +303,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (packageJson?.dependencies != null)
             {
                 var depSpecs = ((JObject)packageJson.dependencies).ToObject<IDictionary<string, string>>();
-                _logger.LogDependencies(
-                    _commonOptions.PlatformName,
+                this.logger.LogDependencies(
+                    this.commonOptions.PlatformName,
                     nodePlatformDetectorResult.PlatformVersion,
                     depSpecs.Select(d => d.Key + d.Value));
             }
@@ -312,8 +312,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (packageJson?.devDependencies != null)
             {
                 var depSpecs = ((JObject)packageJson.devDependencies).ToObject<IDictionary<string, string>>();
-                _logger.LogDependencies(
-                    _commonOptions.PlatformName,
+                this.logger.LogDependencies(
+                    this.commonOptions.PlatformName,
                     nodePlatformDetectorResult.PlatformVersion,
                     depSpecs.Select(d => d.Key + d.Value),
                     devDeps: true);
@@ -326,7 +326,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 string[] framworks = frameworksObj.Select(p => p.Framework).ToArray();
                 string frameworks = string.Join(",", framworks);
                 manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = frameworks;
-                _logger.LogInformation($"Detected the following framework(s): {frameworks}");
+                this.logger.LogInformation($"Detected the following framework(s): {frameworks}");
             }
 
             string compressNodeModulesCommand = null;
@@ -383,9 +383,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 AppInsightsPackageName = NodeConstants.NodeAppInsightsPackageName,
                 AppInsightsLoaderFileName = NodeAppInsightsLoader.NodeAppInsightsLoaderFileName,
                 PackageInstallerVersionCommand = packageInstallerVersionCommand,
-                RunNpmPack = _commonOptions.ShouldPackage,
-                CustomBuildCommand = _nodeScriptGeneratorOptions.CustomBuildCommand,
-                CustomRunBuildCommand = _nodeScriptGeneratorOptions.CustomRunBuildCommand,
+                RunNpmPack = this.commonOptions.ShouldPackage,
+                CustomBuildCommand = this.nodeScriptGeneratorOptions.CustomBuildCommand,
+                CustomRunBuildCommand = this.nodeScriptGeneratorOptions.CustomRunBuildCommand,
                 LernaRunBuildCommand = runBuildLernaCommand,
                 InstallLernaCommand = installLernaCommand,
                 LernaInitCommand = NodeConstants.LernaInitCommand,
@@ -398,7 +398,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.NodeBuildSnippet,
                 scriptProps,
-                _logger);
+                this.logger);
 
             return new BuildScriptSnippet
             {
@@ -416,7 +416,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
-            return _commonOptions.EnableNodeJSBuild;
+            return this.commonOptions.EnableNodeJSBuild;
         }
 
         /// <inheritdoc/>
@@ -478,30 +478,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             PlatformDetectorResult detectorResult)
         {
             string installationScriptSnippet = null;
-            if (_commonOptions.EnableDynamicInstall)
+            if (this.commonOptions.EnableDynamicInstall)
             {
-                _logger.LogDebug("Dynamic install is enabled.");
+                this.logger.LogDebug("Dynamic install is enabled.");
 
-                if (_platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
+                if (this.platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
                 {
-                    _logger.LogDebug(
+                    this.logger.LogDebug(
                         "Node version {version} is already installed. So skipping installing it again.",
                         detectorResult.PlatformVersion);
                 }
                 else
                 {
-                    _logger.LogDebug(
+                    this.logger.LogDebug(
                         "Node version {version} is not installed. " +
                         "So generating an installation script snippet for it.",
                         detectorResult.PlatformVersion);
 
-                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
+                    installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
                         detectorResult.PlatformVersion);
                 }
             }
             else
             {
-                _logger.LogDebug("Dynamic install not enabled.");
+                this.logger.LogDebug("Dynamic install not enabled.");
             }
 
             return installationScriptSnippet;
@@ -510,8 +510,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// <inheritdoc/>
         public void ResolveVersions(RepositoryContext context, PlatformDetectorResult detectorResult)
         {
-            var resolvedVersion = GetVersionUsingHierarchicalRules(detectorResult.PlatformVersion);
-            resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
+            var resolvedVersion = this.GetVersionUsingHierarchicalRules(detectorResult.PlatformVersion);
+            resolvedVersion = this.GetMaxSatisfyingVersionAndVerify(resolvedVersion);
             detectorResult.PlatformVersion = resolvedVersion;
         }
 
@@ -663,7 +663,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private string GetMaxSatisfyingVersionAndVerify(string version)
         {
-            var versionInfo = _nodeVersionProvider.GetVersionInfo();
+            var versionInfo = this.nodeVersionProvider.GetVersionInfo();
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
                 versionInfo.SupportedVersions);
@@ -674,7 +674,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     NodeConstants.PlatformName,
                     version,
                     versionInfo.SupportedVersions);
-                _logger.LogError(
+                this.logger.LogError(
                     exception,
                     $"Exception caught, the version '{version}' is not supported for the Node platform.");
                 throw exception;
@@ -686,9 +686,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
             // Explicitly specified version by user wins over detected version
-            if (!string.IsNullOrEmpty(_nodeScriptGeneratorOptions.NodeVersion))
+            if (!string.IsNullOrEmpty(this.nodeScriptGeneratorOptions.NodeVersion))
             {
-                return _nodeScriptGeneratorOptions.NodeVersion;
+                return this.nodeScriptGeneratorOptions.NodeVersion;
             }
 
             // If a version was detected, then use it.
@@ -698,7 +698,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             }
 
             // Fallback to default version
-            var versionInfo = _nodeVersionProvider.GetVersionInfo();
+            var versionInfo = this.nodeVersionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
         }
     }

@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             this.client?.TrackEvent(
                 this.eventName,
                 this.eventProps,
-                new Dictionary<string, double> { { "processingTime", stopwatch.Elapsed.TotalMilliseconds } });
+                new Dictionary<string, double> { { "processingTime", this.stopwatch.Elapsed.TotalMilliseconds } });
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            var sourceRepo = new LocalSourceRepo(SourceDir, loggerFactory);
+            var sourceRepo = new LocalSourceRepo(this.SourceDir, loggerFactory);
             var ctx = new DockerfileContext
             {
                 SourceRepo = sourceRepo,
@@ -61,15 +61,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return ProcessConstants.ExitFailure;
             }
 
-            if (string.IsNullOrEmpty(OutputPath))
+            if (string.IsNullOrEmpty(this.OutputPath))
             {
                 console.WriteLine(dockerfile);
             }
             else
             {
-                OutputPath.SafeWriteAllText(dockerfile);
-                OutputPath = Path.GetFullPath(OutputPath).TrimEnd('/').TrimEnd('\\');
-                console.WriteLine($"Dockerfile written to '{OutputPath}'.");
+                this.OutputPath.SafeWriteAllText(dockerfile);
+                this.OutputPath = Path.GetFullPath(this.OutputPath).TrimEnd('/').TrimEnd('\\');
+                console.WriteLine($"Dockerfile written to '{this.OutputPath}'.");
             }
 
             return ProcessConstants.ExitSuccess;
@@ -77,15 +77,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
-            SourceDir = string.IsNullOrEmpty(SourceDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(SourceDir);
-            if (!Directory.Exists(SourceDir))
+            this.SourceDir = string.IsNullOrEmpty(this.SourceDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(this.SourceDir);
+            if (!Directory.Exists(this.SourceDir))
             {
-                console.WriteErrorLine($"Could not find the source directory '{SourceDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{this.SourceDir}'.");
                 return false;
             }
 
             // Invalid to specify platform version without platform name
-            if (string.IsNullOrEmpty(PlatformName) && !string.IsNullOrEmpty(PlatformVersion))
+            if (string.IsNullOrEmpty(this.PlatformName) && !string.IsNullOrEmpty(this.PlatformVersion))
             {
                 console.WriteErrorLine("Cannot use platform version without specifying platform name also.");
                 return false;
@@ -97,20 +97,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override IServiceProvider TryGetServiceProvider(IConsole console)
         {
             // Gather all the values supplied by the user in command line
-            SourceDir = string.IsNullOrEmpty(SourceDir) ?
-                Directory.GetCurrentDirectory() : Path.GetFullPath(SourceDir);
+            this.SourceDir = string.IsNullOrEmpty(this.SourceDir) ?
+                Directory.GetCurrentDirectory() : Path.GetFullPath(this.SourceDir);
 
             // NOTE: Order of the following is important. So a command line provided value has higher precedence
             // than the value provided in a configuration file of the repo.
             var config = new ConfigurationBuilder()
-                .AddIniFile(Path.Combine(SourceDir, Constants.BuildEnvironmentFileName), optional: true)
+                .AddIniFile(Path.Combine(this.SourceDir, Constants.BuildEnvironmentFileName), optional: true)
                 .AddEnvironmentVariables()
-                .Add(GetCommandLineConfigSource())
+                .Add(this.GetCommandLineConfigSource())
                 .Build();
 
             // Override the GetServiceProvider() call in CommandBase to pass the IConsole instance to
             // ServiceProviderBuilder and allow for writing to the console if needed during this command.
-            var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath, console)
+            var serviceProviderBuilder = new ServiceProviderBuilder(this.LogFilePath, console)
                 .ConfigureServices(services =>
                 {
                     // Configure Options related services
@@ -124,7 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         {
                             // These values are not retrieve through the 'config' api since we do not expect
                             // them to be provided by an end user.
-                            options.SourceDir = SourceDir;
+                            options.SourceDir = this.SourceDir;
                             options.ScriptOnly = false;
                         });
                 });
@@ -135,15 +135,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private CustomConfigurationSource GetCommandLineConfigSource()
         {
             var commandLineConfigSource = new CustomConfigurationSource();
-            commandLineConfigSource.Set(SettingsKeys.PlatformName, PlatformName);
-            commandLineConfigSource.Set(SettingsKeys.PlatformVersion, PlatformVersion);
+            commandLineConfigSource.Set(SettingsKeys.PlatformName, this.PlatformName);
+            commandLineConfigSource.Set(SettingsKeys.PlatformVersion, this.PlatformVersion);
 
             // Set the platform key and version in the format that they are represented in other sources
             // (like environment variables and build.env file).
             // This is so that this enables Configuration api to apply the hierarchical config.
             // Example: "--platform python --platform-version 3.6" will win over "PYTHON_VERSION=3.7"
             // in environment variable
-            SetPlatformVersion(PlatformName, PlatformVersion);
+            SetPlatformVersion(this.PlatformName, this.PlatformVersion);
 
             return commandLineConfigSource;
 

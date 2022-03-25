@@ -11,25 +11,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultSourceRepoProvider : ISourceRepoProvider
     {
-        private readonly string _sourceDirectory;
-        private readonly ILoggerFactory _loggerFactory;
-        private LocalSourceRepo _sourceRepo;
+        private readonly string sourceDirectory;
+        private readonly ILoggerFactory loggerFactory;
+        private LocalSourceRepo sourceRepo;
 
         public DefaultSourceRepoProvider(IOptions<BuildScriptGeneratorOptions> options, ILoggerFactory loggerFactory)
         {
-            _sourceDirectory = options.Value.SourceDir;
-            _loggerFactory = loggerFactory;
+            this.sourceDirectory = options.Value.SourceDir;
+            this.loggerFactory = loggerFactory;
         }
 
         public ISourceRepo GetSourceRepo()
         {
-            if (_sourceRepo != null)
+            if (this.sourceRepo != null)
             {
-                return _sourceRepo;
+                return this.sourceRepo;
             }
 
-            _sourceRepo = new LocalSourceRepo(_sourceDirectory, _loggerFactory);
-            return _sourceRepo;
+            this.sourceRepo = new LocalSourceRepo(this.sourceDirectory, this.loggerFactory);
+            return this.sourceRepo;
         }
     }
 }
