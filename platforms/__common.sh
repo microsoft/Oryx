@@ -55,31 +55,67 @@ shouldOverwritePlatformSdk() {
 	local platform="$1"
 	case $platform in
         "php")
-            	return [[ "$OVERWRITE_EXISTING_SDKS_PHP" == "true" ]]; echo "$?"
+            	if [ "$OVERWRITE_EXISTING_SDKS_PHP" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
 	    	;;
         "php-composer")
-            	return [[ "$OVERWRITE_EXISTING_SDKS_PHP_COMPOSER" == "true" ]]; echo "$?"
+            	if [ "$OVERWRITE_EXISTING_SDKS_PHP_COMPOSER" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
             	;;
 	"java")
-	    	return [[ "$OVERWRITE_EXISTING_SDKS_JAVA" == "true" ]]; echo "$?"
+	    		if [ "$OVERWRITE_EXISTING_SDKS_JAVA" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
 	    	;;
         "maven")
-	    	return [[ "$OVERWRITE_EXISTING_SDKS_MAVEN" == "true" ]]; echo "$?"
+	    		if [ "$OVERWRITE_EXISTING_SDKS_MAVEN" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
 	    	;;
 	"nodejs")
-	 	return [[ "$OVERWRITE_EXISTING_SDKS_NODE" == "true" ]]; echo "$?"
+	 		if [ "$OVERWRITE_EXISTING_SDKS_NODE" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
 	    	;;
         "ruby")
-		return [[ "$OVERWRITE_EXISTING_SDKS_RUBY" == "true" ]]; echo "$?"
+		if [ "$OVERWRITE_EXISTING_SDKS_RUBY" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
 		;;
 	"python")
-		return [[ "$OVERWRITE_EXISTING_SDKS_PYTHON" == "true" ]]; echo "$?"
+		if [ "$OVERWRITE_EXISTING_SDKS_PYTHON" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
 		;;
         "golang")
-		return [[ "$OVERWRITE_EXISTING_SDKS_GOLANG" == "true" ]]; echo "$?"
+		if [ "$OVERWRITE_EXISTING_SDKS_GOLANG" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
 		;;
 	"dotnet")
-		return [[ "$OVERWRITE_EXISTING_SDKS_DOTNETCORE" == "true" ]]; echo "$?"
+		if [ "$OVERWRITE_EXISTING_SDKS_DOTNETCORE" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
 		;;
 	esac
 }
