@@ -14,7 +14,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node")]
     public class NodeLegacyVersionsEndToEndTests : NodeEndToEndTestsBase
     {
         public NodeLegacyVersionsEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -22,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
+        [Theory, Trait("category", "node-legacyVersions")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRun_NodeWebFrontEndApp(string nodeVersion)
         {
@@ -70,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory, Trait("category", "node-legacyVersions-2")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModules(string nodeVersion)
         {
