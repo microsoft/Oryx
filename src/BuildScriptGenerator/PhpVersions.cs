@@ -4,8 +4,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class PhpVersions
     {
-        public const string PhpRuntimeBaseTag = "20220128.4";
-        public const string PhpFpmRuntimeBaseTag = "20220129.2";
+        public const string PhpRuntimeBaseTag = "20220324.2";
+        public const string PhpFpmRuntimeBaseTag = "20220325.1";
         public const string ComposerVersion = "2.0.8";
         public const string ComposerSetupSha384 = "756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3";
         public const string Composer19Version = "1.9.3";
@@ -19,10 +19,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Php81TarSha256 = "a1317eff0723a2b3d3122bbfe107a1158570ea2822dc35a5fb360086db0f6bbc";
         public const string Php80Version = "8.0.17";
         public const string Php80Keys = "1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F";
-        public const string Php80TarSha256 = "4e7d94bb3d144412cb8b2adeb599fb1c6c1d7b357b0d0d0478dc5ef53532ebc5";
+        public const string Php80TarSha256 = "bdbd792901c156c4d1710c9d266732d3c17f6ff63850d6660b9d8d3411188424";
         public const string Php74Version = "7.4.28";
         public const string Php74Keys = "42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312";
-        public const string Php74TarSha256 = "9cc3b6f6217b60582f78566b3814532c4b71d517876c25013ae51811e65d8fce";
+        public const string Php74TarSha256 = "a04014cd1646b90547907e2e0ac5371594533960de317b6c7ac70bcb42db92fb";
         public const string Php73Version = "7.3.27";
         public const string Php73Keys = "CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D";
         public const string Php73TarSha256 = "65f616e2d5b6faacedf62830fa047951b0136d5da34ae59e6744cbaf5dca148d";
