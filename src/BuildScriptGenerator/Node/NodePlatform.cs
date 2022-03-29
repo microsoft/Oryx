@@ -323,10 +323,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             var frameworksObj = nodePlatformDetectorResult.Frameworks;
             if (frameworksObj != null && frameworksObj.Any())
             {
-                string[] framworks = frameworksObj.Select(p => p.Framework).ToArray();
-                string frameworks = string.Join(",", framworks);
+                string frameworks = string.Join(",", frameworksObj.Select(p => p.Framework).ToArray());
                 manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = frameworks;
                 this.logger.LogInformation($"Detected the following framework(s): {frameworks}");
+                Console.WriteLine($"Detected the following framework(s): {frameworks}");
             }
 
             string compressNodeModulesCommand = null;

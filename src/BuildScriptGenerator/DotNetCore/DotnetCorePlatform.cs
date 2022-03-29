@@ -139,7 +139,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 installBlazorWebAssemblyAOTWorkloadCommand = DotNetCoreConstants.InstallBlazorWebAssemblyAOTWorkloadCommand;
                 manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = "blazor";
-                this.logger.LogInformation("Detected the the following framework(s): blazor");
+                this.logger.LogInformation("Detected the following framework(s): blazor");
+                Console.WriteLine("Detected the following framework(s): blazor");
             }
 
             var templateProperties = new DotNetCoreBashBuildSnippetProperties
