@@ -116,8 +116,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             if (RubyConstants.ConfigYmlFileName != null)
             {
                 buildProperties[ManifestFilePropertyKeys.Frameworks] = "jekyll";
-                this.logger.LogInformation("Detected the following framework(s): jekyll");
-                Console.WriteLine("Detected the following framework(s): jekyll");
+                this.logger.LogInformation("Detected the following frameworks: jekyll");
+                Console.WriteLine("Detected the following frameworks: jekyll");
             }
 
             // Write the platform name and version to the manifest file
