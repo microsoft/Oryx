@@ -978,8 +978,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"yarn set version berry")
-                .AddCommand($"yarn plugin import workspace-tools@2.2.0")
-                .AddCommand($"yarn set version 2.4.1")
+                .AddCommand($"yarn set version from sources")
+                .AddCommand($"yarn plugin import from sources @yarnpkg/plugin-workspace-tools")
                 .AddCommand($"oryx build . -o {appOutputDir}")
                 .ToString();
 
