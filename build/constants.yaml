@@ -321,7 +321,7 @@
 - name: java-versions
   constants:
     java-version: 17.0.2
-    maven-version: 3.6.3
+    maven-version: 3.8.5
   outputs:
     - type: shell
       directory: build
