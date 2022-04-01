@@ -33,7 +33,7 @@ The latest version of *Maven* is used to install dependencies.
 # Version support
 
 The Java project defines this [release schedule][]. Oryx supports all actively supported
-releases (1.8.0, 9.0.4, 10.0.2, 11.0.8, 12.0.2, 13.0.2, 14.0.2).
+releases (1.8.0, 9.0.4, 10.0.2, 11.0.8, 12.0.2, 13.0.2, 14.0.2, 17.0.2).
 
 We will update the `patch` version of a release at least once every 3 months,
 replacing the previous `patch` version for that release.

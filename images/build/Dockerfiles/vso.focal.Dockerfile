@@ -118,7 +118,7 @@ RUN set -ex \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
     && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s $DOT_NET_60_SDK_VERSION 6-lts \
-    && ln -s 6-lts lts \
+    && ln -s $DOT_NET_60_SDK_VERSION lts \
     # Install Hugo
     && mkdir -p /home/codespace/.hugo \
     && $imagesDir/build/installHugo.sh \
@@ -136,9 +136,9 @@ RUN set -ex \
     && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
     && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
     && cd /opt/nodejs \
-    && ln -s $NODE12_VERSION 14 \
-    && ln -s $NODE14_VERSION 16 \
-    && ln -s 16 lts \
+    && ln -s $NODE14_VERSION 14 \
+    && ln -s $NODE16_VERSION 16 \
+    && ln -s $NODE16_VERSION lts \
     && ln -sfn /opt/nodejs/$NODE16_VERSION /home/codespace/.nodejs/current \
     && cd /opt/yarn \
     && ln -s $YARN_VERSION stable \
@@ -161,7 +161,7 @@ RUN set -ex \
     && ln -s $PYTHON310_VERSION 3.10 \
     && ln -s $PYTHON310_VERSION latest \
     && ln -s $PYTHON310_VERSION stable \
-    && ln -s 3.10 3 \
+    && ln -s $PYTHON310_VERSION 3 \
     && ln -sfn /opt/python/$PYTHON310_VERSION /home/codespace/.python/current \
     # Install PHP pre-reqs
     && $imagesDir/build/php/prereqs/installPrereqs.sh \
@@ -173,7 +173,7 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
     && cd /opt/php \
     && ln -s $PHP81_VERSION 8 \
-    && ln -s 8 lts \
+    && ln -s $PHP81_VERSION lts \
     && ln -sfn /opt/php/$PHP81_VERSION /home/codespace/.php/current \
     && cd /opt/php-composer \
     && ln -sfn $COMPOSER_VERSION stable \

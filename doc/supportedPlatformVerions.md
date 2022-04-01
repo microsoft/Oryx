@@ -251,6 +251,7 @@
 - 2.7.1
 - 2.6.6
 - 2.5.8
+- 3.1.1
 
 ## Supported buster versions
 

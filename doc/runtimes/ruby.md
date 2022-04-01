@@ -32,7 +32,7 @@ The latest version of *gem* is used to install dependencies.
 # Version support
 
 The Ruby project defines this [release schedule][]. Oryx supports all actively supported
-releases (2.5.8, 2.6.6, 2.7.1, 2.7.2, 3.0.0).
+releases (2.5.8, 2.6.6, 2.7.1, 2.7.2, 3.0.0, 3.1.1).
 
 We will update the `patch` version of a release at least once every 3 months,
 replacing the previous `patch` version for that release.
