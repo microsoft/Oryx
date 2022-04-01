@@ -135,6 +135,8 @@
     composer1-10-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
     composer2-0-version: 2.0.8
     composer2-0-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
+    composer2-2-version: 2.2.9
+    composer2-2-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
     # hashes are for .tar.xz
     php81-version: 8.1.0
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
@@ -168,6 +170,8 @@
   constants:
     gem-version: 3.2.9
     # hashes are for .tar.xz
+    ruby31-version: 3.1.1
+    ruby31-tar-sha256: fe6e4782de97443978ddba8ba4be38d222aa24dc3e3f02a6a8e7701c0eeb619d
     ruby27-version: 2.7.2
     ruby27-tar-sha256: 6e5706d0d4ee4e1e2f883db9d768586b4d06567debea353c796ec45e8321c3d4
     ruby26-version: 2.6.6
