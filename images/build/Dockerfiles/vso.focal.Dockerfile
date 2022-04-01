@@ -231,10 +231,10 @@ RUN buildDir="/opt/tmp/build" \
     && cd $imagesDir \
     && mkdir -p /home/codespace/.ruby \
     && . $buildDir/__rubyVersions.sh \
-    && ./installPlatform.sh ruby $RUBY27_VERSION \
+    && ./installPlatform.sh ruby $RUBY31_VERSION \
     && cd /opt/ruby \
-    && ln -s $RUBY27_VERSION /opt/ruby/lts \
-    && ln -sfn /opt/ruby/$RUBY27_VERSION /home/codespace/.ruby/current \
+    && ln -s $RUBY31_VERSION /opt/ruby/lts \
+    && ln -sfn /opt/ruby/$RUBY31_VERSION /home/codespace/.ruby/current \
     && cd $imagesDir \
     && mkdir -p /home/codespace/.java \
     && . $buildDir/__javaVersions.sh \
