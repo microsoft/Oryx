@@ -168,14 +168,13 @@ RUN set -ex \
     && mkdir -p /home/codespace/.php \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
-    && $imagesDir/installPlatform.sh php $PHP72_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP73_VERSION \
     && $imagesDir/installPlatform.sh php $PHP74_VERSION \
+    && $imagesDir/installPlatform.sh php $PHP81_VERSION \
     && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
     && cd /opt/php \
-    && ln -s 7.3 7 \
-    && ln -s 7 lts \
-    && ln -sfn /opt/php/$PHP73_VERSION /home/codespace/.php/current \
+    && ln -s $PHP81_VERSION 8 \
+    && ln -s 8 lts \
+    && ln -sfn /opt/php/$PHP81_VERSION /home/codespace/.php/current \
     && cd /opt/php-composer \
     && ln -sfn 2.0.8 stable \
     && ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar \
