@@ -176,7 +176,7 @@ RUN set -ex \
     && ln -s 8 lts \
     && ln -sfn /opt/php/$PHP81_VERSION /home/codespace/.php/current \
     && cd /opt/php-composer \
-    && ln -sfn 2.0.8 stable \
+    && ln -sfn $COMPOSER_VERSION stable \
     && ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar \
     && apt-get update \
     && apt-get install -y --no-install-recommends \

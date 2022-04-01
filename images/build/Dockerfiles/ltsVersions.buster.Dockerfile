@@ -166,7 +166,7 @@ RUN set -ex \
     && ln -s 8.0 8 \
     && ln -s 8 lts \
     && cd /opt/php-composer \
-    && ln -sfn 2.0.8 stable \
+    && ln -sfn $COMPOSER1_10_VERSION stable \
     && ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
