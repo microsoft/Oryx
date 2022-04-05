@@ -4,7 +4,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class RubyVersions
     {
-        public const string GemVersion = "3.2.9";
+        public const string GemVersion = "3.3.10";
         public const string Ruby27Version = "2.7.2";
         public const string Ruby27TarSha256 = "6e5706d0d4ee4e1e2f883db9d768586b4d06567debea353c796ec45e8321c3d4";
         public const string Ruby26Version = "2.6.6";
@@ -12,6 +12,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Ruby25Version = "2.5.8";
         public const string Ruby25TarSha256 = "0391b2ffad3133e274469f9953ebfd0c9f7c186238968cbdeeb0651aa02a4d6d";
         public const string Ruby31Version = "3.1.1";
-        public const string Ruby31TarSha256 = "fe6e4782de97443978ddba8ba4be38d222aa24dc3e3f02a6a8e7701c0eeb619d";
+        public const string Ruby31TarSha256 = "7aefaa6b78b076515d272ec59c4616707a54fc9f2391239737d5f10af7a16caa";
     }
 }
