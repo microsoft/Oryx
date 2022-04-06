@@ -23,7 +23,7 @@ else
 	dotnet publish "{{ ProjectFile }}" -c {{ Configuration }} -o "$DESTINATION_DIR"
 
 	# we copy *.csproj to destination directory so the detector can identify
-	# the desitionation directory as a DotNet application
+	# the destination directory as a DotNet application
 	# when running oryx run-script
 	# 
 	# 2>/dev/null || :
