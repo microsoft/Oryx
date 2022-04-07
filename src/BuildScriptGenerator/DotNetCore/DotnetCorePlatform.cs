@@ -26,13 +26,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         DotNetCoreConstants.ProjectBuildPropertyKeyDocumentation)]
     internal class DotNetCorePlatform : IProgrammingPlatform
     {
-        private readonly IDotNetCoreVersionProvider _versionProvider;
-        private readonly ILogger<DotNetCorePlatform> _logger;
-        private readonly IDotNetCorePlatformDetector _detector;
-        private readonly DotNetCoreScriptGeneratorOptions _dotNetCoreScriptGeneratorOptions;
-        private readonly BuildScriptGeneratorOptions _commonOptions;
-        private readonly DotNetCorePlatformInstaller _platformInstaller;
-        private readonly GlobalJsonSdkResolver _globalJsonSdkResolver;
+        private readonly IDotNetCoreVersionProvider versionProvider;
+        private readonly ILogger<DotNetCorePlatform> logger;
+        private readonly IDotNetCorePlatformDetector detector;
+        private readonly DotNetCoreScriptGeneratorOptions dotNetCoreScriptGeneratorOptions;
+        private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly DotNetCorePlatformInstaller platformInstaller;
+        private readonly GlobalJsonSdkResolver globalJsonSdkResolver;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DotNetCorePlatform"/> class.
@@ -53,13 +53,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             DotNetCorePlatformInstaller platformInstaller,
             GlobalJsonSdkResolver globalJsonSdkResolver)
         {
-            _versionProvider = versionProvider;
-            _logger = logger;
-            _detector = detector;
-            _dotNetCoreScriptGeneratorOptions = dotNetCoreScriptGeneratorOptions.Value;
-            _commonOptions = commonOptions.Value;
-            _platformInstaller = platformInstaller;
-            _globalJsonSdkResolver = globalJsonSdkResolver;
+            this.versionProvider = versionProvider;
+            this.logger = logger;
+            this.detector = detector;
+            this.dotNetCoreScriptGeneratorOptions = dotNetCoreScriptGeneratorOptions.Value;
+            this.commonOptions = commonOptions.Value;
+            this.platformInstaller = platformInstaller;
+            this.globalJsonSdkResolver = globalJsonSdkResolver;
         }
 
         /// <inheritdoc/>
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             get
             {
-                var versionMap = _versionProvider.GetSupportedVersions();
+                var versionMap = this.versionProvider.GetSupportedVersions();
 
                 // Map is from runtime version => sdk version
                 return versionMap.Keys;
@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             try
             {
-                var detectionResult = _detector.Detect(new DetectorContext
+                var detectionResult = this.detector.Detect(new DetectorContext
                 {
                     SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
                 });
@@ -91,12 +91,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     return null;
                 }
 
-                ResolveVersions(context, detectionResult);
+                this.ResolveVersions(context, detectionResult);
                 return detectionResult;
             }
             catch (InvalidProjectFileException e)
             {
-                _logger.LogError(e, "Error occurred while trying to detect for .Net Core application(s)");
+                this.logger.LogError(e, "Error occurred while trying to detect for .Net Core application(s)");
                 throw new InvalidUsageException(e.Message);
             }
         }
@@ -138,19 +138,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (dotNetCorePlatformDetectorResult.InstallAOTWorkloads)
             {
                 installBlazorWebAssemblyAOTWorkloadCommand = DotNetCoreConstants.InstallBlazorWebAssemblyAOTWorkloadCommand;
+                manifestFileProperties[ManifestFilePropertyKeys.Frameworks] = "blazor";
+                this.logger.LogInformation("Detected the following frameworks: blazor");
+                Console.WriteLine("Detected the following frameworks: blazor");
             }
 
             var templateProperties = new DotNetCoreBashBuildSnippetProperties
             {
                 ProjectFile = projectFile,
-                Configuration = GetBuildConfiguration(),
+                Configuration = this.GetBuildConfiguration(),
                 InstallBlazorWebAssemblyAOTWorkloadCommand = installBlazorWebAssemblyAOTWorkloadCommand,
             };
 
             var script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.DotNetCoreSnippet,
                 templateProperties,
-                _logger);
+                this.logger);
 
             SetStartupFileNameInfoInManifestFile(context, projectFile, manifestFileProperties);
 
@@ -179,7 +182,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
-            return _commonOptions.EnableDotNetCoreBuild;
+            return this.commonOptions.EnableDotNetCoreBuild;
         }
 
         /// <inheritdoc/>
@@ -223,31 +226,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             string installationScriptSnippet = null;
-            if (_commonOptions.EnableDynamicInstall)
+            if (this.commonOptions.EnableDynamicInstall)
             {
-                _logger.LogDebug("Dynamic install is enabled.");
+                this.logger.LogDebug("Dynamic install is enabled.");
 
-                if (_platformInstaller.IsVersionAlreadyInstalled(dotNetCorePlatformDetectorResult.SdkVersion))
+                if (this.platformInstaller.IsVersionAlreadyInstalled(dotNetCorePlatformDetectorResult.SdkVersion))
                 {
-                    _logger.LogDebug(
+                    this.logger.LogDebug(
                         "DotNetCore SDK version {globalJsonSdkVersion} is already installed. " +
                         "So skipping installing it again.",
                         dotNetCorePlatformDetectorResult.SdkVersion);
                 }
                 else
                 {
-                    _logger.LogDebug(
+                    this.logger.LogDebug(
                         "DotNetCore SDK version {globalJsonSdkVersion} is not installed. " +
                         "So generating an installation script snippet for it.",
                         dotNetCorePlatformDetectorResult.SdkVersion);
 
-                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
+                    installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
                         dotNetCorePlatformDetectorResult.SdkVersion);
                 }
             }
             else
             {
-                _logger.LogDebug("Dynamic install is not enabled.");
+                this.logger.LogDebug("Dynamic install is not enabled.");
             }
 
             return installationScriptSnippet;
@@ -265,13 +268,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             // Get runtime version
-            var resolvedRuntimeVersion = GetRuntimeVersionUsingHierarchicalRules(
+            var resolvedRuntimeVersion = this.GetRuntimeVersionUsingHierarchicalRules(
                 dotNetCorePlatformDetectorResult.PlatformVersion);
-            resolvedRuntimeVersion = GetMaxSatisfyingRuntimeVersionAndVerify(resolvedRuntimeVersion);
+            resolvedRuntimeVersion = this.GetMaxSatisfyingRuntimeVersionAndVerify(resolvedRuntimeVersion);
             dotNetCorePlatformDetectorResult.PlatformVersion = resolvedRuntimeVersion;
 
-            var versionMap = _versionProvider.GetSupportedVersions();
-            var sdkVersion = GetSdkVersion(context, dotNetCorePlatformDetectorResult.PlatformVersion, versionMap);
+            var versionMap = this.versionProvider.GetSupportedVersions();
+            var sdkVersion = this.GetSdkVersion(context, dotNetCorePlatformDetectorResult.PlatformVersion, versionMap);
             dotNetCorePlatformDetectorResult.SdkVersion = sdkVersion;
         }
 
@@ -293,36 +296,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return tools;
         }
 
-        private string GetSdkVersion(
-            RepositoryContext context,
-            string runtimeVersion,
-            Dictionary<string, string> versionMap)
-        {
-            if (_commonOptions.EnableDynamicInstall
-                && context.SourceRepo.FileExists(DotNetCoreConstants.GlobalJsonFileName))
-            {
-                var availableSdks = versionMap.Values;
-                var globalJsonSdkVersion = _globalJsonSdkResolver.GetSatisfyingSdkVersion(
-                    context.SourceRepo,
-                    runtimeVersion,
-                    availableSdks);
-                return globalJsonSdkVersion;
-            }
-
-            return versionMap[runtimeVersion];
-        }
-
-        private string GetBuildConfiguration()
-        {
-            var configuration = _dotNetCoreScriptGeneratorOptions.MSBuildConfiguration;
-            if (string.IsNullOrEmpty(configuration))
-            {
-                configuration = DotNetCoreConstants.DefaultMSBuildConfiguration;
-            }
-
-            return configuration;
-        }
-
         /// <summary>
         /// Even though the runtime container has the logic of finding out the startup file based on
         /// 'runtimeconfig.json' prefix, we still set the name in the manifest file because of the following
@@ -336,7 +309,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         /// the build does not happen with Oryx), then the runtime container's logic will fallback to looking at
         /// runtimeconfig.json prefixes.
         /// </summary>
-        private void SetStartupFileNameInfoInManifestFile(
+        private static void SetStartupFileNameInfoInManifestFile(
             BuildScriptGeneratorContext context,
             string projectFile,
             IDictionary<string, string> buildProperties)
@@ -358,9 +331,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
         }
 
+        private string GetSdkVersion(
+            RepositoryContext context,
+            string runtimeVersion,
+            Dictionary<string, string> versionMap)
+        {
+            if (this.commonOptions.EnableDynamicInstall
+                && context.SourceRepo.FileExists(DotNetCoreConstants.GlobalJsonFileName))
+            {
+                var availableSdks = versionMap.Values;
+                var globalJsonSdkVersion = this.globalJsonSdkResolver.GetSatisfyingSdkVersion(
+                    context.SourceRepo,
+                    runtimeVersion,
+                    availableSdks);
+                return globalJsonSdkVersion;
+            }
+
+            return versionMap[runtimeVersion];
+        }
+
+        private string GetBuildConfiguration()
+        {
+            var configuration = this.dotNetCoreScriptGeneratorOptions.MSBuildConfiguration;
+            if (string.IsNullOrEmpty(configuration))
+            {
+                configuration = DotNetCoreConstants.DefaultMSBuildConfiguration;
+            }
+
+            return configuration;
+        }
+
         private string GetMaxSatisfyingRuntimeVersionAndVerify(string runtimeVersion)
         {
-            var versionMap = _versionProvider.GetSupportedVersions();
+            var versionMap = this.versionProvider.GetSupportedVersions();
 
             // Since our semantic versioning library does not work with .NET Core preview version format, here
             // we do some trivial way of finding the latest version which matches a given runtime version
@@ -379,7 +382,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // NOTE:
                 // Preview versions: 5.0.0-preview.3.20214.6, 5.0.0-preview.2.20160.6, 5.0.0-preview.1.20120.5
                 var previewRuntimeVersions = versionMap.Keys
-                    .Where(version => version.IndexOf("-") >= 0)
+                    .Where(version => version.Contains("-"))
                     .Where(version => version.StartsWith(runtimeVersion))
                     .OrderByDescending(version => version);
                 if (previewRuntimeVersions.Any())
@@ -394,7 +397,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     DotNetCoreConstants.PlatformName,
                     runtimeVersion,
                     versionMap.Keys);
-                _logger.LogError(
+                this.logger.LogError(
                     exception,
                     $"Exception caught, the version '{runtimeVersion}' is not supported for the .NET Core platform.");
                 throw exception;
@@ -406,9 +409,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private string GetRuntimeVersionUsingHierarchicalRules(string detectedVersion)
         {
             // Explicitly specified version by user wins over detected version
-            if (!string.IsNullOrEmpty(_dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion))
+            if (!string.IsNullOrEmpty(this.dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion))
             {
-                return _dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion;
+                return this.dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion;
             }
 
             // If a version was detected, then use it.
@@ -418,7 +421,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             }
 
             // Fallback to default version
-            var defaultVersion = _versionProvider.GetDefaultRuntimeVersion();
+            var defaultVersion = this.versionProvider.GetDefaultRuntimeVersion();
             return defaultVersion;
         }
 
@@ -426,15 +429,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             explicitVersion = null;
 
-            var platformName = _commonOptions.PlatformName;
+            var platformName = this.commonOptions.PlatformName;
             if (platformName.EqualsIgnoreCase(DotNetCoreConstants.PlatformName))
             {
-                if (string.IsNullOrWhiteSpace(_dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion))
+                if (string.IsNullOrWhiteSpace(this.dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion))
                 {
                     return false;
                 }
 
-                explicitVersion = _dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion;
+                explicitVersion = this.dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion;
                 return true;
             }
 

@@ -75,12 +75,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// </summary>
         internal const string UniversalWheel = "universal";
 
-        private readonly BuildScriptGeneratorOptions _commonOptions;
-        private readonly PythonScriptGeneratorOptions _pythonScriptGeneratorOptions;
-        private readonly IPythonVersionProvider _versionProvider;
-        private readonly ILogger<PythonPlatform> _logger;
-        private readonly IPythonPlatformDetector _detector;
-        private readonly PythonPlatformInstaller _platformInstaller;
+        private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly PythonScriptGeneratorOptions pythonScriptGeneratorOptions;
+        private readonly IPythonVersionProvider versionProvider;
+        private readonly ILogger<PythonPlatform> logger;
+        private readonly IPythonPlatformDetector detector;
+        private readonly PythonPlatformInstaller platformInstaller;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PythonPlatform"/> class.
@@ -99,12 +99,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             IPythonPlatformDetector detector,
             PythonPlatformInstaller platformInstaller)
         {
-            _commonOptions = commonOptions.Value;
-            _pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
-            _versionProvider = versionProvider;
-            _logger = logger;
-            _detector = detector;
-            _platformInstaller = platformInstaller;
+            this.commonOptions = commonOptions.Value;
+            this.pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
+            this.versionProvider = versionProvider;
+            this.logger = logger;
+            this.detector = detector;
+            this.platformInstaller = platformInstaller;
         }
 
         /// <inheritdoc/>
@@ -114,7 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             get
             {
-                var versionInfo = _versionProvider.GetVersionInfo();
+                var versionInfo = this.versionProvider.GetVersionInfo();
                 return versionInfo.SupportedVersions;
             }
         }
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var detectionResult = _detector.Detect(new DetectorContext
+            var detectionResult = this.detector.Detect(new DetectorContext
             {
                 SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
             });
@@ -132,7 +132,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 return null;
             }
 
-            ResolveVersions(context, detectionResult);
+            this.ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 
@@ -149,15 +149,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     $"'{typeof(PythonPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            _logger.LogInformation($"context buildcommandsfilename: {context.BuildCommandsFileName}");
-            _logger.LogInformation($"common option buildcommandsfilename: {_commonOptions.BuildCommandsFileName}");
+            this.logger.LogInformation($"context buildcommandsfilename: {context.BuildCommandsFileName}");
+            this.logger.LogInformation($"common option buildcommandsfilename: {this.commonOptions.BuildCommandsFileName}");
 
             if (IsCondaEnvironment(pythonPlatformDetectorResult))
             {
-                _logger.LogInformation($" *** conda context buildcommandsfilename: {context.BuildCommandsFileName}");
-                _logger.LogInformation($" *** conda common option buildcommandsfilename: {_commonOptions.BuildCommandsFileName}");
+                this.logger.LogInformation($" *** conda context buildcommandsfilename: {context.BuildCommandsFileName}");
+                this.logger.LogInformation($" *** conda common option buildcommandsfilename: {this.commonOptions.BuildCommandsFileName}");
 
-                return GetBuildScriptSnippetForConda(context, pythonPlatformDetectorResult);
+                return this.GetBuildScriptSnippetForConda(context, pythonPlatformDetectorResult);
             }
 
             var manifestFileProperties = new Dictionary<string, string>();
@@ -167,13 +167,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             var packageDir = GetPackageDirectory(context);
             var virtualEnvName = GetVirtualEnvironmentName(context);
-            var isPythonPackageCommandEnabled = _commonOptions.ShouldPackage;
+            var isPythonPackageCommandEnabled = this.commonOptions.ShouldPackage;
             var pythonPackageWheelType = GetPythonPackageWheelType(context);
-            var pythonBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.BuildCommandsFileName) ?
-                    FilePaths.BuildCommandsFileName : _commonOptions.BuildCommandsFileName;
-            pythonBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.ManifestDir) ?
+            var pythonBuildCommandsFile = string.IsNullOrEmpty(this.commonOptions.BuildCommandsFileName) ?
+                    FilePaths.BuildCommandsFileName : this.commonOptions.BuildCommandsFileName;
+            pythonBuildCommandsFile = string.IsNullOrEmpty(this.commonOptions.ManifestDir) ?
                 Path.Combine(context.SourceRepo.RootPath, pythonBuildCommandsFile) :
-                Path.Combine(_commonOptions.ManifestDir, pythonBuildCommandsFile);
+                Path.Combine(this.commonOptions.ManifestDir, pythonBuildCommandsFile);
             manifestFileProperties[nameof(pythonBuildCommandsFile)] = pythonBuildCommandsFile;
 
             if (!isPythonPackageCommandEnabled && !string.IsNullOrWhiteSpace(pythonPackageWheelType))
@@ -219,13 +219,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var virtualEnvParams = string.Empty;
 
             var pythonVersion = pythonPlatformDetectorResult.PlatformVersion;
-            _logger.LogDebug("Selected Python version: {pyVer}", pythonVersion);
+            this.logger.LogDebug("Selected Python version: {pyVer}", pythonVersion);
 
             if (!string.IsNullOrEmpty(pythonVersion) && !string.IsNullOrWhiteSpace(virtualEnvName))
             {
-                (virtualEnvModule, virtualEnvParams) = GetVirtualEnvModules(pythonVersion);
+                (virtualEnvModule, virtualEnvParams) = this.GetVirtualEnvModules(pythonVersion);
 
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "Using virtual environment {venv}, module {venvModule}",
                     virtualEnvName,
                     virtualEnvModule);
@@ -243,14 +243,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     = compressedVirtualEnvFileName;
             }
 
-            TryLogDependencies(pythonVersion, context.SourceRepo);
+            this.TryLogDependencies(pythonVersion, context.SourceRepo);
 
             var scriptProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: virtualEnvName,
                 virtualEnvironmentModule: virtualEnvModule,
                 virtualEnvironmentParameters: virtualEnvParams,
                 packagesDirectory: packageDir,
-                enableCollectStatic: _pythonScriptGeneratorOptions.EnableCollectStatic,
+                enableCollectStatic: this.pythonScriptGeneratorOptions.EnableCollectStatic,
                 compressVirtualEnvCommand: compressVirtualEnvCommand,
                 compressedVirtualEnvFileName: compressedVirtualEnvFileName,
                 runPythonPackageCommand: isPythonPackageCommandEnabled,
@@ -261,7 +261,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,
                 scriptProps,
-                _logger);
+                this.logger);
 
             return new BuildScriptSnippet()
             {
@@ -286,7 +286,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
-            return _commonOptions.EnablePythonBuild;
+            return this.commonOptions.EnablePythonBuild;
         }
 
         /// <inheritdoc/>
@@ -344,37 +344,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var pythonPlatformDetectorResult = detectorResult as PythonPlatformDetectorResult;
             if (pythonPlatformDetectorResult != null && IsCondaEnvironment(pythonPlatformDetectorResult))
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "Application in the source directory is a Conda based app, " +
                     "so skipping dynamic installation of Python SDK.");
                 return null;
             }
 
             string installationScriptSnippet = null;
-            if (_commonOptions.EnableDynamicInstall)
+            if (this.commonOptions.EnableDynamicInstall)
             {
-                _logger.LogDebug("Dynamic install is enabled.");
+                this.logger.LogDebug("Dynamic install is enabled.");
 
-                if (_platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
+                if (this.platformInstaller.IsVersionAlreadyInstalled(detectorResult.PlatformVersion))
                 {
-                    _logger.LogDebug(
+                    this.logger.LogDebug(
                        "Python version {version} is already installed. So skipping installing it again.",
                        detectorResult.PlatformVersion);
                 }
                 else
                 {
-                    _logger.LogDebug(
+                    this.logger.LogDebug(
                         "Python version {version} is not installed. " +
                         "So generating an installation script snippet for it.",
                         detectorResult.PlatformVersion);
 
-                    installationScriptSnippet = _platformInstaller.GetInstallerScriptSnippet(
+                    installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
                         detectorResult.PlatformVersion);
                 }
             }
             else
             {
-                _logger.LogDebug("Dynamic install not enabled.");
+                this.logger.LogDebug("Dynamic install not enabled.");
             }
 
             return installationScriptSnippet;
@@ -383,8 +383,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// <inheritdoc/>
         public void ResolveVersions(RepositoryContext context, PlatformDetectorResult detectorResult)
         {
-            var resolvedVersion = GetVersionUsingHierarchicalRules(detectorResult.PlatformVersion);
-            resolvedVersion = GetMaxSatisfyingVersionAndVerify(resolvedVersion);
+            var resolvedVersion = this.GetVersionUsingHierarchicalRules(detectorResult.PlatformVersion);
+            resolvedVersion = this.GetMaxSatisfyingVersionAndVerify(resolvedVersion);
             detectorResult.PlatformVersion = resolvedVersion;
         }
 
@@ -422,72 +422,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return packageDir;
         }
 
-        private BuildScriptSnippet GetBuildScriptSnippetForConda(
-            BuildScriptGeneratorContext context,
-            PythonPlatformDetectorResult detectorResult)
-        {
-            var scriptProperties = new JupyterNotebookBashBuildSnippetProperties();
-            scriptProperties.HasRequirementsTxtFile = detectorResult.HasRequirementsTxtFile;
-            _logger.LogInformation($"conda context buildcommandsfilename: {context.BuildCommandsFileName}");
-            _logger.LogInformation($"conda common option buildcommandsfilename: {_commonOptions.BuildCommandsFileName}");
-            _logger.LogInformation($"conda common option manifest dir: {_commonOptions.ManifestDir}");
-            var condaBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.BuildCommandsFileName) ?
-                FilePaths.BuildCommandsFileName : _commonOptions.BuildCommandsFileName;
-            condaBuildCommandsFile = string.IsNullOrEmpty(_commonOptions.ManifestDir) ?
-                Path.Combine(context.SourceRepo.RootPath, condaBuildCommandsFile) :
-                Path.Combine(this._commonOptions.ManifestDir, condaBuildCommandsFile);
-            _logger.LogInformation($"conda buildcommandsfilename with path: {condaBuildCommandsFile}");
-            var manifestFileProperties = new Dictionary<string, string>();
-
-            // Write the platform name and version to the manifest file
-            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = detectorResult.PlatformVersion;
-            manifestFileProperties[nameof(condaBuildCommandsFile)] = condaBuildCommandsFile;
-
-            if (detectorResult.HasCondaEnvironmentYmlFile)
-            {
-                scriptProperties.EnvironmentYmlFile = CondaConstants.CondaEnvironmentYmlFileName;
-            }
-            else
-            {
-                string pythonVersion;
-                string templateName;
-                var version = new SemVer.Version(detectorResult.PlatformVersion);
-                if (version.Major.Equals(2))
-                {
-                    templateName = CondaConstants.DefaultPython2CondaEnvironmentYmlFileTemplateName;
-
-                    // Conda seems to have a problem with post 2.7.15 version,
-                    // so we by default restrict it to this version
-                    pythonVersion = CondaConstants.DefaultPython2Version;
-                }
-                else
-                {
-                    templateName = CondaConstants.DefaultCondaEnvironmentYmlFileTemplateName;
-                    pythonVersion = detectorResult.PlatformVersion;
-                }
-
-                scriptProperties.EnvironmentTemplateFileName = templateName;
-                scriptProperties.EnvironmentTemplatePythonVersion = pythonVersion;
-                scriptProperties.NoteBookBuildCommandsFileName = condaBuildCommandsFile;
-            }
-
-            _logger.LogInformation($"script properties of conda buildcommandfilename: {scriptProperties.NoteBookBuildCommandsFileName}");
-            _logger.LogInformation($"script properties of conda templatename: {scriptProperties.EnvironmentTemplateFileName}");
-
-
-            var script = TemplateHelper.Render(
-                TemplateHelper.TemplateResource.PythonJupyterNotebookSnippet,
-                scriptProperties,
-                _logger);
-
-            return new BuildScriptSnippet
-            {
-                BashBuildScriptSnippet = script,
-                BuildProperties = manifestFileProperties,
-            };
-        }
-
-        private string GetDefaultVirtualEnvName(PlatformDetectorResult detectorResult)
+        private static string GetDefaultVirtualEnvName(PlatformDetectorResult detectorResult)
         {
             string pythonVersion = detectorResult.PlatformVersion;
             if (!string.IsNullOrWhiteSpace(pythonVersion))
@@ -502,7 +437,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return $"pythonenv{pythonVersion}";
         }
 
-        private bool GetVirtualEnvPackOptions(
+        private static bool GetVirtualEnvPackOptions(
             BuildScriptGeneratorContext context,
             string virtualEnvName,
             out string compressVirtualEnvCommand,
@@ -537,7 +472,109 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return isVirtualEnvPackaged;
         }
 
-        private (string virtualEnvModule, string virtualEnvParams) GetVirtualEnvModules(string pythonVersion)
+        private static string GetVirtualEnvironmentName(BuildScriptGeneratorContext context)
+        {
+            if (context.Properties == null ||
+                !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
+            {
+                virtualEnvName = string.Empty;
+            }
+
+            return virtualEnvName;
+        }
+
+        private static string GetPythonPackageWheelType(BuildScriptGeneratorContext context)
+        {
+            if (context.Properties == null ||
+                !context.Properties.TryGetValue(PythonPackageWheelPropertyKey, out var packageWheelProperty))
+            {
+                packageWheelProperty = string.Empty;
+            }
+
+            return packageWheelProperty;
+        }
+
+        private static bool IsCondaEnvironment(PythonPlatformDetectorResult pythonPlatformDetectorResult)
+        {
+            if (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile
+                && IsCondaInstalledInImage())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsCondaInstalledInImage()
+        {
+            return File.Exists(PythonConstants.CondaExecutablePath);
+        }
+
+        private BuildScriptSnippet GetBuildScriptSnippetForConda(
+            BuildScriptGeneratorContext context,
+            PythonPlatformDetectorResult detectorResult)
+        {
+            var scriptProperties = new JupyterNotebookBashBuildSnippetProperties();
+            scriptProperties.HasRequirementsTxtFile = detectorResult.HasRequirementsTxtFile;
+            this.logger.LogInformation($"conda context buildcommandsfilename: {context.BuildCommandsFileName}");
+            this.logger.LogInformation($"conda common option buildcommandsfilename: {this.commonOptions.BuildCommandsFileName}");
+            this.logger.LogInformation($"conda common option manifest dir: {this.commonOptions.ManifestDir}");
+            var condaBuildCommandsFile = string.IsNullOrEmpty(this.commonOptions.BuildCommandsFileName) ?
+                FilePaths.BuildCommandsFileName : this.commonOptions.BuildCommandsFileName;
+            condaBuildCommandsFile = string.IsNullOrEmpty(this.commonOptions.ManifestDir) ?
+                Path.Combine(context.SourceRepo.RootPath, condaBuildCommandsFile) :
+                Path.Combine(this.commonOptions.ManifestDir, condaBuildCommandsFile);
+            this.logger.LogInformation($"conda buildcommandsfilename with path: {condaBuildCommandsFile}");
+            var manifestFileProperties = new Dictionary<string, string>();
+
+            // Write the platform name and version to the manifest file
+            manifestFileProperties[ManifestFilePropertyKeys.PythonVersion] = detectorResult.PlatformVersion;
+            manifestFileProperties[nameof(condaBuildCommandsFile)] = condaBuildCommandsFile;
+
+            if (detectorResult.HasCondaEnvironmentYmlFile)
+            {
+                scriptProperties.EnvironmentYmlFile = CondaConstants.CondaEnvironmentYmlFileName;
+            }
+            else
+            {
+                string pythonVersion;
+                string templateName;
+                var version = new SemVer.Version(detectorResult.PlatformVersion);
+                if (version.Major.Equals(2))
+                {
+                    templateName = CondaConstants.DefaultPython2CondaEnvironmentYmlFileTemplateName;
+
+                    // Conda seems to have a problem with post 2.7.15 version,
+                    // so we by default restrict it to this version
+                    pythonVersion = CondaConstants.DefaultPython2Version;
+                }
+                else
+                {
+                    templateName = CondaConstants.DefaultCondaEnvironmentYmlFileTemplateName;
+                    pythonVersion = detectorResult.PlatformVersion;
+                }
+
+                scriptProperties.EnvironmentTemplateFileName = templateName;
+                scriptProperties.EnvironmentTemplatePythonVersion = pythonVersion;
+                scriptProperties.NoteBookBuildCommandsFileName = condaBuildCommandsFile;
+            }
+
+            this.logger.LogInformation($"script properties of conda buildcommandfilename: {scriptProperties.NoteBookBuildCommandsFileName}");
+            this.logger.LogInformation($"script properties of conda templatename: {scriptProperties.EnvironmentTemplateFileName}");
+
+            var script = TemplateHelper.Render(
+                TemplateHelper.TemplateResource.PythonJupyterNotebookSnippet,
+                scriptProperties,
+                this.logger);
+
+            return new BuildScriptSnippet
+            {
+                BashBuildScriptSnippet = script,
+                BuildProperties = manifestFileProperties,
+            };
+        }
+
+        private (string VirtualEnvModule, string VirtualEnvParams) GetVirtualEnvModules(string pythonVersion)
         {
             string virtualEnvModule;
             string virtualEnvParams = string.Empty;
@@ -554,7 +591,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
                 default:
                     string errorMessage = "Python version '" + pythonVersion + "' is not supported";
-                    _logger.LogError(errorMessage);
+                    this.logger.LogError(errorMessage);
                     throw new NotSupportedException(errorMessage);
             }
 
@@ -563,48 +600,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         private void TryLogDependencies(string pythonVersion, ISourceRepo repo)
         {
-            if (!repo.FileExists(PythonConstants.RequirementsFileName))
+            var customRequirementsTxtPath = this.pythonScriptGeneratorOptions.CustomRequirementsTxtPath;
+            var requirementsTxtPath = customRequirementsTxtPath == null ? PythonConstants.RequirementsFileName : customRequirementsTxtPath;
+            if (!repo.FileExists(requirementsTxtPath))
             {
                 return;
             }
 
             try
             {
-                var deps = repo.ReadAllLines(PythonConstants.RequirementsFileName)
+                var deps = repo.ReadAllLines(requirementsTxtPath)
                     .Where(line => !line.TrimStart().StartsWith("#"));
-                _logger.LogDependencies(PythonConstants.PlatformName, pythonVersion, deps);
+                this.logger.LogDependencies(PythonConstants.PlatformName, pythonVersion, deps);
             }
             catch (Exception exc)
             {
-                _logger.LogWarning(exc, "Exception caught while logging dependencies");
+                this.logger.LogWarning(exc, "Exception caught while logging dependencies");
             }
-        }
-
-        private string GetVirtualEnvironmentName(BuildScriptGeneratorContext context)
-        {
-            if (context.Properties == null ||
-                !context.Properties.TryGetValue(VirtualEnvironmentNamePropertyKey, out var virtualEnvName))
-            {
-                virtualEnvName = string.Empty;
-            }
-
-            return virtualEnvName;
-        }
-
-        private string GetPythonPackageWheelType(BuildScriptGeneratorContext context)
-        {
-            if (context.Properties == null ||
-                !context.Properties.TryGetValue(PythonPackageWheelPropertyKey, out var packageWheelProperty))
-            {
-                packageWheelProperty = string.Empty;
-            }
-
-            return packageWheelProperty;
         }
 
         private string GetMaxSatisfyingVersionAndVerify(string version)
         {
-            var supportedVersions = SupportedVersions;
+            var supportedVersions = this.SupportedVersions;
 
             // Since our semantic versioning library does not work with Python preview version format, here
             // we do some trivial way of finding the latest version which matches a given runtime version.
@@ -634,7 +651,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     PythonConstants.PlatformName,
                     version,
                     supportedVersions);
-                _logger.LogError(
+                this.logger.LogError(
                     exc,
                     $"Exception caught, the version '{version}' is not supported for the Python platform.");
                 throw exc;
@@ -646,9 +663,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private string GetVersionUsingHierarchicalRules(string detectedVersion)
         {
             // Explicitly specified version by user wins over detected version
-            if (!string.IsNullOrEmpty(_pythonScriptGeneratorOptions.PythonVersion))
+            if (!string.IsNullOrEmpty(this.pythonScriptGeneratorOptions.PythonVersion))
             {
-                return _pythonScriptGeneratorOptions.PythonVersion;
+                return this.pythonScriptGeneratorOptions.PythonVersion;
             }
 
             // If a version was detected, then use it.
@@ -658,24 +675,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             // Fallback to default version
-            var versionInfo = _versionProvider.GetVersionInfo();
+            var versionInfo = this.versionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
-        }
-
-        private bool IsCondaEnvironment(PythonPlatformDetectorResult pythonPlatformDetectorResult)
-        {
-            if (pythonPlatformDetectorResult.HasCondaEnvironmentYmlFile 
-                && IsCondaInstalledInImage())
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private bool IsCondaInstalledInImage()
-        {
-            return File.Exists(PythonConstants.CondaExecutablePath);
         }
     }
 }

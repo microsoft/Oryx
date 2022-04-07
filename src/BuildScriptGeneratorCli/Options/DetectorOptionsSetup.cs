@@ -18,9 +18,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
         public void Configure(DetectorOptions options)
         {
-            options.Project = GetStringValue(SettingsKeys.Project);
-            options.AppType = GetStringValue(SettingsKeys.AppType);
-            options.DisableRecursiveLookUp = GetBooleanValue(SettingsKeys.DisableRecursiveLookUp);
+            options.Project = this.GetStringValue(SettingsKeys.Project);
+            options.AppType = this.GetStringValue(SettingsKeys.AppType);
+            options.DisableRecursiveLookUp = this.GetBooleanValue(SettingsKeys.DisableRecursiveLookUp);
+            options.CustomRequirementsTxtPath = this.GetStringValue(SettingsKeys.CustomRequirementsTxtPath);
         }
     }
 }

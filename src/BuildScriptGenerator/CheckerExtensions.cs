@@ -3,10 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -33,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     return true;
                 }
 
-                return attr.TargetToolNames.Intersect(tools.Keys).Count() > 0;
+                return attr.TargetToolNames.Intersect(tools.Keys).Any();
             });
         }
     }

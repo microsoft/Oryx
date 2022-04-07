@@ -3,8 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -13,11 +11,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultScriptExecutor : IScriptExecutor
     {
-        private readonly ILogger<DefaultScriptExecutor> _logger;
+        private readonly ILogger<DefaultScriptExecutor> logger;
 
         public DefaultScriptExecutor(ILogger<DefaultScriptExecutor> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         public int ExecuteScript(
@@ -33,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return exitCode;
             }
 
-            return ExecuteScriptInternal(scriptPath, args, workingDirectory, stdOutHandler, stdErrHandler);
+            return this.ExecuteScriptInternal(scriptPath, args, workingDirectory, stdOutHandler, stdErrHandler);
         }
 
         protected virtual int ExecuteScriptInternal(
@@ -44,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             DataReceivedEventHandler stdErrHandler)
         {
             int exitCode;
-            using (var timedEvent = _logger.LogTimedEvent("ExecuteScript"))
+            using (var timedEvent = this.logger.LogTimedEvent("ExecuteScript"))
             {
                 exitCode = ProcessHelper.RunProcess(
                     scriptPath,

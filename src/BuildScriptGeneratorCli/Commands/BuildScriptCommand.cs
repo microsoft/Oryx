@@ -44,17 +44,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return ProcessConstants.ExitFailure;
             }
 
-            if (string.IsNullOrEmpty(OutputPath))
+            if (string.IsNullOrEmpty(this.OutputPath))
             {
                 console.WriteLine(generatedScript);
             }
             else
             {
-                OutputPath.SafeWriteAllText(generatedScript);
-                console.WriteLine($"Script written to '{OutputPath}'");
+                this.OutputPath.SafeWriteAllText(generatedScript);
+                console.WriteLine($"Script written to '{this.OutputPath}'");
 
                 // Try making the script executable
-                ProcessHelper.TrySetExecutableMode(OutputPath);
+                ProcessHelper.TrySetExecutableMode(this.OutputPath);
             }
 
             return ProcessConstants.ExitSuccess;
@@ -84,17 +84,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(
                 options,
-                sourceDir: SourceDir,
+                sourceDir: this.SourceDir,
                 destinationDir: null,
                 intermediateDir: null,
                 manifestDir: null,
-                platform: PlatformName,
-                platformVersion: PlatformVersion,
-                shouldPackage: ShouldPackage,
-                requiredOsPackages: string.IsNullOrWhiteSpace(OsRequirements) ? null : OsRequirements.Split(','),
-                appType: AppType,
+                platform: this.PlatformName,
+                platformVersion: this.PlatformVersion,
+                shouldPackage: this.ShouldPackage,
+                requiredOsPackages: string.IsNullOrWhiteSpace(this.OsRequirements) ? null : this.OsRequirements.Split(','),
+                appType: this.AppType,
                 scriptOnly: true,
-                properties: Properties);
+                properties: this.Properties);
         }
     }
 }

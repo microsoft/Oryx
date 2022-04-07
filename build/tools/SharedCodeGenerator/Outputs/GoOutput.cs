@@ -14,42 +14,42 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
     [OutputType("go")]
     internal class GoOutput : IOutputFile
     {
-        private static readonly Template OutputTemplate;
+        private static Template outputTemplate = CreateOutputTemplate();
 
-        private ConstantCollection _collection;
-        private string _directory;
-        private string _package;
-
-        static GoOutput()
-        {
-            var projectOutputDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            using (var templateReader = new StreamReader(Path.Combine(projectOutputDir, "Outputs", "GoConstants.go.tpl")))
-            {
-                OutputTemplate = Template.Parse(templateReader.ReadToEnd());
-            }
-        }
+        private ConstantCollection collection;
+        private string directory;
+        private string package;
 
         public void Initialize(ConstantCollection constantCollection, Dictionary<string, string> typeInfo)
         {
-            _collection = constantCollection;
-            _directory = typeInfo["directory"];
-            _package = typeInfo.GetValueOrDefault("package") ?? Path.GetFileName(_directory);
+            this.collection = constantCollection;
+            this.directory = typeInfo["directory"];
+            this.package = typeInfo.GetValueOrDefault("package") ?? Path.GetFileName(this.directory);
         }
 
         public string GetPath()
         {
-            return Path.Combine(_directory, _collection.Name.Replace(ConstantCollection.NameSeparator, "_") + ".go");
+            return Path.Combine(this.directory, this.collection.Name.Replace(ConstantCollection.NameSeparator, "_") + ".go");
         }
 
         public string GetContent()
         {
             var model = new ConstantCollectionTemplateModel
             {
-                AutogenDisclaimer = Program.BuildAutogenDisclaimer(_collection.SourcePath),
-                Namespace = _package,
-                Constants = _collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
+                AutogenDisclaimer = Program.BuildAutogenDisclaimer(this.collection.SourcePath),
+                Namespace = this.package,
+                Constants = this.collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
             };
-            return OutputTemplate.Render(model, member => member.Name);
+            return outputTemplate.Render(model, member => member.Name);
+        }
+
+        private static Template CreateOutputTemplate()
+        {
+            var projectOutputDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            using (var templateReader = new StreamReader(Path.Combine(projectOutputDir, "Outputs", "GoConstants.go.tpl")))
+            {
+                return Template.Parse(templateReader.ReadToEnd());
+            }
         }
     }
 }

@@ -1,9 +1,9 @@
 {{ if NodeBuildCommandsFile | IsNotBlank }}
-COMMAND_MANIFEST_FILE={{ NodeBuildCommandsFile }}
+COMMAND_MANIFEST_FILE="{{ NodeBuildCommandsFile }}"
 
 echo "Removing existing manifest file"
 rm -f "$COMMAND_MANIFEST_FILE"
-echo "Creating directory for command manifest file if it doesnot exist"
+echo "Creating directory for command manifest file if it does not exist"
 mkdir -p "$(dirname "$COMMAND_MANIFEST_FILE")"
 
 {{ if NodeBuildProperties != empty }}

@@ -11,7 +11,9 @@ stages:
     - job: ValidatePipeline
       displayName: Validate pipeline
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         skipComponentGovernanceDetection: true
       steps:
@@ -51,7 +53,7 @@ stages:
     - job: Job_SignBinariesAndPackages
       displayName: Sign Detector Binaries and NuGet packages
       pool:
-        name: VSEng-MicroBuildVS2017
+        name: VSEngSS-MicroBuild2022-1ES
         demands:
         - msbuild
         - visualstudio
@@ -62,7 +64,9 @@ stages:
     - job: Job_BuildAndTestDetector
       displayName: Build and test detector
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       steps:
       - template: templates/_buildTemplateDetector.yml
       
@@ -73,7 +77,9 @@ stages:
     - job: Release_GitHub
       displayName: Create GitHub release
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         skipComponentGovernanceDetection: true
       steps:

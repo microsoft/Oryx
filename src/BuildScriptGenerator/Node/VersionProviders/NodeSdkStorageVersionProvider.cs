@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     internal class NodeSdkStorageVersionProvider : SdkStorageVersionProviderBase, INodeVersionProvider
     {
-        private PlatformVersionInfo _platformVersionInfo;
+        private PlatformVersionInfo platformVersionInfo;
 
         public NodeSdkStorageVersionProvider(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
@@ -24,14 +24,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            if (_platformVersionInfo == null)
+            if (this.platformVersionInfo == null)
             {
-                _platformVersionInfo = GetAvailableVersionsFromStorage(
+                this.platformVersionInfo = this.GetAvailableVersionsFromStorage(
                     platformName: "nodejs",
                     versionMetadataElementName: "Version");
             }
 
-            return _platformVersionInfo;
+            return this.platformVersionInfo;
         }
     }
 }

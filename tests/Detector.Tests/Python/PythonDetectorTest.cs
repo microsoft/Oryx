@@ -220,6 +220,57 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         }
 
         [Fact]
+        public void Detect_ReturnsResult_WhenCustomRequirementsFileExists()
+        {
+            // Arrange
+            var options = new DetectorOptions
+            {
+                CustomRequirementsTxtPath = "foo/requirements.txt",
+            };
+            var detector = CreatePythonPlatformDetector(options);
+            var sourceDir = Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N")))
+                .FullName;
+            var subDirStr = "foo";
+            var subDir = Directory.CreateDirectory(Path.Combine(sourceDir, subDirStr)).FullName;
+            IOHelpers.CreateFile(subDir, "foo==1.1",  "requirements.txt");
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            var pythonPlatformResult = Assert.IsType<PythonPlatformDetectorResult>(result);
+            Assert.NotNull(pythonPlatformResult);
+            Assert.Equal(PythonConstants.PlatformName, pythonPlatformResult.Platform);
+            Assert.Equal(string.Empty, pythonPlatformResult.AppDirectory);
+            Assert.True(pythonPlatformResult.HasRequirementsTxtFile);
+            Assert.Null(pythonPlatformResult.PlatformVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsNull_WhenCustomRequirementsFileDoesNotExist()
+        {
+            // Arrange
+            var options = new DetectorOptions
+            {
+                CustomRequirementsTxtPath = "foo/requirements.txt",
+            };
+            var detector = CreatePythonPlatformDetector(options);
+            var sourceDir = Directory.CreateDirectory(Path.Combine(_tempDirRoot, Guid.NewGuid().ToString("N")))
+                .FullName;
+            IOHelpers.CreateFile(sourceDir, "foo==1.1", "requirements.txt");
+            var repo = new LocalSourceRepo(sourceDir, NullLoggerFactory.Instance);
+            var context = CreateContext(repo);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
         public void Detect_ReturnsResult_WhenOnlyJupyterNotebookFilesExist()
         {
             // Arrange

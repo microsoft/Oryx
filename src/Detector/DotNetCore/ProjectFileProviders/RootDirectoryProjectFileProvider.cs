@@ -14,11 +14,11 @@ namespace Microsoft.Oryx.Detector.DotNetCore
     /// </summary>
     internal class RootDirectoryProjectFileProvider : IProjectFileProvider
     {
-        private readonly ILogger<RootDirectoryProjectFileProvider> _logger;
+        private readonly ILogger<RootDirectoryProjectFileProvider> logger;
 
         public RootDirectoryProjectFileProvider(ILogger<RootDirectoryProjectFileProvider> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         public string GetRelativePathToProjectFile(DetectorContext context)

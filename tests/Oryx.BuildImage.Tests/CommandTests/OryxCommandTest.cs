@@ -148,7 +148,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact(Skip="Temporarily skipping the test")]
         public void BuildImage_CanExec_CommandInSourceDir()
         {
             // Arrange

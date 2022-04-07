@@ -26,6 +26,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(Settings.LtsVersionsBuildImageName);
                 var imageTestHelper = new ImageTestHelper();
                 data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+                data.Add(imageTestHelper.GetVsoBuildImage());
                 return data;
             }
         }

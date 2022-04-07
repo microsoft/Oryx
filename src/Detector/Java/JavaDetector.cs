@@ -13,15 +13,15 @@ namespace Microsoft.Oryx.Detector.Java
     /// </summary>
     public class JavaDetector : IJavaPlatformDetector
     {
-        private readonly ILogger<JavaDetector> _logger;
+        private readonly ILogger<JavaDetector> logger;
 
         /// <summary>
-        /// Creates an instance of <see cref="JavaDetector"/>.
+        /// Initializes a new instance of the <see cref="JavaDetector"/> class.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{JavaDetector}"/>.</param>
         public JavaDetector(ILogger<JavaDetector> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         /// <inheritdoc/>
@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.Detector.Java
                 var files = sourceRepo.EnumerateFiles($"*.{fileExtensionName}", searchSubDirectories: true);
                 if (files.Any())
                 {
-                    _logger.LogDebug($"Found files with extension '{fileExtensionName}' in the repo");
+                    this.logger.LogDebug($"Found files with extension '{fileExtensionName}' in the repo");
                     hasJavaRelatedFileExtensions = true;
                     break;
                 }
@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.Detector.Java
 
             if (!hasJavaRelatedFileExtensions)
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     $"Could not find any files with the following extensions in the repo: " +
                     $"{string.Join(", ", JavaConstants.JavaFileExtensionNames)}");
                 return null;

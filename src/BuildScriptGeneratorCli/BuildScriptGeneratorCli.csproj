@@ -13,9 +13,8 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyVersion>0.2</AssemblyVersion>
     <HighEntropyVA>true</HighEntropyVA>
-  </PropertyGroup>
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\..\CommonFiles\StyleCop.ruleset</CodeAnalysisRuleSet>
+    <!-- Remove when proper XML documentation is added to the project. -->
+    <DisableDocRequirement>true</DisableDocRequirement>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
@@ -34,14 +33,11 @@
     <PackageReference Include="Microsoft.VisualStudioEng.MicroBuild.Core" Version="0.4.1" />
     <PackageReference Include="NLog" Version="4.6.5" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.5.1" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BuildScriptGenerator\BuildScriptGenerator.csproj" />
+    <ProjectReference Include="..\BuildServer\BuildServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

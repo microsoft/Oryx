@@ -12,31 +12,31 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
     [OutputType("shell")]
     internal class ShellOutput : IOutputFile
     {
-        private const string NewLine = "\n";
-        private ConstantCollection _collection;
-        private string _directory;
-        private string _fileNamePrefix;
+        private const char NewLine = '\n';
+        private ConstantCollection collection;
+        private string directory;
+        private string fileNamePrefix;
 
         public void Initialize(ConstantCollection constantCollection, Dictionary<string, string> typeInfo)
         {
-            _collection = constantCollection;
-            _directory = typeInfo["directory"];
-            _fileNamePrefix = typeInfo["file-name-prefix"];
+            this.collection = constantCollection;
+            this.directory = typeInfo["directory"];
+            this.fileNamePrefix = typeInfo["file-name-prefix"];
         }
 
         public string GetPath()
         {
-            var name = _collection.Name.Camelize();
+            var name = this.collection.Name.Camelize();
             name = char.ToLowerInvariant(name[0]) + name.Substring(1);
-            return Path.Combine(_directory, _fileNamePrefix + name + ".sh");
+            return Path.Combine(this.directory, this.fileNamePrefix + name + ".sh");
         }
 
         public string GetContent()
         {
             StringBuilder body = new StringBuilder();
-            body.Append("# " + Program.BuildAutogenDisclaimer(_collection.SourcePath) + NewLine); // Can't use AppendLine becuase it appends \r\n
+            body.Append("# " + Program.BuildAutogenDisclaimer(this.collection.SourcePath) + NewLine); // Can't use AppendLine becuase it appends \r\n
             body.Append(NewLine);
-            foreach (var constant in _collection.Constants)
+            foreach (var constant in this.collection.Constants)
             {
                 string name = constant.Key.Replace(ConstantCollection.NameSeparator[0], '_').ToUpper();
                 var value = constant.Value.WrapValueInQuotes();

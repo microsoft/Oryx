@@ -16,7 +16,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Hugo;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
@@ -160,7 +159,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var context = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
 
                 IEnumerable<PlatformDetectorResult> detectedPlatforms = null;
-                if (SkipDetection)
+                if (this.SkipDetection)
                 {
                     console.WriteLine(
                         $"Skipping platform detection since '{SkipDetectionTemplate}' switch was used...");
@@ -168,8 +167,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     var platforms = serviceProvider.GetRequiredService<IEnumerable<IProgrammingPlatform>>();
                     if (TryValidateSuppliedPlatformsAndVersions(
                         platforms,
-                        PlatformsAndVersions,
-                        PlatformsAndVersionsFile,
+                        this.PlatformsAndVersions,
+                        this.PlatformsAndVersionsFile,
                         console,
                         context,
                         out var results))
@@ -223,7 +222,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 File.WriteAllText(tempScriptPath, script);
                 timedEvent.AddProperty(nameof(tempScriptPath), tempScriptPath);
 
-                if (DebugMode)
+                if (this.DebugMode)
                 {
                     console.WriteLine($"Temporary script @ {tempScriptPath}:");
                     console.WriteLine("---");
@@ -261,12 +260,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override void ConfigureBuildScriptGeneratorOptions(BuildScriptGeneratorOptions options)
         {
-            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(options, sourceDir: SourceDir);
+            BuildScriptGeneratorOptionsHelper.ConfigureBuildScriptGeneratorOptions(options, sourceDir: this.SourceDir);
         }
 
         internal override IServiceProvider TryGetServiceProvider(IConsole console)
         {
-            if (!IsValidInput(console))
+            if (!this.IsValidInput(console))
             {
                 return null;
             }
@@ -275,25 +274,25 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // than the value provided in a configuration file of the repo.
             var configBuilder = new ConfigurationBuilder();
 
-            if (string.IsNullOrEmpty(PlatformsAndVersionsFile))
+            if (string.IsNullOrEmpty(this.PlatformsAndVersionsFile))
             {
                 // Gather all the values supplied by the user in command line
-                SourceDir = string.IsNullOrEmpty(SourceDir) ?
-                    Directory.GetCurrentDirectory() : Path.GetFullPath(SourceDir);
-                configBuilder.AddIniFile(Path.Combine(SourceDir, Constants.BuildEnvironmentFileName), optional: true);
+                this.SourceDir = string.IsNullOrEmpty(this.SourceDir) ?
+                    Directory.GetCurrentDirectory() : Path.GetFullPath(this.SourceDir);
+                configBuilder.AddIniFile(Path.Combine(this.SourceDir, Constants.BuildEnvironmentFileName), optional: true);
             }
             else
             {
                 string versionsFilePath;
-                if (PlatformsAndVersionsFile.StartsWith("/"))
+                if (this.PlatformsAndVersionsFile.StartsWith("/"))
                 {
-                    versionsFilePath = Path.GetFullPath(PlatformsAndVersionsFile);
+                    versionsFilePath = Path.GetFullPath(this.PlatformsAndVersionsFile);
                 }
                 else
                 {
                     versionsFilePath = Path.Combine(
                         Directory.GetCurrentDirectory(),
-                        Path.GetFullPath(PlatformsAndVersionsFile));
+                        Path.GetFullPath(this.PlatformsAndVersionsFile));
                 }
 
                 if (!File.Exists(versionsFilePath))
@@ -314,7 +313,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // Override the GetServiceProvider() call in CommandBase to pass the IConsole instance to
             // ServiceProviderBuilder and allow for writing to the console if needed during this command.
-            var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath, console)
+            var serviceProviderBuilder = new ServiceProviderBuilder(this.LogFilePath, console)
                 .ConfigureServices(services =>
                 {
                     // Configure Options related services
@@ -328,7 +327,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         {
                             // These values are not retrieve through the 'config' api since we do not expect
                             // them to be provided by an end user.
-                            options.SourceDir = SourceDir;
+                            options.SourceDir = this.SourceDir;
                         });
                 });
 
@@ -369,29 +368,29 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return result;
         }
 
+        private static CustomConfigurationSource GetCommandLineConfigSource()
+        {
+            var commandLineConfigSource = new CustomConfigurationSource();
+            return commandLineConfigSource;
+        }
+
         private bool IsValidInput(IConsole console)
         {
-            if (!SkipDetection && string.IsNullOrEmpty(SourceDir))
+            if (!this.SkipDetection && string.IsNullOrEmpty(this.SourceDir))
             {
                 console.WriteErrorLine("Source directory is required.");
                 return false;
             }
 
-            if (SkipDetection
-                && string.IsNullOrEmpty(PlatformsAndVersions)
-                && string.IsNullOrEmpty(PlatformsAndVersionsFile))
+            if (this.SkipDetection
+                && string.IsNullOrEmpty(this.PlatformsAndVersions)
+                && string.IsNullOrEmpty(this.PlatformsAndVersionsFile))
             {
                 console.WriteErrorLine("Platform names and versions are required.");
                 return false;
             }
 
             return true;
-        }
-
-        private CustomConfigurationSource GetCommandLineConfigSource()
-        {
-            var commandLineConfigSource = new CustomConfigurationSource();
-            return commandLineConfigSource;
         }
     }
 }

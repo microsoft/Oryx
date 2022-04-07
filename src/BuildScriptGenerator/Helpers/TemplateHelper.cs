@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             private TemplateResource(string name)
             {
-                Name = name;
+                this.Name = name;
             }
 
             public static TemplateResource BaseBashScript
@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 get => new TemplateResource(
                     "Microsoft.Oryx.BuildScriptGenerator.Golang.GolangBashBuildSnippet.sh.tpl");
             }
-            
+
             public static TemplateResource PythonSnippet
             {
                 get => new TemplateResource(

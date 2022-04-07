@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.Detector
             {
                 // Gets a syntax tree of the TOML text
                 var doc = Toml.Parse(tomlContent);
+
                 // Gets a runtime representation of the syntax tree
                 var table = doc.ToModel();
                 return table;

@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-
 namespace Microsoft.Oryx.Detector.Golang
 {
     /// <summary>

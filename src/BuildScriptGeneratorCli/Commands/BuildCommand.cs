@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string Name = "build";
 
         // Beginning and ending markers for build script output spans that should be time measured
-        private readonly TextSpan[] _measurableStdOutSpans =
+        private readonly TextSpan[] measurableStdOutSpans =
         {
             new TextSpan(
                 "RunPreBuildScript",
@@ -39,8 +39,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 Oryx.BuildScriptGenerator.Constants.PostBuildCommandEpilogue),
         };
 
-        private bool _languageVersionWasSet;
-        private bool _languageWasSet;
+        private bool languageVersionWasSet;
+        private bool languageWasSet;
 
         [Option(
             "-i|--intermediate-dir <dir>",
@@ -55,11 +55,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             ShowInHelpText = false)]
         public string LanguageName
         {
-            get => PlatformName;
+            get => this.PlatformName;
             set
             {
-                PlatformName = value;
-                _languageWasSet = true;
+                this.PlatformName = value;
+                this.languageWasSet = true;
             }
         }
 
@@ -70,11 +70,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             ShowInHelpText = false)]
         public string LanguageVersion
         {
-            get => PlatformVersion;
+            get => this.PlatformVersion;
             set
             {
-                PlatformVersion = value;
-                _languageVersionWasSet = true;
+                this.PlatformVersion = value;
+                this.languageVersionWasSet = true;
             }
         }
 
@@ -195,7 +195,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Write build script to selected path
             File.WriteAllText(buildScriptPath, scriptContent);
             logger.LogTrace("Build script written to file");
-            if (DebugMode)
+            if (this.DebugMode)
             {
                 console.WriteLine($"Build script content:\n{scriptContent}");
             }
@@ -210,7 +210,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var buildScriptOutput = new StringBuilder();
             var stdOutEventLoggers = new ITextStreamProcessor[]
             {
-                new TextSpanEventLogger(logger, _measurableStdOutSpans),
+                new TextSpanEventLogger(logger, this.measurableStdOutSpans),
                 new PipDownloadEventLogger(logger),
             };
 
@@ -299,13 +299,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
 
-            if (_languageWasSet)
+            if (this.languageWasSet)
             {
                 logger.LogWarning("Deprecated option '--language' used");
                 console.WriteLine("Warning: the deprecated option '--language' was used.");
             }
 
-            if (_languageVersionWasSet)
+            if (this.languageVersionWasSet)
             {
                 logger.LogWarning("Deprecated option '--language-version' used");
                 console.WriteLine("Warning: the deprecated option '--language-version' was used.");
@@ -365,26 +365,26 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override IServiceProvider TryGetServiceProvider(IConsole console)
         {
             // Gather all the values supplied by the user in command line
-            SourceDir = string.IsNullOrEmpty(SourceDir) ?
-                Directory.GetCurrentDirectory() : Path.GetFullPath(SourceDir);
-            ManifestDir = string.IsNullOrEmpty(ManifestDir) ? null : Path.GetFullPath(ManifestDir);
-            IntermediateDir = string.IsNullOrEmpty(IntermediateDir) ? null : Path.GetFullPath(IntermediateDir);
-            DestinationDir = string.IsNullOrEmpty(DestinationDir) ? null : Path.GetFullPath(DestinationDir);
-            BuildCommandsFileName = string.IsNullOrEmpty(BuildCommandsFileName) ?
-                FilePaths.BuildCommandsFileName : BuildCommandsFileName;
-            var buildProperties = ProcessProperties(Properties);
+            this.SourceDir = string.IsNullOrEmpty(this.SourceDir) ?
+                Directory.GetCurrentDirectory() : Path.GetFullPath(this.SourceDir);
+            this.ManifestDir = string.IsNullOrEmpty(this.ManifestDir) ? null : Path.GetFullPath(this.ManifestDir);
+            this.IntermediateDir = string.IsNullOrEmpty(this.IntermediateDir) ? null : Path.GetFullPath(this.IntermediateDir);
+            this.DestinationDir = string.IsNullOrEmpty(this.DestinationDir) ? null : Path.GetFullPath(this.DestinationDir);
+            this.BuildCommandsFileName = string.IsNullOrEmpty(this.BuildCommandsFileName) ?
+                FilePaths.BuildCommandsFileName : this.BuildCommandsFileName;
+            var buildProperties = ProcessProperties(this.Properties);
 
             // NOTE: Order of the following is important. So a command line provided value has higher precedence
             // than the value provided in a configuration file of the repo.
             var config = new ConfigurationBuilder()
-                .AddIniFile(Path.Combine(SourceDir, Constants.BuildEnvironmentFileName), optional: true)
+                .AddIniFile(Path.Combine(this.SourceDir, Constants.BuildEnvironmentFileName), optional: true)
                 .AddEnvironmentVariables()
-                .Add(GetCommandLineConfigSource(buildProperties))
+                .Add(this.GetCommandLineConfigSource(buildProperties))
                 .Build();
 
             // Override the GetServiceProvider() call in CommandBase to pass the IConsole instance to
             // ServiceProviderBuilder and allow for writing to the console if needed during this command.
-            var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath, console)
+            var serviceProviderBuilder = new ServiceProviderBuilder(this.LogFilePath, console)
                 .ConfigureServices(services =>
                 {
                     // Configure Options related services
@@ -398,10 +398,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         {
                             // These values are not retrieve through the 'config' api since we do not expect
                             // them to be provided by an end user.
-                            options.SourceDir = SourceDir;
-                            options.IntermediateDir = IntermediateDir;
-                            options.DestinationDir = DestinationDir;
-                            options.ManifestDir = ManifestDir;
+                            options.SourceDir = this.SourceDir;
+                            options.IntermediateDir = this.IntermediateDir;
+                            options.DestinationDir = this.DestinationDir;
+                            options.ManifestDir = this.ManifestDir;
                             options.Properties = buildProperties;
                             options.ScriptOnly = false;
                         });
@@ -410,26 +410,55 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return serviceProviderBuilder.Build();
         }
 
+        private static string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)
+        {
+            string commitId = env.GetEnvironmentVariable(ExtVarNames.ScmCommitIdEnvVarName);
+
+            if (string.IsNullOrEmpty(commitId))
+            {
+                using (var timedEvent = logger.LogTimedEvent("GetGitCommitId"))
+                {
+                    commitId = repo.GetGitCommitId();
+                    timedEvent.AddProperty(nameof(commitId), commitId);
+                }
+            }
+
+            return commitId;
+        }
+
+        private static string[] GetEnvVarNames([CanBeNull] IEnvironment env)
+        {
+            var envVarKeyCollection = env?.GetEnvironmentVariables()?.Keys;
+            if (envVarKeyCollection == null)
+            {
+                return Array.Empty<string>();
+            }
+
+            string[] envVarNames = new string[envVarKeyCollection.Count];
+            envVarKeyCollection.CopyTo(envVarNames, 0);
+            return envVarNames;
+        }
+
         private CustomConfigurationSource GetCommandLineConfigSource(
             IDictionary<string, string> buildProperties)
         {
             var commandLineConfigSource = new CustomConfigurationSource();
-            SetValueIfNotNullOrEmpty(SettingsKeys.PlatformName, PlatformName);
-            SetValueIfNotNullOrEmpty(SettingsKeys.PlatformVersion, PlatformVersion);
+            SetValueIfNotNullOrEmpty(SettingsKeys.PlatformName, this.PlatformName);
+            SetValueIfNotNullOrEmpty(SettingsKeys.PlatformVersion, this.PlatformVersion);
 
             // Set the platform key and version in the format that they are represented in other sources
             // (like environment variables and build.env file).git
             // This is so that this enables Configuration api to apply the hierarchical config.
             // Example: "--platform python --platform-version 3.6" will win over "PYTHON_VERSION=3.7"
             // in environment variable
-            SetPlatformVersion(PlatformName, PlatformVersion);
+            SetPlatformVersion(this.PlatformName, this.PlatformVersion);
 
-            commandLineConfigSource.Set(SettingsKeys.CreatePackage, ShouldPackage.ToString());
-            SetValueIfNotNullOrEmpty(SettingsKeys.RequiredOsPackages, OsRequirements);
-            SetValueIfNotNullOrEmpty(SettingsKeys.AppType, AppType);
-            commandLineConfigSource.Set(SettingsKeys.CompressDestinationDir, CompressDestinationDir.ToString());
-            SetValueIfNotNullOrEmpty(SettingsKeys.DynamicInstallRootDir, DynamicInstallRootDir);
-            SetValueIfNotNullOrEmpty(SettingsKeys.BuildCommandsFileName, BuildCommandsFileName);
+            commandLineConfigSource.Set(SettingsKeys.CreatePackage, this.ShouldPackage.ToString());
+            SetValueIfNotNullOrEmpty(SettingsKeys.RequiredOsPackages, this.OsRequirements);
+            SetValueIfNotNullOrEmpty(SettingsKeys.AppType, this.AppType);
+            commandLineConfigSource.Set(SettingsKeys.CompressDestinationDir, this.CompressDestinationDir.ToString());
+            SetValueIfNotNullOrEmpty(SettingsKeys.DynamicInstallRootDir, this.DynamicInstallRootDir);
+            SetValueIfNotNullOrEmpty(SettingsKeys.BuildCommandsFileName, this.BuildCommandsFileName);
 
             if (buildProperties != null)
             {
@@ -467,35 +496,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     commandLineConfigSource.Set(key, value);
                 }
             }
-        }
-
-        private string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)
-        {
-            string commitId = env.GetEnvironmentVariable(ExtVarNames.ScmCommitIdEnvVarName);
-
-            if (string.IsNullOrEmpty(commitId))
-            {
-                using (var timedEvent = logger.LogTimedEvent("GetGitCommitId"))
-                {
-                    commitId = repo.GetGitCommitId();
-                    timedEvent.AddProperty(nameof(commitId), commitId);
-                }
-            }
-
-            return commitId;
-        }
-
-        private string[] GetEnvVarNames([CanBeNull] IEnvironment env)
-        {
-            var envVarKeyCollection = env?.GetEnvironmentVariables()?.Keys;
-            if (envVarKeyCollection == null)
-            {
-                return new string[] { };
-            }
-
-            string[] envVarNames = new string[envVarKeyCollection.Count];
-            envVarKeyCollection.CopyTo(envVarNames, 0);
-            return envVarNames;
         }
     }
 }

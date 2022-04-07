@@ -13,11 +13,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
     [Checker(PythonConstants.PlatformName)]
     public class PythonVersionChecker : IChecker
     {
-        private readonly ILogger<PythonVersionChecker> _logger;
+        private readonly ILogger<PythonVersionChecker> logger;
 
         public PythonVersionChecker(ILogger<PythonVersionChecker> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         [NotNull]
@@ -25,12 +25,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         {
             var used = tools[PythonConstants.PlatformName];
             var comparison = SemanticVersionResolver.CompareVersions(used, PythonConstants.PythonLtsVersion);
-            _logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
+            this.logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
             if (comparison < 0)
             {
                 return new[]
                 {
-                    new CheckerMessage(string.Format(Resources.Labels.ToolVersionCheckerMessageFormat,
+                    new CheckerMessage(string.Format(
+                        Resources.Labels.ToolVersionCheckerMessageFormat,
                         PythonConstants.PlatformName,
                         used,
                         Constants.OryxGitHubUrl)),

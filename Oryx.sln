@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30104.148
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7515BF2B-C485-43A0-AB2F-DC761B6AB151}"
 EndProject
@@ -96,7 +96,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Oryx.Common\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGenerator.Common.Tests", "tests\BuildScriptGenerator.Common.Tests\BuildScriptGenerator.Common.Tests.csproj", "{3078BCDB-FC35-4826-82A1-9CE094446DE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoUpdater", "build\tools\AutoUpdater\AutoUpdater.csproj", "{6C4DBA89-3D17-451C-9D89-71A70410D835}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer", "src\BuildServer\BuildServer.csproj", "{F13BEF5A-5426-4F77-879F-A7F812F1E336}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer.Tests", "tests\BuildServer.Tests\BuildServer.Tests.csproj", "{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -164,10 +166,14 @@ Global
 		{3078BCDB-FC35-4826-82A1-9CE094446DE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3078BCDB-FC35-4826-82A1-9CE094446DE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3078BCDB-FC35-4826-82A1-9CE094446DE8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6C4DBA89-3D17-451C-9D89-71A70410D835}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6C4DBA89-3D17-451C-9D89-71A70410D835}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6C4DBA89-3D17-451C-9D89-71A70410D835}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6C4DBA89-3D17-451C-9D89-71A70410D835}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F13BEF5A-5426-4F77-879F-A7F812F1E336}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F13BEF5A-5426-4F77-879F-A7F812F1E336}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F13BEF5A-5426-4F77-879F-A7F812F1E336}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F13BEF5A-5426-4F77-879F-A7F812F1E336}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -194,7 +200,8 @@ Global
 		{ECEEEF09-5053-46D7-B7E8-2711B523D1F6} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
 		{93C07A18-89BA-45A2-B818-F2B20E17E0BE} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
 		{3078BCDB-FC35-4826-82A1-9CE094446DE8} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
-		{6C4DBA89-3D17-451C-9D89-71A70410D835} = {2AA826A1-5647-46B2-9885-20E89050653F}
+		{F13BEF5A-5426-4F77-879F-A7F812F1E336} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
+		{5BD3E03A-3086-4CF6-950B-215C1E76B7F5} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3577CC82-8B1B-4B06-829A-3E1CCE78A2C3}

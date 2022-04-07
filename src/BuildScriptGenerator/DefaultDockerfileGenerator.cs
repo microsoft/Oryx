@@ -18,10 +18,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultDockerfileGenerator : IDockerfileGenerator
     {
-        private readonly ICompatiblePlatformDetector _platformDetector;
-        private readonly ILogger<DefaultDockerfileGenerator> _logger;
-        private readonly BuildScriptGeneratorOptions _commonOptions;
-        private readonly IDictionary<string, IList<string>> _slimPlatformVersions =
+        private readonly ICompatiblePlatformDetector platformDetector;
+        private readonly ILogger<DefaultDockerfileGenerator> logger;
+        private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly IDictionary<string, IList<string>> slimPlatformVersions =
             new Dictionary<string, IList<string>>()
             {
                 { "dotnet", new List<string>() { "2.1" } },
@@ -34,9 +34,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             ILogger<DefaultDockerfileGenerator> logger,
             IOptions<BuildScriptGeneratorOptions> commonOptions)
         {
-            _platformDetector = platformDetector;
-            _logger = logger;
-            _commonOptions = commonOptions.Value;
+            this.platformDetector = platformDetector;
+            this.logger = logger;
+            this.commonOptions = commonOptions.Value;
         }
 
         public string GenerateDockerfile(DockerfileContext ctx)
@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var buildImageTag = "lts-versions";
             var runImage = string.Empty;
             var runImageTag = string.Empty;
-            var compatiblePlatforms = GetCompatiblePlatforms(ctx);
+            var compatiblePlatforms = this.GetCompatiblePlatforms(ctx);
             if (!compatiblePlatforms.Any())
             {
                 throw new UnsupportedPlatformException(Labels.UnableToDetectPlatformMessage);
@@ -54,16 +54,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 var platform = platformAndDetectorResult.Key;
                 var detectorResult = platformAndDetectorResult.Value;
-                if (!_slimPlatformVersions.ContainsKey(platform.Name) ||
-                    (!_slimPlatformVersions[platform.Name].Any(v => detectorResult.PlatformVersion.StartsWith(v)) &&
-                     !_slimPlatformVersions[platform.Name].Any(v => v.StartsWith(detectorResult.PlatformVersion))))
+                if (!this.slimPlatformVersions.ContainsKey(platform.Name) ||
+                    (!this.slimPlatformVersions[platform.Name].Any(v => detectorResult.PlatformVersion.StartsWith(v)) &&
+                     !this.slimPlatformVersions[platform.Name].Any(v => v.StartsWith(detectorResult.PlatformVersion))))
                 {
                     buildImageTag = "latest";
                     runImageTag = GenerateRuntimeTag(detectorResult.PlatformVersion);
                 }
                 else
                 {
-                    runImageTag = _slimPlatformVersions[platform.Name]
+                    runImageTag = this.slimPlatformVersions[platform.Name]
                         .Where(v => detectorResult.PlatformVersion.StartsWith(v)).FirstOrDefault();
                 }
 
@@ -80,12 +80,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return TemplateHelper.Render(
                 TemplateHelper.TemplateResource.Dockerfile,
                 properties,
-                _logger);
-        }
-
-        private IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(DockerfileContext ctx)
-        {
-            return _platformDetector.GetCompatiblePlatforms(ctx);
+                this.logger);
         }
 
         /// <summary>
@@ -94,7 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <param name="version">The version of the platform returned from the detector.</param>
         /// <returns>A formatted version tag to pull the runtime image from.</returns>
-        private string GenerateRuntimeTag(string version)
+        private static string GenerateRuntimeTag(string version)
         {
             var split = version.Split('.');
             if (split.Length < 3)
@@ -105,7 +100,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return $"{split[0]}.{split[1]}";
         }
 
-        private string ConvertToRuntimeName(string platformName)
+        private static string ConvertToRuntimeName(string platformName)
         {
             if (string.Equals(platformName, DotNetCoreConstants.PlatformName, StringComparison.OrdinalIgnoreCase))
             {
@@ -118,6 +113,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return platformName;
+        }
+
+        private IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(DockerfileContext ctx)
+        {
+            return this.platformDetector.GetCompatiblePlatforms(ctx);
         }
     }
 }

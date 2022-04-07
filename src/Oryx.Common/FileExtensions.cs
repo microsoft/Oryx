@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.Common.Extensions
             var parentPath = Directory.GetParent(outputPath).FullName;
             if (!Directory.Exists(parentPath))
             {
-                Directory.CreateDirectory(parentPath);
+                _ = Directory.CreateDirectory(parentPath);
             }
 
             File.WriteAllText(outputPath, contents);

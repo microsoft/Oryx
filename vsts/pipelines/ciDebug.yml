@@ -9,7 +9,9 @@ stages:
     jobs:
     - job: CreateReleaseTag
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         skipComponentGovernanceDetection: true
       steps:
@@ -36,7 +38,8 @@ stages:
       displayName: Security
       condition: succeeded()
       pool:
-        name: Hosted VS2017
+        name: Azure Pipelines
+        vmImage: windows-2022
       steps:
       - template: templates/_securityChecks.yml
 
@@ -44,7 +47,9 @@ stages:
       displayName: Build and Test Build Image
       timeoutInMinutes: 300
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         SignType: 'test'
         skipComponentGovernanceDetection: true
@@ -68,7 +73,9 @@ stages:
       displayName: Build and Test Runtime Images
       timeoutInMinutes: 300
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         SignType: 'test'
         skipComponentGovernanceDetection: true
@@ -97,7 +104,9 @@ stages:
     - job: Release_BuildImage
       displayName: Push Build Image to MCR
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         skipComponentGovernanceDetection: true
       timeoutInMinutes: 300
@@ -112,7 +121,9 @@ stages:
     - job: Release_RuntimeImages
       displayName: Push Runtime Images to MCR
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         skipComponentGovernanceDetection: true
       timeoutInMinutes: 400

@@ -23,5 +23,12 @@ RUN if [ -z "$AGENTBUILD" ]; then \
             -o /opt/buildscriptgen/ \
             -c Release \
             src/BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj; \
+
+        dotnet publish \
+            -r linux-x64 \
+            -o /opt/buildscriptgen/ \
+            -c Release \
+            src/BuildServer/BuildServer.csproj; \
     fi
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
+RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer

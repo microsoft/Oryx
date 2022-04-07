@@ -22,14 +22,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         /// <summary>
         /// The tar-gz option for Java modules.
         /// </summary>
-        private readonly BuildScriptGeneratorOptions _commonOptions;
-        private readonly ScriptGeneratorOptionsForJava _javaScriptGeneratorOptions;
-        private readonly IJavaVersionProvider _javaVersionProvider;
-        private readonly IMavenVersionProvider _mavenVersionProvider;
-        private readonly ILogger<JavaPlatform> _logger;
-        private readonly IJavaPlatformDetector _detector;
-        private readonly JavaPlatformInstaller _javaPlatformInstaller;
-        private readonly MavenInstaller _mavenInstaller;
+        private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly ScriptGeneratorOptionsForJava javaScriptGeneratorOptions;
+        private readonly IJavaVersionProvider javaVersionProvider;
+        private readonly IMavenVersionProvider mavenVersionProvider;
+        private readonly ILogger<JavaPlatform> logger;
+        private readonly IJavaPlatformDetector detector;
+        private readonly JavaPlatformInstaller javaPlatformInstaller;
+        private readonly MavenInstaller mavenInstaller;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JavaPlatform"/> class.
@@ -40,7 +40,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         /// <param name="mavenVersionProvider">The <see cref="IMavenVersionProvider"/>.</param>
         /// <param name="logger">The logger of Java platform.</param>
         /// <param name="detector">The detector of Java platform.</param>
-        /// <param name="environment">The environment of Java platform.</param>
         /// <param name="javaPlatformInstaller">The <see cref="JavaPlatformInstaller"/>.</param>
         /// <param name="mavenInstaller">The <see cref="MavenInstaller"/>.</param>
         public JavaPlatform(
@@ -53,14 +52,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             JavaPlatformInstaller javaPlatformInstaller,
             MavenInstaller mavenInstaller)
         {
-            _commonOptions = commonOptions.Value;
-            _javaScriptGeneratorOptions = javaScriptGeneratorOptions.Value;
-            _javaVersionProvider = javaVersionProvider;
-            _mavenVersionProvider = mavenVersionProvider;
-            _logger = logger;
-            _detector = detector;
-            _javaPlatformInstaller = javaPlatformInstaller;
-            _mavenInstaller = mavenInstaller;
+            this.commonOptions = commonOptions.Value;
+            this.javaScriptGeneratorOptions = javaScriptGeneratorOptions.Value;
+            this.javaVersionProvider = javaVersionProvider;
+            this.mavenVersionProvider = mavenVersionProvider;
+            this.logger = logger;
+            this.detector = detector;
+            this.javaPlatformInstaller = javaPlatformInstaller;
+            this.mavenInstaller = mavenInstaller;
         }
 
         /// <inheritdoc/>
@@ -71,7 +70,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         {
             get
             {
-                var versionInfo = _javaVersionProvider.GetVersionInfo();
+                var versionInfo = this.javaVersionProvider.GetVersionInfo();
                 return versionInfo.SupportedVersions;
             }
         }
@@ -79,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         /// <inheritdoc/>
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var detectionResult = _detector.Detect(new DetectorContext
+            var detectionResult = this.detector.Detect(new DetectorContext
             {
                 SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
             });
@@ -89,7 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
                 return null;
             }
 
-            ResolveVersions(context, detectionResult);
+            this.ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 
@@ -115,7 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 
             if (javaPlatformDetectorResult.UsesMavenWrapperTool)
             {
-                if (_commonOptions.ShouldPackage)
+                if (this.commonOptions.ShouldPackage)
                 {
                     command = JavaConstants.CreatePackageCommandUsingMavenWrapper;
                 }
@@ -126,7 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             }
             else if (javaPlatformDetectorResult.UsesMaven)
             {
-                if (_commonOptions.ShouldPackage)
+                if (this.commonOptions.ShouldPackage)
                 {
                     command = JavaConstants.CreatePackageCommandUsingMaven;
                 }
@@ -154,7 +153,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.JavaBuildSnippet,
                 scriptProps,
-                _logger);
+                this.logger);
 
             return new BuildScriptSnippet
             {
@@ -172,7 +171,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         /// <inheritdoc/>
         public bool IsEnabled(RepositoryContext ctx)
         {
-            return _commonOptions.EnableJavaBuild;
+            return this.commonOptions.EnableJavaBuild;
         }
 
         /// <inheritdoc/>
@@ -212,18 +211,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
                     $"'{typeof(JavaPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            if (_commonOptions.EnableDynamicInstall)
+            if (this.commonOptions.EnableDynamicInstall)
             {
-                _logger.LogDebug("Dynamic install is enabled.");
+                this.logger.LogDebug("Dynamic install is enabled.");
 
                 var scriptBuilder = new StringBuilder();
 
-                InstallJavaSdk(javaPlatformDetectorResult.PlatformVersion, scriptBuilder);
+                this.InstallJavaSdk(javaPlatformDetectorResult.PlatformVersion, scriptBuilder);
 
                 // We need not setup Maven if repo already uses a Maven wrapper script.
                 if (!javaPlatformDetectorResult.UsesMavenWrapperTool)
                 {
-                    InstallMaven(javaPlatformDetectorResult.MavenVersion, scriptBuilder);
+                    this.InstallMaven(javaPlatformDetectorResult.MavenVersion, scriptBuilder);
                 }
 
                 if (scriptBuilder.Length == 0)
@@ -235,7 +234,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             }
             else
             {
-                _logger.LogDebug("Dynamic install not enabled.");
+                this.logger.LogDebug("Dynamic install not enabled.");
                 return null;
             }
         }
@@ -276,16 +275,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
                     $"'{typeof(JavaPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            ResolveVersionsUsingHierarchicalRules(javaPlatformDetectorResult);
+            this.ResolveVersionsUsingHierarchicalRules(javaPlatformDetectorResult);
         }
 
         private void ResolveVersionsUsingHierarchicalRules(JavaPlatformDetectorResult detectorResult)
         {
             var javaVersion = ResolveJavaVersion(detectorResult.PlatformVersion);
-            javaVersion = GetMaxSatisfyingJavaVersionAndVerify(javaVersion);
+            javaVersion = this.GetMaxSatisfyingJavaVersionAndVerify(javaVersion);
 
             var mavenVersion = ResolveMavenVersion(detectorResult.MavenVersion);
-            mavenVersion = GetMaxSatisfyingMavenVersionAndVerify(mavenVersion);
+            mavenVersion = this.GetMaxSatisfyingMavenVersionAndVerify(mavenVersion);
 
             detectorResult.PlatformVersion = javaVersion;
             detectorResult.MavenVersion = mavenVersion;
@@ -293,9 +292,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             string ResolveJavaVersion(string detectedVersion)
             {
                 // Explicitly specified version by user wins over detected version
-                if (!string.IsNullOrEmpty(_javaScriptGeneratorOptions.JavaVersion))
+                if (!string.IsNullOrEmpty(this.javaScriptGeneratorOptions.JavaVersion))
                 {
-                    return _javaScriptGeneratorOptions.JavaVersion;
+                    return this.javaScriptGeneratorOptions.JavaVersion;
                 }
 
                 // If a version was detected, then use it.
@@ -305,16 +304,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
                 }
 
                 // Fallback to default version
-                var versionInfo = _javaVersionProvider.GetVersionInfo();
+                var versionInfo = this.javaVersionProvider.GetVersionInfo();
                 return versionInfo.DefaultVersion;
             }
 
             string ResolveMavenVersion(string detectedVersion)
             {
                 // Explicitly specified version by user wins over detected version
-                if (!string.IsNullOrEmpty(_javaScriptGeneratorOptions.MavenVersion))
+                if (!string.IsNullOrEmpty(this.javaScriptGeneratorOptions.MavenVersion))
                 {
-                    return _javaScriptGeneratorOptions.MavenVersion;
+                    return this.javaScriptGeneratorOptions.MavenVersion;
                 }
 
                 // If a version was detected, then use it.
@@ -330,20 +329,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 
         private void InstallJavaSdk(string jdkVersion, StringBuilder scriptBuilder)
         {
-            if (_javaPlatformInstaller.IsVersionAlreadyInstalled(jdkVersion))
+            if (this.javaPlatformInstaller.IsVersionAlreadyInstalled(jdkVersion))
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                    "JDK version {version} is already installed. So skipping installing it again.",
                    jdkVersion);
             }
             else
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "JSDK version {version} is not installed. " +
                     "So generating an installation script snippet for it.",
                     jdkVersion);
 
-                var script = _javaPlatformInstaller.GetInstallerScriptSnippet(jdkVersion);
+                var script = this.javaPlatformInstaller.GetInstallerScriptSnippet(jdkVersion);
                 scriptBuilder.AppendLine(script);
             }
         }
@@ -351,27 +350,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         private void InstallMaven(string mavenVersion, StringBuilder scriptBuilder)
         {
             // Install PHP Composer
-            if (_mavenInstaller.IsVersionAlreadyInstalled(mavenVersion))
+            if (this.mavenInstaller.IsVersionAlreadyInstalled(mavenVersion))
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                    "Maven version {version} is already installed. So skipping installing it again.",
                    mavenVersion);
             }
             else
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "Maven version {version} is not installed. " +
                     "So generating an installation script snippet for it.",
                     mavenVersion);
 
-                var script = _mavenInstaller.GetInstallerScriptSnippet(mavenVersion);
+                var script = this.mavenInstaller.GetInstallerScriptSnippet(mavenVersion);
                 scriptBuilder.AppendLine(script);
             }
         }
 
         private string GetMaxSatisfyingJavaVersionAndVerify(string version)
         {
-            var versionInfo = _javaVersionProvider.GetVersionInfo();
+            var versionInfo = this.javaVersionProvider.GetVersionInfo();
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
                 versionInfo.SupportedVersions);
@@ -382,7 +381,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
                     JavaConstants.PlatformName,
                     version,
                     versionInfo.SupportedVersions);
-                _logger.LogError(
+                this.logger.LogError(
                     exception,
                     $"Exception caught, the version '{version}' is not supported for the Java platform.");
                 throw exception;
@@ -393,7 +392,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 
         private string GetMaxSatisfyingMavenVersionAndVerify(string version)
         {
-            var versionInfo = _mavenVersionProvider.GetVersionInfo();
+            var versionInfo = this.mavenVersionProvider.GetVersionInfo();
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
                 version,
                 versionInfo.SupportedVersions);
@@ -404,7 +403,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
                     "maven",
                     version,
                     versionInfo.SupportedVersions);
-                _logger.LogError(
+                this.logger.LogError(
                     exception,
                     $"Exception caught, the version '{version}' is not supported for Maven.");
                 throw exception;

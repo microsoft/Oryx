@@ -5,7 +5,7 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
-    public class ProcessConstants
+    public static class ProcessConstants
     {
         public const int ExitSuccess = 0;
 

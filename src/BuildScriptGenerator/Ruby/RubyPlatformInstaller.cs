@@ -20,15 +20,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 
         public virtual string GetInstallerScriptSnippet(string version)
         {
-            return GetInstallerScriptSnippet(RubyConstants.PlatformName, version);
+            return this.GetInstallerScriptSnippet(RubyConstants.PlatformName, version);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)
         {
-            return IsVersionInstalled(
+            return this.IsVersionInstalled(
                 version,
                 builtInDir: RubyConstants.InstalledRubyVersionsDir,
-                dynamicInstallDir: Path.Combine(CommonOptions.DynamicInstallRootDir, RubyConstants.PlatformName));
+                dynamicInstallDir: Path.Combine(this.CommonOptions.DynamicInstallRootDir, RubyConstants.PlatformName));
         }
     }
 }

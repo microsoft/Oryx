@@ -28,11 +28,12 @@
     dot-net-core-21-sdk-version: 2.1.818
     dot-net-core-22-sdk-version: 2.2.207
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.415
+    dot-net-core-31-sdk-version: 3.1.417
     dot-net-core-50-sdk-version: 5.0.302
-    dot-net-50-sdk-version: 5.0.403
-    dot-net-60-sdk-version: 6.0.100
+    dot-net-50-sdk-version: 5.0.406
+    dot-net-60-sdk-version: 6.0.201
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
+    dot-net-70-sdk-version: 7.0.100-preview.1.22110.4
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -42,7 +43,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20211119.3
+    dot-net-core-runtime-base-tag: 20220322.2
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
 
@@ -61,21 +62,25 @@
     aspnet-core-app-30: 3.0.3
     aspnet-core-app-30-sha: d88366ac20204c5acb4b80bc40396d608d6c067b25baeef54204e77dde48fb515bd463743745a0982ba8c9182fc751306a4e796f91060b2d013ffbea7d9a2dc8
 
-    net-core-app-31: 3.1.21
-    net-core-app-31-sha: cc4b2fef46e94df88bf0fc11cb15439e79bd48da524561dffde80d3cd6db218133468ad2f6785803cf0c13f000d95ff71eb258cec76dd8eb809676ec1cb38fac
-    aspnet-core-app-31: 3.1.21
-    aspnet-core-app-31-sha: f59252166dbfe11a78373226222d6a34484b9132e24283222aea8a950a5e9657da2e4d4e9ff8cbcc2fd7c7705e13bf42a31232a6012d1e247efc718e3d8e2df1
+    net-core-app-31: 3.1.23
+    net-core-app-31-sha: 5f9b800a4ee13c4dbab98348f97010211f8bfd412cafeebb89972beebb2fd69c4b7c03971683e025577696a6d943f2cbcf0b7dba766eed846beb1281cbe14182
+    aspnet-core-app-31: 3.1.23
+    aspnet-core-app-31-sha: 85390781e27d60bce8ebfe95468ddfa58b7538e42b5391f97a78547f34b792e1601d000a08a399f5599e55efdacc45ea6d7aa5d797e2063aa5063435615ddd61
     
-    net-core-app-50: 5.0.12
-    net-core-app-50-sha: 32b5f86db3b1d4c21e3cf616d22f0e4a7374385dac0cf03cdebf3520dcf846460d9677ec1829a180920740a0237d64f6eaa2421d036a67f4fe9fb15d4f6b1db9
-    aspnet-core-app-50: 5.0.12
-    aspnet-core-app-50-sha: 0529f23ffa651ac2c2807b70d6e5034f6ae4c88204afdaaa76965ef604d6533f9440d68d9f2cdd3a9f2ca37e9140e6c61a9f9207d430c71140094c7d5c33bf79
+    net-core-app-50: 5.0.15
+    net-core-app-50-sha: 4c652a02d35bc8bafbcf15555ea319aba7c9077ddb55786cb27a11b5b16e70ef026d1d561268185e398afd16f6db1f02b4846cc83a7e0f1b0b1a07a12f84c7ee
+    aspnet-core-app-50: 5.0.15
+    aspnet-core-app-50-sha: e0d0f5150bac6234dda07da91983eb1a4cb13320d9e06fe83dfe4155abbb4125ce8053638aced998cd9d040a5a595c97773004d16123a9bff6da43a9c0e266eb
 
-    net-core-app-60: 6.0.0
-    net-core-app-60-sha: 7cc8d93f9495b516e1b33bf82af3af605f1300bcfeabdd065d448cc126bd97ab4da5ec5e95b7775ee70ab4baf899ff43671f5c6f647523fb41cda3d96f334ae5
+    net-core-app-60: 6.0.3
+    net-core-app-60-sha: 083d9e6e72f0d8f175b341f5229277374e630c5358cfd3602fe611aeef59abec715edbe18d62135a5d13a650e99ef49f19b17e8c81663d0b5bee757519bec894
+    aspnet-core-app-60: 6.0.3
+    aspnet-core-app-60-sha: 9ea54220468d922ef2c40433c4b8c70df6c60d8ea63a3ac1ff5e5ce712606ae5cfe1e57d321b87eff1b5dc34d7823a4b4b964180587383f22d9a0ff5bb3a8c88
 
-    aspnet-core-app-60: 6.0.0
-    aspnet-core-app-60-sha: 6a1ae878efdc9f654e1914b0753b710c3780b646ac160fb5a68850b2fd1101675dc71e015dbbea6b4fcf1edac0822d3f7d470e9ed533dd81d0cfbcbbb1745c6c
+    net-core-app-70: 7.0.0-preview.1.22076.8
+    net-core-app-70-sha: 8d48436646071c371b862002fcdd24de07addd02ec878ab413cc6c98a5ff6da821f2175c637167462261ad5e47da0d2b83f465949e673462f0e147d62255651c
+    aspnet-core-app-70: 7.0.0-preview.1.22109.13
+    aspnet-core-app-70-sha: 064d65fa3aabe1aa1c7b4142e7ced64b194474cefc0c52710e17aa7f156e3259ed51ae3abacec164c58de29240ac21d51aa7c153ec048c4937104eb3bbb00c74
 
 
   outputs:
@@ -87,11 +92,13 @@
       file-name-prefix: __
 - name: golang-versions
   constants:
-    # hashes are for .tar.xz
+    # hashes are from https://go.dev/dl/
     golang16-version: 1.16.7
     golang16-tar-sha256: 7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04
     golang17-version: 1.17
     golang17-tar-sha256: 6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d
+    golang18-version: 1.18
+    golang18-tar-sha256: e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -101,6 +108,7 @@
       file-name-prefix: __
 - name: python-versions
   constants:
+    python-runtime-base-tag: 20220202.4
     pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
@@ -117,8 +125,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20211214.1
-    php-fpm-runtime-base-tag: 20211214.1
+    php-runtime-base-tag: 20220324.2
+    php-fpm-runtime-base-tag: 20220325.1
     composer-version: 2.0.8
     composer-setup-sha384: 756890a4488ce9024fc62c56153228907f1545c228516cbf63f885e036d37e9a59d27d63f46af1d4d07ee0f76181c7d3
     composer1-9-version: 1.9.3
@@ -131,12 +139,12 @@
     php81-version: 8.1.0
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
     php81-tar-sha256: a1317eff0723a2b3d3122bbfe107a1158570ea2822dc35a5fb360086db0f6bbc
-    php80-version: 8.0.13
+    php80-version: 8.0.17
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: cd976805ec2e9198417651027dfe16854ba2c2c388151ab9d4d268513d52ed52
-    php74-version: 7.4.26
+    php80-tar-sha256: bdbd792901c156c4d1710c9d266732d3c17f6ff63850d6660b9d8d3411188424
+    php74-version: 7.4.28
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
-    php74-tar-sha256: e305b3aafdc85fa73a81c53d3ce30578bc94d1633ec376add193a1e85e0f0ef8
+    php74-tar-sha256: a04014cd1646b90547907e2e0ac5371594533960de317b6c7ac70bcb42db92fb
     php73-version: 7.3.27
     php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
     php73-tar-sha256: 65f616e2d5b6faacedf62830fa047951b0136d5da34ae59e6744cbaf5dca148d
@@ -193,7 +201,7 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20211208.1
+    node-runtime-base-tag: 20220128.5
     yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
@@ -201,11 +209,11 @@
     node8-version: 8.17.0
     node10-version: 10.23.0
     node12-version: 12.22.6
-    node14-version: 14.17.6
+    node14-version: 14.18.3
     node16-version: 16.13.1
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
-    npm-version: 8.1.2
+    npm-version: 6.14.15
   outputs:
     - type: shell
       directory: build

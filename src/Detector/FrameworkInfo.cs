@@ -6,7 +6,7 @@
 namespace Microsoft.Oryx.Detector
 {
     /// <summary>
-    /// This contains basic information about the detected frameworks that an application is using. 
+    /// This contains basic information about the detected frameworks that an application is using.
     /// </summary>
     public class FrameworkInfo
     {
@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Detector
 
         public override string ToString()
         {
-            return Framework + ": " + FrameworkVersion;
+            return this.Framework + ": " + this.FrameworkVersion;
         }
     }
 }

@@ -9,14 +9,17 @@ jobs:
 - job: Job_Security
   displayName: Security
   pool:
-    name: Hosted VS2017
+    name: Azure Pipelines
+    vmImage: windows-2022
   steps:
   - template: templates/_securityChecks.yml
 
 - job: Job_BuildImage
   displayName: Build and Test Build Images
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   timeoutInMinutes: 480
   steps:
   - script: |
@@ -32,7 +35,9 @@ jobs:
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
   pool:
-    vmImage: 'ubuntu-latest'
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   timeoutInMinutes: 480
   steps:
   - script: |

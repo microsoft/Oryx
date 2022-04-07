@@ -16,18 +16,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     public class PlatformsInstallationScriptProvider
     {
-        private readonly IEnumerable<IProgrammingPlatform> _platforms;
-        private readonly DefaultPlatformsInformationProvider _platformDetector;
-        private readonly IStandardOutputWriter _outputWriter;
+        private readonly IEnumerable<IProgrammingPlatform> platforms;
+        private readonly DefaultPlatformsInformationProvider platformDetector;
+        private readonly IStandardOutputWriter outputWriter;
 
         public PlatformsInstallationScriptProvider(
             IEnumerable<IProgrammingPlatform> platforms,
             DefaultPlatformsInformationProvider platformDetector,
             IStandardOutputWriter outputWriter)
         {
-            _platforms = platforms;
-            _platformDetector = platformDetector;
-            _outputWriter = outputWriter;
+            this.platforms = platforms;
+            this.platformDetector = platformDetector;
+            this.outputWriter = outputWriter;
         }
 
         /// <summary>
@@ -45,14 +45,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // Avoid detecting again if detection was already run.
             if (detectionResults == null)
             {
-                var platformInfos = _platformDetector.GetPlatformsInfo(context);
+                var platformInfos = this.platformDetector.GetPlatformsInfo(context);
                 if (platformInfos != null)
                 {
                     detectionResults = platformInfos.Select(pi => pi.DetectorResult);
                 }
             }
 
-            var snippets = GetInstallationScriptSnippets(detectionResults, context);
+            var snippets = this.GetInstallationScriptSnippets(detectionResults, context);
             foreach (var snippet in snippets)
             {
                 scriptBuilder.AppendLine(snippet);
@@ -70,14 +70,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             foreach (var detectionResult in detectionResults)
             {
-                var platform = _platforms
+                var platform = this.platforms
                     .Where(p => p.Name.EqualsIgnoreCase(detectionResult.Platform))
                     .First();
 
                 var snippet = platform.GetInstallerScriptSnippet(context, detectionResult);
                 if (!string.IsNullOrEmpty(snippet))
                 {
-                    _outputWriter.WriteLine(
+                    this.outputWriter.WriteLine(
                         $"Version '{detectionResult.PlatformVersion}' of platform '{detectionResult.Platform}' " +
                         $"is not installed. Generating script to install it...");
                     installationScriptSnippets.Add(snippet);

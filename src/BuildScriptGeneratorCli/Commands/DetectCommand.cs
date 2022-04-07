@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<DetectCommand>();
-            var sourceRepo = new LocalSourceRepo(SourceDir, loggerFactory);
+            var sourceRepo = new LocalSourceRepo(this.SourceDir, loggerFactory);
             var ctx = new DetectorContext
             {
                 SourceRepo = sourceRepo,
@@ -51,12 +51,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 if (detectedPlatformResults == null || !detectedPlatformResults.Any())
                 {
-                    logger?.LogError($"No platforms and versions detected from source directory: '{SourceDir}'");
-                    console.WriteErrorLine($"No platforms and versions detected from source directory: '{SourceDir}'");
+                    logger?.LogError($"No platforms and versions detected from source directory: '{this.SourceDir}'");
+                    console.WriteErrorLine($"No platforms and versions detected from source directory: '{this.SourceDir}'");
                 }
 
-                if (!string.IsNullOrEmpty(OutputFormat)
-                    && string.Equals(OutputFormat, "json", StringComparison.OrdinalIgnoreCase))
+                if (!string.IsNullOrEmpty(this.OutputFormat)
+                    && string.Equals(this.OutputFormat, "json", StringComparison.OrdinalIgnoreCase))
                 {
                     PrintJsonResult(detectedPlatformResults, console);
                 }
@@ -72,22 +72,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<DetectCommand>>();
-            SourceDir = string.IsNullOrEmpty(SourceDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(SourceDir);
+            this.SourceDir = string.IsNullOrEmpty(this.SourceDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(this.SourceDir);
 
-            if (!Directory.Exists(SourceDir))
+            if (!Directory.Exists(this.SourceDir))
             {
                 logger?.LogError("Could not find the source directory.");
-                console.WriteErrorLine($"Could not find the source directory: '{SourceDir}'");
+                console.WriteErrorLine($"Could not find the source directory: '{this.SourceDir}'");
 
                 return false;
             }
 
-            if (!string.IsNullOrEmpty(OutputFormat)
-                && !string.Equals(OutputFormat, "json", StringComparison.OrdinalIgnoreCase)
-                && !string.Equals(OutputFormat, "table", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(this.OutputFormat)
+                && !string.Equals(this.OutputFormat, "json", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(this.OutputFormat, "table", StringComparison.OrdinalIgnoreCase))
             {
                 logger?.LogError("Unsupported output format. Supported output formats are: json, table.");
-                console.WriteErrorLine($"Unsupported output format: '{OutputFormat}'. " +
+                console.WriteErrorLine($"Unsupported output format: '{this.OutputFormat}'. " +
                     "Supported output formats are: json, table.");
 
                 return false;
@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        private void PrintTableResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)
+        private static void PrintTableResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)
         {
             var defs = new DefinitionListFormatter();
             if (detectedPlatformResults == null || !detectedPlatformResults.Any())
@@ -136,7 +136,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             console.WriteLine(defs.ToString());
         }
 
-        private void PrintJsonResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)
+        private static void PrintJsonResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)
         {
             if (detectedPlatformResults == null || !detectedPlatformResults.Any())
             {

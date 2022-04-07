@@ -20,15 +20,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 
         public virtual string GetInstallerScriptSnippet(string version)
         {
-            return GetInstallerScriptSnippet(JavaConstants.PlatformName, version);
+            return this.GetInstallerScriptSnippet(JavaConstants.PlatformName, version);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)
         {
-            return IsVersionInstalled(
+            return this.IsVersionInstalled(
                 version,
                 builtInDir: JavaConstants.InstalledJavaVersionsDir,
-                dynamicInstallDir: Path.Combine(CommonOptions.DynamicInstallRootDir, JavaConstants.PlatformName));
+                dynamicInstallDir: Path.Combine(this.CommonOptions.DynamicInstallRootDir, JavaConstants.PlatformName));
         }
     }
 }

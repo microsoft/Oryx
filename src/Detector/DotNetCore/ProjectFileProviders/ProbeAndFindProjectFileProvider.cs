@@ -12,17 +12,17 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 {
     internal class ProbeAndFindProjectFileProvider : IProjectFileProvider
     {
-        private readonly ILogger<ProbeAndFindProjectFileProvider> _logger;
-        private readonly DetectorOptions _options;
+        private readonly ILogger<ProbeAndFindProjectFileProvider> logger;
+        private readonly DetectorOptions options;
 
-        private string _projectFileRelativePath;
+        private string projectFileRelativePath;
 
         public ProbeAndFindProjectFileProvider(
             ILogger<ProbeAndFindProjectFileProvider> logger,
             IOptions<DetectorOptions> options)
         {
-            _logger = logger;
-            _options = options.Value;
+            this.logger = logger;
+            this.options = options.Value;
         }
 
         public string GetRelativePathToProjectFile(DetectorContext context)
@@ -31,24 +31,24 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             string projectFile = null;
 
             // search for .csproj files
-            var projectFiles = GetAllProjectFilesInRepo(
+            var projectFiles = this.GetAllProjectFilesInRepo(
                     sourceRepo,
                     DotNetCoreConstants.CSharpProjectFileExtension);
 
             if (!projectFiles.Any())
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "Could not find any files with extension " +
                     $"'{DotNetCoreConstants.CSharpProjectFileExtension}' in repo.");
 
                 // search for .fsproj files
-                projectFiles = GetAllProjectFilesInRepo(
+                projectFiles = this.GetAllProjectFilesInRepo(
                     sourceRepo,
                     DotNetCoreConstants.FSharpProjectFileExtension);
 
                 if (!projectFiles.Any())
                 {
-                    _logger.LogDebug(
+                    this.logger.LogDebug(
                         "Could not find any files with extension " +
                         $"'{DotNetCoreConstants.FSharpProjectFileExtension}' in repo.");
                     return null;
@@ -84,14 +84,14 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             // for example azurefunction and blazor both projects can reside
             // at the same repo, so more than 2 csprojs will be found. Now we will
             // look for --apptype value to determine which project needs to be built
-            if (!string.IsNullOrEmpty(_options.AppType))
+            if (!string.IsNullOrEmpty(this.options.AppType))
             {
-                _logger.LogInformation($"{nameof(_options.AppType)} is set to {_options.AppType}");
+                this.logger.LogInformation($"{nameof(this.options.AppType)} is set to {this.options.AppType}");
 
-                var appType = _options.AppType.ToLower();
+                var appType = this.options.AppType.ToLower();
                 if (appType.Contains(Constants.FunctionApplications))
                 {
-                    if (azureFunctionsProjects.Count() == 0)
+                    if (azureFunctionsProjects.Count == 0)
                     {
                         return null;
                     }
@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 }
                 else if (appType.Contains(Constants.StaticSiteApplications))
                 {
-                    if (blazorWasmProjects.Count() == 0)
+                    if (blazorWasmProjects.Count == 0)
                     {
                         return null;
                     }
@@ -109,7 +109,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 }
                 else if (appType.Contains(Constants.WebApplications))
                 {
-                    if (webAppProjects.Count() == 0)
+                    if (webAppProjects.Count == 0)
                     {
                         return null;
                     }
@@ -118,54 +118,41 @@ namespace Microsoft.Oryx.Detector.DotNetCore
                 }
                 else
                 {
-                    _logger.LogDebug($"Unrecognized app type {appType}'.");
+                    this.logger.LogDebug($"Unrecognized app type {appType}'.");
                 }
             }
             else
             {
-                _logger.LogInformation($"AppType is not provided. Selecting projects based on ");
+                this.logger.LogInformation($"AppType is not provided. Selecting projects based on ");
 
                 // If multiple project exists, and appType is not passed
                 // we detect them in following order
-                if (webAppProjects.Count() > 0)
+                if (webAppProjects.Count > 0)
                 {
                     projectFile = GetProject(webAppProjects);
                 }
-                else if (blazorWasmProjects.Count() > 0)
+                else if (blazorWasmProjects.Count > 0)
                 {
                     projectFile = GetProject(blazorWasmProjects);
                 }
-                else if (azureFunctionsProjects.Count() > 0)
+                else if (azureFunctionsProjects.Count > 0)
                 {
                     projectFile = GetProject(azureFunctionsProjects);
                 }
             }
 
-            // After scanning all the project types we stil didn't find any files (e.g. csproj
+            // After scanning all the project types we still didn't find any files (e.g. csproj
             if (projectFile == null)
             {
-                _logger.LogDebug("Could not find a .NET Core project file to build.");
+                this.logger.LogDebug("Could not find a .NET Core project file to build.");
                 return null;
             }
 
-            _projectFileRelativePath = ProjectFileHelpers.GetRelativePathToRoot(projectFile, sourceRepo.RootPath);
-            return _projectFileRelativePath;
+            this.projectFileRelativePath = ProjectFileHelpers.GetRelativePathToRoot(projectFile, sourceRepo.RootPath);
+            return this.projectFileRelativePath;
         }
 
-        private IEnumerable<string> GetAllProjectFilesInRepo(
-            ISourceRepo sourceRepo,
-            string projectFileExtension)
-        {
-            var searchSubDirectories = !_options.DisableRecursiveLookUp;
-            if (!searchSubDirectories)
-            {
-                _logger.LogDebug("Skipping search for files in sub-directories as it has been disabled.");
-            }
-
-            return sourceRepo.EnumerateFiles($"*.{projectFileExtension}", searchSubDirectories);
-        }
-
-        private string GetProject(List<string> projects)
+        private static string GetProject(List<string> projects)
         {
             if (projects.Count > 1)
             {
@@ -181,6 +168,19 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             }
 
             return null;
+        }
+
+        private IEnumerable<string> GetAllProjectFilesInRepo(
+            ISourceRepo sourceRepo,
+            string projectFileExtension)
+        {
+            var searchSubDirectories = !this.options.DisableRecursiveLookUp;
+            if (!searchSubDirectories)
+            {
+                this.logger.LogDebug("Skipping search for files in sub-directories as it has been disabled.");
+            }
+
+            return sourceRepo.EnumerateFiles($"*.{projectFileExtension}", searchSubDirectories);
         }
     }
 }

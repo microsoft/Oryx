@@ -9,7 +9,9 @@ stages:
     jobs:
     - job: CreateReleaseTag
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         skipComponentGovernanceDetection: true
       steps:
@@ -44,7 +46,8 @@ stages:
       displayName: Security
       condition: succeeded()
       pool:
-        name: Hosted VS2017
+        name: Azure Pipelines
+        vmImage: windows-2022
       steps:
       - template: templates/_securityChecks.yml
 
@@ -80,7 +83,9 @@ stages:
       condition: succeeded()
       timeoutInMinutes: 480
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true
@@ -106,7 +111,9 @@ stages:
       condition: succeeded()
       timeoutInMinutes: 480
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]  # map in the signtype variable
         skipComponentGovernanceDetection: true

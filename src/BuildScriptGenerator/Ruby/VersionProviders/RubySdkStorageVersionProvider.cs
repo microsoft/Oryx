@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            return GetAvailableVersionsFromStorage(
+            return this.GetAvailableVersionsFromStorage(
                 platformName: ToolNameConstants.RubyName,
                 versionMetadataElementName: "Version");
         }

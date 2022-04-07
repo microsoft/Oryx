@@ -3,11 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
-using System;
-using System.Linq;
 
 namespace Microsoft.Oryx.Detector.Ruby
 {
@@ -16,18 +16,18 @@ namespace Microsoft.Oryx.Detector.Ruby
     /// </summary>
     public class RubyDetector : IRubyPlatformDetector
     {
-        private readonly ILogger<RubyDetector> _logger;
-        private readonly DetectorOptions _options;
+        private readonly ILogger<RubyDetector> logger;
+        private readonly DetectorOptions options;
 
         /// <summary>
-        /// Creates an instance of <see cref="RubyDetector"/>.
+        /// Initializes a new instance of the <see cref="RubyDetector"/> class.
         /// </summary>
         /// <param name="logger">The <see cref="ILogger{RubyDetector}"/>.</param>
         /// <param name="options">The <see cref="DetectorOptions"/>.</param>
         public RubyDetector(ILogger<RubyDetector> logger, IOptions<DetectorOptions> options)
         {
-            _logger = logger;
-            _options = options.Value;
+            this.logger = logger;
+            this.options = options.Value;
         }
 
         public PlatformDetectorResult Detect(DetectorContext context)
@@ -41,70 +41,80 @@ namespace Microsoft.Oryx.Detector.Ruby
             if (sourceRepo.FileExists(RubyConstants.ConfigYmlFileName))
             {
                 configYmlFileExists = true;
-                _logger.LogInformation($"Found {RubyConstants.ConfigYmlFileName} at the root of the repo. " );
+                this.logger.LogInformation($"Found {RubyConstants.ConfigYmlFileName} at the root of the repo.");
             }
-            if (!string.IsNullOrEmpty(_options.AppType))
-            {
-                _logger.LogInformation($"{nameof(_options.AppType)} is set to {_options.AppType}");
 
-                var appType = _options.AppType.ToLower();
+            if (!string.IsNullOrEmpty(this.options.AppType))
+            {
+                this.logger.LogInformation($"{nameof(this.options.AppType)} is set to {this.options.AppType}");
+
+                var appType = this.options.AppType.ToLower();
                 if (appType.Contains(Constants.StaticSiteApplications)
                     && configYmlFileExists)
                 {
                     isRubyApp = true;
-                    _logger.LogInformation($"The ruby app was detected as a Jekyll static web app. ");
+                    this.logger.LogInformation($"The ruby app was detected as a Jekyll static web app. ");
                 }
             }
+
             if (sourceRepo.FileExists(RubyConstants.GemFileName))
             {
                 isRubyApp = true;
                 gemfileExists = true;
-                _logger.LogInformation($"Found {RubyConstants.GemFileName} at the root of the repo.");
+                this.logger.LogInformation($"Found {RubyConstants.GemFileName} at the root of the repo.");
             }
             else
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     $"Could not find {RubyConstants.GemFileName} in repo");
             }
-            if (!isRubyApp) {
+
+            if (!isRubyApp)
+            {
                 var isRubyLikeApp = false;
                 if (sourceRepo.FileExists(RubyConstants.GemFileLockName))
                 {
                     isRubyLikeApp = true;
-                    bundlerVersion = GetBundlerVersionFromGemFileLock(context);
-                    _logger.LogInformation($"Found {RubyConstants.GemFileLockName} "
+                    bundlerVersion = this.GetBundlerVersionFromGemFileLock(context);
+                    this.logger.LogInformation($"Found {RubyConstants.GemFileLockName} "
                     + "at the root of the repo.");
                 }
+
                 if (sourceRepo.FileExists(RubyConstants.ConfigRubyFileName))
                 {
                     isRubyLikeApp = true;
-                    _logger.LogInformation($"Found {RubyConstants.ConfigRubyFileName} "
+                    this.logger.LogInformation($"Found {RubyConstants.ConfigRubyFileName} "
                     + "at the root of the repo.");
                 }
-                if (isRubyLikeApp) {
-                     foreach (var iisStartupFile in RubyConstants.IisStartupFiles)
+
+                if (isRubyLikeApp)
+                {
+                    foreach (var iisStartupFile in RubyConstants.IisStartupFiles)
                     {
                         if (sourceRepo.FileExists(iisStartupFile))
                         {
-                            _logger.LogDebug(
+                            this.logger.LogDebug(
                                 "App in repo is not a Ruby app as it has the file {iisStartupFile}",
                                 iisStartupFile.Hash());
                             return null;
                         }
                     }
+
                     isRubyApp = true;
                 }
                 else
                 {
-                    _logger.LogDebug("Could not find typical Ruby files in repo");
+                    this.logger.LogDebug("Could not find typical Ruby files in repo");
                 }
             }
+
             if (!isRubyApp)
             {
-                _logger.LogDebug("App in repo is not a Ruby app");
+                this.logger.LogDebug("App in repo is not a Ruby app");
                 return null;
             }
-            var version = GetVersion(context);
+
+            var version = this.GetVersion(context);
             return new RubyPlatformDetectorResult
             {
                 Platform = RubyConstants.PlatformName,
@@ -118,16 +128,19 @@ namespace Microsoft.Oryx.Detector.Ruby
 
         private string GetVersion(DetectorContext context)
         {
-            var versionFromGemfile = GetVersionFromGemFile(context);
+            var versionFromGemfile = this.GetVersionFromGemFile(context);
             if (versionFromGemfile != null)
             {
                 return versionFromGemfile;
             }
-            var versionFromGemfileLock = GetVersionFromGemFileLock(context);
-            if (versionFromGemfileLock != null) {
+
+            var versionFromGemfileLock = this.GetVersionFromGemFileLock(context);
+            if (versionFromGemfileLock != null)
+            {
                 return versionFromGemfileLock;
             }
-            _logger.LogDebug("Could not get version from the gemfile or gemfile.lock. ");
+
+            this.logger.LogDebug("Could not get version from the gemfile or gemfile.lock. ");
             return null;
         }
 
@@ -147,6 +160,7 @@ namespace Microsoft.Oryx.Detector.Ruby
                     if (gemFileContentLine.Trim().StartsWith("ruby", StringComparison.InvariantCultureIgnoreCase))
                     {
                         var rubyVersionLine = gemFileContentLine.Trim().Split(' ');
+
                         // Make sure it's in valid format.
                         if (rubyVersionLine.Length == 2)
                         {
@@ -157,7 +171,7 @@ namespace Microsoft.Oryx.Detector.Ruby
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(
+                this.logger.LogWarning(
                     ex,
                     $"Exception caught while trying to parse {RubyConstants.GemFileName}");
             }
@@ -172,6 +186,7 @@ namespace Microsoft.Oryx.Detector.Ruby
                 var gemFileLockContent = context.SourceRepo.ReadFile(RubyConstants.GemFileLockName);
                 var gemFileLockContentLines = gemFileLockContent.Split('\n');
                 gemFileLockContentLines = gemFileLockContentLines.Select(x => x.Trim()).ToArray();
+
                 // Example content from a Gemfile.lock:
                 // PLATFORMS
                 //   ruby
@@ -181,6 +196,7 @@ namespace Microsoft.Oryx.Detector.Ruby
                 if (rubyVersionLineIndex != -1)
                 {
                     var rubyVersionLine = gemFileLockContentLines[rubyVersionLineIndex + 1].Split(' ');
+
                     // Make sure it's in valid format.
                     if (rubyVersionLine.Length == 2)
                     {
@@ -190,21 +206,24 @@ namespace Microsoft.Oryx.Detector.Ruby
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(
+                this.logger.LogWarning(
                     ex,
                     $"Exception caught while trying to parse {RubyConstants.GemFileLockName}");
             }
+
             return null;
         }
 
-        private string GetBundlerVersionFromGemFileLock(DetectorContext context) {
+        private string GetBundlerVersionFromGemFileLock(DetectorContext context)
+        {
             try
             {
                 var gemFileLockContent = context.SourceRepo.ReadFile(RubyConstants.GemFileLockName);
                 var gemFileLockContentLines = gemFileLockContent.Split('\n');
                 gemFileLockContentLines = gemFileLockContentLines.Select(x => x.Trim()).ToArray();
+
                 // Example content from a Gemfile.lock:
-                //BUNDLED WITH
+                // BUNDLED WITH
                 //   1.11.2
                 int bundlerVersionLineIndex = Array.IndexOf(gemFileLockContentLines, "BUNDLED WITH");
                 if (bundlerVersionLineIndex != -1)
@@ -214,10 +233,11 @@ namespace Microsoft.Oryx.Detector.Ruby
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(
+                this.logger.LogWarning(
                     ex,
                     $"Exception caught while trying to parse {RubyConstants.GemFileLockName}");
             }
+
             return null;
         }
     }

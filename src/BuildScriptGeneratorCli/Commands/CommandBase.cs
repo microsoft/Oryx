@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal abstract class CommandBase
     {
-        private IServiceProvider _serviceProvider = null;
+        private IServiceProvider serviceProvider;
 
         [Option(
             "--log-file <file>",
@@ -29,24 +29,25 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option("--debug", Description = "Print stack traces for exceptions.")]
         public bool DebugMode { get; set; }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "All arguments are necessary for OnExecute call, even if not used.")]
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
-            console.CancelKeyPress += Console_CancelKeyPress;
+            console.CancelKeyPress += this.Console_CancelKeyPress;
 
             ILogger<CommandBase> logger = null;
 
             try
             {
-                _serviceProvider = TryGetServiceProvider(console);
-                if (_serviceProvider == null)
+                this.serviceProvider = this.TryGetServiceProvider(console);
+                if (this.serviceProvider == null)
                 {
                     return ProcessConstants.ExitFailure;
                 }
 
-                logger = _serviceProvider?.GetRequiredService<ILogger<CommandBase>>();
+                logger = this.serviceProvider?.GetRequiredService<ILogger<CommandBase>>();
                 logger?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
 
-                var envSettings = _serviceProvider?.GetRequiredService<CliEnvironmentSettings>();
+                var envSettings = this.serviceProvider?.GetRequiredService<CliEnvironmentSettings>();
                 if (envSettings != null && envSettings.GitHubActions)
                 {
                     logger?.LogInformation("The current Oryx command is being run from within a GitHub Action.");
@@ -68,19 +69,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     }
                 }
 
-                if (!IsValidInput(_serviceProvider, console))
+                if (!this.IsValidInput(this.serviceProvider, console))
                 {
                     return ProcessConstants.ExitFailure;
                 }
 
-                if (DebugMode)
+                if (this.DebugMode)
                 {
                     console.WriteLine("Debug mode enabled");
                 }
 
-                using (var timedEvent = logger?.LogTimedEvent(GetType().Name))
+                using (var timedEvent = logger?.LogTimedEvent(this.GetType().Name))
                 {
-                    var exitCode = Execute(_serviceProvider, console);
+                    var exitCode = this.Execute(this.serviceProvider, console);
                     timedEvent?.AddProperty(nameof(exitCode), exitCode.ToString());
                     return exitCode;
                 }
@@ -95,7 +96,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 logger?.LogError(exc, "Exception caught");
 
                 console.WriteErrorLine(Constants.GenericErrorMessage);
-                if (DebugMode)
+                if (this.DebugMode)
                 {
                     console.WriteErrorLine(exc.ToString());
                 }
@@ -104,7 +105,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             finally
             {
-                DisposeServiceProvider();
+                this.DisposeServiceProvider();
             }
         }
 
@@ -123,7 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             // Don't use the IConsole instance in this method -- override this method in the command
             // and pass IConsole through to ServiceProviderBuilder to write to the output.
-            var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath)
+            var serviceProviderBuilder = new ServiceProviderBuilder(this.LogFilePath)
                 .ConfigureServices(services =>
                 {
                     // Add an empty and default configuration to prevent some commands from breaking since options
@@ -131,11 +132,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     var configuration = new ConfigurationBuilder().Build();
                     services.AddSingleton<IConfiguration>(configuration);
                 })
-                .ConfigureScriptGenerationOptions(opts => ConfigureBuildScriptGeneratorOptions(opts));
+                .ConfigureScriptGenerationOptions(opts => this.ConfigureBuildScriptGeneratorOptions(opts));
             return serviceProviderBuilder.Build();
         }
 
-        protected string GetBeginningCommandOutputLog()
+        protected static string GetBeginningCommandOutputLog()
         {
             var output = new StringBuilder();
             output.AppendLine("Operation performed by Microsoft Oryx, https://github.com/Microsoft/Oryx");
@@ -156,12 +157,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
-            DisposeServiceProvider();
+            this.DisposeServiceProvider();
         }
 
         private void DisposeServiceProvider()
         {
-            if (_serviceProvider is IDisposable disposable)
+            if (this.serviceProvider is IDisposable disposable)
             {
                 disposable.Dispose();
             }

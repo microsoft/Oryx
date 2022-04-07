@@ -21,12 +21,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
         public void Configure(NodeScriptGeneratorOptions options)
         {
-            options.NodeVersion = GetStringValue(SettingsKeys.NodeVersion);
-            options.CustomRunBuildCommand = GetStringValue(SettingsKeys.CustomRunBuildCommand);
-            options.CustomBuildCommand = GetStringValue(SettingsKeys.CustomBuildCommand);
-            options.PruneDevDependencies = GetBooleanValue(SettingsKeys.PruneDevDependencies);
-            options.NpmRegistryUrl = GetStringValue(SettingsKeys.NpmRegistryUrl);
-            options.EnableNodeMonorepoBuild = GetBooleanValue(SettingsKeys.EnableNodeMonorepoBuild);
+            options.NodeVersion = this.GetStringValue(SettingsKeys.NodeVersion);
+            options.CustomRunBuildCommand = this.GetStringValue(SettingsKeys.CustomRunBuildCommand);
+            options.CustomBuildCommand = this.GetStringValue(SettingsKeys.CustomBuildCommand);
+            options.PruneDevDependencies = this.GetBooleanValue(SettingsKeys.PruneDevDependencies);
+            options.NpmRegistryUrl = this.GetStringValue(SettingsKeys.NpmRegistryUrl);
+            options.EnableNodeMonorepoBuild = this.GetBooleanValue(SettingsKeys.EnableNodeMonorepoBuild);
         }
     }
 }

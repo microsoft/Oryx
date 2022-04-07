@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
             }
 
-            console.WriteLine(OutputJson ? JsonConvert.SerializeObject(platformInfo) : FormatResult(platformInfo));
+            console.WriteLine(this.OutputJson ? JsonConvert.SerializeObject(platformInfo) : FormatResult(platformInfo));
             return ProcessConstants.ExitSuccess;
         }
 
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // Override the GetServiceProvider() call in CommandBase to pass the IConsole instance to
             // ServiceProviderBuilder and allow for writing to the console if needed during this command.
-            var serviceProviderBuilder = new ServiceProviderBuilder(LogFilePath, console)
+            var serviceProviderBuilder = new ServiceProviderBuilder(this.LogFilePath, console)
                 .ConfigureServices(services =>
                 {
                     // Configure Options related services
@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return serviceProviderBuilder.Build();
         }
 
-        private string FormatResult(IList<PlatformResult> platforms)
+        private static string FormatResult(IList<PlatformResult> platforms)
         {
             var result = new StringBuilder();
 
@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return result.ToString();
         }
 
-        private IList<string> SortVersions(IEnumerable<string> versions)
+        private static IList<string> SortVersions(IEnumerable<string> versions)
         {
             var result = new List<VersionInfo>();
             foreach (var version in versions)

@@ -12,8 +12,6 @@ namespace Microsoft.Oryx.Tests.Common
     {
         private readonly static List<string> LegacyNodeVersions = new List<string>
         {
-            "4.4", "4.5", "4.8",
-            "6.2", "6.6", "6.9", "6.10", "6.11",
             "8","8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12",
             "9.4",
             "10","10.1", "10.10", "10.14",
@@ -28,7 +26,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         private readonly static List<string> PythonVersions = new List<string>
         {
-            "2.7", "3.6", "3.7"
+            "3.6", "3.7"
         };
 
         private readonly static List<string> ZipOptions = new List<string>

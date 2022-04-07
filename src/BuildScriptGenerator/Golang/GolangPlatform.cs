@@ -20,12 +20,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 {
     internal class GolangPlatform : IProgrammingPlatform
     {
-        private readonly GolangScriptGeneratorOptions _goScriptGeneratorOptions;
-        private readonly BuildScriptGeneratorOptions _commonOptions;
-        private readonly IGolangVersionProvider _goVersionProvider;
-        private readonly ILogger<GolangPlatform> _logger;
-        private readonly IGolangPlatformDetector _detector;
-        private readonly GolangPlatformInstaller _golangInstaller;
+        private readonly GolangScriptGeneratorOptions goScriptGeneratorOptions;
+        private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly IGolangVersionProvider goVersionProvider;
+        private readonly ILogger<GolangPlatform> logger;
+        private readonly IGolangPlatformDetector detector;
+        private readonly GolangPlatformInstaller golangInstaller;
 
         public GolangPlatform(
             IOptions<GolangScriptGeneratorOptions> goScriptGeneratorOptions,
@@ -35,12 +35,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
             IGolangPlatformDetector detector,
             GolangPlatformInstaller golangInstaller)
         {
-            _goScriptGeneratorOptions = goScriptGeneratorOptions.Value;
-            _commonOptions = commonOptions.Value;
-            _goVersionProvider = goVersionProvider;
-            _logger = logger;
-            _detector = detector;
-            _golangInstaller = golangInstaller;
+            this.goScriptGeneratorOptions = goScriptGeneratorOptions.Value;
+            this.commonOptions = commonOptions.Value;
+            this.goVersionProvider = goVersionProvider;
+            this.logger = logger;
+            this.detector = detector;
+            this.golangInstaller = golangInstaller;
         }
 
         /// <summary>
@@ -55,14 +55,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
         {
             get
             {
-                var versionInfo = _goVersionProvider.GetVersionInfo();
+                var versionInfo = this.goVersionProvider.GetVersionInfo();
                 return versionInfo.SupportedVersions;
             }
         }
 
         public PlatformDetectorResult Detect(RepositoryContext context)
         {
-            var detectionResult = _detector.Detect(new DetectorContext
+            var detectionResult = this.detector.Detect(new DetectorContext
             {
                 SourceRepo = new Detector.LocalSourceRepo(context.SourceRepo.RootPath),
             });
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
                 return null;
             }
 
-            ResolveVersions(context, detectionResult);
+            this.ResolveVersions(context, detectionResult);
             return detectionResult;
         }
 
@@ -100,22 +100,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 
             // Write platform name and version to the manifest file
             buildProperties[ManifestFilePropertyKeys.GolangVersion] = goPlatformDetectorResult.PlatformVersion;
-            _logger.LogDebug($"Selected Go version: {goPlatformDetectorResult.PlatformVersion}");
+            this.logger.LogDebug($"Selected Go version: {goPlatformDetectorResult.PlatformVersion}");
 
             var scriptProps = new GolangBashBuildSnippetProperties
             {
-                GoModExists = goPlatformDetectorResult.GoModExists
+                GoModExists = goPlatformDetectorResult.GoModExists,
             };
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.GolangSnippet,
                 scriptProps,
-                _logger);
+                this.logger);
 
             return new BuildScriptSnippet
             {
                 BashBuildScriptSnippet = script,
-                BuildProperties = buildProperties
+                BuildProperties = buildProperties,
             };
         }
 
@@ -126,7 +126,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 
         public bool IsEnabled(RepositoryContext ctx)
         {
-            return _commonOptions.EnableGolangBuild;
+            return this.commonOptions.EnableGolangBuild;
         }
 
         public bool IsCleanRepo(ISourceRepo repo)
@@ -160,7 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
                     $"'{typeof(GolangPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            ResolveVersionsUsingHierarchicalRules(goPlatformDetectorResult);
+            this.ResolveVersionsUsingHierarchicalRules(goPlatformDetectorResult);
         }
 
         public string GetInstallerScriptSnippet(BuildScriptGeneratorContext context, PlatformDetectorResult detectorResult)
@@ -173,13 +173,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
                     $"'{typeof(GolangPlatformDetectorResult)}' but got '{detectorResult.GetType()}'.");
             }
 
-            if (_commonOptions.EnableDynamicInstall)
+            if (this.commonOptions.EnableDynamicInstall)
             {
-                _logger.LogDebug("Dynamic install is enabled.");
+                this.logger.LogDebug("Dynamic install is enabled.");
 
                 var scriptBuilder = new StringBuilder();
 
-                InstallGolang(golangPlatformDetectorResult.PlatformVersion, scriptBuilder);
+                this.InstallGolang(golangPlatformDetectorResult.PlatformVersion, scriptBuilder);
 
                 if (scriptBuilder.Length == 0)
                 {
@@ -190,7 +190,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
             }
             else
             {
-                _logger.LogDebug("Dynamic install not enabled.");
+                this.logger.LogDebug("Dynamic install not enabled.");
                 return null;
             }
         }
@@ -213,16 +213,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
         private void ResolveVersionsUsingHierarchicalRules(GolangPlatformDetectorResult detectorResult)
         {
             var goVersion = ResolveGoVersion(detectorResult.PlatformVersion);
-            goVersion = GetMaxSatisfyingGoVersionAndVerify(goVersion);
+            goVersion = this.GetMaxSatisfyingGoVersionAndVerify(goVersion);
 
             detectorResult.PlatformVersion = goVersion;
 
             string ResolveGoVersion(string detectedVersion)
             {
                 // Explicitly specified version by user wins over detected version
-                if (!string.IsNullOrEmpty(_goScriptGeneratorOptions.GolangVersion))
+                if (!string.IsNullOrEmpty(this.goScriptGeneratorOptions.GolangVersion))
                 {
-                    return _goScriptGeneratorOptions.GolangVersion;
+                    return this.goScriptGeneratorOptions.GolangVersion;
                 }
 
                 // If a version was detected, then use it.
@@ -232,21 +232,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
                 }
 
                 // Fallback to default version
-                var versionInfo = _goVersionProvider.GetVersionInfo();
+                var versionInfo = this.goVersionProvider.GetVersionInfo();
                 return versionInfo.DefaultVersion;
             }
         }
 
         private string GetMaxSatisfyingGoVersionAndVerify(string version)
         {
-            var versionInfo = _goVersionProvider.GetVersionInfo();
+            var versionInfo = this.goVersionProvider.GetVersionInfo();
             if (!versionInfo.SupportedVersions.Contains(version))
             {
                 var exc = new UnsupportedVersionException(
                     GolangConstants.PlatformName,
                     version,
                     versionInfo.SupportedVersions);
-                _logger.LogError(
+                this.logger.LogError(
                     exc,
                     $"Exception caught, the version '{version}' is not supported for the Go platform.");
                 throw exc;
@@ -257,20 +257,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 
         private void InstallGolang(string golangVersion, StringBuilder scriptBuilder)
         {
-            if (_golangInstaller.IsVersionAlreadyInstalled(golangVersion))
+            if (this.golangInstaller.IsVersionAlreadyInstalled(golangVersion))
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                    "Golang version {version} is already installed. So skipping installing it again.",
                    golangVersion);
             }
             else
             {
-                _logger.LogDebug(
+                this.logger.LogDebug(
                     "Golang version {version} is not installed. " +
                     "So generating an installation script snippet for it.",
                     golangVersion);
 
-                var script = _golangInstaller.GetInstallerScriptSnippet(golangVersion);
+                var script = this.golangInstaller.GetInstallerScriptSnippet(golangVersion);
                 scriptBuilder.AppendLine(script);
             }
         }

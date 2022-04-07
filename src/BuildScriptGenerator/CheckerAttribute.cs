@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     [AttributeUsage(AttributeTargets.Class)]
     public class CheckerAttribute : Attribute
     {
-        private readonly string[] _targetToolNames;
+        private readonly string[] targetToolNames;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CheckerAttribute"/> class.
@@ -22,8 +22,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// The annotated checker will only be applied to builds that used these tools.
         /// If empty, the checker will apply to all builds, regardless of tools.
         /// </param>
-        public CheckerAttribute(params string[] targetToolNames) => _targetToolNames = targetToolNames;
+        public CheckerAttribute(params string[] targetToolNames) => this.targetToolNames = targetToolNames;
 
-        public string[] TargetToolNames => _targetToolNames;
+        public string[] TargetToolNames => this.targetToolNames;
     }
 }

@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("8.1", PhpVersions.Php81Version)]
         [InlineData("8.0", PhpVersions.Php80Version)]
         [InlineData("7.4", PhpVersions.Php74Version)]
         [InlineData("7.3", PhpVersions.Php73Version)]
@@ -189,6 +190,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
         [InlineData("7.3")]
@@ -240,6 +242,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
+        [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
         [InlineData("7.3")]
@@ -281,6 +284,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
         [InlineData("7.3")]
@@ -310,7 +314,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
         public void SqlSrv_IsInstalled(string imageTag)
         {
             // Arrange & Act

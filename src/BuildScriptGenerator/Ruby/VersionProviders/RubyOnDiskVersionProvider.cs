@@ -9,17 +9,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 {
     public class RubyOnDiskVersionProvider : IRubyVersionProvider
     {
-        private readonly ILogger<RubyOnDiskVersionProvider> _logger;
+        private readonly ILogger<RubyOnDiskVersionProvider> logger;
 
         public RubyOnDiskVersionProvider(ILogger<RubyOnDiskVersionProvider> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            _logger.LogDebug("Getting list of versions from {installDir}", RubyConstants.InstalledRubyVersionsDir);
+            this.logger.LogDebug("Getting list of versions from {installDir}", RubyConstants.InstalledRubyVersionsDir);
 
             var installedVersions = VersionProviderHelper.GetVersionsFromDirectory(
                             RubyConstants.InstalledRubyVersionsDir);

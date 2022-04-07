@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-2")]
     public class NodeAngularAppTest : NodeEndToEndTestsBase
     {
         public NodeAngularAppTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -25,8 +24,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
         // Official Node.js version that is supported by Angular CLI 6.0+ is 8.9 or greater
         [Theory]
-        [InlineData("8")]
-        [InlineData("9.4")]
+        [InlineData("8"), Trait("category", "node-8")]
+        [InlineData("9.4"), Trait("category", "node-9.4")]
         public async Task CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -70,11 +69,11 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InRoot_WithoutCompression()
+        [Theory]
+        [InlineData("8"), Trait("category", "node-8")]
+        public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "8";
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -139,11 +138,11 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InAppDir_WithoutCompression()
+        [Theory]
+        [InlineData("9.4"), Trait("category", "node-9.4")]
+        public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InAppDir_WithoutCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "9.4";
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -208,11 +207,11 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InRoot_WithoutCompression()
+        [Theory]
+        [InlineData("8"), Trait("category", "node-8")]
+        public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "8";
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -278,11 +277,11 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InAppDir_WithoutCompression()
+        [Theory]
+        [InlineData("9.4"), Trait("category", "node-9.4")]
+        public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InAppDir_WithoutCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "9.4";
             var appName = "angular6app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -348,11 +347,11 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Fact]
-        public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_Dir_Exists_InAppDir_UsingCompression()
+        [Theory]
+        [InlineData("8"), Trait("category", "node-8")]
+        public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_Dir_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "8";
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -429,11 +428,11 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Fact]
-        public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_SymLink_Exists_InRootDir_UsingCompression()
+        [Theory]
+        [InlineData("9.4"), Trait("category", "node-9.4")]
+        public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_SymLink_Exists_InRootDir_UsingCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "9.4";
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -512,8 +511,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12")]
-        [InlineData("10")]
+        [InlineData("12"), Trait("category", "node-12")]
+        [InlineData("10"), Trait("category", "node-10")]
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -561,8 +560,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
         // Official Node.js version that is supported by Angular CLI 8.0+ is 10.9 or greater
         [Theory]
-        [InlineData("10")]
-        [InlineData("12")]
+        [InlineData("10"), Trait("category", "node-10")]
+        [InlineData("12"), Trait("category", "node-12")]
         public async Task CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -606,11 +605,11 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_Angular8App_NodeModules_Dir_Exists_InRoot_WithoutCompression()
+        [Theory]
+        [InlineData("10"), Trait("category", "node-10")]
+        public async Task CanBuildAndRun_Angular8App_NodeModules_Dir_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "10";
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -684,11 +683,11 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Fact]
-        public async Task CanBuildAndRun_Angular8App_NodeModules_SymLink_Exists_InRoot_WithoutCompression()
+        [Theory]
+        [InlineData("12"), Trait("category", "node-12")]
+        public async Task CanBuildAndRun_Angular8App_NodeModules_SymLink_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "12";
             var appName = "angular8app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -755,11 +754,11 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Fact]
-        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InRoot_UsingCompression()
+        [Theory]
+        [InlineData("10"), Trait("category", "node-10")]
+        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InRoot_UsingCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "10";
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -835,11 +834,11 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Fact]
-        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompression()
+        [Theory]
+        [InlineData("12"), Trait("category", "node-12")]
+        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "12";
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -914,11 +913,11 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Fact]
-        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InRoot_UsingCompression()
+        [Theory]
+        [InlineData("10"), Trait("category", "node-10")]
+        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InRoot_UsingCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "10";
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -995,11 +994,11 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Fact]
-        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression()
+        [Theory]
+        [InlineData("12"), Trait("category", "node-12-2")]
+        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
             // Arrange
-            var nodeVersion = "12";
             string compressFormat = "tar-gz";
             int count = 0;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -1078,8 +1077,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("10")]
-        [InlineData("12")]
+        [InlineData("10"), Trait("category", "node-10")]
+        [InlineData("12"), Trait("category", "node-12-2")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
             // Arrange

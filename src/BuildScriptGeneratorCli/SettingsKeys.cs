@@ -52,5 +52,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string BuildCommandsFileName = "BUILDCOMMANDS_FILE";
         public const string DynamicInstallRootDir = "DYNAMIC_INSTALL_ROOT_DIR";
         public const string DisableRecursiveLookUp = "DISABLE_RECURSIVE_LOOKUP";
+        public const string CustomRequirementsTxtPath = "CUSTOM_REQUIREMENTSTXT_PATH";
     }
 }

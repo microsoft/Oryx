@@ -1,6 +1,6 @@
 FROM php-8.0
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.0.13
+ENV PHP_VERSION 8.0.17
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
@@ -102,7 +102,7 @@ RUN set -eux; \
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 # pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 7.3.0)
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \

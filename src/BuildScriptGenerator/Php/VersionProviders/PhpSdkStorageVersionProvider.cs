@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            return GetAvailableVersionsFromStorage(
+            return this.GetAvailableVersionsFromStorage(
                 platformName: ToolNameConstants.PhpName,
                 versionMetadataElementName: "Version");
         }

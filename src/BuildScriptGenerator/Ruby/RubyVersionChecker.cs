@@ -13,11 +13,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
     [Checker(RubyConstants.PlatformName)]
     public class RubyVersionChecker : IChecker
     {
-        private readonly ILogger<RubyVersionChecker> _logger;
+        private readonly ILogger<RubyVersionChecker> logger;
 
         public RubyVersionChecker(ILogger<RubyVersionChecker> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         [NotNull]
@@ -25,12 +25,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
         {
             var used = tools[RubyConstants.PlatformName];
             var comparison = SemanticVersionResolver.CompareVersions(used, RubyConstants.RubyLtsVersion);
-            _logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
+            this.logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
             if (comparison < 0)
             {
                 return new[]
                 {
-                    new CheckerMessage(string.Format(Resources.Labels.ToolVersionCheckerMessageFormat,
+                    new CheckerMessage(string.Format(
+                        Resources.Labels.ToolVersionCheckerMessageFormat,
                         RubyConstants.PlatformName,
                         used,
                         Constants.OryxGitHubUrl)),

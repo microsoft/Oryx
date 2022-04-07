@@ -7,7 +7,9 @@ stages:
   - job: DotNetCore_Buster
     timeoutInMinutes: 250
     pool:
-      vmImage: 'ubuntu-latest'
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
     steps:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
@@ -17,7 +19,9 @@ stages:
   - job: DotNetCore_Stretch
     timeoutInMinutes: 250
     pool:
-      vmImage: 'ubuntu-latest'
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
     steps:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
@@ -27,7 +31,9 @@ stages:
   - job: DotNetCore_Ubuntu
     timeoutInMinutes: 250
     pool:
-      vmImage: 'ubuntu-latest'
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
     steps:
     - template: ../templates/_platformBinariesTemplate.yml
       parameters:
@@ -41,7 +47,9 @@ stages:
     timeoutInMinutes: 250
     displayName: Publish to Azure Blob Storage
     pool:
-      vmImage: 'ubuntu-latest'
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
     steps:
     - template: ../templates/_platformBinariesReleaseTemplate.yml
 

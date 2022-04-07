@@ -12,7 +12,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node")]
     public class NodeSassExampleTest : NodeEndToEndTestsBase
     {
         public NodeSassExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -21,8 +20,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12")]
-        [InlineData("14")]
+        [InlineData("12"), Trait("category", "node-12-7")]
+        [InlineData("14"), Trait("category", "node-14")]
         public async Task Test_NodeSassExample(string nodeVersion)
         {
             // Arrange

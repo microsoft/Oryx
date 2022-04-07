@@ -58,7 +58,35 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            Assert.Contains("COMMAND_MANIFEST_FILE=oryx-build-commands.txt", text);
+            Assert.Contains("COMMAND_MANIFEST_FILE=\"oryx-build-commands.txt\"", text);
+
+        }
+
+        [Fact]
+        public void GeneratedSnippet_ContainsBuildCommand_WhenCustomRequirementsTxtExists()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: true,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: "3.6",
+                runPythonPackageCommand: false,
+                customRequirementsTxtPath: "foo/requirements.txt"
+                );
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            Assert.Contains("python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE", text);
 
         }
 

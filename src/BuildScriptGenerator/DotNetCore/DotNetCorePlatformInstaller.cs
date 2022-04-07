@@ -20,16 +20,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public virtual string GetInstallerScriptSnippet(string version)
         {
-            return GetInstallerScriptSnippet(DotNetCoreConstants.PlatformName, version);
+            return this.GetInstallerScriptSnippet(DotNetCoreConstants.PlatformName, version);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)
         {
-            return IsVersionInstalled(
+            return this.IsVersionInstalled(
                 version,
                 builtInDir: DotNetCoreConstants.DefaultDotNetCoreSdkVersionsInstallDir,
                 dynamicInstallDir: Path.Combine(
-                    CommonOptions.DynamicInstallRootDir, DotNetCoreConstants.PlatformName));
+                    this.CommonOptions.DynamicInstallRootDir, DotNetCoreConstants.PlatformName));
         }
     }
 }

@@ -25,18 +25,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             Description = "The version of the programming platform used in the provided source directory.")]
         public string PlatformVersion { get; set; }
 
-        [Option("--package", CommandOptionType.NoValue,
+        [Option(
+            "--package",
+            CommandOptionType.NoValue,
             Description = "Package the built sources into a platform-specific format.")]
         public bool ShouldPackage { get; set; }
 
-        [Option("--os-requirements", CommandOptionType.SingleValue,
+        [Option(
+            "--os-requirements",
+            CommandOptionType.SingleValue,
             Description = "Comma-separated list of operating system packages that will be installed (using apt-get) before building the application.")]
         public string OsRequirements { get; set; }
 
         [Option(
             OptionTemplates.AppType,
             CommandOptionType.SingleValue,
-            Description = "Type of application that the the source directory has, for example: 'functions' or 'static-sites' etc.")]
+            Description = "Type of application that the source directory has, for example: 'functions' or 'static-sites' etc.")]
         public string AppType { get; set; }
 
         [Option(

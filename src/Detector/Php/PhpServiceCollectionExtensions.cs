@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.Detector
         public static IServiceCollection AddPhpServices(this IServiceCollection services)
         {
             services.AddSingleton<PhpDetector>();
+
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
             Func<IServiceProvider, PhpDetector> factory = (sp) => sp.GetRequiredService<PhpDetector>();

@@ -28,17 +28,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private static readonly TimeSpan RunScriptGeneratorTimeout = TimeSpan.FromSeconds(5);
 
-        private readonly string _tempScriptPath = Path.Combine(Path.GetTempPath(), "run.sh");
+        private readonly string tempScriptPath = Path.Combine(Path.GetTempPath(), "run.sh");
 
-        private readonly IEnumerable<IProgrammingPlatform> _programmingPlatforms;
-        private readonly ILogger<DefaultRunScriptGenerator> _logger;
+        private readonly IEnumerable<IProgrammingPlatform> programmingPlatforms;
+        private readonly ILogger<DefaultRunScriptGenerator> logger;
 
         public DefaultRunScriptGenerator(
             IEnumerable<IProgrammingPlatform> platforms,
             ILogger<DefaultRunScriptGenerator> logger)
         {
-            _programmingPlatforms = platforms;
-            _logger = logger;
+            this.programmingPlatforms = platforms;
+            this.logger = logger;
         }
 
         public string GenerateBashScript(RunScriptGeneratorContext ctx)
@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             IProgrammingPlatform targetPlatform = null;
             if (!string.IsNullOrEmpty(ctx.Platform))
             {
-                targetPlatform = _programmingPlatforms
+                targetPlatform = this.programmingPlatforms
                     .Where(p => p.Name.EqualsIgnoreCase(ctx.Platform))
                     .FirstOrDefault();
 
@@ -62,14 +62,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
             else
             {
-                _logger.LogDebug("No platform provided for run-script command; attempting to determine platform...");
-                foreach (var platform in _programmingPlatforms)
+                this.logger.LogDebug("No platform provided for run-script command; attempting to determine platform...");
+                foreach (var platform in this.programmingPlatforms)
                 {
-                    _logger.LogDebug($"Checking if platform '{platform.Name}' is compatible...");
+                    this.logger.LogDebug($"Checking if platform '{platform.Name}' is compatible...");
                     var detectionResult = platform.Detect(ctx);
                     if (detectionResult != null)
                     {
-                        _logger.LogDebug($"Detected platform '{detectionResult.Platform}' with version '{detectionResult.PlatformVersion}'.");
+                        this.logger.LogDebug($"Detected platform '{detectionResult.Platform}' with version '{detectionResult.PlatformVersion}'.");
                         if (string.IsNullOrEmpty(detectionResult.PlatformVersion))
                         {
                             throw new UnsupportedVersionException($"Couldn't detect a version for platform '{detectionResult.Platform}' in the repo.");
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
             }
 
-            return RunStartupScriptGeneratorForPlatform(targetPlatform, ctx);
+            return this.RunStartupScriptGeneratorForPlatform(targetPlatform, ctx);
         }
 
         private string RunStartupScriptGeneratorForPlatform(
@@ -104,7 +104,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 scriptGenArgs.Add("create-script");
             }
 
-            scriptGenArgs.AddRange(new[] { "-appPath", ctx.SourceRepo.RootPath, "-output", _tempScriptPath });
+            scriptGenArgs.AddRange(new[] { "-appPath", ctx.SourceRepo.RootPath, "-output", this.tempScriptPath });
 
             if (ctx.PassThruArguments != null)
             {
@@ -116,11 +116,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (exitCode != ProcessConstants.ExitSuccess)
             {
-                _logger.LogError("Generated run script returned exit code '{exitCode}'", exitCode);
+                this.logger.LogError("Generated run script returned exit code '{exitCode}'", exitCode);
+#pragma warning disable CA2201 // Ignoring generic Exception for backwards-compatibility
+#pragma warning disable CA2201 // Ignoring generic Exception for backwards-compatibility
                 throw new Exception($"{scriptGenPath} failed");
+#pragma warning restore CA2201
             }
 
-            return File.ReadAllText(_tempScriptPath);
+            return File.ReadAllText(this.tempScriptPath);
         }
     }
 }

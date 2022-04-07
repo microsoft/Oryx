@@ -14,22 +14,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     internal class TextSpanEventLogger : ITextStreamProcessor
     {
-        private readonly ILogger _logger;
+        private readonly ILogger logger;
 
-        private readonly Dictionary<string, TextSpan> _beginnings = new Dictionary<string, TextSpan>();
+        private readonly Dictionary<string, TextSpan> beginnings = new Dictionary<string, TextSpan>();
 
-        private readonly Dictionary<string, TextSpan> _endings = new Dictionary<string, TextSpan>();
+        private readonly Dictionary<string, TextSpan> endings = new Dictionary<string, TextSpan>();
 
-        private readonly Dictionary<TextSpan, EventStopwatch> _events = new Dictionary<TextSpan, EventStopwatch>();
+        private readonly Dictionary<TextSpan, EventStopwatch> events = new Dictionary<TextSpan, EventStopwatch>();
 
         public TextSpanEventLogger(ILogger logger, TextSpan[] events)
         {
-            _logger = logger;
+            this.logger = logger;
 
             foreach (var span in events)
             {
-                _beginnings[span.BeginMarker] = span;
-                _endings[span.EndMarker] = span;
+                this.beginnings[span.BeginMarker] = span;
+                this.endings[span.EndMarker] = span;
             }
         }
 
@@ -37,19 +37,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var marker = line.Trim();
 
-            if (_beginnings.ContainsKey(marker)) // Start measuring
+            // Start measuring
+            if (this.beginnings.ContainsKey(marker))
             {
-                var span = _beginnings[marker];
-                if (!_events.ContainsKey(span)) // Avoid a new measurement for a span already being measured
+                var span = this.beginnings[marker];
+
+                // Avoid a new measurement for a span already being measured
+                if (!this.events.ContainsKey(span))
                 {
-                    _events[span] = _logger.LogTimedEvent(span.Name);
+                    this.events[span] = this.logger.LogTimedEvent(span.Name);
                 }
             }
-            else if (_endings.ContainsKey(marker)) // Stop a running measurement
+            else if (this.endings.ContainsKey(marker))
             {
-                var span = _endings[marker];
-                _events.GetValueOrDefault(span)?.Dispose(); // Records the measurement
-                _events.Remove(span); // No need to check if the removal succeeded, because the event might not exist
+                // Stop a running measurement
+                var span = this.endings[marker];
+                this.events.GetValueOrDefault(span)?.Dispose(); // Records the measurement
+                this.events.Remove(span); // No need to check if the removal succeeded, because the event might not exist
             }
         }
     }

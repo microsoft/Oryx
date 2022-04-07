@@ -24,37 +24,38 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
         {
             // "config.GetValue" call will get the most closest value provided based on the order of
             // configuration sources added to the ConfigurationBuilder above.
-            options.PlatformName = GetStringValue(SettingsKeys.PlatformName);
-            options.PlatformVersion = GetStringValue(SettingsKeys.PlatformVersion);
-            options.ShouldPackage = GetBooleanValue(SettingsKeys.CreatePackage);
-            var requiredOsPackages = GetStringValue(SettingsKeys.RequiredOsPackages);
+            options.PlatformName = this.GetStringValue(SettingsKeys.PlatformName);
+            options.PlatformVersion = this.GetStringValue(SettingsKeys.PlatformVersion);
+            options.ShouldPackage = this.GetBooleanValue(SettingsKeys.CreatePackage);
+            var requiredOsPackages = this.GetStringValue(SettingsKeys.RequiredOsPackages);
             options.RequiredOsPackages = string.IsNullOrWhiteSpace(requiredOsPackages)
                 ? null : requiredOsPackages.Split(',').Select(pkg => pkg.Trim()).ToArray();
 
-            options.EnableCheckers = !GetBooleanValue(SettingsKeys.DisableCheckers);
-            options.EnableDotNetCoreBuild = !GetBooleanValue(SettingsKeys.DisableDotNetCoreBuild);
-            options.EnableGolangBuild = !GetBooleanValue(SettingsKeys.DisableGolangeBuild);
-            options.EnableNodeJSBuild = !GetBooleanValue(SettingsKeys.DisableNodeJSBuild);
-            options.EnablePythonBuild = !GetBooleanValue(SettingsKeys.DisablePythonBuild);
-            options.EnablePhpBuild = !GetBooleanValue(SettingsKeys.DisablePhpBuild);
-            options.EnableHugoBuild = !GetBooleanValue(SettingsKeys.DisableHugoBuild);
-            options.EnableRubyBuild = !GetBooleanValue(SettingsKeys.DisableRubyBuild);
-            options.EnableJavaBuild = !GetBooleanValue(SettingsKeys.DisableJavaBuild);
-            options.EnableMultiPlatformBuild = GetBooleanValue(SettingsKeys.EnableMultiPlatformBuild);
-            options.EnableTelemetry = !GetBooleanValue(SettingsKeys.DisableTelemetry);
-            options.PreBuildScriptPath = GetStringValue(SettingsKeys.PreBuildScriptPath);
-            options.PreBuildCommand = GetStringValue(SettingsKeys.PreBuildCommand);
-            options.PostBuildScriptPath = GetStringValue(SettingsKeys.PostBuildScriptPath);
-            options.PostBuildCommand = GetStringValue(SettingsKeys.PostBuildCommand);
-            options.OryxSdkStorageBaseUrl = GetStringValue(SettingsKeys.OryxSdkStorageBaseUrl);
-            options.AppType = GetStringValue(SettingsKeys.AppType);
-            options.BuildCommandsFileName = GetStringValue(SettingsKeys.BuildCommandsFileName);
-            options.CompressDestinationDir = GetBooleanValue(SettingsKeys.CompressDestinationDir);
+            options.EnableCheckers = !this.GetBooleanValue(SettingsKeys.DisableCheckers);
+            options.EnableDotNetCoreBuild = !this.GetBooleanValue(SettingsKeys.DisableDotNetCoreBuild);
+            options.EnableGolangBuild = !this.GetBooleanValue(SettingsKeys.DisableGolangeBuild);
+            options.EnableNodeJSBuild = !this.GetBooleanValue(SettingsKeys.DisableNodeJSBuild);
+            options.EnablePythonBuild = !this.GetBooleanValue(SettingsKeys.DisablePythonBuild);
+            options.EnablePhpBuild = !this.GetBooleanValue(SettingsKeys.DisablePhpBuild);
+            options.EnableHugoBuild = !this.GetBooleanValue(SettingsKeys.DisableHugoBuild);
+            options.EnableRubyBuild = !this.GetBooleanValue(SettingsKeys.DisableRubyBuild);
+            options.EnableJavaBuild = !this.GetBooleanValue(SettingsKeys.DisableJavaBuild);
+            options.EnableMultiPlatformBuild = this.GetBooleanValue(SettingsKeys.EnableMultiPlatformBuild);
+            options.EnableTelemetry = !this.GetBooleanValue(SettingsKeys.DisableTelemetry);
+            options.PreBuildScriptPath = this.GetStringValue(SettingsKeys.PreBuildScriptPath);
+            options.PreBuildCommand = this.GetStringValue(SettingsKeys.PreBuildCommand);
+            options.PostBuildScriptPath = this.GetStringValue(SettingsKeys.PostBuildScriptPath);
+            options.PostBuildCommand = this.GetStringValue(SettingsKeys.PostBuildCommand);
+            options.OryxSdkStorageBaseUrl = this.GetStringValue(SettingsKeys.OryxSdkStorageBaseUrl);
+            options.AppType = this.GetStringValue(SettingsKeys.AppType);
+            options.BuildCommandsFileName = this.GetStringValue(SettingsKeys.BuildCommandsFileName);
+            options.CompressDestinationDir = this.GetBooleanValue(SettingsKeys.CompressDestinationDir);
+            options.CustomRequirementsTxtPath = this.GetStringValue(SettingsKeys.CustomRequirementsTxtPath);
 
             // Dynamic install
-            options.EnableDynamicInstall = GetBooleanValue(SettingsKeys.EnableDynamicInstall);
+            options.EnableDynamicInstall = this.GetBooleanValue(SettingsKeys.EnableDynamicInstall);
 
-            var dynamicInstallRootDir = GetStringValue(SettingsKeys.DynamicInstallRootDir);
+            var dynamicInstallRootDir = this.GetStringValue(SettingsKeys.DynamicInstallRootDir);
 
             if (string.IsNullOrEmpty(dynamicInstallRootDir))
             {

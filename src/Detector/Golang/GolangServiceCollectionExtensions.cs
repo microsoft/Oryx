@@ -15,6 +15,7 @@ namespace Microsoft.Oryx.Detector
         public static IServiceCollection AddGolangServices(this IServiceCollection services)
         {
             services.AddSingleton<GolangDetector>();
+
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
             Func<IServiceProvider, GolangDetector> factory = (sp) => sp.GetRequiredService<GolangDetector>();

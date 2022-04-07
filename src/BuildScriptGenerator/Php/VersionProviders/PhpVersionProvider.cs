@@ -10,11 +10,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     internal class PhpVersionProvider : IPhpVersionProvider
     {
-        private readonly BuildScriptGeneratorOptions _options;
-        private readonly PhpOnDiskVersionProvider _onDiskVersionProvider;
-        private readonly PhpSdkStorageVersionProvider _sdkStorageVersionProvider;
-        private readonly ILogger<PhpVersionProvider> _logger;
-        private PlatformVersionInfo _versionInfo;
+        private readonly BuildScriptGeneratorOptions options;
+        private readonly PhpOnDiskVersionProvider onDiskVersionProvider;
+        private readonly PhpSdkStorageVersionProvider sdkStorageVersionProvider;
+        private readonly ILogger<PhpVersionProvider> logger;
+        private PlatformVersionInfo versionInfo;
 
         public PhpVersionProvider(
             IOptions<BuildScriptGeneratorOptions> options,
@@ -22,25 +22,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             PhpSdkStorageVersionProvider sdkStorageVersionProvider,
             ILogger<PhpVersionProvider> logger)
         {
-            _options = options.Value;
-            _onDiskVersionProvider = onDiskVersionProvider;
-            _sdkStorageVersionProvider = sdkStorageVersionProvider;
-            _logger = logger;
+            this.options = options.Value;
+            this.onDiskVersionProvider = onDiskVersionProvider;
+            this.sdkStorageVersionProvider = sdkStorageVersionProvider;
+            this.logger = logger;
         }
 
         public PlatformVersionInfo GetVersionInfo()
         {
-            if (_versionInfo == null)
+            if (this.versionInfo == null)
             {
-                if (_options.EnableDynamicInstall)
+                if (this.options.EnableDynamicInstall)
                 {
-                    return _sdkStorageVersionProvider.GetVersionInfo();
+                    return this.sdkStorageVersionProvider.GetVersionInfo();
                 }
 
-                _versionInfo = _onDiskVersionProvider.GetVersionInfo();
+                this.versionInfo = this.onDiskVersionProvider.GetVersionInfo();
             }
 
-            return _versionInfo;
+            return this.versionInfo;
         }
     }
 }

@@ -10,7 +10,9 @@ stages:
     jobs:
     - job: CreateReleaseTag
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         skipComponentGovernanceDetection: true
       steps:
@@ -36,7 +38,8 @@ stages:
       displayName: Security
       condition: succeeded()
       pool:
-        name: Hosted VS2017
+        name: Azure Pipelines
+        vmImage: windows-2022
       steps:
       - template: templates/_securityChecks.yml
 
@@ -44,7 +47,9 @@ stages:
       displayName: Build and Test Build Image
       timeoutInMinutes: 480
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       steps:
       - script: |
           echo "##vso[task.setvariable variable=BuildBuildImages;]true"
@@ -62,7 +67,9 @@ stages:
       displayName: Build and Test Runtime Images
       condition: succeeded()
       pool:
-        vmImage: 'ubuntu-latest'
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       # Building runtime images can take a long time due to our PHP images
       timeoutInMinutes: 480
       steps:

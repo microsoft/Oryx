@@ -13,15 +13,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// </summary>
     public class DefaultPlatformsInformationProvider
     {
-        private readonly IEnumerable<IProgrammingPlatform> _platforms;
-        private readonly IStandardOutputWriter _outputWriter;
+        private readonly IEnumerable<IProgrammingPlatform> platforms;
+        private readonly IStandardOutputWriter outputWriter;
 
         public DefaultPlatformsInformationProvider(
             IEnumerable<IProgrammingPlatform> platforms,
             IStandardOutputWriter outputWriter)
         {
-            _platforms = platforms;
-            _outputWriter = outputWriter;
+            this.platforms = platforms;
+            this.outputWriter = outputWriter;
         }
 
         /// <summary>
@@ -38,14 +38,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // install both these platforms' sdks before actually using any of their commands. So even though a user
             // of Oryx might explicitly supply the platform of the app as .NET Core, we still need to make sure the
             // build environment is setup with detected platforms' sdks.
-            _outputWriter.WriteLine("Detecting platforms...");
+            this.outputWriter.WriteLine("Detecting platforms...");
 
-            foreach (var platform in _platforms)
+            foreach (var platform in this.platforms)
             {
                 // Check if a platform is enabled or not
                 if (!platform.IsEnabled(context))
                 {
-                    _outputWriter.WriteLine(
+                    this.outputWriter.WriteLine(
                         $"Platform '{platform.Name}' has been disabled, so skipping detection for it.");
                     continue;
                 }
@@ -66,16 +66,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (platformInfos.Any())
             {
-                _outputWriter.WriteLine("Detected following platforms:");
+                this.outputWriter.WriteLine("Detected following platforms:");
                 foreach (var platformInfo in platformInfos)
                 {
                     var detectorResult = platformInfo.DetectorResult;
-                    _outputWriter.WriteLine($"  {detectorResult.Platform}: {detectorResult.PlatformVersion}");
+                    this.outputWriter.WriteLine($"  {detectorResult.Platform}: {detectorResult.PlatformVersion}");
                 }
             }
             else
             {
-                _outputWriter.WriteLine("Could not detect any platform in the source directory.");
+                this.outputWriter.WriteLine("Could not detect any platform in the source directory.");
             }
 
             return platformInfos;

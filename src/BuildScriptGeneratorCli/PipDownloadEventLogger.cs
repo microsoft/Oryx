@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -19,24 +18,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private const string PipDownloadMarker = "Downloading";
         private const string EventName = "PipDownload";
 
-        private readonly ILogger _logger;
+        private readonly ILogger logger;
 
-        private EventStopwatch _currentDownload = null;
+        private EventStopwatch currentDownload;
 
         public PipDownloadEventLogger(ILogger logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         public void ProcessLine(string line)
         {
             var cleanLine = line.Trim().ReplaceUrlUserInfo();
 
-            if (_currentDownload != null)
+            if (this.currentDownload != null)
             {
-                _currentDownload.AddProperty("nextLine", cleanLine);
-                _currentDownload.Dispose();
-                _currentDownload = null;
+                this.currentDownload.AddProperty("nextLine", cleanLine);
+                this.currentDownload.Dispose();
+                this.currentDownload = null;
             }
 
             if (line.Contains(PipDownloadMarker))
@@ -45,16 +44,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (parts[1].StartsWith("http"))
                 {
-                    _currentDownload = _logger.LogTimedEvent(EventName);
-                    _currentDownload.AddProperty("markerLine", cleanLine);
+                    this.currentDownload = this.logger.LogTimedEvent(EventName);
+                    this.currentDownload.AddProperty("markerLine", cleanLine);
 
                     var url = parts[1].ReplaceUrlUserInfo();
-                    _currentDownload.AddProperty(nameof(url), url);
+                    this.currentDownload.AddProperty(nameof(url), url);
 
                     var size = parts.Last();
                     if (size.StartsWith('(') && size.EndsWith(')'))
                     {
-                        _currentDownload.AddProperty(nameof(size), size.Trim('(', ')'));
+                        this.currentDownload.AddProperty(nameof(size), size.Trim('(', ')'));
                     }
                 }
             }

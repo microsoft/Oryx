@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node")]
     public class NodeDynamicInstallationTest : NodeEndToEndTestsBase
     {
         private readonly string DefaultSdksRootDir = "/tmp/oryx/nodejs";
@@ -24,8 +23,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData(NodeVersions.Node12Version)]
-        [InlineData(NodeVersions.Node14Version)]
+        [InlineData(NodeVersions.Node12Version), Trait("category", "node-12-3")]
+        [InlineData(NodeVersions.Node14Version), Trait("category", "node-14")]
         public async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(string nodeVersion)
         {
             // Arrange
@@ -74,8 +73,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData(NodeVersions.Node12Version)]
-        [InlineData(NodeVersions.Node14Version)]
+        [InlineData(NodeVersions.Node12Version), Trait("category", "node-12-3")]
+        [InlineData(NodeVersions.Node14Version), Trait("category", "node-14")]
         public async Task CanBuildAndRunApp_UsingScriptCommand(string nodeVersion)
         {
             // Arrange

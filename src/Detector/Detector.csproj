@@ -21,6 +21,9 @@
     <RepositoryUrl>https://github.com/microsoft/oryx</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Remove when proper XML documentation is added to the project. -->
+    <DisableDocRequirement>true</DisableDocRequirement>
+    <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
   
   <Import Project="$(MSBuildThisFileDirectory)\..\..\build\detector\__detectorNugetPackagesVersions.props" />

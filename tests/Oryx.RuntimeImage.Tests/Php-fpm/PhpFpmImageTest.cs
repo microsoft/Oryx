@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("8.1-fpm", PhpVersions.Php81Version)]
         [InlineData("8.0-fpm", PhpVersions.Php80Version)]
         [InlineData("7.4-fpm", PhpVersions.Php74Version)]
         [InlineData("7.3-fpm", PhpVersions.Php73Version)]
@@ -64,6 +65,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("8.1-fpm")]
         [InlineData("8.0-fpm")]
         [InlineData("7.4-fpm")]
         [InlineData("7.3-fpm")]
@@ -112,6 +114,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
+        [InlineData("8.1-fpm")]
         [InlineData("8.0-fpm")]
         [InlineData("7.4-fpm")]
         [InlineData("7.3-fpm")]
@@ -151,6 +154,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("8.1-fpm")]
         [InlineData("8.0-fpm")]
         [InlineData("7.4-fpm")]
         [InlineData("7.3-fpm")]

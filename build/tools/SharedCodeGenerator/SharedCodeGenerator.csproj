@@ -4,19 +4,14 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <HighEntropyVA>true</HighEntropyVA>
-  </PropertyGroup>
-  <PropertyGroup>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\..\..\..\src\CommonFiles\StyleCop.ruleset</CodeAnalysisRuleSet>
+    <!-- Remove when proper XML documentation is added to the project. -->
+    <DisableDocRequirement>true</DisableDocRequirement>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2018.3.0" />
     <PackageReference Include="Scriban.Signed" Version="1.2.9" />
     <PackageReference Include="YamlDotNet.Signed" Version="5.3.0" />
-    <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

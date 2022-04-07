@@ -14,10 +14,10 @@ sed 's/PYTHON_VERSION/{{ EnvironmentTemplatePythonVersion }}/g' "$envFileTemplat
 echo "{{ NoteBookBuildCommandsFileName }}"
 
 {{ if NoteBookBuildCommandsFileName | IsNotBlank }}
-COMMAND_MANIFEST_FILE={{ NoteBookBuildCommandsFileName }}
+COMMAND_MANIFEST_FILE="{{ NoteBookBuildCommandsFileName }}"
 {{ end }}
 
-echo "Creating directory for command manifest file if it doesnot exist"
+echo "Creating directory for command manifest file if it does not exist"
 mkdir -p "$(dirname "$COMMAND_MANIFEST_FILE")"
 echo "Removing existing manifest file"
 rm -f "$COMMAND_MANIFEST_FILE"

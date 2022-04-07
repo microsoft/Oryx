@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
         public void Configure(GolangScriptGeneratorOptions options)
         {
-            options.GolangVersion = GetStringValue(SettingsKeys.GolangVersion);
+            options.GolangVersion = this.GetStringValue(SettingsKeys.GolangVersion);
         }
     }
 }
