@@ -21,13 +21,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly ICompatiblePlatformDetector platformDetector;
         private readonly ILogger<DefaultDockerfileGenerator> logger;
         private readonly BuildScriptGeneratorOptions commonOptions;
-        private readonly IDictionary<string, IList<string>> slimPlatformVersions =
-            new Dictionary<string, IList<string>>()
-            {
-                { "dotnet", new List<string>() { "2.1" } },
-                { "nodejs",   new List<string>() { "8", "10", "12" } },
-                { "python", new List<string>() { "3.7", "3.8" } },
-            };
 
         public DefaultDockerfileGenerator(
             ICompatiblePlatformDetector platformDetector,
@@ -41,9 +34,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GenerateDockerfile(DockerfileContext ctx)
         {
-            var buildImageTag = "lts-versions";
+            var buildImageTag = "azfunc-jamstack";
             var runImage = string.Empty;
-            var runImageTag = string.Empty;
+            var runImageTag = "dynamic";
             var compatiblePlatforms = this.GetCompatiblePlatforms(ctx);
             if (!compatiblePlatforms.Any())
             {
@@ -52,22 +45,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             foreach (var platformAndDetectorResult in compatiblePlatforms)
             {
+                // TODO: Investigate handling multiple platforms; for now just take first platform that works.
                 var platform = platformAndDetectorResult.Key;
-                var detectorResult = platformAndDetectorResult.Value;
-                if (!this.slimPlatformVersions.ContainsKey(platform.Name) ||
-                    (!this.slimPlatformVersions[platform.Name].Any(v => detectorResult.PlatformVersion.StartsWith(v)) &&
-                     !this.slimPlatformVersions[platform.Name].Any(v => v.StartsWith(detectorResult.PlatformVersion))))
-                {
-                    buildImageTag = "latest";
-                    runImageTag = GenerateRuntimeTag(detectorResult.PlatformVersion);
-                }
-                else
-                {
-                    runImageTag = this.slimPlatformVersions[platform.Name]
-                        .Where(v => detectorResult.PlatformVersion.StartsWith(v)).FirstOrDefault();
-                }
-
                 runImage = ConvertToRuntimeName(platform.Name);
+                if (!string.IsNullOrEmpty(runImage))
+                {
+                    break;
+                }
             }
 
             var properties = new DockerfileProperties()
@@ -81,23 +65,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 TemplateHelper.TemplateResource.Dockerfile,
                 properties,
                 this.logger);
-        }
-
-        /// <summary>
-        /// For runtime images, the tag follows the format `{MAJOR}.{MINOR}`, so we need to correctly format the
-        /// version that is returned from the detector to ensure we are pulling from a valid tag.
-        /// </summary>
-        /// <param name="version">The version of the platform returned from the detector.</param>
-        /// <returns>A formatted version tag to pull the runtime image from.</returns>
-        private static string GenerateRuntimeTag(string version)
-        {
-            var split = version.Split('.');
-            if (split.Length < 3)
-            {
-                return version;
-            }
-
-            return $"{split[0]}.{split[1]}";
         }
 
         private static string ConvertToRuntimeName(string platformName)
