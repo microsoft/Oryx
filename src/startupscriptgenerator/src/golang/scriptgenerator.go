@@ -20,8 +20,6 @@ type GolangStartupScriptGenerator struct {
 	Configuration            Configuration
 }
 
-const GeneratingCommandMessage = "Generating `%s` command for '%s'"
-
 const DefaultHost = "0.0.0.0"
 const DefaultBindPort = "80"
 
@@ -29,11 +27,8 @@ func (gen *GolangStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger := common.GetLogger("golang.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
 
-	pythonInstallationRoot := fmt.Sprintf("/opt/golang/%s", gen.Manifest.GolangVersion)
-
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n\n")
-	scriptBuilder.WriteString("echo TODO: update with golang script commands change2")
 
 	command := gen.UserStartupCommand // A custom command takes precedence over any framework defaults
 	if command != "" {
@@ -45,22 +40,16 @@ func (gen *GolangStartupScriptGenerator) GenerateEntrypointScript() string {
 	// set APP_PATH
 	scriptBuilder.WriteString(fmt.Sprintf("echo 'export APP_PATH=\"%s\"' >> ~/.bashrc\n", gen.AppPath))
 	scriptBuilder.WriteString("echo 'cd $APP_PATH' >> ~/.bashrc\n")
-
-	// dynamic installation
-	if gen.Configuration.EnableDynamicInstall && !common.PathExists(pythonInstallationRoot) {
-		scriptBuilder.WriteString(fmt.Sprintf("oryx setupEnv -appPath %s\n", gen.getAppPath()))
-	}
-
 	common.SetupPreRunScript(&scriptBuilder, gen.getAppPath(), gen.Configuration.PreRunCommand)
-
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.getAppPath() + "\n\n")
 	scriptBuilder.WriteString("export APP_PATH=\"" + gen.getAppPath() + "\"\n")
 	
+	// set host:port
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "HOST", "", DefaultHost)
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 
-	scriptBuilder.WriteString("./oryxBuildBinary\n")
+	scriptBuilder.WriteString("./oryxBuildBinary\n\n")
 
 	return scriptBuilder.String()
 }
