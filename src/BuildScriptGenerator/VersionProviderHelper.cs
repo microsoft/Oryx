@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;   
+using System.Text.RegularExpressions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -64,7 +64,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         internal static IEnumerable<string> GetMajorMinorVersionsFromDirectory(string versionsDir)
         {
-
             var listOptions = new EnumerationOptions()
             {
                 RecurseSubdirectories = false,
@@ -82,7 +81,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return Enumerable.Empty<string>();
             }
 
-            var versions = new List<String>();
+            var versions = new List<string>();
             foreach (var versionDir in versionDirectories)
             {
                 try
