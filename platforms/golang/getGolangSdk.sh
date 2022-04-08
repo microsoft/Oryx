@@ -29,7 +29,7 @@ getGolangSdk() {
 			downloadedFile=golang-$debianFlavor-$sdkVersion.tar.gz
 	fi
 
-	if shouldBuildSdk golang $downloadedFile || shouldOverwriteSdk || shouldOverwriteGolangSdk; then
+	if shouldBuildSdk golang $downloadedFile || shouldOverwriteSdk || shouldOverwritePlatformSdk golang; then
 		echo "Downloading golang SDK version '$sdkVersion'..."
 		echo
 
@@ -51,14 +51,6 @@ getGolangSdk() {
 		rm -rf $tempDir
 
 		echo "Version=$sdkVersion" >> "$targetDir/golang-$sdkVersion-metadata.txt"
-	fi
-}
-
-shouldOverwriteGolangSdk() {
-	if [ "$OVERWRITE_EXISTING_SDKS_GOLANG" == "true" ]; then
-		return 0
-	else
-		return 1
 	fi
 }
 

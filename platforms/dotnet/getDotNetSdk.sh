@@ -28,7 +28,7 @@ getDotNetCoreSdk() {
 			downloadedFile=dotnet-$debianFlavor-$sdkVersion.tar.gz
 	fi
 
-	if shouldBuildSdk dotnet $downloadedFile || shouldOverwriteSdk || shouldOverwriteDotNetCoreSdk; then
+	if shouldBuildSdk dotnet $downloadedFile || shouldOverwriteSdk || shouldOverwritePlatformSdk dotnet; then
 		echo "Downloading .NET Core SDK version '$sdkVersion'..."
 		echo
 
@@ -54,14 +54,6 @@ getDotNetCoreSdk() {
 
 		echo "Runtime_version=$runtimeVersion" >> "$targetDir/dotnet-$sdkVersion-metadata.txt"
 		echo "Version=$sdkVersion" >> "$targetDir/dotnet-$sdkVersion-metadata.txt"
-	fi
-}
-
-shouldOverwriteDotNetCoreSdk() {
-	if [ "$OVERWRITE_EXISTING_SDKS_DOTNETCORE" == "true" ]; then
-		return 0
-	else
-		return 1
 	fi
 }
 

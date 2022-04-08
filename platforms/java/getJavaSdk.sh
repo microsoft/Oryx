@@ -62,7 +62,7 @@ downloadJavaSdk()
         return
     fi
 
-    if shouldBuildSdk java $tarFileName || shouldOverwriteSdk || shouldOverwriteJavaSdk; then
+    if shouldBuildSdk java $tarFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk java; then
         local baseUrl="https://github.com/AdoptOpenJDK/openjdk${majorVersion}-binaries/releases/download"
         if [ "$majorVersion" == "10" ] && [ "$JDK_BUILD_NUMBER" == "13" ]; then
             url="$baseUrl/jdk-10.0.2%2B13.1/OpenJDK10U-jdk_x64_linux_hotspot_10.0.2_13.tar.gz"
@@ -81,14 +81,6 @@ downloadJavaSdk()
 		echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
 		echo "JdkFullVersion=$JDK_VERSION+$JDK_BUILD_NUMBER" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
     fi
-}
-
-shouldOverwriteNodeSdk() {
-	if [ "$OVERWRITE_EXISTING_SDKS_JAVA" == "true" ]; then
-		return 0
-	else
-		return 1
-	fi
 }
 
 echo "Downloading Java SDK..."
