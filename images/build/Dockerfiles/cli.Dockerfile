@@ -1,5 +1,5 @@
 ARG DEBIAN_FLAVOR
-FROM buildpack-deps:stretch-curl
+FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
