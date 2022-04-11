@@ -45,7 +45,7 @@ buildPhp() {
 
 	cp "$phpPlatformDir/defaultVersion.txt" "$targetDir"
 
-	if shouldBuildSdk php $phpSdkFileName || shouldOverwriteSdk || shouldOverwritePhpSdk; then
+	if shouldBuildSdk php $phpSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk php; then
 		if ! $builtPhpPrereqs; then
 			buildPhpPrereqsImage
 		fi
@@ -84,7 +84,7 @@ buildPhpComposer() {
         composerSdkFileName=php-composer-$debianFlavor-$version.tar.gz
     fi
 
-	if shouldBuildSdk php-composer $composerSdkFileName || shouldOverwriteSdk || shouldOverwritePhpComposerSdk; then
+	if shouldBuildSdk php-composer $composerSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk php-composer; then
 		if ! $builtPhpPrereqs; then
 			buildPhpPrereqsImage
 		fi
@@ -108,22 +108,6 @@ buildPhpComposer() {
 		getSdkFromImage $imageName "$targetDir"
 		
 		echo "Version=$version" >> "$targetDir/php-composer-$version-metadata.txt"
-	fi
-}
-
-shouldOverwritePhpSdk() {
-	if [ "$OVERWRITE_EXISTING_SDKS_PHP" == "true" ]; then
-		return 0
-	else
-		return 1
-	fi
-}
-
-shouldOverwritePhpComposerSdk() {
-	if [ "$OVERWRITE_EXISTING_SDKS_PHP_COMPOSER" == "true" ]; then
-		return 0
-	else
-		return 1
 	fi
 }
 

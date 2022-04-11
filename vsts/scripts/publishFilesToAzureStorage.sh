@@ -6,6 +6,8 @@
 
 set -ex
 
+declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
+source $REPO_DIR/platforms/__common.sh
 commit=$(git rev-parse HEAD)
 storageAccount="$1"
 
@@ -39,7 +41,21 @@ uploadFiles() {
             checksum=$(sha256sum $fileToUpload | cut -d " " -f 1)
         fi
         
-        az storage blob upload \
+        if shouldOverwriteSdk || shouldOverwritePlatformSdk $platform; then
+            az storage blob upload \
+            --name $fileName \
+            --file "$fileToUpload" \
+            --container-name $platform \
+            --account-name $storageAccount \
+            --metadata \
+                Buildnumber="$BUILD_BUILDNUMBER" \
+                Commit="$commit" \
+                Branch="$BUILD_SOURCEBRANCHNAME" \
+                Checksum="$checksum" \
+                $fileMetadata \
+            --overwrite true
+        else
+            az storage blob upload \
             --name $fileName \
             --file "$fileToUpload" \
             --container-name $platform \
@@ -50,6 +66,7 @@ uploadFiles() {
                 Branch="$BUILD_SOURCEBRANCHNAME" \
                 Checksum="$checksum" \
                 $fileMetadata
+        fi
     done
 }
 
