@@ -22,23 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         internal static IEnumerable<string> GetVersionsFromDirectory(string versionsDir)
         {
-            var listOptions = new EnumerationOptions()
-            {
-                RecurseSubdirectories = false,
-                IgnoreInaccessible = false,
-            };
-
-            IEnumerable<DirectoryInfo> versionDirectories;
-            try
-            {
-                versionDirectories = Directory.EnumerateDirectories(versionsDir, "*", listOptions)
-                    .Select(versionDir => new DirectoryInfo(versionDir));
-            }
-            catch (IOException)
-            {
-                return Enumerable.Empty<string>();
-            }
-
+            IEnumerable<DirectoryInfo> versionDirectories = GetVersionDirectories(versionsDir);
             var versions = new List<SemVer.Version>();
             foreach (var versionDir in versionDirectories)
             {
@@ -64,6 +48,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         internal static IEnumerable<string> GetMajorMinorVersionsFromDirectory(string versionsDir)
         {
+            IEnumerable<DirectoryInfo> versionDirectories = GetVersionDirectories(versionsDir);
+            var versions = new List<string>();
+            foreach (var versionDir in versionDirectories)
+            {
+                /* Regex will match:
+                    * major.minor
+                    *      where major & minor contains any number of digits
+                    * Valid examples:
+                    *      1.16, 1.17, 0.1, 123.456
+                    * Invalid examples:
+                    *      1.16.1, 1.2.3, 1.2a
+                */
+                Regex regex = new Regex(@"^[0-9]+\.[0-9]+$");
+                string version = versionDir.Name;
+                Match match = regex.Match(version);
+                if (match.Success)
+                {
+                    versions.Add(version);
+                }
+            }
+
+            return versions;
+        }
+
+        private static IEnumerable<DirectoryInfo> GetVersionDirectories(string versionsDir)
+        {
             var listOptions = new EnumerationOptions()
             {
                 RecurseSubdirectories = false,
@@ -78,37 +88,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
             catch (IOException)
             {
-                return Enumerable.Empty<string>();
+                return (IEnumerable<DirectoryInfo>)Enumerable.Empty<string>();
             }
 
-            var versions = new List<string>();
-            foreach (var versionDir in versionDirectories)
-            {
-                try
-                {
-                    /* Regex will match:
-                     * major.minor
-                     *      where major & minor contains any number of digits
-                     * Valid examples:
-                     *      1.16, 1.17, 0.1, 123.456
-                     * Invalid examples:
-                     *      1.16.1, 1.2.3, 1.2a
-                    */
-                    Regex regex = new Regex(@"^[0-9]+\.[0-9]+$");
-                    string version = versionDir.Name;
-                    Match match = regex.Match(version);
-                    if (match.Success)
-                    {
-                        versions.Add(version);
-                    }
-                }
-                catch (ArgumentException)
-                {
-                    // Ignore non-Semantic-Versioning based strings like 'latest' or 'lts'
-                }
-            }
-
-            return versions;
+            return versionDirectories;
         }
     }
 }
