@@ -32,16 +32,6 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
         tk-dev \
         uuid-dev
 
-if  [ "${PYTHON_VERSION[0]}" == "3" ] && [ "${PYTHON_VERSION[1]}" -ge "10" ]
-then
-    apt-get update && \
-	apt-get upgrade -y && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        build-essential \
-        libgeos-dev \
-    PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
-fi
-
 if [ "$debianFlavor" == "stretch" ]; then
 	# Use default python sdk file name
     echo "Hack flavor is: "$debianHackFlavor
@@ -82,60 +72,23 @@ make -j $(nproc)
 
 make install
 
-if  [ "${PYTHON_VERSION[0]}" == "3" ] && [ "${PYTHON_VERSION[1]}" -ge "10" ]
-then
-    rm -rf /usr/src/python
-    find /usr/local -depth \
-        \( \
-            \( -type d -a \( -name test -o -name tests -o -name idle_test \) \) \
-            -o \( -type f -a \( -name '*.pyc' -o -name '*.pyo' -o -name '*.a' \) \) \
-        \) -exec rm -rf '{}' + \
+# Install pip
+wget "$PYTHON_GET_PIP_URL" -O get-pip.py
 
-    ldconfig
-    python3 --version
+LD_LIBRARY_PATH=/usr/src/python \
+/usr/src/python/python get-pip.py \
+    --trusted-host pypi.python.org \
+    --trusted-host pypi.org \
+    --trusted-host files.pythonhosted.org \
+    --prefix $INSTALLATION_PREFIX \
+    --disable-pip-version-check \
+    --no-cache-dir \
+    --no-warn-script-location \
+    pip==$PIP_VERSION
 
-    # make some useful symlinks that are expected to exist
-    cd /usr/local/bin
-    ln -s idle3 idle
-    ln -s pydoc3 pydoc
-    ln -s python3 python
-    ln -s python3-config python-config
-
-    PYTHON_GET_PIP_SHA256="c518250e91a70d7b20cceb15272209a4ded2a0c263ae5776f129e0d9b5674309"
-
-    # Install pip
-    wget "$PYTHON_GET_PIP_URL" -O get-pip.py
-
-    python3 get-pip.py \
-        --trusted-host pypi.python.org \
-        --trusted-host pypi.org \
-        --trusted-host files.pythonhosted.org \
-        --disable-pip-version-check \
-        --no-cache-dir \
-        --no-warn-script-location
-
-    rm -rf /configure* /config.* /*.txt /*.md /*.rst /*.toml /*.m4 /tmpFiles
-    rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
-    rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
-else
-    # Install pip
-    wget "$PYTHON_GET_PIP_URL" -O get-pip.py
-
-    LD_LIBRARY_PATH=/usr/src/python \
-    /usr/src/python/python get-pip.py \
-        --trusted-host pypi.python.org \
-        --trusted-host pypi.org \
-        --trusted-host files.pythonhosted.org \
-        --prefix $INSTALLATION_PREFIX \
-        --disable-pip-version-check \
-        --no-cache-dir \
-        --no-warn-script-location \
-        pip==$PIP_VERSION
-
-    if [ "${PYTHON_VERSION::1}" == "2" ]; then
-        LD_LIBRARY_PATH=$INSTALLATION_PREFIX/lib \
-        $INSTALLATION_PREFIX/bin/pip install --no-cache-dir virtualenv
-    fi
+if [ "${PYTHON_VERSION::1}" == "2" ]; then
+    LD_LIBRARY_PATH=$INSTALLATION_PREFIX/lib \
+    $INSTALLATION_PREFIX/bin/pip install --no-cache-dir virtualenv
 fi
 
 # Currently only for version '2' of Python, the alias 'python' exists in the 'bin'

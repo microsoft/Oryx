@@ -32,6 +32,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.1");
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3");
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.9.0");
+                data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.9.12");
                 return data;
             }
         }
