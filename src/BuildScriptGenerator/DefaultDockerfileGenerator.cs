@@ -18,6 +18,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultDockerfileGenerator : IDockerfileGenerator
     {
+        private const string DefaultRuntimeImageTag = "dynamic";
+
         private readonly ICompatiblePlatformDetector platformDetector;
         private readonly ILogger<DefaultDockerfileGenerator> logger;
         private readonly BuildScriptGeneratorOptions commonOptions;
@@ -35,8 +37,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string GenerateDockerfile(DockerfileContext ctx)
         {
             var buildImageTag = "azfunc-jamstack";
-            var runImage = string.Empty;
-            var runImageTag = "dynamic";
+            var runImage = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformName) ?
+                ConvertToRuntimeName(this.commonOptions.RuntimePlatformName) : string.Empty;
+            var runImageTag = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformVersion) ?
+                this.commonOptions.RuntimePlatformVersion : DefaultRuntimeImageTag;
             var compatiblePlatforms = this.GetCompatiblePlatforms(ctx);
             if (!compatiblePlatforms.Any())
             {
@@ -45,9 +49,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             foreach (var platformAndDetectorResult in compatiblePlatforms)
             {
-                // TODO: Investigate handling multiple platforms; for now just take first platform that works.
                 var platform = platformAndDetectorResult.Key;
-                runImage = ConvertToRuntimeName(platform.Name);
+                if (string.IsNullOrEmpty(runImage))
+                {
+                    runImage = ConvertToRuntimeName(platform.Name);
+                }
+
+                // If the runtime image has been set manually or by the platform detection result, stop searching.
                 if (!string.IsNullOrEmpty(runImage))
                 {
                     break;

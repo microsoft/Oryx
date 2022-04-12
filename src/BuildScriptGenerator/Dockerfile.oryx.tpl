@@ -3,7 +3,7 @@ ARG RUNTIME={{ RuntimeImageName }}:{{ RuntimeImageTag }}
 FROM mcr.microsoft.com/oryx/build:{{ BuildImageTag }} as build
 WORKDIR /app
 COPY . .
-RUN oryx build --output /output /app
+RUN oryx build /app --output /output
 
 FROM mcr.microsoft.com/oryx/${RUNTIME}
 WORKDIR /app

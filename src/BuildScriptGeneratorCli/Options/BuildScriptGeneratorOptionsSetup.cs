@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using BuildScriptGeneratorLib = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
@@ -26,6 +25,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             // configuration sources added to the ConfigurationBuilder above.
             options.PlatformName = this.GetStringValue(SettingsKeys.PlatformName);
             options.PlatformVersion = this.GetStringValue(SettingsKeys.PlatformVersion);
+            options.RuntimePlatformName = this.GetStringValue(SettingsKeys.RuntimePlatformName);
+            options.RuntimePlatformVersion = this.GetStringValue(SettingsKeys.RuntimePlatformVersion);
             options.ShouldPackage = this.GetBooleanValue(SettingsKeys.CreatePackage);
             var requiredOsPackages = this.GetStringValue(SettingsKeys.RequiredOsPackages);
             options.RequiredOsPackages = string.IsNullOrWhiteSpace(requiredOsPackages)
