@@ -1,6 +1,6 @@
 # This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
-GEM_VERSION='3.2.9'
+GEM_VERSION='3.3.10'
 RUBY27_VERSION='2.7.2'
 RUBY27_TAR_SHA256='6e5706d0d4ee4e1e2f883db9d768586b4d06567debea353c796ec45e8321c3d4'
 RUBY26_VERSION='2.6.6'

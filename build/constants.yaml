@@ -166,7 +166,7 @@
       file-name-prefix: __
 - name: ruby-versions
   constants:
-    gem-version: 3.2.9
+    gem-version: 3.3.10
     # hashes are for .tar.xz
     ruby27-version: 2.7.2
     ruby27-tar-sha256: 6e5706d0d4ee4e1e2f883db9d768586b4d06567debea353c796ec45e8321c3d4
