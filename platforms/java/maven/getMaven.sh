@@ -26,7 +26,7 @@ downloadMavenBinary()
 			tarFileName=maven-$debianFlavor-$version.tar.gz
 	fi
 
-    if shouldBuildSdk maven $tarFileName || shouldOverwriteSdk || shouldOverwriteMavenBinary; then
+    if shouldBuildSdk maven $tarFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk maven; then
         curl -L "$baseUrl/$version/binaries/apache-maven-$version-bin.tar.gz" -o $tarFileName
         rm -rf extracted
         mkdir -p extracted
@@ -36,14 +36,6 @@ downloadMavenBinary()
 
 		echo "Version=$version" >> "$hostMavenArtifactsDir/maven-$version-metadata.txt"
     fi
-}
-
-shouldOverwriteMavenBinary() {
-	if [ "$OVERWRITE_EXISTING_SDKS_MAVEN" == "true" ]; then
-		return 0
-	else
-		return 1
-	fi
 }
 
 echo "Downloading Maven binary..."

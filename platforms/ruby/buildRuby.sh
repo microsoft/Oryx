@@ -42,7 +42,7 @@ buildRuby() {
 		rubySdkFileName=ruby-$debianFlavor-$version.tar.gz
 	fi 
 
-	if shouldBuildSdk ruby $rubySdkFileName || shouldOverwriteSdk || shouldOverwriteRubySdk; then
+	if shouldBuildSdk ruby $rubySdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk ruby; then
 		if ! $builtRubyPrereqs; then
 			buildRubyPrereqsImage
 		fi
@@ -68,14 +68,6 @@ buildRuby() {
 		getSdkFromImage $imageName "$targetDir"
 
 		echo "Version=$version" >> "$targetDir/ruby-$version-metadata.txt"
-	fi
-}
-
-shouldOverwriteRubySdk() {
-	if [ "$OVERWRITE_EXISTING_SDKS_RUBY" == "true" ]; then
-		return 0
-	else
-		return 1
 	fi
 }
 
