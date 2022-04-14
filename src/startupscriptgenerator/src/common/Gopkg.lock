@@ -61,6 +61,21 @@
   version = "v1.2.0"
 
 [[projects]]
+digest = "1:f8ae93995f7b68f2aeba036bd6c9e0881c8c6edd67d6120f092eafa4c5a040f0"
+name = "github.com/spf13/viper"
+packages = [
+".",
+"internal/encoding",
+"internal/encoding/hcl",
+"internal/encoding/json",
+"internal/encoding/toml",
+"internal/encoding/yaml",
+]
+pruneopts = "UT"
+revision = "f646c50b184a0bec644dd1147d6b0e57be17c7aa"
+version = "v1.10.1"
+
+[[projects]]
   digest = "1:972c2427413d41a1e06ca4897e8528e5a1622894050e2f527b38ddf0f343f759"
   name = "github.com/stretchr/testify"
   packages = ["assert"]
