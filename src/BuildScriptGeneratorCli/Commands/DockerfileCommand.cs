@@ -38,6 +38,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string PlatformVersion { get; set; }
 
         [Option(
+            OptionTemplates.RuntimePlatform,
+            CommandOptionType.SingleValue,
+            Description = "The runtime platform to use in the Dockerfile. If not provided, the value for --platform will be used, otherwise the value will be auto-detected.")]
+        public string RuntimePlatformName { get; set; }
+
+        [Option(
+            OptionTemplates.RuntimePlatformVersion,
+            CommandOptionType.SingleValue,
+            Description = "The version of the runtime to use in the Dockerfile. If not provided, the value will be 'dynamic'.")]
+        public string RuntimePlatformVersion { get; set; }
+
+        [Option(
             "--output",
             CommandOptionType.SingleValue,
             Description = "The path that the dockerfile will be written to. " +
@@ -137,6 +149,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var commandLineConfigSource = new CustomConfigurationSource();
             commandLineConfigSource.Set(SettingsKeys.PlatformName, this.PlatformName);
             commandLineConfigSource.Set(SettingsKeys.PlatformVersion, this.PlatformVersion);
+            commandLineConfigSource.Set(SettingsKeys.RuntimePlatformName, this.RuntimePlatformName);
+            commandLineConfigSource.Set(SettingsKeys.RuntimePlatformVersion, this.RuntimePlatformVersion);
 
             // Set the platform key and version in the format that they are represented in other sources
             // (like environment variables and build.env file).

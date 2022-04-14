@@ -1,5 +1,5 @@
 ARG DEBIAN_FLAVOR
-FROM debian:${DEBIAN_FLAVOR}-slim
+FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
@@ -9,7 +9,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu63 \
-            libcurl4 \ 
+            libcurl4 \
             libssl1.1 \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
@@ -35,5 +35,7 @@ RUN apt-get update \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && echo "cli" > /opt/oryx/.imagetype
-    
+
+ENV ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io"
+ENV ENABLE_DYNAMIC_INSTALL="true"
 ENV PATH="$PATH:/opt/oryx"
