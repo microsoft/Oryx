@@ -28,7 +28,7 @@ getNode() {
 			tarFileName=nodejs-$debianFlavor-$version.tar.gz
 	fi
 
-	if shouldBuildSdk nodejs $tarFileName || shouldOverwriteSdk || shouldOverwriteNodeSdk; then
+	if shouldBuildSdk nodejs $tarFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk nodejs; then
 		echo "Getting Node version '$version'..."
 		echo
 
@@ -47,14 +47,6 @@ getNode() {
 			bash -c "/tmp/scripts/build.sh $version && cp -f /tmp/compressedSdk/* /tmp/sdk"
 		
 		echo "Version=$version" >> "$hostNodeArtifactsDir/nodejs-$version-metadata.txt"
-	fi
-}
-
-shouldOverwriteNodeSdk() {
-	if [ "$OVERWRITE_EXISTING_SDKS_NODE" == "true" ]; then
-		return 0
-	else
-		return 1
 	fi
 }
 

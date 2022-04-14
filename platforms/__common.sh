@@ -51,6 +51,75 @@ shouldOverwriteSdk() {
 	fi
 }
 
+shouldOverwritePlatformSdk() {
+	local platform="$1"
+	case $platform in
+        "php")
+            	if [ "$OVERWRITE_EXISTING_SDKS_PHP" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
+	    	;;
+        "php-composer")
+            	if [ "$OVERWRITE_EXISTING_SDKS_PHP_COMPOSER" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
+            	;;
+	"java")
+	    		if [ "$OVERWRITE_EXISTING_SDKS_JAVA" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
+	    	;;
+        "maven")
+	    		if [ "$OVERWRITE_EXISTING_SDKS_MAVEN" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
+	    	;;
+	"nodejs")
+	 		if [ "$OVERWRITE_EXISTING_SDKS_NODE" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
+	    	;;
+        "ruby")
+		if [ "$OVERWRITE_EXISTING_SDKS_RUBY" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
+		;;
+	"python")
+		if [ "$OVERWRITE_EXISTING_SDKS_PYTHON" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
+		;;
+        "golang")
+		if [ "$OVERWRITE_EXISTING_SDKS_GOLANG" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
+		;;
+	"dotnet")
+		if [ "$OVERWRITE_EXISTING_SDKS_DOTNETCORE" == "true" ]; then
+					return 0
+				else
+					return 1
+				fi
+		;;
+	esac
+}
+
 getSdkFromImage() {
 	local imageName="$1"
 	local hostVolumeDir="$2"
