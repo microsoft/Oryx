@@ -3,112 +3,59 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Tests.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
+using System.Text;
+using Xunit;
 
-namespace Microsoft.Oryx.BuildScriptGenerator
+namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
-    internal static class VersionProviderHelper
+    public class VersionProviderHelperTest : IClassFixture<TestTempDirTestFixture>
     {
-        internal static IEnumerable<string> GetSupportedVersions(
-            IEnumerable<string> optionsVersions,
-            string versionsDir)
+        private readonly string _tempDirRoot;
+
+        public VersionProviderHelperTest(TestTempDirTestFixture tempDirFixture)
         {
-            return optionsVersions != null ? optionsVersions : GetVersionsFromDirectory(versionsDir);
+            _tempDirRoot = tempDirFixture.RootDirPath;
         }
 
-        internal static IEnumerable<string> GetVersionsFromDirectory(string versionsDir)
+        [Fact]
+        public void GetVersionsFromDirectory_IgnoresMalformedVersionStrings()
         {
-            var listOptions = new EnumerationOptions()
-            {
-                RecurseSubdirectories = false,
-                IgnoreInaccessible = false,
-            };
+            // Arrange
+            var expectedVersion = "1.0.0";
+            CreateSubDirectory(expectedVersion);
+            CreateSubDirectory("2.0b"); // Invalid SemVer string
 
-            IEnumerable<DirectoryInfo> versionDirectories;
-            try
-            {
-                versionDirectories = Directory.EnumerateDirectories(versionsDir, "*", listOptions)
-                    .Select(versionDir => new DirectoryInfo(versionDir));
-            }
-            catch (IOException)
-            {
-                return Enumerable.Empty<string>();
-            }
+            // Act
+            var versions = VersionProviderHelper.GetVersionsFromDirectory(_tempDirRoot);
 
-            var versions = new List<SemVer.Version>();
-            foreach (var versionDir in versionDirectories)
-            {
-                try
-                {
-                    var version = new SemVer.Version(versionDir.Name);
-                    versions.Add(version);
-                }
-                catch (ArgumentException)
-                {
-                    // Ignore non-Semantic-Versioning based strings like 'latest' or 'lts'
-                }
-            }
-
-            versions.Sort();
-            return versions.Select(v => v.ToString());
+            // Assert
+            Assert.Single(versions, expectedVersion);
         }
 
-        /// <summary>
-        ///     This method is specifically for obtaining Major.Minor version (example: 1.16)
-        ///     specifically for Golang since it does not have use semantic-versioning
-        ///     As a result we use RegEx extract version instead of SemVer.
-        /// </summary>
-        internal static IEnumerable<string> GetMajorMinorVersionsFromDirectory(string versionsDir)
+        [Fact]
+        public void GetMajorMinorVersionsFromDirectory_IgnoresMalformedVersionStrings()
         {
-            var listOptions = new EnumerationOptions()
-            {
-                RecurseSubdirectories = false,
-                IgnoreInaccessible = false,
-            };
+            // Arrange
+            var expectedVersion = "1.16";
+            CreateSubDirectory(expectedVersion);
+            CreateSubDirectory("2.0b"); // Invalid Major.Minor version
+            CreateSubDirectory("1.2.3"); // Invalid Major.Minor version
 
-            IEnumerable<DirectoryInfo> versionDirectories;
-            try
-            {
-                versionDirectories = Directory.EnumerateDirectories(versionsDir, "*", listOptions)
-                    .Select(versionDir => new DirectoryInfo(versionDir));
-            }
-            catch (IOException)
-            {
-                return Enumerable.Empty<string>();
-            }
+            // Act
+            var versions = VersionProviderHelper.GetMajorMinorVersionsFromDirectory(_tempDirRoot);
 
-            var versions = new List<string>();
-            foreach (var versionDir in versionDirectories)
-            {
-                try
-                {
-                    /* Regex will match:
-                     * major.minor
-                     *      where major & minor contains any number of digits
-                     * Valid examples:
-                     *      1.16, 1.17, 0.1, 123.456
-                     * Invalid examples:
-                     *      1.16.1, 1.2.3, 1.2a
-                    */
-                    Regex regex = new Regex(@"^[0-9]+\.[0-9]+$");
-                    string version = versionDir.Name;
-                    Match match = regex.Match(version);
-                    if (match.Success)
-                    {
-                        versions.Add(version);
-                    }
-                }
-                catch (ArgumentException)
-                {
-                    // Ignore non-Semantic-Versioning based strings like 'latest' or 'lts'
-                }
-            }
+            // Assert
+            Assert.Single(versions, expectedVersion);
+        }
 
-            return versions;
+        private void CreateSubDirectory(string name)
+        {
+            Directory.CreateDirectory(Path.Combine(_tempDirRoot, name));
         }
     }
 }
