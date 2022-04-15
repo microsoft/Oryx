@@ -37,6 +37,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.Single(versions, expectedVersion);
         }
 
+        [Fact]
+        public void GetMajorMinorVersionsFromDirectory_IgnoresMalformedVersionStrings()
+        {
+            // Arrange
+            var expectedVersion = "1.16";
+            CreateSubDirectory(expectedVersion);
+            CreateSubDirectory("2.0b"); // Invalid Major.Minor version
+            CreateSubDirectory("1.2.3"); // Invalid Major.Minor version
+
+            // Act
+            var versions = VersionProviderHelper.GetMajorMinorVersionsFromDirectory(_tempDirRoot);
+
+            // Assert
+            Assert.Single(versions, expectedVersion);
+        }
+
         private void CreateSubDirectory(string name)
         {
             Directory.CreateDirectory(Path.Combine(_tempDirRoot, name));

@@ -19,12 +19,15 @@ downloadJavaSdk()
     local JDK_BUILD_NUMBER="$2"
 
     tarFileName="java-$JDK_VERSION.tar.gz"
-    
+    tarFileNameWithoutGZ="java-$JDK_VERSION.tar"
+
     if [ "$debianFlavor" == "stretch" ]; then
 			# Use default sdk file name
 			tarFileName=java-$JDK_VERSION.tar.gz
+            tarFileNameWithoutGZ=java-$JDK_VERSION.tar
 	else
 			tarFileName=java-$debianFlavor-$JDK_VERSION.tar.gz
+            tarFileNameWithoutGZ=java-$debianFlavor-$JDK_VERSION.tar
 	fi
     
     # TODO: refactor to reduce the number of if statements. Workitem #1439235
@@ -47,15 +50,14 @@ downloadJavaSdk()
     IFS='.' read -ra VERSION_PARTS <<< "$JDK_VERSION"
     majorVersion="${VERSION_PARTS[0]}"
 
-    # Version 17.0.1 has a different url format than rest of the versions, so special casing it.
-    if [ "$JDK_VERSION" == "17.0.1" ]; then
-        local buildNumber="12"
-        local url="https://download.java.net/java/GA/jdk17.0.1/2a2082e5a09d4267845be086888add4f/12/GPL/openjdk-17.0.1_linux-x64_bin.tar.gz"
+    if [ "$JDK_VERSION" == "17.0.2" ]; then
+        local url="https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz"
 
         curl -L "$url" -o $tarFileName
         rm -rf extracted
         mkdir -p extracted
-        tar -xf $tarFileName --directory extracted
+        gzip -d $tarFileName
+        tar -xf $tarFileNameWithoutGZ --directory extracted
         cd "extracted/jdk-${JDK_VERSION}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
 		echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"

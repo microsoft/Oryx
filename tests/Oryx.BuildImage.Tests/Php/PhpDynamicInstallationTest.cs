@@ -29,6 +29,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var imageHelper = new ImageTestHelper();
                 data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage());
                 data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage());
+                data.Add("8.1.4", imageHelper.GetGitHubActionsBuildImage());
                 return data;
             }
         }

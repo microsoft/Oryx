@@ -13,5 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Ruby25TarSha256 = "0391b2ffad3133e274469f9953ebfd0c9f7c186238968cbdeeb0651aa02a4d6d";
         public const string Ruby30Version = "3.0.3";
         public const string Ruby30TarSha256 = "88cc7f0f021f15c4cd62b1f922e3a401697f7943551fe45b1fdf4f2417a17a9c";
+        public const string Ruby31Version = "3.1.1";
+        public const string Ruby31TarSha256 = "7aefaa6b78b076515d272ec59c4616707a54fc9f2391239737d5f10af7a16caa";
     }
 }

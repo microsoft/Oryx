@@ -147,6 +147,11 @@ docker run --detach --rm \
 Oryx consists of a build image, a collection of runtime images, a build script generator, and a collection of
 startup script generators. For more details, refer to our [architecture](./doc/architecture.md) page.
 
+# Testing Locally
+## startup script generator
+`build/testStartupScriptGenerators.sh` will perform tests on all startup script generators written in go. 
+The tests are copied into a docker image for performing `go test` on all platforms.
+
 # Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md).
