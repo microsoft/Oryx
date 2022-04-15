@@ -12,7 +12,7 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     LANG="C.UTF-8"
 
 ARG IMAGES_DIR="/opt/tmp/images"
-RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 \
+RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 --debug \
     && echo "$DEBIAN_FLAVOR" \
     && . /tmp/build/__goVersions.sh \
     && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
