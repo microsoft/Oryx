@@ -30,6 +30,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
                 data.Add(RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage("vso-focal"));
+                data.Add(RubyVersions.Ruby30Version, imageTestHelper.GetGitHubActionsBuildImage());
                 data.Add(RubyVersions.Ruby31Version, imageTestHelper.GetGitHubActionsBuildImage());
                 return data;
             }
