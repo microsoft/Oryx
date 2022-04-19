@@ -2,6 +2,12 @@ steps:
 - checkout: self
   clean: true
 
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-policheck.PoliCheck@1
+  displayName: 'Run PoliCheck'
+  inputs:
+    targetType: F
+  condition: always()
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'
   inputs:
@@ -16,6 +22,11 @@ steps:
   displayName: 'Run CredScan'
   inputs:
     debugMode: false
+  condition: always()
+
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-roslynanalyzers.RoslynAnalyzers@2
+  displayName: 'Run Roslyn Analyzers'
+  continueOnError: true
   condition: always()
 
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@3
