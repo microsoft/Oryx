@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.Detector.Python
 
             if (sourceRepo.FileExists(requirementsTxtPath))
             {
-                this.logger.LogInformation($"Found {requirementsTxtPath} at the root of the repo.");
+                this.logger.LogInformation($"Found {requirementsTxtPath.Hash()} at the root of the repo.");
                 hasRequirementsTxtFile = true;
 
                 // Warning if missing django module
@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.Detector.Python
 
                 if (!hasDjangoModule)
                 {
-                    this.logger.LogWarning($"Missing django module in {requirementsTxtPath}");
+                    this.logger.LogWarning($"Missing django module in {requirementsTxtPath.Hash()}");
                 }
                 else
                 {
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.Detector.Python
             }
             else
             {
-                string errorMsg = $"Cound not find {requirementsTxtPath} at the root of the repo. More information: https://aka.ms/requirements-not-found";
+                string errorMsg = $"Cound not find {requirementsTxtPath.Hash()} at the root of the repo. More information: https://aka.ms/requirements-not-found";
                 this.logger.LogError(errorMsg);
             }
 
@@ -242,7 +242,7 @@ namespace Microsoft.Oryx.Detector.Python
             }
             catch (FailedToParseFileException ex)
             {
-                this.logger.LogError(ex, $"An error occurred when trying to parse file '{fileName}'.");
+                this.logger.LogError(ex, $"An error occurred when trying to parse file '{fileName.Hash()}'.");
                 return false;
             }
 
