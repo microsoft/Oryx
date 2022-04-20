@@ -9,9 +9,13 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.BuildScriptGenerator.Ruby;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -93,7 +97,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var scriptGenArgs = new List<string>();
 
             // 'create-script' is only supported for these platform as of now
-            if (platform is NodePlatform || platform is PythonPlatform)
+            if (platform is NodePlatform || platform is PythonPlatform ||
+                platform is GolangPlatform || platform is PhpPlatform ||
+                platform is RubyPlatform || platform is DotNetCorePlatform)
             {
                 scriptGenArgs.Add("create-script");
             }

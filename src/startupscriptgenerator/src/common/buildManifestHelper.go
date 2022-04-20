@@ -28,6 +28,7 @@ type BuildManifest struct {
 	NodeVersion                     string
 	PythonVersion                   string
 	RubyVersion                     string
+	GolangVersion                   string
 	SourceDirectoryInBuildContainer string
 	CompressDestinationDir          string
 }

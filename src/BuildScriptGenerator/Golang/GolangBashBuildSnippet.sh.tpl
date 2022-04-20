@@ -19,7 +19,7 @@ echo "   "
 
 # TODO: add support for nested dirs
 echo "building go app..."
-go build
+go build -o oryxBuildBinary
 
 echo "list of module dependencies"
 go list -m

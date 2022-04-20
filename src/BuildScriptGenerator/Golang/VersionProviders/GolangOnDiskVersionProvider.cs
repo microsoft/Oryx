@@ -19,10 +19,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            this.logger.LogDebug("Getting list of versions from {installDir}", GolangConstants.InstalledGolangVersionsDir);
+            // we expect Golang to only be installed using dynamic installation
+            this.logger.LogDebug("Getting list of versions from {installDir}", GolangConstants.DynamicInstalledGolangVersionsDir);
 
-            var installedVersions = VersionProviderHelper.GetVersionsFromDirectory(
-                            GolangConstants.InstalledGolangVersionsDir);
+            var installedVersions = VersionProviderHelper.GetMajorMinorVersionsFromDirectory(
+                            GolangConstants.DynamicInstalledGolangVersionsDir);
 
             return PlatformVersionInfo.CreateOnDiskVersionInfo(installedVersions, GolangConstants.GolangDefaultVersion);
         }
