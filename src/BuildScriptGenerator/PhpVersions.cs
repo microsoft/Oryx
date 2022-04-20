@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Php81Version = "8.1.0";
         public const string Php81Keys = "528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544";
         public const string Php81TarSha256 = "a1317eff0723a2b3d3122bbfe107a1158570ea2822dc35a5fb360086db0f6bbc";
-        public const string Php80Version = "8.0.16";
+        public const string Php80Version = "8.0.17";
         public const string Php80Keys = "1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F";
         public const string Php80TarSha256 = "f27a2f25259e8c51e42dfd74e24a546ee521438ad7d9f6c6e794aa91f38bab0a";
         public const string Php74Version = "7.4.28";
