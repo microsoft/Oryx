@@ -12,6 +12,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string Platform = "--platform <name>";
         public const string PlatformVersion = "--platform-version <version>";
 
+        public const string RuntimePlatform = "--runtime-platform <name>";
+        public const string RuntimePlatformVersion = "--runtime-platform-version <version>";
+
         [Obsolete("Previous name for --platform")]
         public const string Language = "-l|--language <name>";
         [Obsolete("Previous name for --platform-version")]

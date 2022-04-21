@@ -104,6 +104,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(rubyPlatform.Versions.Any());
                     Assert.True(rubyPlatform.Versions.Contains("2.6.6"));
                     Assert.True(rubyPlatform.Versions.Contains("2.7.1"));
+                    Assert.True(rubyPlatform.Versions.Contains("3.0.3"));
                 },
             result.GetDebugInfo());
         }

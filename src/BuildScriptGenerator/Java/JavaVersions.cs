@@ -4,7 +4,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 {
     public static class JavaVersions
     {
-        public const string JavaVersion = "17.0.1";
-        public const string MavenVersion = "3.6.3";
+        public const string JavaVersion = "17.0.2";
+        public const string MavenVersion = "3.8.5";
     }
 }

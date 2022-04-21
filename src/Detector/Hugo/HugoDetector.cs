@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector.Exceptions;
 using Newtonsoft.Json.Linq;
 using Tomlyn.Model;
@@ -163,7 +164,7 @@ namespace Microsoft.Oryx.Detector.Hugo
             }
             catch (FailedToParseFileException ex)
             {
-                this.logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
+                this.logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath.Hash()}'.");
                 return false;
             }
 
@@ -188,7 +189,7 @@ namespace Microsoft.Oryx.Detector.Hugo
             }
             catch (FailedToParseFileException ex)
             {
-                this.logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
+                this.logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath.Hash()}'.");
                 return false;
             }
 
@@ -218,7 +219,7 @@ namespace Microsoft.Oryx.Detector.Hugo
             }
             catch (FailedToParseFileException ex)
             {
-                this.logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath}'.");
+                this.logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath.Hash()}'.");
                 return false;
             }
 
