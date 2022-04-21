@@ -98,16 +98,29 @@ RUN ${IMAGES_DIR}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.cr
     
 # Install PHP pre-reqs	# Install PHP pre-reqs
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
-    apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y \
-        $PHPIZE_DEPS \
-        ca-certificates \
-        curl \
-        xz-utils \
-        libsodium-dev \
-        libncurses5 \
-    --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
+        apt-get update \
+        && apt-get upgrade -y \
+        && apt-get install -y \
+            $PHPIZE_DEPS \
+            ca-certificates \
+            curl \
+            xz-utils \
+            libsodium-dev \
+            libncurses5 \
+        --no-install-recommends && rm -r /var/lib/apt/lists/* \
+        # A workaround for php 8.0 composer issue: https://github.com/microsoft/Oryx/issues/1100
+        && ln -s /usr/lib/x86_64-linux-gnu/libonig.so /usr/lib/x86_64-linux-gnu/libonig.so.4 \
+        && apt-get update -y \
+        && apt-get install software-properties-common -y \
+        && apt-get update -y \
+        && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D1DAC98AF575D16E \
+        && apt-get update -y \
+        && echo "deb http://ppa.launchpad.net/xapienz/curl34/ubuntu bionic main" | tee /etc/apt/sources.list.d/docker.list \
+        && apt-get update -y \
+        && apt-get remove curl -y \
+        && apt-get remove libcurl4 -y \
+        && apt-get install libcurl4=7.58.0-2ubuntu3.13ppa2 \
+        && apt-get install curl=7.58.0-2ubuntu3.13ppa2 ; \
     else \
         .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
     fi 
