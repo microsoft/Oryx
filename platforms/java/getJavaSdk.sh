@@ -17,6 +17,7 @@ downloadJavaSdk()
 {
     local JDK_VERSION="$1"
     local JDK_BUILD_NUMBER="$2"
+    local $JDK_URL="$4"
 
     tarFileName="java-$JDK_VERSION.tar.gz"
     tarFileNameWithoutGZ="java-$JDK_VERSION.tar"
@@ -30,6 +31,17 @@ downloadJavaSdk()
             tarFileNameWithoutGZ=java-$debianFlavor-$JDK_VERSION.tar
 	fi
     
+    if [ -z "$JDK_URL" ]; then
+        curl -L "$JDK_URL" -o $tarFileName
+        rm -rf extracted
+        mkdir -p extracted
+        tar -xf $tarFileName --directory extracted
+        cd "extracted/jdk${versionUpdate}"
+        tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
+		echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        return
+    fi
+
     # TODO: refactor to reduce the number of if statements. Workitem #1439235
     # Version 8 or 1.8.0 has a different url format than rest of the versions, so special casing it.
     if [ "$JDK_VERSION" == "1.8.0" ]; then
