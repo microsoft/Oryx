@@ -32,7 +32,8 @@ downloadJavaSdk()
 	fi
     
     if [ -z "$JDK_URL" ]; then
-        curl -L "$JDK_URL" -o $tarFileName
+        echo "JDK_URL: ${JDK_URL}"
+        curl -L "${JDK_URL}" -o $tarFileName
         rm -rf extracted
         mkdir -p extracted
         tar -xf $tarFileName --directory extracted
