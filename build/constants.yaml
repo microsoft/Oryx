@@ -320,7 +320,8 @@
       file-name-prefix: __
 - name: java-versions
   constants:
-    java-version: 11.0.14
+    java-version: 17.0.2
+    java-version11: 11.0.14
     maven-version: 3.8.5
   outputs:
     - type: shell
