@@ -31,7 +31,7 @@ downloadJavaSdk()
             tarFileNameWithoutGZ=java-$debianFlavor-$JDK_VERSION.tar
 	fi
     
-    if [ -z "$JDK_URL" ]; then
+    if [ ! -z "$JDK_URL" ]; then
         echo "JDK_URL: ${JDK_URL}"
         curl -L "${JDK_URL}" -o $tarFileName
         rm -rf extracted
