@@ -17,6 +17,7 @@ downloadJavaSdk()
 {
     local JDK_VERSION="$1"
     local JDK_BUILD_NUMBER="$2"
+    local JDK_SHA256="$3"
     local JDK_URL="$4"
 
     tarFileName="java-$JDK_VERSION.tar.gz"
@@ -34,10 +35,11 @@ downloadJavaSdk()
     if [ ! -z "$JDK_URL" ]; then
         echo "JDK_URL: ${JDK_URL}"
         curl -L "${JDK_URL}" -o $tarFileName
+        echo "$JDK_SHA256 $tarFileName" | sha256sum --check --strict; \
+        
         rm -rf extracted
         mkdir -p extracted
         
-        # gzip -d $tarFileName
         tar -xf $tarFileName --directory extracted
         ls
         ls extracted/
