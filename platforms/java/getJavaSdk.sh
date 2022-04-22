@@ -36,10 +36,15 @@ downloadJavaSdk()
         curl -L "${JDK_URL}" -o $tarFileName
         rm -rf extracted
         mkdir -p extracted
+        
+        # gzip -d $tarFileName
         tar -xf $tarFileName --directory extracted
-        cd "extracted/jdk${versionUpdate}"
+        ls
+        ls extracted/
+        cd "extracted/jdk-${JDK_VERSION}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
 		echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        cat $hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt
         return
     fi
 
