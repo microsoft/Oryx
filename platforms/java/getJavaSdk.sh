@@ -17,7 +17,7 @@ downloadJavaSdk()
 {
     local JDK_VERSION="$1"
     local JDK_BUILD_NUMBER="$2"
-    local $JDK_URL="$4"
+    local JDK_URL="$4"
 
     tarFileName="java-$JDK_VERSION.tar.gz"
     tarFileNameWithoutGZ="java-$JDK_VERSION.tar"
