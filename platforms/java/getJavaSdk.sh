@@ -33,13 +33,14 @@ downloadJavaSdk()
 	fi
     
     if [ ! -z "$JDK_URL" ]; then
+        # download & validate
         echo "JDK_URL: ${JDK_URL}"
         curl -L "${JDK_URL}" -o $tarFileName
         echo "$JDK_SHA256 $tarFileName" | sha256sum --check --strict; \
         
+        # extract
         rm -rf extracted
         mkdir -p extracted
-        
         tar -xf $tarFileName --directory extracted
         cd "extracted/jdk-${JDK_VERSION}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
