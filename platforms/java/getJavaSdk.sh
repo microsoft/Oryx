@@ -41,12 +41,9 @@ downloadJavaSdk()
         mkdir -p extracted
         
         tar -xf $tarFileName --directory extracted
-        ls
-        ls extracted/
         cd "extracted/jdk-${JDK_VERSION}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
 		echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
-        cat $hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt
         return
     fi
 
