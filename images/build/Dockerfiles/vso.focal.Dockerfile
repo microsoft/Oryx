@@ -249,6 +249,9 @@ RUN buildDir="/opt/tmp/build" \
     && mkdir -p /home/codespace/.maven/current \
     && ln -sfn /opt/maven/$MAVEN_VERSION /home/codespace/.maven/current \
     && npm install -g lerna \
+    && PATH="$PATH:/opt/php/lts/bin" \
+    && wget http://pear.php.net/go-pear.phar \
+    && php go-pear.phar \
     && pecl install -f libsodium \
     && echo "vso-focal" > /opt/oryx/.imagetype
 
