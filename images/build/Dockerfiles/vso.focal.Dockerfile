@@ -170,13 +170,13 @@ RUN set -ex \
     && . $buildDir/__phpVersions.sh \
     && $imagesDir/installPlatform.sh php $PHP80_VERSION \
     && $imagesDir/installPlatform.sh php $PHP81_VERSION \
-    && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
+    && $imagesDir/installPlatform.sh php-composer $COMPOSER2_3_VERSION \
     && cd /opt/php \
     && ln -s $PHP81_VERSION 8 \
     && ln -s $PHP81_VERSION lts \
     && ln -sfn /opt/php/$PHP81_VERSION /home/codespace/.php/current \
-&& cd /opt/php-composer \
-    && ln -sfn $COMPOSER_VERSION stable \
+    && cd /opt/php-composer \
+    && ln -sfn $COMPOSER2_3_VERSION stable \
     && ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -240,6 +240,7 @@ RUN buildDir="/opt/tmp/build" \
     && . $buildDir/__javaVersions.sh \
     # TODO: add java 11
     && ./installPlatform.sh java $JAVA_VERSION \
+    && ./installPlatform.sh java $JAVA_VERSION11 \
     && ./installPlatform.sh maven $MAVEN_VERSION \
     && cd /opt/java \
     && ln -s $JAVA_VERSION lts \
