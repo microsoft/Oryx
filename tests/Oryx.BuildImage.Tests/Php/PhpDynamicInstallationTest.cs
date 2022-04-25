@@ -67,6 +67,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     $"PHP executable: " +
                     BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot, result.StdOut);
                 Assert.Contains("Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
+                Assert.Contains($"\'php-composer\' version \'{PhpVersions.ComposerVersion}\'", result.StdOut);
             },
             result.GetDebugInfo());
         }
