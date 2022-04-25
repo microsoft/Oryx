@@ -238,7 +238,6 @@ RUN buildDir="/opt/tmp/build" \
     && cd $imagesDir \
     && mkdir -p /home/codespace/.java \
     && . $buildDir/__javaVersions.sh \
-    # TODO: add java 11
     && ./installPlatform.sh java $JAVA_VERSION \
     && ./installPlatform.sh java $JAVA_VERSION11 \
     && ./installPlatform.sh maven $MAVEN_VERSION \
