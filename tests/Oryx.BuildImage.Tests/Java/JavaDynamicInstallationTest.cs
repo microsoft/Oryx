@@ -30,6 +30,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var data = new TheoryData<string>();
                 data.Add("17.0.1");
                 data.Add("17.0.2");
+                data.Add("11.0.14");
                 return data;
             }
         }
