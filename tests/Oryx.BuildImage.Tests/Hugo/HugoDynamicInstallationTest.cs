@@ -73,11 +73,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
+        [Theory]
+        [InlineData("0.70.0")] //NOTE: use the full version so that we know the install directory path
+        [InlineData("0.96.0")]
+        public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent(string hugoVersion)
         {
-            // Arrange
-            var hugoVersion = "0.70.0"; //NOTE: use the full version so that we know the install directory path
+            // Arrange 
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/hugo/{hugoVersion}";
             var sentinelFile = $"{installationDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}";
             var appName = SampleAppName;
