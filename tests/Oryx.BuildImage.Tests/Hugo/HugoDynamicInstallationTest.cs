@@ -74,9 +74,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent(string hugoVersion)
+        public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
-            // Arrange 
+            // Arrange
             var hugoVersion = "0.70.0"; //NOTE: use the full version so that we know the install directory path
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/hugo/{hugoVersion}";
             var sentinelFile = $"{installationDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}";
