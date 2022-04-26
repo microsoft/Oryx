@@ -8,6 +8,12 @@ steps:
     targetType: F
   condition: always()
 
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
+  displayName: 'Run CredScan'
+  inputs:
+    debugMode: false
+  condition: always()
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish'
   inputs:
@@ -17,12 +23,6 @@ steps:
     arguments: '-o $(Build.BinariesDirectory)'
     zipAfterPublish: false
     modifyOutputPath: false
-
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
-  displayName: 'Run CredScan'
-  inputs:
-    debugMode: false
-  condition: always()
 
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-roslynanalyzers.RoslynAnalyzers@2
   displayName: 'Run Roslyn Analyzers'
