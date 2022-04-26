@@ -176,8 +176,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} " +
                 $"--dynamic-install-root-dir {expectedDynamicInstallRootDir}")
-                .AddDirectoryExistsCheck(
-                $"{expectedDynamicInstallRootDir}/{HugoConstants.PlatformName}/{hugoVersion}")
                 .ToString();
 
             // Act
