@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public const string RuntimeFileName = "runtime.txt";
         public const string PythonFileNamePattern = "*.py";
         public const string PythonVersionEnvVarName = "PYTHON_VERSION";
-        public const string PythonLtsVersion = Common.PythonVersions.Python310Version;
+        public const string PythonLtsVersion = Common.PythonVersions.Python38Version;
         public const string InstalledPythonVersionsDir = "/opt/python/";
         public const string ZipFileExtension = "tar.gz";
         public const string ZipVirtualEnvFileNameFormat = "{0}.zip";

@@ -552,7 +552,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var phpVersion = PhpVersions.Php73Version;
-            if (buildImageName == "oryxdevmcr.azurecr.io/public/oryx/build:vso-focal")
+            if (buildImageName.Contains("oryxdevmcr.azurecr.io/public/oryx/build:vso-focal"))
             {
                 phpVersion = PhpVersions.Php81Version;
             }
