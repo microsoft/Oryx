@@ -551,7 +551,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
             // Arrange
-            var expectedOutput = $"PHP {PhpVersions.Php81Version} (cli) ";
+            var phpVersion = PhpVersions.Php73Version
+            if (buildImageName == Settings.VsoUbuntuBuildImageName)
+            {
+                phpVersion = PhpVersions.Php81Version
+            }
+
+            var expectedOutput = $"PHP {phpVersion} (cli) ";
 
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
