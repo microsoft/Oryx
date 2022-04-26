@@ -73,12 +73,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [InlineData("0.70.0")] //NOTE: use the full version so that we know the install directory path
-        [InlineData("0.96.0")]
+        [Fact]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent(string hugoVersion)
         {
             // Arrange 
+            var hugoVersion = "0.70.0"; //NOTE: use the full version so that we know the install directory path
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/hugo/{hugoVersion}";
             var sentinelFile = $"{installationDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}";
             var appName = SampleAppName;
@@ -132,6 +131,48 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("HUGO_VERSION", hugoVersion)
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} " +
+                $"--dynamic-install-root-dir {expectedDynamicInstallRootDir}")
+                .AddDirectoryExistsCheck(
+                $"{expectedDynamicInstallRootDir}/{HugoConstants.PlatformName}/{hugoVersion}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Hugo Static Site Generator v{hugoVersion}",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        public void BuildsApplication_ByDynamicallyInstallingIntoCustomDynamicInstallationDir()
+        {
+            // Arrange
+            var hugoVersion = "0.96.0";
+            var expectedDynamicInstallRootDir = "/foo/bar";
+            var appName = SampleAppName;
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .SetEnvironmentVariable("HUGO_VERSION", hugoVersion)
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} " +
                 $"--dynamic-install-root-dir {expectedDynamicInstallRootDir}")
