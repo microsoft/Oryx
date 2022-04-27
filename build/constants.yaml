@@ -133,6 +133,7 @@
     composer1-10-version: 1.10.19
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
+    composer2-3-version: 2.3.4
     # hashes are for .tar.xz
     php81-version: 8.1.0
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
@@ -321,6 +322,7 @@
 - name: java-versions
   constants:
     java-version: 17.0.2
+    java-version11: 11.0.14
     maven-version: 3.8.5
   outputs:
     - type: shell
