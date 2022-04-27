@@ -752,7 +752,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --buildcommands-file {buildCommandsFileName}")
                 .AddFileExistsCheck($"{commandListFile}")
                 .AddStringExistsInFileCheck("PlatformWithVersion=", $"{commandListFile}")
-                .AddStringExistsInFileCheck("BuildCommands=", $"{commandListFile}")
                 .ToString();
 
             // Act
