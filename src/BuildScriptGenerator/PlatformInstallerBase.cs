@@ -53,7 +53,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"mkdir -p {versionDirInTemp}")
                 .AppendLine($"cd {versionDirInTemp}")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
-                .AppendLine($"if [ \"$platformName\" = \"php\" ] && [ \"$DEBIAN_FLAVOR\" != \"stretch\" ]; then")
+                .AppendLine($"platformName=\"{platformName}\"")
+                .AppendLine($"if [[ \"$platformName\" = \"php\" || \"$platformName\" = \"php-composer\" ]] && [[ \"$DEBIAN_FLAVOR\" != \"stretch\" ]]; then")
+                .AppendLine("echo \"Detecting image debian flavor: $DEBIAN_FLAVOR.\"")
                 .AppendLine(
                 $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
@@ -76,7 +78,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("rm -f headers.txt")
                 .AppendLine("echo Extracting contents...")
                 .AppendLine($"tar -xzf {tarFile} -C .")
-                .AppendLine($"platformName=\"{platformName}\"")
 
                 // use sha256 for golang and sha512 for all other platforms
                 .AppendLine($"if [ \"$platformName\" = \"golang\" ]; then")
