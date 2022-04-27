@@ -46,7 +46,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage(), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage("buster"), PhpVersions.Composer23Version);
                 data.Add("8.1.4", imageHelper.GetGitHubActionsBuildImage("buster"), PhpVersions.Composer23Version);
-                data.Add("8.1.17", imageHelper.GetGitHubActionsBuildImage("buster"), PhpVersions.Composer23Version);
 
                 return data;
             }
