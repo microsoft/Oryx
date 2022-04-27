@@ -65,6 +65,10 @@ fi
     then
         set +e 
         echo "Running pip install..."
+        InstallCommand1="pip show itsdangerous"
+        printf %s " , $InstallCommand1" >> "$COMMAND_MANIFEST_FILE"
+        InstallCommand2="pip show django-cors-middleware"
+        printf %s " , $InstallCommand2" >> "$COMMAND_MANIFEST_FILE"
         InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
         StdError=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
