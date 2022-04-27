@@ -752,12 +752,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --buildcommands-file {buildCommandsFileName}")
                 .AddFileExistsCheck($"{commandListFile}")
                 .AddStringExistsInFileCheck("PlatformWithVersion=", $"{commandListFile}")
+                .AddStringExistsInFileCheck("BuildCommands=", $"{commandListFile}")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetVsoBuildImage("vso-focal"),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
