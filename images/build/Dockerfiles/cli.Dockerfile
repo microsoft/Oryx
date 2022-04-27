@@ -1,7 +1,12 @@
 ARG DEBIAN_FLAVOR
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
+
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+###
+# Build run script generators (to be used by the `oryx run-script` command)
+###
+FROM golang:1.15-stretch as startupScriptGens
 
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 
@@ -39,3 +44,23 @@ RUN apt-get update \
 ENV ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io"
 ENV ENABLE_DYNAMIC_INSTALL="true"
 ENV PATH="$PATH:/opt/oryx"
+
+
+
+
+# GOPATH is set to "/go" in the base image
+WORKDIR /go/src
+COPY src/startupscriptgenerator/src .
+
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ARG RELEASE_TAG_NAME=unspecified
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
+
+RUN ./build.sh golang     /opt/startupcmdgen/golang
+
+###
+# End build run script generators
+###
