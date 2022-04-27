@@ -116,6 +116,14 @@ function buildGitHubRunnersUbuntuBaseImage() {
 		.
 }
 
+function buildGitHubRunnersBullseyeBaseImage() {
+	echo
+	echo "----Building the image which uses GitHub runners' buildpackdeps-bullseye-scm specific digest----------"
+	docker build -t githubrunners-buildpackdeps-bullseye \
+		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_BULLSEYE_DOCKERFILE" \
+		.
+}
+
 function buildGitHubRunnersBusterBaseImage() {
 	
 	echo
