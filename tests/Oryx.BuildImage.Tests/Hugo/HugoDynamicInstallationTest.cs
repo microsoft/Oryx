@@ -193,9 +193,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        $"Hugo Static Site Generator v{hugoVersion}",
-                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
