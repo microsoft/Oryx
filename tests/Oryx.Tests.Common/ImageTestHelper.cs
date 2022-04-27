@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _azureFunctionsJamStack = "azfunc-jamstack";
         private const string _gitHubActions = "github-actions";
         private const string _gitHubActionsBuster = "github-actions-buster";
+        private const string _gitHubActionsBullseye = "github-actions-bullseye";
         private const string _vso = "vso";
         private const string _vsoUbuntu = "vso-focal";
         private const string _buildRepository = "build";
@@ -174,6 +175,10 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetGitHubActionsBuildImage(_gitHubActionsBuster);
             }
+            else if (string.Equals(tag, _gitHubActionsBullseye))
+            {
+                return GetGitHubActionsBuildImage(_gitHubActionsBullseye);
+            }
             else if (string.Equals(tag, _ltsVersionsBuster))
             {
                 return GetLtsVersionsBuildImage(_ltsVersionsBuster);
@@ -205,12 +210,13 @@ namespace Microsoft.Oryx.Tests.Common
 
         public string GetGitHubActionsBuildImage(string debianFlavor=null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor)
-                && string.Equals(debianFlavor.ToLower(), _gitHubActionsBuster))
-            {
+            if (string.Equals(debianFlavor.ToLower(), _gitHubActionsBuster)) {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBuster}{_tagSuffix}";
+            } else if (string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseye)) {
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
+            } else {
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
             }
-            return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
         }
 
         public string GetVsoBuildImage(string debianFlavor=null)
