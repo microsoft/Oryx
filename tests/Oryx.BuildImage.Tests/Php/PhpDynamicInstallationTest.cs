@@ -20,24 +20,39 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        public static TheoryData<string, string> VersionAndImageNameData
+        public static TheoryData<string, string, string> VersionAndImageNameData
         {
             get
             {
-                var data = new TheoryData<string, string>();
-                data.Add(PhpVersions.Php73Version, ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage());
+                // test default php-composer version
+                var data = new TheoryData<string, string, string>();
+                data.Add(
+                    PhpVersions.Php73Version, 
+                    ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage(), 
+                    PhpVersions.ComposerVersion
+                );
                 var imageHelper = new ImageTestHelper();
-                data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage());
-                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
-                data.Add("8.1.4", imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
-                data.Add("8.0.17", imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage(), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.ComposerVersion);
+                data.Add("8.1.4", imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.ComposerVersion);
+                data.Add("8.0.17", imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.ComposerVersion);
+
+                // test latest php-composer version
+                data.Add(
+                    PhpVersions.Php73Version,
+                    ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage(),
+                    PhpVersions.Composer23Version
+                );
+                data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage(), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.Composer23Version);
+                data.Add("8.1.4", imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.Composer23Version);
                 return data;
             }
         }
 
         [Theory]
         [MemberData(nameof(VersionAndImageNameData))]
-        public void BuildsAppByInstallingSdkDynamically(string phpVersion, string imageName)
+        public void BuildsAppByInstallingSdkDynamically(string phpVersion, string imageName, string phpComposerVersion)
         {
             // Arrange
             var appName = "twig-example";
@@ -46,6 +61,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
+                .SetEnvironmentVariable("PHP_COMPOSER_VERSION", phpComposerVersion)
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
@@ -68,6 +84,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     $"PHP executable: " +
                     BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot, result.StdOut);
                 Assert.Contains("Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
+                Assert.Contains($"\'php-composer\' version \'{phpComposerVersion}\'", result.StdOut);
             },
             result.GetDebugInfo());
         }
