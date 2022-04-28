@@ -160,6 +160,43 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        public void BuildsApplication_ByDynamicallyInstallingIntoCustomDynamicInstallationDir()
+        {
+            // Arrange
+            var hugoVersion = "0.96.0";
+            var expectedDynamicInstallRootDir = "/foo/bar";
+            var appName = SampleAppName;
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .SetEnvironmentVariable("HUGO_VERSION", hugoVersion)
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} " +
+                $"--dynamic-install-root-dir {expectedDynamicInstallRootDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetBuildImage(),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
         private string GetSnippetToCleanUpExistingInstallation()
         {
             return $"rm -rf {DefaultInstallationRootDir}; mkdir -p {DefaultInstallationRootDir}";

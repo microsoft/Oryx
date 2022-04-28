@@ -4,7 +4,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     public static class CondaConstants
     {
-        public const string CondaVersion = "4.8.3-0";
+        public const string CondaVersion = "4.11.0-0";
         public const string CondaEnvironmentYmlFileName = "environment.yml";
         public const string OryxGeneratedEnvironmentYmlFileName = "oryx.environment.yml";
         public const string DefaultCondaEnvironmentYmlFileTemplateName = "default.envrionment.yml.template";
