@@ -735,7 +735,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory(Skip = "Issue#Markup v2.1.1")]
+        [Theory]
         [InlineData("flask-app", "foo.txt")]
         [InlineData("django-realworld-example-app", FilePaths.BuildCommandsFileName)]
         public void BuildPythonApps_Prints_BuildCommands_In_File(string appName, string buildCommandsFileName)
