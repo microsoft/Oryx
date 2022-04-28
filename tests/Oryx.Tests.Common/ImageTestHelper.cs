@@ -210,9 +210,9 @@ namespace Microsoft.Oryx.Tests.Common
 
         public string GetGitHubActionsBuildImage(string debianFlavor=null)
         {
-            if (string.Equals(debianFlavor.ToLower(), _gitHubActionsBuster)) {
+            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBuster)) {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBuster}{_tagSuffix}";
-            } else if (string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseye)) {
+            } else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseye)) {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
             } else {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
