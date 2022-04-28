@@ -28,9 +28,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(PhpVersions.Php73Version, ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage());
                 var imageHelper = new ImageTestHelper();
                 data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage());
-                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage("buster"));
-                data.Add("8.1.4", imageHelper.GetGitHubActionsBuildImage("buster"));
-                data.Add("8.0.17", imageHelper.GetGitHubActionsBuildImage("buster"));
+                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add("8.1.4", imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add("8.0.17", imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
                 return data;
             }
         }

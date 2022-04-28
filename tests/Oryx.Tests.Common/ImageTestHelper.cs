@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _restrictedPermissionsImageRepoPrefix = "oryxtests";
 
         private const string _azureFunctionsJamStack = "azfunc-jamstack";
+        private const string _azureFunctionsJamStackBuster = "azfunc-jamstack-buster";
         private const string _gitHubActions = "github-actions";
         private const string _gitHubActionsBuster = "github-actions-buster";
         private const string _gitHubActionsBullseye = "github-actions-bullseye";
@@ -183,6 +184,14 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetLtsVersionsBuildImage(_ltsVersionsBuster);
             }
+            else if (string.Equals(tag, _azureFunctionsJamStack))
+            {
+                return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStack);
+            }
+            else if (string.Equals(tag, _azureFunctionsJamStackBuster))
+            {
+                return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStackBuster);
+            }
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
 
@@ -203,8 +212,13 @@ namespace Microsoft.Oryx.Tests.Common
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
         /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
-        public string GetAzureFunctionsJamStackBuildImage()
+        public string GetAzureFunctionsJamStackBuildImage(string debianFlavor=null)
         {
+            if (!string.IsNullOrEmpty(debianFlavor)
+                && string.Equals(debianFlavor.ToLower(), _azureFunctionsJamStackBuster))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBuster}{_tagSuffix}";
+            }
             return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStack}{_tagSuffix}";
         }
 
