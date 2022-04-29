@@ -441,7 +441,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddDirectoryExistsCheck($"/home/codespace/.dotnet/")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
-                .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNet50SdkVersion}")
+                .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNet60SdkVersion}")
                 .AddLinkDoesNotExistCheck($"{preInstalledSdkLink}/{sdkVersion}")
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
@@ -476,7 +476,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                         $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{expectedSdkVersionPrefix}",
                         result.StdOut);
                     Assert.Contains($"{DotNetCoreSdkVersions.DotNetCore31SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
-                    Assert.Contains($"{DotNetCoreSdkVersions.DotNet50SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
+                    Assert.Contains($"{DotNetCoreSdkVersions.DotNet60SdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
                     Assert.Contains($"{sdkVersion} [/home/codespace/.dotnet/sdk]", result.StdOut);
                 },
                 result.GetDebugInfo());
