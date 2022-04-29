@@ -551,7 +551,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
             // Arrange
-            var expectedOutput = $"PHP {PhpVersions.Php73Version} (cli) ";
+            var phpVersion = PhpVersions.Php73Version;
+            if (buildImageName.Contains("oryxdevmcr.azurecr.io/public/oryx/build:vso-focal"))
+            {
+                phpVersion = "8.1.4";
+            }
+
+            var expectedOutput = $"PHP {phpVersion} (cli) ";
 
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments

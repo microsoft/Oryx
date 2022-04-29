@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunPythonApp(string pythonVersion)
         {
             // Arrange
-            var appName = "flask-app";
+            var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -53,8 +53,17 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { "-c", runScript },
                 async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
+                    var data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/boards.css");
+                    Assert.Contains("CSS file from Boards app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/uservoice.css");
+                    Assert.Contains("CSS file from UserVoice app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/boards/");
+                    Assert.Contains("Hello, World! from Boards app", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/uservoice/");
+                    Assert.Contains("Hello, World! from Uservoice app", data);
                 });
         }
 
@@ -62,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunPythonApp_UsingPython37_AndVirtualEnv()
         {
             // Arrange
-            var appName = "flask-app";
+            var appName = "django-app";
             var virtualEnvName = "antenv";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -98,8 +107,17 @@ namespace Microsoft.Oryx.Integration.Tests
                 },
                 async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
+                    var data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/boards.css");
+                    Assert.Contains("CSS file from Boards app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/uservoice.css");
+                    Assert.Contains("CSS file from UserVoice app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/boards/");
+                    Assert.Contains("Hello, World! from Boards app", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/uservoice/");
+                    Assert.Contains("Hello, World! from Uservoice app", data);
                 });
         }
 
@@ -111,7 +129,7 @@ namespace Microsoft.Oryx.Integration.Tests
             string expectedCompressFileNameExtension)
         {
             // Arrange
-            var appName = "flask-app";
+            var appName = "django-app";
             var virtualEnvName = "antenv";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -149,8 +167,17 @@ namespace Microsoft.Oryx.Integration.Tests
                 },
                 async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
+                    var data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/boards.css");
+                    Assert.Contains("CSS file from Boards app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/uservoice.css");
+                    Assert.Contains("CSS file from UserVoice app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/boards/");
+                    Assert.Contains("Hello, World! from Boards app", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/uservoice/");
+                    Assert.Contains("Hello, World! from Uservoice app", data);
                 });
         }
 
@@ -158,7 +185,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunPythonApp_UsingCustomManifestFileLocation()
         {
             // Arrange
-            var appName = "flask-app";
+            var appName = "django-app";
             var virtualEnvName = "antenv";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -202,8 +229,17 @@ namespace Microsoft.Oryx.Integration.Tests
                 },
                 async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
+                    var data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/boards.css");
+                    Assert.Contains("CSS file from Boards app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/uservoice.css");
+                    Assert.Contains("CSS file from UserVoice app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/boards/");
+                    Assert.Contains("Hello, World! from Boards app", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/uservoice/");
+                    Assert.Contains("Hello, World! from Uservoice app", data);
                 });
         }
 
@@ -319,7 +355,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunPythonApp_WhenAllOutputIsCompressed()
         {
             // Arrange
-            var appName = "flask-app";
+            var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -352,11 +388,17 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { "-c", runScript },
                 async (hostPort) =>
                 {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
+                    var data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/boards.css");
+                    Assert.Contains("CSS file from Boards app module", data);
 
-                    data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/applicationpath");
-                    Assert.Contains(buildContainerBuildDir, data);
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/uservoice.css");
+                    Assert.Contains("CSS file from UserVoice app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/boards/");
+                    Assert.Contains("Hello, World! from Boards app", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/uservoice/");
+                    Assert.Contains("Hello, World! from Uservoice app", data);
                 });
         }
     }
