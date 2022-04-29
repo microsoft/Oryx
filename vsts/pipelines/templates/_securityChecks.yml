@@ -14,15 +14,13 @@ steps:
     debugMode: false
   condition: always()
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet publish'
+- task: VSBuild@1
+  displayName: 'Build the Oryx solution'
   inputs:
-    command: publish
-    publishWebProjects: false
-    projects: '$(Build.SourcesDirectory)\src\**\*.csproj'
-    arguments: '-o $(Build.BinariesDirectory)'
-    zipAfterPublish: false
-    modifyOutputPath: false
+    solution: '$(Build.SourcesDirectory)\Oryx.sln'
+    configuration: 'debug'
+    createLogFile: true
+    logFileVerbosity: diagnostic
 
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-roslynanalyzers.RoslynAnalyzers@2
   displayName: 'Run Roslyn Analyzers'
