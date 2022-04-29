@@ -14,6 +14,12 @@ steps:
     debugMode: false
   condition: always()
 
+- task: NuGetCommand@2
+  displayName: 'Run "nuget restore" on Oryx solution'
+  inputs:
+    command: 'restore'
+    restoreSolution: '$(Build.SourcesDirectory)\Oryx.sln'
+
 - task: VSBuild@1
   displayName: 'Build the Oryx solution'
   inputs:
