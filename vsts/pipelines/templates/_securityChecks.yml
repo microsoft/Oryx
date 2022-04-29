@@ -35,7 +35,7 @@ steps:
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@3
   displayName: 'Run BinSkim '
   inputs:
-    arguments: 'analyze $(Build.BinariesDirectory)\* --recurse --output $(Build.BinariesDirectory)\binskim.sarif --verbose'
+    arguments: 'analyze Microsoft.Oryx*.dll --recurse --output $(Build.BinariesDirectory)\binskim.sarif --verbose'
   condition: always()
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -48,6 +48,9 @@ steps:
   inputs:
     BinSkim: true
     CredScan: true
+    PoliCheck: true
+    RoslynAnalyzers: true
+  continueOnError: false
 
 - task: AntiMalware@3
   displayName: 'Run Antimalware Scan'
