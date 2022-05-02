@@ -16,7 +16,7 @@ source $REPO_DIR/build/__sdkStorageConstants.sh
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
-runtimeImageDebianFlavor="buster"
+runtimeImageDebianFlavor=""
 
 if [ $# -eq 2 ] 
 then
@@ -69,6 +69,13 @@ docker build \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
     -t "$RUNTIME_BASE_IMAGE_NAME-buster" \
     --build-arg DEBIAN_FLAVOR=buster \
+    $REPO_DIR
+
+docker build \
+    --pull \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "$RUNTIME_BASE_IMAGE_NAME-bullseye" \
+    --build-arg DEBIAN_FLAVOR=bullseye \
     $REPO_DIR
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"

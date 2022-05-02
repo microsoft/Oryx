@@ -33,6 +33,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3");
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage("github-actions-buster"), "3.9.0");
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.10.4");
+                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"), "3.10.4");
                 return data;
             }
         }

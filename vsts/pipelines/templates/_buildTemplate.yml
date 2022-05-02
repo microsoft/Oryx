@@ -101,6 +101,13 @@ steps:
     args: buster
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
+- task: ShellScript@2
+  displayName: 'Build Bullseye runtime images'
+  inputs:
+    scriptPath: ./build/buildRunTimeImages.sh
+    args: bullseye
+  condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
+
 - script: |
     docker images && docker system prune -f && df -h && echo
   displayName: 'clean docker unknown layers'
@@ -185,9 +192,10 @@ steps:
   condition: true
 
 - script: |
-    echo "Merging buster and stretch based runtime image tags in one single file"
+    echo "Merging bullseye, buster and stretch based runtime image tags in one single file"
     cat '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.stretch.txt' >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
     cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.buster.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
+    cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.bullseye.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
   displayName: 'Merge runtime image tags in one single file'
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 

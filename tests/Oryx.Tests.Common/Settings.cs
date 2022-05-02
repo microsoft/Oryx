@@ -14,6 +14,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string GitHubActionsBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:github-actions";
         public const string GitHubActionsBusterBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-buster";
         public const string GitHubActionsBullseyeBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-bullseye";
+        public const string JamStackBullseyeBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-bullseye";
         public const string JamStackBusterBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-buster";
         public const string JamStackBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack";
         public const string CliBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/cli";
