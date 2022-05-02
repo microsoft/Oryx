@@ -397,6 +397,45 @@ function buildCliImage() {
 	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 }
 
+function buildAndRunImage() {
+	buildBuildScriptGeneratorImage
+	
+	local debianFlavor=$1
+	local devImageTag=BuildAndRun
+	local builtImageName="$ACR_BUILD_AND_RUN_IMAGE_REPO"
+
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+		debianFlavor="stretch"
+	elif  [ "$debianFlavor" == "buster" ]; then
+		debianFlavor="buster"
+		devImageTag=$devImageTag-$debianFlavor
+		echo "dev image tag: "$devImageTag
+		builtImageName=$builtImageName-$debianFlavor
+		echo "built image name: "$builtImageName
+	fi
+
+	echo
+	echo "-------------Creating BuildAndRun image-------------------"
+	docker build -t $builtImageName \
+		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg DEBIAN_FLAVOR=$debianFlavor \
+		--label com.microsoft.oryx="$labelContent" \
+		-f "$BUILD_IMAGES_BUILD_AND_RUN_DOCKERFILE" \
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:$devImageTag"
+
+	echo
+	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+}
+
 function buildBuildPackImage() {
 	# Build buildpack images
 	# 'pack create-builder' is not supported on Windows
@@ -440,6 +479,8 @@ elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
+elif [ "$imageTypeToBuild" == "buildAndRun" ]; then
+	buildAndRunImage "buster"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
