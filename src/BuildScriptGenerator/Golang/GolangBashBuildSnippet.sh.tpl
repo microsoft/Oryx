@@ -6,6 +6,10 @@ set -e
 #	./go.mod
 #	./main.go
 
+# enables golang globally
+export PATH="/tmp/oryx/platforms/golang/{{ GolangVersion }}/go/bin/:$PATH"
+echo "PATH: $PATH"
+
 GOLANG_BUILD_START_TIME=$SECONDS
 echo "   "
 echo "Using Golang version: "
