@@ -33,9 +33,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 );
                 var imageHelper = new ImageTestHelper();
                 data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage(), PhpVersions.ComposerVersion);
-                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage("buster"), PhpVersions.ComposerVersion);
-                data.Add("8.1.4", imageHelper.GetGitHubActionsBuildImage("buster"), PhpVersions.ComposerVersion);
-                data.Add("8.0.17", imageHelper.GetGitHubActionsBuildImage("buster"), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.ComposerVersion);
+                data.Add("8.1.4", imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.ComposerVersion);
+                data.Add("8.0.17", imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.ComposerVersion);
 
                 // test latest php-composer version
                 data.Add(
@@ -44,9 +44,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     PhpVersions.Composer23Version
                 );
                 data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage(), PhpVersions.Composer23Version);
-                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage("buster"), PhpVersions.Composer23Version);
-                data.Add("8.1.4", imageHelper.GetGitHubActionsBuildImage("buster"), PhpVersions.Composer23Version);
-
+                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.Composer23Version);
+                data.Add("8.1.4", imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.Composer23Version);
                 return data;
             }
         }

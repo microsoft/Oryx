@@ -116,6 +116,14 @@ function buildGitHubRunnersUbuntuBaseImage() {
 		.
 }
 
+function buildGitHubRunnersBullseyeBaseImage() {
+	echo
+	echo "----Building the image which uses GitHub runners' buildpackdeps-bullseye-scm specific digest----------"
+	docker build -t githubrunners-buildpackdeps-bullseye \
+		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_BULLSEYE_DOCKERFILE" \
+		.
+}
+
 function buildGitHubRunnersBusterBaseImage() {
 	
 	echo
@@ -137,6 +145,7 @@ function buildTemporaryFilesImage() {
 	buildGitHubRunnersBaseImage
 	buildGitHubRunnersBusterBaseImage
 	buildGitHubRunnersUbuntuBaseImage
+	buildGitHubRunnersBullseyeBaseImage
 
 	# Create the following image so that it's contents can be copied to the rest of the images below
 	echo
@@ -169,8 +178,8 @@ function buildGitHubActionsImage() {
 	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
 		debianFlavor="stretch"
 		echo "Debian Flavor is: "$debianFlavor
-	elif  [ "$debianFlavor" == "buster" ]; then
-		debianFlavor="buster"
+	elif [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "bullseye" ]; then
+		debianFlavor=$debianFlavor
 		devImageTag=$devImageTag-$debianFlavor
 		echo "dev image tag: "$devImageTag
 		builtImageName=$builtImageName-$debianFlavor
@@ -409,6 +418,7 @@ function buildBuildPackImage() {
 }
 
 if [ -z "$imageTypeToBuild" ]; then
+	buildGitHubActionsImage "bullseye"
 	buildGitHubActionsImage "buster"
 	buildGitHubActionsImage
 	buildJamStackImage "buster"
@@ -424,6 +434,8 @@ elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
 elif [ "$imageTypeToBuild" == "githubactions-buster" ]; then
 	buildGitHubActionsImage "buster"
+elif [ "$imageTypeToBuild" == "githubactions-bullseye" ]; then
+	buildGitHubActionsImage "bullseye"
 elif [ "$imageTypeToBuild" == "jamstack-buster" ]; then
 	buildJamStackImage "buster"
 elif [ "$imageTypeToBuild" == "jamstack" ]; then
