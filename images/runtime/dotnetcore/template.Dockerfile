@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM golang:1.14-${DEBIAN_FLAVOR} as startupCmdGen
+FROM golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
 
 # Install dep
 RUN go get -u github.com/golang/dep/cmd/dep
