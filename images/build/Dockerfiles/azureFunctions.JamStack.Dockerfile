@@ -18,7 +18,8 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 --debug \
     && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
     && ${IMAGES_DIR}/retry.sh "curl -SLsO https://golang.org/dl/$downloadedFileName" \
     && mkdir -p /usr/local \
-    && tar -xzf $downloadedFileName -C /usr/local \
+    && gzip -d $downloadedFileName \
+    && tar -xf "go${GO_VERSION}.linux-amd64.tar" -C /usr/local \
     && rm -rf $downloadedFileName
 
 RUN set -ex \
