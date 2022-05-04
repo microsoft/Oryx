@@ -18,11 +18,13 @@ declare -r RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER="%RUNTIME_BASE_IMAGE_NAME%"
 echo "PHP-FPM image type is: $1"
 ImageDebianFlavor="$1"
 
-PHP_VERSION_ARRAY=("${VERSION_ARRAY[@]}")
+PHP_VERSION_ARRAY=()
 
 if [ "$ImageDebianFlavor" == "buster" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")
-fi 
+elif  [ "$ImageDebianFlavor" == "stretch" ];then
+	PHP_VERSION_ARRAY=("${VERSION_ARRAY[@]}")
+fi
 
 for PHP_VERSION in "${PHP_VERSION_ARRAY[@]}"
 do

@@ -23,9 +23,6 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 --debug \
     && rm -rf $downloadedFileName
 
 RUN set -ex \
-    && tmpDir="/opt/tmp" \
-    && imagesDir="$tmpDir/images" \
-    && buildDir="$tmpDir/build" \
     # Install Python SDKs
     # Upgrade system python
     && PYTHONIOENCODING="UTF-8" \
@@ -52,6 +49,9 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
     fi
 
 RUN set -ex \
+    && tmpDir="/opt/tmp" \
+    && imagesDir="$tmpDir/images" \
+    && buildDir="$tmpDir/build" \
     && pip3 install pip --upgrade \
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \

@@ -34,7 +34,7 @@ if [ "$1" == "buster" ];then
 		RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
 		sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
 	done
-else
+elif [ "$1" == "stretch" ];then
 	dockerFiles=$(find . -type f \( -name "base.stretch.Dockerfile" \) )
 	for dockerFile in $dockerFiles; do
 		dockerFileDir=$(dirname "${dockerFile}")
