@@ -32,21 +32,10 @@ RUN set -ex \
     && apt-get install -y --no-install-recommends \
         build-essential \
         python3-pip \
+        swig \
         tk-dev \
         uuid-dev \
     && rm -rf /var/lib/apt/lists/*
-
-RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
-        apt-get update \
-        && apt-get install -y --no-install-recommends \
-            swig4.0 \
-        && rm -rf /var/lib/apt/lists/* ; \
-    else \
-        apt-get update \
-        && apt-get install -y --no-install-recommends \
-            swig3.0 \
-        && rm -rf /var/lib/apt/lists/* ; \
-    fi
 
 RUN set -ex \
     && tmpDir="/opt/tmp" \
