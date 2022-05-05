@@ -8,7 +8,6 @@ using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Golang;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -35,26 +34,27 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {GolangConstants.PlatformName} " +
-                $"--platform-version {golangVersion}")
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " + 
+                $"--platform {GolangConstants.PlatformName} --platform-version {golangVersion}")
                 .AddCommand(
                 $"oryx run-script {appOutputDir} --output {DefaultStartupFilePath} --debug")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
+            // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: "oryxdevmcr.azurecr.io/public/oryx/build-and-run-buster:latest",
+                imageName: "oryx/build:BuildAndRun-buster",
                 output: _output,
                 volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                 environmentVariables: null,
-                port: 8080,
+                port: ContainerPort,
                 link: null,
                 runCmd: "/bin/sh",
                 runArgs: new[] { "-c", runtimeImageScript },
                 assertAction: async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello, World!", data);
+                    Assert.Contains("Hello World!!!", data);
                 },
                 dockerCli: new DockerCli());
         }
