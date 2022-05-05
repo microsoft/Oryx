@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "dotnetcore")]
+    [Trait("category", "dotnetcore-31")]
     public class DotNetCoreRuntimeVersion31Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion31Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)

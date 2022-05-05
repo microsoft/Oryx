@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "dotnetcore")]
+    [Trait("category", "dotnetcore-dynamic")]
     public class DotNetCoreDynamicInstallTest : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreDynamicInstallTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
