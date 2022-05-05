@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: "oryx/build:BuildAndRun-buster",
+                imageName: "oryxdevmcr.azurecr.io/public/oryx/build-and-run-buster:latest",
                 output: _output,
                 volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                 environmentVariables: null,
