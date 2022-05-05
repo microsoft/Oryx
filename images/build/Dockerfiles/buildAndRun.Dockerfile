@@ -44,6 +44,16 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        git \
+        make \
+        unzip \
+        vim \
+        # Required for ts
+        moreutils \
+        rsync \
+        zip \
+        libgdiplus \
+        jq \
     # .NET Core dependencies
         libc6 \
         libgcc1 \
