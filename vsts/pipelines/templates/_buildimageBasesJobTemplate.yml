@@ -27,6 +27,7 @@ jobs:
       args: ${{ parameters.imageDir }} ${{ parameters.imageDebianFlavor }}
 
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    displatName: Generate Software Bill of Materials (SBOM)
     inputs:
       BuildDropPath: '$(System.ArtifactsDirectory)/buildOutput'
       PackageName: 'Visual Studio 2022'
