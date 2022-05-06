@@ -300,11 +300,11 @@ function buildLtsVersionsImage() {
 		.
 }
 
-function buildFullImage() {
+function buildAllImages() {
 	buildLtsVersionsImage
 
 	echo
-	echo "-------------Creating full build image-------------------"
+	echo "-------------Creating all build images-------------------"
 	local builtImageName="$ACR_BUILD_IMAGES_REPO"
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
@@ -397,12 +397,12 @@ function buildCliImage() {
 	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 }
 
-function buildAndRunImage() {
+function buildFullImage() {
 	buildBuildScriptGeneratorImage
 	
 	local debianFlavor=$1
-	local devImageTag=BuildAndRun
-	local builtImageName="$ACR_BUILD_AND_RUN_IMAGE_REPO"
+	local devImageTag=full
+	local builtImageName="$ACR_BUILD_FULL_IMAGE_NAME"
 
 	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
 		debianFlavor="stretch"
@@ -415,7 +415,7 @@ function buildAndRunImage() {
 	fi
 
 	echo
-	echo "-------------Creating BuildAndRun image-------------------"
+	echo "-------------Creating full image-------------------"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
@@ -454,11 +454,12 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildJamStackImage
 	buildLtsVersionsImage "buster"
 	buildLtsVersionsImage	
-	buildFullImage
+	buildAllImages
 	buildVsoFocalImage
 	buildCliImage "buster"
 	buildCliImage
 	buildBuildPackImage
+	buildFullImage "buster"
 elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
 elif [ "$imageTypeToBuild" == "githubactions-buster" ]; then
@@ -471,6 +472,8 @@ elif [ "$imageTypeToBuild" == "ltsversions" ]; then
 	buildLtsVersionsImage
 elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
 	buildLtsVersionsImage "buster"
+elif [ "$imageTypeToBuild" == "all" ]; then
+	buildAllImages
 elif [ "$imageTypeToBuild" == "full" ]; then
 	buildFullImage
 elif [ "$imageTypeToBuild" == "vso-focal" ]; then
@@ -479,13 +482,11 @@ elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
-elif [ "$imageTypeToBuild" == "buildAndRun" ]; then
-	buildAndRunImage "buster"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
-githubactions, jamstack, ltsversions, full, vso-focal, cli, buildpack"
+githubactions, jamstack, ltsversions, all, full, vso-focal, cli, buildpack"
 	exit 1
 fi
 
