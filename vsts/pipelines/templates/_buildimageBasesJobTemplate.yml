@@ -6,9 +6,6 @@ parameters:
   artifactsFileName: ''
   jobName: ''
 
-variables:
-  Packaging.EnableSBOMSigning: true
-
 jobs:
 - job: ${{ parameters.jobName }}
   displayName: ${{ parameters.displayName }}
