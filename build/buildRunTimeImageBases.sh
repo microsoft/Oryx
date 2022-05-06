@@ -17,7 +17,7 @@ declare -r NODE_BUSTER_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
-runtimeImageDebianFlavor=""
+runtimeImageDebianFlavor="buster"
 
 if [ $# -eq 2 ] 
 then

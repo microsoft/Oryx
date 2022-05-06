@@ -75,7 +75,7 @@ elif [ "$imageName" == "python" ]
 then
   echo ""
   echo $imageName
-  retagImageWithStagingRepository python-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository python-runtimeimage-bases-bullseye.txt $imageName bullseye
 elif [ "$imageName" == "php-build" ]
 then
   echo ""

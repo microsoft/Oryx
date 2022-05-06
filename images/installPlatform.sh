@@ -49,7 +49,7 @@ if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
 elif [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "focal-scm" ]; then
   fileName="$PLATFORM_NAME-$debianFlavor-$VERSION.tar.gz"
 else
-  # Bullseye SDKs are not supported so use buster version of it for now.
+  # Bullseye SDKs are not supported so using buster version for now.
   fileName="$PLATFORM_NAME-buster-$VERSION.tar.gz"
 fi
 
