@@ -31,13 +31,21 @@ fi
 
 echo "Building the package for platform '$PLATFORM'..."
 
+if [ "$DEBIAN_FLAVOR" != "bullseye" ]; then
+    ./restorePackages.sh
+fi
+
 echo
 echo "Building package..."
 cd "$PLATFORM_DIR"
-cp -r $WORKSPACE_DIR/src/common /usr/local/go/src/common
-cp -r $WORKSPACE_DIR/src/common/consts /usr/local/go/src/common/consts
-go mod init
-go mod tidy
+
+if [ "$DEBIAN_FLAVOR" == "bullseye" ]; then
+    cp -r $WORKSPACE_DIR/src/common /usr/local/go/src/common
+    cp -r $WORKSPACE_DIR/src/common/consts /usr/local/go/src/common/consts
+    go mod init
+    go mod tidy
+fi
+
 go build \
     -ldflags "-X common.BuildNumber=$BUILD_NUMBER -X common.Commit=$GIT_COMMIT -X common.ReleaseTagName=$RELEASE_TAG_NAME" \
     -v -o "$TARGET_OUTPUT" .
