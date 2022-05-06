@@ -6,6 +6,9 @@ parameters:
   artifactsFileName: ''
   jobName: ''
 
+variables:
+  Packaging.EnableSBOMSigning: true
+
 jobs:
 - job: ${{ parameters.jobName }}
   displayName: ${{ parameters.displayName }}
@@ -25,6 +28,12 @@ jobs:
     inputs:
       scriptPath: ${{ parameters.scriptPath }}
       args: ${{ parameters.imageDir }} ${{ parameters.imageDebianFlavor }}
+
+  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+    inputs:
+      BuildDropPath: '$(System.ArtifactsDirectory)/buildOutput'
+      PackageName: 'Visual Studio 2022'
+      PackageVersion: '17.0.2'
 
   - task: CopyFiles@2
     displayName: Copy artifacts to staging directory
