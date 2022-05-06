@@ -29,7 +29,7 @@ jobs:
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
     displayName: Generate Software Bill of Materials (SBOM)
     inputs:
-      BuildDropPath: '$(System.ArtifactsDirectory)/buildOutput'
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)'
       PackageName: 'Visual Studio 2022'
       PackageVersion: '17.0.2'
 
