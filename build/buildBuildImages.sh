@@ -300,11 +300,11 @@ function buildLtsVersionsImage() {
 		.
 }
 
-function buildAllImages() {
+function buildLatestImages() {
 	buildLtsVersionsImage
 
 	echo
-	echo "-------------Creating all build images-------------------"
+	echo "-------------Creating latest build images-------------------"
 	local builtImageName="$ACR_BUILD_IMAGES_REPO"
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
@@ -421,7 +421,7 @@ function buildFullImage() {
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
-		-f "$BUILD_IMAGES_BUILD_AND_RUN_DOCKERFILE" \
+		-f "$BUILD_IMAGES_FULL_DOCKERFILE" \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -454,7 +454,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildJamStackImage
 	buildLtsVersionsImage "buster"
 	buildLtsVersionsImage	
-	buildAllImages
+	buildlatestImages
 	buildVsoFocalImage
 	buildCliImage "buster"
 	buildCliImage
@@ -472,10 +472,10 @@ elif [ "$imageTypeToBuild" == "ltsversions" ]; then
 	buildLtsVersionsImage
 elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
 	buildLtsVersionsImage "buster"
-elif [ "$imageTypeToBuild" == "all" ]; then
-	buildAllImages
+elif [ "$imageTypeToBuild" == "latest" ]; then
+	buildLatestImages
 elif [ "$imageTypeToBuild" == "full" ]; then
-	buildFullImage
+	buildFullImage "buster"
 elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage
 elif [ "$imageTypeToBuild" == "cli" ]; then
@@ -486,7 +486,7 @@ elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
-githubactions, jamstack, ltsversions, all, full, vso-focal, cli, buildpack"
+githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, buildpack"
 	exit 1
 fi
 
