@@ -454,7 +454,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildJamStackImage
 	buildLtsVersionsImage "buster"
 	buildLtsVersionsImage	
-	buildlatestImages
+	buildLatestImages
 	buildVsoFocalImage
 	buildCliImage "buster"
 	buildCliImage
