@@ -49,7 +49,7 @@ fi
     fi
 
     echo Creating virtual environment...
-    
+
     CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
     echo "BuildCommands=$CreateVenvCommand" >> "$COMMAND_MANIFEST_FILE"
 
@@ -63,7 +63,7 @@ fi
     moreInformation="More information: https://aka.ms/troubleshoot-python"
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
-        set +e 
+        set +e
         echo "Running pip install..."
         InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
@@ -73,7 +73,7 @@ fi
         if [[ $pipInstallExitCode != 0 ]]
         then
             StdError=$(echo "$StdError" | sed '/^error/I!d')
-            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}" 
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
             exit $pipInstallExitCode
         fi
     elif [ -e "setup.py" ]
@@ -87,7 +87,7 @@ fi
         set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}" 
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
     elif [ -e "pyproject.toml" ]
@@ -98,9 +98,9 @@ fi
         printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
         pip install poetry
         echo "Running poetry install..."
-        InstallPoetryCommand="poetry install"
+        InstallPoetryCommand="poetry install --no-dev"
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdWarning=$( ( poetry install; exit ${PIPESTATUS[0]} ) 2>&1)
+        StdWarning=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1)
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
         if [[ $pythonBuildExitCode != 0 ]]
@@ -132,7 +132,7 @@ fi
         if [[ $pipInstallExitCode != 0 ]]
         then
             StdError=$(echo "$StdError" | sed '/^error/I!d')
-            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}" 
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
             exit $pipInstallExitCode
         fi
     elif [ -e "setup.py" ]
@@ -154,7 +154,7 @@ fi
         set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}" 
+            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
     elif [ -e "pyproject.toml" ]
@@ -166,9 +166,9 @@ fi
         pip install poetry
         START_TIME=$SECONDS
         echo "Running poetry install..."
-        InstallPoetryCommand="poetry install"
+        InstallPoetryCommand="poetry install --no-dev"
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdWarning=$( ( poetry install; exit ${PIPESTATUS[0]} ) 2>&1 )
+        StdWarning=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1 )
         pythonBuildExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
@@ -208,7 +208,7 @@ fi
     PackageWheelCommand=""
 
     if [ -z "{{ PythonPackageWheelProperty }}" ]
-    then 
+    then
         echo "Creating non universal package wheel ...."
         PackageWheelCommand="$python setup.py sdist --formats=gztar,zip,tar bdist_wheel"
         $python setup.py sdist --formats=gztar,zip,tar bdist_wheel
@@ -216,9 +216,9 @@ fi
         PackageWheelCommand="$python setup.py sdist --formats=gztar,zip,tar bdist_wheel --universal"
         $python setup.py sdist --formats=gztar,zip,tar bdist_wheel --universal
     fi
-    
+
     PackageEggCommand="$python setup.py bdist_egg"
-    
+
     echo "Now creating python package egg ...."
     printf %s " , $PackageWheelCommand, $PackageEggCommand" >> "$COMMAND_MANIFEST_FILE"
     $python setup.py bdist_egg
@@ -238,7 +238,7 @@ fi
             START_TIME=$SECONDS
             CollectStaticCommand="$python_bin manage.py collectstatic --noinput"
             printf %s " , $CollectStaticCommand" >> "$COMMAND_MANIFEST_FILE"
-            StdWarning=$(($python_bin manage.py collectstatic --noinput; exit ${PIPESTATUS[0]}) 2>&1) 
+            StdWarning=$(($python_bin manage.py collectstatic --noinput; exit ${PIPESTATUS[0]}) 2>&1)
             EXIT_CODE=${PIPESTATUS[0]}
             if [[ $EXIT_CODE != 0 ]]
             then
