@@ -5,8 +5,18 @@
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Golang
 {
-    internal class GolangBashBuildSnippetProperties
+    public class GolangBashBuildSnippetProperties
     {
+        public GolangBashBuildSnippetProperties(
+            bool goModExists,
+            string golangVersion)
+        {
+            this.GoModExists = goModExists;
+            this.GolangVersion = golangVersion;
+        }
+
         public bool GoModExists { get; set; }
+
+        public string GolangVersion { get; set; }
     }
 }
