@@ -18,7 +18,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string RuntimeImageTag { get; set; }
 
         /// <summary>
-        /// Gets or sets the tag of the build image we're pulling from (either 'latest' or 'slim').
+        /// Gets or sets the name of the image used to build the application in the Dockerfile.
+        /// </summary>
+        public string BuildImageName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tag of the image used to build the application in the Dockerfile.
         /// </summary>
         public string BuildImageTag { get; set; }
     }

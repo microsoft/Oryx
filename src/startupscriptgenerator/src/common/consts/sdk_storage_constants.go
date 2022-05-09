@@ -11,3 +11,4 @@ const DefaultVersionFileName string = "defaultVersion.txt"
 const VersionsToBuildFileName string = "versionsToBuild.txt"
 const ContainerMetadataUrlFormat string = "{0}/{1}?restype=container&comp=list&include=metadata"
 const SdkDownloadSentinelFileName string = ".oryx-sdkdownload-sentinel"
+

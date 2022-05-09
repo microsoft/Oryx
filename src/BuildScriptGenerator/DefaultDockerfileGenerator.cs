@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
@@ -19,6 +20,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     internal class DefaultDockerfileGenerator : IDockerfileGenerator
     {
         private const string DefaultRuntimeImageTag = "dynamic";
+
+        private readonly Dictionary<string, List<string>> supportedRuntimeVersions = new Dictionary<string, List<string>>()
+        {
+            { "dotnetcore", DotNetCoreSdkVersions.RuntimeVersions },
+            { "node", NodeVersions.RuntimeVersions },
+            { "php", PhpVersions.RuntimeVersions },
+            { "python", PythonVersions.RuntimeVersions },
+            { "ruby", RubyVersions.RuntimeVersions },
+        };
 
         private readonly ICompatiblePlatformDetector platformDetector;
         private readonly ILogger<DefaultDockerfileGenerator> logger;
@@ -36,11 +46,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GenerateDockerfile(DockerfileContext ctx)
         {
-            var buildImageTag = "azfunc-jamstack";
-            var runImage = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformName) ?
+            var dockerfileBuildImageName = "cli";
+            var dockerfileBuildImageTag = "stable";
+
+            var dockerfileRuntimeImage = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformName) ?
                 ConvertToRuntimeName(this.commonOptions.RuntimePlatformName) : string.Empty;
-            var runImageTag = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformVersion) ?
-                this.commonOptions.RuntimePlatformVersion : DefaultRuntimeImageTag;
+            var dockerfileRuntimeImageTag = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformVersion) ?
+                this.commonOptions.RuntimePlatformVersion : string.Empty;
             var compatiblePlatforms = this.GetCompatiblePlatforms(ctx);
             if (!compatiblePlatforms.Any())
             {
@@ -50,13 +62,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             foreach (var platformAndDetectorResult in compatiblePlatforms)
             {
                 var platform = platformAndDetectorResult.Key;
-                if (string.IsNullOrEmpty(runImage))
+                var platformDetectorResult = platformAndDetectorResult.Value;
+                var detectedRuntimeName = ConvertToRuntimeName(platform.Name);
+
+                // If the runtime platform name wasn't previously provided, see if we can use the current detected platform as the runtime image.
+                if (string.IsNullOrEmpty(dockerfileRuntimeImage))
                 {
-                    runImage = ConvertToRuntimeName(platform.Name);
+                    // If the detected platform isn't in our currently list of runtime versions, skip it with a notice to the user.
+                    if (!this.supportedRuntimeVersions.ContainsKey(detectedRuntimeName))
+                    {
+                        this.logger.LogDebug($"The detected platform {platform.Name} does not currently have a supported runtime image." +
+                                               $"If this Dockerfile command or image is outdated, please provide the runtime platform name manually.");
+                        continue;
+                    }
+
+                    dockerfileRuntimeImage = detectedRuntimeName;
+                }
+
+                // If the runtime platform version wasn't previously provided, see if we can detect one from the current detected platform.
+                // Note: we first need to ensure that the current detected platform is the same as the runtime platform name previously set or pvodied.
+                if (!string.IsNullOrEmpty(dockerfileRuntimeImage) && dockerfileRuntimeImage.Equals(detectedRuntimeName, StringComparison.OrdinalIgnoreCase) &&
+                     string.IsNullOrEmpty(dockerfileRuntimeImageTag))
+                {
+                    dockerfileRuntimeImageTag = this.ConvertToRuntimeVersion(dockerfileRuntimeImage, platformDetectorResult.PlatformVersion);
                 }
 
                 // If the runtime image has been set manually or by the platform detection result, stop searching.
-                if (!string.IsNullOrEmpty(runImage))
+                if (!string.IsNullOrEmpty(dockerfileRuntimeImage))
                 {
                     break;
                 }
@@ -64,9 +96,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             var properties = new DockerfileProperties()
             {
-                RuntimeImageName = runImage,
-                RuntimeImageTag = runImageTag,
-                BuildImageTag = buildImageTag,
+                RuntimeImageName = dockerfileRuntimeImage,
+                RuntimeImageTag = dockerfileRuntimeImageTag,
+                BuildImageName = dockerfileBuildImageName,
+                BuildImageTag = dockerfileBuildImageTag,
             };
 
             return TemplateHelper.Render(
@@ -75,6 +108,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 this.logger);
         }
 
+        /// <summary>
+        /// Converts the name of the platform to the expected runtime image name. For example, "dotnet" --> "dotnetcore".
+        /// </summary>
+        /// <param name="platformName">The name of the platform detected or provided.</param>
+        /// <returns>The converted platform runtime image name.</returns>
         private static string ConvertToRuntimeName(string platformName)
         {
             if (string.Equals(platformName, DotNetCoreConstants.PlatformName, StringComparison.OrdinalIgnoreCase))
@@ -88,6 +126,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return platformName;
+        }
+
+        /// <summary>
+        /// Determines the version of the runtime image to use given the provided or detected platform name and version.
+        /// If no version is provided or detected, the "dynamic" runtime image tag will be used.
+        /// </summary>
+        /// <param name="platformName">The name of the platform detected or provided.</param>
+        /// <param name="platformVersion">The version of the platform detected or provided.</param>
+        /// <returns>The converted platform runtime image version.</returns>
+        private string ConvertToRuntimeVersion(string platformName, string platformVersion)
+        {
+            if (!string.IsNullOrEmpty(platformName) && !string.IsNullOrEmpty(platformVersion))
+            {
+                var runtimeVersions = this.supportedRuntimeVersions[platformName];
+                this.logger.LogDebug($"Supported runtime image tags for platform {platformName}: {string.Join(',', runtimeVersions)}");
+                return SemanticVersionResolver.GetMaxSatisfyingVersion($"~{platformVersion}", runtimeVersions, loose: true) ?? DefaultRuntimeImageTag;
+            }
+
+            return DefaultRuntimeImageTag;
         }
 
         private IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(DockerfileContext ctx)

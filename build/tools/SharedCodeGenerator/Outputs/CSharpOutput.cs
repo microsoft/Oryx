@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,13 +45,20 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
                 scope = this.scope;
             }
 
+            var header = $"// {Program.BuildAutogenDisclaimer(this.collection.SourcePath)}";
+            if (this.collection.ListConstants?.Any() == true)
+            {
+                header += $"{Environment.NewLine}{Environment.NewLine}using System.Collections.Generic;";
+            }
+
             var model = new ConstantCollectionTemplateModel
             {
-                AutogenDisclaimer = Program.BuildAutogenDisclaimer(this.collection.SourcePath),
+                Header = header,
                 Namespace = this.namespaceProperty,
                 Name = this.className,
                 Scope = scope,
-                Constants = this.collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
+                StringConstants = this.collection.StringConstants?.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
+                ListConstants = this.collection.ListConstants?.ToDictionary(pair => pair.Key.Camelize(), pair => $"{{ \"{string.Join("\", \"", pair.Value)}\" }}"),
             };
 
             return outputTemplate.Render(model, member => member.Name);

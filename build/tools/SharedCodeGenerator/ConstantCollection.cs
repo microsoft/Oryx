@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Oryx.SharedCodeGenerator
 {
@@ -15,8 +16,28 @@ namespace Microsoft.Oryx.SharedCodeGenerator
 
         public string Name { get; set; }
 
-        public Dictionary<string, string> Constants { get; set; }
+        public Dictionary<string, object> Constants { get; set; }
 
         public List<Dictionary<string, string>> Outputs { get; set; }
+
+        public Dictionary<string, string> StringConstants
+        {
+            get
+            {
+                return this.Constants?
+                    .Where(pair => pair.Value is string)
+                    .ToDictionary(pair => pair.Key, pair => pair.Value as string);
+            }
+        }
+
+        public Dictionary<string, IList<object>> ListConstants
+        {
+            get
+            {
+                return this.Constants?
+                    .Where(pair => pair.Value is IList<object>)
+                    .ToDictionary(pair => pair.Key, pair => pair.Value as IList<object>);
+            }
+        }
     }
 }

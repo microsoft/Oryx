@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
 
             foreach (var collection in collections)
             {
-                ReplaceVariablesWithValues(collection.Constants);
+                ReplaceVariablesWithValues(collection.StringConstants);
 
                 foreach (Dictionary<string, string> outputInfo in collection.Outputs)
                 {

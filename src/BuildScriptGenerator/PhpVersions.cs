@@ -1,5 +1,7 @@
 // This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class PhpVersions
@@ -34,5 +36,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Php56Version = "5.6.40";
         public const string Php56Keys = "0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3";
         public const string Php56TarSha256 = "1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c";
+        public static readonly List<string> RuntimeVersions = new List<string> { "5.6", "7.0", "7.2", "7.3", "7.4", "8.0", "8.1" };
     }
 }

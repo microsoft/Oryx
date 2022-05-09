@@ -1,9 +1,10 @@
 ARG DEBIAN_FLAVOR
-FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
+FROM buildpack-deps:${DEBIAN_FLAVOR}
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
 
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \
@@ -36,6 +37,13 @@ RUN apt-get update \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && echo "cli" > /opt/oryx/.imagetype
 
+RUN tmpDir="/opt/tmp" \
+    && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
+    && chmod +x /opt/oryx/benv
+
 ENV ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io"
 ENV ENABLE_DYNAMIC_INSTALL="true"
 ENV PATH="$PATH:/opt/oryx"
+ENV DYNAMIC_INSTALL_ROOT_DIR="/opt"
+
+ENTRYPOINT [ "benv" ]

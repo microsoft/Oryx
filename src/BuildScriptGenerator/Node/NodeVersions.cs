@@ -1,5 +1,7 @@
 // This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     public static class NodeVersions
@@ -17,5 +19,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string NodeAppInsightsSdkVersion = "1.8.7";
         public const string Pm2Version = "4.5.6";
         public const string NpmVersion = "6.14.15";
+        public static readonly List<string> RuntimeVersions = new List<string> { "4.4", "4.5", "4.8", "6", "6.2", "6.6", "6.9", "6.10", "6.11", "8", "8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12", "9.4", "10", "10.1", "10.10", "10.12", "10.14", "12", "14", "16" };
     }
 }
