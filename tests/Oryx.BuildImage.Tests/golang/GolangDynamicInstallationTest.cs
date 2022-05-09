@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    [Trait("platform", "golang")]
+    [Trait("platform", "golang-full")]
     public class GolangDynamicInstallationTest : SampleAppsTestBase
     {
         public GolangDynamicInstallationTest(ITestOutputHelper output) : base(output)
