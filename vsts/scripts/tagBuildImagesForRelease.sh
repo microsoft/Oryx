@@ -54,7 +54,7 @@ tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-$BUILD_DEF
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-buster" "github-actions-buster-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-bullseye" "github-actions-bullseye-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-focal-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso-focal" "vso-focal-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:full-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "full" "full-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:full-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "full-buster" "full-buster-$RELEASE_TAG_NAME"
 
 echo "printing pme tags from $outPmeFileMCR"
 cat $outPmeFileMCR

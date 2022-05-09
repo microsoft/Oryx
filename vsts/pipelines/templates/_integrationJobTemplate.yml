@@ -34,7 +34,7 @@ parameters:
   - name: golangVersions
     type: object
     default:
-      - dynamic
+      - full
 jobs:
 - job: Job_PythonIntegrationTests
   displayName: Run Python Integration Tests
