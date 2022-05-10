@@ -4,6 +4,7 @@ resources:
 
 variables:
 - group: Oryx
+- Packaging.EnableSBOMSigning: true
 
 jobs:
 - job: Job_Security

@@ -3,6 +3,7 @@ resources:
 
 variables:
 - group: Oryx
+- Packaging.EnableSBOMSigning: true
 
 stages:
   - stage: CreateReleaseTag

@@ -53,6 +53,13 @@ steps:
     scriptPath: ./build/buildSln.sh
     args: Oryx.sln
 
+- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+  displayName: Generate Software Bill of Materials (SBOM)
+  inputs:
+      BuildDropPath: '$(Build.SourcesDirectory)'
+      PackageName: 'Visual Studio 2022'
+      PackageVersion: '17.0.2'
+
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
   inputs:
