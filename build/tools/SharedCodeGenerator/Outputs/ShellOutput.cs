@@ -49,18 +49,6 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
                 }
             }
 
-            if (this.collection.ListConstants?.Any() ?? false)
-            {
-                foreach (var constant in this.collection.ListConstants)
-                {
-                    string name = constant.Key.Replace(ConstantCollection.NameSeparator[0], '_').ToUpper();
-                    string value = string.Join("\" \"", constant.Value);
-
-                    // Ex: RUNTIME_VERSIONS=("2.5" "2.6" "2.7")
-                    body.Append($"{name}=(\"{value}\"){NewLine}");
-                }
-            }
-
             return body.ToString();
         }
     }

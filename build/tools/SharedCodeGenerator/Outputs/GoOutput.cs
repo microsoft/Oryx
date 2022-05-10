@@ -39,7 +39,6 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
                 Header = $"// {Program.BuildAutogenDisclaimer(this.collection.SourcePath)}",
                 Namespace = this.package,
                 StringConstants = this.collection.StringConstants?.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
-                ListConstants = this.collection.ListConstants?.ToDictionary(pair => pair.Key.Camelize(), pair => $"{{ \"{string.Join("\", \"", pair.Value)}\" }}"),
             };
             return outputTemplate.Render(model, member => member.Name);
         }

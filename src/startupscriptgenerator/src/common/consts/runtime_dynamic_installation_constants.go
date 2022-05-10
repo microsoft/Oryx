@@ -8,4 +8,3 @@ const GolangInstallationDir string = "/opt/golang"
 const PythonInstallationRootDir string = "/opt/python"
 const SetupScriptLocation string = "/tmp/oryx/setupEnv.sh"
 const RubyInstallationRootDir string = "/opt/ruby"
-

@@ -15,4 +15,3 @@ const UserDotnetStartupHooks string = "/DotNetCoreAgent/2.8.42/StartupHook/Micro
 const UserNetcoreHostingstartupAssemblies string = "Microsoft.ApplicationInsights.StartupBootstrapper"
 const PythonEnableGunicornMultiWorkersEnvVarName string = "PYTHON_ENABLE_GUNICORN_MULTIWORKERS"
 const PythonGunicornConfigPathEnvVarName string = "PYTHON_USE_GUNICORN_CONFIG_FROM_PATH"
-

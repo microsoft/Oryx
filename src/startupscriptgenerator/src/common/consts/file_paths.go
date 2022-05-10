@@ -12,4 +12,3 @@ const Logger string = "/opt/oryx/logger"
 const Bash string = "/bin/bash"
 const Benv string = "/opt/oryx/benv"
 const PreRunCommandEnvVarName string = "PRE_RUN_COMMAND"
-
