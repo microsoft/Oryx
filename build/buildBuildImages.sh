@@ -226,8 +226,8 @@ function buildJamStackImage() {
 	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
 		debianFlavor="stretch"
 		parentImageTag=actions
-	elif  [ "$debianFlavor" == "buster" ]; then
-		debianFlavor="buster"
+	elif  [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "bullseye" ]; then
+		debianFlavor=$debianFlavor
 		parentImageTag=actions-$debianFlavor
 		devImageTag=$devImageTag-$debianFlavor
 		echo "dev image tag: "$devImageTag
@@ -460,6 +460,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildGitHubActionsImage "bullseye"
 	buildGitHubActionsImage "buster"
 	buildGitHubActionsImage
+	buildJamStackImage "bullseye"
 	buildJamStackImage "buster"
 	buildJamStackImage
 	buildLtsVersionsImage "buster"
@@ -476,6 +477,8 @@ elif [ "$imageTypeToBuild" == "githubactions-buster" ]; then
 	buildGitHubActionsImage "buster"
 elif [ "$imageTypeToBuild" == "githubactions-bullseye" ]; then
 	buildGitHubActionsImage "bullseye"
+elif [ "$imageTypeToBuild" == "jamstack-bullseye" ]; then
+	buildJamStackImage "bullseye"
 elif [ "$imageTypeToBuild" == "jamstack-buster" ]; then
 	buildJamStackImage "buster"
 elif [ "$imageTypeToBuild" == "jamstack" ]; then

@@ -29,7 +29,7 @@ VERSIONS_DIRECTORY=()
 
 if [ "$ImageDebianFlavor" == "buster" ];then
 	VERSIONS_DIRECTORY=("${RUBY_BUSTER_VERSION_ARRAY[@]}")
-else 
+elif  [ "$ImageDebianFlavor" == "stretch" ];then
 	VERSIONS_DIRECTORY=("${RUBY_STRETCH_VERSION_ARRAY[@]}")
 fi
 

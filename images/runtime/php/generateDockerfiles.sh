@@ -22,7 +22,7 @@ PHP_VERSION_ARRAY=()
 
 if [ "$ImageDebianFlavor" == "buster" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")
-else
+elif [ "$ImageDebianFlavor" == "stretch" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY[@]}")
 fi 
 

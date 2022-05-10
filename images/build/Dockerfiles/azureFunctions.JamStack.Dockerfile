@@ -18,13 +18,11 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 --debug \
     && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
     && ${IMAGES_DIR}/retry.sh "curl -SLsO https://golang.org/dl/$downloadedFileName" \
     && mkdir -p /usr/local \
-    && tar -xzf $downloadedFileName -C /usr/local \
+    && gzip -d $downloadedFileName \
+    && tar -xf "go${GO_VERSION}.linux-amd64.tar" -C /usr/local \
     && rm -rf $downloadedFileName
 
 RUN set -ex \
-    && tmpDir="/opt/tmp" \
-    && imagesDir="$tmpDir/images" \
-    && buildDir="$tmpDir/build" \
     # Install Python SDKs
     # Upgrade system python
     && PYTHONIOENCODING="UTF-8" \
@@ -34,10 +32,15 @@ RUN set -ex \
     && apt-get install -y --no-install-recommends \
         build-essential \
         python3-pip \
-        swig3.0 \
+        swig \
         tk-dev \
         uuid-dev \
-    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN set -ex \
+    && tmpDir="/opt/tmp" \
+    && imagesDir="$tmpDir/images" \
+    && buildDir="$tmpDir/build" \
     && pip3 install pip --upgrade \
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \

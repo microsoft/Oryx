@@ -50,6 +50,7 @@ tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-$BUILD_DEFIN
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "lts-versions-buster" "lts-versions-buster-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack" "azfunc-jamstack-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack-buster" "azfunc-jamstack-buster-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack-bullseye" "azfunc-jamstack-bullseye-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions" "github-actions-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-buster" "github-actions-buster-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-bullseye" "github-actions-bullseye-$RELEASE_TAG_NAME"
