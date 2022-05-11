@@ -17,15 +17,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <param name="rangeSpec">The provided range specification to match against. For example, "3.9.0", ">=3.9", "~3.0.0".</param>
         /// <param name="supportedVersions">The enumeration of versions to search through.</param>
-        /// <param name="loose">Determines whether or not a looser RegEx is used when searching the versions.</param>
         /// <returns>The latest version less than or equal to the provided version.</returns>
-        public static string GetMaxSatisfyingVersion(string rangeSpec, IEnumerable<string> supportedVersions, bool loose = false)
+        public static string GetMaxSatisfyingVersion(string rangeSpec, IEnumerable<string> supportedVersions)
         {
             try
             {
                 var preparedVersions = FormatVersions(supportedVersions);
                 var range = new Range(rangeSpec);
-                var satisfying = range.MaxSatisfying(preparedVersions.Select(v => v.FormattedVersion), loose);
+                var satisfying = range.MaxSatisfying(preparedVersions.Select(v => v.FormattedVersion));
                 if (!string.IsNullOrEmpty(satisfying))
                 {
                     satisfying = preparedVersions.Where(v => v.FormattedVersion == satisfying)

@@ -159,7 +159,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         platformVersion = $"~{platformVersion}";
                     }
 
-                    return SemanticVersionResolver.GetMaxSatisfyingVersion(platformVersion, runtimeVersions, loose: true) ?? runtimeVersions.LastOrDefault();
+                    return SemanticVersionResolver.GetMaxSatisfyingVersion(platformVersion, runtimeVersions) ?? runtimeVersions.LastOrDefault();
                 }
 
                 return runtimeVersions.LastOrDefault();
