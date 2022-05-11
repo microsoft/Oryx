@@ -15,12 +15,13 @@ ARG IMAGES_DIR="/opt/tmp/images"
 RUN oryx prep --skip-detection --platforms-and-versions nodejs=12 --debug \
     && echo "$DEBIAN_FLAVOR" \
     && . /tmp/build/__goVersions.sh \
-    && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
-    && ${IMAGES_DIR}/retry.sh "curl -SLsO https://golang.org/dl/$downloadedFileName" \
+    && downloadedGzFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
+    && downloadedTarFileName="go${GO_VERSION}.linux-amd64.tar" \
+    && ${IMAGES_DIR}/retry.sh "curl -SLsO https://golang.org/dl/$downloadedGzFileName" \
     && mkdir -p /usr/local \
-    && gzip -d $downloadedFileName \
-    && tar -xf "go${GO_VERSION}.linux-amd64.tar" -C /usr/local \
-    && rm -rf $downloadedFileName
+    && gzip -d $downloadedGzFileName \
+    && tar -xf $downloadedTarFileName -C /usr/local \
+    && rm -rf $downloadedGzFileName $downloadedTarFileName
 
 RUN set -ex \
     # Install Python SDKs

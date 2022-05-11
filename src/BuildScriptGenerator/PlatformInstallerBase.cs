@@ -41,7 +41,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 versionDirInTemp = Path.Combine(this.CommonOptions.DynamicInstallRootDir, platformName, version);
             }
 
-            var tarFile = $"{version}.tar.gz";
+            var gzFile = $"{version}.tar.gz";
+            var tarFile = $"{version}.tar";
             var snippet = new StringBuilder();
             snippet
                 .AppendLine()
@@ -54,15 +55,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"cd {versionDirInTemp}")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine($"platformName=\"{platformName}\"")
-                .AppendLine($"if [[ \"$platformName\" = \"php\" || \"$platformName\" = \"php-composer\" ]] && [[ \"$DEBIAN_FLAVOR\" != \"stretch\" ]]; then")
+                .AppendLine($"if [[ \"$DEBIAN_FLAVOR\" != \"stretch\" ]]; then")
                 .AppendLine("echo \"Detecting image debian flavor: $DEBIAN_FLAVOR.\"")
                 .AppendLine(
                 $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" " +
-                $"--output {tarFile} >/dev/null 2>&1")
+                $"--output {gzFile} >/dev/null 2>&1")
                 .AppendLine("else")
                 .AppendLine(
                 $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
-                $"--output {tarFile} >/dev/null 2>&1")
+                $"--output {gzFile} >/dev/null 2>&1")
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")
                 .AppendLine("echo \"Downloaded in $PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME sec(s).\"")
@@ -77,7 +78,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("checksumValue=${checksumHeader#\"$headerName: \"}")
                 .AppendLine("rm -f headers.txt")
                 .AppendLine("echo Extracting contents...")
-                .AppendLine($"tar -xzf {tarFile} -C .")
+                .AppendLine($"gzip -d {gzFile}")
+                .AppendLine($"tar -xf {tarFile} -C .")
+                .AppendLine($"rm -rf {gzFile} {tarFile}")
 
                 // use sha256 for golang and sha512 for all other platforms
                 .AppendLine($"if [ \"$platformName\" = \"golang\" ]; then")
@@ -87,7 +90,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"echo \"performing sha512 checksum for: {platformName}...\"")
                 .AppendLine($"echo \"$checksumValue {version}.tar.gz\" | sha512sum -c - >/dev/null 2>&1")
                 .AppendLine("fi")
-                .AppendLine($"rm -f {tarFile}")
+                .AppendLine($"rm -f {gzFile}")
                 .AppendLine("PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))")
                 .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")

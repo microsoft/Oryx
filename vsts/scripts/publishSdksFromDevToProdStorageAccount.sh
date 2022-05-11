@@ -74,6 +74,9 @@ function copyPlatformBlobsToProd() {
         copyBlob "$platformName" "$platformName-$version.tar.gz"
         copyBlob "$platformName" "$platformName-focal-scm-$version.tar.gz"
         copyBlob "$platformName" "$platformName-buster-$version.tar.gz"
+        if [ "$platformName" == "python" ]; then
+            copyBlob "$platformName" "$platformName-bullseye-$version.tar.gz"
+        fi
 	done 3< "$versionsFile"
 
     copyBlob "$platformName" defaultVersion.txt
