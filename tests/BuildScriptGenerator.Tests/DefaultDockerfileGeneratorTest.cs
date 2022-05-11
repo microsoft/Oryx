@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("php", "5.6", "5.6")]
         [InlineData("php", "7.3", "7.3")]
         [InlineData("python", "2.7", "2.7")]
-        [InlineData("python", "3.7", "dynamic")] // Python 3.7 is currently not a supported runtime
+        [InlineData("python", "3.7", "3.10")] // Python 3.7 is currently not a supported runtime, use latest
         [InlineData("python", "3.8", "3.8")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatformAndVersion(
             string platformName,
@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("php", "5.6", "5.6")]
         [InlineData("php", "7.3", "7.3")]
         [InlineData("python", "2.7", "2.7")]
-        [InlineData("python", "3.7", "dynamic")] // Python 3.7 is currently not a supported runtime
+        [InlineData("python", "3.7", "3.10")] // Python 3.7 is currently not a supported runtime, use latest
         [InlineData("python", "3.8", "3.8")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatform(
             string platformName,
@@ -148,7 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("php", "5.6", "5.6")]
         [InlineData("php", "7.3", "7.3")]
         [InlineData("python", "2.7", "2.7")]
-        [InlineData("python", "3.7", "dynamic")] // Python 3.7 is currently not a supported runtime
+        [InlineData("python", "3.7", "3.10")] // Python 3.7 is currently not a supported runtime, use latest
         [InlineData("python", "3.8", "3.8")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForNoProvidedPlatform(
             string detectedPlatformName,

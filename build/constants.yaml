@@ -34,6 +34,7 @@
     dot-net-60-sdk-version: 6.0.201
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
     dot-net-70-sdk-version: 7.0.100-preview.1.22110.4
+    # Ensure that the below list of runtime versions are sorted in ascending order
     runtime-versions: [1.0, 1.1, 2.0, 2.1, 2.2, 3.0, 3.1, 5.0, 6.0, 7.0]    
   outputs:
     - type: csharp
@@ -117,6 +118,7 @@
     python38-version: 3.8.12
     python39-version: 3.9.7
     python310-version: 3.10.0
+    # Ensure that the below list of runtime versions are sorted in ascending order
     runtime-versions: [2.7, 3.6, 3.8, 3.9, 3.10]
   outputs:
     - type: csharp
@@ -158,6 +160,7 @@
     php56-version: 5.6.40
     php56-keys: 0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
     php56-tar-sha256: 1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c
+    # Ensure that the below list of runtime versions are sorted in ascending order
     runtime-versions: [5.6, 7.0, 7.2, 7.3, 7.4, 8.0, 8.1]    
   outputs:
     - type: csharp
@@ -180,6 +183,7 @@
     ruby25-tar-sha256: 0391b2ffad3133e274469f9953ebfd0c9f7c186238968cbdeeb0651aa02a4d6d
     ruby30-version: 3.0.3
     ruby30-tar-sha256: 88cc7f0f021f15c4cd62b1f922e3a401697f7943551fe45b1fdf4f2417a17a9c
+    # Ensure that the below list of runtime versions are sorted in ascending order
     runtime-versions: [2.5, 2.6, 2.7]
   outputs:
     - type: csharp
@@ -221,6 +225,7 @@
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 6.14.15
+    # Ensure that the below list of runtime versions are sorted in ascending order
     runtime-versions: [4.4, 4.5, 4.8, 6, 6.2, 6.6, 6.9, 6.10,
                       6.11, 8, 8.0, 8.1, 8.2, 8.8, 8.9, 8.11,
                       8.12, 9.4, 10, 10.1, 10.10, 10.12, 10.14,

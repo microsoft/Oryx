@@ -43,13 +43,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             OptionTemplates.RuntimePlatform,
             CommandOptionType.SingleValue,
-            Description = "The runtime platform to use in the Dockerfile. If not provided, the value for --platform will be used, otherwise the value will be auto-detected.")]
+            Description = "The runtime platform to use in the Dockerfile. If not provided, the value for --platform will " +
+                          "be used, otherwise the runtime platform will be auto-detected.")]
         public string RuntimePlatformName { get; set; }
 
         [Option(
             OptionTemplates.RuntimePlatformVersion,
             CommandOptionType.SingleValue,
-            Description = "The version of the runtime to use in the Dockerfile. If not provided, the value will be 'dynamic'.")]
+            Description = "The version of the runtime to use in the Dockerfile. If not provided, an attempt will be made to " +
+                          "determine the runtime version to use based on the detected platform version, otherwise the 'dynamic' " +
+                          "runtime image will be used.")]
         public string RuntimePlatformVersion { get; set; }
 
         [Option(
@@ -119,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!this.supportedRuntimePlatforms.Contains(this.RuntimePlatformName))
                 {
                     console.WriteLine($"WARNING: Unable to find provided runtime platform name '{this.RuntimePlatformName}' in " +
-                                      $"supported list of runtime platform names: {string.Join(',', this.supportedRuntimePlatforms)}." +
+                                      $"supported list of runtime platform names: {string.Join(", ", this.supportedRuntimePlatforms)}. " +
                                       $"The provided runtime platform name will be used in case this Dockerfile command or image is outdated.");
                 }
             }

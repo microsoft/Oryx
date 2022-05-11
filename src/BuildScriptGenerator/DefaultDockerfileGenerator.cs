@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultDockerfileGenerator : IDockerfileGenerator
     {
-        private const string DefaultRuntimeImageTag = "dynamic";
+        private const string DynamicRuntimeImageTag = "dynamic";
 
         private readonly Dictionary<string, List<string>> supportedRuntimeVersions = new Dictionary<string, List<string>>()
         {
@@ -129,22 +129,43 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
-        /// Determines the version of the runtime image to use given the provided or detected platform name and version.
-        /// If no version is provided or detected, the "dynamic" runtime image tag will be used.
+        /// Determines the version of the runtime image to use in the Dockerfile using the following logic:
+        /// (1) If both the platform name and version are provided, attempt to find the maximum satisfying version
+        /// from the supported runtime version list that meets the version spec "~{VERSION}". If no version can be found,
+        /// default to using the latest version in the list of supported runtime versions.
+        /// (2) If only the platform name is provided, default to using the latest version in the list of supported runtime versions.
+        /// (3) If neither the platform name nor version are provided, default to using the "dynamic" runtime tag.
         /// </summary>
         /// <param name="platformName">The name of the platform detected or provided.</param>
         /// <param name="platformVersion">The version of the platform detected or provided.</param>
         /// <returns>The converted platform runtime image version.</returns>
         private string ConvertToRuntimeVersion(string platformName, string platformVersion)
         {
-            if (!string.IsNullOrEmpty(platformName) && !string.IsNullOrEmpty(platformVersion))
+            if (!string.IsNullOrEmpty(platformName))
             {
                 var runtimeVersions = this.supportedRuntimeVersions[platformName];
+                if (runtimeVersions == null || !runtimeVersions.Any())
+                {
+                    return DynamicRuntimeImageTag;
+                }
+
                 this.logger.LogDebug($"Supported runtime image tags for platform {platformName}: {string.Join(',', runtimeVersions)}");
-                return SemanticVersionResolver.GetMaxSatisfyingVersion($"~{platformVersion}", runtimeVersions, loose: true) ?? DefaultRuntimeImageTag;
+                if (!string.IsNullOrEmpty(platformVersion))
+                {
+                    // We need to check if the detected platform version is in the form of a version spec or not.
+                    if (SemanticVersionResolver.IsValidVersion(platformVersion))
+                    {
+                        // If it's a valid version, add a semver range specifier.
+                        platformVersion = $"~{platformVersion}";
+                    }
+
+                    return SemanticVersionResolver.GetMaxSatisfyingVersion(platformVersion, runtimeVersions, loose: true) ?? runtimeVersions.LastOrDefault();
+                }
+
+                return runtimeVersions.LastOrDefault();
             }
 
-            return DefaultRuntimeImageTag;
+            return DynamicRuntimeImageTag;
         }
 
         private IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(DockerfileContext ctx)

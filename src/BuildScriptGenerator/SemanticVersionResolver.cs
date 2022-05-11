@@ -23,12 +23,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             try
             {
-                var preparedVersions = PrepareVersions(supportedVersions);
+                var preparedVersions = FormatVersions(supportedVersions);
                 var range = new Range(rangeSpec);
-                var satisfying = range.MaxSatisfying(preparedVersions.Select(v => v.PreparedVersion), loose);
+                var satisfying = range.MaxSatisfying(preparedVersions.Select(v => v.FormattedVersion), loose);
                 if (!string.IsNullOrEmpty(satisfying))
                 {
-                    satisfying = preparedVersions.Where(v => v.PreparedVersion == satisfying)
+                    satisfying = preparedVersions.Where(v => v.FormattedVersion == satisfying)
                                                  .Select(v => v.OriginalVersion)
                                                  .FirstOrDefault();
                 }
@@ -59,31 +59,57 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
+        /// Returns whether or not the provided version is valid.
+        /// Note: We first format the version by appending ".0" at most twice to ensure it has at least a patch version.
+        /// </summary>
+        /// <param name="version">The version to check.</param>
+        /// <returns>True if the provided version is valid, false otherwise.</returns>
+        public static bool IsValidVersion(string version)
+        {
+            var versionPair = FormatVersion(version);
+            return Version.TryParse(versionPair.FormattedVersion, out _);
+        }
+
+        /// <summary>
         /// Since the SemanticVersioning library we're using is very strict about versions being in the form of at least
-        /// Major.Minor.Patch, we need to prepare the versions in case they don't follow this model.
+        /// Major.Minor.Patch, we need to format the versions in case they don't follow this model.
         /// For example, 16 => 16.0.0, 10.12 => 10.12.0.
         /// </summary>
-        /// <param name="versions">The enumeration of versions to prepare.</param>
+        /// <param name="versions">The enumeration of versions to format.</param>
         /// <returns>An enumeration of version pairs with the first being the original version and the second
-        /// being the prepared version.</returns>
-        private static IEnumerable<(string OriginalVersion, string PreparedVersion)> PrepareVersions(IEnumerable<string> versions)
+        /// being the formatted version.</returns>
+        private static IEnumerable<(string OriginalVersion, string FormattedVersion)> FormatVersions(IEnumerable<string> versions)
         {
             if (versions == null || !versions.Any())
             {
                 return Enumerable.Empty<(string, string)>();
             }
 
-            return versions.Select(v =>
-            {
-                var segments = v.Split('.');
-                var preparedV = v;
-                for (int i = 0; i < 3 - segments.Length; i++)
-                {
-                    preparedV += ".0";
-                }
+            return versions.Select(v => FormatVersion(v));
+        }
 
-                return (v, preparedV);
-            });
+        /// <summary>
+        /// Since the SemanticVersioning library we're using is very strict about versions being in the form of at least
+        /// Major.Minor.Patch, we need to format the version in case it doesn't follow this model.
+        /// For example, 16 => 16.0.0, 10.12 => 10.12.0.
+        /// </summary>
+        /// <param name="version">The versions to format.</param>
+        /// <returns>A version pair with the first item being the original version and the second item being the formatted version.</returns>
+        private static (string OriginalVersion, string FormattedVersion) FormatVersion(string version)
+        {
+            if (string.IsNullOrEmpty(version))
+            {
+                return (string.Empty, string.Empty);
+            }
+
+            var formattedVersion = version;
+            var segments = version.Split('.');
+            for (int i = 0; i < 3 - segments.Length; i++)
+            {
+                formattedVersion += ".0";
+            }
+
+            return (version, formattedVersion);
         }
     }
 }
