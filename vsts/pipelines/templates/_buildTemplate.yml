@@ -191,6 +191,13 @@ steps:
     overWrite: true
   condition: true
 
+- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+  displayName: Generate Software Bill of Materials (SBOM)
+  inputs:
+      BuildDropPath: '$(Build.ArtifactStagingDirectory)'
+      PackageName: 'Visual Studio 2022'
+      PackageVersion: '17.0.2'
+
 - script: |
     echo "Merging bullseye, buster and stretch based runtime image tags in one single file"
     cat '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.stretch.txt' >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
