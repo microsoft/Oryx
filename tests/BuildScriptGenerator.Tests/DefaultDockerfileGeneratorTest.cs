@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
@@ -17,11 +16,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 {
     public class DefaultDockerfileGeneratorTest : IClassFixture<TestTempDirTestFixture>
     {
-        private const string _buildImageFormat = "mcr.microsoft.com/oryx/build:{0}";
+        private const string _buildImageFormat = "mcr.microsoft.com/oryx/{0}:{1}";
         private const string _argRuntimeFormat = "ARG RUNTIME={0}:{1}";
 
-        private const string _buildImageTag = "azfunc-jamstack";
-        private const string _runtimeImageTag = "dynamic";
+        private const string _buildImageName = "cli";
+        private const string _buildImageTag = "stable";
 
         private readonly string _tempDirRoot;
 
@@ -43,35 +42,48 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 () => generator.GenerateDockerfile(ctx));
         }
 
+        /// <summary>
+        /// Tests that the platform name and version provided will be used directly in the generated Dockerfile.
+        /// This scenario ensures that outdated images, or images that haven't generated the new list of
+        /// supported runtime versions, will respect the provided runtime version.
+        /// </summary>
+        /// <param name="platformName">The name of the platform for the build and run.</param>
+        /// <param name="detectedPlatformVersion">The platform version that is "detected".</param>
+        /// <param name="commandArgPlatformVersion">The version provided to the "oryx dockerfile" command.</param>
+        /// <param name="expectedRuntimeImageTag">The expected runtime tag of the Dockerfile produced.</param>
         [Theory]
-        [InlineData("dotnet", "2.0")]
-        [InlineData("dotnet", "2.1")]
-        [InlineData("dotnet", "3.0")]
-        [InlineData("nodejs", "6")]
-        [InlineData("nodejs", "8")]
-        [InlineData("nodejs", "10")]
-        [InlineData("nodejs", "12")]
-        [InlineData("php", "5.6")]
-        [InlineData("php", "7.3")]
-        [InlineData("python", "2.7")]
-        [InlineData("python", "3.7")]
-        [InlineData("python", "3.8")]
+        [InlineData("dotnet", "2.0", "2.0", "2.0")]
+        [InlineData("dotnet", "2.1", "2.1", "2.1")]
+        [InlineData("dotnet", "3.0", "3.0",  "3.0")]
+        [InlineData("nodejs", "6", "6", "6")]
+        [InlineData("nodejs", "8", "8", "8")]
+        [InlineData("nodejs", "10", "10", "10")]
+        [InlineData("nodejs", "12", "12", "12")]
+        [InlineData("php", "5.6", "5.6", "5.6")]
+        [InlineData("php", "7.3", "7.3", "7.3")]
+        [InlineData("python", "2.7", "2.7", "2.7")]
+        [InlineData("python", "3.7", "3.7", "3.7")]
+        [InlineData("python", "3.8", "3.8", "3.8")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatformAndVersion(
             string platformName,
-            string platformVersion)
+            string detectedPlatformVersion,
+            string commandArgPlatformVersion,
+            string expectedRuntimeImageTag)
         {
             // Arrange
             var detector = new TestPlatformDetectorUsingPlatformName(
                 detectedPlatformName: platformName,
-                detectedPlatformVersion: platformVersion);
+                detectedPlatformVersion: detectedPlatformVersion);
             var platform = new TestProgrammingPlatform(
                 platformName,
-                new[] { platformVersion },
+                new string[] {},
                 detector: detector);
             var commonOptions = new BuildScriptGeneratorOptions
             {
                 PlatformName = platformName,
-                PlatformVersion = platformVersion
+                PlatformVersion = commandArgPlatformVersion,
+                RuntimePlatformName = platformName,
+                RuntimePlatformVersion = commandArgPlatformVersion,
             };
             var generator = CreateDefaultDockerfileGenerator(platform, commonOptions);
             var ctx = CreateDockerfileContext();
@@ -82,30 +94,42 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Assert
             Assert.NotNull(dockerfile);
             Assert.NotEqual(string.Empty, dockerfile);
-            Assert.Contains(string.Format(_buildImageFormat, _buildImageTag), dockerfile);
+            Assert.Contains(string.Format(_buildImageFormat, _buildImageName, _buildImageTag), dockerfile);
             Assert.Contains(string.Format(_argRuntimeFormat,
                 ConvertToRuntimeName(platformName),
-                _runtimeImageTag),
+                expectedRuntimeImageTag),
                 dockerfile);
             Assert.True(detector.DetectInvoked);
         }
 
+        /// <summary>
+        /// Tests that the correct runtime version will be used for the detected platform version for the
+        /// given platform name. If the max satisfying supported version found for the detected version isn't
+        /// available in the runtime (or within the semver spec), we'll default to the latest version.
+        /// </summary>
+        /// <param name="platformName">The name of the platform for the build and run.</param>
+        /// <param name="detectedPlatformVersion">The platform version that is "detected".</param>
+        /// <param name="expectedRuntimeImageTag">The expected runtime tag of the Dockerfile produced.</param>
         [Theory]
-        [InlineData("dotnet", "2.0")]
-        [InlineData("dotnet", "2.1")]
-        [InlineData("dotnet", "3.0")]
-        [InlineData("nodejs", "6")]
-        [InlineData("nodejs", "8")]
-        [InlineData("nodejs", "10")]
-        [InlineData("nodejs", "12")]
-        [InlineData("php", "5.6")]
-        [InlineData("php", "7.3")]
-        [InlineData("python", "2.7")]
-        [InlineData("python", "3.7")]
-        [InlineData("python", "3.8")]
+        [InlineData("dotnet", "2.0", "2.0")]
+        [InlineData("dotnet", "2.1", "2.1")]
+        [InlineData("dotnet", "3.0", "3.0")]
+        [InlineData("nodejs", "6", "6")]
+        [InlineData("nodejs", "8", "8")]
+        [InlineData("nodejs", "10", "10")]
+        [InlineData("nodejs", "12", "12")]
+        [InlineData("nodejs", "~12", "12")] // Test semver spec
+        [InlineData("nodejs", "~8", "8.12")] // Test semver spec 
+        [InlineData("nodejs", "<13", "12")] // Test semver
+        [InlineData("php", "5.6", "5.6")]
+        [InlineData("php", "7.3", "7.3")]
+        [InlineData("python", "2.7", "2.7")]
+        [InlineData("python", "3.7", "3.10")] // 3.7.x not currently a runtime, use latest
+        [InlineData("python", "3.8", "3.8")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatform(
             string platformName,
-            string detectedPlatformVersion)
+            string detectedPlatformVersion,
+            string expectedRuntimeImageTag)
         {
             // Arrange
             var detector = new TestPlatformDetectorUsingPlatformName(
@@ -113,7 +137,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 detectedPlatformVersion: detectedPlatformVersion);
             var platform = new TestProgrammingPlatform(
                 platformName,
-                new[] { detectedPlatformVersion },
+                new string[] {},
                 detector: detector);
             var commonOptions = new BuildScriptGeneratorOptions
             {
@@ -128,38 +152,50 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Assert
             Assert.NotNull(dockerfile);
             Assert.NotEqual(string.Empty, dockerfile);
-            Assert.Contains(string.Format(_buildImageFormat, _buildImageTag), dockerfile);
+            Assert.Contains(string.Format(_buildImageFormat, _buildImageName, _buildImageTag), dockerfile);
             Assert.Contains(string.Format(_argRuntimeFormat,
                 ConvertToRuntimeName(platformName),
-                _runtimeImageTag),
+                expectedRuntimeImageTag),
                 dockerfile);
             Assert.True(detector.DetectInvoked);
         }
 
+        /// <summary>
+        /// Tests that the correct runtime version will be used for the detected platform version for the
+        /// given platform name. If the max satisfying supported version found for the detected version isn't
+        /// available in the runtime (or within the semver spec), we'll default to the latest version.
+        /// </summary>
+        /// <param name="platformName">The name of the platform for the build and run.</param>
+        /// <param name="detectedPlatformVersion">The platform version that is "detected".</param>
+        /// <param name="expectedRuntimeImageTag">The expected runtime tag of the Dockerfile produced.</param>
         [Theory]
-        [InlineData("dotnet", "2.0")]
-        [InlineData("dotnet", "2.1")]
-        [InlineData("dotnet", "3.0")]
-        [InlineData("nodejs", "6")]
-        [InlineData("nodejs", "8")]
-        [InlineData("nodejs", "10")]
-        [InlineData("nodejs", "12")]
-        [InlineData("php", "5.6")]
-        [InlineData("php", "7.3")]
-        [InlineData("python", "2.7")]
-        [InlineData("python", "3.7")]
-        [InlineData("python", "3.8")]
+        [InlineData("dotnet", "2.0", "2.0")]
+        [InlineData("dotnet", "2.1", "2.1")]
+        [InlineData("dotnet", "3.0", "3.0")]
+        [InlineData("nodejs", "6", "6")]
+        [InlineData("nodejs", "8", "8")]
+        [InlineData("nodejs", "10", "10")]
+        [InlineData("nodejs", "12", "12")]
+        [InlineData("nodejs", "~12", "12")] // Test semver spec
+        [InlineData("nodejs", "~8", "8.12")] // Test semver spec 
+        [InlineData("nodejs", "<13", "12")] // Test semver
+        [InlineData("php", "5.6", "5.6")]
+        [InlineData("php", "7.3", "7.3")]
+        [InlineData("python", "2.7", "2.7")]
+        [InlineData("python", "3.7", "3.10")] // 3.7.x not currently a runtime, use latest
+        [InlineData("python", "3.8", "3.8")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForNoProvidedPlatform(
-            string detectedPlatformName,
-            string detectedPlatformVersion)
+            string platformName,
+            string detectedPlatformVersion,
+            string expectedRuntimeImageTag)
         {
             // Arrange
             var detector = new TestPlatformDetectorUsingPlatformName(
-                detectedPlatformName: detectedPlatformName,
+                detectedPlatformName: platformName,
                 detectedPlatformVersion: detectedPlatformVersion);
             var platform = new TestProgrammingPlatform(
-                detectedPlatformName,
-                new[] { detectedPlatformVersion },
+                platformName,
+                new string[] {},
                 detector: detector);
             var commonOptions = new BuildScriptGeneratorOptions();
             var generator = CreateDefaultDockerfileGenerator(platform, commonOptions);
@@ -171,10 +207,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Assert
             Assert.NotNull(dockerfile);
             Assert.NotEqual(string.Empty, dockerfile);
-            Assert.Contains(string.Format(_buildImageFormat, _buildImageTag), dockerfile);
+            Assert.Contains(string.Format(_buildImageFormat, _buildImageName, _buildImageTag), dockerfile);
             Assert.Contains(string.Format(_argRuntimeFormat,
-                ConvertToRuntimeName(detectedPlatformName),
-                _runtimeImageTag),
+                ConvertToRuntimeName(platformName),
+                expectedRuntimeImageTag),
                 dockerfile);
             Assert.True(detector.DetectInvoked);
         }
@@ -228,7 +264,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Assert
             Assert.NotNull(dockerfile);
             Assert.NotEqual(string.Empty, dockerfile);
-            Assert.Contains(string.Format(_buildImageFormat, _buildImageTag), dockerfile);
+            Assert.Contains(string.Format(_buildImageFormat, _buildImageName, _buildImageTag), dockerfile);
             Assert.Contains(string.Format(_argRuntimeFormat,
                 ConvertToRuntimeName(runtimePlatformName),
                 runtimePlatformVersion),

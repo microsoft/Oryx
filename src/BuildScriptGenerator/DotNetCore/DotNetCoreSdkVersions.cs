@@ -1,5 +1,7 @@
 // This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public static class DotNetCoreSdkVersions
@@ -14,5 +16,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string DotNet60SdkVersion = "6.0.201";
         public const string DotNet60RtmSdkVersion = "6-0-100-rtm-21527-11";
         public const string DotNet70SdkVersion = "7.0.100-preview.1.22110.4";
+        public static readonly List<string> RuntimeVersions = new List<string> { "1.0", "1.1", "2.0", "2.1", "2.2", "3.0", "3.1", "5.0", "6.0", "7.0" };
     }
 }
