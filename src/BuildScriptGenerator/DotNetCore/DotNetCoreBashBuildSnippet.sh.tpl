@@ -9,17 +9,25 @@ echo "Using .NET Core SDK Version: $dotnetCoreVersion"
     {{ InstallBlazorWebAssemblyAOTWorkloadCommand }}
 {{ end }}
 
+doc="https://docs.microsoft.com/en-us/azure/app-service/configure-language-dotnetcore?pivots=platform-linux"
+suggestion="Please build your app locally before publishing." 
+msg="${suggestion} | ${doc}"
+
 {{ # .NET Core 1.1 based projects require restore to be run before publish }}
-dotnet restore "{{ ProjectFile }}"
+cmd="dotnet restore \"{{ ProjectFile }}\""
+# LogErrorWithTryCatch "$cmd" "$msg"
 
 if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
 then
-    dotnet publish "{{ ProjectFile }}" -c {{ Configuration }}
+    echo "Publishing..."
+    cmd="dotnet publish \"{{ ProjectFile }}\" -c {{ Configuration }}"
+    LogErrorWithTryCatch "$cmd" "$msg"
 else
     echo
     echo "Publishing to directory $DESTINATION_DIR..."
-    echo
-    dotnet publish "{{ ProjectFile }}" -c {{ Configuration }} -o "$DESTINATION_DIR"
+    echo    
+    cmd="dotnet publish \"{{ ProjectFile }}\" -c {{ Configuration }} -o \"$DESTINATION_DIR\""
+    LogErrorWithTryCatch "$cmd" "$msg"
 
     # we copy *.csproj to destination directory so the detector can identify
     # the destination directory as a DotNet application
