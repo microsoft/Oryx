@@ -15,7 +15,7 @@ msg="${suggestion} | ${doc}"
 
 {{ # .NET Core 1.1 based projects require restore to be run before publish }}
 cmd="dotnet restore \"{{ ProjectFile }}\""
-# LogErrorWithTryCatch "$cmd" "$msg"
+LogErrorWithTryCatch "$cmd" "$msg"
 
 if [ "$SOURCE_DIR" == "$DESTINATION_DIR" ]
 then
@@ -26,7 +26,7 @@ else
     echo
     echo "Publishing to directory $DESTINATION_DIR..."
     echo    
-    cmd="dotnet publish \"{{ ProjectFile }}\" -c {{ Configuration }} -o \"$DESTINATION_DIR\""
+    cmd="dotnet publish \"{{ ProjectFile }}\" -c {{ Configuration }} -o $DESTINATION_DIR"
     LogErrorWithTryCatch "$cmd" "$msg"
 
     # we copy *.csproj to destination directory so the detector can identify
