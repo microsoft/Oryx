@@ -46,8 +46,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GenerateDockerfile(DockerfileContext ctx)
         {
-            var dockerfileBuildImageName = "cli";
-            var dockerfileBuildImageTag = "stable";
+            var dockerfileBuildImageName = "build";
+            var dockerfileBuildImageTag = "azfunc-jamstack";
 
             var dockerfileRuntimeImage = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformName) ?
                 ConvertToRuntimeName(this.commonOptions.RuntimePlatformName) : string.Empty;
