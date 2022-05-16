@@ -19,8 +19,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         private const string _buildImageFormat = "mcr.microsoft.com/oryx/{0}:{1}";
         private const string _argRuntimeFormat = "ARG RUNTIME={0}:{1}";
 
-        private const string _buildImageName = "cli";
-        private const string _buildImageTag = "stable";
+        private const string _buildImageName = "build";
+        private const string _buildImageTag = "azfunc-jamstack";
 
         private readonly string _tempDirRoot;
 
