@@ -776,7 +776,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.417"), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.419"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
