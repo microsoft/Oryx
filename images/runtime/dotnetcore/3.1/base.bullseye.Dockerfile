@@ -8,7 +8,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters --version 
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump --version 5.0.236902
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 6.1.*
 
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 ARG BUILD_DIR=/tmp/oryx/build
 ADD build ${BUILD_DIR}
 
