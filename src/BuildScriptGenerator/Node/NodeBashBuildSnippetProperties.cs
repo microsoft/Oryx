@@ -62,6 +62,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public string CustomBuildCommand { get; set; }
 
+        public string NpmVersionSpec { get; set; }
+
         /// <summary>
         /// Gets or sets a list of commands for the build.
         /// </summary>
