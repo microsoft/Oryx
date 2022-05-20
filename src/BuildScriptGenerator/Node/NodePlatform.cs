@@ -260,6 +260,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 hasDevDependencies = true;
             }
 
+            var npmVersionSpec = packageJson?.engines?.npm?.Value as string;
+
             var productionOnlyPackageInstallCommand = string.Format(
                 NodeConstants.ProductionOnlyPackageInstallCommandTemplate, packageInstallCommand);
 
@@ -394,6 +396,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 LageRunBuildCommand = runBuildLageCommand,
                 NodeBuildProperties = nodeCommandManifestFileProperties,
                 NodeBuildCommandsFile = nodeBuildCommandsFile,
+                NpmVersionSpec = npmVersionSpec,
             };
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.NodeBuildSnippet,
