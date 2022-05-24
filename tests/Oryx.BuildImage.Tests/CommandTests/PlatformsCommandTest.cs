@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(pythonPlatform.Versions.Contains("3.8.4rc1"));
                     Assert.True(pythonPlatform.Versions.Contains("3.9.0b1"));
                     Assert.True(pythonPlatform.Versions.Contains("3.9.0"));
-                    Assert.True(pythonPlatform.Versions.Contains("3.9.0"));
+                    Assert.True(pythonPlatform.Versions.Contains("3.10.4"));
                     Assert.True(pythonPlatform.Versions.Contains("3.11.0b1"));
 
                     var phpPlatform = actualResults
