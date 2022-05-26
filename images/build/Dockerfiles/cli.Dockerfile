@@ -3,8 +3,8 @@ FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
-COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \

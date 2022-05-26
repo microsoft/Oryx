@@ -1,4 +1,4 @@
-FROM php-7.0
+FROM oryxdevmcr.azurecr.io/private/oryx/php-7.0
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 7.0.33
 

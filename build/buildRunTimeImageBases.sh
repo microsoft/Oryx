@@ -49,21 +49,21 @@ docker build \
     --pull \
     --build-arg DEBIAN_FLAVOR=stretch \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME-stretch" \
+    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-stretch" \
     $REPO_DIR
 
 docker build \
     --pull \
     --build-arg DEBIAN_FLAVOR=buster \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME-buster" \
+    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-buster" \
     $REPO_DIR
 
 docker build \
     --pull \
     --build-arg DEBIAN_FLAVOR=bullseye \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME-bullseye" \
+    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-bullseye" \
     $REPO_DIR
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
@@ -80,13 +80,13 @@ if [ "$runtimeSubDir" == "node" ]; then
     docker build \
         --build-arg DEBIAN_FLAVOR=stretch \
         -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
-        -t "oryx-node-run-base-stretch" \
+        -t "oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-stretch" \
         $REPO_DIR
 
     docker build \
         --build-arg DEBIAN_FLAVOR=buster \
         -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
-        -t "oryx-node-run-base-buster" \
+        -t "oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-buster" \
         $REPO_DIR
 
     if [ "$runtimeImageDebianFlavor" == "buster" ]; then

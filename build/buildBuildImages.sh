@@ -61,7 +61,7 @@ eval set -- "$PARAMS"
 echo
 echo "Image type to build is set to: $imageTypeToBuild"
 
-declare -r supportFilesImageName="support-files-image-for-build"
+declare -r supportFilesImageName="oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build"
 
 function BuildAndTagStage()
 {
@@ -111,7 +111,7 @@ function buildGitHubRunnersUbuntuBaseImage() {
 	
 	echo
 	echo "----Building the image which uses GitHub runners' buildpackdeps-focal-scm specific digest----------"
-	docker build -t githubrunners-buildpackdeps-focal \
+	docker build -t "oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-focal" \
 		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_FOCAL_DOCKERFILE" \
 		.
 }
@@ -119,7 +119,7 @@ function buildGitHubRunnersUbuntuBaseImage() {
 function buildGitHubRunnersBullseyeBaseImage() {
 	echo
 	echo "----Building the image which uses GitHub runners' buildpackdeps-bullseye-scm specific digest----------"
-	docker build -t githubrunners-buildpackdeps-bullseye \
+	docker build -t "oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-bullseye" \
 		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_BULLSEYE_DOCKERFILE" \
 		.
 }
@@ -128,7 +128,7 @@ function buildGitHubRunnersBusterBaseImage() {
 	
 	echo
 	echo "----Building the image which uses GitHub runners' buildpackdeps-buster-scm specific digest----------"
-	docker build -t githubrunners-buildpackdeps-buster \
+	docker build -t "oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-buster" \
 		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_BUSTER_DOCKERFILE" \
 		.
 }
@@ -136,7 +136,7 @@ function buildGitHubRunnersBusterBaseImage() {
 function buildGitHubRunnersBaseImage() {
 	echo
 	echo "----Building the image which uses GitHub runners' buildpackdeps-stretch specific digest----------"
-	docker build -t githubrunners-buildpackdeps-stretch \
+	docker build -t "oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-stretch" \
 		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE" \
 		.
 }
@@ -150,7 +150,7 @@ function buildTemporaryFilesImage() {
 	# Create the following image so that it's contents can be copied to the rest of the images below
 	echo
 	echo "------Creating temporary files image-------"
-	docker build -t support-files-image-for-build \
+	docker build -t "oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build" \
 		-f "$BUILD_IMAGES_SUPPORT_FILES_DOCKERFILE" \
 		.
 }
@@ -161,7 +161,7 @@ function buildBuildScriptGeneratorImage() {
 	# Create the following image so that it's contents can be copied to the rest of the images below
 	echo
 	echo "-------------Creating build script generator image-------------------"
-	docker build -t buildscriptgenerator \
+	docker build -t "oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator" \
 		--build-arg AGENTBUILD=$BUILD_SIGNED \
 		--build-arg GIT_COMMIT=$GIT_COMMIT \
 		--build-arg BUILD_NUMBER=$BUILD_NUMBER \

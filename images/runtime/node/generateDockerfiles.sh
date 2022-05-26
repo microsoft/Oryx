@@ -12,7 +12,7 @@ source $REPO_DIR/build/__nodeVersions.sh
 
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r DOCKERFILE_TEMPLATE="$DIR/template.Dockerfile"
-declare -r RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER="%RUNTIME_BASE_IMAGE_NAME%"
+declare -r RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER="%RUNTIME_BASE_IMAGE_TAG%"
 declare -r NODE_BUSTER_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
 
 echo "$1"
@@ -31,8 +31,8 @@ if [ "$1" == "buster" ];then
 
 		echo "Generating Dockerfile for buster based images..."
 		# Replace placeholders
-		RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
-		sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
+		RUNTIME_BASE_IMAGE_TAG="node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
+		sed -i "s|$RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER|$RUNTIME_BASE_IMAGE_TAG|g" "$TARGET_DOCKERFILE"
 	done
 elif [ "$1" == "stretch" ];then
 	dockerFiles=$(find . -type f \( -name "base.stretch.Dockerfile" \) )
@@ -50,7 +50,7 @@ elif [ "$1" == "stretch" ];then
 
 		echo "Generating Dockerfile for stretch based images..."
 		# Replace placeholders
-		RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
-		sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"	
+		RUNTIME_BASE_IMAGE_TAG="node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
+		sed -i "s|$RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER|$RUNTIME_BASE_IMAGE_TAG|g" "$TARGET_DOCKERFILE"	
 	done
 fi

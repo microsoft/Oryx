@@ -1,5 +1,5 @@
 ARG DEBIAN_FLAVOR
-FROM githubrunners-buildpackdeps-${DEBIAN_FLAVOR} AS main
+FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-${DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 # Install basic build tools
@@ -64,8 +64,8 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
 
 # Install Yarn, HUGO
 FROM main AS intermediate
-COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
-COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images" 
 RUN ${IMAGES_DIR}/build/installHugo.sh
