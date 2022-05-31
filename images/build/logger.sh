@@ -13,6 +13,31 @@ function LogError()
     _LogMessage "ERROR" "$1"
 }
 
+function LogErrorWithTryCatch()
+{
+    if [ $# -ne 2 ]; then
+        echo "Please provide 2 paremters to LogErrorWithTryCatch. " \
+            "Example: LogErrorWithTryCatch {cmd} {msg}. " \
+            "$# paremters were provided"
+    fi
+    cmd=$1
+    msg=$2
+
+    # try
+    set +e
+    output=$( $cmd )
+    exitCode=${PIPESTATUS[0]}
+    set -e
+
+    # catch
+    if [ $exitCode != 0 ]; then
+        LogError "${output} | ${exitCode} | ${msg}" 
+        exit $exitCode
+    fi
+
+    echo "$output"
+}
+
 function LogWarning()
 {
     if [ $# -ne 1 ]; then

@@ -123,6 +123,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                     {"PlatformWithVersion", "Node.js 10.10.10" },
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
+                NpmVersionSpec = "5.4.2",
             };
 
             // Act
