@@ -248,7 +248,7 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $MAVEN_VERSION lts \
     && mkdir -p /home/codespace/.maven/current \
     && ln -sfn /opt/maven/$MAVEN_VERSION /home/codespace/.maven/current \
-    && npm install -g lerna \
+    && npm install -g lerna@4.0.0 \
     && PATH="$PATH:/opt/php/lts/bin" \
     && wget http://pear.php.net/go-pear.phar \
     && php go-pear.phar \
