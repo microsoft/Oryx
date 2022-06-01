@@ -92,6 +92,7 @@ then
   echo $imageName
   retagImageWithStagingRepository php-fpm-runtimeimage-bases-buster.txt $imageName buster
   retagImageWithStagingRepository php-fpm-runtimeimage-bases-stretch.txt $imageName stretch
+  retagImageWithStagingRepository php-fpm-runtimeimage-bases-bullseye.txt $imageName bullseye
 elif [ "$imageName" == "dotnetcore" ]
 then
   echo ""
