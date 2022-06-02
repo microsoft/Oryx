@@ -25,7 +25,7 @@ function LogErrorWithTryCatch()
 
     # try
     set +e
-    output=$( $cmd )
+    output=$( $cmd 2>&1)
     exitCode=${PIPESTATUS[0]}
     set -e
 
