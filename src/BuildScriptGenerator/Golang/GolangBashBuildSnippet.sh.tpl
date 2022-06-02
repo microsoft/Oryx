@@ -24,7 +24,8 @@ echo "   "
 # TODO: add support for nested dirs
 echo "building go app..."
 doc="https://aka.ms/troubleshoot-go"
-suggestion="Please check your go.mod is valid. Try building locally first: go build"
+suggestion="Please check your go.mod is valid.
+ Try building locally first with the following command: go build"
 msg="${suggestion} | ${doc}"
 cmd="go build -o oryxBuildBinary"
 LogErrorWithTryCatch "$cmd" "$msg"
