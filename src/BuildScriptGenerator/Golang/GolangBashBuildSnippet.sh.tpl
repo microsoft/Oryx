@@ -23,7 +23,11 @@ echo "   "
 
 # TODO: add support for nested dirs
 echo "building go app..."
-go build -o oryxBuildBinary
+doc="https://aka.ms/troubleshoot-go"
+suggestion="Please check your go.mod is valid. Try building locally first: go build"
+msg="${suggestion} | ${doc}"
+cmd="go build -o oryxBuildBinary"
+LogErrorWithTryCatch "$cmd" "$msg"
 
 echo "list of module dependencies"
 go list -m
