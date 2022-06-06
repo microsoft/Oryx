@@ -95,16 +95,7 @@ if [ "$runtimeSubDir" == "node" ]; then
         -t "oryx-node-run-base-bullseye" \
         $REPO_DIR
 
-    if [ "$runtimeImageDebianFlavor" == "buster" ]; then
-        for NODE_BUSTER_VERSION in "${NODE_BUSTER_VERSION_ARRAY[@]}"
-        do
-            IFS='.' read -ra SPLIT_VERSION <<< "$NODE_BUSTER_VERSION"
-	        VERSION_DIRECTORY="${SPLIT_VERSION[0]}"
-            eachFile=$runtimeImagesSourceDir/$VERSION_DIRECTORY/$dockerFileName
-            busterNodeDockerFiles+=( "$eachFile" )
-        done
-        dockerFiles="${busterNodeDockerFiles[@]}"
-    elif  [ "$runtimeImageDebianFlavor" == "bullseye" ]; then
+    if  [ "$runtimeImageDebianFlavor" == "bullseye" ]; then
         for NODE_BULLSEYE_VERSION in "${NODE_BULLSEYE_VERSION_ARRAY[@]}"
         do
             IFS='.' read -ra SPLIT_VERSION <<< "$NODE_BULLSEYE_VERSION"
