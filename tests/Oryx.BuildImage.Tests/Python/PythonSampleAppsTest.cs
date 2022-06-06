@@ -137,6 +137,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
+                    Assert.Contains("Running pip install", result.StdOut);
+                    Assert.Contains("Collecting Flask", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
