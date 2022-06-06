@@ -54,13 +54,6 @@ docker build \
 
 docker build \
     --pull \
-    --build-arg DEBIAN_FLAVOR=buster \
-    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME-buster" \
-    $REPO_DIR
-
-docker build \
-    --pull \
     --build-arg DEBIAN_FLAVOR=bullseye \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
     -t "$RUNTIME_BASE_IMAGE_NAME-bullseye" \
@@ -81,12 +74,6 @@ if [ "$runtimeSubDir" == "node" ]; then
         --build-arg DEBIAN_FLAVOR=stretch \
         -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
         -t "oryx-node-run-base-stretch" \
-        $REPO_DIR
-
-    docker build \
-        --build-arg DEBIAN_FLAVOR=buster \
-        -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
-        -t "oryx-node-run-base-buster" \
         $REPO_DIR
 
     docker build \

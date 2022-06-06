@@ -16,15 +16,6 @@ jobs:
 
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build Node runtime buster based images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: node
-    imageDebianFlavor: buster
-    artifactsFileName: node-runtimeimage-bases-buster.txt
-    jobName: Build_Buster_BaseImages
-
-- template: ../templates/_buildimageBasesJobTemplate.yml
-  parameters:
     displayName: Build Node runtime bullseye based images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: node
@@ -35,7 +26,6 @@ jobs:
 - job: Release_NodeRuntimeBaseImage
   dependsOn: 
     - Build_Stretch_BaseImages
-    - Build_Buster_BaseImages
     - Build_Bullseye_BaseImages
   displayName: Push images to MCR
   timeoutInMinutes: 250
