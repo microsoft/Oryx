@@ -67,29 +67,31 @@ fi
         echo "Running pip install..."
         InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdError=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+        output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
         set -e
         if [[ $pipInstallExitCode != 0 ]]
         then
-            StdError=$(echo "$StdError" | sed '/^error/I!d')
-            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+            output=$(echo "output" | sed '/^error/I!d')
+            LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
             exit $pipInstallExitCode
         fi
+        echo "${output}"
     elif [ -e "setup.py" ]
     then
         set +e
         echo "Running python setup.py install..."
         InstallCommand="$python setup.py install --user| ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdError=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+        output=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
+            LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
+        echo "${output}"
     elif [ -e "pyproject.toml" ]
     then
         set +e
@@ -100,14 +102,15 @@ fi
         echo "Running poetry install..."
         InstallPoetryCommand="poetry install --no-dev"
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdWarning=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1)
+        output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1)
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogWarning "${StdWarning} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
+            LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
+        echo "${output}"
     else
         echo $REQS_NOT_FOUND_MSG
     fi
@@ -124,17 +127,18 @@ fi
         START_TIME=$SECONDS
         InstallCommand="$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdError=$( ( $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+        output=$( ( $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
         set -e
         if [[ $pipInstallExitCode != 0 ]]
         then
-            StdError=$(echo "$StdError" | sed '/^error/I!d')
-            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
+            output=$(echo "${output}" | sed '/^error/I!d')
+            LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
             exit $pipInstallExitCode
         fi
+        echo "${output}"
     elif [ -e "setup.py" ]
     then
         echo
@@ -149,14 +153,15 @@ fi
         echo "Running python setup.py install..."
         InstallCommand="$python setup.py install --user| ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdError=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+        output=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogError "${StdError} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
+            LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
+        echo "${output}"
     elif [ -e "pyproject.toml" ]
     then
         set +e
@@ -168,16 +173,17 @@ fi
         echo "Running poetry install..."
         InstallPoetryCommand="poetry install --no-dev"
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        StdWarning=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1 )
+        output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1 )
         pythonBuildExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
         set -e
         if [[ $pythonBuildExitCode != 0 ]]
         then
-            LogWarning "${StdWarning} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
+            LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
+        echo "${output}"
     else
         echo $REQS_NOT_FOUND_MSG
     fi
@@ -238,19 +244,20 @@ fi
             START_TIME=$SECONDS
             CollectStaticCommand="$python_bin manage.py collectstatic --noinput"
             printf %s " , $CollectStaticCommand" >> "$COMMAND_MANIFEST_FILE"
-            StdWarning=$(($python_bin manage.py collectstatic --noinput; exit ${PIPESTATUS[0]}) 2>&1)
+            output=$(($python_bin manage.py collectstatic --noinput; exit ${PIPESTATUS[0]}) 2>&1)
             EXIT_CODE=${PIPESTATUS[0]}
             if [[ $EXIT_CODE != 0 ]]
             then
                 recommendation="Please review message"
-                LogWarning "${StdWarning} | Exit code: ${EXIT_CODE} | ${recommendation} | ${moreInformation}"
+                LogWarning "${output} | Exit code: ${EXIT_CODE} | ${recommendation} | ${moreInformation}"
             fi
+            echo "${output}"
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             echo "Done in $ELAPSED_TIME sec(s)."
         else
-            StdWarning="Missing Django modile in Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
+            output="Missing Django modile in Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
             recommendation="Add Django to your requirements.txt file."
-            LogWarning "${StdWarning} | Exit code: 0 | ${recommendation} | ${moreInformation}"
+            LogWarning "${output} | Exit code: 0 | ${recommendation} | ${moreInformation}"
         fi
     fi
     set -e
