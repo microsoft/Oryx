@@ -23,7 +23,8 @@ namespace Oryx.BuildImage.Tests.Node
         }
 
         [Theory]
-        [InlineData("angularsample", "dist")]
+        // Temporarily skipping the angularsample test as described in work item 1551293
+        // [InlineData("angularsample", "dist")]
         // Temporarily blocking next app as next build is failing accross npm
         // [InlineData("blog-starter-nextjs", ".next")]
         [InlineData("hackernews-nuxtjs", ".nuxt")]
