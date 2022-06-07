@@ -85,18 +85,21 @@ then
   echo ""
   retagImageWithStagingRepository php-runtimeimage-bases-buster.txt $imageName buster
   retagImageWithStagingRepository php-runtimeimage-bases-stretch.txt $imageName stretch
+  retagImageWithStagingRepository php-runtimeimage-bases-bullseye.txt $imageName bullseye
 elif [ "$imageName" == "php-fpm" ]
 then
   echo ""
   echo $imageName
   retagImageWithStagingRepository php-fpm-runtimeimage-bases-buster.txt $imageName buster
   retagImageWithStagingRepository php-fpm-runtimeimage-bases-stretch.txt $imageName stretch
+  retagImageWithStagingRepository php-fpm-runtimeimage-bases-bullseye.txt $imageName bullseye
 elif [ "$imageName" == "dotnetcore" ]
 then
   echo ""
   echo $imageName
   retagImageWithStagingRepository dotnetcore-runtimeimage-bases-buster.txt $imageName buster
   retagImageWithStagingRepository dotnetcore-runtimeimage-bases-stretch.txt $imageName stretch
+  retagImageWithStagingRepository dotnetcore-runtimeimage-bases-bullseye.txt $imageName bullseye
 elif [ "$imageName" == "ruby" ]
 then
   echo ""
