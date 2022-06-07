@@ -70,12 +70,12 @@ fi
         output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
         set -e
+        echo "${output}"
         if [[ $pipInstallExitCode != 0 ]]
         then
             LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
             exit $pipInstallExitCode
         fi
-        echo "${output}"
     elif [ -e "setup.py" ]
     then
         set +e
@@ -85,12 +85,12 @@ fi
         output=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
+        echo "${output}"
         if [[ $pythonBuildExitCode != 0 ]]
         then
             LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
-        echo "${output}"
     elif [ -e "pyproject.toml" ]
     then
         set +e
@@ -104,12 +104,12 @@ fi
         output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1)
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
+        echo "${output}"
         if [[ $pythonBuildExitCode != 0 ]]
         then
             LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
-        echo "${output}"
     else
         echo $REQS_NOT_FOUND_MSG
     fi
@@ -131,12 +131,12 @@ fi
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
         set -e
+        echo "${output}"
         if [[ $pipInstallExitCode != 0 ]]
         then
             LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
             exit $pipInstallExitCode
         fi
-        echo "${output}"
     elif [ -e "setup.py" ]
     then
         echo
@@ -154,12 +154,12 @@ fi
         output=$( ( $python setup.py install --user| ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
+        echo "${output}"
         if [[ $pythonBuildExitCode != 0 ]]
         then
             LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your setup.py | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
-        echo "${output}"
     elif [ -e "pyproject.toml" ]
     then
         set +e
@@ -176,12 +176,12 @@ fi
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
         set -e
+        echo "${output}"
         if [[ $pythonBuildExitCode != 0 ]]
         then
             LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
             exit $pythonBuildExitCode
         fi
-        echo "${output}"
     else
         echo $REQS_NOT_FOUND_MSG
     fi
@@ -244,12 +244,12 @@ fi
             printf %s " , $CollectStaticCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$(($python_bin manage.py collectstatic --noinput; exit ${PIPESTATUS[0]}) 2>&1)
             EXIT_CODE=${PIPESTATUS[0]}
+            echo "${output}"
             if [[ $EXIT_CODE != 0 ]]
             then
                 recommendation="Please review message"
                 LogWarning "${output} | Exit code: ${EXIT_CODE} | ${recommendation} | ${moreInformation}"
             fi
-            echo "${output}"
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             echo "Done in $ELAPSED_TIME sec(s)."
         else
