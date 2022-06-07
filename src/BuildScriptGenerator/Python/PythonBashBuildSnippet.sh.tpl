@@ -72,7 +72,7 @@ fi
         set -e
         if [[ $pipInstallExitCode != 0 ]]
         then
-            output=$(echo "output" | sed '/^error/I!d')
+            output=$(echo "${output}" | sed '/^error/I!d')
             LogError "${output} | Exit code: ${pipInstallExitCode} | Please review your requirements.txt | ${moreInformation}"
             exit $pipInstallExitCode
         fi
