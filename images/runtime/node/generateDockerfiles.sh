@@ -34,22 +34,6 @@ if [ "$1" == "bullseye" ];then
 		RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
 		sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
 	done
-elif [ "$1" == "buster" ];then
-	for NODE_BUSTER_VERSION in "${NODE_BUSTER_VERSION_ARRAY[@]}"
-	do
-		IFS='.' read -ra SPLIT_VERSION <<< "$NODE_BUSTER_VERSION"
-		VERSION_DIRECTORY="${SPLIT_VERSION[0]}"
-
-		echo "Generating Dockerfile for buster based image $VERSION_DIRECTORY..."
-
-		TARGET_DOCKERFILE="$DIR/$VERSION_DIRECTORY/$1.Dockerfile"
-		cp "$DOCKERFILE_TEMPLATE" "$TARGET_DOCKERFILE"
-
-		echo "Generating Dockerfile for buster based images..."
-		# Replace placeholders
-		RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/base:node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
-		sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
-	done
 elif [ "$1" == "stretch" ];then
 	dockerFiles=$(find . -type f \( -name "base.stretch.Dockerfile" \) )
 	for dockerFile in $dockerFiles; do
