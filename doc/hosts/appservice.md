@@ -147,3 +147,10 @@ location other than `/home/site/wwwroot`.
 When using this solution, you should not have hardcoded references to files that include `/home/site/wwwroot` in 
 the path, for example in custom startup scripts. Alternatively, you can just reference those files by its relative
 path, removing `/home/site/wwwroot` from it.
+
+## Network Dependencies
+
+When using App Service with a Virtual Network or an App Service Environment, you will need to allow outbound access 
+from the webapp to `oryx-cdn.microsoft.io` on port `443`. `oryx-cdn.microsoft.io` hosts the Oryx container image, which 
+your Web App will pull to build your application during deployment. If this network dependency is blocked, then App Service
+will not be able to build your application using Oryx.
