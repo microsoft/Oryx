@@ -65,7 +65,7 @@ mkdir -p $artifactsDir/$imageName
 if [ "$imageName" == "node" ]
 then
   echo ""
-  retagImageWithStagingRepository node-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository node-runtimeimage-bases-bullseye.txt $imageName bullseye
   retagImageWithStagingRepository node-runtimeimage-bases-stretch.txt $imageName stretch
 elif [ "$imageName" == "python-build" ]
 then

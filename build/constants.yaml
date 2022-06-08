@@ -110,7 +110,7 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-runtime-base-tag: 20220506.5
+    python-runtime-base-tag: 20220608.1
     pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
@@ -212,7 +212,7 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20220519.2
+    node-runtime-base-tag: 20220607.3
     yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
