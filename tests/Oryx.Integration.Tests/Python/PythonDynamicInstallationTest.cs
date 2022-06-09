@@ -111,7 +111,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
         [Theory]
         [InlineData(PythonVersions.Python310Version)]
-        public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
+        [InlineData(PythonVersions.Python311Version)]
+        public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallation(
             string pythonVersion)
         {
             // Arrange

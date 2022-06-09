@@ -144,8 +144,9 @@
     python38-version: 3.8.12
     python39-version: 3.9.7
     python310-version: 3.10.4
+    python311-version: 3.11.0b1
     # Ensure that the below list of runtime versions are sorted in ascending order
-    runtime-versions: [2.7, 3.6, 3.8, 3.9, 3.10]
+    runtime-versions: [2.7, 3.6, 3.8, 3.9, 3.10, 3.11]
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -263,6 +264,7 @@
     node12-version: 12.22.11
     node14-version: 14.19.1
     node16-version: 16.14.2
+    node18-version: 18.2.0
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 6.14.15
@@ -270,7 +272,7 @@
     runtime-versions: [4.4, 4.5, 4.8, 6, 6.2, 6.6, 6.9, 6.10,
                       6.11, 8, 8.0, 8.1, 8.2, 8.8, 8.9, 8.11,
                       8.12, 9.4, 10, 10.1, 10.10, 10.12, 10.14,
-                      12, 14, 16]
+                      12, 14, 16, 18]
   outputs:
     - type: shell
       directory: build
