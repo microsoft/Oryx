@@ -71,7 +71,7 @@ RUN pip install --upgrade pip \
     && if [ "%PYTHON_MAJOR_VERSION%" = "3" ] && [ "%PYTHON_VERSION%" != "3.6" ]; then pip install viztracer==0.14.3 \
     && pip install vizplugins==0.1.2 \
     && pip install orjson==3.6.6; fi \
-    && if [ "%PYTHON_VERSION%" != "3.7" ] && [ "%PYTHON_VERSION%" != "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
+    && if [ "%PYTHON_VERSION%" = "3.7" ] || [ "%PYTHON_VERSION%" = "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
     && dpkg -i libffi6_3.2.1-9_amd64.deb \
     && rm libffi6_3.2.1-9_amd64.deb; fi \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
