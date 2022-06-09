@@ -4,6 +4,7 @@ resources:
 variables:
   group: Oryx
   Packaging.EnableSBOMSigning: true
+  TeamName: Oryx  # Required MicroBuild variable
 
 stages:
   - stage: CreateReleaseTag
