@@ -130,7 +130,7 @@ for dockerFile in $dockerFiles; do
         --build-arg CACHEBUST=$(date +%s) \
         --build-arg NODE14_VERSION=$NODE14_VERSION \
         --build-arg NODE16_VERSION=$NODE16_VERSION \
-        --build-arg NODE16_VERSION=$NODE18_VERSION \
+        --build-arg NODE18_VERSION=$NODE18_VERSION \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
         $labels \
         .
