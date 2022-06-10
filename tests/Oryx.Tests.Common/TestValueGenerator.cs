@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         private readonly static List<string> PythonVersions = new List<string>
         {
-            "3.6", "3.7"
+            "3.6", "3.7", "3.8"
         };
 
         private readonly static List<string> ZipOptions = new List<string>

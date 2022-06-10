@@ -23,6 +23,15 @@ jobs:
     artifactsFileName: php-fpm-runtimeimage-bases-buster.txt
     jobName: Build_PHP_FPM_Buster_Base
 
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build php bullseye runtime base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: php-fpm
+    imageDebianFlavor: bullseye
+    artifactsFileName: php-fpm-runtimeimage-bases-bullseye.txt
+    jobName: Build_PHP_FPM_Bullseye_Base
+
 - job: Release_PhpRuntimeBaseImage
   dependsOn: 
     - Build_Php_Fpm_Base
