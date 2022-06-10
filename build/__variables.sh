@@ -55,7 +55,7 @@ declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-imag
 declare -r PACK_IMAGE_NAME='pack'
 declare -r PACK_STACK_BASE_IMAGE_NAME="pack-stack-base"
 declare -r PACK_BUILDER_IMAGE_NAME="pack-builder"
-declare -r PACK_TOOL_VERSION="0.18.1"
+declare -r PACK_TOOL_VERSION="0.26.0"
 declare -r ORYXTESTS_BUILDIMAGE_REPO="oryxtests/build"
 
 declare -r DEVBOX_BUILD_IMAGES_REPO="oryx/build"
