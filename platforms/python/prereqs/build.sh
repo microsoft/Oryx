@@ -28,6 +28,7 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
         libreadline-dev \
         libbz2-dev \
         libgdm-dev \
+	liblzma-dev \
         libbluetooth-dev \
         tk-dev \
         uuid-dev
