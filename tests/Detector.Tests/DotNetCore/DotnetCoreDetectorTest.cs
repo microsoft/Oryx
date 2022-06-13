@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         [Theory]
         [InlineData("Library", "Library")]
         [InlineData("Exe", "Exe")]
-        [InlineData("randomText", "randomtext")]
+        [InlineData("randomText", "randomText")]
         [InlineData("", "Library")]
         public void Detect_ReturnsOutputType(
             string outputTypeName,
@@ -149,13 +149,12 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         }
 
         [Theory]
-        [InlineData("Library", null)]
-        [InlineData("Exe", null)]
-        [InlineData("randomText", null)]
-        [InlineData("", null)]
+        [InlineData("Library")]
+        [InlineData("Exe")]
+        [InlineData("randomText")]
+        [InlineData("")]
         public void Detect_ReturnsWithoutOutputType(
-            string outputTypeName,
-            string expectedOutputType)
+            string outputTypeName)
         {
             // Arrange
             // create .csproj
@@ -183,8 +182,8 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
 
             Assert.NotNull(result);
 
-            // check our outputType is there
-            Assert.Equal(expectedOutputType, result.OutputType);
+            // check our outputType is the default output type
+            Assert.Equal(DotNetCoreConstants.DefaultOutputType, result.OutputType);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
