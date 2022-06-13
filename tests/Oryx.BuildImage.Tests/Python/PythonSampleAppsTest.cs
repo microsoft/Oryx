@@ -1407,11 +1407,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("lts-versions", "3")]
-        [InlineData("vso-focal", "3")]
-        [InlineData("latest", "2")]
-        [InlineData("latest", "3")]
-        public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName, string pythonVersion)
+        [InlineData("lts-versions")]
+        [InlineData("vso-focal")]
+        [InlineData("latest")]
+        public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName)
         {
             // Arrange
             var expectedPackage = "jamspell";

@@ -29,21 +29,21 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Fact, Trait("category", "php-8.0")]
-        public void PipelineTestInvocationsPhp80()
+        public async void PipelineTestInvocationsPhp80()
         {   
             string phpVersion80 = "8.0";
-            PhpApp_UsingPdo(phpVersion80, "github-actions");
-            PhpApp_UsingPdo(phpVersion80, "github-buster");
-            PhpApp_UsingPdo(phpVersion80, "latest");
+            await PhpApp_UsingPdo(phpVersion80, "github-actions");
+            await PhpApp_UsingPdo(phpVersion80, "github-buster");
+            await PhpApp_UsingPdo(phpVersion80, "latest");
         }
 
         [Fact, Trait("category", "php-7.4")]
-        public void PipelineTestInvocationsPhp74()
+        public async void PipelineTestInvocationsPhp74()
         {
             string phpVersion74 = "7.4";
-            PhpApp_UsingPdo(phpVersion74, "github-actions");
-            PhpApp_UsingPdo(phpVersion74, "github-buster");
-            PhpApp_UsingPdo(phpVersion74, "latest");
+            await PhpApp_UsingPdo(phpVersion74, "github-actions");
+            await PhpApp_UsingPdo(phpVersion74, "github-buster");
+            await PhpApp_UsingPdo(phpVersion74, "latest");
         }
 
         [Theory]

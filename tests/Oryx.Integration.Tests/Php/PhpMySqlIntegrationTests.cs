@@ -22,11 +22,11 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Fact, Trait("category", "php-7.4")]
-        public void PipelineTestInvocationsPhp74()
+        public async void PipelineTestInvocationsPhp74()
         {
             string phpVersion74 = "7.4";
-            PhpApp_UsingMysqli(phpVersion74, "latest");
-            PhpApp_UsingMysqli(phpVersion74, "github-actions");
+            await PhpApp_UsingMysqli(phpVersion74, "latest");
+            await PhpApp_UsingMysqli(phpVersion74, "github-actions");
         }
 
         [Theory]
