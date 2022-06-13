@@ -42,6 +42,7 @@ RUN LANG="C.UTF-8" \
         sqlite3 \
         libsqlite3-dev \
         software-properties-common \
+        liblzma-dev \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && apt-get update \
