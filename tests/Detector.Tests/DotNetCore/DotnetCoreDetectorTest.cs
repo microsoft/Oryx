@@ -113,7 +113,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         [InlineData("Library", "Library")]
         [InlineData("Exe", "Exe")]
         [InlineData("randomText", "randomText")]
-        [InlineData("", "Library")]
+        [InlineData("", DotNetCoreConstants.DefaultOutputType)]
         public void Detect_ReturnsOutputType(
             string outputTypeName,
             string expectedOutputType)
