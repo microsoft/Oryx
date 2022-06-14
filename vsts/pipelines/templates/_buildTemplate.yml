@@ -85,7 +85,8 @@ steps:
 - task: ShellScript@2
   displayName: 'Build build images'
   inputs:
-    scriptPath: ./build/buildBuildImages.sh -t ${{ parameters.imageType }}
+    scriptPath: ./build/buildBuildImages.sh
+    args: -t ${{ parameters.imageType }}
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ShellScript@2
