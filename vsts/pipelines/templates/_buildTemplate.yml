@@ -2,6 +2,7 @@ parameters:
   ascName: oryxSP
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
+  imageType: ltsversions    
 
 steps:
 - script: |
@@ -84,7 +85,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Build build images'
   inputs:
-    scriptPath: ./build/buildBuildImages.sh
+    scriptPath: ./build/buildBuildImages.sh -t ${{ parameters.imageType }}
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ShellScript@2
