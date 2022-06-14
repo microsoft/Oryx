@@ -123,6 +123,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 #pragma warning restore CA2201
             }
 
+            BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(ctx.SourceRepo.ReadFile("appsvc.yaml"));
+            if (!string.IsNullOrEmpty(buildConfigFile.Run))
+            {
+                File.AppendAllText(this.tempScriptPath, Environment.NewLine + buildConfigFile.Run);
+            }
+
             return File.ReadAllText(this.tempScriptPath);
         }
     }
