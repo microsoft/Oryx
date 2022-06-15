@@ -108,5 +108,6 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh php $PHP56_VERSION \
     && cd /opt/php \
     && ln -s 5.6 5 \
-    && echo "full" > /opt/oryx/.imagetype
+    && echo "full" > /opt/oryx/.imagetype \
+    && echo "$DEBIAN_FLAVOR" > /opt/oryx/.ostype
 

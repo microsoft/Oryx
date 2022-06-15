@@ -35,7 +35,8 @@ RUN apt-get update \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && echo "cli" > /opt/oryx/.imagetype
+    && echo "cli" > /opt/oryx/.imagetype \
+    && echo "$DEBIAN_FLAVOR" > /opt/oryx/.ostype
 
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
