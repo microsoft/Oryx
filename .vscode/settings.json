@@ -10,6 +10,6 @@
     "go.toolsGopath": "${env:HOME}/go",
     "editor.rulers": [0, 120],
     "workbench.colorCustomizations": {
-        "editorRuler.foreground": "#33333388"
+        "editorRuler.foreground": "#ff333388"
     },
 }
