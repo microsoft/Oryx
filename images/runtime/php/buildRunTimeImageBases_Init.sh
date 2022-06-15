@@ -19,6 +19,8 @@ PHP_VERSION_ARRAY=()
 
 if [ "$baseImageDebianFlavor" == "buster" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")
+elif [ "$baseImageDebianFlavor" == "bullseye" ];then
+    PHP_VERSION_ARRAY=("${VERSION_ARRAY_BULLSEYE[@]}")
 else
     PHP_VERSION_ARRAY=("${VERSION_ARRAY[@]}")
 fi

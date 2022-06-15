@@ -8,7 +8,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters --version 
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump --version 5.0.236902
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 6.1.*
 
-FROM mcr.microsoft.com/mirror/docker/library/debian:buster-slim
+FROM mcr.microsoft.com/mirror/docker/library/debian:bullseye-slim
 ARG BUILD_DIR=/tmp/oryx/build
 ADD build ${BUILD_DIR}
 
@@ -20,7 +20,7 @@ RUN apt-get update \
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
-        libicu63 \
+        libicu67 \
         libssl1.1 \
         libstdc++6 \
         zlib1g \

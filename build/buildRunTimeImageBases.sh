@@ -13,11 +13,11 @@ source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__nodeVersions.sh
 
-declare -r NODE_BUSTER_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
+declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
-runtimeImageDebianFlavor="buster"
+runtimeImageDebianFlavor="bullseye"
 
 if [ $# -eq 2 ] 
 then
@@ -54,13 +54,6 @@ docker build \
 
 docker build \
     --pull \
-    --build-arg DEBIAN_FLAVOR=buster \
-    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-buster" \
-    $REPO_DIR
-
-docker build \
-    --pull \
     --build-arg DEBIAN_FLAVOR=bullseye \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
     -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-bullseye" \
@@ -74,7 +67,7 @@ execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$
 dockerFileName="base.$runtimeImageDebianFlavor.Dockerfile"
 dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)
 
-busterNodeDockerFiles=()
+bullseyeNodeDockerFiles=()
 
 if [ "$runtimeSubDir" == "node" ]; then
     docker build \
@@ -84,21 +77,21 @@ if [ "$runtimeSubDir" == "node" ]; then
         $REPO_DIR
 
     docker build \
-        --build-arg DEBIAN_FLAVOR=buster \
+        --build-arg DEBIAN_FLAVOR=bullseye \
         -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
-        -t "oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-buster" \
+        -t "oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye" \
         $REPO_DIR
 
-    if [ "$runtimeImageDebianFlavor" == "buster" ]; then
-        for NODE_BUSTER_VERSION in "${NODE_BUSTER_VERSION_ARRAY[@]}"
+    if  [ "$runtimeImageDebianFlavor" == "bullseye" ]; then
+        for NODE_BULLSEYE_VERSION in "${NODE_BULLSEYE_VERSION_ARRAY[@]}"
         do
-            IFS='.' read -ra SPLIT_VERSION <<< "$NODE_BUSTER_VERSION"
+            IFS='.' read -ra SPLIT_VERSION <<< "$NODE_BULLSEYE_VERSION"
 	        VERSION_DIRECTORY="${SPLIT_VERSION[0]}"
             eachFile=$runtimeImagesSourceDir/$VERSION_DIRECTORY/$dockerFileName
-            busterNodeDockerFiles+=( "$eachFile" )
+            bullseyeNodeDockerFiles+=( "$eachFile" )
         done
-        dockerFiles="${busterNodeDockerFiles[@]}"
-    fi 
+        dockerFiles="${bullseyeNodeDockerFiles[@]}"
+    fi
 fi
 
 # Write the list of images that were built to artifacts folder

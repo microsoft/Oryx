@@ -124,7 +124,7 @@ RUN set -ex \
     && cd /opt/nodejs \
     && ln -s $NODE14_VERSION 14 \
     && ln -s 14 lts \
-    && npm install -g lerna \
+    && npm install -g lerna@4.0.0 \
     && cd /opt/yarn \
     && ln -s $YARN_VERSION stable \
     && ln -s $YARN_VERSION latest \
