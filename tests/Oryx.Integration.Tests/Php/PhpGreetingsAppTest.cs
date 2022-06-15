@@ -25,19 +25,21 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Fact, Trait("category", "php-8.0")]
-        public async void PipelineTestInvocationsPhp80()
+        public void PipelineTestInvocationsPhp80()
         {   
             string phpVersion80 = "8.0";
-            await GreetingsAppTest(phpVersion80);
-            await PhpFpmGreetingsAppTest(phpVersion80);
+            Task.WaitAll(
+                GreetingsAppTest(phpVersion80),
+                PhpFpmGreetingsAppTest(phpVersion80));
         }
 
         [Fact, Trait("category", "php-7.4")]
-        public async void PipelineTestInvocationsPhp74()
+        public void PipelineTestInvocationsPhp74()
         {
             string phpVersion74 = "7.4";
-            await GreetingsAppTest(phpVersion74);
-            await PhpFpmGreetingsAppTest(phpVersion74);
+            Task.WaitAll(
+                GreetingsAppTest(phpVersion74),
+                PhpFpmGreetingsAppTest(phpVersion74));
         }
 
         [Theory]
