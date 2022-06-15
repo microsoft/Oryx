@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_FSharpNetCoreApp21WebApp_WithoutSpecifyingPlatformExplicitly()
+        public async Task CanBuildAndRun_FSharpNetCoreApp21WebApp_WithoutSpecifyingPlatformExplicitlyAsync()
         {
             // Arrange
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "FSharpNetCoreApp21.WebApp");
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore30WebApp()
+        public async Task CanBuildAndRun_NetCore30WebAppAsync()
         {
             // Arrange
             var dotnetcoreVersion = "3.0";
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore30MvcApp()
+        public async Task CanBuildAndRun_NetCore30MvcAppAsync()
         {
             // Arrange
             var dotnetcoreVersion = "3.0";
@@ -157,7 +157,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRun_SelfContainedApp_TargetedForLinux()
+        public async Task CanRun_SelfContainedApp_TargetedForLinuxAsync()
         {
             // ****************************************************************
             // A self-contained app is an app which does not depend on whether a .NET Core runtime is present on the
@@ -215,7 +215,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRun_NetCore30App_PublishedOnMacMachine_ButRunOnNetCore30RuntimeContainer()
+        public async Task CanRun_NetCore30App_PublishedOnMacMachine_ButRunOnNetCore30RuntimeContainerAsync()
         {
             // This test verifies that we fallback to using 'dotnet TodoAppFromMac.dll' since the executable
             // file 'TodoAppFromMac' was indeed generated from a Mac OS and cannot be run in a Linux container.
@@ -251,7 +251,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore30WebApp_UsingExplicitStartupCommand()
+        public async Task CanBuildAndRun_NetCore30WebApp_UsingExplicitStartupCommandAsync()
         {
             // Arrange
             var dotnetcoreVersion = "3.0";
@@ -299,7 +299,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore30WebApp_HavingExplicitAssemblyName()
+        public async Task CanBuildAndRun_NetCore30WebApp_HavingExplicitAssemblyNameAsync()
         {
             // Arrange
             var appName = "NetCoreApp30WebAppWithExplicitAssemblyName";

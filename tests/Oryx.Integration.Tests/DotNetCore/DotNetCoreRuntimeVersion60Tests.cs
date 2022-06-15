@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore60MvcApp()
+        public async Task CanBuildAndRun_NetCore60MvcAppAsync()
         {
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_Adds_Oryx_AppInsights_Codeless_Configuration()
+        public async Task CanBuildAndRun_Adds_Oryx_AppInsights_Codeless_ConfigurationAsync()
         {
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
@@ -130,7 +130,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_DoesNot_Add_Oryx_AppInsights_Codeless_Configuration()
+        public async Task CanBuildAndRun_DoesNot_Add_Oryx_AppInsights_Codeless_ConfigurationAsync()
         {
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
@@ -188,7 +188,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore60MvcApp_UsingExplicitStartupCommand()
+        public async Task CanBuildAndRun_NetCore60MvcApp_UsingExplicitStartupCommandAsync()
         {
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
@@ -236,7 +236,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
         
         [Fact]
-        public async Task CanBuildAndRunApp_FromNestedOutputDirectory()
+        public async Task CanBuildAndRunApp_FromNestedOutputDirectoryAsync()
         {
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
@@ -284,7 +284,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
+        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
@@ -340,7 +340,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     
         [Fact]
-        public async Task CanRun_SelfContainedApp_TargetedForLinux()
+        public async Task CanRun_SelfContainedApp_TargetedForLinuxAsync()
         {
             // ****************************************************************
             // A self-contained app is an app which does not depend on whether a .NET Core runtime is present on the

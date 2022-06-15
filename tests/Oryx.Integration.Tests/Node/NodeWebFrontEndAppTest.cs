@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRun_NodeWebFrontEndApp(string nodeVersion)
+        public async Task CanBuildAndRun_NodeWebFrontEndAppAsync(string nodeVersion)
         {
             // Arrange
             var appName = "webfrontend";
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("webfrontend")]
         [InlineData("webfrontend-yarnlock")]
-        public async Task CanBuildAndRun_NodeWebFrontEndApp_WhenPruneDevDependenciesIsTrue(string appName)
+        public async Task CanBuildAndRun_NodeWebFrontEndApp_WhenPruneDevDependenciesIsTrueAsync(string appName)
         {
             // Arrange
             var nodeVersion = "12";
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NodeWebFrontEndApp_AfterRebuild_WhenPruneDevDependenciesIsTrue()
+        public async Task CanBuildAndRun_NodeWebFrontEndApp_AfterRebuild_WhenPruneDevDependenciesIsTrueAsync()
         {
             // Arrange
             var nodeVersion = "12";

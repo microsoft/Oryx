@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunApp_WithoutBuildManifestFile()
+        public async Task CanRunApp_WithoutBuildManifestFileAsync()
         {
             // Arrange
             var golangVersion = "1.17";

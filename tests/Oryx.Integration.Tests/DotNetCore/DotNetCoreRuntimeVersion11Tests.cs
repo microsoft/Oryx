@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore11WebApp()
+        public async Task CanBuildAndRun_NetCore11WebAppAsync()
         {
             // Arrange
             var dotnetcoreVersion = "1.1";
@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore11WebApp_HavingExplicitAssemblyName()
+        public async Task CanBuildAndRun_NetCore11WebApp_HavingExplicitAssemblyNameAsync()
         {
             // Arrange
             var appName = "NetCoreApp11WithExplicitAssemblyName";

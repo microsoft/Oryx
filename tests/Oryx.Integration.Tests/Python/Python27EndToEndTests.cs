@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingPython27_AndExplicitOutputStartupFile()
+        public async Task CanBuildAndRunPythonApp_UsingPython27_AndExplicitOutputStartupFileAsync()
         {
             // Arrange
             var appName = "python2-flask-app";
@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task CanBuildAndRun_Python27App_UsingVirtualEnv(bool compressDestinationDir)
+        public async Task CanBuildAndRun_Python27App_UsingVirtualEnvAsync(bool compressDestinationDir)
         {
             // Arrange
             var appName = "python2-flask-app";

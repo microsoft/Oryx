@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("github-actions")]
         [InlineData("latest")]
-        public async Task NodeApp_MicrosoftSqlServerDB(string imageTag)
+        public async Task NodeApp_MicrosoftSqlServerDBAsync(string imageTag)
         {
             // Arrange
             var appName = "node-mssql";

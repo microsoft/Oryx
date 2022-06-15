@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("2.7")]
         [InlineData("3.8")]
-        public async Task CanBuildAndRunPythonApp_UsingCustomStartUpScript(string pythonVersion)
+        public async Task CanBuildAndRunPythonApp_UsingCustomStartUpScriptAsync(string pythonVersion)
         {
             // Arrange
             var appName = "http-server-py";
@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("2.7")]
         [InlineData("3.8")]
-        public async Task CanBuildAndRunPythonApp_UsingCustomStartUpCommand(string pythonVersion)
+        public async Task CanBuildAndRunPythonApp_UsingCustomStartUpCommandAsync(string pythonVersion)
         {
             // Arrange
             var appName = "http-server-py";

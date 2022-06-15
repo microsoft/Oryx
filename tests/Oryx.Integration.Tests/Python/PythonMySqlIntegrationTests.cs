@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("mysql-mysqlconnector-sample", "github-actions")]
         [InlineData("mysql-mysqlclient-sample", "latest")]
         [InlineData("mysql-mysqlclient-sample", "github-actions")]
-        public async Task Python37App_MySqlDB_UsingPyMySql_UsingLtsVersionsBuildImage(
+        public async Task Python37App_MySqlDB_UsingPyMySql_UsingLtsVersionsBuildImageAsync(
             string sampleAppName,
             string imageTag)
         {
@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("mysql-pymysql-sample", "github-actions-buster")]
         [InlineData("mysql-mysqlconnector-sample", "github-actions-buster")]
         [InlineData("mysql-mysqlclient-sample", "github-actions-buster")]
-        public async Task Python39App_MySqlDB_UsingPyMySql_UsingBusterBuildImage(
+        public async Task Python39App_MySqlDB_UsingPyMySql_UsingBusterBuildImageAsync(
             string sampleAppName,
             string imageTag)
         {

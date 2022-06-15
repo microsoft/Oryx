@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("3.7")]
-        public async Task CanBuildAndRunPythonApp(string pythonVersion)
+        public async Task CanBuildAndRunPythonAppAsync(string pythonVersion)
         {
             // Arrange
             var appName = "django-app";
@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingPython37_AndVirtualEnv()
+        public async Task CanBuildAndRunPythonApp_UsingPython37_AndVirtualEnvAsync()
         {
             // Arrange
             var appName = "django-app";
@@ -124,7 +124,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("tar-gz", "tar.gz")]
         [InlineData("zip", "zip")]
-        public async Task CanBuildAndRunPythonApp_UsingPython37_AndCompressedVirtualEnv(
+        public async Task CanBuildAndRunPythonApp_UsingPython37_AndCompressedVirtualEnvAsync(
             string compressOption,
             string expectedCompressFileNameExtension)
         {
@@ -182,7 +182,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingCustomManifestFileLocation()
+        public async Task CanBuildAndRunPythonApp_UsingCustomManifestFileLocationAsync()
         {
             // Arrange
             var appName = "django-app";
@@ -244,7 +244,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_DjangoApp_DoingCollectStaticByDefault()
+        public async Task CanBuildAndRun_DjangoApp_DoingCollectStaticByDefaultAsync()
         {
             // Arrange
             var appName = "django-app";
@@ -296,7 +296,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_DjangoPython37App_UsingVirtualEnv()
+        public async Task CanBuildAndRun_DjangoPython37App_UsingVirtualEnvAsync()
         {
             // Arrange
             var appName = "django-app";
@@ -352,7 +352,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunPythonApp_WhenAllOutputIsCompressed()
+        public async Task CanBuildAndRunPythonApp_WhenAllOutputIsCompressedAsync()
         {
             // Arrange
             var appName = "django-app";

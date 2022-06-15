@@ -30,8 +30,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion80 = "8.0";
             Task.WaitAll(
-                ExifExample(phpVersion80),
-                PhpFpmExifExample(phpVersion80));
+                ExifExampleAsync(phpVersion80),
+                PhpFpmExifExampleAsync(phpVersion80));
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -39,14 +39,14 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             Task.WaitAll(
-                ExifExample(phpVersion74),
-                PhpFpmExifExample(phpVersion74));
+                ExifExampleAsync(phpVersion74),
+                PhpFpmExifExampleAsync(phpVersion74));
         }
 
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task ExifExample(string phpVersion)
+        public async Task ExifExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "exif-example";
@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task PhpFpmExifExample(string phpVersion)
+        public async Task PhpFpmExifExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "exif-example";

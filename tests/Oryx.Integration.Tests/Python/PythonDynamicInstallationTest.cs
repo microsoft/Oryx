@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("3.7")]
         [InlineData("3.8")]
         [InlineData("3.9")]
-        public async Task CanBuildAndRunPythonApp(string pythonVersion)
+        public async Task CanBuildAndRunPythonAppAsync(string pythonVersion)
         {
             // Arrange
             var appName = "flask-app";
@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData(PythonVersions.Python37Version)]
         [InlineData(PythonVersions.Python38Version)]
         [InlineData(PythonVersions.Python39Version)]
-        public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallation(
+        public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
             string pythonVersion)
         {
             // Arrange
@@ -114,7 +114,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
         [Theory]
         [InlineData(PythonVersions.Python310Version)]
-        public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallation(
+        public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
             string pythonVersion)
         {
             // Arrange
@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitch()
+        public async Task CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitchAsync()
         {
             // Arrange
             var pythonVersion = "3.7";
@@ -216,7 +216,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory(Skip = "Temporarily skip, Bug#1266781")]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task CanBuildAndRunPythonAppWhenUsingPackageDirSwitch(bool compressDestinationDir)
+        public async Task CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(bool compressDestinationDir)
         {
             // Arrange
             var pythonVersion = "3.7";

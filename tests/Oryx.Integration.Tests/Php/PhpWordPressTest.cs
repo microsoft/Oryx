@@ -31,8 +31,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion80 = "8.0";
             Task.WaitAll(
-                PhpWithWordPress51(phpVersion80),
-                CanBuildAndRun_Wordpress_SampleApp(phpVersion80));
+                PhpWithWordPress51Async(phpVersion80),
+                CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion80));
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -40,14 +40,14 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             Task.WaitAll(
-                PhpWithWordPress51(phpVersion74),
-                CanBuildAndRun_Wordpress_SampleApp(phpVersion74));
+                PhpWithWordPress51Async(phpVersion74),
+                CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion74));
         }
 
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task PhpWithWordPress51(string phpVersion)
+        public async Task PhpWithWordPress51Async(string phpVersion)
         {
             // Arrange
             string hostDir = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task CanBuildAndRun_Wordpress_SampleApp(string phpVersion)
+        public async Task CanBuildAndRun_Wordpress_SampleAppAsync(string phpVersion)
         {
             // Arrange
             var appName = "wordpress-example";

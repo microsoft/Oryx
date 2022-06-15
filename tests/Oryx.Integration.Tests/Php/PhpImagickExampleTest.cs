@@ -28,8 +28,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion80 = "8.0";
             Task.WaitAll(
-                ImagickExample(phpVersion80),
-                PhpFpmImagickExample(phpVersion80));
+                ImagickExampleAsync(phpVersion80),
+                PhpFpmImagickExampleAsync(phpVersion80));
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -37,13 +37,13 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             Task.WaitAll(
-                ImagickExample(phpVersion74),
-                PhpFpmImagickExample(phpVersion74));
+                ImagickExampleAsync(phpVersion74),
+                PhpFpmImagickExampleAsync(phpVersion74));
         }
 
         [Theory]
         [InlineData("7.4")]
-        public async Task ImagickExample(string phpVersion)
+        public async Task ImagickExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "imagick-example";
@@ -77,7 +77,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("7.4")]
-        public async Task PhpFpmImagickExample(string phpVersion)
+        public async Task PhpFpmImagickExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "imagick-example";

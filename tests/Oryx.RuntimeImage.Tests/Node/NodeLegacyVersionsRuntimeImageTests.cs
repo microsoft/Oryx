@@ -156,7 +156,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory(Skip = "Legacy node versions are out of support")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task RunNodeAppUsingProcessJson(string nodeVersion)
+        public async Task RunNodeAppUsingProcessJsonAsync(string nodeVersion)
         {
 
             var appName = "express-process-json";
@@ -193,7 +193,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory(Skip = "Legacy node versions are out of support")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task RunNodeAppUsingConfigYml(string nodeVersion)
+        public async Task RunNodeAppUsingConfigYmlAsync(string nodeVersion)
         {
 
             var appName = "express-config-yaml";
@@ -229,7 +229,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory(Skip = "Legacy node versions are out of support")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task RunNodeAppUsingConfigJs(string nodeVersion)
+        public async Task RunNodeAppUsingConfigJsAsync(string nodeVersion)
         {
 
             var appName = "express-config-js";

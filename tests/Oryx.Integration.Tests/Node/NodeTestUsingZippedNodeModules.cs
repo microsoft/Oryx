@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
 
-        public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModules(string nodeVersion)
+        public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModulesAsync(string nodeVersion)
         {
             // Arrange
             var compressFormat = "tar-gz";
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("12")]
         [InlineData("14")]
-        public async Task Node_CreateReactAppSample_zippedNodeModules(string nodeVersion)
+        public async Task Node_CreateReactAppSample_zippedNodeModulesAsync(string nodeVersion)
         {
             // Arrange
             // Use a separate volume for output due to rsync errors
@@ -108,7 +108,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task BuildsAndRunsNodeApp_WhenPruneDevDependenciesIsTrue_AndNodeModulesAreCompressed()
+        public async Task BuildsAndRunsNodeApp_WhenPruneDevDependenciesIsTrue_AndNodeModulesAreCompressedAsync()
         {
             // Arrange
             // Use a separate volume for output due to rsync errors
@@ -149,7 +149,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory(Skip = "Bug#1071724")]
         [InlineData("true")]
         [InlineData("false")]
-        public async Task CopiesNodeModulesInSubDirectory_ToDestination_WhenNodeModulesAreCompressed(string pruneDevDependency)
+        public async Task CopiesNodeModulesInSubDirectory_ToDestination_WhenNodeModulesAreCompressedAsync(string pruneDevDependency)
         {
             // Arrange
             // Use a separate volume for output due to rsync errors

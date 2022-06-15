@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("github-actions")]
         [InlineData("github-actions-buster")]
         [InlineData("latest")]
-        public async Task Python37App_PostgreSqlDB(string imageTag)
+        public async Task Python37App_PostgreSqlDBAsync(string imageTag)
         {
             await RunTestAsync(
                 "python",

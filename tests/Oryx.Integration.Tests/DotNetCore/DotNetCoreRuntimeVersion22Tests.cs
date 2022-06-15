@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore22WebApp()
+        public async Task CanBuildAndRun_NetCore22WebAppAsync()
         {
             // Arrange
             var dotnetcoreVersion = "2.2";
@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore22WebApp_UsingDebugConfiguration()
+        public async Task CanBuildAndRun_NetCore22WebApp_UsingDebugConfigurationAsync()
         {
             // Arrange
             var dotnetcoreVersion = "2.2";
@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task DotNetCoreStartupScript_UsesPortEnvironmentVariableValue()
+        public async Task DotNetCoreStartupScript_UsesPortEnvironmentVariableValueAsync()
         {
             // Arrange
             var dotnetcoreVersion = "2.2";
@@ -166,7 +166,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task StartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresent()
+        public async Task StartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresentAsync()
         {
             // Arrange
             var dotnetcoreVersion = "2.2";
@@ -212,7 +212,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore22WebApp_HavingExplicitAssemblyName_WithWhiteSpaceInIt()
+        public async Task CanBuildAndRun_NetCore22WebApp_HavingExplicitAssemblyName_WithWhiteSpaceInItAsync()
         {
             // Arrange
             var appName = "NetCoreApp22WithExplicitAssemblyName";
@@ -259,7 +259,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_UsingDefaultApp_WhenCannotFindAnyStartupFile()
+        public async Task CanBuildAndRun_UsingDefaultApp_WhenCannotFindAnyStartupFileAsync()
         {
             // Arrange
             var defaultAppVolume = CreateDefaultWebAppVolume();

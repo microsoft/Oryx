@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task TwigExampleCanBuildAndRun_UsingPreRunCommand()
+        public async Task TwigExampleCanBuildAndRun_UsingPreRunCommandAsync()
         {
             // Arrange
             var phpVersion = "7.4";
@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task TwigExampleCanBuildAndRun_UsingPreRunScript()
+        public async Task TwigExampleCanBuildAndRun_UsingPreRunScriptAsync()
         {
             // Arrange
             var phpVersion = "7.4";
@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task TwigExampleCanBuildAndRun_UsingPreRunScriptToInstallExtension()
+        public async Task TwigExampleCanBuildAndRun_UsingPreRunScriptToInstallExtensionAsync()
         {
             // Arrange
             var phpVersion = "7.4";
@@ -173,7 +173,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
+        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange
             var phpVersion = "7.4";

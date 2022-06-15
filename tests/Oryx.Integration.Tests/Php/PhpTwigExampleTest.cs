@@ -28,8 +28,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion80 = "8.0";
             Task.WaitAll(
-                TwigExample(phpVersion80),
-                PhpFpmTwigExample(phpVersion80));
+                TwigExampleAsync(phpVersion80),
+                PhpFpmTwigExampleAsync(phpVersion80));
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -37,15 +37,15 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             Task.WaitAll(
-                TwigExample(phpVersion74),
-                PhpFpmTwigExample(phpVersion74));
+                TwigExampleAsync(phpVersion74),
+                PhpFpmTwigExampleAsync(phpVersion74));
         }
 
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
         // Twig does not support PHP < 7
-        public async Task TwigExample(string phpVersion)
+        public async Task TwigExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "twig-example";
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("8.0")]
         [InlineData("7.4")]
         // Twig does not support PHP < 7
-        public async Task PhpFpmTwigExample(string phpVersion)
+        public async Task PhpFpmTwigExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "twig-example";

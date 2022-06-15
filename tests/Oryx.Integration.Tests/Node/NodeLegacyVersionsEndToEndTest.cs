@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory, Trait("category", "node-legacyVersions")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRun_NodeWebFrontEndApp(string nodeVersion)
+        public async Task CanBuildAndRun_NodeWebFrontEndAppAsync(string nodeVersion)
         {
             // Arrange
             var appName = "webfrontend";
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory, Trait("category", "node-legacyVersions-2")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModules(string nodeVersion)
+        public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModulesAsync(string nodeVersion)
         {
             // Arrange
             var compressFormat = "tar-gz";

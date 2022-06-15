@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("12", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
         //Without pre-IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~2'
         // and that will enable oryx's appInsight attach logic
-        public async Task CanBuildAndRun_App_With_AgentExtension_And_InstrumentKey_Or_ConnectionString(
+        public async Task CanBuildAndRun_App_With_AgentExtension_And_InstrumentKey_Or_ConnectionStringAsync(
             string nodeVersion,
             string agentExtensionVersionEnvValue,
             string appInsightKeyOrConnectionString)
@@ -92,7 +92,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("12", "disabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
         //With New IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~3'
         // and that will disable oryx's appInsight attach logic
-        public async Task CanBuildAndRun_NodeApp_AppInsights_With_NewIPA_Configuration(
+        public async Task CanBuildAndRun_NodeApp_AppInsights_With_NewIPA_ConfigurationAsync(
             string nodeVersion, 
             string agentExtensionVersionEnvValue,
             string appInsightKeyOrConnectionString)

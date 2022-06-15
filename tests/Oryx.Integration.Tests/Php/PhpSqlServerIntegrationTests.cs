@@ -33,9 +33,9 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion80 = "8.0";
             Task.WaitAll(
-                PhpApp_UsingPdo(phpVersion80, "github-actions"),
-                PhpApp_UsingPdo(phpVersion80, "github-buster"),
-                PhpApp_UsingPdo(phpVersion80, "latest"));
+                PhpApp_UsingPdoAsync(phpVersion80, "github-actions"),
+                PhpApp_UsingPdoAsync(phpVersion80, "github-buster"),
+                PhpApp_UsingPdoAsync(phpVersion80, "latest"));
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -43,9 +43,9 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             Task.WaitAll(
-                PhpApp_UsingPdo(phpVersion74, "github-actions"),
-                PhpApp_UsingPdo(phpVersion74, "github-buster"),
-                PhpApp_UsingPdo(phpVersion74, "latest"));
+                PhpApp_UsingPdoAsync(phpVersion74, "github-actions"),
+                PhpApp_UsingPdoAsync(phpVersion74, "github-buster"),
+                PhpApp_UsingPdoAsync(phpVersion74, "latest"));
         }
 
         [Theory]
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("8.0", "github-actions")]
         [InlineData("8.0", "github-actions-buster")]
         [InlineData("8.0", "latest")]
-        public async Task PhpApp_UsingPdo(string phpVersion, string imageTag)
+        public async Task PhpApp_UsingPdoAsync(string phpVersion, string imageTag)
         {
             // Arrange
             var appName = "sqlsrv-example";

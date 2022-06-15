@@ -28,8 +28,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion80 = "8.0";
             Task.WaitAll(
-                GdExample(phpVersion80),
-                PhpFpmGdExample(phpVersion80));
+                GdExampleAsync(phpVersion80),
+                PhpFpmGdExampleAsync(phpVersion80));
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -37,14 +37,14 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             Task.WaitAll(
-                GdExample(phpVersion74),
-                PhpFpmGdExample(phpVersion74));
+                GdExampleAsync(phpVersion74),
+                PhpFpmGdExampleAsync(phpVersion74));
         }
 
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task GdExample(string phpVersion)
+        public async Task GdExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "gd-example";
@@ -80,7 +80,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task PhpFpmGdExample(string phpVersion)
+        public async Task PhpFpmGdExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "gd-example";

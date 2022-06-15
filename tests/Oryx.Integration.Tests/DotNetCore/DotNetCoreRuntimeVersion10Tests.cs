@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCoreApp10WebApp()
+        public async Task CanBuildAndRun_NetCoreApp10WebAppAsync()
         {
             // Arrange
             var dotNetCoreVersion = "1.0";

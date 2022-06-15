@@ -24,21 +24,21 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Fact, Trait("category", "php-8.0")]
-        public async void PipelineTestInvocationsPhp80()
+        public async Task PipelineTestInvocationsPhp80Async()
         {   
-            await CanBuildAndRunApp("8.0");
+            await CanBuildAndRunAppAsync("8.0");
         }
 
         [Fact, Trait("category", "php-7.4")]
-        public async void PipelineTestInvocationsPhp74()
+        public async Task PipelineTestInvocationsPhp74Async()
         {
-            await CanBuildAndRunApp("7.4");
+            await CanBuildAndRunAppAsync("7.4");
         }
 
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task CanBuildAndRunApp(string phpVersion)
+        public async Task CanBuildAndRunAppAsync(string phpVersion)
         {
             // Arrange
             var exifImageTypePng = "3";

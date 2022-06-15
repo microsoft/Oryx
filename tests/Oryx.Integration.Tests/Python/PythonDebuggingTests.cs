@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("2.7")]
         [InlineData("3.6")]
         [InlineData("3.7", 5637)] // Test with a non-default port as well
-        public async Task CanBuildAndDebugFlaskApp(string pythonVersion, int? debugPort = null)
+        public async Task CanBuildAndDebugFlaskAppAsync(string pythonVersion, int? debugPort = null)
         {
             // Arrange
             var appName = "flask-app";
@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     // Send an Initialize request to make sure the debugger is running
                     using (var debugClient = new SimpleDAPClient("127.0.0.1", ptvsdHostPort, "oryxtests"))
                     {
-                        string initResponse = await debugClient.Initialize();
+                        string initResponse = await debugClient.InitializeAsync();
                         // Deliberately weak assertion; don't care what's in the response, only that there IS a response
                         Assert.False(string.IsNullOrEmpty(initResponse));
                     }
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("2.7")]
         [InlineData("3.6")]
         [InlineData("3.7", 5637)] // Test with a non-default port as well
-        public async Task CanBuildAndDebugFlaskAppWithDebugPy(string pythonVersion, int? debugPort = null)
+        public async Task CanBuildAndDebugFlaskAppWithDebugPyAsync(string pythonVersion, int? debugPort = null)
         {
             // Arrange
             var appName = "flask-app";
@@ -102,7 +102,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     // Send an Initialize request to make sure the debugger is running
                     using (var debugClient = new SimpleDAPClient("127.0.0.1", debugPyHostPort, "oryxtests"))
                     {
-                        string initResponse = await debugClient.Initialize();
+                        string initResponse = await debugClient.InitializeAsync();
                         // Deliberately weak assertion; don't care what's in the response, only that there IS a response
                         Assert.False(string.IsNullOrEmpty(initResponse));
                     }

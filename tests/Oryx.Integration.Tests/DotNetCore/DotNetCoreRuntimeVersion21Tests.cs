@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunApp_WithoutBuildManifestFile()
+        public async Task CanRunApp_WithoutBuildManifestFileAsync()
         {
             //NOTE: This test simulates the scenario where a user publishes the app via Visual Studio
 
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunApp_WithCustomBuildManifestFileLocation()
+        public async Task CanRunApp_WithCustomBuildManifestFileLocationAsync()
         {
             // Arrange
             var dotnetcoreVersion = "2.1";
@@ -126,7 +126,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunApp_NetCore21WebApp_NetCoreApp21WithExplicitAssemblyName_AndNoBuildManifestFile()
+        public async Task CanRunApp_NetCore21WebApp_NetCoreApp21WithExplicitAssemblyName_AndNoBuildManifestFileAsync()
         {
             //NOTE: This test simulates the scenario where a user publishes the app via Visual Studio
 
@@ -178,7 +178,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore21WebApp_WhenOutputDirIsCurrentDirectory()
+        public async Task CanBuildAndRun_NetCore21WebApp_WhenOutputDirIsCurrentDirectoryAsync()
         {
             // Arrange
             var dotnetcoreVersion = "2.1";
@@ -225,7 +225,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore21WebApp_HavingExplicitAssemblyName()
+        public async Task CanBuildAndRun_NetCore21WebApp_HavingExplicitAssemblyNameAsync()
         {
             // Arrange
             var appName = "NetCoreApp21WithExplicitAssemblyName";
@@ -289,7 +289,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [MemberData(nameof(StartupCommandData))]
-        public async Task CanBuildAndRun_NetCore21WebApp_UsingExplicitStartupCommand(string startupCommand)
+        public async Task CanBuildAndRun_NetCore21WebApp_UsingExplicitStartupCommandAsync(string startupCommand)
         {
             // Arrange
             var dotnetcoreVersion = "2.1";
@@ -340,7 +340,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_UsingExplicitStartupScriptFile()
+        public async Task CanBuildAndRun_UsingExplicitStartupScriptFileAsync()
         {
             // Arrange
             var dotnetcoreVersion = "2.1";
@@ -395,7 +395,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore21WebApp_HavingNestedProjectDirectory_AndNoPlatformVersionSwitch()
+        public async Task CanBuildAndRun_NetCore21WebApp_HavingNestedProjectDirectory_AndNoPlatformVersionSwitchAsync()
         {
             // Arrange
             var appName = "MultiWebAppRepo";
@@ -443,7 +443,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore21WebApp_HavingMultipleProjects()
+        public async Task CanBuildAndRun_NetCore21WebApp_HavingMultipleProjectsAsync()
         {
             // Arrange
             var appName = "NetCoreApp22MultiProjectApp";
@@ -487,7 +487,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunApp_HavingMultipleRuntimeConfigJsonFiles_AndExplicitStartupCommand()
+        public async Task CanRunApp_HavingMultipleRuntimeConfigJsonFiles_AndExplicitStartupCommandAsync()
         {
             // Scenario: When a user does a rename of a project and publishes it, there would be new files
             // (.dll and .runtimeconfig.json) having this new name. If the user does not clean the output directory
@@ -549,7 +549,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunApp_UsingDefaultApp_WhenHavingMultipleRuntimeConfigJsonFiles()
+        public async Task CanRunApp_UsingDefaultApp_WhenHavingMultipleRuntimeConfigJsonFilesAsync()
         {
             // Arrange
             var appName = "MultiWebAppRepo";
@@ -606,7 +606,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunCorrectApp_WhenOutputHasMultipleRuntimeConfigJsonFiles_DueToProjectFileRenaming()
+        public async Task CanRunCorrectApp_WhenOutputHasMultipleRuntimeConfigJsonFiles_DueToProjectFileRenamingAsync()
         {
             // Arrange
             var appVolume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp21WebApp));
@@ -657,7 +657,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunApp_WhenRecursiveLookUpIsDisabled_ButProjectSettingIsSupplied()
+        public async Task CanBuildAndRunApp_WhenRecursiveLookUpIsDisabled_ButProjectSettingIsSuppliedAsync()
         {
             // Arrange
             var appName = "MultiWebAppRepo";

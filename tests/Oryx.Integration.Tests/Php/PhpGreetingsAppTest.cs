@@ -29,8 +29,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion80 = "8.0";
             Task.WaitAll(
-                GreetingsAppTest(phpVersion80),
-                PhpFpmGreetingsAppTest(phpVersion80));
+                GreetingsAppTestAsync(phpVersion80),
+                PhpFpmGreetingsAppTestAsync(phpVersion80));
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -38,14 +38,14 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             Task.WaitAll(
-                GreetingsAppTest(phpVersion74),
-                PhpFpmGreetingsAppTest(phpVersion74));
+                GreetingsAppTestAsync(phpVersion74),
+                PhpFpmGreetingsAppTestAsync(phpVersion74));
         }
 
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task GreetingsAppTest(string phpVersion)
+        public async Task GreetingsAppTestAsync(string phpVersion)
         {
             // Arrange
             var appName = "greetings";
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task PhpFpmGreetingsAppTest(string phpVersion)
+        public async Task PhpFpmGreetingsAppTestAsync(string phpVersion)
         {
             // Arrange
             var appName = "greetings";

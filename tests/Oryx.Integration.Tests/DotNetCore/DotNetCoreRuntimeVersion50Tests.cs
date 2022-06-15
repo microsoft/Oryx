@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_Without_Oryx_AppInsights_Codeless_Configuration()
+        public async Task CanBuildAndRun_Without_Oryx_AppInsights_Codeless_ConfigurationAsync()
         {
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp50;
@@ -80,7 +80,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore50MvcApp()
+        public async Task CanBuildAndRun_NetCore50MvcAppAsync()
         {
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp50;
@@ -128,7 +128,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
     
         [Fact(Skip = "Skipping test temporarily")]
-        public async Task CanRun_SelfContainedApp_TargetedForLinux()
+        public async Task CanRun_SelfContainedApp_TargetedForLinuxAsync()
         {
             // ****************************************************************
             // A self-contained app is an app which does not depend on whether a .NET Core runtime is present on the

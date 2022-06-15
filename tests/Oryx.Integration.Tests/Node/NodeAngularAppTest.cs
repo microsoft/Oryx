@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8"), Trait("category", "node-8")]
         [InlineData("9.4"), Trait("category", "node-9.4")]
-        public async Task CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(string nodeVersion)
+        public async Task CanBuildAndRun_Angular6App_WithoutCompressedNodeModulesAsync(string nodeVersion)
         {
             // Arrange
             var appName = "angular6app";
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("8"), Trait("category", "node-8")]
-        public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InRoot_WithoutCompression(string nodeVersion)
+        public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InRoot_WithoutCompressionAsync(string nodeVersion)
         {
             // Arrange
             var appName = "angular6app";
@@ -140,7 +140,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("9.4"), Trait("category", "node-9.4")]
-        public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InAppDir_WithoutCompression(string nodeVersion)
+        public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InAppDir_WithoutCompressionAsync(string nodeVersion)
         {
             // Arrange
             var appName = "angular6app";
@@ -209,7 +209,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("8"), Trait("category", "node-8")]
-        public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InRoot_WithoutCompression(string nodeVersion)
+        public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InRoot_WithoutCompressionAsync(string nodeVersion)
         {
             // Arrange
             var appName = "angular6app";
@@ -279,7 +279,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("9.4"), Trait("category", "node-9.4")]
-        public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InAppDir_WithoutCompression(string nodeVersion)
+        public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InAppDir_WithoutCompressionAsync(string nodeVersion)
         {
             // Arrange
             var appName = "angular6app";
@@ -349,7 +349,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("8"), Trait("category", "node-8")]
-        public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_Dir_Exists_InAppDir_UsingCompression(string nodeVersion)
+        public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_Dir_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -430,7 +430,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("9.4"), Trait("category", "node-9.4")]
-        public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_SymLink_Exists_InRootDir_UsingCompression(string nodeVersion)
+        public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_SymLink_Exists_InRootDir_UsingCompressionAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -513,7 +513,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("12"), Trait("category", "node-12")]
         [InlineData("10"), Trait("category", "node-10")]
-        public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
+        public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModulesAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -562,7 +562,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("10"), Trait("category", "node-10")]
         [InlineData("12"), Trait("category", "node-12")]
-        public async Task CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(string nodeVersion)
+        public async Task CanBuildAndRun_Angular8App_WithoutCompressedNodeModulesAsync(string nodeVersion)
         {
             // Arrange
             var appName = "angular8app";
@@ -607,7 +607,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("10"), Trait("category", "node-10")]
-        public async Task CanBuildAndRun_Angular8App_NodeModules_Dir_Exists_InRoot_WithoutCompression(string nodeVersion)
+        public async Task CanBuildAndRun_Angular8App_NodeModules_Dir_Exists_InRoot_WithoutCompressionAsync(string nodeVersion)
         {
             // Arrange
             var appName = "angular8app";
@@ -685,7 +685,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("12"), Trait("category", "node-12")]
-        public async Task CanBuildAndRun_Angular8App_NodeModules_SymLink_Exists_InRoot_WithoutCompression(string nodeVersion)
+        public async Task CanBuildAndRun_Angular8App_NodeModules_SymLink_Exists_InRoot_WithoutCompressionAsync(string nodeVersion)
         {
             // Arrange
             var appName = "angular8app";
@@ -756,7 +756,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("10"), Trait("category", "node-10")]
-        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InRoot_UsingCompression(string nodeVersion)
+        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InRoot_UsingCompressionAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -836,7 +836,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("12"), Trait("category", "node-12")]
-        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompression(string nodeVersion)
+        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -915,7 +915,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("10"), Trait("category", "node-10")]
-        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InRoot_UsingCompression(string nodeVersion)
+        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InRoot_UsingCompressionAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -996,7 +996,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("12"), Trait("category", "node-12-2")]
-        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression(string nodeVersion)
+        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -1079,7 +1079,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("10"), Trait("category", "node-10")]
         [InlineData("12"), Trait("category", "node-12-2")]
-        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
+        public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModulesAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";

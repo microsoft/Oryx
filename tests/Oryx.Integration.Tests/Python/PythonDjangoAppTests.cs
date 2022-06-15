@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_DjangoPython36App_UsingVirtualEnv()
+        public async Task CanBuildAndRun_DjangoPython36App_UsingVirtualEnvAsync()
         {
             // Arrange
             var appName = "django-app";
@@ -77,7 +77,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public async Task CanBuildAndRun_DjangoApp_UsingPython36(bool compressDestinationDir)
+        public async Task CanBuildAndRun_DjangoApp_UsingPython36Async(bool compressDestinationDir)
         {
             // Arrange
             var appName = "django-app";
@@ -130,7 +130,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_MultiPlatformApp_HavingReactAndDjango()
+        public async Task CanBuildAndRun_MultiPlatformApp_HavingReactAndDjangoAsync()
         {
             // Arrange
             var appName = "reactdjango";

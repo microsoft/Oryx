@@ -26,14 +26,14 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             Task.WaitAll(
-                PhpApp_UsingMysqli(phpVersion74, "latest"),
-                PhpApp_UsingMysqli(phpVersion74, "github-actions"));
+                PhpApp_UsingMysqliAsync(phpVersion74, "latest"),
+                PhpApp_UsingMysqliAsync(phpVersion74, "github-actions"));
         }
 
         [Theory]
         [InlineData("7.4", "latest")]
         [InlineData("7.4", "github-actions")]
-        public async Task PhpApp_UsingMysqli(string phpVersion, string imageTag)
+        public async Task PhpApp_UsingMysqliAsync(string phpVersion, string imageTag)
         {
             await RunTestAsync(
                 "php",
