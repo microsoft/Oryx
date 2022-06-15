@@ -30,7 +30,7 @@ RUN buildDir="/opt/tmp/build" \
     # Install Conda and related tools
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        apt-transport-https \
+    apt-transport-https \
     && rm -rf /var/lib/apt/lists/* \
     && curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor > conda.gpg \
     && install -o root -g root -m 644 conda.gpg /usr/share/keyrings/conda-archive-keyring.gpg \
@@ -39,7 +39,7 @@ RUN buildDir="/opt/tmp/build" \
     && . $buildDir/__condaConstants.sh \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        conda=${CONDA_VERSION} \
+    conda=${CONDA_VERSION} \
     && rm -rf /var/lib/apt/lists/* \
     && . $CONDA_SCRIPT \
     && conda config --add channels conda-forge \
