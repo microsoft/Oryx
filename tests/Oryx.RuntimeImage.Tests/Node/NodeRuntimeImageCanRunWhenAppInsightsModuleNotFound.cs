@@ -172,7 +172,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("10", "~3")]
         [InlineData("12", "")]
         [InlineData("12", "disabled")]
-        public async Task GeneratesScript_Doesnot_Add_Oryx_AppInsights_Logic_With_IPA_Configuration(
+        public async Task GeneratesScript_Doesnot_Add_Oryx_AppInsights_Logic_With_IPA_Configuration_Async(
             string nodeVersion,
             string agentExtensionVersionEnvValue)
         {
