@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData(Settings.JamStackBuildImageName, "stretch")]
         [InlineData(Settings.JamStackBullseyeBuildImageName, "bullseye")]
         [InlineData(Settings.JamStackBusterBuildImageName, "buster")]
-        [InlineData(Settings.VsoUbuntuBuildImageName, "focal")]
+        [InlineData(Settings.VsoUbuntuBuildImageName, "focal-scm")]
         public void PulledBuildImages_Contains_BUILDOS_TYPE_Info(string buildImageName, string expectedBuildOsType)
         {
             // Arrange and Act
@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedBuildOsType, actualOutput);
+                    Assert.Equal(expectedBuildOsType, actualOutput);
                 },
                 result.GetDebugInfo());
         }
