@@ -47,6 +47,8 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData(Settings.CliBuildImageName, "stretch")]
         [InlineData(Settings.CliBusterBuildImageName, "buster")]
         [InlineData(Settings.JamStackBuildImageName, "stretch")]
+        [InlineData(Settings.JamStackBullseyeBuildImageName, "bullseye")]
+        [InlineData(Settings.JamStackBusterBuildImageName, "buster")]
         [InlineData(Settings.VsoUbuntuBuildImageName, "focal")]
         public void PulledBuildImages_Contains_BUILDOS_TYPE_Info(string buildImageName, string expectedBuildOsType)
         {
