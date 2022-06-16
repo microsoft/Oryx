@@ -56,7 +56,7 @@ jobs:
         imageType: jamstack
 
 - job: Job_BuildImage_latest
-  displayName: Build and Test Build Jamstack Image
+  displayName: Build and Test Build Latest Image
   pool:
     name: AzurePipelines-EO
     demands:

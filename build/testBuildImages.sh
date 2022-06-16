@@ -37,6 +37,13 @@ then
     export ORYX_TEST_TAG_SUFFIX="-$3"
 fi
 
+if [ -n "$4" ]
+then
+    echo
+    echo "Setting environment variable 'ORYX_TEST_IMAGE_TYPE' to provided value '$4'."
+    export ORYX_TEST_IMAGE_TYPE="$4"
+fi
+
 echo
 echo "Building and running tests..."
 cd "$TESTS_SRC_DIR/$testProjectName"
@@ -56,6 +63,7 @@ diagnosticFileLocation="$artifactsDir/$testProjectName-log.txt"
 dotnet test \
     --blame \
     --diag "$diagnosticFileLocation" \
+    --filter "${ORYX_TEST_IMAGE_TYPE}" \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" \
     -c $BUILD_CONFIGURATION
