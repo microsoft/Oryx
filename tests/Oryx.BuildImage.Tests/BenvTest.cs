@@ -233,8 +233,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("latest")]
-        [InlineData("lts-versions")]
+        [InlineData("latest"), Trait("category", "latest")]
+        [InlineData("lts-versions"), Trait("category", "lts-versions")]
         public void InstalledNodeModulesExecutablesAreOnPath(string tag)
         {
             // Arrange
@@ -259,7 +259,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("latest")]
+        [InlineData("latest"), Trait("category", "latest")]
         [InlineData("lts-versions")]
         public void InstalledPythonExecutablesAreOnPath(string tag)
         {
@@ -301,6 +301,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
 
         }
+        // TODO: figure out a way to add the trait with ImageNameData:
+        //  Trait("category", "latest")
         [Theory]
         [MemberData(nameof(ImageNameData))]
         public void BuildImagesHaveOryxPathsEnvironmentVariableAvailable(string iamgeName)
@@ -389,6 +391,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "latest")]
         public void BenvDotNet22UsesDotNetCore22Version()
         {
             // Arrange

@@ -30,7 +30,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 return data;
             }
         }
-
+        // TODO: figure out how to add trait to ImageNameData
+        //  Trait("category", "latest")
         [Theory]
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuilds(string buildImageName)

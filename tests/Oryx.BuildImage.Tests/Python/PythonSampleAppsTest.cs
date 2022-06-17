@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.BuildImageName), Trait("category", "latest")]
         [InlineData(Settings.LtsVersionsBuildImageName)]
         public void GeneratesScript_AndBuilds(string buildImageName)
         {
@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_WithPackageDir()
         {
             // Arrange
@@ -147,7 +147,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("github-actions")]
         [InlineData("github-actions-buster")]
         [InlineData("lts-versions")]
-        [InlineData("latest")]
+        [InlineData("latest"), Trait("category", "latest")]
         public void DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(string imageTag)
         {
             // Arrange
@@ -180,7 +180,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
@@ -294,7 +294,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
@@ -327,7 +327,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
@@ -361,7 +361,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_DoestNotCleanDestinationDir()
         {
             // Arrange
@@ -402,7 +402,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
             // Try building a Python 2.7 app with 3.7 version. This should fail as there are major
@@ -445,7 +445,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_WhenExplicitPlatformAndVersion_AreProvided()
         {
             // Arrange
@@ -492,7 +492,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         // This is to test if we can build an app when there is no requirement.txt
         // but setup.py is provided at root level
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_WhenSetupDotPy_File_isProvided()
         {
             // Arrange
@@ -536,7 +536,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         // This is to test if we can build an app when both the files requirement.txt
         // and setup.py are provided, we tend to prioritize the root level requirement.txt
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_With_Both_Files_areProvided()
         {
             // Arrange
@@ -578,7 +578,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Issue# 1094264")]
+        [Fact(Skip = "Issue# 1094264"), Trait("category", "latest")]
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
             // Arrange
@@ -617,7 +617,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Issue# 1094264")]
+        [Fact(Skip = "Issue# 1094264"), Trait("category", "latest")]
         public void ThrowsException_ForInvalidPythonVersion()
         {
             // Arrange
@@ -658,7 +658,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Issue# 1094264")]
+        [Fact(Skip = "Issue# 1094264"), Trait("category", "latest")]
         public void CanBuild_Python2_WithScriptOnlyOption()
         {
             // Arrange
@@ -698,7 +698,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
@@ -776,7 +776,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_VirtualEnv_Unzipped_ByDefault()
         {
             // Arrange
@@ -814,7 +814,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData(null)]
         [InlineData("tar-gz")]
         public void Build_CompressesVirtualEnv_InTargGzFormat(string compressionFormat)
@@ -856,7 +856,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_CompressesVirtualEnv_InZipFormat()
         {
             // Arrange
@@ -897,7 +897,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_InstallsVirtualEnvironment_AndPackagesInIt()
         {
             // Arrange
@@ -935,7 +935,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_InstallsVirtualEnvironment_AndPackagesInIt_From_File_Setup_Py()
         {
             // Arrange
@@ -973,7 +973,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_ExecutesPreAndPostBuildScripts_UsingBuildEnvironmentFile()
         {
             // Arrange
@@ -1038,7 +1038,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_ExecutesPreAndPostBuildScripts_UsingEnvironmentVariables()
         {
             // Arrange
@@ -1101,7 +1101,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void PreAndPostBuildScripts_HaveAccessToSourceAndDestinationDirectoryVariables()
         {
             // Arrange
@@ -1160,7 +1160,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_Executes_InlinePreAndPostBuildCommands()
         {
             // Arrange
@@ -1203,7 +1203,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Django_CollectStaticFailure_DoesNotFailBuild()
         {
             // Arrange
@@ -1245,7 +1245,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData(PythonVersions.Python38Version)]
         [InlineData(PythonVersions.Python27Version)]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext(string version)
@@ -1409,8 +1409,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData("lts-versions", "3")]
         [InlineData("vso-focal", "3")]
-        [InlineData("latest", "2")]
-        [InlineData("latest", "3")]
+        [InlineData("latest", "2"), Trait("category", "latest")]
+        [InlineData("latest", "3"), Trait("category", "latest")]
         public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName, string pythonVersion)
         {
             // Arrange

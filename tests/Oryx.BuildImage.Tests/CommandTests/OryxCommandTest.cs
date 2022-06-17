@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public OryxCommandTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
+        [Trait("category", "latest")]
         public void Build_ReturnsExpectedErrorCode_ForUnsupportedPlatformException()
         {
             // Arrange
@@ -48,6 +49,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "latest")]
         public void Build_ReturnsExpectedErrorCode_ForUnsupportedVersionException()
         {
             // Arrange
@@ -73,7 +75,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildImage_Build_UsesCwd_WhenNoSourceDirGiven()
         {
             // Act
@@ -95,7 +97,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Temporarily skipping test")]
+        [Fact(Skip = "Temporarily skipping test"), Trait("category", "latest")]
         public void BuildImage_CanExec_WithNoUsableToolsDetected()
         {
             // Arrange
@@ -119,7 +121,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildImage_CanExec_SingleCommand()
         {
             // Arrange
@@ -148,7 +150,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip="Temporarily skipping the test")]
+        [Fact(Skip="Temporarily skipping the test"), Trait("category", "latest")]
         public void BuildImage_CanExec_CommandInSourceDir()
         {
             // Arrange
@@ -178,7 +180,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildImage_CanExec_MultipleCommands_WithOlderToolVersions()
         {
             // Arrange
@@ -217,7 +219,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildImage_Exec_PropagatesFailures()
         {
             // Arrange

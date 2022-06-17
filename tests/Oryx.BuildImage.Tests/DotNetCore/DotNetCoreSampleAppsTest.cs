@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
-        [Fact (Skip="NetCore11 is no longer officially supported")]
+        [Fact (Skip="NetCore11 is no longer officially supported"), Trait("category", "latest")]
         public void Builds_NetCore10App_UsingNetCore11_DotNetSdkVersion()
         {
             // Arrange
@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion()
         {
             // Arrange
@@ -108,7 +108,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_NetCore20App_UsingNetCore21_DotNetSdkVersion()
         {
             // Arrange
@@ -143,7 +143,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.BuildImageName), Trait("category", "latest")]
         [InlineData(Settings.LtsVersionsBuildImageName)]
         public void Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(string buildImageName)
         {
@@ -177,7 +177,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_NetCore22App_UsingNetCore22_DotNetSdkVersion()
         {
             // Arrange
@@ -210,7 +210,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_NetCore30App_UsingNetCore30_DotNetSdkVersion()
         {
             // Arrange
@@ -243,7 +243,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion()
         {
             // Arrange
@@ -313,7 +313,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_Net5MvcApp_UsingNet5_DotNetSdkVersion()
         {
             // Arrange
@@ -384,7 +384,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
         {
             // Arrange
@@ -515,7 +515,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_Executes_InlinePreAndPostBuildCommands()
         {
             // Arrange
@@ -556,7 +556,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_DoesNotClean_DestinationDirectory_ByDefault()
         {
             // Arrange
@@ -592,7 +592,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsApplication_InIntermediateDirectory_WhenIntermediateDirectorySwitchIsUsed()
         {
             // Arrange
@@ -628,7 +628,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsMultiWebAppRepoApp_InIntermediateDirectory_WhenIntermediateDirectorySwitchIsUsed()
         {
             // Arrange
@@ -666,7 +666,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_AzureFunctionsProject()
         {
             // Arrange
@@ -701,7 +701,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Skipping till we fix Bug#1288173")]
+        [Fact(Skip = "Skipping till we fix Bug#1288173"), Trait("category", "latest")]
         public void Builds_SingleBlazorWasmProject_Without_Setting_Apptype_Option()
         {
             // Arrange
@@ -742,7 +742,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_AzureBlazorWasmFunctionProject_By_Setting_Apptype_Via_BuildCommand()
         {
             // Arrange
@@ -819,7 +819,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_Application_Checks_OutputType_In_Manifest()
         {
             // Arrange
@@ -857,10 +857,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-       //[InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion), Trait("category", "latest")]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion), Trait("category", "latest")]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion), Trait("category", "latest")]
+        //[InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion), Trait("category", "latest")]
         public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
         {
             // Arrange
@@ -969,9 +969,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory]
         [InlineData("github-actions")]
         [InlineData("github-actions-buster")]
-        [InlineData("lts-versions")]
+        [InlineData("lts-versions"), Trait("category", "lts-versions")]
         [InlineData("vso-focal")]
-        [InlineData("latest")]
+        [InlineData("latest"), Trait("category", "latest")]
         public void GDIPlusLibrary_IsPresentInTheImage(string tagName)
         {
             // Arrange

@@ -43,7 +43,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 return data;
             }
         }
-
+        // TODO: Add category attribute to MemberData
+        //  Trait("category", "latest")
         [SkippableTheory]
         [MemberData(nameof(ImageNameData))]
         public void OryxBuildImage_Contains_VersionAndCommit_Information(string buildImageName)
@@ -136,7 +137,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.BuildImageName), Trait("category", "latest")]
         [InlineData(Settings.LtsVersionsBuildImageName)]
         public void DotNetAlias_UsesLtsVersion_ByDefault(string buildImageName)
         {
@@ -221,7 +222,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.BuildImageName), Trait("category", "latest")]
         [InlineData(Settings.LtsVersionsBuildImageName)]
         public void Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
             string buildImageName)
@@ -249,7 +250,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "node")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("8.1.4", "v8.1.4")]
         [InlineData("8.11", "v8.11.4")]
         [InlineData("8.11.4", "v8.11.4")]
@@ -298,7 +299,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "node")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         // Only version 6 of npm is upgraded, so the following should remain unchanged.
         [InlineData("10.1", "5.6.0")]
         // Make sure the we get the upgraded version of npm in the following cases
@@ -331,7 +332,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void NpmVersion_IsNotUpgraded_To_6_9_0()
         {
             // Arrange
@@ -361,7 +362,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "python")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
         [InlineData(PythonVersions.Python27Version, Python27VersionInfo)]
@@ -394,7 +395,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "python")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
         [InlineData(PythonVersions.Python27Version, Python27VersionInfo)]
@@ -426,7 +427,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "python")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("latest", Python38VersionInfo)]
         [InlineData("stable", Python38VersionInfo)]
         [InlineData("3", Python38VersionInfo)]
@@ -464,7 +465,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "dotnet")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("DotNet", "dotnet")]
         [InlineData("dotnet", "dotNet")]
         [InlineData("DOTNET_VERSION", "DOTNET_VERSION")]
@@ -502,7 +503,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "dotnet")]
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void RunningBenvMultipleTimes_HonorsLastRunArguments()
         {
             // Arrange
@@ -545,7 +546,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 return data;
             }
         }
-
+        // TODO: Add attribute to MemberData
+        //  Trait("category", "latest")
         [Theory]
         [MemberData(nameof(PhpVersionImageNameData))]
         public void PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
@@ -578,7 +580,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData(PhpVersions.Php73Version, PhpVersions.Php73Version)]
         [InlineData("7.3", PhpVersions.Php73Version)]
         [InlineData("7", PhpVersions.Php73Version)]
@@ -610,7 +612,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BenvShouldSetUpEnviroment_WhenMultiplePlatforms_AreSuppliedAsArguments()
         {
             // Arrange
@@ -642,7 +644,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BenvShouldSetUpEnviroment_UsingExactNames()
         {
             // Arrange

@@ -234,7 +234,7 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void InstallsPlatformsAtBuiltInInstallDirAsRoot()
         {
             // Arrange

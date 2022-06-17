@@ -151,7 +151,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange

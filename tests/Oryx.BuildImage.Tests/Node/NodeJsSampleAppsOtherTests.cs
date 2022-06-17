@@ -41,7 +41,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 return data;
             }
         }
-
+        // TODO: Add Trait to Memberdata
+        //  Trait("category", "latest")
         [Theory]
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuilds(string buildImageName)
@@ -77,7 +78,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
@@ -144,7 +145,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
         {
             // Arrange
@@ -212,7 +213,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             return script;
         }
 
-        [Fact(Skip = "structured data is not logged as custom dimension in file, 801985")]
+        [Fact(Skip = "structured data is not logged as custom dimension in file, 801985"), Trait("category", "latest")]
         public void ErrorDetectingNode_FailedExitCode_StringContentFound()
         {
             var appDir = "/tmp/app1";
@@ -246,7 +247,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "structured data is not logged as custom dimension in file, 801985")]
+        [Fact(Skip = "structured data is not logged as custom dimension in file, 801985"), Trait("category", "latest")]
         public void ErrorDetectingNode_FailedExitCode_StringContentNotFound()
         {
             var appDir = "/tmp/app1";
@@ -277,7 +278,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
             // Arrange
@@ -308,7 +309,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_WhenExplicitPlatformAndVersion_AreProvided()
         {
             // Arrange
@@ -344,7 +345,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
             // Arrange
@@ -379,7 +380,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption_AndWhenExplicitPlatformAndVersion_AreProvided()
         {
             // Arrange
@@ -414,7 +415,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
@@ -445,7 +446,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
@@ -475,6 +476,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact(Skip = "Work item 819489 - output folder as a subdirectory of source is not yet supported.)")]
+        [Trait("category", "latest")]
         public void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
@@ -504,7 +506,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
         {
             // Arrange
@@ -568,7 +570,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsNodeApp_AndZipsNodeModules_WithTarGz_IfZipNodeModulesIsTarGz()
         {
             // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
@@ -603,7 +605,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsNodeApp_AndZipsNodeModules_IfCompressNodeModulesIsZip()
         {
             // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
@@ -641,7 +643,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsNodeApp_AndDoesNotZipNodeModules_IfZipNodeModulesIsFalse()
         {
             // Arrange
@@ -672,7 +674,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir()
         {
             // Arrange
@@ -705,7 +707,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir_WhenPackageDirAndSourceDirAreSame()
         {
             // Arrange
@@ -809,7 +811,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("webfrontend")]
         [InlineData("webfrontend-yarnlock")]
         public void BuildsNodeApp_AndDoesNotCopyDevDependencies_IfPruneDevDependenciesIsTrue(string appName)
@@ -856,7 +858,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsNodeApp_DoesNotPruneDevDependencies_IfPruneDevDependenciesIsFalse()
         {
             // Arrange

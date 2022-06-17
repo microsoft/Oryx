@@ -117,7 +117,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange
@@ -160,7 +160,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsApplication_ByDynamicallyInstallingIntoCustomDynamicInstallationDir()
         {
             // Arrange
