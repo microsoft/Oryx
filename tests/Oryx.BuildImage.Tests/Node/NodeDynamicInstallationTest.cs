@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add("12.22.11", imageTestHelper.GetGitHubActionsBuildImage());
                 data.Add("14.19.1", imageTestHelper.GetGitHubActionsBuildImage());
                 data.Add("16.14.2", imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add("18.2.0", imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add("18.2.0", imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
                 return data;
             }
         }
