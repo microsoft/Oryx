@@ -63,7 +63,7 @@ diagnosticFileLocation="$artifactsDir/$testProjectName-log.txt"
 dotnet test \
     --blame \
     --diag "$diagnosticFileLocation" \
-    --filter category="${ORYX_TEST_IMAGE_TYPE}" \
+    --filter "category=${ORYX_TEST_IMAGE_TYPE}" \
     --verbosity normal
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" \
