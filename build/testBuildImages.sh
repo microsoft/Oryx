@@ -64,7 +64,7 @@ dotnet test \
     --blame \
     --diag "$diagnosticFileLocation" \
     --filter "category=${ORYX_TEST_IMAGE_TYPE}" \
-    --verbosity normal
+    --verbosity normal \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" \
     -c $BUILD_CONFIGURATION
