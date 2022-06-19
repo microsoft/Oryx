@@ -144,7 +144,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(Settings.BuildImageName), Trait("category", "latest")]
-        [InlineData(Settings.LtsVersionsBuildImageName)]
+        //[InlineData(Settings.LtsVersionsBuildImageName)]
         public void Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(string buildImageName)
         {
             // Arrange
@@ -967,10 +967,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("github-actions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("lts-versions"), Trait("category", "lts-versions")]
-        [InlineData("vso-focal")]
+        //[InlineData("github-actions")]
+        //[InlineData("github-actions-buster")]
+        //[InlineData("lts-versions"), Trait("category", "lts-versions")]
+        //[InlineData("vso-focal")]
         [InlineData("latest"), Trait("category", "latest")]
         public void GDIPlusLibrary_IsPresentInTheImage(string tagName)
         {

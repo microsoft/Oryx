@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(Settings.BuildImageName), Trait("category", "latest")]
-        [InlineData(Settings.LtsVersionsBuildImageName)]
+        //[InlineData(Settings.LtsVersionsBuildImageName)]
         public void GeneratesScript_AndBuilds(string buildImageName)
         {
             // Arrange
@@ -144,10 +144,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("github-actions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("lts-versions")]
-        [InlineData("latest"), Trait("category", "latest")]
+        //[InlineData("github-actions"), Trait("category", "github")]
+        //[InlineData("github-actions-buster"), Trait("category", "github")]
+        //[InlineData("lts-versions")]
+        [InlineData("latest"), Trait("category", "mytest")]
         public void DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(string imageTag)
         {
             // Arrange
@@ -1407,8 +1407,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("lts-versions", "3")]
-        [InlineData("vso-focal", "3")]
+        //[InlineData("lts-versions", "3")]
+        //[InlineData("vso-focal", "3")]
         [InlineData("latest", "2"), Trait("category", "latest")]
         [InlineData("latest", "3"), Trait("category", "latest")]
         public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName, string pythonVersion)

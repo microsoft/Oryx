@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(Settings.BuildImageName), Trait("category", "latest")]
-        [InlineData(Settings.LtsVersionsBuildImageName)]
+        //[InlineData(Settings.LtsVersionsBuildImageName)]
         public void DotNetAlias_UsesLtsVersion_ByDefault(string buildImageName)
         {
             // Arrange
@@ -223,7 +223,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(Settings.BuildImageName), Trait("category", "latest")]
-        [InlineData(Settings.LtsVersionsBuildImageName)]
+        //[InlineData(Settings.LtsVersionsBuildImageName)]
         public void Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
             string buildImageName)
         {

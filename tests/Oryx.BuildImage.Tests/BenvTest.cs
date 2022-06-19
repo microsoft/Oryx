@@ -234,7 +234,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("latest"), Trait("category", "latest")]
-        [InlineData("lts-versions"), Trait("category", "lts-versions")]
+       // [InlineData("lts-versions"), Trait("category", "lts-versions")]
         public void InstalledNodeModulesExecutablesAreOnPath(string tag)
         {
             // Arrange
@@ -260,7 +260,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData("latest"), Trait("category", "latest")]
-        [InlineData("lts-versions")]
+        //[InlineData("lts-versions")]
         public void InstalledPythonExecutablesAreOnPath(string tag)
         {
             // Arrange

@@ -196,7 +196,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
         }
 
         [Theory]
-        [InlineData(Settings.LtsVersionsBuildImageWithRootAccess)]
+        //[InlineData(Settings.LtsVersionsBuildImageWithRootAccess)]
         [InlineData(Settings.BuildImageWithRootAccess), Trait("category", "latest")]
         public void InstalledPypiFromArtifactFeeds(string imageTag)
         {
