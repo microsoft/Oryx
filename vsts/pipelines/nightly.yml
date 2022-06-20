@@ -44,25 +44,25 @@ stages:
       steps:
       - template: templates/_securityChecks.yml
 
-    - job: Job_BuildImage
-      displayName: Build and Test Build Image
-      timeoutInMinutes: 480
+    - job: Job_BuildImage_latest
+      displayName: Build and Test Build Latest Image
       pool:
         name: AzurePipelines-EO
         demands:
           - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      timeoutInMinutes: 480
       steps:
       - script: |
           echo "##vso[task.setvariable variable=BuildBuildImages;]true"
           echo "##vso[task.setvariable variable=TestBuildImages;]true"
-          echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
-          echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-          echo "##vso[task.setvariable variable=PushBuildImages;]true"
+          echo "##vso[task.setvariable variable=PushBuildImages;]false"
           echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
           echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
           echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$(Build.BuildNumber)"
         displayName: 'Set variables'
       - template: templates/_buildTemplate.yml
+        parameters:
+            imageType: latest
 
     - job: Job_RuntimeImages
       displayName: Build and Test Runtime Images
