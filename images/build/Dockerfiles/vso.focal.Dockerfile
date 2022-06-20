@@ -254,7 +254,7 @@ RUN buildDir="/opt/tmp/build" \
     && php go-pear.phar \
     && pecl install -f libsodium \
     && echo "vso-focal" > /opt/oryx/.imagetype \
-    && echo "$DEBIAN_FLAVOR" > /opt/oryx/.ostype
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 # install few more tools for VSO
 RUN gem install bundler rake ruby-debug-ide debase jekyll

@@ -66,4 +66,4 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $MAVEN_VERSION lts \
     && rm -rf /opt/tmp \
     && echo "vso" > /opt/oryx/.imagetype \
-    && echo "$DEBIAN_FLAVOR" > /opt/oryx/.ostype
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype

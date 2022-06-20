@@ -38,18 +38,18 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData(Settings.WithRootAccessBuildImageName, "stretch")]
-        [InlineData(Settings.WithRootAccessLtsVersionsBuildImageName, "stretch")]
-        [InlineData(Settings.LtsVerionsBusterBuildImageName, "buster")]
-        [InlineData(Settings.GitHubActionsBuildImageName, "stretch")]
-        [InlineData(Settings.GitHubActionsBusterBuildImageName, "buster")]
-        [InlineData(Settings.GitHubActionsBullseyeBuildImageName, "bullseye")]
-        [InlineData(Settings.CliBuildImageName, "stretch")]
-        [InlineData(Settings.CliBusterBuildImageName, "buster")]
-        [InlineData(Settings.JamStackBuildImageName, "stretch")]
-        [InlineData(Settings.JamStackBullseyeBuildImageName, "bullseye")]
-        [InlineData(Settings.JamStackBusterBuildImageName, "buster")]
-        [InlineData(Settings.VsoUbuntuBuildImageName, "focal-scm")]
+        [InlineData(Settings.WithRootAccessBuildImageName, "DEBIAN|STRETCH")]
+        [InlineData(Settings.WithRootAccessLtsVersionsBuildImageName, "DEBIAN|STRETCH")]
+        [InlineData(Settings.LtsVerionsBusterBuildImageName, "DEBIAN|BUSTER")]
+        [InlineData(Settings.GitHubActionsBuildImageName, "DEBIAN|STRETCH")]
+        [InlineData(Settings.GitHubActionsBusterBuildImageName, "DEBIAN|BUSTER")]
+        [InlineData(Settings.GitHubActionsBullseyeBuildImageName, "DEBIAN|BULLSEYE")]
+        [InlineData(Settings.CliBuildImageName, "DEBIAN|STRETCH")]
+        [InlineData(Settings.CliBusterBuildImageName, "DEBIAN|BUSTER")]
+        [InlineData(Settings.JamStackBuildImageName, "DEBIAN|STRETCH")]
+        [InlineData(Settings.JamStackBullseyeBuildImageName, "DEBIAN|BULLSEYE")]
+        [InlineData(Settings.JamStackBusterBuildImageName, "DEBIAN|BUSTER")]
+        [InlineData(Settings.VsoUbuntuBuildImageName, "DEBIAN|FOCAL-SCM")]
         public void PulledBuildImages_Contains_BUILDOS_TYPE_Info(string buildImageName, string expectedBuildOsType)
         {
             // Arrange and Act
