@@ -23,15 +23,6 @@ namespace Microsoft.Oryx.Integration.Tests
         // Unique category traits are needed to run each
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
-        [Fact, Trait("category", "php-8.0")]
-        public async Task PipelineTestInvocationsPhp80Async()
-        {   
-            string phpVersion80 = "8.0";
-            await Task.WhenAll(
-                ImagickExampleAsync(phpVersion80),
-                PhpFpmImagickExampleAsync(phpVersion80));
-        }
-
         [Fact, Trait("category", "php-7.4")]
         public async Task PipelineTestInvocationsPhp74Async()
         {
