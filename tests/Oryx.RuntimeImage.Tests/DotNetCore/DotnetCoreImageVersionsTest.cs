@@ -136,33 +136,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("1.0", "Version  : 1.0.1")]
-        [InlineData("1.1", "Version  : 1.1.13")]
-        [Trait(TestConstants.Category, TestConstants.Release)]
-        public void RuntimeImage_HasExecptedDotNetVersion_NetCoreApp10Versions(string version, string expectedOutput)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
-                CommandToExecuteOnRun = "dotnet",
-                CommandArguments = new[] { "--version" }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.Contains(expectedOutput, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
-        [InlineData("2.0", "Version  : " + DotNetCoreRunTimeVersions.NetCoreApp20)]
-        [InlineData("2.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp21)]
-        [InlineData("2.2", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp22)]
         [InlineData("3.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30)]
         [InlineData("3.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
         [InlineData("5.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp50)]

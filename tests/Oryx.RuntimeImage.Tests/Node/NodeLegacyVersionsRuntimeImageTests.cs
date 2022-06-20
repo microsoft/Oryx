@@ -59,21 +59,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("4.4", "4.4.7")]
-        [InlineData("4.5", "4.5.0")]
-        [InlineData("4.8", "4.8.7")]
-        [InlineData("6", NodeVersions.Node6Version)]
-        [InlineData("6.2", "6.2.2")]
-        [InlineData("6.6", "6.6.0")]
-        [InlineData("6.9", "6.9.5")]
-        [InlineData("6.10", "6.10.3")]
-        [InlineData("6.11", "6.11.5")]
-        [InlineData("8", NodeVersions.Node8Version)]
-        [InlineData("8.2", "8.2.1")]
-        [InlineData("8.11", "8.11.4")]
-        [InlineData("9.4", "9.4.0")]
-        [InlineData("10", NodeVersions.Node10Version)]
-        [InlineData("10.10", "10.10.0")]
         [InlineData("14", NodeVersions.Node14Version)]
         [InlineData("16", NodeVersions.Node16Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
@@ -99,33 +84,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [InlineData("10.1")]
-        [InlineData("10.10")]
-        [InlineData("10.12")]
-        [InlineData("10.14")]
-        public void Node10ImageContains_Correct_NPM_Version(string imageTag)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("node", imageTag),
-                CommandToExecuteOnRun = "npm",
-                CommandArguments = new[] { "-v" }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(NodeVersions.NpmVersion, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [MemberData(
             nameof(TestValueGenerator.GetLegacyNodeVersions),
             MemberType = typeof(TestValueGenerator))]
