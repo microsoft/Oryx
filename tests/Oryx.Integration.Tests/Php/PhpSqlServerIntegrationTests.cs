@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.Integration.Tests
             string phpVersion80 = "8.0";
             await Task.WhenAll(
                 PhpApp_UsingPdoAsync(phpVersion80, "github-actions"),
-                PhpApp_UsingPdoAsync(phpVersion80, "github-buster"),
+                PhpApp_UsingPdoAsync(phpVersion80, "github-actions-buster"),
                 PhpApp_UsingPdoAsync(phpVersion80, "latest"));
         }
 
@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.Integration.Tests
             string phpVersion74 = "7.4";
             await Task.WhenAll(
                 PhpApp_UsingPdoAsync(phpVersion74, "github-actions"),
-                PhpApp_UsingPdoAsync(phpVersion74, "github-buster"),
+                PhpApp_UsingPdoAsync(phpVersion74, "github-actions-buster"),
                 PhpApp_UsingPdoAsync(phpVersion74, "latest"));
         }
 
