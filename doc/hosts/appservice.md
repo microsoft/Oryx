@@ -151,6 +151,6 @@ path, removing `/home/site/wwwroot` from it.
 ## Network Dependencies
 
 When using App Service with a Virtual Network or an App Service Environment, you will need to allow outbound access 
-from the webapp to `oryx-cdn.microsoft.io` on port `443`. `oryx-cdn.microsoft.io` hosts the Oryx container image, which 
-your Web App will pull to build your application during deployment. If this network dependency is blocked, then App Service
-will not be able to build your application using Oryx.
+from the webapp to `oryx-cdn.microsoft.io` on port `443`. `oryx-cdn.microsoft.io` hosts the Oryx packages corresponding
+to each SDK language and version. If this network dependency is blocked, then App Servicewill not be able to build your 
+application using Oryx.
