@@ -44,7 +44,7 @@ stages:
       steps:
       - template: templates/_securityChecks.yml
 
-    - job: Job_BuildImage_latest
+    - job: Job_BuildImage
       displayName: Build and Test Build Latest Image
       pool:
         name: AzurePipelines-EO
