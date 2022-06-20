@@ -23,8 +23,16 @@ define( 'WP_DEBUG', false );
 define( 'DISALLOW_FILE_EDIT', true );
 PHP
 
+# As of mariadb 10.5, which bullseye is using, the service name is now mariadb
+# instead of mysql, but the mysql command is still symlinked.
+# See: https://mariadb.com/kb/en/changes-improvements-in-mariadb-105/#binaries-named-mariadb-mysql-symlinked
+#
 # restart mysql server and install WordPress
-service mysql start
+if service --status-all | grep -Fq 'mysql'; then    
+    service mysql start
+else
+    service mariadb start
+fi
 
 echo "Installing WordPress......."
 wp core install --url="http://127.0.0.1" --title="$sitename" --admin_user="$wpuser" --admin_password="$password" --admin_email="user@example.org" --allow-root

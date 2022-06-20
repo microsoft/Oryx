@@ -30,9 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task PipelineTestInvocationsPhp80Async()
         {
             string phpVersion80 = "8.0";
-            await Task.WhenAll(
-                PhpWithWordPress51Async(phpVersion80),
-                CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion80));
+            await CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion80);
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -45,7 +43,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("8.0")]
         [InlineData("7.4")]
         public async Task PhpWithWordPress51Async(string phpVersion)
         {
