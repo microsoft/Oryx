@@ -18,22 +18,22 @@ The information won't show in runtime image tags, but we can always check the de
 - 5.6, 7.0, 7.2, 7.3
 
 ### python
-- 2.7, 3.6, 3.7, 3.8
+- 2.7, 3.6
 
 
 ## Buster based runtime images
 
 ### dotnet
-- 3.0, 3.1, 5.0, 6.0, 7.0
+- 3.0, 5.0, 6.0, 7.0
 
 ### nodejs
 - 14, 16
 
 ### php
-- 7.4, 8.0, 8.1
+- 8.0, 8.1
 
 ### php-fpm
-- 7.4, 8.0, 8.1
+- 8.0, 8.1
 
 ### python
 - 3.9
@@ -44,5 +44,17 @@ The information won't show in runtime image tags, but we can always check the de
 
 ## Bullseye based runtime images
 
+### dotnet
+- 3.1
+
+### php
+- 7.4
+
+### php-fpm
+- 7.4
+
+### nodejs
+- 18
+
 ### python
-- 3.10
+- 3.7, 3.8, 3.10, 3.11
