@@ -26,7 +26,8 @@ namespace Oryx.BuildImage.Tests.Node
         [InlineData("angularsample", "dist")]
         // Temporarily blocking next app as next build is failing accross npm
         // [InlineData("blog-starter-nextjs", ".next")]
-        [InlineData("hackernews-nuxtjs", ".nuxt")]
+        // Temporarily disable test as it requires node 18 which is currently broken
+        // [InlineData("hackernews-nuxtjs", ".nuxt")]
         [InlineData("vue-sample", "dist")]
         [InlineData("create-react-app-sample", "build")]
         [InlineData("gatsbysample", "public")]
