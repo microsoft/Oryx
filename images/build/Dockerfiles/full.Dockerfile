@@ -64,7 +64,8 @@ RUN apt-get update \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && echo "full" > /opt/oryx/.imagetype
+    && echo "full" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 ENV ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io"
 ENV ENABLE_DYNAMIC_INSTALL="true"

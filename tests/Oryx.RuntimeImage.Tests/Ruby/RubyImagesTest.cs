@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
         }
 
-        [Fact]
+        [SkippableFact]
         public void RubyRuntimeImage_Contains_VersionAndCommit_Information()
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
