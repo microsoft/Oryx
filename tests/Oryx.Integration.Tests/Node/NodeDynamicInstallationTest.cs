@@ -125,7 +125,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData(NodeVersions.Node18Version), Trait("category", "node-18")]
-        public async Task CanBuildAndRunApp_UsingScriptCommand(string nodeVersion)
+        public async Task CanBuildAndRunApp_UsingScriptCommand_WithBullseyeBasedImages(string nodeVersion)
         {
             // Arrange
             var appName = "webfrontend";
