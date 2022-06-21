@@ -277,6 +277,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "lts-versions")]
         public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion_CustomError()
         {
             // Arrange
@@ -351,6 +352,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         // This test is necessary once .NET 6 preview 5 come out.
         [Fact]
+        [Trait("category", "jamstack")]
         public void Builds_Net6BlazorWasmApp_RunsAOTCompilationInstallCommands()
         {
             // Arrange
@@ -782,6 +784,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "jamstack")]
         public void Builds_AzureFunctionProject_FromBlazorFunctionRepo_When_Apptype_Is_SetAs_Functions()
         {
             // Arrange
@@ -857,6 +860,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [Trait("category", "latest")]
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion), Trait("category", "latest")]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion), Trait("category", "latest")]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion), Trait("category", "latest")]
@@ -896,6 +900,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "lts-versions")]
         public void Builds_AndCopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -929,6 +934,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "lts-versions")]
         public void SubsequentBuilds_CopyOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -1001,6 +1007,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         /// </summary>
         /// <remarks>Find supported Azure Function app target frameworks here: https://docs.microsoft.com/en-us/azure/static-web-apps/apis</remarks>
         [Fact]
+        [Trait("category", "jamstack")]
         public void JamstackImage_CanBuild_NetCore31_V3Functions_apps()
         {
             // Arrange
@@ -1038,6 +1045,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         /// </summary>
         /// <remarks>Find supported Azure Function app target frameworks here: https://docs.microsoft.com/en-us/azure/static-web-apps/apis</remarks>
         [Fact]
+        [Trait("category", "jamstack")]
         public void JamstackImage_CanBuild_Dotnet6_V4Functions_apps()
         {
             // Arrange
@@ -1075,6 +1083,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         /// </summary>
         /// <remarks>Find supported Azure Function app target frameworks here: https://docs.microsoft.com/en-us/azure/static-web-apps/apis</remarks>
         [Fact]
+        [Trait("category", "jamstack")]
         public void JamstackImage_CanBuild_Dotnet6_Isolated_apps()
         {
             // Arrange

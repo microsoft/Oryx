@@ -25,7 +25,48 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _imageHelper = new ImageTestHelper(output);
         }
 
+        [Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
+        {
+            InstalledNodeModulesExecutablesAreOnPath("latest");
+            InstalledPythonExecutablesAreOnPath("latest");
+
+            var imageTestHelper = new ImageTestHelper();
+            InstalledPythonExecutablesAreOnPath(imageTestHelper.GetBuildImage());
+        }
+
+        [Trait("category", "lts-versions")]
+        public void PipelineTestInvocationLtsVersions()
+        {
+            InstalledNodeModulesExecutablesAreOnPath("lts-versions");
+            InstalledPythonExecutablesAreOnPath("lts-versions");
+            var imageTestHelper = new ImageTestHelper();
+            InstalledPythonExecutablesAreOnPath(imageTestHelper.GetLtsVersionsBuildImage());
+        }
+
+        [Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            InstalledPythonExecutablesAreOnPath(imageTestHelper.GetVsoBuildImage("vso-focal"));
+        }
+
+        [Trait("category", "jamstack")]
+        public void PipelineTestInvocationJamstack()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            InstalledPythonExecutablesAreOnPath(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        }
+
+        [Trait("category", "github-actions")]
+        public void PipelineTestInvocationGithubActions()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            InstalledPythonExecutablesAreOnPath(imageTestHelper.GetGitHubActionsBuildImage());
+        }
+
         [Theory]
+        [Trait("category", "latest")]
         // DotNet
         [InlineData("dotnet", "/opt/dotnet/")]
         // Node
@@ -67,6 +108,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [Trait("category", "lts-versions")]
         // DotNet
         [InlineData("dotnet", "/opt/dotnet/")]
         // Node
@@ -109,6 +151,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [Trait("category", "vso-focal")]
         [InlineData("dotnet", "vso-focal")]
         [InlineData("node", "vso-focal")]
         [InlineData("npm", "vso-focal")]
@@ -146,6 +189,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [Trait("category", "vso-focal")]
         [InlineData("python3", "/usr/bin/python3", "vso-focal")]
         [InlineData("pip", "/usr/local/bin/pip", "vso-focal")]
         [InlineData("pip3", "/usr/local/bin/pip3", "vso-focal")]
@@ -171,6 +215,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [Trait("category", "vso-focal")]
         [InlineData("vso-focal")]
         public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths_InVsoImage(string debianImageFlavor)
         {
@@ -201,6 +246,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [Trait("category", "vso-focal")]
         [InlineData("vso-focal")]
         public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv_InVsoBuildImage(string debianImageFlavor=null)
         {
@@ -233,8 +279,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("latest"), Trait("category", "latest")]
-       // [InlineData("lts-versions"), Trait("category", "lts-versions")]
+        [InlineData("latest")]
+        [InlineData("lts-versions")]
         public void InstalledNodeModulesExecutablesAreOnPath(string tag)
         {
             // Arrange
@@ -259,8 +305,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("latest"), Trait("category", "latest")]
-        //[InlineData("lts-versions")]
+        [InlineData("latest")]
+        [InlineData("lts-versions")]
         public void InstalledPythonExecutablesAreOnPath(string tag)
         {
             // Arrange
@@ -299,10 +345,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
                 return data;
             }
-
         }
-        // TODO: figure out a way to add the trait with ImageNameData:
-        //  Trait("category", "latest")
         [Theory]
         [MemberData(nameof(ImageNameData))]
         public void BuildImagesHaveOryxPathsEnvironmentVariableAvailable(string iamgeName)
@@ -327,6 +370,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [Trait("category", "vso-focal")]
         // DotNet
         [InlineData("dotnet", "/opt/dotnet/", "vso-focal")]
         // Node
@@ -367,6 +411,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [Trait("category", "vso-focal")]
         [InlineData("vso-focal")]
         public void OutOfTheBox_JavaHomeEnvironmentVarialbeIsSetInVSOImage(string debianImageFlavor)
         {
