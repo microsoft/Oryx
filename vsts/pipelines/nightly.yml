@@ -86,7 +86,7 @@ stages:
         displayName: 'Set variables'
       - template: templates/_buildTemplate.yml
         parameters:
-            imageType: lts-versions
+            imageType: ltsversions
 
     - job: Job_BuildImage_Jamstack
       displayName: Build and Test Build Jamstack Image
@@ -130,7 +130,7 @@ stages:
         displayName: 'Set variables'
       - template: templates/_buildTemplate.yml
         parameters:
-            imageType: github-actions
+            imageType: githubactions
 
     - job: Job_RuntimeImages
       displayName: Build and Test Runtime Images
