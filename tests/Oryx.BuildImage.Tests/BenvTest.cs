@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _imageHelper = new ImageTestHelper(output);
         }
 
-        [Trait("category", "latest")]
+        [Fact, Trait("category", "latest")]
         public void PipelineTestInvocationLatest()
         {
             InstalledNodeModulesExecutablesAreOnPath("latest");
@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             InstalledPythonExecutablesAreOnPath(imageTestHelper.GetBuildImage());
         }
 
-        [Trait("category", "lts-versions")]
+        [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
             InstalledNodeModulesExecutablesAreOnPath("lts-versions");
@@ -44,21 +44,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
             InstalledPythonExecutablesAreOnPath(imageTestHelper.GetLtsVersionsBuildImage());
         }
 
-        [Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
             var imageTestHelper = new ImageTestHelper();
             InstalledPythonExecutablesAreOnPath(imageTestHelper.GetVsoBuildImage("vso-focal"));
         }
 
-        [Trait("category", "jamstack")]
+        [Fact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {
             var imageTestHelper = new ImageTestHelper();
             InstalledPythonExecutablesAreOnPath(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
-        [Trait("category", "github-actions")]
+        [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -108,7 +108,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [Trait("category", "lts-versions")]
+        [Trait("category", "ltsversions")]
         // DotNet
         [InlineData("dotnet", "/opt/dotnet/")]
         // Node

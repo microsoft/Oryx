@@ -44,7 +44,19 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
 
         private readonly string[] IgnoredTarEntries = new[] { "tutorial.rst", "docs/tutorial.rst" };
 
-        [Theory]
+        [Fact, Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
+        {
+            InstalledPypiFromArtifactFeeds(Settings.BuildImageWithRootAccess);
+        }
+
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
+        {
+            InstalledPypiFromArtifactFeeds(Settings.LtsVersionsBuildImageWithRootAccess);
+        }
+
+        [Theory, Trait("category", "ltsversions")]
         [MemberData(nameof(PythonPackageExamples))]
         public void CanBuildPython3Packages(
             string pkgName,
@@ -196,8 +208,8 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
         }
 
         [Theory]
-        //[InlineData(Settings.LtsVersionsBuildImageWithRootAccess)]
-        [InlineData(Settings.BuildImageWithRootAccess), Trait("category", "latest")]
+        [InlineData(Settings.LtsVersionsBuildImageWithRootAccess)]
+        [InlineData(Settings.BuildImageWithRootAccess)]
         public void InstalledPypiFromArtifactFeeds(string imageTag)
         {
             var script = new ShellScriptBuilder()

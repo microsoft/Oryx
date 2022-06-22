@@ -28,6 +28,35 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", sampleAppName));
 
+        [Fact, Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
+        {
+            Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion("latest");
+            Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.BuildImageName);
+            GDIPlusLibrary_IsPresentInTheImage("latest");
+        }
+
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
+        {
+            Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion("lts-versions");
+            Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.LtsVersionsBuildImageName);
+            GDIPlusLibrary_IsPresentInTheImage("lts-versions");
+        }
+
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
+        {
+            GDIPlusLibrary_IsPresentInTheImage("vso-focal");
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocation()
+        {
+            GDIPlusLibrary_IsPresentInTheImage("github-actions");
+            GDIPlusLibrary_IsPresentInTheImage("github-actions-buster");
+        }
+
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
         [Fact (Skip="NetCore11 is no longer officially supported"), Trait("category", "latest")]
@@ -143,8 +172,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(Settings.BuildImageName), Trait("category", "latest")]
-        //[InlineData(Settings.LtsVersionsBuildImageName)]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.LtsVersionsBuildImageName)]
         public void Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(string buildImageName)
         {
             // Arrange
@@ -277,7 +306,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        [Trait("category", "lts-versions")]
+        [Trait("category", "ltsversions")]
         public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion_CustomError()
         {
             // Arrange
@@ -451,7 +480,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void Build_CopiesContentCreatedByPreAndPostBuildScript_ToExplicitOutputDirectory()
         {
             // NOTE: Here we are trying to verify that the pre and post build scripts are able to access the
@@ -900,7 +929,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        [Trait("category", "lts-versions")]
+        [Trait("category", "ltsversions")]
         public void Builds_AndCopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -934,7 +963,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        [Trait("category", "lts-versions")]
+        [Trait("category", "ltsversions")]
         public void SubsequentBuilds_CopyOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -973,11 +1002,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        //[InlineData("github-actions")]
-        //[InlineData("github-actions-buster")]
-        //[InlineData("lts-versions"), Trait("category", "lts-versions")]
-        //[InlineData("vso-focal")]
-        [InlineData("latest"), Trait("category", "latest")]
+        [InlineData("github-actions")]
+        [InlineData("github-actions-buster")]
+        [InlineData("lts-versions")]
+        [InlineData("vso-focal")]
+        [InlineData("latest")]
         public void GDIPlusLibrary_IsPresentInTheImage(string tagName)
         {
             // Arrange

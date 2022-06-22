@@ -30,8 +30,33 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 return data;
             }
         }
-        // TODO: figure out how to add trait to ImageNameData
-        //  Trait("category", "latest")
+
+        [Fact, Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
+        {
+            GeneratesScript_AndBuilds(Settings.BuildImageName);
+        }
+
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
+        {
+            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
+        }
+
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        }
+
+        [Fact, Trait("category", "jamstack")]
+        public void PipelineTestInvocationJamstack()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage());
+        }
+
         [Theory]
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuilds(string buildImageName)
@@ -64,7 +89,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "githubactions")]
         [InlineData("hugo-sample")]
         [InlineData("hugo-sample-json")]
         [InlineData("hugo-sample-yaml")]
@@ -99,7 +124,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void CanBuildHugoAppHavingPackageJson_ByExplicitlySpecifyingHugoPlatform()
         {
             // Idea is here that even though the app has a package.json, a user can explicitly choose for Hugo

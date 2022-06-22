@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        [Theory]
+        [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(string version, string buildImageName)
         {
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void DynamicallyInstallsNodeRuntimeAndBuilds()
         {
             // Arrange
@@ -107,7 +107,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange

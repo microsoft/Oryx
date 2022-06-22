@@ -36,6 +36,24 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage("vso-focal"));
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocationGithubActions()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby30Version, imageTestHelper.GetGitHubActionsBuildImage());
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby31Version, imageTestHelper.GetGitHubActionsBuildImage());
+        }
+
         [Theory]
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string version, string buildImageName)

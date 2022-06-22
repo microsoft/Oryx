@@ -26,6 +26,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public PlatformsCommandTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
+        [Trait("category", "githubactions")]
         public void ListsPlatformsAndVersionsAvailableForDynamicInstall()
         {
             // Arrange

@@ -38,6 +38,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [Trait("category", "githubactions")]
         [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
         [InlineData(NetCoreApp50MvcApp, "5.0")]
@@ -90,6 +91,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "githubactions")]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
@@ -144,6 +146,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresExplicitRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
@@ -206,6 +209,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
@@ -266,6 +270,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "githubactions")]
         public void BuildsApplication_UsingPreviewVersionOfSdk()
         {
             // Arrange
@@ -325,6 +330,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "githubactions")]
         public void BuildsAppAfterInstallingAllRequiredPlatforms()
         {
             // Arrange
@@ -362,6 +368,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "githubactions")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_IntoCustomDynamicInstallationDir()
         {
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
@@ -425,6 +432,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [Trait("category", "vso-focal")]
         [InlineData(NetCoreApp30MvcApp, "3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
         public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
             string appName,

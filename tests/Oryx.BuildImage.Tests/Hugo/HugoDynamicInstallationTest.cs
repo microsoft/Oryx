@@ -34,6 +34,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
+        [Trait("category", "jamstack")]
+        public void PipelineTestInvocationJamstack()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        }
+
+        [Trait("category", "githubactions")]
+        public void PipelineTestInvocationGithubactions()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetGitHubActionsBuildImage());
+        }
+
         [Theory]
         [MemberData(nameof(ImageNameData))]
         public void InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(string imageName)
@@ -73,7 +87,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
@@ -202,7 +216,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             return $"rm -rf {DefaultInstallationRootDir}; mkdir -p {DefaultInstallationRootDir}";
         }
 
-        [Fact]
+        [Fact, Trait("category", "jamstack")]
         public void JamStackImageHasGoLangInstalled()
         {
             // Arrange

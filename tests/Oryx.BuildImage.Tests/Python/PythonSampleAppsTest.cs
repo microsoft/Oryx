@@ -27,9 +27,42 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _tempDirRootPath = testFixture.RootDirPath;
         }
 
+        [Fact, Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
+        {
+            GeneratesScript_AndBuilds(Settings.BuildImageName);
+            JamSpell_CanBe_Installed_In_The_BuildImage("latest", "2");
+            JamSpell_CanBe_Installed_In_The_BuildImage("latest", "3");
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("latest");
+            GeneratesScript_AndBuilds(Settings.BuildImageName);
+        }
+
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
+        {
+            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
+            JamSpell_CanBe_Installed_In_The_BuildImage("lts-versions", "3");
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("lts-versions");
+            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
+        }
+
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
+        {
+            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
+            JamSpell_CanBe_Installed_In_The_BuildImage("vso-focal", "3");
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocationGithubActions()
+        {
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions");
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions-buster");
+        }
+
         [Theory]
-        [InlineData(Settings.BuildImageName), Trait("category", "latest")]
-        //[InlineData(Settings.LtsVersionsBuildImageName)]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.LtsVersionsBuildImageName)]
         public void GeneratesScript_AndBuilds(string buildImageName)
         {
             // Arrange
@@ -64,7 +97,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void GeneratesScript_AndLoggerFormatCheck()
         {
             // Arrange  
@@ -144,10 +177,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        //[InlineData("github-actions"), Trait("category", "github")]
-        //[InlineData("github-actions-buster"), Trait("category", "github")]
-        //[InlineData("lts-versions")]
-        [InlineData("latest"), Trait("category", "mytest")]
+        [InlineData("github-actions")]
+        [InlineData("github-actions-buster")]
+        [InlineData("lts-versions")]
+        [InlineData("latest")]
         public void DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(string imageTag)
         {
             // Arrange
@@ -219,7 +252,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void Build_CopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -255,7 +288,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void SubsequentBuilds_CopyOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -737,7 +770,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("flask-app", "foo.txt")]
         [InlineData("django-realworld-example-app", FilePaths.BuildCommandsFileName)]
         public void BuildPythonApps_Prints_BuildCommands_In_File(string appName, string buildCommandsFileName)
@@ -1319,7 +1352,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void BuildsAppSuccessfully_EvenIfRequirementsTxtOrSetupPyFileDoNotExist()
         {
             // Arrange
@@ -1358,7 +1391,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsAppAndCompressesOutputDirectory()
         {
             // Arrange
@@ -1407,10 +1440,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        //[InlineData("lts-versions", "3")]
-        //[InlineData("vso-focal", "3")]
-        [InlineData("latest", "2"), Trait("category", "latest")]
-        [InlineData("latest", "3"), Trait("category", "latest")]
+        [InlineData("lts-versions", "3")]
+        [InlineData("vso-focal", "3")]
+        [InlineData("latest", "2")]
+        [InlineData("latest", "3")]
         public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName, string pythonVersion)
         {
             // Arrange

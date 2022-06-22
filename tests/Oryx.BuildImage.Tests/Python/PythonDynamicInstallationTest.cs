@@ -37,6 +37,24 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.1");
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.3");
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocationGithubActions()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.1");
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3");
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage("github-actions-buster"), "3.9.0");
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.10.4");      
+        }
+
         [Theory]
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuildsPython(string imageName, string version)
@@ -77,7 +95,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "jamstack")]
         [InlineData("3.10.4")]
         public void GeneratesScript_AndBuildsPython_JamstackBuildImage(string version)
         {
@@ -116,7 +134,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "githubactions")]
         [InlineData("3.8.0b3")]
         [InlineData("3.9.0b1")]
         public void GeneratesScript_AndBuildsPythonPreviewVersion(string previewVersion)
@@ -157,7 +175,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
@@ -200,7 +218,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsAzureFunctionApp()
         {
             // Arrange
@@ -282,7 +300,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_WithPackageDir()
         {
             // Arrange

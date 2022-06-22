@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Fact]
+        [Fact, Trait("category", "vso-focal")]
         public void CanBuildPythonAppWhichHasJupiterNotebookFile()
         {
             // Arrange
@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "vso-focal")]
         public void CanBuildAppWhichHasCondaEnvironmentYmlFile()
         {
             // Arrange
@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "vso-focal")]
         public void CanBuildPython2AppHavingRequirementsTxtFile()
         {
             // Arrange
@@ -121,7 +121,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "vso-focal")]
         public void CanBuildAppWithCondaEnviornmentYmlFileHavingPipPackages()
         {
             // Arrange
@@ -157,7 +157,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "vso-focal")]
         public void CanBuildJuliaPythonSampleApp()
         {
             // Arrange
@@ -193,7 +193,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "vso-focal")]
         public void CanBuildJupiterRiseApp()
         {
             // Arrange
@@ -229,7 +229,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("jupyter-rise")]
         public void BuildJupiterCondaApps_Prints_BuildCommands_In_File(string appName)
         {

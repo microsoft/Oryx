@@ -41,8 +41,26 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 return data;
             }
         }
-        // TODO: Add Trait to Memberdata
-        //  Trait("category", "latest")
+
+        [Fact, Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
+        {
+            GeneratesScript_AndBuilds(Settings.BuildImageName);
+        }
+
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
+        {
+            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
+        }
+
+        [Fact, Trait("category", "jamstack")]
+        public void PipelineTestInvocationJamstack()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        }
+
         [Theory]
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuilds(string buildImageName)
@@ -115,7 +133,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void Build_CopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -743,7 +761,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "jamstack")]
         public void BuildsNodeApp_AndDoesNotCopyDevDependencies_IfPruneDevDependenciesIsTrue_AndNoProdDependencies()
         {
             // Arrange
@@ -776,7 +794,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "jamstack")]
         [InlineData("empty-dependencies")]
         [InlineData("no-dependeny-nodes")]
         public void BuildsNodeApp_IfPruneDevDependenciesIsTrue_AndNoProd_OrDevDependencies(string appName)
@@ -903,7 +921,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void BuildsApp_ByRunningCustomBuildCommand_AndSkipNpmInstallCommand()
         {
             // Arrange
@@ -937,7 +955,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void BuildsApp_ByRunningCustomBuildScript_AndSkipNpmInstallCommand()
         {
             // Arrange
@@ -969,7 +987,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void  CanBuildAndRunNodeApp_WithWorkspace_UsingYarn2ForBuild()
         {
             // Arrange
@@ -1003,7 +1021,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void CanBuildAndRunNodeAppWithoutWorkspace_UsingYarn2ForBuild()
         {
             // Arrange
@@ -1033,7 +1051,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void BuildsApp_ByRunningNpmInstall_AndCustomRunBuildCommand()
         {
             // Arrange
@@ -1068,7 +1086,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void CanBuildAppHavingAppDynamicsNpmPackage()
         {
             // Arrange
@@ -1104,7 +1122,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void CanBuildAppHavingUsingYarnEngine()
         {
             // Arrange  
@@ -1144,7 +1162,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void CanBuildVuePressSampleAppWithPruneDevDependencies()
         {
             // Arrange

@@ -43,8 +43,63 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 return data;
             }
         }
-        // TODO: Add category attribute to MemberData
-        //  Trait("category", "latest")
+
+        [Fact, Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                imageTestHelper.GetBuildImage());
+            Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                Settings.BuildImageName);
+            Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                Settings.BuildImageName);
+            DotNetAlias_UsesLtsVersion_ByDefault(
+                Settings.BuildImageName);
+            OryxBuildImage_Contains_VersionAndCommit_Information(Settings.BuildImageName);
+
+        }
+
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                imageTestHelper.GetLtsVersionsBuildImage());
+            Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                Settings.LtsVersionsBuildImageName);
+            Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                Settings.LtsVersionsBuildImageName);
+            DotNetAlias_UsesLtsVersion_ByDefault(Settings.LtsVersionsBuildImageName);
+            OryxBuildImage_Contains_VersionAndCommit_Information(Settings.LtsVersionsBuildImageName);
+        }
+
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                imageTestHelper.GetVsoBuildImage("vso-focal"));
+            OryxBuildImage_Contains_VersionAndCommit_Information(
+                imageTestHelper.GetVsoBuildImage("vso-focal"));
+        }
+
+        [Fact, Trait("category", "jamstack")]
+        public void PipelineTestInvocationJamstack()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            OryxBuildImage_Contains_VersionAndCommit_Information(
+                imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocationGithubActions()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            OryxBuildImage_Contains_VersionAndCommit_Information(
+                imageTestHelper.GetGitHubActionsBuildImage());
+        }
+
         [SkippableTheory]
         [MemberData(nameof(ImageNameData))]
         public void OryxBuildImage_Contains_VersionAndCommit_Information(string buildImageName)
@@ -81,7 +136,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("vso-focal")]
         public void OryxVsoBuildImage_Contains_PHP_Xdebug(string imageVersion)
         {
@@ -107,7 +162,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("bundler", "vso-focal")]
         [InlineData("rake", "vso-focal")]
         [InlineData("ruby-debug-ide", "vso-focal")]
@@ -137,8 +192,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(Settings.BuildImageName), Trait("category", "latest")]
-        //[InlineData(Settings.LtsVersionsBuildImageName)]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.LtsVersionsBuildImageName)]
         public void DotNetAlias_UsesLtsVersion_ByDefault(string buildImageName)
         {
             // Arrange
@@ -163,7 +218,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
@@ -222,8 +277,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(Settings.BuildImageName), Trait("category", "latest")]
-        //[InlineData(Settings.LtsVersionsBuildImageName)]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.LtsVersionsBuildImageName)]
         public void Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
             string buildImageName)
         {
@@ -546,8 +601,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 return data;
             }
         }
-        // TODO: Add attribute to MemberData
-        //  Trait("category", "latest")
+
         [Theory]
         [MemberData(nameof(PhpVersionImageNameData))]
         public void PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)

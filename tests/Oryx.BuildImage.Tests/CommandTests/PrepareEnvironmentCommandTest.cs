@@ -28,7 +28,7 @@ namespace Oryx.BuildImage.Tests
         }
 
         [Fact]
-        [Trait("category", "github-actions")]
+        [Trait("category", "githubactions")]
         public void DetectsAndInstallsPlatformIfNotPresent()
         {
             // Arrange

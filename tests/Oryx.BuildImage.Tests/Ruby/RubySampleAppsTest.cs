@@ -35,7 +35,24 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        [Fact]
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
+                imageTestHelper.GetVsoBuildImage("vso-focal"));
+
+        }
+
+        [Fact, Trait("category", "jamstack")]
+        public void PipelineTestInvocationJamstack()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
+                imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        }
+
+        [Fact, Trait("category", "vso-focal")]
         public void GeneratesScript_AndBuildSinatraApp()
         {
             // Arrange
@@ -68,7 +85,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "vso-focal")]
         public void GeneratesScript_AndBuildRailsApp()
         {
             // Arrange
@@ -102,7 +119,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "vso-focal")]
         public void Builds_JekyllStaticWebApp_When_Apptype_Is_SetAs_StaticSiteApplications()
         {
             // Arrange

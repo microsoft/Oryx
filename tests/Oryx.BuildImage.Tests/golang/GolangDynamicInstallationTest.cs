@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void GeneratesScript_AndBuildGolangAppWithDynamicInstall()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void GeneratesScript_AndBuildGolangAppWithoutGoMod()
         {
             var imageTestHelper = new ImageTestHelper();
