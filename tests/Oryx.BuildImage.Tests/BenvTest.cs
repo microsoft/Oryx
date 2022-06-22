@@ -30,9 +30,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             InstalledNodeModulesExecutablesAreOnPath("latest");
             InstalledPythonExecutablesAreOnPath("latest");
-
-            var imageTestHelper = new ImageTestHelper();
-            InstalledPythonExecutablesAreOnPath(imageTestHelper.GetBuildImage());
         }
 
         [Fact, Trait("category", "ltsversions")]
@@ -40,30 +37,28 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             InstalledNodeModulesExecutablesAreOnPath("lts-versions");
             InstalledPythonExecutablesAreOnPath("lts-versions");
-            var imageTestHelper = new ImageTestHelper();
-            InstalledPythonExecutablesAreOnPath(imageTestHelper.GetLtsVersionsBuildImage());
         }
 
-        [Fact, Trait("category", "vso-focal")]
-        public void PipelineTestInvocationVsoFocal()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            InstalledPythonExecutablesAreOnPath(imageTestHelper.GetVsoBuildImage("vso-focal"));
-        }
+        //[Fact, Trait("category", "vso-focal")]
+        //public void PipelineTestInvocationVsoFocal()
+        //{
+        //    var imageTestHelper = new ImageTestHelper();
+        //    InstalledPythonExecutablesAreOnPath(imageTestHelper.GetVsoBuildImage("vso-focal"));
+        //}
 
-        [Fact, Trait("category", "jamstack")]
-        public void PipelineTestInvocationJamstack()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            InstalledPythonExecutablesAreOnPath(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-        }
+        //[Fact, Trait("category", "jamstack")]
+        //public void PipelineTestInvocationJamstack()
+        //{
+        //    var imageTestHelper = new ImageTestHelper();
+        //    InstalledPythonExecutablesAreOnPath(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        //}
 
-        [Fact, Trait("category", "githubactions")]
-        public void PipelineTestInvocationGithubActions()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            InstalledPythonExecutablesAreOnPath(imageTestHelper.GetGitHubActionsBuildImage());
-        }
+        //[Fact, Trait("category", "githubactions")]
+        //public void PipelineTestInvocationGithubActions()
+        //{
+        //    var imageTestHelper = new ImageTestHelper();
+        //    InstalledPythonExecutablesAreOnPath(imageTestHelper.GetGitHubActionsBuildImage());
+        //}
 
         [Theory]
         [Trait("category", "latest")]

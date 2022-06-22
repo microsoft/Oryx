@@ -47,14 +47,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationVsoFocal()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage());
         }
 
         [Fact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage());
+            GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
         [Theory]

@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
-            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
+            // GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
             JamSpell_CanBe_Installed_In_The_BuildImage("vso-focal", "3");
         }
 

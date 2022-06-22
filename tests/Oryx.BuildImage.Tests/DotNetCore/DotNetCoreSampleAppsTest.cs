@@ -31,7 +31,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "latest")]
         public void PipelineTestInvocationLatest()
         {
-            Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion("latest");
             Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.BuildImageName);
             GDIPlusLibrary_IsPresentInTheImage("latest");
         }
@@ -39,7 +38,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
-            Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion("lts-versions");
             Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.LtsVersionsBuildImageName);
             GDIPlusLibrary_IsPresentInTheImage("lts-versions");
         }
