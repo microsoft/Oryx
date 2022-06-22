@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact]
+        [Fact(Skip = "Legacy python versions are out of support")]
         public async Task CanBuildAndRunPythonApp_UsingPython36()
         {
             // Arrange
@@ -109,7 +109,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("3.6")]
         [InlineData("3.7")]
         public async Task BuildWithVirtualEnv_RemovesOryxPackagesDir_FromOlderBuild(string pythonVersion)
         {
@@ -165,8 +164,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
         
         [Theory (Skip = "Bug 1410367")]
-        [InlineData("2.7")]
-        [InlineData("3.6")]
         [InlineData("3.7")]
         [InlineData("3.8")]
         public async Task BuildWithVirtualEnv_From_File_Requirement_Txt(string pythonVersion)

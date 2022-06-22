@@ -26,24 +26,8 @@ namespace Microsoft.Oryx.Tests.Common
 
         private readonly static List<string> PythonVersions = new List<string>
         {
-            "3.6", "3.7", "3.8"
+            "3.7", "3.8", "3.9"
         };
-
-        private readonly static List<string> ZipOptions = new List<string>
-        {
-            "tar-gz", "zip"
-        };
-
-        public static IEnumerable<object[]> GetZipOptions_NodeVersions()
-        {
-            foreach (var version in NodeVersions)
-            {
-                foreach (var zipOption in ZipOptions)
-                {
-                    yield return new object[] { zipOption, version };
-                }
-            }
-        }
 
         public static IEnumerable<object[]> GetNodeVersions_SupportDebugging()
         {
@@ -52,28 +36,6 @@ namespace Microsoft.Oryx.Tests.Common
                 "12",
                 "14",
                 "16"
-            };
-
-            return versions.Select(v => new object[] { v });
-        }
-
-        public static IEnumerable<object[]> GetLegacyNodeVersions_SupportDebugging()
-        {
-            var versions = new List<string>
-            {
-                "8","8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12",
-                "9.4",
-                "10","10.1", "10.10", "10.14"
-            };
-
-            return versions.Select(v => new object[] { v });
-        }
-        
-        public static IEnumerable<object[]> GetNodeVersions_DoesNotSupportDebugging()
-        {
-            var versions = new List<string>
-            {
-                "4.4.7", "4.5.0", "6.2.2", "6.9.3", "6.10.3", "6.11.0"
             };
 
             return versions.Select(v => new object[] { v });

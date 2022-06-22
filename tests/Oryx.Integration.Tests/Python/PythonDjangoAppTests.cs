@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact]
+        [Fact(Skip = "Legacy python versions are out of support")]
         public async Task CanBuildAndRun_DjangoPython36App_UsingVirtualEnv()
         {
             // Arrange
@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy python versions are out of support")]
         [InlineData(true)]
         [InlineData(false)]
         public async Task CanBuildAndRun_DjangoApp_UsingPython36(bool compressDestinationDir)

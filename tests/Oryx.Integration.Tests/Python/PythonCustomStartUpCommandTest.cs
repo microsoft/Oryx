@@ -21,7 +21,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("2.7")]
         [InlineData("3.8")]
         public async Task CanBuildAndRunPythonApp_UsingCustomStartUpScript(string pythonVersion)
         {
@@ -72,7 +71,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("2.7")]
         [InlineData("3.8")]
         public async Task CanBuildAndRunPythonApp_UsingCustomStartUpCommand(string pythonVersion)
         {

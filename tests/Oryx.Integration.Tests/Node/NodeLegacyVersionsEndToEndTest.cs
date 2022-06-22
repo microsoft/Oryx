@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory, Trait("category", "node-legacyVersions")]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRun_NodeWebFrontEndApp(string nodeVersion)
         {
@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory, Trait("category", "node-legacyVersions-2")]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModules(string nodeVersion)
         {

@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
         }
 
-        [SkippableTheory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [MemberData(nameof(TestValueGenerator.GetLegacyNodeVersions), MemberType = typeof(TestValueGenerator))]
         public void NodeImage_Contains_VersionAndCommit_Information(string version)
         {

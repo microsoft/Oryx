@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public const int PortInContainer = 4200;
 
         // Official Node.js version that is supported by Angular CLI 6.0+ is 8.9 or greater
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [InlineData("8"), Trait("category", "node-8")]
         [InlineData("9.4"), Trait("category", "node-9.4")]
         public async Task CanBuildAndRun_Angular6App_WithoutCompressedNodeModules(string nodeVersion)
@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [InlineData("8"), Trait("category", "node-8")]
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [InlineData("9.4"), Trait("category", "node-9.4")]
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_Dir_Exists_InAppDir_WithoutCompression(string nodeVersion)
         {
@@ -207,7 +207,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [InlineData("8"), Trait("category", "node-8")]
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
@@ -277,7 +277,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [InlineData("9.4"), Trait("category", "node-9.4")]
         public async Task CanBuildAndRun_Angular6App_With_NodeModule_SymLink_Exists_InAppDir_WithoutCompression(string nodeVersion)
         {
@@ -347,7 +347,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [InlineData("8"), Trait("category", "node-8")]
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_Dir_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
@@ -428,7 +428,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [InlineData("9.4"), Trait("category", "node-9.4")]
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_NodeModule_SymLink_Exists_InRootDir_UsingCompression(string nodeVersion)
         {
@@ -512,7 +512,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("12"), Trait("category", "node-12")]
-        [InlineData("10"), Trait("category", "node-10")]
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -560,7 +559,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
         // Official Node.js version that is supported by Angular CLI 8.0+ is 10.9 or greater
         [Theory]
-        [InlineData("10"), Trait("category", "node-10")]
         [InlineData("12"), Trait("category", "node-12")]
         public async Task CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(string nodeVersion)
         {
@@ -605,7 +603,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [InlineData("10"), Trait("category", "node-10")]
         public async Task CanBuildAndRun_Angular8App_NodeModules_Dir_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
@@ -754,7 +752,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [InlineData("10"), Trait("category", "node-10")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InRoot_UsingCompression(string nodeVersion)
         {
@@ -913,7 +911,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy node versions are out of support")]
         [InlineData("10"), Trait("category", "node-10")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InRoot_UsingCompression(string nodeVersion)
         {
@@ -1077,7 +1075,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("10"), Trait("category", "node-10")]
         [InlineData("12"), Trait("category", "node-12-2")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
