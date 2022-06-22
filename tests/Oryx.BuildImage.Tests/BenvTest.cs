@@ -60,8 +60,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         //    InstalledPythonExecutablesAreOnPath(imageTestHelper.GetGitHubActionsBuildImage());
         //}
 
-        [Theory]
-        [Trait("category", "latest")]
+        [Theory, Trait("category", "latest")]
         // DotNet
         [InlineData("dotnet", "/opt/dotnet/")]
         // Node
@@ -102,8 +101,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [Trait("category", "ltsversions")]
+        [Theory, Trait("category", "ltsversions")]
         // DotNet
         [InlineData("dotnet", "/opt/dotnet/")]
         // Node
@@ -145,8 +143,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [Trait("category", "vso-focal")]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("dotnet", "vso-focal")]
         [InlineData("node", "vso-focal")]
         [InlineData("npm", "vso-focal")]
@@ -183,8 +180,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [Trait("category", "vso-focal")]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("python3", "/usr/bin/python3", "vso-focal")]
         [InlineData("pip", "/usr/local/bin/pip", "vso-focal")]
         [InlineData("pip3", "/usr/local/bin/pip3", "vso-focal")]
@@ -209,8 +205,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [Trait("category", "vso-focal")]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("vso-focal")]
         public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths_InVsoImage(string debianImageFlavor)
         {
@@ -364,8 +359,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [Trait("category", "vso-focal")]
+        [Theory, Trait("category", "vso-focal")]
         // DotNet
         [InlineData("dotnet", "/opt/dotnet/", "vso-focal")]
         // Node
@@ -405,8 +399,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [Trait("category", "vso-focal")]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("vso-focal")]
         public void OutOfTheBox_JavaHomeEnvironmentVarialbeIsSetInVSOImage(string debianImageFlavor)
         {

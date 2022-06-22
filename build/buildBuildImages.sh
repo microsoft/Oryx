@@ -504,6 +504,7 @@ elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage
 elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
+	buildCliImage "buster"
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then

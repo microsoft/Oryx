@@ -886,11 +886,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [Trait("category", "latest")]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion), Trait("category", "latest")]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion), Trait("category", "latest")]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion), Trait("category", "latest")]
+        [Theory, Trait("category", "latest")]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
         //[InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion), Trait("category", "latest")]
         public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
         {
