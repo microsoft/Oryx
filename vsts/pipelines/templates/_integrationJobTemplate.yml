@@ -40,7 +40,7 @@ jobs:
   displayName: Run Python Integration Tests
   dependsOn:
     - Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_RuntimeImages
   pool:
     name: AzurePipelines-EO
     demands:
@@ -69,7 +69,7 @@ jobs:
     displayName: 'Run DotNetCore ${{ dotNetCoreVersion }} Integration Tests'
     dependsOn:
       - Job_BuildImage
-      #- Job_RuntimeImages
+      - Job_RuntimeImages
     pool:
       name: AzurePipelines-EO
       demands:
@@ -98,7 +98,7 @@ jobs:
     displayName: 'Run Node ${{ nodeVersion }} Integration Tests'
     dependsOn:
       - Job_BuildImage
-      #- Job_RuntimeImages
+      - Job_RuntimeImages
     pool:
       name: AzurePipelines-EO
       demands:
@@ -127,7 +127,7 @@ jobs:
     displayName: 'Run Golang ${{ golangVersion }} Integration Tests'
     dependsOn:
       - Job_BuildImage
-      #- Job_RuntimeImages
+      - Job_RuntimeImages
     pool:
       name: AzurePipelines-EO
       demands:
@@ -154,7 +154,7 @@ jobs:
   displayName: Run Php Integration Tests 8.0
   dependsOn:
     - Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_RuntimeImages
   pool:
     name: AzurePipelines-EO
     demands:
@@ -181,7 +181,7 @@ jobs:
   displayName: Run Php Integration Tests 7.4
   dependsOn:
     - Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_RuntimeImages
   pool:
     name: AzurePipelines-EO
     demands:
@@ -208,7 +208,7 @@ jobs:
   displayName: Run Ruby Integration Tests
   dependsOn:
     - Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_RuntimeImages
   pool:
     name: AzurePipelines-EO
     demands:
@@ -235,7 +235,7 @@ jobs:
   displayName: Run Database Integration Tests
   dependsOn:
     - Job_BuildImage
-    #- Job_RuntimeImages
+    - Job_RuntimeImages
   pool:
     name: AzurePipelines-EO
     demands:
