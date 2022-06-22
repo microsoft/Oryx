@@ -152,7 +152,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 dockerCli: _dockerCli);
         }
 
-        [Theory]
+        [Theory(Skip = "Legacy PHP versions are out of support")]
         [InlineData("7.0")]
         // mcrypt only exists in 5.6 and 7.0, it's deprecated from php 7.2  and newer
         public void Mcrypt_IsInstalled(string imageTag)
