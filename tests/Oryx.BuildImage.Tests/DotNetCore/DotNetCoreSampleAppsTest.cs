@@ -279,7 +279,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 3.1.8")
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform dotnet " +
+                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp31}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
@@ -298,7 +301,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion), 
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -313,8 +318,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo RandomText >> {appDir}/Program.cs") // triggers a failure
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 3.1.8")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform dotnet " +
+                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp31}")
                 .ToString();
             // Regex will match:
             // "yyyy-mm-dd hh:mm:ss"|ERROR|Micro
@@ -390,7 +398,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform dotnet " +
-                $"--platform-version 6")
+                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp60}")
                 .ToString();
 
             // Act
