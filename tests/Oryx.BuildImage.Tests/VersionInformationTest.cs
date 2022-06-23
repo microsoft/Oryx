@@ -57,7 +57,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             DotNetAlias_UsesLtsVersion_ByDefault(
                 Settings.BuildImageName);
             OryxBuildImage_Contains_VersionAndCommit_Information(Settings.BuildImageName);
-
         }
 
         [Fact, Trait("category", "ltsversions")]

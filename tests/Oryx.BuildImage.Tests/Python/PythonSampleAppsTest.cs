@@ -34,7 +34,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             JamSpell_CanBe_Installed_In_The_BuildImage("latest", "2");
             JamSpell_CanBe_Installed_In_The_BuildImage("latest", "3");
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("latest");
-            GeneratesScript_AndBuilds(Settings.BuildImageName);
         }
 
         [Fact, Trait("category", "ltsversions")]
@@ -43,13 +42,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
             JamSpell_CanBe_Installed_In_The_BuildImage("lts-versions", "3");
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("lts-versions");
-            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
         }
 
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
-            // GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
             JamSpell_CanBe_Installed_In_The_BuildImage("vso-focal", "3");
         }
 
