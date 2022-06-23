@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
-    [Trait("platform", "java")]
+    [Fact, Trait("platform", "java")]
     public class JavaDynamicInstallationTest : SampleAppsTestBase
     {
         public JavaDynamicInstallationTest(ITestOutputHelper output) : base(output)

@@ -214,8 +214,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [Trait("category", "vso-focal")]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("vso-focal")]
         public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv_InVsoBuildImage(string debianImageFlavor=null)
         {
@@ -402,8 +401,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        [Trait("category", "latest")]
+        [Fact, Trait("category", "latest")]
         public void BenvDotNet22UsesDotNetCore22Version()
         {
             // Arrange

@@ -34,14 +34,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        [Trait("category", "jamstack")]
+        [Fact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {
             var imageTestHelper = new ImageTestHelper();
             InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
-        [Trait("category", "githubactions")]
+        [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubactions()
         {
             var imageTestHelper = new ImageTestHelper();

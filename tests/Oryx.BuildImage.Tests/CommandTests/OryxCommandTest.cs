@@ -21,8 +21,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         public OryxCommandTest(ITestOutputHelper output) : base(output) { }
 
-        [Fact]
-        [Trait("category", "latest")]
+        [Fact, Trait("category", "latest")]
         public void Build_ReturnsExpectedErrorCode_ForUnsupportedPlatformException()
         {
             // Arrange
@@ -48,8 +47,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        [Trait("category", "latest")]
+        [Fact, Trait("category", "latest")]
         public void Build_ReturnsExpectedErrorCode_ForUnsupportedVersionException()
         {
             // Arrange

@@ -89,8 +89,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        [Trait("category", "githubactions")]
+        [Fact, Trait("category", "githubactions")]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
@@ -144,8 +143,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        [Trait("category", "githubactions")]
+        [Fact, [Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresExplicitRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
@@ -207,8 +205,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        [Trait("category", "githubactions")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
@@ -268,8 +265,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        [Trait("category", "githubactions")]
+        [Fact, [Trait("category", "githubactions")]
         public void BuildsApplication_UsingPreviewVersionOfSdk()
         {
             // Arrange
@@ -328,8 +324,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        [Trait("category", "githubactions")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsAppAfterInstallingAllRequiredPlatforms()
         {
             // Arrange
@@ -366,8 +361,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        [Trait("category", "githubactions")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_IntoCustomDynamicInstallationDir()
         {
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
