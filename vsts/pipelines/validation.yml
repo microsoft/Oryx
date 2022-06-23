@@ -2,14 +2,27 @@ parameters:
   - name: buildImages
     type: object
     default:
-      - latest
-      - ltsversions
-      - jamstack
-      - githubactions
-      - vso-focal
-      - full
-      - cli
-      - buildpack
+      - 
+        key: latest
+        value: ltsversions
+      - 
+        key: jamstack
+        value: jamstack
+      - 
+        key: githubActions
+        value: githubactions
+      - 
+        key: vsoFocal
+        value: vso-focal
+      - 
+        key: full
+        value: full
+      - 
+        key: cli
+        value: cli
+      - 
+        key: buildpack
+        value: buildpack
 
 resources:
 - repo: self
@@ -29,8 +42,8 @@ jobs:
   - template: templates/_securityChecks.yml
 
 - ${{ each buildImage in parameters.buildImages }}:
-  - job: Job_BuildImage_${{ buildImage }}
-    displayName: 'Build & Test ${{ buildImage }} build image'
+  - job: Job_BuildImage_${{ buildImage.key }}
+    displayName: 'Build & Test ${{ buildImage.key }} build image'
     pool:
       name: AzurePipelines-EO
       demands:
@@ -47,7 +60,7 @@ jobs:
         displayName: 'Set variables'
       - template: templates/_buildTemplate.yml
         parameters:
-            imageType: ${{ buildImage }}
+            imageType: ${{ buildImage.value }}
 
 #- job: Job_BuildImage_ltsVersions
 #  displayName: Build and Test Build LtsVersions Image
