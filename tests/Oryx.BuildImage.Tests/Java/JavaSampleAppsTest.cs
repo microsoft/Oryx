@@ -22,6 +22,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "java", sampleAppName));
 
+        /* Temporarily remove
+
         [Fact, Trait("category", "githubactions")]
         public void BuildsMavenArcheTypeSample()
         {
@@ -53,7 +55,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                 },
                 result.GetDebugInfo());
-        }
+        }*/
 
         [Fact, Trait("category", "githubactions")]
         public void BuildsMavenJ2EESample()
