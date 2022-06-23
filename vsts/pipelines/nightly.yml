@@ -1,3 +1,32 @@
+parameters:
+  - name: buildImages
+    type: object
+    default:
+      - 
+        key: Latest
+        value: latest
+      - 
+        key: LtsVersions
+        value: ltsversions
+      - 
+        key: Jamstack
+        value: jamstack
+      - 
+        key: GithubActions
+        value: githubactions
+      - 
+        key: VsoFocal
+        value: vso-focal
+      - 
+        key: Full
+        value: full
+      - 
+        key: Cli
+        value: cli
+      - 
+        key: Buildpack
+        value: buildpack
+
 resources:
 - repo: self
   fetchDepth: 15
