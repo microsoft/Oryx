@@ -78,6 +78,45 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
+        [InlineData("3.10.4")]
+        public void GeneratesScript_AndBuildsPython_JamstackBuildImage(string version)
+        {
+            // Arrange
+            var installationDir = "/opt/" + $"python/{version}";
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand(GetSnippetToCleanUpExistingInstallation())
+                .AddBuildCommand(
+                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: {installationDir}/bin/python3",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
         [InlineData("3.8.0b3")]
         [InlineData("3.9.0b1")]
         public void GeneratesScript_AndBuildsPythonPreviewVersion(string previewVersion)

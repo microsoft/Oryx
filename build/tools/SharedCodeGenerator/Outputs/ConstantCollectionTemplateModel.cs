@@ -9,7 +9,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
 {
     internal class ConstantCollectionTemplateModel
     {
-        public string AutogenDisclaimer { get; set; }
+        public string Header { get; set; }
 
         public string Namespace { get; set; }
 
@@ -17,6 +17,8 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
 
         public string Scope { get; set; }
 
-        public Dictionary<string, string> Constants { get; set; }
+        public Dictionary<string, string> StringConstants { get; set; }
+
+        public Dictionary<string, string> ListConstants { get; set; }
     }
 }

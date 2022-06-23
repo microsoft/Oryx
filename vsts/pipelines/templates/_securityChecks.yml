@@ -28,6 +28,12 @@ steps:
     createLogFile: true
     logFileVerbosity: diagnostic
 
+- task: PowerShell@2
+  displayName: 'Wait 30 seconds after building solution'
+  inputs:
+    targetType: 'inline'
+    script: 'Start-Sleep -Seconds 30'
+
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-roslynanalyzers.RoslynAnalyzers@2
   displayName: 'Run Roslyn Analyzers'
   condition: always()

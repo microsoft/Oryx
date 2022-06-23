@@ -248,12 +248,13 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $MAVEN_VERSION lts \
     && mkdir -p /home/codespace/.maven/current \
     && ln -sfn /opt/maven/$MAVEN_VERSION /home/codespace/.maven/current \
-    && npm install -g lerna \
+    && npm install -g lerna@4.0.0 \
     && PATH="$PATH:/opt/php/lts/bin" \
     && wget http://pear.php.net/go-pear.phar \
     && php go-pear.phar \
     && pecl install -f libsodium \
-    && echo "vso-focal" > /opt/oryx/.imagetype
+    && echo "vso-focal" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 # install few more tools for VSO
 RUN gem install bundler rake ruby-debug-ide debase jekyll

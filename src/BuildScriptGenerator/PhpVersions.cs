@@ -1,11 +1,13 @@
 // This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
+using System.Collections.Generic;
+
 namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class PhpVersions
     {
-        public const string PhpRuntimeBaseTag = "20220324.2";
-        public const string PhpFpmRuntimeBaseTag = "20220325.1";
+        public const string PhpRuntimeBaseTag = "20220603.1";
+        public const string PhpFpmRuntimeBaseTag = "20220603.1";
         public const string ComposerVersion = "2.0.8";
         public const string ComposerSetupSha384 = "906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8";
         public const string Composer19Version = "1.9.3";
@@ -34,5 +36,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Php56Version = "5.6.40";
         public const string Php56Keys = "0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3";
         public const string Php56TarSha256 = "1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c";
+        public static readonly List<string> RuntimeVersions = new List<string> { "5.6", "7.0", "7.2", "7.3", "7.4", "8.0", "8.1" };
     }
 }

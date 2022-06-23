@@ -2,7 +2,8 @@ resources:
 - repo: self
 
 variables:
-- group: Oryx
+  group: Oryx
+  Packaging.EnableSBOMSigning: true
 
 stages:
   - stage: CreateReleaseTag

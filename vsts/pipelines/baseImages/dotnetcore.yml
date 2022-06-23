@@ -2,7 +2,8 @@ variables:
     ascName: oryxSP
     acrName: oryxdevmcr.azurecr.io
     skipComponentGovernanceDetection: true
-  
+    Packaging.EnableSBOMSigning: true
+
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
@@ -22,10 +23,20 @@ jobs:
     artifactsFileName: dotnetcore-runtimeimage-bases-buster.txt
     jobName: Build_DotNetCore_BaseImage_Buster
 
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build DotNetCore runtime bullseye base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: dotnetcore
+    imageDebianFlavor: bullseye
+    artifactsFileName: dotnetcore-runtimeimage-bases-bullseye.txt
+    jobName: Build_DotNetCore_BaseImage_Bullseye
+
 - job: Release_DotNetCoreRuntimeBaseImage
   dependsOn: 
     - Build_DotNetCore_BaseImage_Stretch
     - Build_DotNetCore_BaseImage_Buster
+    - Build_DotNetCore_BaseImage_Bullseye
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

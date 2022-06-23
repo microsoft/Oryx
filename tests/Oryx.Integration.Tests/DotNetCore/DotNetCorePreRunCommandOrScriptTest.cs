@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "dotnetcore")]
+    [Trait("category", "dotnetcore-31")]
     public class DotNetCorePreRunCommandOrScriptTest : DotNetCoreEndToEndTestsBase
     {
         private readonly string RunScriptPath = DefaultStartupFilePath;

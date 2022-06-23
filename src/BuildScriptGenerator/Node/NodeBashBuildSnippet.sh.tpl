@@ -15,6 +15,14 @@ echo "Node Build Command Manifest file created."
 {{ end }}
 {{ end }}
 
+{{ if NpmVersionSpec | IsNotBlank }}
+echo
+echo "Found npm version spec to follow in package.json: '{{ NpmVersionSpec }}'"
+echo "Updating version of npm installed to meet the above version spec."
+npm install -g npm@'{{ NpmVersionSpec }}'
+echo
+{{ end }}
+
 echo
 echo "Using Node version:"
 node --version

@@ -112,6 +112,56 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Hello World!", data);
                 });
         }
+        [Theory]
+        [InlineData(PythonVersions.Python310Version)]
+        public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallation(
+            string pythonVersion)
+        {
+            // Arrange
+            var appName = "django-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+               .AddDefaultTestEnvironmentVariables()
+               .AddCommand(GetSnippetToCleanUpExistingInstallation())
+               .AddCommand(
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
+               .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand($"oryx setupEnv -appPath {appOutputDir}")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new[] { volume, appOutputDirVolume },
+                _imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"),
+                "/bin/bash", new[] { "-c", buildScript },
+                _imageHelper.GetRuntimeImage("python", "3.10"),
+                ContainerPort,
+                "/bin/bash",
+                new[] { "-c", runScript },
+                async (hostPort) =>
+                {
+                    var data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/boards.css");
+                    Assert.Contains("CSS file from Boards app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/staticfiles/css/uservoice.css");
+                    Assert.Contains("CSS file from UserVoice app module", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/boards/");
+                    Assert.Contains("Hello, World! from Boards app", data);
+
+                    data = await GetResponseDataAsync($"http://localhost:{hostPort}/uservoice/");
+                    Assert.Contains("Hello, World! from Uservoice app", data);
+                });
+        }
 
         [Fact]
         public async Task CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitch()
