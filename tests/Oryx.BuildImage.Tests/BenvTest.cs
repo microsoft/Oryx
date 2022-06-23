@@ -39,27 +39,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             InstalledPythonExecutablesAreOnPath("lts-versions");
         }
 
-        //[Fact, Trait("category", "vso-focal")]
-        //public void PipelineTestInvocationVsoFocal()
-        //{
-        //    var imageTestHelper = new ImageTestHelper();
-        //    InstalledPythonExecutablesAreOnPath(imageTestHelper.GetVsoBuildImage("vso-focal"));
-        //}
-
-        //[Fact, Trait("category", "jamstack")]
-        //public void PipelineTestInvocationJamstack()
-        //{
-        //    var imageTestHelper = new ImageTestHelper();
-        //    InstalledPythonExecutablesAreOnPath(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-        //}
-
-        //[Fact, Trait("category", "githubactions")]
-        //public void PipelineTestInvocationGithubActions()
-        //{
-        //    var imageTestHelper = new ImageTestHelper();
-        //    InstalledPythonExecutablesAreOnPath(imageTestHelper.GetGitHubActionsBuildImage());
-        //}
-
         [Theory, Trait("category", "latest")]
         // DotNet
         [InlineData("dotnet", "/opt/dotnet/")]
