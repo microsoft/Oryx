@@ -3,25 +3,28 @@ parameters:
     type: object
     default:
       - 
-        key: latest
+        key: Latest
+        value: latest
+      - 
+        key: LtsVersions
         value: ltsversions
       - 
-        key: jamstack
+        key: Jamstack
         value: jamstack
       - 
-        key: githubActions
+        key: GithubActions
         value: githubactions
       - 
-        key: vsoFocal
+        key: VsoFocal
         value: vso-focal
       - 
-        key: full
+        key: Full
         value: full
       - 
-        key: cli
+        key: Cli
         value: cli
       - 
-        key: buildpack
+        key: Buildpack
         value: buildpack
 
 resources:
@@ -43,7 +46,7 @@ jobs:
 
 - ${{ each buildImage in parameters.buildImages }}:
   - job: Job_BuildImage_${{ buildImage.key }}
-    displayName: 'Build & Test ${{ buildImage.key }} build image'
+    displayName: 'Build & Test ${{ buildImage.key }} Build image'
     pool:
       name: AzurePipelines-EO
       demands:
