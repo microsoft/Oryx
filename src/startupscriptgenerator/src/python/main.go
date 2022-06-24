@@ -107,7 +107,7 @@ func main() {
 			fmt.Sprintf("echo %s/lib > /etc/ld.so.conf.d/python.conf\n", pythonInstallationRoot))
 		scriptBuilder.WriteString("ldconfig\n")
 
-		if strings.HasPrefix(buildManifest.PythonVersion, "3.") {
+		if strings.HasPrefix(buildManifest.PythonVersion, "3.") && !strings.HasPrefix(buildManifest.PythonVersion, "3.10") {
 			scriptBuilder.WriteString(
 				fmt.Sprintf("cd %s/bin\n", pythonInstallationRoot))
 			scriptBuilder.WriteString("rm -f python\n")

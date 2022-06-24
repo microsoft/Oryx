@@ -20,8 +20,11 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _restrictedPermissionsImageRepoPrefix = "oryxtests";
 
         private const string _azureFunctionsJamStack = "azfunc-jamstack";
+        private const string _azureFunctionsJamStackBuster = "azfunc-jamstack-buster";
+        private const string _azureFunctionsJamStackBullseye = "azfunc-jamstack-bullseye";
         private const string _gitHubActions = "github-actions";
         private const string _gitHubActionsBuster = "github-actions-buster";
+        private const string _gitHubActionsBullseye = "github-actions-bullseye";
         private const string _vso = "vso";
         private const string _vsoUbuntu = "vso-focal";
         private const string _buildRepository = "build";
@@ -174,9 +177,25 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetGitHubActionsBuildImage(_gitHubActionsBuster);
             }
+            else if (string.Equals(tag, _gitHubActionsBullseye))
+            {
+                return GetGitHubActionsBuildImage(_gitHubActionsBullseye);
+            }
             else if (string.Equals(tag, _ltsVersionsBuster))
             {
                 return GetLtsVersionsBuildImage(_ltsVersionsBuster);
+            }
+            else if (string.Equals(tag, _azureFunctionsJamStack))
+            {
+                return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStack);
+            }
+            else if (string.Equals(tag, _azureFunctionsJamStackBuster))
+            {
+                return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStackBuster);
+            }
+            else if (string.Equals(tag, _azureFunctionsJamStackBullseye))
+            {
+                return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStackBullseye);
             }
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
@@ -198,19 +217,28 @@ namespace Microsoft.Oryx.Tests.Common
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
         /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
-        public string GetAzureFunctionsJamStackBuildImage()
+        public string GetAzureFunctionsJamStackBuildImage(string debianFlavor=null)
         {
-            return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStack}{_tagSuffix}";
+            if (!string.IsNullOrEmpty(debianFlavor)
+                && string.Equals(debianFlavor.ToLower(), _azureFunctionsJamStackBuster))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBuster}{_tagSuffix}";
+            } else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _azureFunctionsJamStackBullseye)) {
+                return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBullseye}{_tagSuffix}";
+            } else {
+                return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStack}{_tagSuffix}";
+            }
         }
 
         public string GetGitHubActionsBuildImage(string debianFlavor=null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor)
-                && string.Equals(debianFlavor.ToLower(), _gitHubActionsBuster))
-            {
+            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBuster)) {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBuster}{_tagSuffix}";
+            } else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseye)) {
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
+            } else {
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
             }
-            return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
         }
 
         public string GetVsoBuildImage(string debianFlavor=null)

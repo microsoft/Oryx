@@ -31,7 +31,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.3");
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.1");
                 data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3");
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.9.0");
+                data.Add(imageTestHelper.GetGitHubActionsBuildImage("github-actions-buster"), "3.9.0");
+                data.Add(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.10.4");
                 return data;
             }
         }
@@ -58,6 +59,45 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = imageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: {installationDir}/bin/python3",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [InlineData("3.10.4")]
+        public void GeneratesScript_AndBuildsPython_JamstackBuildImage(string version)
+        {
+            // Arrange
+            var installationDir = "/opt/" + $"python/{version}";
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand(GetSnippetToCleanUpExistingInstallation())
+                .AddBuildCommand(
+                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

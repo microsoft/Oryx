@@ -2,20 +2,21 @@ variables:
     ascName: oryxSP
     acrName: oryxdevmcr.azurecr.io
     skipComponentGovernanceDetection: true
+    Packaging.EnableSBOMSigning: true
   
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build python runtime buster base images
+    displayName: Build python runtime bullseye base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: python
-    imageDebianFlavor: buster
-    artifactsFileName: python-runtimeimage-bases-buster.txt
-    jobName: Build_Buster_BaseImages
+    imageDebianFlavor: bullseye
+    artifactsFileName: python-runtimeimage-bases-bullseye.txt
+    jobName: Build_Bullseye_BaseImages
 
 - job: Release_PythonRuntimeBaseImage
   dependsOn: 
-    - Build_Buster_BaseImages
+    - Build_Bullseye_BaseImages
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

@@ -37,6 +37,16 @@ docker build \
 echo
 echo
 
+echo "Building bullseye based github action image for tests..."
+docker build \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-bullseye" \
+    --build-arg PARENT_IMAGE_BASE=github-actions-bullseye \
+    -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
+    .
+
+echo
+echo
+
 echo "Building stretch based full build image for tests..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:latest" \

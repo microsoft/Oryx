@@ -3,7 +3,8 @@ resources:
   fetchDepth: 15
 
 variables:
-- group: Oryx
+  group: Oryx
+  Packaging.EnableSBOMSigning: true
 
 stages:
   - stage: CreateReleaseTag

@@ -1,6 +1,6 @@
 ARG RUNTIME={{ RuntimeImageName }}:{{ RuntimeImageTag }}
 
-FROM mcr.microsoft.com/oryx/build:{{ BuildImageTag }} as build
+FROM mcr.microsoft.com/oryx/{{ BuildImageName }}:{{ BuildImageTag }} as build
 WORKDIR /app
 COPY . .
 RUN oryx build /app --output /output

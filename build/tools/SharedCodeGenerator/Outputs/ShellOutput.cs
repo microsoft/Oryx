@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
@@ -36,13 +37,16 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
             StringBuilder body = new StringBuilder();
             body.Append("# " + Program.BuildAutogenDisclaimer(this.collection.SourcePath) + NewLine); // Can't use AppendLine becuase it appends \r\n
             body.Append(NewLine);
-            foreach (var constant in this.collection.Constants)
+            if (this.collection.StringConstants?.Any() ?? false)
             {
-                string name = constant.Key.Replace(ConstantCollection.NameSeparator[0], '_').ToUpper();
-                var value = constant.Value.WrapValueInQuotes();
+                foreach (var constant in this.collection.StringConstants)
+                {
+                    string name = constant.Key.Replace(ConstantCollection.NameSeparator[0], '_').ToUpper();
+                    var value = constant.Value.WrapValueInQuotes();
 
-                // Ex: PYTHON_VERSION='3.7.7'
-                body.Append($"{name}={value}{NewLine}");
+                    // Ex: PYTHON_VERSION='3.7.7'
+                    body.Append($"{name}={value}{NewLine}");
+                }
             }
 
             return body.ToString();

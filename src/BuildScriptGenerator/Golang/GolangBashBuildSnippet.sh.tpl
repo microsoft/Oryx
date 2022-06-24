@@ -6,6 +6,10 @@ set -e
 #	./go.mod
 #	./main.go
 
+# enables golang globally
+export PATH="/tmp/oryx/platforms/golang/{{ GolangVersion }}/go/bin/:$PATH"
+echo "PATH: $PATH"
+
 GOLANG_BUILD_START_TIME=$SECONDS
 echo "   "
 echo "Using Golang version: "
@@ -19,7 +23,12 @@ echo "   "
 
 # TODO: add support for nested dirs
 echo "building go app..."
-go build
+doc="https://aka.ms/troubleshoot-go"
+suggestion="Please check your go.mod is valid.
+ Try building locally first with the following command: go build"
+msg="${suggestion} | ${doc}"
+cmd="go build -o oryxBuildBinary"
+LogErrorWithTryCatch "$cmd" "$msg"
 
 echo "list of module dependencies"
 go list -m

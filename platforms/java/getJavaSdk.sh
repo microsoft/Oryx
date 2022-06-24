@@ -17,16 +17,45 @@ downloadJavaSdk()
 {
     local JDK_VERSION="$1"
     local JDK_BUILD_NUMBER="$2"
+    local JDK_SHA256="$3"
+    local JDK_URL="$4"  
+    local JDK_DIR_NAME="$5" # jdk's root directory name after extracting
 
     tarFileName="java-$JDK_VERSION.tar.gz"
-    
+    tarFileNameWithoutGZ="java-$JDK_VERSION.tar"
+
+    # set tarFile's Debian flavor
     if [ "$debianFlavor" == "stretch" ]; then
-			# Use default sdk file name
-			tarFileName=java-$JDK_VERSION.tar.gz
-	else
-			tarFileName=java-$debianFlavor-$JDK_VERSION.tar.gz
-	fi
+            tarFileName=java-$JDK_VERSION.tar.gz
+            tarFileNameWithoutGZ=java-$JDK_VERSION.tar
+    else
+            tarFileName=java-$debianFlavor-$JDK_VERSION.tar.gz
+            tarFileNameWithoutGZ=java-$debianFlavor-$JDK_VERSION.tar
+    fi
+
     
+    if [ ! -z "$JDK_URL" ]; then
+        # download & validate
+        echo "JDK_URL: ${JDK_URL}"
+        curl -L "${JDK_URL}" -o $tarFileName
+        echo "$JDK_SHA256 $tarFileName" | sha256sum --check --strict; \
+        
+        # extract
+        rm -rf extracted
+        mkdir -p extracted
+        tar -xf $tarFileName --directory extracted
+        ls
+        if [ ! -z "$JDK_DIR_NAME" ]; then
+            jdk_root="extracted/$JDK_DIR_NAME"
+        else
+            jdk_root="extracted/jdk-${JDK_VERSION}"
+        fi
+        cd $jdk_root
+        tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
+        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        return
+    fi
+
     # TODO: refactor to reduce the number of if statements. Workitem #1439235
     # Version 8 or 1.8.0 has a different url format than rest of the versions, so special casing it.
     if [ "$JDK_VERSION" == "1.8.0" ]; then
@@ -40,25 +69,24 @@ downloadJavaSdk()
         tar -xf $tarFileName --directory extracted
         cd "extracted/jdk${versionUpdate}-${buildNumber}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
-		echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
         return
     fi
 
     IFS='.' read -ra VERSION_PARTS <<< "$JDK_VERSION"
     majorVersion="${VERSION_PARTS[0]}"
 
-    # Version 17.0.1 has a different url format than rest of the versions, so special casing it.
-    if [ "$JDK_VERSION" == "17.0.1" ]; then
-        local buildNumber="12"
-        local url="https://download.java.net/java/GA/jdk17.0.1/2a2082e5a09d4267845be086888add4f/12/GPL/openjdk-17.0.1_linux-x64_bin.tar.gz"
+    if [ "$JDK_VERSION" == "17.0.2" ]; then
+        local url="https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz"
 
         curl -L "$url" -o $tarFileName
         rm -rf extracted
         mkdir -p extracted
-        tar -xf $tarFileName --directory extracted
+        gzip -d $tarFileName
+        tar -xf $tarFileNameWithoutGZ --directory extracted
         cd "extracted/jdk-${JDK_VERSION}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
-		echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
         return
     fi
 
@@ -78,8 +106,8 @@ downloadJavaSdk()
         cd "extracted/jdk-${JDK_VERSION}+${JDK_BUILD_NUMBER}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
 
-		echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
-		echo "JdkFullVersion=$JDK_VERSION+$JDK_BUILD_NUMBER" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        echo "JdkFullVersion=$JDK_VERSION+$JDK_BUILD_NUMBER" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
     fi
 }
 

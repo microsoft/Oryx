@@ -6,7 +6,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
+using Microsoft.Oryx.BuildScriptGenerator.Ruby;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -23,21 +23,22 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
-        public static TheoryData<string> ImageNameData
+        public static TheoryData<string, string> ImageNameData
         {
             get
             {
-                var data = new TheoryData<string>();
+                var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add(RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage("vso-focal"));
+                data.Add(RubyVersions.Ruby30Version, imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add(RubyVersions.Ruby31Version, imageTestHelper.GetGitHubActionsBuildImage());
                 return data;
             }
         }
 
         [Theory]
         [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string buildImageName)
+        public void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string version, string buildImageName)
         {
             // Arrange
             var appName = "sinatra-app";
@@ -46,7 +47,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} --platform {RubyConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
                 .ToString();
 
             // Act

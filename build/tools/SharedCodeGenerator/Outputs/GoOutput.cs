@@ -36,9 +36,9 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
         {
             var model = new ConstantCollectionTemplateModel
             {
-                AutogenDisclaimer = Program.BuildAutogenDisclaimer(this.collection.SourcePath),
+                Header = $"// {Program.BuildAutogenDisclaimer(this.collection.SourcePath)}",
                 Namespace = this.package,
-                Constants = this.collection.Constants.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
+                StringConstants = this.collection.StringConstants?.ToDictionary(pair => pair.Key.Camelize(), pair => pair.Value),
             };
             return outputTemplate.Render(model, member => member.Name);
         }

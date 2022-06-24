@@ -2,7 +2,8 @@ variables:
     ascName: oryxSP
     acrName: oryxdevmcr.azurecr.io
     skipComponentGovernanceDetection: true
-  
+    Packaging.EnableSBOMSigning: true
+
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
@@ -22,10 +23,20 @@ jobs:
     artifactsFileName: php-runtimeimage-bases-buster.txt
     jobName: Build_Buster_BaseImages
 
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build php runtime bullseye base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: php
+    imageDebianFlavor: bullseye
+    artifactsFileName: php-runtimeimage-bases-bullseye.txt
+    jobName: Build_Bullseye_BaseImages
+
 - job: Release_PhpRuntimeBaseImage
   dependsOn: 
     - Build_Stretch_BaseImages
     - Build_Buster_BaseImages
+    - Build_Bullseye_BaseImages
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

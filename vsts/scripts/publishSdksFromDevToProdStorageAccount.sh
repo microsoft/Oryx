@@ -7,8 +7,6 @@
 set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
-source $REPO_DIR/build/__variables.sh
-source $REPO_DIR/build/__sdkStorageConstants.sh
 source $REPO_DIR/platforms/__common.sh
 
 azCopyDir="/tmp/azcopy-tool"

@@ -101,11 +101,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
             // Write platform name and version to the manifest file
             buildProperties[ManifestFilePropertyKeys.GolangVersion] = goPlatformDetectorResult.PlatformVersion;
             this.logger.LogDebug($"Selected Go version: {goPlatformDetectorResult.PlatformVersion}");
-
-            var scriptProps = new GolangBashBuildSnippetProperties
-            {
-                GoModExists = goPlatformDetectorResult.GoModExists,
-            };
+            var scriptProps = new GolangBashBuildSnippetProperties(
+                goPlatformDetectorResult.GoModExists,
+                goPlatformDetectorResult.PlatformVersion);
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.GolangSnippet,

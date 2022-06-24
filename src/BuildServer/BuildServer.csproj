@@ -17,7 +17,6 @@
     <PackageReference Include="JsonFlatFileDataStore" Version="2.2.3" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.4" />
     <PackageReference Include="RunProcessAsTask" Version="1.2.4" />
-    <PackageReference Include="JsonFlatFileDataStore" Version="2.2.3" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>

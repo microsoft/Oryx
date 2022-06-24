@@ -116,6 +116,14 @@ function buildGitHubRunnersUbuntuBaseImage() {
 		.
 }
 
+function buildGitHubRunnersBullseyeBaseImage() {
+	echo
+	echo "----Building the image which uses GitHub runners' buildpackdeps-bullseye-scm specific digest----------"
+	docker build -t githubrunners-buildpackdeps-bullseye \
+		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_BULLSEYE_DOCKERFILE" \
+		.
+}
+
 function buildGitHubRunnersBusterBaseImage() {
 	
 	echo
@@ -137,6 +145,7 @@ function buildTemporaryFilesImage() {
 	buildGitHubRunnersBaseImage
 	buildGitHubRunnersBusterBaseImage
 	buildGitHubRunnersUbuntuBaseImage
+	buildGitHubRunnersBullseyeBaseImage
 
 	# Create the following image so that it's contents can be copied to the rest of the images below
 	echo
@@ -169,8 +178,8 @@ function buildGitHubActionsImage() {
 	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
 		debianFlavor="stretch"
 		echo "Debian Flavor is: "$debianFlavor
-	elif  [ "$debianFlavor" == "buster" ]; then
-		debianFlavor="buster"
+	elif [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "bullseye" ]; then
+		debianFlavor=$debianFlavor
 		devImageTag=$devImageTag-$debianFlavor
 		echo "dev image tag: "$devImageTag
 		builtImageName=$builtImageName-$debianFlavor
@@ -217,8 +226,8 @@ function buildJamStackImage() {
 	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
 		debianFlavor="stretch"
 		parentImageTag=actions
-	elif  [ "$debianFlavor" == "buster" ]; then
-		debianFlavor="buster"
+	elif  [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "bullseye" ]; then
+		debianFlavor=$debianFlavor
 		parentImageTag=actions-$debianFlavor
 		devImageTag=$devImageTag-$debianFlavor
 		echo "dev image tag: "$devImageTag
@@ -300,11 +309,11 @@ function buildLtsVersionsImage() {
 		.
 }
 
-function buildFullImage() {
+function buildLatestImages() {
 	buildLtsVersionsImage
 
 	echo
-	echo "-------------Creating full build image-------------------"
+	echo "-------------Creating latest build images-------------------"
 	local builtImageName="$ACR_BUILD_IMAGES_REPO"
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
@@ -397,6 +406,45 @@ function buildCliImage() {
 	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 }
 
+function buildFullImage() {
+	buildBuildScriptGeneratorImage
+	
+	local debianFlavor=$1
+	local devImageTag=full
+	local builtImageName="$ACR_BUILD_FULL_IMAGE_NAME"
+
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+		debianFlavor="stretch"
+	elif  [ "$debianFlavor" == "buster" ]; then
+		debianFlavor="buster"
+		devImageTag=$devImageTag-$debianFlavor
+		echo "dev image tag: "$devImageTag
+		builtImageName=$builtImageName-$debianFlavor
+		echo "built image name: "$builtImageName
+	fi
+
+	echo
+	echo "-------------Creating full image-------------------"
+	docker build -t $builtImageName \
+		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg DEBIAN_FLAVOR=$debianFlavor \
+		--label com.microsoft.oryx="$labelContent" \
+		-f "$BUILD_IMAGES_FULL_DOCKERFILE" \
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:$devImageTag"
+
+	echo
+	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+}
+
 function buildBuildPackImage() {
 	# Build buildpack images
 	# 'pack create-builder' is not supported on Windows
@@ -409,21 +457,28 @@ function buildBuildPackImage() {
 }
 
 if [ -z "$imageTypeToBuild" ]; then
+	buildGitHubActionsImage "bullseye"
 	buildGitHubActionsImage "buster"
 	buildGitHubActionsImage
+	buildJamStackImage "bullseye"
 	buildJamStackImage "buster"
 	buildJamStackImage
 	buildLtsVersionsImage "buster"
 	buildLtsVersionsImage	
-	buildFullImage
+	buildLatestImages
 	buildVsoFocalImage
 	buildCliImage "buster"
 	buildCliImage
 	buildBuildPackImage
+	buildFullImage "buster"
 elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
 elif [ "$imageTypeToBuild" == "githubactions-buster" ]; then
 	buildGitHubActionsImage "buster"
+elif [ "$imageTypeToBuild" == "githubactions-bullseye" ]; then
+	buildGitHubActionsImage "bullseye"
+elif [ "$imageTypeToBuild" == "jamstack-bullseye" ]; then
+	buildJamStackImage "bullseye"
 elif [ "$imageTypeToBuild" == "jamstack-buster" ]; then
 	buildJamStackImage "buster"
 elif [ "$imageTypeToBuild" == "jamstack" ]; then
@@ -432,8 +487,10 @@ elif [ "$imageTypeToBuild" == "ltsversions" ]; then
 	buildLtsVersionsImage
 elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
 	buildLtsVersionsImage "buster"
+elif [ "$imageTypeToBuild" == "latest" ]; then
+	buildLatestImages
 elif [ "$imageTypeToBuild" == "full" ]; then
-	buildFullImage
+	buildFullImage "buster"
 elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage
 elif [ "$imageTypeToBuild" == "cli" ]; then
@@ -444,7 +501,7 @@ elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
-githubactions, jamstack, ltsversions, full, vso-focal, cli, buildpack"
+githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, buildpack"
 	exit 1
 fi
 

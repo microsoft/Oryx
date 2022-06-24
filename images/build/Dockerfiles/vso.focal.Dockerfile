@@ -112,25 +112,21 @@ RUN set -ex \
     && DOTNET_SDK_VER=$DOT_NET_60_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
-    && DOTNET_SDK_VER=$DOT_NET_50_SDK_VERSION \
-       INSTALL_PACKAGES="true" \
-       $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPackagesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
     && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s $DOT_NET_60_SDK_VERSION 6-lts \
-    && ln -s 6-lts lts \
+    && ln -s $DOT_NET_60_SDK_VERSION lts \
     # Install Hugo
     && mkdir -p /home/codespace/.hugo \
     && $imagesDir/build/installHugo.sh \
     # Install Node
     && mkdir -p /home/codespace/.nodejs \
     && . $buildDir/__nodeVersions.sh \
-    && $imagesDir/installPlatform.sh nodejs $NODE10_VERSION \
-    && $imagesDir/installPlatform.sh nodejs $NODE12_VERSION \
     && $imagesDir/installPlatform.sh nodejs $NODE14_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $NODE16_VERSION \
     && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
     && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
     && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
@@ -140,11 +136,10 @@ RUN set -ex \
     && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
     && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
     && cd /opt/nodejs \
-    && ln -s $NODE10_VERSION 10 \
-    && ln -s $NODE12_VERSION 12 \
     && ln -s $NODE14_VERSION 14 \
-    && ln -s 14 lts \
-    && ln -sfn /opt/nodejs/$NODE14_VERSION /home/codespace/.nodejs/current \
+    && ln -s $NODE16_VERSION 16 \
+    && ln -s $NODE16_VERSION lts \
+    && ln -sfn /opt/nodejs/$NODE16_VERSION /home/codespace/.nodejs/current \
     && cd /opt/yarn \
     && ln -s $YARN_VERSION stable \
     && ln -s $YARN_VERSION latest \
@@ -156,36 +151,32 @@ RUN set -ex \
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \
     && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON36_VERSION \
-    && $imagesDir/installPlatform.sh python $PYTHON37_VERSION \
-    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
-    && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
-    && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
-    && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && $imagesDir/installPlatform.sh python $PYTHON39_VERSION \
+    && $imagesDir/installPlatform.sh python $PYTHON310_VERSION \
+    && [ -d "/opt/python/$PYTHON39_VERSION" ] && echo /opt/python/$PYTHON39_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && [ -d "/opt/python/$PYTHON310_VERSION" ] && echo /opt/python/$PYTHON310_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \
-    && ln -s $PYTHON36_VERSION 3.6 \
-    && ln -s $PYTHON37_VERSION 3.7 \
-    && ln -s $PYTHON38_VERSION 3.8 \
-    && ln -s $PYTHON38_VERSION latest \
-    && ln -s $PYTHON38_VERSION stable \
-    && ln -s 3.8 3 \
-    && ln -sfn /opt/python/$PYTHON38_VERSION /home/codespace/.python/current \
+    && ln -s $PYTHON39_VERSION 3.9 \
+    && ln -s $PYTHON310_VERSION 3.10 \
+    && ln -s $PYTHON310_VERSION latest \
+    && ln -s $PYTHON310_VERSION stable \
+    && ln -s $PYTHON310_VERSION 3 \
+    && ln -sfn /opt/python/$PYTHON310_VERSION /home/codespace/.python/current \
     # Install PHP pre-reqs
     && $imagesDir/build/php/prereqs/installPrereqs.sh \
     && mkdir -p /home/codespace/.php \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
-    && $imagesDir/installPlatform.sh php $PHP72_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP73_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP74_VERSION \
-    && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
+    && $imagesDir/installPlatform.sh php $PHP80_VERSION \
+    && $imagesDir/installPlatform.sh php $PHP81_VERSION \
+    && $imagesDir/installPlatform.sh php-composer $COMPOSER2_3_VERSION \
     && cd /opt/php \
-    && ln -s 7.3 7 \
-    && ln -s 7 lts \
-    && ln -sfn /opt/php/$PHP73_VERSION /home/codespace/.php/current \
+    && ln -s $PHP81_VERSION 8 \
+    && ln -s $PHP81_VERSION lts \
+    && ln -sfn /opt/php/$PHP81_VERSION /home/codespace/.php/current \
     && cd /opt/php-composer \
-    && ln -sfn 2.0.8 stable \
+    && ln -sfn $COMPOSER2_3_VERSION stable \
     && ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -239,14 +230,16 @@ RUN buildDir="/opt/tmp/build" \
     && cd $imagesDir \
     && mkdir -p /home/codespace/.ruby \
     && . $buildDir/__rubyVersions.sh \
-    && ./installPlatform.sh ruby $RUBY27_VERSION \
+    && ./installPlatform.sh ruby $RUBY30_VERSION \
+    && ./installPlatform.sh ruby $RUBY31_VERSION \
     && cd /opt/ruby \
-    && ln -s $RUBY27_VERSION /opt/ruby/lts \
-    && ln -sfn /opt/ruby/$RUBY27_VERSION /home/codespace/.ruby/current \
+    && ln -s $RUBY30_VERSION /opt/ruby/lts \
+    && ln -sfn /opt/ruby/$RUBY30_VERSION /home/codespace/.ruby/current \
     && cd $imagesDir \
     && mkdir -p /home/codespace/.java \
     && . $buildDir/__javaVersions.sh \
     && ./installPlatform.sh java $JAVA_VERSION \
+    && ./installPlatform.sh java $JAVA_VERSION11 \
     && ./installPlatform.sh maven $MAVEN_VERSION \
     && cd /opt/java \
     && ln -s $JAVA_VERSION lts \
@@ -255,9 +248,13 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $MAVEN_VERSION lts \
     && mkdir -p /home/codespace/.maven/current \
     && ln -sfn /opt/maven/$MAVEN_VERSION /home/codespace/.maven/current \
-    && npm install -g lerna \
+    && npm install -g lerna@4.0.0 \
+    && PATH="$PATH:/opt/php/lts/bin" \
+    && wget http://pear.php.net/go-pear.phar \
+    && php go-pear.phar \
     && pecl install -f libsodium \
-    && echo "vso-focal" > /opt/oryx/.imagetype
+    && echo "vso-focal" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 # install few more tools for VSO
 RUN gem install bundler rake ruby-debug-ide debase jekyll

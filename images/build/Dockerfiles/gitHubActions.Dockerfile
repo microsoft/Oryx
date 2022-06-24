@@ -38,7 +38,14 @@ RUN LANG="C.UTF-8" \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
 
-RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu67 \
+            libcurl4 \ 
+            libssl1.1 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    elif [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu63 \
@@ -97,7 +104,7 @@ RUN ${IMAGES_DIR}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.cr
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
     
 # Install PHP pre-reqs	# Install PHP pre-reqs
-RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+RUN if [ "${DEBIAN_FLAVOR}" = "buster" ] || [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
     apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
@@ -135,7 +142,8 @@ RUN tmpDir="/opt/tmp" \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f /etc/apt/sources.list.d/buster.list \
-    && echo "githubactions" > /opt/oryx/.imagetype
+    && echo "githubactions" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
 # For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 

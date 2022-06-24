@@ -18,9 +18,12 @@ ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV DEBIAN_FLAVOR="stretch"
 
 RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
+RUN ./build.sh golang     /opt/startupcmdgen/golang
+RUN ./build.sh hugo       /opt/startupcmdgen/hugo
 RUN ./build.sh node       /opt/startupcmdgen/nodejs
 RUN ./build.sh php        /opt/startupcmdgen/php
 RUN ./build.sh python     /opt/startupcmdgen/python
+RUN ./build.sh ruby       /opt/startupcmdgen/ruby
 
 ###
 # End build run script generators
@@ -105,5 +108,6 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh php $PHP56_VERSION \
     && cd /opt/php \
     && ln -s 5.6 5 \
-    && echo "full" > /opt/oryx/.imagetype
+    && echo "full" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 

@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Option(
             OptionTemplates.CompressDestinationDir,
             CommandOptionType.NoValue,
-            Description = "Compresses the destination directory(excluding the manifest file) into a tar ball.")]
+            Description = "Compresses the destination directory(excluding the manifest file) into a tarball.")]
         public bool CompressDestinationDir { get; set; }
 
         [Option(

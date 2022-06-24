@@ -2,15 +2,11 @@ steps:
 - checkout: self
   clean: true
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet publish'
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-policheck.PoliCheck@1
+  displayName: 'Run PoliCheck'
   inputs:
-    command: publish
-    publishWebProjects: false
-    projects: '$(Build.SourcesDirectory)\src\**\*.csproj'
-    arguments: '-o $(Build.BinariesDirectory)'
-    zipAfterPublish: false
-    modifyOutputPath: false
+    targetType: F
+  condition: always()
 
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
   displayName: 'Run CredScan'
@@ -18,10 +14,34 @@ steps:
     debugMode: false
   condition: always()
 
+- task: NuGetCommand@2
+  displayName: 'Run "nuget restore" on Oryx solution'
+  inputs:
+    command: 'restore'
+    restoreSolution: '$(Build.SourcesDirectory)\Oryx.sln'
+
+- task: VSBuild@1
+  displayName: 'Build the Oryx solution'
+  inputs:
+    solution: '$(Build.SourcesDirectory)\Oryx.sln'
+    configuration: 'debug'
+    createLogFile: true
+    logFileVerbosity: diagnostic
+
+- task: PowerShell@2
+  displayName: 'Wait 30 seconds after building solution'
+  inputs:
+    targetType: 'inline'
+    script: 'Start-Sleep -Seconds 30'
+
+- task: securedevelopmentteam.vss-secure-development-tools.build-task-roslynanalyzers.RoslynAnalyzers@2
+  displayName: 'Run Roslyn Analyzers'
+  condition: always()
+
 - task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@3
   displayName: 'Run BinSkim '
   inputs:
-    arguments: 'analyze $(Build.BinariesDirectory)\* --recurse --output $(Build.BinariesDirectory)\binskim.sarif --verbose'
+    arguments: 'analyze Microsoft.Oryx*.dll --recurse --output $(Build.BinariesDirectory)\binskim.sarif --verbose'
   condition: always()
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
@@ -34,6 +54,9 @@ steps:
   inputs:
     BinSkim: true
     CredScan: true
+    PoliCheck: true
+    RoslynAnalyzers: true
+  continueOnError: false
 
 - task: AntiMalware@3
   displayName: 'Run Antimalware Scan'

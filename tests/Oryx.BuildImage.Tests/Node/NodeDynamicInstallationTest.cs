@@ -21,6 +21,55 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
+        public static TheoryData<string, string> ImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string, string>();
+                var imageTestHelper = new ImageTestHelper();
+                data.Add("12.22.11", imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add("14.19.1", imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add("16.14.2", imageTestHelper.GetGitHubActionsBuildImage());
+                return data;
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(ImageNameData))]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(string version, string buildImageName)
+        {
+            // Arrange
+            var devPackageName = "nodemon";
+            var prodPackageName = "express";
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version} --debug")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{prodPackageName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImageName,
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
         [Fact]
         public void DynamicallyInstallsNodeRuntimeAndBuilds()
         {
