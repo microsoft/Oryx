@@ -41,7 +41,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var imageTestHelper = new ImageTestHelper();
             Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
                 imageTestHelper.GetVsoBuildImage("vso-focal"));
-
         }
 
         [Fact, Trait("category", "jamstack")]

@@ -73,6 +73,7 @@ stages:
         vmImage: windows-2022
       steps:
       - template: templates/_securityChecks.yml
+      
       # Job loop for BuildImages
     - ${{ each buildImage in parameters.buildImages }}:
         - job: Job_BuildImage_${{ buildImage.key }}

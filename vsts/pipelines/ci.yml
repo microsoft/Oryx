@@ -106,7 +106,8 @@ stages:
           }
         displayName: 'Set release tag name as environment variable'
       - template: templates/_signBinary.yml
-
+    
+      # Job loop for BuildImages
     - ${{ each buildImage in parameters.buildImages }}:
       - job: Job_BuildImage_${{ buildImage.key }}
         displayName: 'Build & Test ${{ buildImage.key }} Build image'
