@@ -9,6 +9,7 @@
     <DelaySign>true</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
     <AssemblyVersion>0.2</AssemblyVersion>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <!-- Remove when proper XML documentation is added to the project. -->
     <DisableDocRequirement>true</DisableDocRequirement>
   </PropertyGroup>

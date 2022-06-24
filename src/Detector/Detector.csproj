@@ -47,7 +47,7 @@
     <PackageProjectUrl>https://github.com/microsoft/oryx</PackageProjectUrl>
     <PackageTags>Oryx Detector OryxDetector</PackageTags>
     <Description>A library to detect tools and frameworks used in an application.</Description>
-    
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <!-- Test projects in this repo will use the following package version to 
     avoid testing any publicly available versions -->
     <Version Condition="'$(CREATE_PACKAGE_FOR_TESTS)' == 'true'">1.0.0-test</Version>

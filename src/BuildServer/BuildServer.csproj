@@ -9,6 +9,7 @@
     <RootNamespace>Microsoft.Oryx.BuildServer</RootNamespace>
     <OutputType>Exe</OutputType>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <!-- Remove when proper XML documentation is added to the project. -->
     <DisableDocRequirement>true</DisableDocRequirement>
   </PropertyGroup>

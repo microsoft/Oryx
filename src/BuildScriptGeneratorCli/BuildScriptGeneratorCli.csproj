@@ -13,6 +13,7 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyVersion>0.2</AssemblyVersion>
     <HighEntropyVA>true</HighEntropyVA>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <!-- Remove when proper XML documentation is added to the project. -->
     <DisableDocRequirement>true</DisableDocRequirement>
   </PropertyGroup>
