@@ -822,9 +822,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion), 
-                        result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.419"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
