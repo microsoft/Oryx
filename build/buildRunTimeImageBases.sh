@@ -54,6 +54,13 @@ docker build \
 
 docker build \
     --pull \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "$RUNTIME_BASE_IMAGE_NAME-buster" \
+    --build-arg DEBIAN_FLAVOR=buster \
+    $REPO_DIR
+
+docker build \
+    --pull \
     --build-arg DEBIAN_FLAVOR=bullseye \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
     -t "$RUNTIME_BASE_IMAGE_NAME-bullseye" \
