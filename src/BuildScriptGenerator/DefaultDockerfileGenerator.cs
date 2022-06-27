@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -102,10 +103,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 BuildImageTag = dockerfileBuildImageTag,
             };
 
-            return TemplateHelper.Render(
+            var generatedDockerfile = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.Dockerfile,
                 properties,
                 this.logger);
+
+            // Remove the Container Registry Analysis snippet, if it exists in the template.
+            var pattern = "# DisableDockerDetector \".*?\"\n";
+            generatedDockerfile = Regex.Replace(generatedDockerfile, pattern, string.Empty);
+
+            return generatedDockerfile;
         }
 
         /// <summary>
