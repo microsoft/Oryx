@@ -58,7 +58,7 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "github-actions")]
+        [Fact, Trait("category", "githubactions")]
         public void DetectsAndInstallsPlatformVersion_SpecifiedByEnvironmentVariable()
         {
             // Arrange
@@ -93,7 +93,7 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "github-actions")]
+        [Fact, Trait("category", "githubactions")]
         public void DetectsAndInstallsPlatformVersion_SpecifiedByBuildEnvFile()
         {
             // Arrange
@@ -128,7 +128,7 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "github-actions")]
+        [Fact, Trait("category", "githubactions")]
         public void SkipsDetectionAndInstallsPlatform()
         {
             // Arrange
@@ -161,7 +161,7 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "github-actions")]
+        [Fact, Trait("category", "githubactions")]
         public void SkipsDetectionAndInstallsPlatformsFromFile()
         {
             // Arrange
@@ -197,7 +197,7 @@ namespace Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "github-actions")]
+        [Fact, Trait("category", "githubactions")]
         public void InstallsPlatformAtCustomInstallationRootDirectory()
         {
             // Arrange
