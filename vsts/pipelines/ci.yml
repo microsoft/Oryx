@@ -111,7 +111,7 @@ stages:
     - ${{ each buildImage in parameters.buildImages }}:
       - job: Job_BuildImage_${{ buildImage.key }}
         displayName: 'Build & Test ${{ buildImage.key }} Build image'
-        dependsOn: Job_SignBinaries
+        #dependsOn: Job_SignBinaries
         condition: succeeded()
         timeoutInMinutes: 480
         pool:
