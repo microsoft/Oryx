@@ -35,7 +35,7 @@ steps:
   condition: >
     and(succeeded(),
     or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')),
-    or(startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
+    #or(startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
     startsWith(variables['Build.SourceBranch'],'refs/heads/patch/'),
     startsWith(variables['Build.SourceBranch'],'refs/heads/exp/')))
 
