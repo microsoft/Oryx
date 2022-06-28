@@ -17,20 +17,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        public static TheoryData<string> ImageNameData
-        {
-            get
-            {
-                var data = new TheoryData<string>();
-                data.Add(Settings.BuildImageName);
-                data.Add(Settings.LtsVersionsBuildImageName);
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-                data.Add(imageTestHelper.GetVsoBuildImage());
-                return data;
-            }
-        }
-
         [Fact, Trait("category", "latest")]
         public void PipelineTestInvocationLatest()
         {
@@ -47,7 +33,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationVsoFocal()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage());
+            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage("vso-focal"));
         }
 
         [Fact, Trait("category", "jamstack")]
@@ -57,10 +43,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuilds(string buildImageName)
+        private void GeneratesScript_AndBuilds(string buildImageName)
         {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // Arrange
             var volume = CreateSampleAppVolume();
             var appDir = volume.ContainerDir;

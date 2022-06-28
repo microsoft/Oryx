@@ -21,22 +21,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        public static TheoryData<string, string> ImageNameData
-        {
-            get
-            {
-                var imageTestHelper = new ImageTestHelper();
-                var data = new TheoryData<string, string>();
-                data.Add(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.1");
-                data.Add(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.3");
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.1");
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3");
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage("github-actions-buster"), "3.9.0");
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.10.4");
-                return data;
-            }
-        }
-
         [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
@@ -55,10 +39,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.10.4");      
         }
 
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuildsPython(string imageName, string version)
+        private void GeneratesScript_AndBuildsPython(string imageName, string version)
         {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // Arrange
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
                 $"python/{version}";

@@ -23,18 +23,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
-        public static TheoryData<string> ImageNameData
-        {
-            get
-            {
-                var data = new TheoryData<string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-                data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
-                return data;
-            }
-        }
-
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
@@ -148,10 +136,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             });
         }
 
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void Builds_JekyllStaticWebApp_UsingCustomBuildCommand(string buildImage)
+        private void Builds_JekyllStaticWebApp_UsingCustomBuildCommand(string buildImage)
         {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // Arrange
             var appName = "Jekyll-app";
             var volume = CreateSampleAppVolume(appName);

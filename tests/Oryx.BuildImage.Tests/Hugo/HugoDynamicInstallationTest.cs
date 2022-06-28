@@ -22,18 +22,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        public static TheoryData<string> ImageNameData
-        {
-            get
-            {
-                var imageTestHelper = new ImageTestHelper();
-                var data = new TheoryData<string>();
-                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage());
-                return data;
-            }
-        }
-
         [Fact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {
@@ -48,10 +36,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetGitHubActionsBuildImage());
         }
 
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(string imageName)
+        private void InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(string imageName)
         {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // Arrange
             var hugoVersion = "0.59.1";
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/hugo/{hugoVersion}";

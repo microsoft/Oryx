@@ -23,19 +23,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
-        public static TheoryData<string, string> ImageNameData
-        {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage("vso-focal"));
-                data.Add(RubyVersions.Ruby30Version, imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add(RubyVersions.Ruby31Version, imageTestHelper.GetGitHubActionsBuildImage());
-                return data;
-            }
-        }
-
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
@@ -54,10 +41,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 RubyVersions.Ruby31Version, imageTestHelper.GetGitHubActionsBuildImage());
         }
 
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string version, string buildImageName)
+        private void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string version, string buildImageName)
         {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // Arrange
             var appName = "sinatra-app";
             var volume = CreateSampleAppVolume(appName);

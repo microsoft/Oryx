@@ -29,21 +29,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _dockerCli = new DockerCli();
         }
 
-        public static TheoryData<string> ImageNameData
-        {
-            get
-            {
-                var data = new TheoryData<string>();
-                data.Add(Settings.BuildImageName);
-                data.Add(Settings.LtsVersionsBuildImageName);
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
-                return data;
-            }
-        }
-
         [Fact, Trait("category", "latest")]
         public void PipelineTestInvocationLatest()
         {
@@ -99,10 +84,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 imageTestHelper.GetGitHubActionsBuildImage());
         }
 
-        [SkippableTheory]
-        [MemberData(nameof(ImageNameData))]
-        public void OryxBuildImage_Contains_VersionAndCommit_Information(string buildImageName)
+        private void OryxBuildImage_Contains_VersionAndCommit_Information(string buildImageName)
         {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
             // so we should check agent_os environment variable to know if the test is happening in azure devops agent 
             // or locally, locally we need to skip this test
@@ -588,23 +574,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        public static TheoryData<string> PhpVersionImageNameData
+        private void PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
-            get
-            {
-                var data = new TheoryData<string>();
-                data.Add(Settings.BuildImageName);
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetLtsVersionsBuildImage());
-                data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
-                return data;
-            }
-        }
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
 
-        [Theory]
-        [MemberData(nameof(PhpVersionImageNameData))]
-        public void PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
-        {
             // Arrange
             var phpVersion = PhpVersions.Php73Version;
             if (buildImageName.Contains("oryxdevmcr.azurecr.io/public/oryx/build:vso-focal"))

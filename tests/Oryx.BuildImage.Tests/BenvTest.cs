@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             var imageTestHelper = new ImageTestHelper();
             BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
-                imageTestHelper.GetVsoBuildImage());
+                imageTestHelper.GetVsoBuildImage("vso-focal"));
         }
 
         [Theory, Trait("category", "latest")]
@@ -328,26 +328,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        public static TheoryData<string> ImageNameData
+        private void BuildImagesHaveOryxPathsEnvironmentVariableAvailable(string iamgeName)
         {
-            get
-            {
-                var data = new TheoryData<string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetBuildImage());
-                data.Add(imageTestHelper.GetLtsVersionsBuildImage());
-                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage());
-                //data.Add(imageTestHelper.GetVsoBuildImage());
-                //vso image of ubuntu version is tagged as oryx/build:vso-focal
-                data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
-                return data;
-            }
-        }
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void BuildImagesHaveOryxPathsEnvironmentVariableAvailable(string iamgeName)
-        {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // Arrange
             var expected = "/opt/oryx:";
             var script = new ShellScriptBuilder()
