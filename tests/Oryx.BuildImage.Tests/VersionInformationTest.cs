@@ -29,25 +29,66 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _dockerCli = new DockerCli();
         }
 
-        public static TheoryData<string> ImageNameData
+        [Fact, Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
         {
-            get
-            {
-                var data = new TheoryData<string>();
-                data.Add(Settings.BuildImageName);
-                data.Add(Settings.LtsVersionsBuildImageName);
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
-                return data;
-            }
+            var imageTestHelper = new ImageTestHelper();
+            PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                imageTestHelper.GetBuildImage());
+            Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                Settings.BuildImageName);
+            Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                Settings.BuildImageName);
+            DotNetAlias_UsesLtsVersion_ByDefault(
+                Settings.BuildImageName);
+            OryxBuildImage_Contains_VersionAndCommit_Information(Settings.BuildImageName);
         }
 
-        [SkippableTheory]
-        [MemberData(nameof(ImageNameData))]
-        public void OryxBuildImage_Contains_VersionAndCommit_Information(string buildImageName)
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
         {
+            var imageTestHelper = new ImageTestHelper();
+            PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                imageTestHelper.GetLtsVersionsBuildImage());
+            Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                Settings.LtsVersionsBuildImageName);
+            Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                Settings.LtsVersionsBuildImageName);
+            DotNetAlias_UsesLtsVersion_ByDefault(Settings.LtsVersionsBuildImageName);
+            OryxBuildImage_Contains_VersionAndCommit_Information(Settings.LtsVersionsBuildImageName);
+        }
+
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
+                imageTestHelper.GetVsoBuildImage("vso-focal"));
+            OryxBuildImage_Contains_VersionAndCommit_Information(
+                imageTestHelper.GetVsoBuildImage("vso-focal"));
+        }
+
+        [Fact, Trait("category", "jamstack")]
+        public void PipelineTestInvocationJamstack()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            OryxBuildImage_Contains_VersionAndCommit_Information(
+                imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocationGithubActions()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            OryxBuildImage_Contains_VersionAndCommit_Information(
+                imageTestHelper.GetGitHubActionsBuildImage());
+        }
+
+        private void OryxBuildImage_Contains_VersionAndCommit_Information(string buildImageName)
+        {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
             // so we should check agent_os environment variable to know if the test is happening in azure devops agent 
             // or locally, locally we need to skip this test
@@ -80,7 +121,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("vso-focal")]
         public void OryxVsoBuildImage_Contains_PHP_Xdebug(string imageVersion)
         {
@@ -106,7 +147,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("bundler", "vso-focal")]
         [InlineData("rake", "vso-focal")]
         [InlineData("ruby-debug-ide", "vso-focal")]
@@ -162,7 +203,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
@@ -249,7 +290,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "node")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("8.1.4", "v8.1.4")]
         [InlineData("8.11", "v8.11.4")]
         [InlineData("8.11.4", "v8.11.4")]
@@ -298,7 +339,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "node")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         // Only version 6 of npm is upgraded, so the following should remain unchanged.
         [InlineData("10.1", "5.6.0")]
         // Make sure the we get the upgraded version of npm in the following cases
@@ -331,7 +372,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void NpmVersion_IsNotUpgraded_To_6_9_0()
         {
             // Arrange
@@ -361,7 +402,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "python")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
         [InlineData(PythonVersions.Python27Version, Python27VersionInfo)]
@@ -394,7 +435,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "python")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
         [InlineData(PythonVersions.Python27Version, Python27VersionInfo)]
@@ -426,7 +467,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "python")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("latest", Python38VersionInfo)]
         [InlineData("stable", Python38VersionInfo)]
         [InlineData("3", Python38VersionInfo)]
@@ -464,7 +505,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "dotnet")]
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("DotNet", "dotnet")]
         [InlineData("dotnet", "dotNet")]
         [InlineData("DOTNET_VERSION", "DOTNET_VERSION")]
@@ -502,7 +543,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Trait("platform", "dotnet")]
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void RunningBenvMultipleTimes_HonorsLastRunArguments()
         {
             // Arrange
@@ -533,23 +574,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        public static TheoryData<string> PhpVersionImageNameData
+        private void PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
-            get
-            {
-                var data = new TheoryData<string>();
-                data.Add(Settings.BuildImageName);
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetLtsVersionsBuildImage());
-                data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
-                return data;
-            }
-        }
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
 
-        [Theory]
-        [MemberData(nameof(PhpVersionImageNameData))]
-        public void PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
-        {
             // Arrange
             var phpVersion = PhpVersions.Php73Version;
             if (buildImageName.Contains("oryxdevmcr.azurecr.io/public/oryx/build:vso-focal"))
@@ -578,7 +607,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData(PhpVersions.Php73Version, PhpVersions.Php73Version)]
         [InlineData("7.3", PhpVersions.Php73Version)]
         [InlineData("7", PhpVersions.Php73Version)]
@@ -610,7 +639,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BenvShouldSetUpEnviroment_WhenMultiplePlatforms_AreSuppliedAsArguments()
         {
             // Arrange
@@ -642,7 +671,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BenvShouldSetUpEnviroment_UsingExactNames()
         {
             // Arrange

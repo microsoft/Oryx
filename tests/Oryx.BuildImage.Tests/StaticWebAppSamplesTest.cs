@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Fact]
+        [Fact, Trait("category", "jamstack")]
         public void BuildsHugoClientAndDotNetCoreServerApp_WithRecurisveLookupDisabled()
         {
             // NOTE: This test simulates a typical Azure Static Web Apps repo where the root folder is a static app

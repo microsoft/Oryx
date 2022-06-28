@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        [Theory]
+        [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(VersionsData))]
         public void BuildsMavenArcheTypeSampleWithDynamicInstallation(string version)
         {
