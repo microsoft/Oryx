@@ -23,23 +23,29 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
-        public static TheoryData<string, string> ImageNameData
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
         {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage("vso-focal"));
-                data.Add(RubyVersions.Ruby30Version, imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add(RubyVersions.Ruby31Version, imageTestHelper.GetGitHubActionsBuildImage());
-                return data;
-            }
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage("vso-focal"));
         }
 
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string version, string buildImageName)
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocationGithubActions()
         {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby30Version, imageTestHelper.GetGitHubActionsBuildImage());
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby31Version, imageTestHelper.GetGitHubActionsBuildImage());
+        }
+
+        private void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string version, string buildImageName)
+        {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // Arrange
             var appName = "sinatra-app";
             var volume = CreateSampleAppVolume(appName);

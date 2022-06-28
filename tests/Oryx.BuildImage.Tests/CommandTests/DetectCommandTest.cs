@@ -24,7 +24,7 @@ namespace Oryx.BuildImage.Tests
         {
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void DetectCommand_OutputsJsonFormat()
         {
             // Arrange

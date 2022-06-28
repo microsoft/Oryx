@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", sampleAppName));
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void GeneratesScript_AndBuilds_TwigExample_InLtsVersionsBuildImage()
         {
             // Arrange
@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData(PhpVersions.Php74Version)]
         [InlineData(PhpVersions.Php73Version)]
         [InlineData(PhpVersions.Php72Version)]
@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "ltsversions")]
         [InlineData(PhpVersions.Php74Version)]
         [InlineData(PhpVersions.Php73Version)]
         [InlineData(PhpVersions.Php72Version)]
@@ -139,7 +139,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "ltsversions")]
         [InlineData(PhpVersions.Php80Version)]
         public void GeneratesScript_AndBuilds_TwigExample_InLtsVersionsBusterImage(string phpVersion)
         {

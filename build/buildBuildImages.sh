@@ -473,18 +473,27 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildFullImage "buster"
 elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
+	buildGitHubActionsImage "buster"
+	buildGitHubActionsImage "bullseye"
 elif [ "$imageTypeToBuild" == "githubactions-buster" ]; then
 	buildGitHubActionsImage "buster"
 elif [ "$imageTypeToBuild" == "githubactions-bullseye" ]; then
 	buildGitHubActionsImage "bullseye"
+elif [ "$imageTypeToBuild" == "githubactions-stretch" ]; then
+	buildGitHubActionsImage
+elif [ "$imageTypeToBuild" == "jamstack" ]; then
+	buildJamStackImage
+	buildJamStackImage "buster"
+	buildJamStackImage "bullseye"
 elif [ "$imageTypeToBuild" == "jamstack-bullseye" ]; then
 	buildJamStackImage "bullseye"
 elif [ "$imageTypeToBuild" == "jamstack-buster" ]; then
 	buildJamStackImage "buster"
-elif [ "$imageTypeToBuild" == "jamstack" ]; then
+elif [ "$imageTypeToBuild" == "jamstack-stretch" ]; then
 	buildJamStackImage
 elif [ "$imageTypeToBuild" == "ltsversions" ]; then
 	buildLtsVersionsImage
+	buildLtsVersionsImage "buster"
 elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
 	buildLtsVersionsImage "buster"
 elif [ "$imageTypeToBuild" == "latest" ]; then
@@ -495,6 +504,7 @@ elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage
 elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
+	buildCliImage "buster"
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then

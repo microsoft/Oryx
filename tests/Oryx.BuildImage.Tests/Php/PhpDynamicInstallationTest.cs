@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        [Theory]
+        [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(VersionAndImageNameData))]
         public void BuildsAppByInstallingSdkDynamically(string phpVersion, string imageName, string phpComposerVersion)
         {
@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange

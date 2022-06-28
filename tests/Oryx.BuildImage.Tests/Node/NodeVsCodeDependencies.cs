@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
 
         private readonly string[] IgnoredTarEntries = new[] { "package/.npmignore", "package", "package/yarn.lock" };
 
-        [Theory(Skip = "Bug# 1361701: In agent this test is failing")]
+        [Theory(Skip = "Bug# 1361701: In agent this test is failing"), Trait("category", "latest")]
         [MemberData(nameof(SomeVSCodeDependencies))]
         public void CanBuildNpmPackages(
             string pkgName,
