@@ -153,17 +153,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "vso-focal")]
-        [InlineData("dotnet", "vso-focal")]
-        [InlineData("node", "vso-focal")]
-        [InlineData("npm", "vso-focal")]
-        [InlineData("npx", "vso-focal")]
-        [InlineData("yarn", "vso-focal")]
-        [InlineData("python", "vso-focal")]
-        [InlineData("php", "vso-focal")]
-        [InlineData("ruby", "vso-focal")]
-        [InlineData("java", "vso-focal")]
-        [InlineData("mvn", "vso-focal")]
-        public void UserInstalledExecutable_IsChosenOverOryxExecutable_InVsoBuildImage(string executableName, string debianImageFlavor=null)
+        [InlineData("dotnet")]
+        [InlineData("node")]
+        [InlineData("npm")]
+        [InlineData("npx")]
+        [InlineData("yarn")]
+        [InlineData("python")]
+        [InlineData("php")]
+        [InlineData("ruby")]
+        [InlineData("java")]
+        [InlineData("mvn")]
+        public void UserInstalledExecutable_IsChosenOverOryxExecutable_InVsoBuildImage(string executableName)
         {
             // Arrange
             var userInstalledExecutable = $"/usr/local/bin/{executableName}";
@@ -176,7 +176,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(debianImageFlavor);
+            var image = _imageHelper.GetVsoBuildImage("vso-focal");
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -190,10 +190,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "vso-focal")]
-        [InlineData("python3", "/usr/bin/python3", "vso-focal")]
-        [InlineData("pip", "/usr/local/bin/pip", "vso-focal")]
-        [InlineData("pip3", "/usr/local/bin/pip3", "vso-focal")]
-        public void DefaultVersionsOfPythonExecutablesAreUsedInVSOImage(string executableName, string expectedPath, string debianImageFlavor=null)
+        [InlineData("python3", "/usr/bin/python3")]
+        [InlineData("pip", "/usr/local/bin/pip")]
+        [InlineData("pip3", "/usr/local/bin/pip3")]
+        public void DefaultVersionsOfPythonExecutablesAreUsedInVSOImage(string executableName, string expectedPath)
         {
             // Arrange
             var script = new ShellScriptBuilder()
@@ -201,7 +201,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(debianImageFlavor);
+            var image = _imageHelper.GetVsoBuildImage("vso-focal");
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -214,9 +214,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
-        [InlineData("vso-focal")]
-        public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths_InVsoImage(string debianImageFlavor)
+        [Fact, Trait("category", "vso-focal")]
+        public void ExecutableLookUp_FallsBackTo_OryxInstalledVersions_IfNotFoundInEarlierPaths_InVsoImage()
         {
             // Arrange
             var userInstalledDotNet = "/usr/local/bin/dotnet";
@@ -230,7 +229,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(debianImageFlavor);
+            var image = _imageHelper.GetVsoBuildImage("vso-focal");
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -244,9 +243,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
-        [InlineData("vso-focal")]
-        public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv_InVsoBuildImage(string debianImageFlavor=null)
+        [Fact, Trait("category", "vso-focal")]
+        public void UserInstalledExecutable_TakesPrecedence_OverEnvironmentSetupByBenv_InVsoBuildImage()
         {
             // Arrange
             var userInstalledDotNet = "/usr/local/bin/dotnet";
@@ -262,7 +260,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(debianImageFlavor);
+            var image = _imageHelper.GetVsoBuildImage("vso-focal");
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -354,24 +352,23 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "vso-focal")]
         // DotNet
-        [InlineData("dotnet", "/opt/dotnet/", "vso-focal")]
+        [InlineData("dotnet", "/opt/dotnet/")]
         // Node
-        [InlineData("node", "/opt/nodejs/", "vso-focal")]
-        [InlineData("npm", "/opt/nodejs/", "vso-focal")]
-        [InlineData("npx", "/opt/nodejs/", "vso-focal")]
-        [InlineData("yarn", "/opt/yarn/", "vso-focal")]
-        [InlineData("yarnpkg", "/opt/yarn/", "vso-focal")]
+        [InlineData("node", "/opt/nodejs/")]
+        [InlineData("npm", "/opt/nodejs/")]
+        [InlineData("npx", "/opt/nodejs/")]
+        [InlineData("yarn", "/opt/yarn/")]
+        [InlineData("yarnpkg", "/opt/yarn/")]
         // Python: Note that by default system installed python is available in the path
         // Php
-        [InlineData("php", "/opt/php/", "vso-focal")]
-        [InlineData("composer.phar", "/opt/php-composer/", "vso-focal")]
+        [InlineData("php", "/opt/php/")]
+        [InlineData("composer.phar", "/opt/php-composer/")]
         // Java
-        [InlineData("java", "/opt/java/", "vso-focal")]
-        [InlineData("mvn", "/opt/maven/", "vso-focal")]
+        [InlineData("java", "/opt/java/")]
+        [InlineData("mvn", "/opt/maven/")]
         public void OutOfTheBox_SomeToolsAreAvailableInPathOfVSOImage(
             string executableName,
-            string expectedPathPrefix,
-            string debianImageFlavor=null)
+            string expectedPathPrefix)
         {
             // Arrange
             var script = new ShellScriptBuilder()
@@ -379,7 +376,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(debianImageFlavor);
+            var image = _imageHelper.GetVsoBuildImage("vso-focal");
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -392,9 +389,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
-        [InlineData("vso-focal")]
-        public void OutOfTheBox_JavaHomeEnvironmentVarialbeIsSetInVSOImage(string debianImageFlavor)
+        [Fact, Trait("category", "vso-focal")]
+        public void OutOfTheBox_JavaHomeEnvironmentVarialbeIsSetInVSOImage()
         {
             // Arrange
             var expectedContent = "JAVA_HOME=/opt/java/lts";
@@ -403,7 +399,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(debianImageFlavor);
+            var image = _imageHelper.GetVsoBuildImage("vso-focal");
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
