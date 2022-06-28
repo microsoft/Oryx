@@ -1,7 +1,8 @@
 ARG DEBIAN_FLAVOR
 
 ### oryx run-script image
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.15-${DEBIAN_FLAVOR} as startupScriptGens
+# DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
+FROM golang:1.15-${DEBIAN_FLAVOR} as startupScriptGens
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
