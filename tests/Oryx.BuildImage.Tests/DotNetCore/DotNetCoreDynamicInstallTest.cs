@@ -51,6 +51,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
@@ -58,6 +59,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
             var majorPart = runtimeVersion.Split('.')[0];
@@ -169,6 +171,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(volume.MountedHostDir, DotNetCoreConstants.GlobalJsonFileName),
                 globalJsonContent);
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
@@ -176,6 +179,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} --log-file log.txt")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -231,11 +235,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(volume.MountedHostDir, DotNetCoreConstants.GlobalJsonFileName),
                 globalJsonContent);
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -290,11 +296,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 globalJsonContent);
 
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -387,6 +395,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(volume.MountedHostDir, DotNetCoreConstants.GlobalJsonFileName),
                 globalJsonContent);
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
@@ -395,6 +404,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{expectedDynamicInstallRootDir}/{DotNetCoreConstants.PlatformName}/{expectedSdkVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -436,6 +446,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var preInstalledSdkLink = $"/home/codespace/.dotnet/sdk";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
@@ -450,6 +461,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDirectoryExistsCheck($"/opt/dotnet/{sdkVersion}")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/{sdkVersion}")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .AddCommand("/home/codespace/.dotnet/dotnet --list-sdks")
                 .ToString();
