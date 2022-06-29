@@ -216,12 +216,13 @@ echo "Manifest file created."
 {{ end }}
 {{ end }}
 
-if [ -f "/opt/oryx/.ostype" ]
+OS_TYPE_SOURCE_DIR="/opt/oryx/.ostype"
+if [ -f "$OS_TYPE_SOURCE_DIR" ]
 then
 	echo "Copying .ostype to manifest output directory."
-	cp "/opt/oryx/.ostype" "$MANIFEST_DIR/.ostype"
+	cp "$OS_TYPE_SOURCE_DIR" "$MANIFEST_DIR/.ostype"
 else
-	echo "File /opt/oryx/.ostype does not exist. Cannot copy to manifest directory."
+	echo "File $OS_TYPE_SOURCE_DIR does not exist. Cannot copy to manifest directory."
 fi
 
 TOTAL_EXECUTION_ELAPSED_TIME=$(($SECONDS - $TOTAL_EXECUTION_START_TIME))

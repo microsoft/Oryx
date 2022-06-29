@@ -40,7 +40,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 // NOTE: Delete the manifest file explicitly
                 .AddCommand($"rm -f {appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
