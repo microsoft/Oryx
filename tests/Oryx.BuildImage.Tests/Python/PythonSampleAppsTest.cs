@@ -484,6 +484,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
@@ -531,6 +532,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
@@ -575,6 +577,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
@@ -739,9 +742,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var virtualEnvName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -i {appIntermediateDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvName}")
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -1399,13 +1404,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var outputDir = "/tmp/output";
             var virtualEnvName = "antenv";
             var manifestFile = $"{outputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i {buildDir} -o {outputDir} " +
                 $"-p virtualenv_name={virtualEnvName} --compress-destination-dir")
                 .AddFileExistsCheck($"{outputDir}/output.tar.gz")
-                .AddFileExistsCheck($"{outputDir}/oryx-manifest.toml")
+                .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddFileDoesNotExistCheck($"{outputDir}/requirements.txt")
                 .AddDirectoryDoesNotExistCheck($"{outputDir}/{virtualEnvName}")
                 .AddCommand($"cat {manifestFile}")

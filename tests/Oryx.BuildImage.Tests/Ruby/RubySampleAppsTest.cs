@@ -119,6 +119,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} ")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(
                 $"{ManifestFilePropertyKeys.PlatformName}=\"{RubyConstants.PlatformName}\"",
                 $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -153,6 +154,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} ")
                 .AddFileExistsCheck($"{appOutputDir}/example.txt")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(
                 $"{ManifestFilePropertyKeys.PlatformName}=\"{RubyConstants.PlatformName}\"",
                 $"{appOutputDir}/{FilePaths.BuildManifestFileName}")

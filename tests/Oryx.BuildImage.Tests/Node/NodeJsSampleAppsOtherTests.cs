@@ -324,9 +324,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -625,6 +627,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var buildScript = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p compress_node_modules=zip")
                 .AddFileExistsCheck($"{appOutputDir}/node_modules.zip")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
                 .AddStringExistsInFileCheck(
                 "compressedNodeModulesFile=\"node_modules.zip\"",
