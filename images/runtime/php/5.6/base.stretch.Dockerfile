@@ -1,4 +1,4 @@
-FROM php-5.6
+FROM oryxdevmcr.azurecr.io/private/oryx/php-5.6
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 5.6.40
 

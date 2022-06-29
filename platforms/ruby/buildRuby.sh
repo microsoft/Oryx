@@ -24,7 +24,7 @@ buildRubyPrereqsImage() {
 		docker build \
 			   --build-arg DEBIAN_FLAVOR=$debianFlavor \
 			   -f "$rubyPlatformDir/prereqs/Dockerfile" \
-			   -t "ruby-build-prereqs" $REPO_DIR
+			   -t "oryxdevmcr.azurecr.io/private/oryx/ruby-build-prereqs" $REPO_DIR
 		builtRubyPrereqs=true
 	fi
 }

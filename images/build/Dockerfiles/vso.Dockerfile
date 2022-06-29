@@ -13,7 +13,7 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     DYNAMIC_INSTALL_ROOT_DIR="/opt" \
     DEBIAN_FLAVOR="stretch"
 
-COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 
 RUN buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \

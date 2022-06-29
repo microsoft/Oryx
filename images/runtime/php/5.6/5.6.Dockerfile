@@ -1,3 +1,4 @@
+# DisableDockerDetector "Below image will not be supported by a Docker Hub mirror"
 FROM php:5.6-apache-stretch
 
 # persistent / runtime deps

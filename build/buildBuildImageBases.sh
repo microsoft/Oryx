@@ -50,7 +50,7 @@ case $IMAGE_DIR_TO_BUILD in
 		echo "Building Python base images"
 		echo
 
-		docker build -f $BUILD_IMAGES_DIR/python/prereqs/Dockerfile -t "python-build-prereqs" $REPO_DIR
+		docker build -f $BUILD_IMAGES_DIR/python/prereqs/Dockerfile -t "oryxdevmcr.azurecr.io/private/oryx/python-build-prereqs" $REPO_DIR
 		buildImages "python"
 		;;
 	*) echo "Unknown image directory";;

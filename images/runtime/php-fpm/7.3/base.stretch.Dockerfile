@@ -1,4 +1,4 @@
-FROM php-fpm-7.3
+FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-7.3
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 7.3.21
 

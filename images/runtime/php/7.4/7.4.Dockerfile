@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # From https://github.com/docker-library/php.git
-FROM php-run-base-${DEBIAN_FLAVOR}
+FROM oryxdevmcr.azurecr.io/private/oryx/php-run-base-${DEBIAN_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
