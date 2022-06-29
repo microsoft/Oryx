@@ -23,7 +23,6 @@ source "$PYTHON_VERSIONS_PATH"
 
 declare -r PYTHON_BULLSEYE_VERSION_ARRAY=($PYTHON37_VERSION $PYTHON38_VERSION $PYTHON310_VERSION)
 declare -r PYTHON_BUSTER_VERSION_ARRAY=($PYTHON39_VERSION)
-declare -r PYTHON_STRETCH_VERSION_ARRAY=()
 ImageDebianFlavor="$1"
 echo "python baseimage type: $ImageDebianFlavor"
 
@@ -33,8 +32,6 @@ if [ "$ImageDebianFlavor" == "bullseye" ];then
     VERSIONS_DIRECTORY=("${PYTHON_BULLSEYE_VERSION_ARRAY[@]}")
 elif [ "$ImageDebianFlavor" == "buster" ];then
     VERSIONS_DIRECTORY=("${PYTHON_BUSTER_VERSION_ARRAY[@]}")
-else 
-    VERSIONS_DIRECTORY=("${PYTHON_STRETCH_VERSION_ARRAY[@]}")
 fi
 
 
