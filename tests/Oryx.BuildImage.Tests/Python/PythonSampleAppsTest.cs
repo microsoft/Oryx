@@ -490,6 +490,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
                 $"--platform-version {PythonVersions.Python36Version}")
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -538,6 +539,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
                 $"--platform-version {PythonVersions.Python36Version}")
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -583,6 +585,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
                 $"--platform-version {PythonVersions.Python36Version}")
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -1404,7 +1407,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var outputDir = "/tmp/output";
             var virtualEnvName = "antenv";
             var manifestFile = $"{outputDir}/{FilePaths.BuildManifestFileName}";
-            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
+            var osTypeFile = $"{outputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
