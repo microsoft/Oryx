@@ -1,4 +1,4 @@
-FROM php-8.0
+FROM oryxdevmcr.azurecr.io/private/oryx/php-8.0
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 8.0.17
 
