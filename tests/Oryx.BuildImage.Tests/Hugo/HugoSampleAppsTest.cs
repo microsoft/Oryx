@@ -17,24 +17,37 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        public static TheoryData<string> ImageNameData
+        [Fact, Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
         {
-            get
-            {
-                var data = new TheoryData<string>();
-                data.Add(Settings.BuildImageName);
-                data.Add(Settings.LtsVersionsBuildImageName);
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-                data.Add(imageTestHelper.GetVsoBuildImage());
-                return data;
-            }
+            GeneratesScript_AndBuilds(Settings.BuildImageName);
         }
 
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuilds(string buildImageName)
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
         {
+            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
+        }
+
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage("vso-focal"));
+        }
+
+        [Fact, Trait("category", "jamstack")]
+        public void PipelineTestInvocationJamstack()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        }
+
+        private void GeneratesScript_AndBuilds(string buildImageName)
+        {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // Arrange
             var volume = CreateSampleAppVolume();
             var appDir = volume.ContainerDir;
@@ -63,7 +76,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "githubactions")]
         [InlineData("hugo-sample")]
         [InlineData("hugo-sample-json")]
         [InlineData("hugo-sample-yaml")]
@@ -98,7 +111,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void CanBuildHugoAppHavingPackageJson_ByExplicitlySpecifyingHugoPlatform()
         {
             // Idea is here that even though the app has a package.json, a user can explicitly choose for Hugo

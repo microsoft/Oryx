@@ -1,4 +1,4 @@
-FROM githubrunners-buildpackdeps-stretch
+FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-stretch
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 RUN mkdir -p ${IMAGES_DIR} \

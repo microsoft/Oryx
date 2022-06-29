@@ -22,7 +22,7 @@ namespace Oryx.BuildImage.Tests.Node
         {
         }
 
-        [Theory]
+        [Theory, Trait("category", "jamstack")]
         [InlineData("angularsample", "dist")]
         // Temporarily blocking next app as next build is failing accross npm
         // [InlineData("blog-starter-nextjs", ".next")]

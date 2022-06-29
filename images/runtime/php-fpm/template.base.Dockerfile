@@ -1,4 +1,4 @@
-FROM %PHP_BASE_IMAGE%
+FROM oryxdevmcr.azurecr.io/private/oryx/%PHP_BASE_IMAGE_TAG%
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION %PHP_VERSION%
 

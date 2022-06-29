@@ -33,7 +33,7 @@ buildPythonPrereqsImage() {
 			   --build-arg DEBIAN_FLAVOR=$debianFlavor \
 			   --build-arg DEBIAN_HACK_FLAVOR=$debianType \
 			   -f "$pythonPlatformDir/prereqs/Dockerfile"  \
-			   -t "python-build-prereqs" $REPO_DIR
+			   -t "oryxdevmcr.azurecr.io/private/oryx/python-build-prereqs" $REPO_DIR
 		builtPythonPrereqs=true
 	fi
 }

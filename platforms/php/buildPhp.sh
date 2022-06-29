@@ -21,7 +21,7 @@ buildPhpPrereqsImage() {
 		docker build  \
 			--build-arg DEBIAN_FLAVOR=$debianFlavor \
 			-f "$phpPlatformDir/prereqs/Dockerfile" \
-			-t "php-build-prereqs" $REPO_DIR
+			-t "oryxdevmcr.azurecr.io/private/oryx/php-build-prereqs" $REPO_DIR
 		builtPhpPrereqs=true
 	fi
 }

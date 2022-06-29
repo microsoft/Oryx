@@ -2,7 +2,7 @@ ARG PARENT_DEBIAN_FLAVOR
 FROM oryxdevmcr.azurecr.io/public/oryx/build:github-${PARENT_DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
 
-COPY --from=support-files-image-for-build /tmp/oryx/ /tmp
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /tmp
 
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     ORYX_BUILDIMAGE_TYPE="jamstack" \
