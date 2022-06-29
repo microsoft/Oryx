@@ -21,49 +21,6 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact(Skip = "Legacy python versions are out of support")]
-        public async Task CanBuildAndRunPythonApp_UsingPython36()
-        {
-            // Arrange
-            var appName = "flask-app";
-            var volume = CreateAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDirVolume = CreateAppOutputDirVolume();
-            var appOutputDir = appOutputDirVolume.ContainerDir;
-            var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-               $"--platform {PythonConstants.PlatformName} --platform-version 3.6")
-               .ToString();
-            var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                new[] { volume, appOutputDirVolume },
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    buildScript
-                },
-                _imageHelper.GetRuntimeImage("python", "3.6"),
-                ContainerPort,
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    runScript
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
-                });
-        }
-
         [Fact]
         public async Task CanBuildAndRun_Tweeter3App()
         {
