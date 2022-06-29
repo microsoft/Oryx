@@ -31,8 +31,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLatest()
         {
             GeneratesScript_AndBuilds(Settings.BuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage("latest", "2");
-            JamSpell_CanBe_Installed_In_The_BuildImage("latest", "3");
+            JamSpell_CanBe_Installed_In_The_BuildImage("latest");
+            JamSpell_CanBe_Installed_In_The_BuildImage("latest");
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("latest");
         }
 
@@ -40,14 +40,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLtsVersions()
         {
             GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage("lts-versions", "3");
+            JamSpell_CanBe_Installed_In_The_BuildImage("lts-versions");
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("lts-versions");
         }
 
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
-            JamSpell_CanBe_Installed_In_The_BuildImage("vso-focal", "3");
+            JamSpell_CanBe_Installed_In_The_BuildImage("vso-focal");
         }
 
         [Fact, Trait("category", "githubactions")]
