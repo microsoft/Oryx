@@ -90,13 +90,6 @@ steps:
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Build Stretch runtime images'
-  inputs:
-    scriptPath: ./build/buildRunTimeImages.sh
-    args: stretch
-  condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
-
-- task: ShellScript@2
   displayName: 'Build Buster runtime images'
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
