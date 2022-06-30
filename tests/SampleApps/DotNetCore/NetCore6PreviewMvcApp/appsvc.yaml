@@ -1,0 +1,11 @@
+version: 1
+
+pre-build: apt-get install jq
+
+build: pip install requirements.txt
+  
+post-build: |
+  python manage.py makemigrations
+  python manage.py migrate
+  
+run: gunicorn myapp.app --workers 5
