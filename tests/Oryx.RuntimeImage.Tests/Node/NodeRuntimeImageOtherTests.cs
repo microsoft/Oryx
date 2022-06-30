@@ -22,7 +22,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("12", NodeVersions.Node12Version)]
         [InlineData("14", NodeVersions.Node14Version)]
         [InlineData("16", NodeVersions.Node16Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]

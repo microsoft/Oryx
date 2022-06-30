@@ -21,12 +21,12 @@ jobs:
     imageDir: php-fpm
     imageDebianFlavor: bullseye
     artifactsFileName: php-fpm-runtimeimage-bases-bullseye.txt
-    jobName: Build_PHP_FPM_Bullseye_Base
+    jobName: Build_PHP_Fpm_Bullseye_Base
 
 - job: Release_PhpRuntimeBaseImage
   dependsOn: 
     - Build_Php_Fpm_Buster_Base
-    - Build_PHP_FPM_Bullseye_Base
+    - Build_PHP_Fpm_Bullseye_Base
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

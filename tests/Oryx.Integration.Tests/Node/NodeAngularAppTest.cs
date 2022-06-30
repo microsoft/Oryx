@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public const int PortInContainer = 4200;
 
         [Theory]
-        [InlineData("12"), Trait("category", "node-12")]
+        [InlineData("14"), Trait("category", "node-14")]
         public async Task CanBuildAndRunAngular6_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         // Official Node.js version that is supported by Angular CLI 8.0+ is 10.9 or greater
         [Theory]
-        [InlineData("12"), Trait("category", "node-12")]
+        [InlineData("14"), Trait("category", "node-14")]
         public async Task CanBuildAndRun_Angular8App_WithoutCompressedNodeModules(string nodeVersion)
         {
             // Arrange
@@ -116,7 +116,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12"), Trait("category", "node-12")]
+        [InlineData("14"), Trait("category", "node-14")]
         public async Task CanBuildAndRun_Angular8App_NodeModules_SymLink_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
             // Arrange
@@ -187,7 +187,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12"), Trait("category", "node-12")]
+        [InlineData("14"), Trait("category", "node-14")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
             // Arrange
@@ -266,7 +266,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12"), Trait("category", "node-12-2")]
+        [InlineData("14"), Trait("category", "node-14-2")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
             // Arrange
@@ -348,7 +348,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12"), Trait("category", "node-12-2")]
+        [InlineData("14"), Trait("category", "node-14-2")]
         public async Task CanBuildAndRunAngular8_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
             // Arrange

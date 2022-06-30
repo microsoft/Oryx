@@ -10,16 +10,8 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public static class TestValueGenerator
     {
-        private readonly static List<string> LegacyNodeVersions = new List<string>
-        {
-            "8","8.0", "8.1", "8.2", "8.8", "8.9", "8.11", "8.12",
-            "9.4",
-            "10","10.1", "10.10", "10.14",
-        };
-
         private readonly static List<string> NodeVersions = new List<string>
         {
-            "12",
             "14",
             "16"
         };
@@ -33,7 +25,6 @@ namespace Microsoft.Oryx.Tests.Common
         {
             var versions = new List<string>
             {
-                "12",
                 "14",
                 "16"
             };
@@ -48,15 +39,7 @@ namespace Microsoft.Oryx.Tests.Common
                 yield return new object[] { version };
             }
         }
-
-        public static IEnumerable<object[]> GetLegacyNodeVersions()
-        {
-            foreach (var version in LegacyNodeVersions)
-            {
-                yield return new object[] { version };
-            }
-        }
-
+        
         public static IEnumerable<object[]> GetPythonVersions()
         {
             foreach (var version in PythonVersions)
