@@ -43,8 +43,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir} -o {appOutputDir}")
                 .ToString();
             // Regex will match:
-            // "yyyy-mm-dd hh:mm:ss"|ERROR|node: errors parsing node.mod
-            Regex regex = new Regex(@"""[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])""\|ERROR\|node:\serrors\sparsing\snode\.mod.*");
+            // "yyyy-mm-dd hh:mm:ss"|WARNING|node.
+            Regex regex = new Regex(@"""[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])""\|WARNING\|node.*");
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
