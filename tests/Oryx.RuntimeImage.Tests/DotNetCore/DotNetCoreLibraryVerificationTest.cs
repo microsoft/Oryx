@@ -17,11 +17,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("1.0")]
-        [InlineData("1.1")]
-        [InlineData("2.0")]
-        [InlineData("2.1")]
-        [InlineData("2.2")]
         [InlineData("3.1")]
         [InlineData("5.0")]
         public void GDIPlusLibrary_IsPresentInTheImage(string version)

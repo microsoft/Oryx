@@ -7,15 +7,6 @@ variables:
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build DotNetCore runtime stretch based images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: dotnetcore
-    imageDebianFlavor: stretch
-    artifactsFileName: dotnetcore-runtimeimage-bases-stretch.txt
-    jobName: Build_DotNetCore_BaseImage_Stretch
-
-- template: ../templates/_buildimageBasesJobTemplate.yml
-  parameters:
     displayName: Build DotNetCore runtime buster base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: dotnetcore
@@ -34,7 +25,6 @@ jobs:
 
 - job: Release_DotNetCoreRuntimeBaseImage
   dependsOn: 
-    - Build_DotNetCore_BaseImage_Stretch
     - Build_DotNetCore_BaseImage_Buster
     - Build_DotNetCore_BaseImage_Bullseye
   displayName: Push images to MCR
