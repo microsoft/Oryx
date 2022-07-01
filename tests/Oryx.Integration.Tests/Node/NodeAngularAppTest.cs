@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public const int PortInContainer = 4200;
 
         // Official Node.js version that is supported by Angular CLI 14.0+ is 16.10 or greater
-        [Theory]
+        [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [InlineData("16"), Trait("category", "node-16")]
         public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
         {
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [InlineData("16"), Trait("category", "node-16")]
         public async Task CanBuildAndRun_Angular14App_WithoutCompressedNodeModules(string nodeVersion)
         {
@@ -114,7 +114,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
+        [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [InlineData("16"), Trait("category", "node-16")]
         public async Task CanBuildAndRun_Angular14App_NodeModules_SymLink_Exists_InRoot_WithoutCompression(string nodeVersion)
         {
@@ -182,7 +182,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [InlineData("16"), Trait("category", "node-16")]
         public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
@@ -257,7 +257,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        [Theory]
+        [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [InlineData("16"), Trait("category", "node-16")]
         public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression(string nodeVersion)
         {
