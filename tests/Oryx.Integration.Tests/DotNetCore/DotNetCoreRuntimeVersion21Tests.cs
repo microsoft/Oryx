@@ -93,6 +93,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"--platform-version {dotnetcoreVersion} " +
                 $"--manifest-dir {manifestDir}")
                 .AddFileExistsCheck($"{manifestDir}/{FilePaths.BuildManifestFileName}")
+                // Additionally ensure that the ostype file is placed where the manifest file is, not the output dir
+                .AddFileExistsCheck($"{manifestDir}/{FilePaths.OsTypeFileName}")
                 .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddCommand(

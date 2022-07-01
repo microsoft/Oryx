@@ -1,4 +1,4 @@
-FROM php-build-prereqs AS php73-build
+FROM oryxdevmcr.azurecr.io/private/oryx/php-build-prereqs AS php73-build
 ARG PHP_VERSION
 ARG GPG_KEYS
 ARG PHP_SHA256

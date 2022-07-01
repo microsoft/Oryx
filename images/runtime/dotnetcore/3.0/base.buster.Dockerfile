@@ -6,7 +6,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace --version 5.0
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump --version 5.0.236902
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters --version 5.0.236902
 
-FROM debian:buster-slim
+FROM mcr.microsoft.com/mirror/docker/library/debian:buster-slim
 ARG BUILD_DIR=/tmp/oryx/build
 ADD build ${BUILD_DIR}
 

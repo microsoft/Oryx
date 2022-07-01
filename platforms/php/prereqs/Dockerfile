@@ -1,5 +1,5 @@
 ARG DEBIAN_FLAVOR
-FROM buildpack-deps:${DEBIAN_FLAVOR} AS php-build-prereqs
+FROM buildpack-deps:${DEBIAN_FLAVOR} AS php-buildpack-prereqs
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 COPY platforms/php/prereqs /php

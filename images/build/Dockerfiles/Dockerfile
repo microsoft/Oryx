@@ -3,6 +3,7 @@ FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions AS main
 ###
 # Build run script generators (to be used by the `oryx run-script` command)
 ###
+# DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
 FROM golang:1.15-stretch as startupScriptGens
 
 # GOPATH is set to "/go" in the base image

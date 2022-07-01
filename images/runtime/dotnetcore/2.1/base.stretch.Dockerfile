@@ -4,7 +4,7 @@ ARG DEBIAN_FLAVOR
 FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS tools-install
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos --version 5.0.236902
 
-FROM oryx-run-base-stretch
+FROM oryxdevmcr.azurecr.io/private/oryx/oryx-run-base-stretch
 ARG BUILD_DIR=/tmp/oryx/build
 
 RUN apt-get update \

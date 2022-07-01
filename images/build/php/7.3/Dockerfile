@@ -1,5 +1,5 @@
 # Build PHP 7.3
-FROM php-build-prereqs AS php73-build
+FROM oryxdevmcr.azurecr.io/private/oryx/php-build-prereqs AS php73-build
 RUN set -eux \
     && . /php/__phpVersions.sh \
     && PHP_VERSION=$PHP73_VERSION GPG_KEYS=$PHP73_KEYS PHP_SHA256=$PHP73_TAR_SHA256 /php/build.sh

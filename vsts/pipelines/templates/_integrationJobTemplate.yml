@@ -40,7 +40,14 @@ jobs:
 - job: Job_PythonIntegrationTests
   displayName: Run Python Integration Tests
   dependsOn:
-    - Job_BuildImage
+    - Job_BuildImage_Latest
+    - Job_BuildImage_LtsVersions
+    - Job_BuildImage_Jamstack
+    - Job_BuildImage_GithubActions
+    - Job_BuildImage_VsoFocal
+    - Job_BuildImage_Full
+    - Job_BuildImage_Cli
+    - Job_BuildImage_Buildpack
     - Job_RuntimeImages
   pool:
     name: AzurePipelines-EO
@@ -69,8 +76,15 @@ jobs:
   - job:
     displayName: 'Run DotNetCore ${{ dotNetCoreVersion }} Integration Tests'
     dependsOn:
-      - Job_BuildImage
-      - Job_RuntimeImages
+    - Job_BuildImage_Latest
+    - Job_BuildImage_LtsVersions
+    - Job_BuildImage_Jamstack
+    - Job_BuildImage_GithubActions
+    - Job_BuildImage_VsoFocal
+    - Job_BuildImage_Full
+    - Job_BuildImage_Cli
+    - Job_BuildImage_Buildpack
+    - Job_RuntimeImages
     pool:
       name: AzurePipelines-EO
       demands:
@@ -98,8 +112,15 @@ jobs:
   - job:
     displayName: 'Run Node ${{ nodeVersion }} Integration Tests'
     dependsOn:
-      - Job_BuildImage
-      - Job_RuntimeImages
+    - Job_BuildImage_Latest
+    - Job_BuildImage_LtsVersions
+    - Job_BuildImage_Jamstack
+    - Job_BuildImage_GithubActions
+    - Job_BuildImage_VsoFocal
+    - Job_BuildImage_Full
+    - Job_BuildImage_Cli
+    - Job_BuildImage_Buildpack
+    - Job_RuntimeImages
     pool:
       name: AzurePipelines-EO
       demands:
@@ -127,8 +148,15 @@ jobs:
   - job:
     displayName: 'Run Golang ${{ golangVersion }} Integration Tests'
     dependsOn:
-      - Job_BuildImage
-      - Job_RuntimeImages
+    - Job_BuildImage_Latest
+    - Job_BuildImage_LtsVersions
+    - Job_BuildImage_Jamstack
+    - Job_BuildImage_GithubActions
+    - Job_BuildImage_VsoFocal
+    - Job_BuildImage_Full
+    - Job_BuildImage_Cli
+    - Job_BuildImage_Buildpack
+    - Job_RuntimeImages
     pool:
       name: AzurePipelines-EO
       demands:
@@ -154,7 +182,14 @@ jobs:
 - job: Job_PhpIntegrationTests8_0
   displayName: Run Php Integration Tests 8.0
   dependsOn:
-    - Job_BuildImage
+    - Job_BuildImage_Latest
+    - Job_BuildImage_LtsVersions
+    - Job_BuildImage_Jamstack
+    - Job_BuildImage_GithubActions
+    - Job_BuildImage_VsoFocal
+    - Job_BuildImage_Full
+    - Job_BuildImage_Cli
+    - Job_BuildImage_Buildpack
     - Job_RuntimeImages
   pool:
     name: AzurePipelines-EO
@@ -181,7 +216,14 @@ jobs:
 - job: Job_PhpIntegrationTests7_4
   displayName: Run Php Integration Tests 7.4
   dependsOn:
-    - Job_BuildImage
+    - Job_BuildImage_Latest
+    - Job_BuildImage_LtsVersions
+    - Job_BuildImage_Jamstack
+    - Job_BuildImage_GithubActions
+    - Job_BuildImage_VsoFocal
+    - Job_BuildImage_Full
+    - Job_BuildImage_Cli
+    - Job_BuildImage_Buildpack
     - Job_RuntimeImages
   pool:
     name: AzurePipelines-EO
@@ -208,7 +250,14 @@ jobs:
 - job: Job_RubyIntegrationTests
   displayName: Run Ruby Integration Tests
   dependsOn:
-    - Job_BuildImage
+    - Job_BuildImage_Latest
+    - Job_BuildImage_LtsVersions
+    - Job_BuildImage_Jamstack
+    - Job_BuildImage_GithubActions
+    - Job_BuildImage_VsoFocal
+    - Job_BuildImage_Full
+    - Job_BuildImage_Cli
+    - Job_BuildImage_Buildpack
     - Job_RuntimeImages
   pool:
     name: AzurePipelines-EO
@@ -235,7 +284,14 @@ jobs:
 - job: Job_DbIntegrationTests
   displayName: Run Database Integration Tests
   dependsOn:
-    - Job_BuildImage
+    - Job_BuildImage_Latest
+    - Job_BuildImage_LtsVersions
+    - Job_BuildImage_Jamstack
+    - Job_BuildImage_GithubActions
+    - Job_BuildImage_VsoFocal
+    - Job_BuildImage_Full
+    - Job_BuildImage_Cli
+    - Job_BuildImage_Buildpack
     - Job_RuntimeImages
   pool:
     name: AzurePipelines-EO

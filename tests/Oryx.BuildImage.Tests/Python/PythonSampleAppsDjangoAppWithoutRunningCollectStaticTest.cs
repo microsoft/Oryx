@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("true")]
         [InlineData("True")]
         public void GeneratesScript_AndBuilds_DjangoApp_WithoutRunningCollectStatic_IfDisableCollectStatic_IsTrue(
