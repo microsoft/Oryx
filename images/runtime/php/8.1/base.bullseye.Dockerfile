@@ -1,5 +1,5 @@
 # DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
-FROM php:8.1-buster
+FROM php:8.1-bullseye
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 8.1.6
 
@@ -20,6 +20,12 @@ RUN echo -e '<FilesMatch "\.(?i:ph([[p]?[0-9]*|tm[l]?))$">\n SetHandler applicat
 # Disable Apache2 server signature
 RUN echo -e 'ServerSignature Off' >> /etc/apache2/apache2.conf
 RUN echo -e 'ServerTokens Prod' >> /etc/apache2/apache2.conf
+RUN { \
+   echo '<DirectoryMatch "^/.*/\.git/">'; \
+   echo '   Order deny,allow'; \
+   echo '   Deny from all'; \
+   echo '</DirectoryMatch>'; \
+} >> /etc/apache2/apache2.conf
 
 # Install common PHP extensions
 RUN apt-get update \
