@@ -716,6 +716,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Directory.CreateDirectory(outputFolder);
             if (createOsTypeFile)
             {
+                Directory.CreateDirectory(Path.GetDirectoryName(OS_TYPE_FILE_PATH));
                 File.Create(OS_TYPE_FILE_PATH).Dispose();
             }
             var servicesBuilder = new ServiceProviderBuilder()
