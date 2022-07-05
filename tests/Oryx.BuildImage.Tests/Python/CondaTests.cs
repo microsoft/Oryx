@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void CanBuildPythonAppWhichHasJupiterNotebookFile()
         {
             // Arrange
@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void CanBuildAppWhichHasCondaEnvironmentYmlFile()
         {
             // Arrange
@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void CanBuildPython2AppHavingRequirementsTxtFile()
         {
             // Arrange
@@ -121,7 +121,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void CanBuildAppWithCondaEnviornmentYmlFileHavingPipPackages()
         {
             // Arrange
@@ -157,7 +157,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void CanBuildJuliaPythonSampleApp()
         {
             // Arrange
@@ -193,7 +193,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void CanBuildJupiterRiseApp()
         {
             // Arrange
@@ -229,7 +229,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
+        [Theory, Trait("category", "vso-focal-2")]
         [InlineData("jupyter-rise")]
         public void BuildJupiterCondaApps_Prints_BuildCommands_In_File(string appName)
         {

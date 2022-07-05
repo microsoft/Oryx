@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void PipelineTestInvocationVsoFocal()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void GeneratesScript_AndBuildSinatraApp()
         {
             // Arrange
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void GeneratesScript_AndBuildRailsApp()
         {
             // Arrange
@@ -106,7 +106,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void Builds_JekyllStaticWebApp_When_Apptype_Is_SetAs_StaticSiteApplications()
         {
             // Arrange

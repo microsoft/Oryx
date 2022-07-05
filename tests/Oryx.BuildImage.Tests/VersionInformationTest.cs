@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             OryxBuildImage_Contains_VersionAndCommit_Information(Settings.LtsVersionsBuildImageName);
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void PipelineTestInvocationVsoFocal()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -121,7 +121,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
+        [Theory, Trait("category", "vso-focal-2")]
         [InlineData("vso-focal")]
         public void OryxVsoBuildImage_Contains_PHP_Xdebug(string imageVersion)
         {
@@ -147,7 +147,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
+        [Theory, Trait("category", "vso-focal-2")]
         [InlineData("bundler", "vso-focal")]
         [InlineData("rake", "vso-focal")]
         [InlineData("ruby-debug-ide", "vso-focal")]

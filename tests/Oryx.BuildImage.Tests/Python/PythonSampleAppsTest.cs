@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("lts-versions");
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "vso-focal-2")]
         public void PipelineTestInvocationVsoFocal()
         {
             JamSpell_CanBe_Installed_In_The_BuildImage("vso-focal", "3");
@@ -775,7 +775,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
+        [Theory, Trait("category", "vso-focal-2")]
         [InlineData("flask-app", "foo.txt")]
         [InlineData("django-realworld-example-app", FilePaths.BuildCommandsFileName)]
         public void BuildPythonApps_Prints_BuildCommands_In_File(string appName, string buildCommandsFileName)
