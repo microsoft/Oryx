@@ -3,6 +3,7 @@ parameters:
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
   imageType: null    
+  imageTypeTest: null    
 
 steps:
 - script: |
@@ -123,7 +124,7 @@ steps:
   displayName: 'Test build images'
   inputs:
     scriptPath: ./build/testBuildImages.sh
-    args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME) ${{ parameters.imageType }}
+    args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME) ${{ parameters.imageType }} ${{ parameters.imageTypeTest }}
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2

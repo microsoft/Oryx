@@ -44,6 +44,13 @@ then
     export ORYX_TEST_IMAGE_TYPE="$4"
 fi
 
+if [ -n "$5" ]
+then
+    echo
+    echo "Setting environment variable 'ORYX_TEST_IMAGE_TYPE_TEST' to provided value $5'."
+    export ORYX_TEST_IMAGE_TYPE_TEST="$5"
+fi
+
 echo
 echo "Building and running tests..."
 cd "$TESTS_SRC_DIR/$testProjectName"
@@ -63,7 +70,7 @@ diagnosticFileLocation="$artifactsDir/$testProjectName-log.txt"
 dotnet test \
     --blame \
     --diag "$diagnosticFileLocation" \
-    --filter "category=${ORYX_TEST_IMAGE_TYPE}" \
+    --filter "category=${ORYX_TEST_IMAGE_TYPE_TEST}" \
     --verbosity normal \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR\testResults\\$testProjectName.xml" \
