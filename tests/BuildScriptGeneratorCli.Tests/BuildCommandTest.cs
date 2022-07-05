@@ -30,6 +30,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     public class BuildCommandTest : IClassFixture<TestTempDirTestFixture>
     {
+        private const string OS_TYPE_FILE_PATH = "/opt/oryx/.ostype";
+
         private readonly string _testDirPath;
         private readonly TestTempDirTestFixture _testDir;
 
@@ -239,7 +241,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     detector: new TestPlatformDetectorUsingPlatformName(
                         detectedPlatformName: "test",
                         detectedPlatformVersion: "1.0.0")),
-                scriptOnly: false);
+                scriptOnly: false,
+                createOsTypeFile: true);
             var buildCommand = new BuildCommand();
             var testConsole = new TestConsole(newLineCharacter: string.Empty);
 
@@ -250,6 +253,34 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.Equal(0, exitCode);
             Assert.Equal(string.Empty, testConsole.StdError);
             Assert.Contains(stringToPrint, testConsole.StdOutput.Replace(Environment.NewLine, string.Empty));
+        }
+
+        [EnableOnPlatform("LINUX")]
+        public void BuildScriptFails_WhenOstypeFile_NotPresent()
+        {
+            // Arrange
+            var stringToPrint = "Hello World";
+            var script = $"#!/bin/bash\necho {stringToPrint}\n";
+            var serviceProvider = CreateServiceProvider(
+                new TestProgrammingPlatform(
+                    platformName: "test",
+                    platformVersions: new[] { "1.0.0" },
+                    canGenerateScript: true,
+                    scriptContent: script,
+                    detector: new TestPlatformDetectorUsingPlatformName(
+                        detectedPlatformName: "test",
+                        detectedPlatformVersion: "1.0.0")),
+                scriptOnly: false,
+                createOsTypeFile: false);
+            var buildCommand = new BuildCommand();
+            var testConsole = new TestConsole(newLineCharacter: string.Empty);
+
+            // Act
+            var exitCode = buildCommand.Execute(serviceProvider, testConsole);
+
+            // Assert failed with exit code 1
+            Assert.Equal(1, exitCode);
+            Assert.Contains($"File {OS_TYPE_FILE_PATH} does not exist. Cannot copy to manifest directory.", testConsole.StdError);
         }
 
         [Fact]
@@ -677,12 +708,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.False(options.EnableHugoBuild);
         }
 
-        private IServiceProvider CreateServiceProvider(TestProgrammingPlatform generator, bool scriptOnly)
+        private IServiceProvider CreateServiceProvider(TestProgrammingPlatform generator, bool scriptOnly, bool createOsTypeFile)
         {
             var sourceCodeFolder = Path.Combine(_testDirPath, "src");
             Directory.CreateDirectory(sourceCodeFolder);
             var outputFolder = Path.Combine(_testDirPath, "output");
             Directory.CreateDirectory(outputFolder);
+            if (createOsTypeFile)
+            {
+                File.Create(OS_TYPE_FILE_PATH).Dispose();
+            }
             var servicesBuilder = new ServiceProviderBuilder()
                 .ConfigureServices(services =>
                 {
