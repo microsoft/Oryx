@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo RandomText >> {appDir}/Program.cs") // triggers a failure
                 .AddBuildCommand(
-                $"{appDir} -o {appOutputDir}")
+                $"{appDir} -o {appOutputDir} --package --property package_directory='oryxteststring'")
                 .ToString();
             // Regex will match:
             // "yyyy-mm-dd hh:mm:ss"|WARNING|.
@@ -60,9 +60,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(
                 () =>
                 {
-                    Assert.True(result.IsSuccess);
+                    Assert.False(result.IsSuccess);
                     Match match = regex.Match(result.StdOut);
-                    Assert.False(match.Success);
+                    Assert.True(match.Success);
                 },
                 result.GetDebugInfo());
         }
