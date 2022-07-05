@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-12-8")]
+    [Trait("category", "node-14-8")]
     public class NodeTestBuildAndRunAppWithDebugger : NodeEndToEndTestsBase
     {
         public NodeTestBuildAndRunAppWithDebugger(ITestOutputHelper output, TestTempDirTestFixture fixture)

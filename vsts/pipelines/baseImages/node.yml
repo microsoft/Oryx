@@ -7,15 +7,6 @@ variables:
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build Node runtime stretch based images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: node
-    imageDebianFlavor: stretch
-    artifactsFileName: node-runtimeimage-bases-stretch.txt
-    jobName: Build_Stretch_BaseImages
-
-- template: ../templates/_buildimageBasesJobTemplate.yml
-  parameters:
     displayName: Build Node runtime bullseye based images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: node
@@ -25,7 +16,6 @@ jobs:
 
 - job: Release_NodeRuntimeBaseImage
   dependsOn: 
-    - Build_Stretch_BaseImages
     - Build_Bullseye_BaseImages
   displayName: Push images to MCR
   timeoutInMinutes: 250

@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-12-4")]
+    [Trait("category", "node-14-4")]
     public class NodeNuxtJsAppTest : NodeEndToEndTestsBase
     {
         public const string AppName = "helloworld-nuxtjs";
@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_HackerNewsNuxtJsApp_WithoutZippingNodeModules()
         {
             // Arrange
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             var volume = CreateAppVolume(AppName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_HackerNewsNuxtJsApp_UsingZippedNodeModules()
         {
             // Arrange
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             string compressFormat = "zip";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;

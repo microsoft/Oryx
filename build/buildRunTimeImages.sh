@@ -60,13 +60,6 @@ fi
 docker build \
     --pull \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-stretch" \
-    --build-arg DEBIAN_FLAVOR=stretch \
-    $REPO_DIR
-
-docker build \
-    --pull \
-    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
     -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-buster" \
     --build-arg DEBIAN_FLAVOR=buster \
     $REPO_DIR

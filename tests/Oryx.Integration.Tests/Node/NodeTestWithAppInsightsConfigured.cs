@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-12-10")]
+    [Trait("category", "node-14-10")]
     public class NodeTestWithAppInsightsConfigured : NodeEndToEndTestsBase
     {
         public NodeTestWithAppInsightsConfigured(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -24,8 +24,6 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("14", "~2", ExtVarNames.UserAppInsightsKeyEnv)]
         [InlineData("14", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
-        [InlineData("12", "~2", ExtVarNames.UserAppInsightsKeyEnv)]
-        [InlineData("12", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
         //Without pre-IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~2'
         // and that will enable oryx's appInsight attach logic
         public async Task CanBuildAndRun_App_With_AgentExtension_And_InstrumentKey_Or_ConnectionString(
@@ -86,10 +84,10 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("14", "~3", ExtVarNames.UserAppInsightsKeyEnv)]
         [InlineData("14", "~3", ExtVarNames.UserAppInsightsConnectionStringEnv)]
-        [InlineData("12", "", ExtVarNames.UserAppInsightsKeyEnv)]
-        [InlineData("12", "", ExtVarNames.UserAppInsightsConnectionStringEnv)]
-        [InlineData("12", "disabled", ExtVarNames.UserAppInsightsKeyEnv)]
-        [InlineData("12", "disabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
+        [InlineData("14", "", ExtVarNames.UserAppInsightsKeyEnv)]
+        [InlineData("14", "", ExtVarNames.UserAppInsightsConnectionStringEnv)]
+        [InlineData("14", "disabled", ExtVarNames.UserAppInsightsKeyEnv)]
+        [InlineData("14", "disabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
         //With New IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~3'
         // and that will disable oryx's appInsight attach logic
         public async Task CanBuildAndRun_NodeApp_AppInsights_With_NewIPA_Configuration(

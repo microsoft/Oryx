@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-12-11")]
+    [Trait("category", "node-14-11")]
     public class NodeWebFrontEndAppTest : NodeEndToEndTestsBase
     {
         public NodeWebFrontEndAppTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_NodeWebFrontEndApp_WhenPruneDevDependenciesIsTrue(string appName)
         {
             // Arrange
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -115,7 +115,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_NodeWebFrontEndApp_AfterRebuild_WhenPruneDevDependenciesIsTrue()
         {
             // Arrange
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
