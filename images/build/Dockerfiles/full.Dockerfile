@@ -72,7 +72,7 @@ RUN apt-get update \
 RUN set -ex \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
-    # custom logging
+    # enables custom logging
     && cp -f $imagesDir/build/logger.sh /opt/oryx/logger
 
 ENV ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io"
