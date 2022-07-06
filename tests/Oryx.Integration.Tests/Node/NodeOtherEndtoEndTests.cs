@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.Integration.Tests
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
     {
 
-        protected static string NodeVersion = "12";
+        protected static string NodeVersion = "14";
 
         public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.Integration.Tests
         
 
         [Fact]
-        [Trait("category", "node-12-5")]
+        [Trait("category", "node-14-5")]
         public async Task CanBuildAndRunNodeApp_UsingCustomManifestFileLocationAsync()
         {
             // Arrange
@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-5")]
+        [Trait("category", "node-14-5")]
         public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules_WithoutExtractingAsync()
         {
             // Arrange
@@ -179,7 +179,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-5")]
+        [Trait("category", "node-14-5")]
         public async Task CanBuildAndRunNodeApp_OnSecondBuild_AfterZippingNodeModules_InFirstBuildAsync()
         {
             // Arrange
@@ -230,7 +230,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-5")]
+        [Trait("category", "node-14-5")]
         public async Task CanBuildAndRunNodeApp_OnSecondBuild_AfterNotZippingNodeModules_InFirstBuildAsync()
         {
             // Arrange
@@ -281,7 +281,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-5")]
+        [Trait("category", "node-14-5")]
         public async Task NodeStartupScript_UsesPortEnvironmentVariableValueAsync()
         {
             // Arrange
@@ -324,9 +324,9 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("ecosystem.config.js"), Trait("category", "node-12-5")]
-        [InlineData("ecosystem.config.yaml"), Trait("category", "node-12-5")]
-        [InlineData("ecosystem.config.yml"), Trait("category", "node-12-5")]
+        [InlineData("ecosystem.config.js"), Trait("category", "node-14-5")]
+        [InlineData("ecosystem.config.yaml"), Trait("category", "node-14-5")]
+        [InlineData("ecosystem.config.yml"), Trait("category", "node-14-5")]
         public async Task CanRunNodeApp_WithoutPm2_EvenThoughPm2SpecificFilesArePresentInRepoAsync(string pm2ConfigFileName)
         {
             // Arrange
@@ -373,7 +373,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
+        [Trait("category", "node-14-6")]
         public async Task NodeStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresentAsync()
         {
             // Arrange
@@ -416,7 +416,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
+        [Trait("category", "node-14-6")]
         public async Task CanBuildAndRunNodeApp_UsingYarnForBuild_AndExplicitOutputFileAsync()
         {
             // Arrange
@@ -449,7 +449,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         // Run on Linux only as TypeScript seems to create symlinks and this does not work on Windows machines.
-        [EnableOnPlatform("LINUX"), Trait("category", "node-12-6")]
+        [EnableOnPlatform("LINUX"), Trait("category", "node-14-6")]
         public async Task CanBuildNodeAppUsingScriptsNodeInPackageJsonAsync()
         {
             // Arrange
@@ -491,7 +491,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
+        [Trait("category", "node-14-6")]
         public async Task Node_Lab2AppServiceAppAsync()
         {
             // Arrange
@@ -533,7 +533,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "bug: 1505700")] 
-        // [Trait("category", "node-12-6")]
+        // [Trait("category", "node-14-6")]
         public async Task Node_SoundCloudNgrxAppAsync()
         {
             // Arrange
@@ -577,7 +577,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
+        [Trait("category", "node-14-6")]
         public async Task Node_CreateReactAppSampleAsync()
         {
             // Arrange
@@ -743,7 +743,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
+        [Trait("category", "node-14-6")]
         public async Task CanBuildAndRunNodeApp_UsingNestedOutputDirectoryAsync()
         {
             // Arrange
@@ -768,7 +768,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "12"),
+                _imageHelper.GetRuntimeImage("node", "14"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -784,7 +784,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
+        [Trait("category", "node-14-6")]
         public async Task CanBuildAndRunNodeApp_UsingIntermediateDir_AndNestedOutputDirectoryAsync()
         {
             // Arrange
@@ -809,7 +809,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "12"),
+                _imageHelper.GetRuntimeImage("node", "14"),
                 ContainerPort,
                 "/bin/sh",
                 new[]

@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-12-6")]
+    [Trait("category", "node-14-6")]
     public class NodePreRunCommandOrScriptTest : NodeEndToEndTestsBase
     {
         private readonly string RunScriptPath = "/tmp/startup.sh";
@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunNodeApp_UsingPreRunCommand_WithDynamicInstallAsync()
         {
             // Arrange
-            var nodeVersion = NodeVersions.Node12Version;
+            var nodeVersion = NodeVersions.Node14Version;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunNodeApp_UsingPreRunScript_WithDynamicInstallAsync()
         {
             // Arrange
-            var nodeVersion = NodeVersions.Node12Version;
+            var nodeVersion = NodeVersions.Node14Version;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -169,7 +169,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;

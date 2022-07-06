@@ -10,8 +10,6 @@ set -euo pipefail
 
 bullseyeBaseImagesFile="$1"-bullseye-base-images-mcr.txt
 busterBaseImagesFile="$1"-buster-base-images-mcr.txt
-stretchBaseImagesFile="$1"-stretch-base-images-mcr.txt
-bullseyeBaseImagesFile="$1"-bullseye-base-images-mcr.txt
 
 echo "base image tag file is in directory: $1"
 
@@ -31,22 +29,4 @@ if [ -f "$busterBaseImagesFile" ]; then
       echo "Pushing image $imageName ..."
       docker push "$imageName"
     done <"$busterBaseImagesFile"
-fi
-
-if [ -f "$stretchBaseImagesFile" ]; then
-    echo "$stretchBaseImagesFile exists. pushing stretch image tags ..."
-    while read imageName; do
-      # read the tags from file
-      echo "Pushing image $imageName ..."
-      docker push "$imageName"
-    done <"$stretchBaseImagesFile"
-fi
-
-if [ -f "$bullseyeBaseImagesFile" ]; then
-    echo "$bullseyeBaseImagesFile exists. pushing bullseye image tags ..."
-    while read imageName; do
-      # read the tags from file
-      echo "Pushing image $imageName ..."
-      docker push "$imageName"
-    done <"$bullseyeBaseImagesFile"
 fi

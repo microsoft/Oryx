@@ -22,49 +22,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingPython36Async()
-        {
-            // Arrange
-            var appName = "flask-app";
-            var volume = CreateAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDirVolume = CreateAppOutputDirVolume();
-            var appOutputDir = appOutputDirVolume.ContainerDir;
-            var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-               $"--platform {PythonConstants.PlatformName} --platform-version 3.6")
-               .ToString();
-            var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                new[] { volume, appOutputDirVolume },
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    buildScript
-                },
-                _imageHelper.GetRuntimeImage("python", "3.6"),
-                ContainerPort,
-                "/bin/bash",
-                new[]
-                {
-                    "-c",
-                    runScript
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
-                });
-        }
-
-        [Fact]
         public async Task CanBuildAndRun_Tweeter3AppAsync()
         {
             // Arrange
@@ -109,7 +66,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("3.6")]
         [InlineData("3.7")]
         public async Task BuildWithVirtualEnv_RemovesOryxPackagesDir_FromOlderBuildAsync(string pythonVersion)
         {
@@ -165,8 +121,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
         
         [Theory (Skip = "Bug 1410367")]
-        [InlineData("2.7")]
-        [InlineData("3.6")]
         [InlineData("3.7")]
         [InlineData("3.8")]
         public async Task BuildWithVirtualEnv_From_File_Requirement_TxtAsync(string pythonVersion)

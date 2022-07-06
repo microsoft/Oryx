@@ -24,8 +24,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("2.7")]
-        [InlineData("3.6")]
         [InlineData("3.7", 5637)] // Test with a non-default port as well
         public async Task CanBuildAndDebugFlaskAppAsync(string pythonVersion, int? debugPort = null)
         {
@@ -67,8 +65,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("2.7")]
-        [InlineData("3.6")]
         [InlineData("3.7", 5637)] // Test with a non-default port as well
         public async Task CanBuildAndDebugFlaskAppWithDebugPyAsync(string pythonVersion, int? debugPort = null)
         {

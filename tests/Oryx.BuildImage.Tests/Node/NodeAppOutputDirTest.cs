@@ -40,6 +40,7 @@ namespace Oryx.BuildImage.Tests.Node
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(
                 $"{NodeManifestFilePropertyKeys.OutputDirPath}=\"{expectedOutputDirPath}\"",
                 $"{appOutputDir}/{FilePaths.BuildManifestFileName}")

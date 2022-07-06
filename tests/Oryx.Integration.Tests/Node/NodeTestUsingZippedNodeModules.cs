@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-12-9")]
+    [Trait("category", "node-14-9")]
     public class NodeTestUsingZippedNodeModules : NodeEndToEndTestsBase
     {
         public NodeTestUsingZippedNodeModules(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -69,7 +69,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("12")]
         [InlineData("14")]
         public async Task Node_CreateReactAppSample_zippedNodeModulesAsync(string nodeVersion)
         {
@@ -112,7 +111,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             // Use a separate volume for output due to rsync errors
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "webfrontend";
@@ -153,7 +152,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             // Use a separate volume for output due to rsync errors
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "node-nested-nodemodules";

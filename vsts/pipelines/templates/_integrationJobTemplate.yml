@@ -13,18 +13,9 @@ parameters:
       - 12-9
       - 12-10
       - 12-11
-      - 10.14
-      - 9.4
-      - 8
-      - legacyVersions
-      - legacyVersions-2
   - name: dotNetCoreVersions
     type: object
     default:
-      - 10
-      - 11
-      - 20
-      - 22
       - 30
       - 31
       - 50

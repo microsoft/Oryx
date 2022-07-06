@@ -22,22 +22,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("8", NodeVersions.Node8Version)]
-        [InlineData("8.0", "8.0.0")]
-        [InlineData("8.1", "8.1.4")]
-        [InlineData("8.2", "8.2.1")]
-        [InlineData("8.8", "8.8.1")]
-        [InlineData("8.9", "8.9.4")]
-        [InlineData("8.11", "8.11.4")]
-        [InlineData("8.12", "8.12.0")]
-        [InlineData("9.4", "9.4.0")]
-        [InlineData("10", NodeVersions.Node10Version)]
-        [InlineData("10.1", "10.1.0")]
-        [InlineData("10.10", "10.10.0")]
-        [InlineData("10.12", "10.12.0")]
-        [InlineData("10.14", "10.14.2")]
-        [InlineData("12", NodeVersions.Node12Version)]
         [InlineData("14", NodeVersions.Node14Version)]
+        [InlineData("16", NodeVersions.Node16Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void NodeVersionMatchesImageName(string nodeTag, string nodeVersion)
         {
@@ -107,7 +93,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", "10.14"),
+                ImageId = _imageHelper.GetRuntimeImage("node", "14"),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[] { "-c", script }
             });

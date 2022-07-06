@@ -24,8 +24,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Temporarily skip, Bug#1266781")]
-        [InlineData("2.7")]
-        [InlineData("3.6")]
         [InlineData("3.7")]
         [InlineData("3.8")]
         [InlineData("3.9")]
@@ -69,7 +67,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory (Skip = "Bug 1410367")]
-        [InlineData(PythonVersions.Python27Version)]
         [InlineData("3")]
         [InlineData(PythonVersions.Python37Version)]
         [InlineData(PythonVersions.Python38Version)]
