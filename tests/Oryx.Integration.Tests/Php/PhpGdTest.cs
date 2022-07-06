@@ -13,6 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
+    [Collection("Php integration")]
     public class PhpGdTest : PhpEndToEndTestsBase
     {
         public PhpGdTest(ITestOutputHelper output, TestTempDirTestFixture fixture)

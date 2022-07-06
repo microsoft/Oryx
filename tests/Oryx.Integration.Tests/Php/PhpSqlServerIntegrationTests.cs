@@ -15,6 +15,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
+    [Collection("Php integration")]
     [Trait("db", "sqlserver")]
     public class PhpSqlServerIntegrationTests : PlatformEndToEndTestsBase
     {

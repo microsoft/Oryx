@@ -12,6 +12,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
+    [Collection("Php integration")]
     public class PhpGreetingsAppTest : PhpEndToEndTestsBase
     {
         private const string ExifImageDebianFlavorPng = "3";
