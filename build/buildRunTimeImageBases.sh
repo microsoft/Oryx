@@ -49,7 +49,7 @@ docker build \
     --pull \
     --build-arg DEBIAN_FLAVOR=buster \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "$RUNTIME_BASE_IMAGE_NAME-buster" \
+    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-buster" \
     $REPO_DIR
 
 docker build \
