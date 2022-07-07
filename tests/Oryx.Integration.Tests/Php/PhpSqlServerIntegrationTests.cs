@@ -29,6 +29,16 @@ namespace Microsoft.Oryx.Integration.Tests
         // Unique category traits are needed to run each
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
+        [Fact, Trait("category", "php-8.1")]
+        public async Task PipelineTestInvocationsPhp81Async()
+        {   
+            string phpVersion81 = "8.1";
+            await Task.WhenAll(
+                PhpApp_UsingPdoAsync(phpVersion81, "github-actions"),
+                PhpApp_UsingPdoAsync(phpVersion81, "github-actions-buster"),
+                PhpApp_UsingPdoAsync(phpVersion81, "latest"));
+        }
+
         [Fact, Trait("category", "php-8.0")]
         public async Task PipelineTestInvocationsPhp80Async()
         {   
@@ -56,6 +66,9 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("8.0", "github-actions")]
         [InlineData("8.0", "github-actions-buster")]
         [InlineData("8.0", "latest")]
+        [InlineData("8.1", "github-actions")]
+        [InlineData("8.1", "github-actions-buster")]
+        [InlineData("8.1", "latest")]
         public async Task PhpApp_UsingPdoAsync(string phpVersion, string imageTag)
         {
             // Arrange
