@@ -1,3 +1,4 @@
+# DisableDockerDetector "This is a template Dockerfile not used to produce any Oryx images"
 ARG RUNTIME={{ RuntimeImageName }}:{{ RuntimeImageTag }}
 
 FROM mcr.microsoft.com/oryx/{{ BuildImageName }}:{{ BuildImageTag }} as build

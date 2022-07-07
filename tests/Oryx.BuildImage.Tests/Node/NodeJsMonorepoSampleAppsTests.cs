@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", sampleAppName));
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void GeneratesScript_AndBuildMonorepoAppUsingLerna_Npm()
         {
             // Arrange
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("monorepo-lerna-npm", true)]
         [InlineData("monorepo-lerna-yarn", true)]
         [InlineData("linxnodeexpress", false)]
@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void GeneratesScript_AndBuildMonorepoAppUsingLerna_Yarn()
         {
             // Arrange

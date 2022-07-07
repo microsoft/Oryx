@@ -1,4 +1,4 @@
-FROM ruby-build-prereqs
+FROM oryxdevmcr.azurecr.io/private/oryx/ruby-build-prereqs
 WORKDIR /usr/src/ruby
 ARG RUBY_VERSION
 ARG GEM_VERSION

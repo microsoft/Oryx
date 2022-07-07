@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -13,7 +13,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
-FROM %RUNTIME_BASE_IMAGE_NAME%
+FROM mcr.microsoft.com/oryx/base:%RUNTIME_BASE_IMAGE_TAG%
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

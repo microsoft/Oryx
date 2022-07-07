@@ -1,3 +1,4 @@
+# DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
 FROM buildpack-deps:stretch AS php-build-prereqs
 COPY images/build/php/prereqs /php
 COPY build/__phpVersions.sh /php/

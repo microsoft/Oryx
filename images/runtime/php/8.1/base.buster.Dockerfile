@@ -1,3 +1,4 @@
+# DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
 FROM php:8.1-buster
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 8.1.0
@@ -117,13 +118,13 @@ RUN { \
                 echo 'opcache.enable_cli=1'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
+# NOTE: zend_extension=opcache is already configured via docker-php-ext-install, above
 RUN { \
                 echo 'error_log=/var/log/apache2/php-error.log'; \
                 echo 'display_errors=Off'; \
                 echo 'log_errors=On'; \
                 echo 'display_startup_errors=Off'; \
                 echo 'date.timezone=UTC'; \
-                echo 'zend_extension=opcache'; \
     } > /usr/local/etc/php/conf.d/php.ini
 
 RUN set -x \

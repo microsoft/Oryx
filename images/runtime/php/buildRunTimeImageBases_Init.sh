@@ -4,7 +4,7 @@ set -ex
 declare -r CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 source "$CURRENT_DIR/__versions.sh"
 
-baseImage="php-run-base"
+baseImage="oryxdevmcr.azurecr.io/private/oryx/php-run-base"
 baseImageDebianFlavor="$1"
 
 echo
@@ -21,8 +21,6 @@ if [ "$baseImageDebianFlavor" == "buster" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")
 elif [ "$baseImageDebianFlavor" == "bullseye" ];then
     PHP_VERSION_ARRAY=("${VERSION_ARRAY_BULLSEYE[@]}")
-else
-    PHP_VERSION_ARRAY=("${VERSION_ARRAY[@]}")
 fi
 
 echo "*****************"
@@ -35,7 +33,7 @@ do
 	IFS='.' read -ra SPLIT_VERSION <<< "$PHP_VERSION"
 	VERSION_DIRECTORY="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
 
-	PHP_IMAGE_NAME="php-$VERSION_DIRECTORY"
+	PHP_IMAGE_NAME="oryxdevmcr.azurecr.io/private/oryx/php-$VERSION_DIRECTORY"
     cd "$CURRENT_DIR/$VERSION_DIRECTORY/"
 
     echo

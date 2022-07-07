@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-10.14")]
+    [Trait("category", "node-14")]
     [Trait("db", "sqlserver")]
     public class NodeSqlServerIntegrationTests : PlatformEndToEndTestsBase
     {
@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("github-actions")]
         [InlineData("latest")]
-        public async Task NodeApp_MicrosoftSqlServerDB(string imageTag)
+        public async Task NodeApp_MicrosoftSqlServerDBAsync(string imageTag)
         {
             // Arrange
             var appName = "node-mssql";
@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { volume },
                 _imageHelper.GetBuildImage(imageTag),
                 "oryx",
-                new[] { "build", appDir, "--platform", "nodejs", "--platform-version", "10.14" },
+                new[] { "build", appDir, "--platform", "nodejs", "--platform-version", "14" },
                 _imageHelper.GetRuntimeImage("node", "14"),
                 SqlServerDbTestHelper.GetEnvironmentVariables(),
                 ContainerPort,

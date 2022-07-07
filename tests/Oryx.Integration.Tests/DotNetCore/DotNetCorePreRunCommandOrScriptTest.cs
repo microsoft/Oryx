@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore31MvcApp_UsingPreRunCommand_WithDynamicInstall()
+        public async Task CanBuildAndRun_NetCore31MvcApp_UsingPreRunCommand_WithDynamicInstallAsync()
         {
             // Arrange
             var runtimeVersion = "3.1";
@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore31MvcApp_UsingPreRunScript_WithDynamicInstall()
+        public async Task CanBuildAndRun_NetCore31MvcApp_UsingPreRunScript_WithDynamicInstallAsync()
         {
             // Arrange
             var runtimeVersion = "3.1";

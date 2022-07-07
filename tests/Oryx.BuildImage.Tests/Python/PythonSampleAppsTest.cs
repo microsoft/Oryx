@@ -27,6 +27,36 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _tempDirRootPath = testFixture.RootDirPath;
         }
 
+        [Fact, Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
+        {
+            GeneratesScript_AndBuilds(Settings.BuildImageName);
+            JamSpell_CanBe_Installed_In_The_BuildImage("latest");
+            JamSpell_CanBe_Installed_In_The_BuildImage("latest");
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("latest");
+        }
+
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
+        {
+            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
+            JamSpell_CanBe_Installed_In_The_BuildImage("lts-versions");
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("lts-versions");
+        }
+
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
+        {
+            JamSpell_CanBe_Installed_In_The_BuildImage("vso-focal");
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocationGithubActions()
+        {
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions");
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions-buster");
+        }
+
         [Theory]
         [InlineData(Settings.BuildImageName)]
         [InlineData(Settings.LtsVersionsBuildImageName)]
@@ -64,7 +94,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void GeneratesScript_AndLoggerFormatCheck()
         {
             // Arrange  
@@ -105,7 +135,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_WithPackageDir()
         {
             // Arrange
@@ -180,7 +210,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
@@ -219,7 +249,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void Build_CopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -255,7 +285,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void SubsequentBuilds_CopyOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -294,7 +324,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
@@ -327,7 +357,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
@@ -361,7 +391,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_DoestNotCleanDestinationDir()
         {
             // Arrange
@@ -402,7 +432,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
             // Try building a Python 2.7 app with 3.7 version. This should fail as there are major
@@ -445,7 +475,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_WhenExplicitPlatformAndVersion_AreProvided()
         {
             // Arrange
@@ -454,11 +484,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
                 $"--platform-version {PythonVersions.Python36Version}")
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -492,7 +524,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         // This is to test if we can build an app when there is no requirement.txt
         // but setup.py is provided at root level
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_WhenSetupDotPy_File_isProvided()
         {
             // Arrange
@@ -501,11 +533,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
                 $"--platform-version {PythonVersions.Python36Version}")
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -536,7 +570,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         // This is to test if we can build an app when both the files requirement.txt
         // and setup.py are provided, we tend to prioritize the root level requirement.txt
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_With_Both_Files_areProvided()
         {
             // Arrange
@@ -545,11 +579,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
                 $"--platform-version {PythonVersions.Python36Version}")
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -578,7 +614,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Issue# 1094264")]
+        [Fact(Skip = "Issue# 1094264"), Trait("category", "latest")]
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
             // Arrange
@@ -617,7 +653,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Issue# 1094264")]
+        [Fact(Skip = "Issue# 1094264"), Trait("category", "latest")]
         public void ThrowsException_ForInvalidPythonVersion()
         {
             // Arrange
@@ -658,7 +694,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Issue# 1094264")]
+        [Fact(Skip = "Issue# 1094264"), Trait("category", "latest")]
         public void CanBuild_Python2_WithScriptOnlyOption()
         {
             // Arrange
@@ -698,7 +734,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
@@ -709,9 +745,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var virtualEnvName = GetDefaultVirtualEnvName(PythonConstants.PythonLtsVersion);
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -i {appIntermediateDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/{virtualEnvName}")
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -737,7 +775,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData("flask-app", "foo.txt")]
         [InlineData("django-realworld-example-app", FilePaths.BuildCommandsFileName)]
         public void BuildPythonApps_Prints_BuildCommands_In_File(string appName, string buildCommandsFileName)
@@ -776,7 +814,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_VirtualEnv_Unzipped_ByDefault()
         {
             // Arrange
@@ -814,7 +852,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData(null)]
         [InlineData("tar-gz")]
         public void Build_CompressesVirtualEnv_InTargGzFormat(string compressionFormat)
@@ -856,7 +894,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_CompressesVirtualEnv_InZipFormat()
         {
             // Arrange
@@ -897,7 +935,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_InstallsVirtualEnvironment_AndPackagesInIt()
         {
             // Arrange
@@ -935,7 +973,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_InstallsVirtualEnvironment_AndPackagesInIt_From_File_Setup_Py()
         {
             // Arrange
@@ -973,7 +1011,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_ExecutesPreAndPostBuildScripts_UsingBuildEnvironmentFile()
         {
             // Arrange
@@ -1038,7 +1076,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_ExecutesPreAndPostBuildScripts_UsingEnvironmentVariables()
         {
             // Arrange
@@ -1101,7 +1139,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void PreAndPostBuildScripts_HaveAccessToSourceAndDestinationDirectoryVariables()
         {
             // Arrange
@@ -1160,7 +1198,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_Executes_InlinePreAndPostBuildCommands()
         {
             // Arrange
@@ -1203,7 +1241,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Django_CollectStaticFailure_DoesNotFailBuild()
         {
             // Arrange
@@ -1245,7 +1283,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData(PythonVersions.Python38Version)]
         [InlineData(PythonVersions.Python27Version)]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext(string version)
@@ -1319,7 +1357,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void BuildsAppSuccessfully_EvenIfRequirementsTxtOrSetupPyFileDoNotExist()
         {
             // Arrange
@@ -1358,7 +1396,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsAppAndCompressesOutputDirectory()
         {
             // Arrange
@@ -1369,13 +1407,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var outputDir = "/tmp/output";
             var virtualEnvName = "antenv";
             var manifestFile = $"{outputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{outputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i {buildDir} -o {outputDir} " +
                 $"-p virtualenv_name={virtualEnvName} --compress-destination-dir")
                 .AddFileExistsCheck($"{outputDir}/output.tar.gz")
-                .AddFileExistsCheck($"{outputDir}/oryx-manifest.toml")
+                .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddFileDoesNotExistCheck($"{outputDir}/requirements.txt")
                 .AddDirectoryDoesNotExistCheck($"{outputDir}/{virtualEnvName}")
                 .AddCommand($"cat {manifestFile}")
@@ -1407,11 +1447,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("lts-versions", "3")]
-        [InlineData("vso-focal", "3")]
-        [InlineData("latest", "2")]
-        [InlineData("latest", "3")]
-        public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName, string pythonVersion)
+        [InlineData("lts-versions")]
+        [InlineData("vso-focal")]
+        [InlineData("latest")]
+        public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName)
         {
             // Arrange
             var expectedPackage = "jamspell";

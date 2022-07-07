@@ -2,6 +2,7 @@ parameters:
   ascName: oryxSP
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
+  imageType: null    
 
 steps:
 - script: |
@@ -85,14 +86,8 @@ steps:
   displayName: 'Build build images'
   inputs:
     scriptPath: ./build/buildBuildImages.sh
+    args: -t ${{ parameters.imageType }}
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
-
-- task: ShellScript@2
-  displayName: 'Build Stretch runtime images'
-  inputs:
-    scriptPath: ./build/buildRunTimeImages.sh
-    args: stretch
-  condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Build Buster runtime images'
@@ -128,7 +123,7 @@ steps:
   displayName: 'Test build images'
   inputs:
     scriptPath: ./build/testBuildImages.sh
-    args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
+    args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME) ${{ parameters.imageType }}
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
 
 - task: ShellScript@2
@@ -199,8 +194,7 @@ steps:
       PackageVersion: '17.0.2'
 
 - script: |
-    echo "Merging bullseye, buster and stretch based runtime image tags in one single file"
-    cat '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.stretch.txt' >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
+    echo "Merging bullseye, buster based runtime image tags in one single file"
     cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.buster.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
     cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.bullseye.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
   displayName: 'Merge runtime image tags in one single file'

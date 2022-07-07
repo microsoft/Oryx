@@ -43,8 +43,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1-fpm", PhpVersions.Php81Version)]
         [InlineData("8.0-fpm", PhpVersions.Php80Version)]
         [InlineData("7.4-fpm", PhpVersions.Php74Version)]
-        [InlineData("7.3-fpm", PhpVersions.Php73Version)]
-        [InlineData("7.2-fpm", PhpVersions.Php72Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesImageName(string imageTag, string expectedPhpVersion)
         {
@@ -68,8 +66,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1-fpm")]
         [InlineData("8.0-fpm")]
         [InlineData("7.4-fpm")]
-        [InlineData("7.3-fpm")]
-        [InlineData("7.2-fpm")]
         public void GraphicsExtension_Gd_IsInstalled(string imageTag)
         {
             // Arrange & Act
@@ -90,8 +86,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [InlineData("7.4-fpm")]
-        [InlineData("7.3-fpm")]
-        [InlineData("7.2-fpm")]
         public void MySqlnd_Azure_IsInstalled(string imageTag)
         {
             // Arrange & Act
@@ -117,8 +111,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1-fpm")]
         [InlineData("8.0-fpm")]
         [InlineData("7.4-fpm")]
-        [InlineData("7.3-fpm")]
-        [InlineData("7.2-fpm")]
         public void PhpFpmRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -157,8 +149,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1-fpm")]
         [InlineData("8.0-fpm")]
         [InlineData("7.4-fpm")]
-        [InlineData("7.3-fpm")]
-        [InlineData("7.2-fpm")]
         public void Redis_IsInstalled(string imageTag)
         {
             // Arrange & Act

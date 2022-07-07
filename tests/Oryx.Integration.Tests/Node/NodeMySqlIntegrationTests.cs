@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-12-3")]
+    [Trait("category", "node-14-3")]
     [Trait("db", "mysql")]
     public class NodeMySqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.MySqlDbContainerFixture>
     {
@@ -22,11 +22,11 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory(Skip = "bug: 1505700 may be intermittent")]
         [InlineData("latest")]
         [InlineData("github-actions")]
-        public async Task NodeApp_MySqlDB(string imageTag)
+        public async Task NodeApp_MySqlDBAsync(string imageTag)
         {
             await RunTestAsync(
                 "nodejs",
-                "12",
+                "14",
                 Path.Combine(HostSamplesDir, "nodejs", "node-mysql"),
                 buildImageName: _imageHelper.GetBuildImage(imageTag));
         }

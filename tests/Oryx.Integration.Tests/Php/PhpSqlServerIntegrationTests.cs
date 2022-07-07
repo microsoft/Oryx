@@ -15,6 +15,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
+    [Collection("Php integration")]
     [Trait("db", "sqlserver")]
     public class PhpSqlServerIntegrationTests : PlatformEndToEndTestsBase
     {
@@ -29,21 +30,23 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Fact, Trait("category", "php-8.0")]
-        public void PipelineTestInvocationsPhp80()
+        public async Task PipelineTestInvocationsPhp80Async()
         {   
             string phpVersion80 = "8.0";
-            PhpApp_UsingPdo(phpVersion80, "github-actions");
-            PhpApp_UsingPdo(phpVersion80, "github-buster");
-            PhpApp_UsingPdo(phpVersion80, "latest");
+            await Task.WhenAll(
+                PhpApp_UsingPdoAsync(phpVersion80, "github-actions"),
+                PhpApp_UsingPdoAsync(phpVersion80, "github-actions-buster"),
+                PhpApp_UsingPdoAsync(phpVersion80, "latest"));
         }
 
         [Fact, Trait("category", "php-7.4")]
-        public void PipelineTestInvocationsPhp74()
+        public async Task PipelineTestInvocationsPhp74Async()
         {
             string phpVersion74 = "7.4";
-            PhpApp_UsingPdo(phpVersion74, "github-actions");
-            PhpApp_UsingPdo(phpVersion74, "github-buster");
-            PhpApp_UsingPdo(phpVersion74, "latest");
+            await Task.WhenAll(
+                PhpApp_UsingPdoAsync(phpVersion74, "github-actions"),
+                PhpApp_UsingPdoAsync(phpVersion74, "github-actions-buster"),
+                PhpApp_UsingPdoAsync(phpVersion74, "latest"));
         }
 
         [Theory]
@@ -53,7 +56,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("8.0", "github-actions")]
         [InlineData("8.0", "github-actions-buster")]
         [InlineData("8.0", "latest")]
-        public async Task PhpApp_UsingPdo(string phpVersion, string imageTag)
+        public async Task PhpApp_UsingPdoAsync(string phpVersion, string imageTag)
         {
             // Arrange
             var appName = "sqlsrv-example";

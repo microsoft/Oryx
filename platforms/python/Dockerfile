@@ -1,4 +1,4 @@
-FROM python-build-prereqs
+FROM oryxdevmcr.azurecr.io/private/oryx/python-build-prereqs
 WORKDIR /usr/src/python
 ARG VERSION_TO_BUILD
 ARG GPG_KEYS
