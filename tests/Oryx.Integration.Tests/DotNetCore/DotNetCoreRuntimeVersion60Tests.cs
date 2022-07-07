@@ -76,7 +76,6 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_NetCore60MvcApp_WithCustomizedRunCommand()
         {
             // Arrange
-            var tempScriptPath = Path.Combine(Path.GetTempPath(), "run.sh");
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
             var appsvcFilePath = Path.Combine(hostDir, "appsvc.yaml");
@@ -119,10 +118,12 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Welcome to ASP.NET Core MVC!", data);
                     Assert.NotNull(buildConfigFile);
                     Assert.NotNull(buildConfigFile.Run);
                     Assert.NotEmpty(buildConfigFile.Run);
-                    Assert.Contains(buildConfigFile.Run, data);
+                    var runScript = File.ReadAllText(Path.Combine(Path.GetTempPath(), "run.sh"));
+                    Assert.Contains(buildConfigFile.Run, runScript);
                 });
         }
 
