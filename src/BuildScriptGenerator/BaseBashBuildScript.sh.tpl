@@ -222,7 +222,8 @@ then
 	echo "Copying .ostype to manifest output directory."
 	cp "$OS_TYPE_SOURCE_DIR" "$MANIFEST_DIR/.ostype"
 else
-	echo "File $OS_TYPE_SOURCE_DIR does not exist. Cannot copy to manifest directory."
+	echo "File $OS_TYPE_SOURCE_DIR does not exist. Cannot copy to manifest directory." 1>&2
+	exit 1
 fi
 
 TOTAL_EXECUTION_ELAPSED_TIME=$(($SECONDS - $TOTAL_EXECUTION_START_TIME))
