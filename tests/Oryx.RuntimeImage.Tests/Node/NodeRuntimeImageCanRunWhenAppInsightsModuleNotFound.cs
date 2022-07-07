@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [MemberData(
            nameof(TestValueGenerator.GetNodeVersions),
            MemberType = typeof(TestValueGenerator))]
-        public async Task GeneratesScript_CanRun_AppInsightsModule_NotFound(string nodeVersion)
+        public async Task GeneratesScript_CanRun_AppInsightsModule_NotFoundAsync(string nodeVersion)
         {
             // This test is for the following scenario:
             // When we find no application insight dependency in package.json, but env variables  for
@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [MemberData(
            nameof(TestValueGenerator.GetNodeVersions),
            MemberType = typeof(TestValueGenerator))]
-        public async Task GeneratesScript_CanRun_With_AppInsights_Env_Variables_NotConfigured(string nodeVersion)
+        public async Task GeneratesScript_CanRun_With_AppInsights_Env_Variables_NotConfigured_Async(string nodeVersion)
         {
             // This test is for the following scenario:
             // When we find no application insight dependency in package.json and env variables for
@@ -121,7 +121,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [MemberData(
            nameof(TestValueGenerator.GetNodeVersions),
            MemberType = typeof(TestValueGenerator))]
-        public async Task GeneratesScript_CanRun_With_New_AppInsights_Env_Variable_Set(string nodeVersion)
+        public async Task GeneratesScript_CanRun_With_New_AppInsights_Env_Variable_Set_Async(string nodeVersion)
         {
             // This test is for the following scenario:
             // When we find the user has set env variable "APPLICATIONINSIGHTS_CONNECTION_STRING" application insight dependency in package.json and env variables for
@@ -171,7 +171,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("14", "")]
         [InlineData("14", "disabled")]
-        public async Task GeneratesScript_Doesnot_Add_Oryx_AppInsights_Logic_With_IPA_Configuration(
+        public async Task GeneratesScript_Doesnot_Add_Oryx_AppInsights_Logic_With_IPA_Configuration_Async(
             string nodeVersion,
             string agentExtensionVersionEnvValue)
         {

@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         // Official Node.js version that is supported by Angular CLI 14.0+ is 16.10 or greater
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_UsingCompressedNodeModules(string nodeVersion)
+        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_UsingCompressedNodeModulesAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRun_Angular14App_WithoutCompressedNodeModules(string nodeVersion)
+        public async Task CanBuildAndRun_Angular14App_WithoutCompressedNodeModulesAsync(string nodeVersion)
         {
             // Arrange
             var appName = "angular14app";
@@ -116,7 +116,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRun_Angular14App_NodeModules_SymLink_Exists_InRoot_WithoutCompression(string nodeVersion)
+        public async Task CanBuildAndRun_Angular14App_NodeModules_SymLink_Exists_InRoot_WithoutCompressionAsync(string nodeVersion)
         {
             // Arrange
             var appName = "angular14app";
@@ -184,7 +184,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompression(string nodeVersion)
+        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -259,7 +259,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompression(string nodeVersion)
+        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";

@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunPythonApp_UsingEarlierBuiltPackagesDirectory()
+        public async Task CanRunPythonApp_UsingEarlierBuiltPackagesDirectoryAsync()
         {
             // This is AppService's scenario where previously built apps can still run
             // fine.
@@ -77,7 +77,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunPythonApp_WithoutBuildManifestFile()
+        public async Task CanRunPythonApp_WithoutBuildManifestFileAsync()
         {
             // This is AppService's scenario where previously built apps can still run
             // fine.

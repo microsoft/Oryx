@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [InlineData("7.4")]
-        public async Task Check_If_Apache_Allows_Casing_In_PHP_File_Extension(string imageTag)
+        public async Task Check_If_Apache_Allows_Casing_In_PHP_File_ExtensionAsync(string imageTag)
         {
             // Arrange
             var appName = "imagick-example";

@@ -13,6 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
+    [Collection("Php integration")]
     public class PhpImagickExampleTest : PhpEndToEndTestsBase
     {
         public PhpImagickExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -23,25 +24,18 @@ namespace Microsoft.Oryx.Integration.Tests
         // Unique category traits are needed to run each
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
-        [Fact, Trait("category", "php-8.0")]
-        public void PipelineTestInvocationsPhp80()
-        {   
-            string phpVersion80 = "8.0";
-            ImagickExample(phpVersion80);
-            PhpFpmImagickExample(phpVersion80);
-        }
-
         [Fact, Trait("category", "php-7.4")]
-        public void PipelineTestInvocationsPhp74()
+        public async Task PipelineTestInvocationsPhp74Async()
         {
             string phpVersion74 = "7.4";
-            ImagickExample(phpVersion74);
-            PhpFpmImagickExample(phpVersion74);
+            await Task.WhenAll(
+                ImagickExampleAsync(phpVersion74),
+                PhpFpmImagickExampleAsync(phpVersion74));
         }
 
         [Theory]
         [InlineData("7.4")]
-        public async Task ImagickExample(string phpVersion)
+        public async Task ImagickExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "imagick-example";
@@ -75,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("7.4")]
-        public async Task PhpFpmImagickExample(string phpVersion)
+        public async Task PhpFpmImagickExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "imagick-example";

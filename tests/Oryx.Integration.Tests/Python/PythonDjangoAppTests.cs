@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_MultiPlatformApp_HavingReactAndDjango()
+        public async Task CanBuildAndRun_MultiPlatformApp_HavingReactAndDjangoAsync()
         {
             // Arrange
             var appName = "reactdjango";

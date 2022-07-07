@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_HackerNewsNuxtJsApp_WithoutZippingNodeModules()
+        public async Task CanBuildAndRun_HackerNewsNuxtJsApp_WithoutZippingNodeModulesAsync()
         {
             // Arrange
             var nodeVersion = "14";
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_HackerNewsNuxtJsApp_UsingZippedNodeModules()
+        public async Task CanBuildAndRun_HackerNewsNuxtJsApp_UsingZippedNodeModulesAsync()
         {
             // Arrange
             var nodeVersion = "14";

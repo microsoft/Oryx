@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_Tweeter3App()
+        public async Task CanBuildAndRun_Tweeter3AppAsync()
         {
             // Arrange
             var appName = "tweeter3";
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("3.7")]
-        public async Task BuildWithVirtualEnv_RemovesOryxPackagesDir_FromOlderBuild(string pythonVersion)
+        public async Task BuildWithVirtualEnv_RemovesOryxPackagesDir_FromOlderBuildAsync(string pythonVersion)
         {
             // Arrange
             var appName = "django-app";
@@ -123,7 +123,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory (Skip = "Bug 1410367")]
         [InlineData("3.7")]
         [InlineData("3.8")]
-        public async Task BuildWithVirtualEnv_From_File_Requirement_Txt(string pythonVersion)
+        public async Task BuildWithVirtualEnv_From_File_Requirement_TxtAsync(string pythonVersion)
         {
              // This is to test if we can build and run an app when both the files requirement.txt 
              // and setup.py are provided, we tend to prioritize the root level requirement.txt
@@ -163,7 +163,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "Bug 1410367") ]
-        public async Task CanBuildAndRunPythonApp_UsingOutputDirectory_NestedUnderSourceDirectory()
+        public async Task CanBuildAndRunPythonApp_UsingOutputDirectory_NestedUnderSourceDirectoryAsync()
         {
             // Arrange
             var appName = "flask-app";
@@ -206,7 +206,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact (Skip = "Bug 1410367")]
-        public async Task CanBuildAndRunPythonApp_UsingIntermediateDir_AndNestedOutputDirectory()
+        public async Task CanBuildAndRunPythonApp_UsingIntermediateDir_AndNestedOutputDirectoryAsync()
         {
             // Arrange
             var appName = "flask-app";

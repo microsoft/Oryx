@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData(NodeVersions.Node14Version), Trait("category", "node-14")]
         [InlineData(NodeVersions.Node16Version), Trait("category", "node-16")]
-        public async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(string nodeVersion)
+        public async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(string nodeVersion)
         {
             // Arrange
             var appName = "webfrontend";
@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData(NodeVersions.Node14Version), Trait("category", "node-14")]
         [InlineData(NodeVersions.Node16Version), Trait("category", "node-16")]
-        public async Task CanBuildAndRunApp_UsingScriptCommand(string nodeVersion)
+        public async Task CanBuildAndRunApp_UsingScriptCommandAsync(string nodeVersion)
         {
             // Arrange
             var appName = "webfrontend";

@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             string outputType = outputTypeElement?.Value;
 
             // default OutputType is "Library"
-            string outputTypeResult = string.IsNullOrEmpty(outputType) ? "Library" : outputType;
+            string outputTypeResult = string.IsNullOrEmpty(outputType) ? DotNetCoreConstants.DefaultOutputType : outputType;
             return outputTypeResult;
         }
 

@@ -327,13 +327,15 @@ namespace Microsoft.Oryx.Tests.Common
                     var hostPort = Convert.ToInt32(portMapping[1]);
                     return hostPort;
                 }
-                else if (getPortMappingResult.StdErr.Contains("No such container"))
+                else if (getPortMappingResult.StdErr.Contains("No such container") || (getPortMappingResult.HasExited && getPortMappingResult.ExitCode != 0))
                 {
-                    break;
+                    throw new InvalidOperationException($"Could not retreive the host port of the container {containerName}:{portInContainer}. " +
+                        $"{getPortMappingResult.StdErr}");
                 }
             }
 
-            throw new InvalidOperationException($"Could not retreive the host port of the container {containerName}:{portInContainer}");
+            throw new InvalidOperationException($"Could not retreive the host port of the container {containerName}:{portInContainer}. " +
+                $"Timed out while attempting to retrieve the port.");
         }
 
         private static async Task RunAssertsAsync(Func<Task> action, DockerResultBase res, ITestOutputHelper output)

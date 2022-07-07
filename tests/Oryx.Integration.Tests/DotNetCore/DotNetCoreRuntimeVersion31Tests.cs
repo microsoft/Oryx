@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore31WebApp()
+        public async Task CanBuildAndRun_NetCore31WebAppAsync()
         {
             // Arrange
             var dotnetcoreVersion = "3.1";
@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunApp_FromNestedOutputDirectory()
+        public async Task CanBuildAndRunApp_FromNestedOutputDirectoryAsync()
         {
             // Arrange
             var dotnetcoreVersion = "3.1";
@@ -115,7 +115,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunAppWhichUsesGDILibrary()
+        public async Task CanRunAppWhichUsesGDILibraryAsync()
         {
             // Arrange
             var appName = "ImageResizingWebApp";
@@ -162,7 +162,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
+        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange
             var dotnetcoreVersion = "3.1";

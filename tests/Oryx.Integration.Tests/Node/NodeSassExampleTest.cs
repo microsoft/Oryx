@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("14"), Trait("category", "node-14")]
-        public async Task Test_NodeSassExample(string nodeVersion)
+        public async Task Test_NodeSassExampleAsync(string nodeVersion)
         {
             // Arrange
             var appName = "node-sass-example";
