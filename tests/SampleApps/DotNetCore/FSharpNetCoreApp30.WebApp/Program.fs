@@ -1,4 +1,4 @@
-namespace FSharpNetCoreApp21.WebApp
+namespace FSharpNetCoreApp30.WebApp
 
 open System
 open System.Collections.Generic

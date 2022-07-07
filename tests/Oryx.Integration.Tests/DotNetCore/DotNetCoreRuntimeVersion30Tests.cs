@@ -23,10 +23,10 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_FSharpNetCoreApp21WebApp_WithoutSpecifyingPlatformExplicitlyAsync()
+        public async Task CanBuildAndRun_FSharpNetCoreApp30WebApp_WithoutSpecifyingPlatformExplicitlyAsync()
         {
             // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "FSharpNetCoreApp21.WebApp");
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "FSharpNetCoreApp30.WebApp");
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "2.1"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "3.0"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
