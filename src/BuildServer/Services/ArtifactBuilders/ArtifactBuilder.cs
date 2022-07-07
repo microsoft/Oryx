@@ -29,7 +29,6 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
                 $"--output {outputPath} --platform {build.Platform} " +
                 $"--platform-version {build.Version}";
             cmd = cmd.Replace("'", "\\'");
-            var escapedArgs = cmd.Replace("\"", "\\\"");
             var process = new Process()
             {
                 StartInfo = new ProcessStartInfo
