@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "/bin/bash",
-                    Arguments = $"-c $\'{cmd}\'",
+                    Arguments = $"-c \'{cmd}\'",
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
