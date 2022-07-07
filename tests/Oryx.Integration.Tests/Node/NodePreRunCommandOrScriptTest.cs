@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunNodeApp_UsingPreRunCommand_WithDynamicInstall()
+        public async Task CanBuildAndRunNodeApp_UsingPreRunCommand_WithDynamicInstallAsync()
         {
             // Arrange
             var nodeVersion = NodeVersions.Node14Version;
@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRunNodeApp_UsingPreRunScript_WithDynamicInstall()
+        public async Task CanBuildAndRunNodeApp_UsingPreRunScript_WithDynamicInstallAsync()
         {
             // Arrange
             var nodeVersion = NodeVersions.Node14Version;
@@ -166,7 +166,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
+        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange
             var nodeVersion = "14";

@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "work item #1122020")]
-        public async Task CanBuildAndRunPythonApp_UsingGunicornMultipleWorkers()
+        public async Task CanBuildAndRunPythonApp_UsingGunicornMultipleWorkersAsync()
         {
             // Arrange
             var pythonVersion = "3.7";

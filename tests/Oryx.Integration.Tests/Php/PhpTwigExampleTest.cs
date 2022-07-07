@@ -13,6 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
+    [Collection("Php integration")]
     public class PhpTwigExampleTest : PhpEndToEndTestsBase
     {
         public PhpTwigExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -24,26 +25,28 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Fact, Trait("category", "php-8.0")]
-        public void PipelineTestInvocationsPhp80()
+        public async Task PipelineTestInvocationsPhp80Async()
         {   
             string phpVersion80 = "8.0";
-            TwigExample(phpVersion80);
-            PhpFpmTwigExample(phpVersion80);
+            await Task.WhenAll(
+                TwigExampleAsync(phpVersion80),
+                PhpFpmTwigExampleAsync(phpVersion80));
         }
 
         [Fact, Trait("category", "php-7.4")]
-        public void PipelineTestInvocationsPhp74()
+        public async Task PipelineTestInvocationsPhp74Async()
         {
             string phpVersion74 = "7.4";
-            TwigExample(phpVersion74);
-            PhpFpmTwigExample(phpVersion74);
+            await Task.WhenAll(
+                TwigExampleAsync(phpVersion74),
+                PhpFpmTwigExampleAsync(phpVersion74));
         }
 
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
         // Twig does not support PHP < 7
-        public async Task TwigExample(string phpVersion)
+        public async Task TwigExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "twig-example";
@@ -79,7 +82,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("8.0")]
         [InlineData("7.4")]
         // Twig does not support PHP < 7
-        public async Task PhpFpmTwigExample(string phpVersion)
+        public async Task PhpFpmTwigExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "twig-example";

@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [MemberData(
            nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
            MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRunNodeApp_WithDebugger(string nodeVersion)
+        public async Task CanBuildAndRunNodeApp_WithDebuggerAsync(string nodeVersion)
         {
             // Arrange
             var appOutputDirVolume = CreateAppOutputDirVolume();

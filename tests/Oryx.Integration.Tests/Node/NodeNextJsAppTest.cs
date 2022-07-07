@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "next blogger app is broken")]
-        public async Task CanBuildAndRun_BlogStarterNextJsApp_WithoutZippingNodeModules()
+        public async Task CanBuildAndRun_BlogStarterNextJsApp_WithoutZippingNodeModulesAsync()
         {
             // Arrange
             var nodeVersion = "14";
@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "next blogger app is broken")]
-        public async Task CanBuildAndRun_BlogStarterNextJsApp_UsingZippedNodeModules()
+        public async Task CanBuildAndRun_BlogStarterNextJsApp_UsingZippedNodeModulesAsync()
         {
             // Arrange
             var nodeVersion = "14";

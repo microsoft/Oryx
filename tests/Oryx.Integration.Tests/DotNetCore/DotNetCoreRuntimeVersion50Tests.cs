@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_Without_Oryx_AppInsights_Codeless_Configuration()
+        public async Task CanBuildAndRun_Without_Oryx_AppInsights_Codeless_ConfigurationAsync()
         {
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp50;
@@ -80,7 +80,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_NetCore50MvcApp()
+        public async Task CanBuildAndRun_NetCore50MvcAppAsync()
         {
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp50;

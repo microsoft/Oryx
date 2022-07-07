@@ -29,5 +29,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
         public const string AzureFunctionsPackageReference = "Microsoft.NET.Sdk.Functions";
 
         public const string AzureBlazorWasmPackageReference = "Microsoft.AspNetCore.Components.WebAssembly";
+
+        public const string DefaultOutputType = "Library";
     }
 }

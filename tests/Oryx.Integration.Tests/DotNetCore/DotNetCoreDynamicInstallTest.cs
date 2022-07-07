@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("3.1", NetCoreApp31MvcApp, "Welcome to ASP.NET Core MVC!")]
-        public async Task CanBuildAndRun_NetCore31WebApp(
+        public async Task CanBuildAndRun_NetCore31WebAppAsync(
             string runtimeVersion,
             string appName,
             string expectedResponseContent)
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("3.1", NetCoreApp31MvcApp, "Welcome to ASP.NET Core MVC!")]
         [InlineData("5.0", Net5MvcApp, "Welcome to ASP.NET Core MVC!")]
-        public async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImage(
+        public async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(
             string runtimeVersion,
             string appName,
             string expectedResponseContent)
