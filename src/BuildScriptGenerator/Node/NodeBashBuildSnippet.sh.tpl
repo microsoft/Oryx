@@ -185,7 +185,6 @@ cd "$SOURCE_DIR"
 	{{ if PackageDirectory | IsNotBlank }}
 	echo "Switching to package directory provided: '{{ PackageDirectory }}'..."
 	if [ ! -d "$SOURCE_DIR/$packageDirName" ]; then
-		echo "Package directory '$SOURCE_DIR/$packageDirName' does not exist." 1>&2
 		LogWarning "Package directory '$SOURCE_DIR/$packageDirName' does not exist. More information: ${doc}"
 		exit 1
 	fi
