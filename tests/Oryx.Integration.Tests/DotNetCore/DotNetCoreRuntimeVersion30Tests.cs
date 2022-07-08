@@ -23,50 +23,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_FSharpNetCoreApp30WebApp_WithoutSpecifyingPlatformExplicitlyAsync()
-        {
-            // Arrange
-            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", "FSharpNetCoreApp30.WebApp");
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var appOutputDirVolume = CreateAppOutputDirVolume();
-            var appOutputDir = appOutputDirVolume.ContainerDir;
-            var buildImageScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir}")
-               .ToString();
-            var runtimeImageScript = new ShellScriptBuilder()
-                .AddCommand(
-                $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                NetCoreApp22WebApp,
-                _output,
-                new[] { volume, appOutputDirVolume },
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    buildImageScript
-                },
-                _imageHelper.GetRuntimeImage("dotnetcore", "3.0"),
-                ContainerPort,
-                "/bin/sh",
-                new[]
-                {
-                    "-c",
-                    runtimeImageScript
-                },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
-                });
-
-        }
-
-        [Fact]
         public async Task CanBuildAndRun_NetCore30WebAppAsync()
         {
             // Arrange

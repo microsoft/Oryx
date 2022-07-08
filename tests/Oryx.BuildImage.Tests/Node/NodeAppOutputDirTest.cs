@@ -23,7 +23,8 @@ namespace Oryx.BuildImage.Tests.Node
         }
 
         [Theory, Trait("category", "jamstack")]
-        [InlineData("angularsample", "dist")]
+        // Temporarily blocking Angular 14 app: Work item 1565890
+        // [InlineData("angular14", "dist")]
         // Temporarily blocking next app as next build is failing accross npm
         // [InlineData("blog-starter-nextjs", ".next")]
         [InlineData("hackernews-nuxtjs", ".nuxt")]
