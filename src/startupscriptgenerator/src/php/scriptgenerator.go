@@ -7,6 +7,7 @@ package main
 
 import (
 	"common"
+	"common/consts"
 	"strings"
 )
 
@@ -42,16 +43,9 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
 	common.SetEnvironmentVariableInScript(&scriptBuilder, portEnvVariable, gen.BindPort, DefaultBindPort)
 	scriptBuilder.WriteString("if [  -n \"$PHP_ORIGIN\" ] && [ \"$PHP_ORIGIN\" = \"php-fpm\" ]; then\n")
+	gen.SetFpmConfiguration(&scriptBuilder)
 	scriptBuilder.WriteString("   export NGINX_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
 	scriptBuilder.WriteString("   service nginx start\n")
-	scriptBuilder.WriteString("   # Set default FPM_MAX_CHILDREN if not provided by customer or FPM_MAX_CHILDREN\n")
-	scriptBuilder.WriteString("   # is not a number\n")
-	scriptBuilder.WriteString("   if [ -z \"$FPM_MAX_CHILDREN\" ] || ! [ $FPM_MAX_CHILDREN -eq $FPM_MAX_CHILDREN 2> /dev/null ]; then\n")
-	scriptBuilder.WriteString("      echo 'FPM_MAX_CHILDREN is not a number, setting to 5'\n")
-	scriptBuilder.WriteString("      FPM_MAX_CHILDREN=\"5\"\n")
-	scriptBuilder.WriteString("      export FPM_MAX_CHILDREN=\"$FPM_MAX_CHILDREN\"\n")
-	scriptBuilder.WriteString("   fi\n")
-	scriptBuilder.WriteString("   sed -i \"s/pm.max_children = .*/pm.max_children = ${FPM_MAX_CHILDREN}/g\" /usr/local/etc/php-fpm.d/www.conf\n")
 	scriptBuilder.WriteString("else\n")
 	scriptBuilder.WriteString("   export APACHE_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
 	scriptBuilder.WriteString("fi\n\n")
@@ -73,4 +67,17 @@ func (gen *PhpStartupScriptGenerator) getStartupCommand() string {
 		startupCommand = "php-fpm"
 	}
 	return startupCommand
+}
+
+func (gen *PhpStartupScriptGenerator) SetFpmConfiguration(scriptBuilder *strings.Builder) {
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMaxChildren, consts.FpmMaxChildrenSettingName)
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmStartServers, consts.FpmStartServersSettingName)
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMaxSpareServers, consts.FpmMaxSpareServersSettingName)
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMinSpareServers, consts.FpmMinSpareServersSettingName)
+}
+
+func AddFpmConfigurationToScript(scriptBuilder *strings.Builder, envVarValue string, fpmSettingName string) {
+	if envVarValue != "" {
+		scriptBuilder.WriteString("   sed -i \"s/" + fpmSettingName + " = .*/" + fpmSettingName + " = " + envVarValue + "/g\" " + consts.FpmConfigurationFile + "\n")
+	}
 }
