@@ -177,7 +177,7 @@ jobs:
 # Php integration tests
 - ${{ each phpVersion in parameters.phpVersions }}:
   - job:
-    displayName: 'Run Php ${{ phpVersions }} Integration Tests'
+    displayName: 'Run Php ${{ phpVersion }} Integration Tests'
     dependsOn:
     - Job_BuildImage_Latest
     - Job_BuildImage_LtsVersions
