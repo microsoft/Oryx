@@ -26,42 +26,87 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Theory, Trait("category", "php-8.0")]
-        [InlineData("1000", "1000")]
-        [InlineData("", "5")]
+        [InlineData("10", "10", "7", "7", "8", "8", "6", "6")]
+        [InlineData("", "5", "", "2", "", "3", "", "1")] // defaults
         public async Task PipelineTestInvocationsPhp80(
-            string fpmMaxChildren, string expectedFpmMaxChildren)
+            string fpmMaxChildren, string expectedFpmMaxChildren,
+            string fpmStartServers, string expectedFpmStartServers,
+            string fpmMaxSpareServers, string expectedFpmMaxSpareServers,
+            string fpmMinSpareServers, string expectedFpmMinSpareServers)
         {
-            await PhpFpmConfigTestAsync("8.0", fpmMaxChildren, expectedFpmMaxChildren);
+            await PhpFpmConfigTestAsync(
+                "8.0", 
+                fpmMaxChildren, expectedFpmMaxChildren,
+                fpmStartServers, expectedFpmStartServers,
+                fpmMaxSpareServers, expectedFpmMaxSpareServers,
+                fpmMinSpareServers, expectedFpmMinSpareServers);
         }
 
         [Theory, Trait("category", "php-8.0")]
-        [InlineData("false", "pm.max_children must be a positive value")]
-        [InlineData("-1", "pm.max_children must be a positive value")]
-        public async Task PipelineTestFailInvocationsPhp80(string fpmMaxChildren, string failureOutputText)
+        [InlineData("false", "5", "5", "5", "pm.max_children must be a positive value")]
+        [InlineData("-1", "5", "5", "5", "pm.max_children must be a positive value")]
+        [InlineData("10", "5", "13", "12", "pm.min_spare_servers(12) and pm.max_spare_servers(13) cannot be greater than pm.max_children(10)")]
+        [InlineData("10", "9", "8", "7", "pm.start_servers(9) must not be less than pm.min_spare_servers(7) and not greater than pm.max_spare_servers(8)")]
+        public async Task PipelineTestFailInvocationsPhp80(
+            string fpmMaxChildren,
+            string fpmStartServers,
+            string fpmMaxSpareServers,
+            string fpmMinSpareServers,
+            string failureOutputText)
         {
-            await PhpFpmConfigTestFailuresAsync("8.0", fpmMaxChildren, failureOutputText);
+            await PhpFpmConfigTestFailuresAsync(
+                "8.0",
+                fpmMaxChildren,
+                fpmStartServers,
+                fpmMaxSpareServers,
+                fpmMinSpareServers,
+                failureOutputText);
         }
 
         [Theory, Trait("category", "php-7.4")]
-        [InlineData("1000", "1000")]
-        [InlineData("", "5")]
-        public async Task PipelineTestInvocationsPhp74(string fpmMaxChildren, string expectedFpmMaxChildren)
+        [InlineData("10", "10", "7", "7", "8", "8", "6", "6")]
+        [InlineData("", "5", "", "2", "", "3", "", "1")] // defaults
+        public async Task PipelineTestInvocationsPhp74(
+            string fpmMaxChildren, string expectedFpmMaxChildren,
+            string fpmStartServers, string expectedFpmStartServers,
+            string fpmMaxSpareServers, string expectedFpmMaxSpareServers,
+            string fpmMinSpareServers, string expectedFpmMinSpareServers)
         {
-            await PhpFpmConfigTestAsync("7.4", fpmMaxChildren, expectedFpmMaxChildren);
+            await PhpFpmConfigTestAsync(
+                "7.4",
+                fpmMaxChildren, expectedFpmMaxChildren,
+                fpmStartServers, expectedFpmStartServers,
+                fpmMaxSpareServers, expectedFpmMaxSpareServers,
+                fpmMinSpareServers, expectedFpmMinSpareServers);
         }
 
         [Theory, Trait("category", "php-7.4")]
-        [InlineData("false", "pm.max_children must be a positive value")]
-        [InlineData("-1", "pm.max_children must be a positive value")]
-        public async Task PipelineTestFailInvocationsPhp74(string fpmMaxChildren, string failureOutputText)
+        [InlineData("false", "5", "5", "5", "pm.max_children must be a positive value")]
+        [InlineData("-1", "5", "5", "5", "pm.max_children must be a positive value")]
+        [InlineData("10", "5", "13", "12", "pm.min_spare_servers(12) and pm.max_spare_servers(13) cannot be greater than pm.max_children(10)")]
+        [InlineData("10", "9", "8", "7", "pm.start_servers(9) must not be less than pm.min_spare_servers(7) and not greater than pm.max_spare_servers(8)")]
+        public async Task PipelineTestFailInvocationsPhp74(
+            string fpmMaxChildren, 
+            string fpmStartServers,
+            string fpmMaxSpareServers,
+            string fpmMinSpareServers,
+            string failureOutputText)
         {
-            await PhpFpmConfigTestFailuresAsync("7.4", fpmMaxChildren, failureOutputText);
+            await PhpFpmConfigTestFailuresAsync(
+                "7.4",
+                fpmMaxChildren,
+                fpmStartServers,
+                fpmMaxSpareServers,
+                fpmMinSpareServers,
+                failureOutputText);
         }
 
         private async Task PhpFpmConfigTestAsync(
             string phpVersion, 
-            string fpmMaxChildren, 
-            string expectedFpmMaxChildren)
+            string fpmMaxChildren, string expectedFpmMaxChildren,
+            string fpmStartServers, string expectedFpmStartServers,
+            string fpmMaxSpareServers, string expectedFpmMaxSpareServers,
+            string fpmMinSpareServers, string expectedFpmMinSpareServers)
         {
             // Arrange
             var appName = "php-fpm-config";
@@ -80,7 +125,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
                 .AddCommand("mkdir -p /home/site/wwwroot")
                 .AddCommand($"cp -rf {appOutputDir}/* /home/site/wwwroot")
-                .AddCommand($"cat {RunScriptPath}")
                 .AddCommand(RunScriptPath)
                 .ToString();
 
@@ -98,6 +142,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<EnvironmentVariable>()
                 {
                     new EnvironmentVariable(ExtVarNames.PhpFpmMaxChildrenEnvVarName, fpmMaxChildren),
+                    new EnvironmentVariable(ExtVarNames.PhpFpmStartServersEnvVarName, fpmStartServers),
+                    new EnvironmentVariable(ExtVarNames.PhpFpmMaxSpareServersEnvVarName, fpmMaxSpareServers),
+                    new EnvironmentVariable(ExtVarNames.PhpFpmMinSpareServersEnvVarName, fpmMinSpareServers),
                 },
                 ContainerPort,
                 "/bin/sh", 
@@ -105,13 +152,20 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var output = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains($"pm = dynamic", output);
                     Assert.Contains($"pm.max_children = {expectedFpmMaxChildren}", output);
+                    Assert.Contains($"pm.start_servers = {expectedFpmStartServers}", output);
+                    Assert.Contains($"pm.max_spare_servers = {expectedFpmMaxSpareServers}", output);
+                    Assert.Contains($"pm.min_spare_servers = {expectedFpmMinSpareServers}", output);
                 });
         }
 
         private async Task PhpFpmConfigTestFailuresAsync(
             string phpVersion,
             string fpmMaxChildren,
+            string fpmStartServers,
+            string fpmMaxSpareServers,
+            string fpmMinSpareServers,
             string failureOutputText)
         {
             // Arrange
@@ -125,7 +179,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // We expect that the container will exit well before this time limit is up
             // as the startup script should fail. This is a fallback in case this does
             // not happen.
-            var waitTimeForContainerExit = TimeSpan.FromSeconds(30);
+            var waitTimeForContainerExit = TimeSpan.FromSeconds(60);
 
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
@@ -153,6 +207,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 {
                     new EnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName, appName),
                     new EnvironmentVariable(ExtVarNames.PhpFpmMaxChildrenEnvVarName, fpmMaxChildren),
+                    new EnvironmentVariable(ExtVarNames.PhpFpmStartServersEnvVarName, fpmStartServers),
+                    new EnvironmentVariable(ExtVarNames.PhpFpmMaxSpareServersEnvVarName, fpmMaxSpareServers),
+                    new EnvironmentVariable(ExtVarNames.PhpFpmMinSpareServersEnvVarName, fpmMinSpareServers),
                 },
                 ContainerPort,
                 link: null,

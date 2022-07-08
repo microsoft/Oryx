@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Tests.Common
     public static class EndToEndTestHelper
     {
         private const int MaxRetryCount = 100;
-        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(100);
+        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(10);
 
         public static Task BuildRunAndAssertAppAsync(
             string appName,
@@ -237,7 +237,7 @@ namespace Microsoft.Oryx.Tests.Common
                output);
 
             // Run and return debug output of failed container
-            return await RunAndAssertFailureAsync(
+            return RunAndAssertFailure(
                 runtimeImageName,
                 volumes,
                 environmentVariables,
@@ -322,7 +322,7 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
-        public static async Task<string> RunAndAssertFailureAsync(
+        public static string RunAndAssertFailure(
             string imageName,
             IEnumerable<DockerVolume> volumes,
             List<EnvironmentVariable> environmentVariables,

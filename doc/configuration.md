@@ -54,7 +54,11 @@ Setting name for Php apps    | Description                                      
 -----------------------------|----------------------------------------------------------------|---------|----------------
 PHP\_VERSION                 | Specify which Php version the app is using                     | ""      | "7.4"
 PHP\_COMPOSER\_VERSION       | Specify which Php composer version the app is using            | ""      | "7.2.15"
-DISABLE\_PHP\_BUILD          | Do not apply Php build even if repo indicates it         | `false` | `true`, `false`
+DISABLE\_PHP\_BUILD          | Do not apply Php build even if repo indicates it               | `false` | `true`, `false`
+FPM\_MAX\_CHILDREN           | The maximum number of child processes to be created            | `5`     | "20"
+FPM\_START\_SERVERS          | The number of child processes created on startup               | `min_spare_servers + (max_spare_servers - min_spare_servers) / 2` | "10"
+FPM\_MAX\_SPARE\_SERVERS     | The desired maximum number of idle server processes            | `3`      | "15"
+FPM\_MIN\_SPARE\_SERVERS     | The desired minimum number of idle server processes            | `1`      | "5"
 
 Setting name for Java apps | Description                                                    | Default | Example
 ---------------------------|----------------------------------------------------------------|---------|----------------
