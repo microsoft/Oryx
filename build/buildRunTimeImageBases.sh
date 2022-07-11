@@ -47,6 +47,13 @@ echo
 # the latest version of its own base image.
 docker build \
     --pull \
+    --build-arg DEBIAN_FLAVOR=buster \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-buster" \
+    $REPO_DIR
+
+docker build \
+    --pull \
     --build-arg DEBIAN_FLAVOR=bullseye \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
     -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-bullseye" \

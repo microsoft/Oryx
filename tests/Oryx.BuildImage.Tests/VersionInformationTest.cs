@@ -583,7 +583,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var phpVersion = PhpVersions.Php73Version;
             if (buildImageName.Contains("oryxdevmcr.azurecr.io/public/oryx/build:vso-focal"))
             {
-                phpVersion = "8.1.4";
+                phpVersion = PhpVersions.Php81Version;
             }
 
             var expectedOutput = $"PHP {phpVersion} (cli) ";
