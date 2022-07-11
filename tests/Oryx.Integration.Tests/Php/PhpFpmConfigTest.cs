@@ -26,78 +26,48 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Theory, Trait("category", "php-8.0")]
-        [InlineData("10", "10", "7", "7", "8", "8", "6", "6")]
-        [InlineData("", "5", "", "2", "", "3", "", "1")] // defaults
-        public async Task PipelineTestInvocationsPhp80(
+        [InlineData("10", "10", "7", "7", "8", "8", "6", "6", null)]
+        [InlineData("", "5", "", "2", "", "3", "", "1", null)] // defaults
+        [InlineData("false", null, "5", null, "5", null, "5", null, "pm.max_children must be a positive value")]
+        [InlineData("-1", null, "5", null, "5", null, "5", null, "pm.max_children must be a positive value")]
+        [InlineData("10", null, "5", null, "13", null, "12", null, "pm.min_spare_servers(12) and pm.max_spare_servers(13) cannot be greater than pm.max_children(10)")]
+        [InlineData("10", null, "9", null, "8", null, "7", null, "pm.start_servers(9) must not be less than pm.min_spare_servers(7) and not greater than pm.max_spare_servers(8)")]
+        public async Task PipelineTestInvocationsPhp80Async(
             string fpmMaxChildren, string expectedFpmMaxChildren,
             string fpmStartServers, string expectedFpmStartServers,
             string fpmMaxSpareServers, string expectedFpmMaxSpareServers,
-            string fpmMinSpareServers, string expectedFpmMinSpareServers)
+            string fpmMinSpareServers, string expectedFpmMinSpareServers,
+            string failureOutputText)
         {
             await PhpFpmConfigTestAsync(
                 "8.0", 
                 fpmMaxChildren, expectedFpmMaxChildren,
                 fpmStartServers, expectedFpmStartServers,
                 fpmMaxSpareServers, expectedFpmMaxSpareServers,
-                fpmMinSpareServers, expectedFpmMinSpareServers);
-        }
-
-        [Theory, Trait("category", "php-8.0")]
-        [InlineData("false", "5", "5", "5", "pm.max_children must be a positive value")]
-        [InlineData("-1", "5", "5", "5", "pm.max_children must be a positive value")]
-        [InlineData("10", "5", "13", "12", "pm.min_spare_servers(12) and pm.max_spare_servers(13) cannot be greater than pm.max_children(10)")]
-        [InlineData("10", "9", "8", "7", "pm.start_servers(9) must not be less than pm.min_spare_servers(7) and not greater than pm.max_spare_servers(8)")]
-        public async Task PipelineTestFailInvocationsPhp80(
-            string fpmMaxChildren,
-            string fpmStartServers,
-            string fpmMaxSpareServers,
-            string fpmMinSpareServers,
-            string failureOutputText)
-        {
-            await PhpFpmConfigTestFailuresAsync(
-                "8.0",
-                fpmMaxChildren,
-                fpmStartServers,
-                fpmMaxSpareServers,
-                fpmMinSpareServers,
+                fpmMinSpareServers, expectedFpmMinSpareServers,
                 failureOutputText);
         }
 
         [Theory, Trait("category", "php-7.4")]
-        [InlineData("10", "10", "7", "7", "8", "8", "6", "6")]
-        [InlineData("", "5", "", "2", "", "3", "", "1")] // defaults
-        public async Task PipelineTestInvocationsPhp74(
+        [InlineData("10", "10", "7", "7", "8", "8", "6", "6", null)]
+        [InlineData("", "5", "", "2", "", "3", "", "1", null)] // defaults
+        [InlineData("false", null, "5", null, "5", null, "5", null, "pm.max_children must be a positive value")]
+        [InlineData("-1", null, "5", null, "5", null, "5", null, "pm.max_children must be a positive value")]
+        [InlineData("10", null, "5", null, "13", null, "12", null, "pm.min_spare_servers(12) and pm.max_spare_servers(13) cannot be greater than pm.max_children(10)")]
+        [InlineData("10", null, "9", null, "8", null, "7", null, "pm.start_servers(9) must not be less than pm.min_spare_servers(7) and not greater than pm.max_spare_servers(8)")]
+        public async Task PipelineTestInvocationsPhp74Async(
             string fpmMaxChildren, string expectedFpmMaxChildren,
             string fpmStartServers, string expectedFpmStartServers,
             string fpmMaxSpareServers, string expectedFpmMaxSpareServers,
-            string fpmMinSpareServers, string expectedFpmMinSpareServers)
+            string fpmMinSpareServers, string expectedFpmMinSpareServers,
+            string failureOutputText)
         {
             await PhpFpmConfigTestAsync(
                 "7.4",
                 fpmMaxChildren, expectedFpmMaxChildren,
                 fpmStartServers, expectedFpmStartServers,
                 fpmMaxSpareServers, expectedFpmMaxSpareServers,
-                fpmMinSpareServers, expectedFpmMinSpareServers);
-        }
-
-        [Theory, Trait("category", "php-7.4")]
-        [InlineData("false", "5", "5", "5", "pm.max_children must be a positive value")]
-        [InlineData("-1", "5", "5", "5", "pm.max_children must be a positive value")]
-        [InlineData("10", "5", "13", "12", "pm.min_spare_servers(12) and pm.max_spare_servers(13) cannot be greater than pm.max_children(10)")]
-        [InlineData("10", "9", "8", "7", "pm.start_servers(9) must not be less than pm.min_spare_servers(7) and not greater than pm.max_spare_servers(8)")]
-        public async Task PipelineTestFailInvocationsPhp74(
-            string fpmMaxChildren, 
-            string fpmStartServers,
-            string fpmMaxSpareServers,
-            string fpmMinSpareServers,
-            string failureOutputText)
-        {
-            await PhpFpmConfigTestFailuresAsync(
-                "7.4",
-                fpmMaxChildren,
-                fpmStartServers,
-                fpmMaxSpareServers,
-                fpmMinSpareServers,
+                fpmMinSpareServers, expectedFpmMinSpareServers,
                 failureOutputText);
         }
 
@@ -106,66 +76,7 @@ namespace Microsoft.Oryx.Integration.Tests
             string fpmMaxChildren, string expectedFpmMaxChildren,
             string fpmStartServers, string expectedFpmStartServers,
             string fpmMaxSpareServers, string expectedFpmMaxSpareServers,
-            string fpmMinSpareServers, string expectedFpmMinSpareServers)
-        {
-            // Arrange
-            var appName = "php-fpm-config";
-            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var appOutputDirVolume = CreateAppOutputDirVolume();
-            var appOutputDir = appOutputDirVolume.ContainerDir;
-
-            var buildScript = new ShellScriptBuilder()
-               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-               $"--platform php --platform-version {phpVersion}")
-               .ToString();
-
-            var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
-                .AddCommand("mkdir -p /home/site/wwwroot")
-                .AddCommand($"cp -rf {appOutputDir}/* /home/site/wwwroot")
-                .AddCommand(RunScriptPath)
-                .ToString();
-
-            var phpimageVersion = string.Concat(phpVersion, "-", "fpm");
-
-            // Act & Assert
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName, 
-                _output, 
-                new[] { volume, appOutputDirVolume }, 
-                Settings.BuildImageName,
-                "/bin/sh", 
-                new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpimageVersion),
-                new List<EnvironmentVariable>()
-                {
-                    new EnvironmentVariable(ExtVarNames.PhpFpmMaxChildrenEnvVarName, fpmMaxChildren),
-                    new EnvironmentVariable(ExtVarNames.PhpFpmStartServersEnvVarName, fpmStartServers),
-                    new EnvironmentVariable(ExtVarNames.PhpFpmMaxSpareServersEnvVarName, fpmMaxSpareServers),
-                    new EnvironmentVariable(ExtVarNames.PhpFpmMinSpareServersEnvVarName, fpmMinSpareServers),
-                },
-                ContainerPort,
-                "/bin/sh", 
-                new[] { "-c", runScript },
-                async (hostPort) =>
-                {
-                    var output = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains($"pm = dynamic", output);
-                    Assert.Contains($"pm.max_children = {expectedFpmMaxChildren}", output);
-                    Assert.Contains($"pm.start_servers = {expectedFpmStartServers}", output);
-                    Assert.Contains($"pm.max_spare_servers = {expectedFpmMaxSpareServers}", output);
-                    Assert.Contains($"pm.min_spare_servers = {expectedFpmMinSpareServers}", output);
-                });
-        }
-
-        private async Task PhpFpmConfigTestFailuresAsync(
-            string phpVersion,
-            string fpmMaxChildren,
-            string fpmStartServers,
-            string fpmMaxSpareServers,
-            string fpmMinSpareServers,
+            string fpmMinSpareServers, string expectedFpmMinSpareServers,
             string failureOutputText)
         {
             // Arrange
@@ -176,12 +87,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
 
-            // We expect that docker will be able to pull the image,
-            // start the container, and exit well before this time limit is up
-            // as the startup script should fail. This is a fallback in case this does
-            // not happen.
-            var waitTimeForContainerExit = TimeSpan.FromSeconds(120);
-
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                $"--platform php --platform-version {phpVersion}")
@@ -196,31 +101,70 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var phpimageVersion = string.Concat(phpVersion, "-", "fpm");
 
-            // Act & Assert
-            var debugText = await EndToEndTestHelper.BuildRunAndAssertFailureAsync(
-                _output,
-                new[] { volume, appOutputDirVolume },
-                Settings.BuildImageName,
-                "/bin/sh",
-                new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpimageVersion),
-                new List<EnvironmentVariable>()
-                {
+            if (failureOutputText != null)
+            {
+                // Act & Assert success conditions
+                await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                    appName,
+                    _output,
+                    new[] { volume, appOutputDirVolume },
+                    Settings.BuildImageName,
+                    "/bin/sh",
+                    new[] { "-c", buildScript },
+                    _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                    new List<EnvironmentVariable>()
+                    {
+                    new EnvironmentVariable(ExtVarNames.PhpFpmMaxChildrenEnvVarName, fpmMaxChildren),
+                    new EnvironmentVariable(ExtVarNames.PhpFpmStartServersEnvVarName, fpmStartServers),
+                    new EnvironmentVariable(ExtVarNames.PhpFpmMaxSpareServersEnvVarName, fpmMaxSpareServers),
+                    new EnvironmentVariable(ExtVarNames.PhpFpmMinSpareServersEnvVarName, fpmMinSpareServers),
+                    },
+                    ContainerPort,
+                    "/bin/sh",
+                    new[] { "-c", runScript },
+                    async (hostPort) =>
+                    {
+                        var output = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                        Assert.Contains($"pm = dynamic", output);
+                        Assert.Contains($"pm.max_children = {expectedFpmMaxChildren}", output);
+                        Assert.Contains($"pm.start_servers = {expectedFpmStartServers}", output);
+                        Assert.Contains($"pm.max_spare_servers = {expectedFpmMaxSpareServers}", output);
+                        Assert.Contains($"pm.min_spare_servers = {expectedFpmMinSpareServers}", output);
+                    });
+            } else {
+
+                // We expect that docker will be able to pull the image,
+                // start the container, and exit well before this time limit is up
+                // as the startup script should fail. This is a fallback in case this does
+                // not happen.
+                var waitTimeForContainerExit = TimeSpan.FromSeconds(120);
+
+                // Act & Assert failure conditions
+                var debugText = await EndToEndTestHelper.BuildRunAndAssertFailureAsync(
+                    _output,
+                    new[] { volume, appOutputDirVolume },
+                    Settings.BuildImageName,
+                    "/bin/sh",
+                    new[] { "-c", buildScript },
+                    _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                    new List<EnvironmentVariable>()
+                    {
                     new EnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName, appName),
                     new EnvironmentVariable(ExtVarNames.PhpFpmMaxChildrenEnvVarName, fpmMaxChildren),
                     new EnvironmentVariable(ExtVarNames.PhpFpmStartServersEnvVarName, fpmStartServers),
                     new EnvironmentVariable(ExtVarNames.PhpFpmMaxSpareServersEnvVarName, fpmMaxSpareServers),
                     new EnvironmentVariable(ExtVarNames.PhpFpmMinSpareServersEnvVarName, fpmMinSpareServers),
-                },
-                ContainerPort,
-                link: null,
-                "/bin/sh",
-                new[] { "-c", runScript },
-                waitTimeForContainerExit);
+                    },
+                    ContainerPort,
+                    link: null,
+                    "/bin/sh",
+                    new[] { "-c", runScript },
+                    waitTimeForContainerExit);
 
-            Assert.Contains("ERROR: failed to post process the configuration", debugText);
-            Assert.Contains("ERROR: FPM initialization failed", debugText);
-            Assert.Contains(failureOutputText, debugText);
+                Assert.Contains("ERROR: failed to post process the configuration", debugText);
+                Assert.Contains("ERROR: FPM initialization failed", debugText);
+                Assert.Contains(failureOutputText, debugText);
+            }
         }
     }
 }
