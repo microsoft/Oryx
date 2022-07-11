@@ -15,6 +15,8 @@ echo "Node Build Command Manifest file created."
 {{ end }}
 {{ end }}
 
+doc="https://docs.microsoft.com/en-us/azure/app-service/configure-language-nodejs?pivots=platform-linux#troubleshooting"
+
 {{ if NpmVersionSpec | IsNotBlank }}
 echo
 echo "Found npm version spec to follow in package.json: '{{ NpmVersionSpec }}'"
@@ -183,7 +185,7 @@ cd "$SOURCE_DIR"
 	{{ if PackageDirectory | IsNotBlank }}
 	echo "Switching to package directory provided: '{{ PackageDirectory }}'..."
 	if [ ! -d "$SOURCE_DIR/$packageDirName" ]; then
-		echo "Package directory '$SOURCE_DIR/$packageDirName' does not exist." 1>&2
+		LogWarning "Package directory '$SOURCE_DIR/$packageDirName' does not exist. More information: ${doc}"
 		exit 1
 	fi
 	cd "$SOURCE_DIR/$packageDirName"
