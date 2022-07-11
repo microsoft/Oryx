@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Tests.Common
     public static class EndToEndTestHelper
     {
         private const int MaxRetryCount = 100;
-        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(100);
 
         public static Task BuildRunAndAssertAppAsync(
             string appName,
