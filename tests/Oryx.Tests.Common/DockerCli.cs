@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 
@@ -17,9 +18,11 @@ namespace Microsoft.Oryx.Tests.Common
     {
         private const string CreatedContainerPrefix = "oryxtests_";
         private const string DockerCmd = "docker";
+        private const int TotalContainerStartupRetries = 100;
 
         private readonly TimeSpan _waitTimeForExit;
         private readonly IEnumerable<EnvironmentVariable> _globalEnvVars;
+        private readonly TimeSpan _containerStartupRetryDelay = TimeSpan.FromSeconds(3);
 
         public DockerCli(IEnumerable<EnvironmentVariable> globalEnvVars = null)
             : this(TimeSpan.FromMinutes(90), globalEnvVars)
@@ -136,6 +139,75 @@ namespace Microsoft.Oryx.Tests.Common
             catch (InvalidOperationException invalidOperationException)
             {
                 exception = invalidOperationException;
+            }
+
+            return new DockerRunCommandProcessResult(
+                containerName,
+                process,
+                exception,
+                outputBuilder,
+                errorBuilder,
+                $"{DockerCmd} {string.Join(" ", arguments)}");
+        }
+
+        public async Task<DockerRunCommandProcessResult> RunAndWaitForContainerStartAsync(DockerRunArguments dockerRunArguments)
+        {
+            if (dockerRunArguments == null)
+            {
+                throw new ArgumentNullException(nameof(dockerRunArguments));
+            }
+
+            if (string.IsNullOrEmpty(dockerRunArguments.ImageId))
+            {
+                throw new ArgumentException(
+                    $"'{nameof(dockerRunArguments)}.{nameof(dockerRunArguments.ImageId)}' cannot be null or empty.");
+            }
+
+            Process process = null;
+            Exception exception = null;
+            var outputBuilder = new StringBuilder();
+            var errorBuilder = new StringBuilder();
+
+            // Generate a unique container name for each 'run' call.
+            // Provide a prefix so that one can delete the containers using regex, if needed
+            var containerName = $"{CreatedContainerPrefix}{Guid.NewGuid().ToString("N")}";
+
+            // Make sure not to run the container in background
+            dockerRunArguments.RunContainerInBackground = false;
+
+            var arguments = PrepareDockerRunArguments(containerName, dockerRunArguments);
+
+            try
+            {
+                process = ProcessHelper.StartProcess(
+                    DockerCmd,
+                    arguments,
+                    workingDirectory: null,
+                    // Preserve the output structure and use AppendLine as these handlers
+                    // are called for each line that is written to the output.
+                    standardOutputHandler: (sender, args) =>
+                    {
+                        outputBuilder.AppendLine(args.Data);
+                    },
+                    standardErrorHandler: (sender, args) =>
+                    {
+                        errorBuilder.AppendLine(args.Data);
+                    });
+            }
+            catch (InvalidOperationException invalidOperationException)
+            {
+                exception = invalidOperationException;
+            }
+
+            var retry = 0;
+            while(!process.HasExited && retry < TotalContainerStartupRetries)
+            {
+                if (!string.IsNullOrEmpty(GetContainerStatus(containerName)))
+                {
+                    break;
+                }
+                await Task.Delay(_containerStartupRetryDelay);
+                retry++;
             }
 
             return new DockerRunCommandProcessResult(

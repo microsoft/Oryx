@@ -14,7 +14,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Collection("Php integration")]
     [Trait("category", "php-7.4")]
     public class PhpPreRunCommandOrScriptTest : PhpEndToEndTestsBase
     {

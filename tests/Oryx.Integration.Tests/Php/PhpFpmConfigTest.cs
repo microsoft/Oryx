@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var phpimageVersion = string.Concat(phpVersion, "-", "fpm");
 
-            if (failureOutputText != null)
+            if (failureOutputText == null)
             {
                 // Act & Assert success conditions
                 await EndToEndTestHelper.BuildRunAndAssertAppAsync(

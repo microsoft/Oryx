@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Tests.Common
     public static class EndToEndTestHelper
     {
         private const int MaxRetryCount = 100;
-        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(100);
+        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(2);
 
         public static Task BuildRunAndAssertAppAsync(
             string appName,
@@ -266,7 +266,7 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 // Docker run the runtime container as a foreground process. This way we can catch any errors
                 // that might occur when the application is being started.
-                runResult = dockerCli.RunAndDoNotWaitForProcessExit(new DockerRunArguments
+                runResult = await dockerCli.RunAndWaitForContainerStartAsync(new DockerRunArguments
                 {
                     ImageId = imageName,
                     EnvironmentVariables = environmentVariables,
