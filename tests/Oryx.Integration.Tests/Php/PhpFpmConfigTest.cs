@@ -176,10 +176,11 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
 
-            // We expect that the container will exit well before this time limit is up
+            // We expect that docker will be able to pull the image,
+            // start the container, and exit well before this time limit is up
             // as the startup script should fail. This is a fallback in case this does
             // not happen.
-            var waitTimeForContainerExit = TimeSpan.FromSeconds(60);
+            var waitTimeForContainerExit = TimeSpan.FromSeconds(120);
 
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
