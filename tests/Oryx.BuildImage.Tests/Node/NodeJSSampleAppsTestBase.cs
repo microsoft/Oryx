@@ -4,8 +4,12 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
+using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.BuildImage.Tests
