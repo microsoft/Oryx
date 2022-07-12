@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
                 return parameter;
             }
 
-            this.logger.LogError($"Invalid parameter. " +
+            this.logger.LogError($"Invalid parameter provided: {parameter}\n" +
                 $"Only alpha-numeric, '/', '.', '-', '_' characters are allowed");
             return null;
         }
