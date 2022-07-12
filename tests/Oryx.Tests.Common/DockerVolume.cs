@@ -53,24 +53,20 @@ namespace Microsoft.Oryx.Tests.Common
         /// </summary>
         /// <param name="hostDir">local directory to be used in a container</param>
         /// <returns>DockerVolume instance that can be used to mount the new copy of `originalDir`.</returns>
-        public static DockerVolume CreateMirror(string hostDir)
+        public static DockerVolume CreateMirror(string hostDir, bool writeToHostDir = false)
         {
             if (string.IsNullOrEmpty(hostDir))
             {
                 throw new ArgumentException($"'{nameof(hostDir)}' cannot be null or empty.");
             }
-
             if (!Directory.Exists(hostDir))
             {
                 throw new ArgumentException($"'{nameof(hostDir)}' must point to an existing directory.");
             }
-
             var dirInfo = new DirectoryInfo(hostDir);
-
             // Copy the host directory to a different location and mount that one as it's always possible that a
             // single sample app could be tested by different tests and we do not want to modify its original state
             // and also it would not be nice to see changes in git repository when running tests.
-
             // Since Docker containers run as 'root' and any content written into the mounted directory is owned by
             // the 'root', the CI agent which runs as a non-root account cannot delete that content, so we try to
             // create content in a well known location on the CI agent so that these folders are deleted during the
@@ -89,13 +85,15 @@ namespace Microsoft.Oryx.Tests.Common
                 // Put the folders in a well known location which the CI build definition looks for to clean up.
                 tempDirRoot = Path.Combine(Path.GetTempPath(), MountedHostDirRootName);
             }
-
-            var writableHostDir = Path.Combine(
-                tempDirRoot,
-                Guid.NewGuid().ToString("N"),
-                dirInfo.Name);
-            CopyDirectories(hostDir, writableHostDir, copySubDirs: true);
-
+            var writableHostDir = hostDir;
+            if (!writeToHostDir)
+            {
+                writableHostDir = Path.Combine(
+                    tempDirRoot,
+                    Guid.NewGuid().ToString("N"),
+                    dirInfo.Name);
+                CopyDirectories(hostDir, writableHostDir, copySubDirs: true);
+            }
             // Grant permissions to the folder we just copied on the host machine. The permisions here allow the
             // user(a non-root user) in the container to read/write/execute files.
             var linuxOS = OSPlatform.Create("LINUX");
@@ -107,9 +105,7 @@ namespace Microsoft.Oryx.Tests.Common
                     workingDirectory: null,
                     waitTimeForExit: null);
             }
-
             var containerDirName = dirInfo.Name;
-
             // Note: Path.Combine is the ideal solution here but this would fail when we run the
             // tests on a windows machine (which most of us use).
             var containerDir = $"{ContainerDirRoot}/{containerDirName}";
