@@ -43,7 +43,7 @@ buildPhp() {
         phpSdkFileName=php-$debianFlavor-$version.tar.gz
     fi
 
-	cp "$phpPlatformDir/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
+	cp "$phpPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
 
 	if shouldBuildSdk php $phpSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk php; then
 		if ! $builtPhpPrereqs; then
@@ -75,7 +75,7 @@ buildPhpComposer() {
 	local composerSdkFileName="php-composer-$version.tar.gz"
 	mkdir -p "$targetDir"
 
-	cp "$phpPlatformDir/composer/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
+	cp "$phpPlatformDir/composer/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
 
 	if [ "$debianFlavor" == "stretch" ]; then
         # Use default php sdk file name
@@ -113,10 +113,10 @@ buildPhpComposer() {
 
 echo "Building Php..."
 echo
-buildPlatform "$phpPlatformDir/$debianFlavor/versionsToBuild.txt" buildPhp
+buildPlatform "$phpPlatformDir/versions/$debianFlavor/versionsToBuild.txt" buildPhp
 
 echo
 echo "Building Php composer..."
 echo
-buildPlatform "$phpPlatformDir/composer/$debianFlavor/versionsToBuild.txt" buildPhpComposer
+buildPlatform "$phpPlatformDir/composer/versions/$debianFlavor/versionsToBuild.txt" buildPhpComposer
 

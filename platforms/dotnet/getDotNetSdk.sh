@@ -60,6 +60,6 @@ getDotNetCoreSdk() {
 echo
 echo "Getting .NET Core Sdks..."
 echo
-buildPlatform "$dotNetPlatformDir/$debianFlavor/versionsToBuild.txt" getDotNetCoreSdk
+buildPlatform "$dotNetPlatformDir/versions/$debianFlavor/versionsToBuild.txt" getDotNetCoreSdk
 
-cp "$dotNetPlatformDir/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
+cp "$dotNetPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"

@@ -73,7 +73,7 @@ buildRuby() {
 
 echo "Building Ruby..."
 echo
-buildPlatform "$rubyPlatformDir/$debianFlavor/versionsToBuild.txt" buildRuby
+buildPlatform "$rubyPlatformDir/versions/$debianFlavor/versionsToBuild.txt" buildRuby
 
 # Write the default version
-cp "$rubyPlatformDir/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
+cp "$rubyPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"

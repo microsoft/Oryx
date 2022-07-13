@@ -106,36 +106,64 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                 foreach (var subDirPath in Directory.GetDirectories(platformsDir))
                 {
                     var subDirInfo = new DirectoryInfo(subDirPath);
+                    var platformSubDirPaths = Directory.GetDirectories(subDirPath);
                     var platformName = subDirInfo.Name;
-                    sw.WriteLine($"## {platformName}");
-                    sw.WriteLine();
-                    foreach (var osTypeDirPath in Directory.GetDirectories(subDirInfo))
+                    foreach (var platformSubDirPath in platformSubDirPaths)
                     {
-                        var osTypeDirInfo = new DirectoryInfo(osTypeDirPath);
-                        var osType = osTypeDirInfo.Name;
-                        sw.WriteLine($"### {osType}");
-                        sw.WriteLine();
-                        var versionFile = Path.Join(osTypeDirPath, "versionsToBuild.txt");
-                        using (var reader = new StreamReader(versionFile))
+                        var platformSubDirPathInfo = new DirectoryInfo(platformSubDirPath);
+                        switch (platformSubDirPathInfo.Name)
                         {
-                            string line;
-                            while ((line = reader.ReadLine()) != null)
-                            {
-                                if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#"))
-                                {
-                                    continue;
-                                }
-
-                                var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
-                                var versionPart = parts[0];
-                                sw.WriteLine($"- {versionPart}");
-                            }
+                            case "versions":
+                                sw.WriteLine($"## {platformName}");
+                                sw.WriteLine();
+                                AddVersions(sw, platformSubDirPath);
+                                break;
+                            case "maven":
+                                sw.WriteLine($"## {platformName} maven");
+                                sw.WriteLine();
+                                AddVersions(sw, Path.Join(platformSubDirPath, "versions"));
+                                break;
+                            case "composer":
+                                sw.WriteLine($"## {platformName} composer");
+                                sw.WriteLine();
+                                AddVersions(sw, Path.Join(platformSubDirPath, "versions"));
+                                break;
                         }
+
                         sw.WriteLine();
                     }
-                    sw.WriteLine();
                 }
+
                 sw.Flush();
+            }
+        }
+
+        private static void AddVersions(StreamWriter sw, string versionsPath)
+        {
+            foreach (var osTypeDirPath in Directory.GetDirectories(versionsPath))
+            {
+                var osTypeDirInfo = new DirectoryInfo(osTypeDirPath);
+                var osType = osTypeDirInfo.Name;
+                sw.WriteLine($"### {osType}");
+                sw.WriteLine();
+                var versionFile = Path.Join(osTypeDirPath, "versionsToBuild.txt");
+                using (var reader = new StreamReader(versionFile))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#"))
+                        {
+                            continue;
+                        }
+
+                        var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
+                        var versionPart = parts[0];
+                        sw.WriteLine($"- {versionPart}");
+                    }
+                }
+
+                sw.WriteLine();
             }
         }
 
