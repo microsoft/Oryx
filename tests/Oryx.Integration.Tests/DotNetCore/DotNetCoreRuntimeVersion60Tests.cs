@@ -78,7 +78,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
-            var appsvcFilePath = Path.Combine(hostDir, "appsvc.yaml");
+            var appsvcFilePath = Path.Combine(hostDir, "appsvc.yaml");  // dummy file
             BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(File.ReadAllText(appsvcFilePath));
             var tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tmpDir);
@@ -90,6 +90,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 var appDir = volume.ContainerDir;
                 var appOutputDirVolume = CreateAppOutputDirVolume();
                 var appOutputDir = appOutputDirVolume.ContainerDir;
+                var rootFilePath = "/appsvc.yaml";
+                var runCommand = "gunicorn myapp.app --workers 5";
                 var buildImageScript = new ShellScriptBuilder()
                    .AddDefaultTestEnvironmentVariables()
                    .AddCommand(
@@ -97,6 +99,9 @@ namespace Microsoft.Oryx.Integration.Tests
                     $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
                    .ToString();
                 var runtimeImageScript = new ShellScriptBuilder()
+                    .AddCommand("ls")
+                    .AddCommand("pwd")
+                    .CreateFile(rootFilePath, runCommand)
                     .AddCommand(
                     $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort} -output {tmpContainerDir}/run.sh")
                     .AddCommand($".{tmpContainerDir}/run.sh")

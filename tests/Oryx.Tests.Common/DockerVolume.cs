@@ -53,6 +53,7 @@ namespace Microsoft.Oryx.Tests.Common
         /// </summary>
         /// <param name="hostDir">local directory to be used in a container</param>
         /// <returns>DockerVolume instance that can be used to mount the new copy of `originalDir`.</returns>
+        /// <param name="writeToHostDir">a boolean which indicates if we want the actual directory or the copy of the actual directory</param>
         public static DockerVolume CreateMirror(string hostDir, bool writeToHostDir = false)
         {
             if (string.IsNullOrEmpty(hostDir))
