@@ -51,12 +51,12 @@ function copyBlob() {
 
 function copyPlatformBlobsToProd() {
     local platformName="$1"
-    local versionsFile="$REPO_DIR/platforms/$platformName/versionsToBuild.txt"
+    local versionsFile="$REPO_DIR/platforms/$platformName/$debianFlavor/versionsToBuild.txt"
 
     if [ "$platformName" == "php-composer" ]; then
-        versionsFile="$REPO_DIR/platforms/php/composer/versionsToBuild.txt"
+        versionsFile="$REPO_DIR/platforms/php/composer/$debianFlavor/versionsToBuild.txt"
     elif [ "$platformName" == "maven" ]; then
-        versionsFile="$REPO_DIR/platforms/java/maven/versionsToBuild.txt"
+        versionsFile="$REPO_DIR/platforms/java/maven/$debianFlavor/versionsToBuild.txt"
     fi
 
     # Here '3' is a file descriptor which is specifically used to read the versions file.

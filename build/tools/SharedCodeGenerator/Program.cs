@@ -109,26 +109,32 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                     var platformName = subDirInfo.Name;
                     sw.WriteLine($"## {platformName}");
                     sw.WriteLine();
-                    var versionFile = Path.Join(subDirPath, "versionsToBuild.txt");
-                    using (var reader = new StreamReader(versionFile))
+                    foreach (var osTypeDirPath in Directory.GetDirectories(subDirInfo))
                     {
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
+                        var osTypeDirInfo = new DirectoryInfo(osTypeDirPath);
+                        var osType = osTypeDirInfo.Name;
+                        sw.WriteLine($"### {osType}");
+                        sw.WriteLine();
+                        var versionFile = Path.Join(osTypeDirPath, "versionsToBuild.txt");
+                        using (var reader = new StreamReader(versionFile))
                         {
-                            if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#"))
+                            string line;
+                            while ((line = reader.ReadLine()) != null)
                             {
-                                continue;
+                                if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#"))
+                                {
+                                    continue;
+                                }
+
+                                var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
+                                var versionPart = parts[0];
+                                sw.WriteLine($"- {versionPart}");
                             }
-
-                            var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
-                            var versionPart = parts[0];
-                            sw.WriteLine($"- {versionPart}");
                         }
+                        sw.WriteLine();
                     }
-
                     sw.WriteLine();
                 }
-
                 sw.Flush();
             }
         }

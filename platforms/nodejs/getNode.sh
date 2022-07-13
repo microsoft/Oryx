@@ -52,7 +52,7 @@ getNode() {
 
 echo "Getting Node Sdk..."
 echo
-buildPlatform "$nodePlatformDir/versionsToBuild.txt" getNode
+buildPlatform "$nodePlatformDir/$debianFlavor/versionsToBuild.txt" getNode
 
 # Write the default version
-cp "$nodePlatformDir/defaultVersion.txt" $hostNodeArtifactsDir
+cp "$nodePlatformDir/$debianFlavor/defaultVersion.txt" "$hostNodeArtifactsDir/defaultVersion.$debianFlavor.txt"

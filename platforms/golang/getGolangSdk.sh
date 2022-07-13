@@ -57,6 +57,6 @@ getGolangSdk() {
 echo
 echo "Getting golang Sdks..."
 echo
-buildPlatform "$golangPlatformDir/versionsToBuild.txt" getGolangSdk
+buildPlatform "$golangPlatformDir/$debianFlavor/versionsToBuild.txt" getGolangSdk
 
-cp "$golangPlatformDir/defaultVersion.txt" $targetDir
+cp "$golangPlatformDir/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"

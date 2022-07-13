@@ -86,7 +86,7 @@ buildPython() {
 
 echo "Building Python..."
 echo
-buildPlatform "$pythonPlatformDir/versionsToBuild.txt" buildPython
+buildPlatform "$pythonPlatformDir/$debianFlavor/versionsToBuild.txt" buildPython
 
 # Write the default version
-cp "$pythonPlatformDir/defaultVersion.txt" $targetDir
+cp "$pythonPlatformDir/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"

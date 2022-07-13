@@ -40,9 +40,9 @@ downloadMavenBinary()
 
 echo "Downloading Maven binary..."
 echo
-buildPlatform "$mavenPlatformDir/versionsToBuild.txt" downloadMavenBinary
+buildPlatform "$mavenPlatformDir/$debianFlavor/versionsToBuild.txt" downloadMavenBinary
 
-cp "$mavenPlatformDir/defaultVersion.txt" $hostMavenArtifactsDir
+cp "$mavenPlatformDir/$debianFlavor/defaultVersion.txt" "$hostMavenArtifactsDir/defaultVersion.$debianFlavor.txt"
 
 ls -l $hostMavenArtifactsDir
 

@@ -113,9 +113,9 @@ downloadJavaSdk()
 
 echo "Downloading Java SDK..."
 echo
-buildPlatform "$javaPlatformDir/versionsToBuild.txt" downloadJavaSdk
+buildPlatform "$javaPlatformDir/$debianFlavor/versionsToBuild.txt" downloadJavaSdk
 
-cp "$javaPlatformDir/defaultVersion.txt" $hostJavaArtifactsDir
+cp "$javaPlatformDir/$debianFlavor/defaultVersion.txt" "$hostJavaArtifactsDir/defaultVersion.$debianFlavor.txt"
 
 ls -l $hostJavaArtifactsDir
 

@@ -4,6 +4,18 @@ variables:
 stages:
 - stage: Build
   jobs:
+    - job: Golang_Bullseye
+    timeoutInMinutes: 250
+    pool:
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'golang'
+        debianFlavor: 'bullseye'
+
   - job: Golang_Buster
     timeoutInMinutes: 250
     pool:

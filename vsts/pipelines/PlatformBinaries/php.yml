@@ -4,6 +4,18 @@ variables:
 stages:
 - stage: Build
   jobs:
+  - job: Php_Bullseye_SDK 
+    timeoutInMinutes: 250
+    pool:
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'php'
+        debianFlavor: 'bullseye'
+  
   - job: Php_Stretch_SDK 
     timeoutInMinutes: 250
     pool:
