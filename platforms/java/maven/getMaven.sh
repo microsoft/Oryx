@@ -33,7 +33,7 @@ downloadMavenBinary()
         tar -xf $tarFileName --directory extracted
         cd "extracted/apache-maven-$version"
         tar -zcf "$hostMavenArtifactsDir/$tarFileName" .
-
+        
 		echo "Version=$version" >> "$hostMavenArtifactsDir/maven-$version-metadata.txt"
     fi
 }

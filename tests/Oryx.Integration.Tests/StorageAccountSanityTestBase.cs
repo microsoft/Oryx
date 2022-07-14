@@ -23,6 +23,8 @@ namespace Oryx.Integration.Tests
         private readonly string _storageUrl;
         private readonly string _repoRootDir;
 
+        private readonly string[] _debianFlavors = { "buster", "bullseye", "vso-focal", "stretch" };
+
         public StorageAccountSanityTestBase(
             string storageUrl,
             ITestOutputHelper output,
@@ -52,13 +54,8 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void DotNetCoreContainer_HasExpectedDefaultVersion()
         {
-            // Arrange & Act
             var platformName = "dotnet";
-            var actualVersion = GetDefaultVersionFromContainer(platformName);
-            var expectedVersion = GetDefaultVersion(platformName);
-
-            // Assert
-            Assert.Equal(expectedVersion, actualVersion);
+            AssertExpectedDefaultVersion(platformName, platformName);
         }
 
         [Fact]
@@ -79,13 +76,8 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void GolangContainer_HasExpectedDefaultVersion()
         {
-            // Arrange & Act
             var platformName = "golang";
-            var actualVersion = GetDefaultVersionFromContainer(platformName);
-            var expectedVersion = GetDefaultVersion(platformName);
-
-            // Assert
-            Assert.Equal(expectedVersion, actualVersion);
+            AssertExpectedDefaultVersion(platformName, platformName);
         }
 
         [Fact]
@@ -106,13 +98,8 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void PythonContainer_HasExpectedDefaultVersion()
         {
-            // Arrange & Act
             var platformName = "python";
-            var actualVersion = GetDefaultVersionFromContainer(platformName);
-            var expectedVersion = GetDefaultVersion(platformName);
-
-            // Assert
-            Assert.Equal(expectedVersion, actualVersion);
+            AssertExpectedDefaultVersion(platformName, platformName);
         }
 
         [Fact]
@@ -133,13 +120,8 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void NodeJSContainer_HasExpectedDefaultVersion()
         {
-            // Arrange & Act
             var platformName = "nodejs";
-            var actualVersion = GetDefaultVersionFromContainer(platformName);
-            var expectedVersion = GetDefaultVersion(platformName);
-
-            // Assert
-            Assert.Equal(expectedVersion, actualVersion);
+            AssertExpectedDefaultVersion(platformName, platformName);
         }
         
         [Fact]
@@ -175,13 +157,8 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void PhpComposerContainer_HasExpectedDefaultVersion()
         {
-            // Arrange & Act
             var platformName = "php-composer";
-            var actualVersion = GetDefaultVersionFromContainer(platformName);
-            var expectedVersion = GetDefaultVersion("php", "composer");
-
-            // Assert
-            Assert.Equal(expectedVersion, actualVersion);
+            AssertExpectedDefaultVersion(platformName, "php", "composer");
         }
 
         [Fact]
@@ -202,13 +179,8 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void RubyContainer_HasExpectedDefaultVersion()
         {
-            // Arrange & Act
             var platformName = "ruby";
-            var actualVersion = GetDefaultVersionFromContainer(platformName);
-            var expectedVersion = GetDefaultVersion(platformName);
-
-            // Assert
-            Assert.Equal(expectedVersion, actualVersion);
+            AssertExpectedDefaultVersion(platformName, platformName);
         }
 
         [Fact]
@@ -229,39 +201,50 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void JavaContainer_HasExpectedDefaultVersion()
         {
-            // Arrange & Act
             var platformName = "java";
-            var actualVersion = GetDefaultVersionFromContainer(platformName);
-            var expectedVersion = GetDefaultVersion(platformName);
-
-            // Assert
-            Assert.Equal(expectedVersion, actualVersion);
+            AssertExpectedDefaultVersion(platformName, platformName);
 
         }
 
         [Fact]
         public void MavenContainer_HasExpectedListOfBlobs()
         {
-            // Arrange & Act
-            var actualVersions = GetVersionsFromContainer("maven", "version");
-            var expectedVersions = GetListOfVersionsToBuild("java", "maven");
-
-            // Assert
-            foreach (var expectedVersion in expectedVersions)
-            {
-                Assert.Contains(expectedVersion, actualVersions);
-            }
+            AssertExpectedListOfBlobs("maven", "version", "java", "maven");
         }
 
         [Fact]
         public void MavenContainer_HasExpectedDefaultVersion()
         {
-            // Arrange & Act
-            var actualVersion = GetDefaultVersionFromContainer("maven");
-            var expectedVersion = GetDefaultVersion("java", "maven");
+            AssertExpectedDefaultVersion("maven", "java", "maven");
+        }
 
-            // Assert
-            Assert.Equal(expectedVersion, actualVersion);
+        private void AssertExpectedDefaultVersion(string platformName, params string[] expectedPlatformPath)
+        {
+            foreach (var debianFlavor in _debianFlavors)
+            {
+                // Arrange & Act
+                var actualVersion = GetDefaultVersionFromContainer(debianFlavor, platformName);
+                var expectedVersion = GetDefaultVersion(debianFlavor, expectedPlatformPath);
+
+                // Assert
+                Assert.Equal(expectedVersion, actualVersion);
+            }
+        }
+
+        private void AssertExpectedListOfBlobs(string platformName, string metadataElementName, params string[] expectedPlatformPath)
+        {
+            foreach (var debianFlavor in _debianFlavors)
+            {
+                // Arrange & Act
+                var actualVersions = GetVersionsFromContainer(platformName, metadataElementName);
+                var expectedVersions = GetListOfVersionsToBuild(debianFlavor, expectedPlatformPath);
+
+                // Assert
+                foreach (var expectedVersion in expectedVersions)
+                {
+                    Assert.Contains(expectedVersion, actualVersions);
+                }
+            }
         }
 
         private XDocument GetMetadata(string platformName)
@@ -291,8 +274,10 @@ namespace Oryx.Integration.Tests
             return supportedVersions;
         }
 
-        private string GetDefaultVersionFromContainer(string platformName)
+        private string GetDefaultVersionFromContainer(string debianFlavor, string platformName)
         {
+            // TODO: replace this with the defaultVersion.{debianFlavor}.txt once we actually have the blobs in the
+            // storage account
             var defaultVersionContent = _httpClient
                 .GetStringAsync($"{_storageUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}")
                 .Result;
@@ -314,13 +299,15 @@ namespace Oryx.Integration.Tests
             return defaultVersion;
         }
 
-        private List<string> GetListOfVersionsToBuild(params string[] platformPath)
+        private List<string> GetListOfVersionsToBuild(string debianFlavor, params string[] platformPath)
         {
             var platformSubPath = Path.Combine(platformPath);
             var versionFile = Path.Combine(
                 _repoRootDir,
                 "platforms",
                 platformSubPath,
+                "versions",
+                debianFlavor,
                 SdkStorageConstants.VersionsToBuildFileName);
             if (!File.Exists(versionFile))
             {
@@ -346,13 +333,15 @@ namespace Oryx.Integration.Tests
             return versions;
         }
 
-        private string GetDefaultVersion(params string[] platformPath)
+        private string GetDefaultVersion(string debianFlavor, params string[] platformPath)
         {
             var platformSubPath = Path.Combine(platformPath);
             var file = Path.Combine(
                 _repoRootDir,
                 "platforms",
                 platformSubPath,
+                "versions",
+                debianFlavor,
                 SdkStorageConstants.DefaultVersionFileName);
             if (!File.Exists(file))
             {

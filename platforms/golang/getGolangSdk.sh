@@ -20,6 +20,7 @@ getGolangSdk() {
 	local sha="$2"
 	local downloadUrl="$3"
 	local downloadedFile=""
+	local metadataFile=""
 	local golangSdkSourceFileName=go$sdkVersion.linux-amd64.tar.gz
 
 	if [ "$debianFlavor" == "stretch" ]; then
@@ -50,7 +51,14 @@ getGolangSdk() {
 		cp -f "$downloadedFile" "$targetDir"
 		rm -rf $tempDir
 
-		echo "Version=$sdkVersion" >> "$targetDir/golang-$sdkVersion-metadata.txt"
+		if [ "$debianFlavor" == "stretch" ]; then
+			# Use default sdk file name
+			metadataFile="$targetDir/golang-$sdkVersion-metadata.txt"
+		else
+			metadataFile="$targetDir/golang-$debianFlavor-$sdkVersion-metadata.txt"
+		fi
+
+		echo "Version=$sdkVersion" >> metadataFile
 	fi
 }
 

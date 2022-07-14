@@ -23,6 +23,13 @@ downloadJavaSdk()
 
     tarFileName="java-$JDK_VERSION.tar.gz"
     tarFileNameWithoutGZ="java-$JDK_VERSION.tar"
+    local metadataFile=""
+    if [ "$debianFlavor" == "stretch" ]; then
+        # Use default sdk file name
+        metadataFile="$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+    else
+        metadataFile="$hostJavaArtifactsDir/java-$debianFlavor-$JDK_VERSION-metadata.txt"
+    fi
 
     # set tarFile's Debian flavor
     if [ "$debianFlavor" == "stretch" ]; then
@@ -52,6 +59,7 @@ downloadJavaSdk()
         fi
         cd $jdk_root
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
+
         echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
         return
     fi
