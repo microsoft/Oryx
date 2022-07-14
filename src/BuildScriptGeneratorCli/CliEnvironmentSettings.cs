@@ -15,6 +15,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string GitHubActionsBuildImagePullStartTimeEnvVarName = "GITHUB_ACTIONS_BUILD_IMAGE_PULL_START_TIME";
         public const string GitHubActionsBuildImagePullEndTimeEnvVarName = "GITHUB_ACTIONS_BUILD_IMAGE_PULL_END_TIME";
 
+        public const string DebianFlavor = "DEBIAN_FLAVOR";
+
         private IEnvironment environment;
 
         public CliEnvironmentSettings(IEnvironment environment)

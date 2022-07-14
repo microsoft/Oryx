@@ -211,6 +211,18 @@
       namespace: Microsoft.Oryx.BuildScriptGenerator.Common
     - type: go
       directory: src/startupscriptgenerator/src/common/consts
+- name: os-types
+  constants:
+    debian-stretch: stretch
+    debian-bullseye: bullseye
+    debian-buster: buster
+    ubuntu-vso-focal: vso-focal
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator.Common
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+    - type: go
+      directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
     node-runtime-base-tag: 20220607.3

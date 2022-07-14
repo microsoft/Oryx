@@ -54,8 +54,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"cd {versionDirInTemp}")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine($"platformName=\"{platformName}\"")
-                .AppendLine($"if [[ \"$platformName\" = \"php\" || \"$platformName\" = \"php-composer\" ]] && [[ \"$DEBIAN_FLAVOR\" != \"stretch\" ]]; then")
                 .AppendLine("echo \"Detecting image debian flavor: $DEBIAN_FLAVOR.\"")
+                .AppendLine($"if [ \"$DEBIAN_FLAVOR\" != \"stretch\" ]; then")
                 .AppendLine(
                 $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
