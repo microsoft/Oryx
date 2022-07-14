@@ -137,7 +137,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 // start the container, and exit well before this time limit is up
                 // as the startup script should fail. This is a fallback in case this does
                 // not happen.
-                var waitTimeForContainerExit = TimeSpan.FromSeconds(120);
+                var waitTimeForContainerExit = TimeSpan.FromMinutes(5);
 
                 // Act & Assert failure conditions
                 var debugText = await EndToEndTestHelper.BuildRunAndAssertFailureAsync(
