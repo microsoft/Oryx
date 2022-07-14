@@ -34,12 +34,15 @@ buildRuby() {
 	local sha="$2"
 	local imageName="oryx/ruby"
 	local rubySdkFileName=""
+	local metadataFile=""
 
 	if [ "$debianFlavor" == "stretch" ]; then
 		# Use default python sdk file name
 		rubySdkFileName=ruby-$version.tar.gz
+		metadataFile="$targetDir/ruby-$version-metadata.txt"
 	else
 		rubySdkFileName=ruby-$debianFlavor-$version.tar.gz
+		metadataFile="$targetDir/ruby-$debianFlavor-$version-metadata.txt"
 	fi 
 
 	if shouldBuildSdk ruby $rubySdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk ruby; then
@@ -67,7 +70,7 @@ buildRuby() {
 
 		getSdkFromImage $imageName "$targetDir"
 
-		echo "Version=$version" >> "$targetDir/ruby-$version-metadata.txt"
+		echo "Version=$version" >> $metadataFile
 	fi
 }
 

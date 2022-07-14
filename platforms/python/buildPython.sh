@@ -44,12 +44,15 @@ buildPython() {
 	local dockerFile="$3"
 	local imageName="oryx/python"
 	local pythonSdkFileName=""
+	local metadataFile=""
 
 	if [ "$debianFlavor" == "stretch" ]; then
 			# Use default python sdk file name
 			pythonSdkFileName=python-$version.tar.gz
+			metadataFile="$targetDir/python-$version-metadata.txt"
 	else
 			pythonSdkFileName=python-$debianFlavor-$version.tar.gz
+			metadataFile="$targetDir/python-$debianFlavor-$version-metadata.txt"
 	fi
 
 	if shouldBuildSdk python $pythonSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk python; then
@@ -80,7 +83,7 @@ buildPython() {
 
 		getSdkFromImage $imageName "$targetDir"
 		
-		echo "Version=$version" >> "$targetDir/python-$version-metadata.txt"
+		echo "Version=$version" >> $metadataFile
 	fi
 }
 

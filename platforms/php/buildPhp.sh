@@ -33,14 +33,17 @@ buildPhp() {
 	local imageName="oryx/php-sdk"
 	local targetDir="$volumeHostDir/php"
 	local phpSdkFileName=""
+	local metadataFile=""
 
 	mkdir -p "$targetDir"
 	
     if [ "$debianFlavor" == "stretch" ]; then
         # Use default php sdk file name
         phpSdkFileName=php-$version.tar.gz
+		metadataFile="$targetDir/php-$version-metadata.txt"
     else
         phpSdkFileName=php-$debianFlavor-$version.tar.gz
+		metadataFile="$targetDir/php-$debianFlavor-$version-metadata.txt"
     fi
 
 	cp "$phpPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
@@ -63,7 +66,7 @@ buildPhp() {
 
 		getSdkFromImage $imageName "$targetDir"
 		
-		echo "version=$version" >> "$targetDir/php-$version-metadata.txt"
+		echo "Version=$version" >> $metadataFile
 	fi
 }
 
@@ -73,6 +76,7 @@ buildPhpComposer() {
 	local imageName="oryx/php-composer-sdk"
 	local targetDir="$volumeHostDir/php-composer"
 	local composerSdkFileName="php-composer-$version.tar.gz"
+	local metadataFile=""
 	mkdir -p "$targetDir"
 
 	cp "$phpPlatformDir/composer/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
@@ -80,8 +84,10 @@ buildPhpComposer() {
 	if [ "$debianFlavor" == "stretch" ]; then
         # Use default php sdk file name
         composerSdkFileName=php-composer-$version.tar.gz
+		metadataFile="$targetDir/php-composer-$version-metadata.txt"
     else
         composerSdkFileName=php-composer-$debianFlavor-$version.tar.gz
+		metadataFile="$targetDir/php-composer-$debianFlavor-$version-metadata.txt"
     fi
 
 	if shouldBuildSdk php-composer $composerSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk php-composer; then
@@ -107,7 +113,7 @@ buildPhpComposer() {
 
 		getSdkFromImage $imageName "$targetDir"
 		
-		echo "Version=$version" >> "$targetDir/php-composer-$version-metadata.txt"
+		echo "Version=$version" >> $metadataFile
 	fi
 }
 
