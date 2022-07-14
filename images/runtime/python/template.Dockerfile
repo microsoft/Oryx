@@ -16,6 +16,7 @@ FROM oryxdevmcr.azurecr.io/private/oryx/%BASE_TAG% as main
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
+ARG DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -36,7 +37,7 @@ COPY platforms/__common.sh /tmp/
 RUN true
 COPY platforms/python/prereqs/build.sh /tmp/
 RUN true
-COPY platforms/python/${DEBIAN_FLAVOR}/versionsToBuild.txt /tmp/
+COPY platforms/python/versions/${DEBIAN_FLAVOR}/versionsToBuild.txt /tmp/
 RUN true
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN true

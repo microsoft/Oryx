@@ -51,12 +51,21 @@ function copyBlob() {
 
 function copyPlatformBlobsToProd() {
     local platformName="$1"
-    local versionsFile="$REPO_DIR/platforms/$platformName/$debianFlavor/versionsToBuild.txt"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "stretch"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "buster"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "bullseye"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "vso-focal"
+}
+
+function copyPlatformBlobsToProdForDebianFlavor() {
+    local platformName="$1"
+    local debianFlavor="$2"
+    local versionsFile="$REPO_DIR/platforms/$platformName/versions/$debianFlavor/versionsToBuild.txt"
 
     if [ "$platformName" == "php-composer" ]; then
-        versionsFile="$REPO_DIR/platforms/php/composer/$debianFlavor/versionsToBuild.txt"
+        versionsFile="$REPO_DIR/platforms/php/composer/versions/$debianFlavor/versionsToBuild.txt"
     elif [ "$platformName" == "maven" ]; then
-        versionsFile="$REPO_DIR/platforms/java/maven/$debianFlavor/versionsToBuild.txt"
+        versionsFile="$REPO_DIR/platforms/java/maven/versions/$debianFlavor/versionsToBuild.txt"
     fi
 
     # Here '3' is a file descriptor which is specifically used to read the versions file.
@@ -71,12 +80,14 @@ function copyPlatformBlobsToProd() {
 
         IFS=',' read -ra LINE_INFO <<< "$line"
         version=$(echo -e "${LINE_INFO[0]}" | sed -e 's/^[[:space:]]*//')
-        copyBlob "$platformName" "$platformName-$version.tar.gz"
-        copyBlob "$platformName" "$platformName-focal-scm-$version.tar.gz"
-        copyBlob "$platformName" "$platformName-buster-$version.tar.gz"
+        if [ "$debianFlavor" == "stretch" ]; then
+            copyBlob "$platformName" "$platformName-$version.tar.gz"
+        else
+            copyBlob "$platformName" "$platformName-$debianFlavor-$version.tar.gz"
+        fi
 	done 3< "$versionsFile"
 
-    copyBlob "$platformName" defaultVersion.txt
+    copyBlob "$platformName" defaultVersion.$debianFlavor.txt
 }
 
 if [ ! -f "$azCopyDir/azcopy" ]; then
