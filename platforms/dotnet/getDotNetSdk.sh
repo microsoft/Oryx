@@ -25,8 +25,10 @@ getDotNetCoreSdk() {
 	if [ "$debianFlavor" == "stretch" ]; then
 			# Use default sdk file name
 			downloadedFile=dotnet-$sdkVersion.tar.gz
+			metadataFile="$targetDir/dotnet-$sdkVersion-metadata.txt"
 	else
 			downloadedFile=dotnet-$debianFlavor-$sdkVersion.tar.gz
+			metadataFile="$targetDir/dotnet-$debianFlavor-$sdkVersion-metadata.txt"
 	fi
 
 	if shouldBuildSdk dotnet $downloadedFile || shouldOverwriteSdk || shouldOverwritePlatformSdk dotnet; then
@@ -52,16 +54,9 @@ getDotNetCoreSdk() {
 		runtimeVersion=$(basename $runtimeVersionDir)
 		cp -f "$downloadedFile" "$targetDir"
 		rm -rf $tempDir
-		
-		if [ "$debianFlavor" == "stretch" ]; then
-			# Use default sdk file name
-			metadataFile="$targetDir/dotnet-$sdkVersion-metadata.txt"
-		else
-			metadataFile="$targetDir/dotnet-$debianFlavor-$sdkVersion-metadata.txt"
-		fi
 
-		echo "Runtime_version=$runtimeVersion" >> metadataFile
-		echo "Version=$sdkVersion" >> metadataFile
+		echo "Runtime_version=$runtimeVersion" >> $metadataFile
+		echo "Version=$sdkVersion" >> $metadataFile
 	fi
 }
 

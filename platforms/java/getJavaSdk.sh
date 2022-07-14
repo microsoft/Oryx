@@ -23,21 +23,17 @@ downloadJavaSdk()
 
     tarFileName="java-$JDK_VERSION.tar.gz"
     tarFileNameWithoutGZ="java-$JDK_VERSION.tar"
-    local metadataFile=""
-    if [ "$debianFlavor" == "stretch" ]; then
-        # Use default sdk file name
-        metadataFile="$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
-    else
-        metadataFile="$hostJavaArtifactsDir/java-$debianFlavor-$JDK_VERSION-metadata.txt"
-    fi
+    metadataFile=""
 
-    # set tarFile's Debian flavor
+    # set tarFile and metadata's Debian flavor
     if [ "$debianFlavor" == "stretch" ]; then
             tarFileName=java-$JDK_VERSION.tar.gz
             tarFileNameWithoutGZ=java-$JDK_VERSION.tar
+            metadataFile="$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
     else
             tarFileName=java-$debianFlavor-$JDK_VERSION.tar.gz
             tarFileNameWithoutGZ=java-$debianFlavor-$JDK_VERSION.tar
+            metadataFile="$hostJavaArtifactsDir/java-$debianFlavor-$JDK_VERSION-metadata.txt"
     fi
 
     
@@ -60,7 +56,7 @@ downloadJavaSdk()
         cd $jdk_root
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
 
-        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        echo "Version=$JDK_VERSION" >> $metadataFile
         return
     fi
 
@@ -77,7 +73,7 @@ downloadJavaSdk()
         tar -xf $tarFileName --directory extracted
         cd "extracted/jdk${versionUpdate}-${buildNumber}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
-        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        echo "Version=$JDK_VERSION" >> $metadataFile
         return
     fi
 
@@ -94,7 +90,7 @@ downloadJavaSdk()
         tar -xf $tarFileNameWithoutGZ --directory extracted
         cd "extracted/jdk-${JDK_VERSION}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
-        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        echo "Version=$JDK_VERSION" >> $metadataFile
         return
     fi
 
@@ -114,8 +110,8 @@ downloadJavaSdk()
         cd "extracted/jdk-${JDK_VERSION}+${JDK_BUILD_NUMBER}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
 
-        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
-        echo "JdkFullVersion=$JDK_VERSION+$JDK_BUILD_NUMBER" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        echo "Version=$JDK_VERSION" >> $metadataFile
+        echo "JdkFullVersion=$JDK_VERSION+$JDK_BUILD_NUMBER" >> $metadataFile
     fi
 }
 
