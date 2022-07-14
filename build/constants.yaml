@@ -216,7 +216,7 @@
     debian-stretch: stretch
     debian-bullseye: bullseye
     debian-buster: buster
-    ubuntu-vso-focal: vso-focal
+    ubuntu-focal-scm: focal-scm
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator.Common
