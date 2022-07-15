@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
@@ -48,17 +49,41 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var xdoc = XDocument.Parse(blobList);
             var supportedVersions = new List<string>();
 
-            foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
+            foreach (var blobElement in xdoc.XPathSelectElements($"//Blobs/Blob"))
             {
-                var childElements = metadataElement.Elements();
-                var versionElement = childElements.Where(e => string.Equals(
-                        versionMetadataElementName,
-                        e.Name.LocalName,
-                        StringComparison.OrdinalIgnoreCase))
-                    .FirstOrDefault();
-                if (versionElement != null)
+                var childElements = blobElement.Elements();
+                if (this.commonOptions.DebianFlavor == OsTypes.DebianStretch)
                 {
-                    supportedVersions.Add(versionElement.Value);
+                    var versionElement = childElements
+                        .Where(e => string.Equals("Metadata", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                        .FirstOrDefault()?.Elements()
+                        .Where(e => string.Equals(versionMetadataElementName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                        .FirstOrDefault();
+
+                    if (versionElement != null)
+                    {
+                        supportedVersions.Add(versionElement.Value);
+                    }
+                }
+                else
+                {
+                    // try to parse the version from the file name, as we currently don't supply version metadata to non-stretch sdks
+                    // TODO: remove the need for this logic by updating the sdk metadata for non-stretch flavors
+                    var fileName = childElements
+                        .Where(e => string.Equals("Name", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                        .FirstOrDefault();
+
+                    if (fileName != null)
+                    {
+                        var patternText = $"{platformName}-{this.commonOptions.DebianFlavor}-(?<version>.*?).tar.gz";
+                        Regex expression = new Regex(patternText);
+                        Match match = expression.Match(fileName.Value);
+                        if (match.Success)
+                        {
+                            var result = match.Groups["version"].Value;
+                            supportedVersions.Add(result);
+                        }
+                    }
                 }
             }
 

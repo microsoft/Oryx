@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -25,7 +27,7 @@ namespace Oryx.Integration.Tests
 
         private readonly string[] _debianFlavors = 
         { 
-            OsTypes.DebianBullseye, OsTypes.DebianBuster, OsTypes.DebianStretch, OsTypes.UbuntuFocalScm
+            OsTypes.DebianBuster, OsTypes.DebianStretch, OsTypes.UbuntuFocalScm, /* OsTypes.DebianBullseye */
         };
 
         public StorageAccountSanityTestBase(
@@ -42,16 +44,8 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void DotNetCoreContainer_HasExpectedListOfBlobs()
         {
-            // Arrange & Act
             var platformName = "dotnet";
-            var actualVersions = GetVersionsFromContainer(platformName, "version");
-            var expectedVersions = GetListOfVersionsToBuild(platformName);
-
-            // Assert
-            foreach (var expectedVersion in expectedVersions)
-            {
-                Assert.Contains(expectedVersion, actualVersions);
-            }
+            AssertExpectedListOfBlobs(platformName, "version", platformName);
         }
 
         [Fact]
@@ -64,16 +58,8 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void GolangCoreContainer_HasExpectedListOfBlobs()
         {
-            // Arrange & Act
             var platformName = "golang";
-            var actualVersions = GetVersionsFromContainer(platformName, "version");
-            var expectedVersions = GetListOfVersionsToBuild(platformName);
-
-            // Assert
-            foreach (var expectedVersion in expectedVersions)
-            {
-                Assert.Contains(expectedVersion, actualVersions);
-            }
+            AssertExpectedListOfBlobs(platformName, "version", platformName);
         }
 
         [Fact]
@@ -86,16 +72,8 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void PythonContainer_HasExpectedListOfBlobs()
         {
-            // Arrange & Act
             var platformName = "python";
-            var actualVersions = GetVersionsFromContainer(platformName, "version");
-            var expectedVersions = GetListOfVersionsToBuild(platformName);
-
-            // Assert
-            foreach (var expectedVersion in expectedVersions)
-            {
-                Assert.Contains(expectedVersion, actualVersions);
-            }
+            AssertExpectedListOfBlobs(platformName, "version", platformName);
         }
 
         [Fact]
@@ -110,14 +88,7 @@ namespace Oryx.Integration.Tests
         {
             // Arrange & Act
             var platformName = "nodejs";
-            var actualVersions = GetVersionsFromContainer(platformName, "version");
-            var expectedVersions = GetListOfVersionsToBuild(platformName);
-
-            // Assert
-            foreach (var expectedVersion in expectedVersions)
-            {
-                Assert.Contains(expectedVersion, actualVersions);
-            }
+            AssertExpectedListOfBlobs(platformName, "version", platformName);
         }
 
         [Fact]
@@ -130,31 +101,15 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void PhpComposerCoreContainer_HasExpectedListOfBlobs()
         {
-            // Arrange & Act
             var platformName = "php-composer";
-            var actualVersions = GetVersionsFromContainer(platformName, "version");
-            var expectedVersions = GetListOfVersionsToBuild("php", "composer");
-
-            // Assert
-            foreach (var expectedVersion in expectedVersions)
-            {
-                Assert.Contains(expectedVersion, actualVersions);
-            }
+            AssertExpectedListOfBlobs(platformName, "version", "php", "composer");
         }
 
         [Fact]
         public void PhpContainer_HasExpectedListOfBlobs()
         {
-            // Arrange & Act
             var platformName = "php";
-            var actualVersions = GetVersionsFromContainer(platformName, "version");
-            var expectedVersions = GetListOfVersionsToBuild(platformName);
-
-            // Assert
-            foreach (var expectedVersion in expectedVersions)
-            {
-                Assert.Contains(expectedVersion, actualVersions);
-            }
+            AssertExpectedListOfBlobs(platformName, "version", platformName);
         }
 
         [Fact]
@@ -167,16 +122,8 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void RubyContainer_HasExpectedListOfBlobs()
         {
-            // Arrange & Act
             var platformName = "ruby";
-            var actualVersions = GetVersionsFromContainer(platformName, "version");
-            var expectedVersions = GetListOfVersionsToBuild(platformName);
-
-            // Assert
-            foreach (var expectedVersion in expectedVersions)
-            {
-                Assert.Contains(expectedVersion, actualVersions);
-            }
+            AssertExpectedListOfBlobs(platformName, "version", platformName);
         }
 
         [Fact]
@@ -189,16 +136,8 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void JavaContainer_HasExpectedListOfBlobs()
         {
-            // Arrange & Act
             var platformName = "java";
-            var actualVersions = GetVersionsFromContainer(platformName, "version");
-            var expectedVersions = GetListOfVersionsToBuild(platformName);
-
-            // Assert
-            foreach (var expectedVersion in expectedVersions)
-            {
-                Assert.Contains(expectedVersion, actualVersions);
-            }
+            AssertExpectedListOfBlobs(platformName, "version", platformName);
         }
 
         [Fact]
@@ -239,7 +178,7 @@ namespace Oryx.Integration.Tests
             foreach (var debianFlavor in _debianFlavors)
             {
                 // Arrange & Act
-                var actualVersions = GetVersionsFromContainer(platformName, metadataElementName);
+                var actualVersions = GetVersionsFromContainer(debianFlavor, platformName, metadataElementName);
                 var expectedVersions = GetListOfVersionsToBuild(debianFlavor, expectedPlatformPath);
 
                 // Assert
@@ -257,28 +196,48 @@ namespace Oryx.Integration.Tests
             return XDocument.Parse(blobList);
         }
 
-        private List<string> GetVersionsFromContainer(string platformName, string metadataElementName)
+        private List<string> GetVersionsFromContainer(string debianFlavor, string platformName, string metadataElementName)
         {
             var xdoc = GetMetadata(platformName);
             var supportedVersions = new List<string>();
-            foreach (var blob in xdoc.XPathSelectElements($"//Blobs/Blob/")) 
+            foreach (var blobElement in xdoc.XPathSelectElements($"//Blobs/Blob"))
             {
-
-            }
-
-            foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
-            {
-                var childElements = metadataElement.Elements();
-                var versionElement = childElements.Where(e => string.Equals(
-                        metadataElementName,
-                        e.Name.LocalName,
-                        StringComparison.OrdinalIgnoreCase))
-                    .FirstOrDefault();
-                if (versionElement != null)
+                var childElements = blobElement.Elements();
+                if (debianFlavor == OsTypes.DebianStretch)
                 {
-                    supportedVersions.Add(versionElement.Value);
+                    var versionElement = childElements
+                        .Where(e => string.Equals("Metadata", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                        .FirstOrDefault()?.Elements()
+                        .Where(e => string.Equals(metadataElementName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                        .FirstOrDefault();
+
+                    if (versionElement != null)
+                    {
+                        supportedVersions.Add(versionElement.Value);
+                    }
+                }
+                else
+                {
+                    // try to parse the version from the file name, as we currently don't supply version metadata to non-stretch sdks
+                    // TODO: remove the need for this logic by updating the sdk metadata for non-stretch flavors
+                    var fileName = childElements
+                        .Where(e => string.Equals("Name", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                        .FirstOrDefault();
+
+                    if (fileName != null)
+                    {
+                        var patternText = $"{platformName}-{debianFlavor}-(?<version>.*?).tar.gz";
+                        Regex expression = new Regex(patternText);
+                        Match match = expression.Match(fileName.Value);
+                        if (match.Success)
+                        {
+                            var result = match.Groups["version"].Value;
+                            supportedVersions.Add(result);
+                        }
+                    }
                 }
             }
+
             return supportedVersions;
         }
 
@@ -326,10 +285,10 @@ namespace Oryx.Integration.Tests
             using (var streamReader = new StreamReader(versionFile))
             {
                 string line = null;
-                while ((line = streamReader.ReadLine()) != null && !string.IsNullOrEmpty(line))
+                while ((line = streamReader.ReadLine()) != null)
                 {
-                    // ignore comments
-                    if (line.StartsWith("#"))
+                    // ignore comments and empty lines
+                    if (line.StartsWith("#") || string.IsNullOrEmpty(line))
                     {
                         continue;
                     }
