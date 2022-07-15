@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
         [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0.100-preview.6.22352.1")]
+        [InlineData(NetCore7PreviewMvcApp, "7.0.0-preview.6.22324.4")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion)
