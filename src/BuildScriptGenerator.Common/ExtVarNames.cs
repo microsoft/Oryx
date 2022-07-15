@@ -9,6 +9,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string AppServiceAppNameEnvVarName = "APPSETTING_WEBSITE_SITE_NAME";
         public const string ScmCommitIdEnvVarName = "SCM_COMMIT_ID";
         public const string PhpOrigin = "PHP_ORIGIN";
+        public const string DebianFlavor = "DEBIAN_FLAVOR";
         public const string UserAppInsightsKeyEnv = "APPINSIGHTS_INSTRUMENTATIONKEY";
         public const string UserAppInsightsAgentExtensionVersion = "ApplicationInsightsAgent_EXTENSION_VERSION";
         public const string UserAppInsightsConnectionStringEnv = "APPLICATIONINSIGHTS_CONNECTION_STRING";

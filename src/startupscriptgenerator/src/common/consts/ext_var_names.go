@@ -7,6 +7,7 @@ const ApplicationInsightsInstrumentationKeyEnvVarName string = "ORYX_AI_INSTRUME
 const AppServiceAppNameEnvVarName string = "APPSETTING_WEBSITE_SITE_NAME"
 const ScmCommitIdEnvVarName string = "SCM_COMMIT_ID"
 const PhpOrigin string = "PHP_ORIGIN"
+const DebianFlavor string = "DEBIAN_FLAVOR"
 const UserAppInsightsKeyEnv string = "APPINSIGHTS_INSTRUMENTATIONKEY"
 const UserAppInsightsAgentExtensionVersion string = "ApplicationInsightsAgent_EXTENSION_VERSION"
 const UserAppInsightsConnectionStringEnv string = "APPLICATIONINSIGHTS_CONNECTION_STRING"

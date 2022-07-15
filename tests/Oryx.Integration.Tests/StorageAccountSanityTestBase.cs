@@ -23,7 +23,10 @@ namespace Oryx.Integration.Tests
         private readonly string _storageUrl;
         private readonly string _repoRootDir;
 
-        private readonly string[] _debianFlavors = { "buster", "bullseye", "vso-focal", "stretch" };
+        private readonly string[] _debianFlavors = 
+        { 
+            OsTypes.DebianBullseye, OsTypes.DebianBuster, OsTypes.DebianStretch, OsTypes.UbuntuFocalScm
+        };
 
         public StorageAccountSanityTestBase(
             string storageUrl,

@@ -5,6 +5,7 @@
     app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
     scm-commit-id-env-var-name: SCM_COMMIT_ID
     php-origin: PHP_ORIGIN
+    debian-flavor: DEBIAN_FLAVOR
     user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
     user-app-insights-agent-extension-version: ApplicationInsightsAgent_EXTENSION_VERSION
     user-app-insights-connection-string-env: APPLICATIONINSIGHTS_CONNECTION_STRING
