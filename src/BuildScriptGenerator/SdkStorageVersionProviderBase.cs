@@ -37,6 +37,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string platformName,
             string versionMetadataElementName)
         {
+            // TODO: configure this to account for the different debian flavors once the Version metadata has
+            // been generated for each package
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
 
@@ -68,7 +70,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var httpClient = this.HttpClientFactory.CreateClient("general");
 
-            var defaultVersionUrl = $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}";
+            var defaultVersionUrl = this.commonOptions.DebianFlavor == OsTypes.DebianStretch
+                ? $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}"
+                : $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFilePrefix}.{this.commonOptions.DebianFlavor}.{SdkStorageConstants.DefaultVersionFilePrefix}";
+
             this.logger.LogDebug("Getting the default version from url {defaultVersionUrl}.", defaultVersionUrl);
 
             // get default version

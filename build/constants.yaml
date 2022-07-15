@@ -259,6 +259,8 @@
     prod-sdk-storage-base-url: https://oryxsdksprod.blob.core.windows.net
     prod-sdk-cdn-storage-base-url: https://oryx-cdn.microsoft.io
     default-version-file-name: defaultVersion.txt
+    default-version-file-prefix: defaultVersion
+    default-version-file-type: txt
     versions-to-build-file-name: versionsToBuild.txt
     container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata'
     sdk-download-sentinel-file-name: .oryx-sdkdownload-sentinel

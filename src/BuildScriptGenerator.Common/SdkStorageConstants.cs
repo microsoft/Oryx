@@ -10,6 +10,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string ProdSdkStorageBaseUrl = "https://oryxsdksprod.blob.core.windows.net";
         public const string ProdSdkCdnStorageBaseUrl = "https://oryx-cdn.microsoft.io";
         public const string DefaultVersionFileName = "defaultVersion.txt";
+        public const string DefaultVersionFilePrefix = "defaultVersion";
+        public const string DefaultVersionFileType = "txt";
         public const string VersionsToBuildFileName = "versionsToBuild.txt";
         public const string ContainerMetadataUrlFormat = "{0}/{1}?restype=container&comp=list&include=metadata";
         public const string SdkDownloadSentinelFileName = ".oryx-sdkdownload-sentinel";

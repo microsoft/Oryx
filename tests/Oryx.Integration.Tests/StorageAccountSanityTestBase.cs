@@ -261,6 +261,11 @@ namespace Oryx.Integration.Tests
         {
             var xdoc = GetMetadata(platformName);
             var supportedVersions = new List<string>();
+            foreach (var blob in xdoc.XPathSelectElements($"//Blobs/Blob/")) 
+            {
+
+            }
+
             foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
             {
                 var childElements = metadataElement.Elements();

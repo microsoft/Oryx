@@ -77,6 +77,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string CustomRequirementsTxtPath { get; set; }
 
-        public string DebianFlavorEnvVar { get; set; }
+        public string DebianFlavor { get; set; }
     }
 }
