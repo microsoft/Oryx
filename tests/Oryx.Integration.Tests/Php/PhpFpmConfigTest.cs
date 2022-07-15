@@ -26,8 +26,8 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Theory, Trait("category", "php-8.0")]
-        [InlineData("10", "10", "7", "7", "8", "8", "6", "6", null)]
-        [InlineData("", "5", "", "2", "", "3", "", "1", null)] // defaults
+        [InlineData("10", "10", "7", "7", "8", "8", "6", "6")]
+        [InlineData("", "5", "", "2", "", "3", "", "1")] // defaults
         [InlineData("false", null, "5", null, "5", null, "5", null, "pm.max_children must be a positive value")]
         [InlineData("-1", null, "5", null, "5", null, "5", null, "pm.max_children must be a positive value")]
         [InlineData("10", null, "5", null, "13", null, "12", null, "pm.min_spare_servers(12) and pm.max_spare_servers(13) cannot be greater than pm.max_children(10)")]
@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.Integration.Tests
             string fpmStartServers, string expectedFpmStartServers,
             string fpmMaxSpareServers, string expectedFpmMaxSpareServers,
             string fpmMinSpareServers, string expectedFpmMinSpareServers,
-            string failureOutputText)
+            string failureOutputText = default)
         {
             await PhpFpmConfigTestAsync(
                 "8.0", 
@@ -49,8 +49,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory, Trait("category", "php-7.4")]
-        [InlineData("10", "10", "7", "7", "8", "8", "6", "6", null)]
-        [InlineData("", "5", "", "2", "", "3", "", "1", null)] // defaults
+        [InlineData("10", "10", "7", "7", "8", "8", "6", "6")]
+        [InlineData("", "5", "", "2", "", "3", "", "1")] // defaults
         [InlineData("false", null, "5", null, "5", null, "5", null, "pm.max_children must be a positive value")]
         [InlineData("-1", null, "5", null, "5", null, "5", null, "pm.max_children must be a positive value")]
         [InlineData("10", null, "5", null, "13", null, "12", null, "pm.min_spare_servers(12) and pm.max_spare_servers(13) cannot be greater than pm.max_children(10)")]
@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.Integration.Tests
             string fpmStartServers, string expectedFpmStartServers,
             string fpmMaxSpareServers, string expectedFpmMaxSpareServers,
             string fpmMinSpareServers, string expectedFpmMinSpareServers,
-            string failureOutputText)
+            string failureOutputText = default)
         {
             await PhpFpmConfigTestAsync(
                 "7.4",
@@ -101,7 +101,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var phpimageVersion = string.Concat(phpVersion, "-", "fpm");
 
-            if (failureOutputText == null)
+            if (string.IsNullOrEmpty(failureOutputText))
             {
                 // Act & Assert success conditions
                 await EndToEndTestHelper.BuildRunAndAssertAppAsync(

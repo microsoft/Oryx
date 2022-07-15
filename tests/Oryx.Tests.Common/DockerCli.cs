@@ -155,12 +155,13 @@ namespace Microsoft.Oryx.Tests.Common
             var dockerCommand = RunAndDoNotWaitForProcessExit(dockerRunArguments);
 
             var retry = 0;
-            while(!dockerCommand.Process.HasExited && retry < TotalContainerStartupRetries)
+            while (!dockerCommand.Process.HasExited && retry < TotalContainerStartupRetries)
             {
                 if (!string.IsNullOrEmpty(GetContainerStatus(dockerCommand.ContainerName)))
                 {
                     break;
                 }
+
                 await Task.Delay(_containerStartupRetryDelay);
                 retry++;
             }
