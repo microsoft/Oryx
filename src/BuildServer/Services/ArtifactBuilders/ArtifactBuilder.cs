@@ -5,6 +5,7 @@
 
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildServer.Models;
 
@@ -21,14 +22,18 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
 
         public bool Build(Build build)
         {
-            var logFilePath = $"{build.LogPath}/{build.Id}.log";
-            var sourcePath = build.SourcePath;
-            var outputPath = $"{build.OutputPath}/{build.Id}";
+            // TODO: improve validation by using semantic versioning,
+            // absolute path regex, platform names in a set.
+            var logFilePath = this.ValidateParameter($"{build.LogPath}/{build.Id}.log");
+            var sourcePath = this.ValidateParameter(build.SourcePath);
+            var outputPath = this.ValidateParameter($"{build.OutputPath}/{build.Id}");
+            var platform = this.ValidateParameter(build.Platform);
+            var version = this.ValidateParameter(build.Version);
             Directory.CreateDirectory(outputPath);
             var cmd = $"oryx build {sourcePath} --log-file {logFilePath} " +
-                $"--output {outputPath} --platform {build.Platform} " +
-                $"--platform-version {build.Version}";
-            var escapedArgs = cmd.Replace("\"", "\\\"");
+                $"--output {outputPath} --platform {platform} " +
+                $"--platform-version {version}";
+            cmd = cmd.Replace("'", "\\'");
             var process = new Process()
             {
                 StartInfo = new ProcessStartInfo
@@ -58,6 +63,20 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
             {
                 process.Dispose();
             }
+        }
+
+        private string ValidateParameter(string parameter)
+        {
+            Regex regex = new Regex(@"^[a-zA-Z0-9./\-_]*$");
+            Match match = regex.Match(parameter);
+            if (match.Success)
+            {
+                return parameter;
+            }
+
+            this.logger.LogError($"Invalid parameter provided: {parameter}\n" +
+                $"Only alpha-numeric, '/', '.', '-', '_' characters are allowed");
+            return null;
         }
     }
 }
