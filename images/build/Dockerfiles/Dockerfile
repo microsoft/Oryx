@@ -4,7 +4,7 @@ FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions AS main
 # Build run script generators (to be used by the `oryx run-script` command)
 ###
 # DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
-FROM golang:1.15-stretch as startupScriptGens
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-bullseye as startupScriptGens
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -16,7 +16,7 @@ ARG RELEASE_TAG_NAME=unspecified
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
-ENV DEBIAN_FLAVOR="stretch"
+ENV DEBIAN_FLAVOR="bullseye"
 
 RUN ./build.sh dotnetcore /opt/startupcmdgen/dotnet
 RUN ./build.sh golang     /opt/startupcmdgen/golang

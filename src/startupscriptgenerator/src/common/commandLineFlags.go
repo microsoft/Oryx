@@ -6,7 +6,7 @@
 package common
 
 import (
-	"common/consts"
+	"startupscriptgenerator/common/consts"
 	"flag"
 	"fmt"
 	"os"

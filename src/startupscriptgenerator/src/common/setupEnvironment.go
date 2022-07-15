@@ -7,7 +7,7 @@ package common
 
 import (
 	"bytes"
-	"common/consts"
+	"startupscriptgenerator/common/consts"
 	"fmt"
 	"log"
 	"os"

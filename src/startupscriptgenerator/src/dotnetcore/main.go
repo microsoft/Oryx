@@ -6,8 +6,8 @@
 package main
 
 import (
-	"common"
-	"common/consts"
+	"startupscriptgenerator/common"
+	"startupscriptgenerator/common/consts"
 	"flag"
 	"fmt"
 	"log"
