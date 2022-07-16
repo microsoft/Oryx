@@ -157,6 +157,7 @@ namespace Microsoft.Oryx.Tests.Common
             var retry = 0;
             while (!dockerCommand.Process.HasExited && retry < TotalContainerStartupRetries)
             {
+                // This invokes the docker ps command, which returns an empty string until the container starts.
                 if (!string.IsNullOrEmpty(GetContainerStatus(dockerCommand.ContainerName)))
                 {
                     break;
