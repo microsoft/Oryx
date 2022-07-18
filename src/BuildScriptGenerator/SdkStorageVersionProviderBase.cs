@@ -64,24 +64,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     {
                         supportedVersions.Add(versionElement.Value);
                     }
+
+                    continue;
                 }
-                else
-                {
-                    // try to parse the version from the file name, as we currently don't supply version metadata to non-stretch sdks
-                    var fileName = childElements
+
+                // TODO: PR2 Remove this logic, as we will be able to depend on bullseye images existing in the sdk storage
+                var patternText = this.commonOptions.DebianFlavor == OsTypes.DebianBullseye
+                    ? $"{platformName}-buster-(?<version>.*?).tar.gz"
+                    : $"{platformName}-{this.commonOptions.DebianFlavor}-(?<version>.*?).tar.gz";
+
+                // try to parse the version from the file name, as we currently don't supply version metadata to non-stretch sdks
+                var fileName = childElements
                         .Where(e => string.Equals("Name", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault();
 
-                    if (fileName != null)
+                if (fileName != null)
+                {
+                    Regex expression = new Regex(patternText);
+                    Match match = expression.Match(fileName.Value);
+                    if (match.Success)
                     {
-                        var patternText = $"{platformName}-{this.commonOptions.DebianFlavor}-(?<version>.*?).tar.gz";
-                        Regex expression = new Regex(patternText);
-                        Match match = expression.Match(fileName.Value);
-                        if (match.Success)
-                        {
-                            var result = match.Groups["version"].Value;
-                            supportedVersions.Add(result);
-                        }
+                        var result = match.Groups["version"].Value;
+                        supportedVersions.Add(result);
                     }
                 }
             }

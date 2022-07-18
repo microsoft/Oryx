@@ -59,6 +59,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine(
                 $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
+
+                // TODO: PR2 remove this elif statement, as bullseye images will be supported
+                .AppendLine($"elif [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianBullseye}\" ]; then")
+                .AppendLine(
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-buster-{version}.tar.gz\" " +
+                $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("else")
                 .AppendLine(
                 $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" " +
