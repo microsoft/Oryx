@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string platformName,
             string versionMetadataElementName)
         {
-            // TODO: configure this to account for the different debian flavors once the Version metadata has
+            // TODO: PR2 configure this to account for the different debian flavors once the Version metadata has
             // been generated for each package
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
@@ -68,7 +68,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 else
                 {
                     // try to parse the version from the file name, as we currently don't supply version metadata to non-stretch sdks
-                    // TODO: remove the need for this logic by updating the sdk metadata for non-stretch flavors
                     var fileName = childElements
                         .Where(e => string.Equals("Name", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault();
@@ -95,9 +94,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var httpClient = this.HttpClientFactory.CreateClient("general");
 
-            var defaultVersionUrl = this.commonOptions.DebianFlavor == OsTypes.DebianStretch
-                ? $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}"
-                : $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFilePrefix}.{this.commonOptions.DebianFlavor}.{SdkStorageConstants.DefaultVersionFilePrefix}";
+            // TODO: PR2 use commented out logic to determine default file name once the ostype specific defaults exist
+
+            // var defaultVersionUrl = this.commonOptions.DebianFlavor == OsTypes.DebianStretch
+            //     ? $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}"
+            //     : $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFilePrefix}.{this.commonOptions.DebianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
+            var defaultVersionUrl = $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}";
 
             this.logger.LogDebug("Getting the default version from url {defaultVersionUrl}.", defaultVersionUrl);
 

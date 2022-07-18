@@ -43,6 +43,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public void GetVersionInfo()
         {
+            // TODO: PR2 configure this to account for the different debian flavors once the Version metadata has
+            // been generated for each package. We also need the Runtime_Version metadata for this method
             if (this.versionMap == null)
             {
                 var httpClient = this.HttpClientFactory.CreateClient("general");

@@ -43,6 +43,9 @@ VERSION="$2"
 
 debianFlavor=$DEBIAN_FLAVOR
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
+
+# TODO: PR2 configure this to account for the different debian flavors once the Version metadata has
+# been generated for each package
 if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
   # Use default sdk file name
 	fileName="$PLATFORM_NAME-$VERSION.tar.gz"

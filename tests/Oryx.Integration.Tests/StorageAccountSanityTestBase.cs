@@ -198,6 +198,8 @@ namespace Oryx.Integration.Tests
 
         private List<string> GetVersionsFromContainer(string debianFlavor, string platformName, string metadataElementName)
         {
+            // TODO: PR2 configure this to account for the different debian flavors once the Version metadata has
+            // been generated for each package
             var xdoc = GetMetadata(platformName);
             var supportedVersions = new List<string>();
             foreach (var blobElement in xdoc.XPathSelectElements($"//Blobs/Blob"))
@@ -218,8 +220,6 @@ namespace Oryx.Integration.Tests
                 }
                 else
                 {
-                    // try to parse the version from the file name, as we currently don't supply version metadata to non-stretch sdks
-                    // TODO: remove the need for this logic by updating the sdk metadata for non-stretch flavors
                     var fileName = childElements
                         .Where(e => string.Equals("Name", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault();
@@ -243,7 +243,7 @@ namespace Oryx.Integration.Tests
 
         private string GetDefaultVersionFromContainer(string debianFlavor, string platformName)
         {
-            // TODO: replace this with the defaultVersion.{debianFlavor}.txt once we actually have the blobs in the
+            // TODO: PR2 replace this with the defaultVersion.{debianFlavor}.txt once we actually have the blobs in the
             // storage account
             var defaultVersionContent = _httpClient
                 .GetStringAsync($"{_storageUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}")
