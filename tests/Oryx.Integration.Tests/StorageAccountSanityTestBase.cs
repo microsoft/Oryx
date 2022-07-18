@@ -333,6 +333,9 @@ namespace Oryx.Integration.Tests
                 string line = null;
                 while ((line = streamReader.ReadLine()) != null)
                 {
+                    // Remove extraneous whitespace
+                    line = line.Trim();
+
                     // ignore comments or empty lines
                     if (line.StartsWith("#") || string.IsNullOrEmpty(line))
                     {
@@ -365,6 +368,9 @@ namespace Oryx.Integration.Tests
                 string line = null;
                 while ((line = streamReader.ReadLine()) != null)
                 {
+                    // Remove extraneous whitespace
+                    line = line.Trim();
+
                     // ignore comments or empty lines
                     if (line.StartsWith("#") || string.IsNullOrEmpty(line))
                     {
