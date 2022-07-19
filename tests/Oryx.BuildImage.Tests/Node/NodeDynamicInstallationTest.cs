@@ -229,7 +229,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "githubactions")]
         [InlineData("github-actions-buster")]
         [InlineData("github-actions-bullseye")]
-        [InlineData("vso-focal")]
         public void NodeFails_ToInstallStretchSdk_OnNonStretchImage(string imageTag)
         {
             // Arrange
