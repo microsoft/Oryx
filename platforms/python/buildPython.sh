@@ -45,14 +45,19 @@ buildPython() {
 	local imageName="oryx/python"
 	local pythonSdkFileName=""
 	local metadataFile=""
+	local sdkVersionMetadataName=""
 
 	if [ "$debianFlavor" == "stretch" ]; then
 			# Use default python sdk file name
 			pythonSdkFileName=python-$version.tar.gz
 			metadataFile="$targetDir/python-$version-metadata.txt"
+			# Continue adding the version metadata with the name of Version
+			# which is what our legacy CLI will use
+			sdkVersionMetadataName="Version"
 	else
 			pythonSdkFileName=python-$debianFlavor-$version.tar.gz
 			metadataFile="$targetDir/python-$debianFlavor-$version-metadata.txt"
+			sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 	fi
 
 	if shouldBuildSdk python $pythonSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk python; then
@@ -83,7 +88,8 @@ buildPython() {
 
 		getSdkFromImage $imageName "$targetDir"
 		
-		echo "Version=$version" >> $metadataFile
+		echo "$sdkVersionMetadataName=$version" >> $metadataFile
+		echo "Os_type=$debianFlavor" >> $metadataFile
 	fi
 }
 

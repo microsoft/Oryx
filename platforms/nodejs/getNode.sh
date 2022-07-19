@@ -21,14 +21,19 @@ getNode() {
 	
 	tarFileName="nodejs-$version.tar.gz"
 	metadataFile=""
+	sdkVersionMetadataName=""
     
     if [ "$debianFlavor" == "stretch" ]; then
 			# Use default sdk file name
 			tarFileName=nodejs-$version.tar.gz
 			metadataFile="$hostNodeArtifactsDir/nodejs-$version-metadata.txt"
+			# Continue adding the version metadata with the name of Version
+			# which is what our legacy CLI will use
+			sdkVersionMetadataName="Version"
 	else
 			tarFileName=nodejs-$debianFlavor-$version.tar.gz
 			metadataFile="$hostNodeArtifactsDir/nodejs-$debianFlavor-$version-metadata.txt"
+			sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 	fi
 
 	if shouldBuildSdk nodejs $tarFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk nodejs; then
@@ -49,7 +54,8 @@ getNode() {
 			$imageName \
 			bash -c "/tmp/scripts/build.sh $version && cp -f /tmp/compressedSdk/* /tmp/sdk"
 		
-		echo "Version=$version" >> $metadataFile
+		echo "$sdkVersionMetadataName=$version" >> $metadataFile
+		echo "Os_type=$debianFlavor" >> $metadataFile
 	fi
 }
 

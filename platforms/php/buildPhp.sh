@@ -34,6 +34,7 @@ buildPhp() {
 	local targetDir="$volumeHostDir/php"
 	local phpSdkFileName=""
 	local metadataFile=""
+	local sdkVersionMetadataName=""
 
 	mkdir -p "$targetDir"
 	
@@ -41,9 +42,13 @@ buildPhp() {
 		# Use default php sdk file name
 		phpSdkFileName=php-$version.tar.gz
 		metadataFile="$targetDir/php-$version-metadata.txt"
+		# Continue adding the version metadata with the name of Version
+		# which is what our legacy CLI will use
+		sdkVersionMetadataName="Version"
 	else
 		phpSdkFileName=php-$debianFlavor-$version.tar.gz
 		metadataFile="$targetDir/php-$debianFlavor-$version-metadata.txt"
+		sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 	fi
 
 	cp "$phpPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
@@ -66,7 +71,8 @@ buildPhp() {
 
 		getSdkFromImage $imageName "$targetDir"
 		
-		echo "Version=$version" >> $metadataFile
+		echo "$sdkVersionMetadataName=$version" >> $metadataFile
+		echo "Os_type=$debianFlavor" >> $metadataFile
 	fi
 }
 
@@ -77,6 +83,7 @@ buildPhpComposer() {
 	local targetDir="$volumeHostDir/php-composer"
 	local composerSdkFileName="php-composer-$version.tar.gz"
 	local metadataFile=""
+	local sdkVersionMetadataName=""
 	mkdir -p "$targetDir"
 
 	cp "$phpPlatformDir/composer/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
@@ -85,9 +92,13 @@ buildPhpComposer() {
 		# Use default php sdk file name
 		composerSdkFileName=php-composer-$version.tar.gz
 		metadataFile="$targetDir/php-composer-$version-metadata.txt"
+		# Continue adding the version metadata with the name of Version
+		# which is what our legacy CLI will use
+		sdkVersionMetadataName="Version"
 	else
 		composerSdkFileName=php-composer-$debianFlavor-$version.tar.gz
 		metadataFile="$targetDir/php-composer-$debianFlavor-$version-metadata.txt"
+		sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 	fi
 
 	if shouldBuildSdk php-composer $composerSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk php-composer; then
@@ -113,7 +124,8 @@ buildPhpComposer() {
 
 		getSdkFromImage $imageName "$targetDir"
 		
-		echo "Version=$version" >> $metadataFile
+		echo "$sdkVersionMetadataName=$version" >> $metadataFile
+		echo "Os_type=$debianFlavor" >> $metadataFile
 	fi
 }
 

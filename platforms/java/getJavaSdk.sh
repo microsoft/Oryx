@@ -24,16 +24,21 @@ downloadJavaSdk()
     tarFileName="java-$JDK_VERSION.tar.gz"
     tarFileNameWithoutGZ="java-$JDK_VERSION.tar"
     metadataFile=""
+	sdkVersionMetadataName=""
 
     # set tarFile and metadata's Debian flavor
     if [ "$debianFlavor" == "stretch" ]; then
             tarFileName=java-$JDK_VERSION.tar.gz
             tarFileNameWithoutGZ=java-$JDK_VERSION.tar
             metadataFile="$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+			# Continue adding the version metadata with the name of Version
+			# which is what our legacy CLI will use
+			sdkVersionMetadataName="Version"
     else
             tarFileName=java-$debianFlavor-$JDK_VERSION.tar.gz
             tarFileNameWithoutGZ=java-$debianFlavor-$JDK_VERSION.tar
             metadataFile="$hostJavaArtifactsDir/java-$debianFlavor-$JDK_VERSION-metadata.txt"
+			sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
     fi
 
     
@@ -56,7 +61,8 @@ downloadJavaSdk()
         cd $jdk_root
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
 
-        echo "Version=$JDK_VERSION" >> $metadataFile
+        echo "$sdkVersionMetadataName=$JDK_VERSION" >> $metadataFile
+		echo "Os_type=$debianFlavor" >> $metadataFile
         return
     fi
 
@@ -73,7 +79,8 @@ downloadJavaSdk()
         tar -xf $tarFileName --directory extracted
         cd "extracted/jdk${versionUpdate}-${buildNumber}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
-        echo "Version=$JDK_VERSION" >> $metadataFile
+        echo "$sdkVersionMetadataName=$JDK_VERSION" >> $metadataFile
+		echo "Os_type=$debianFlavor" >> $metadataFile
         return
     fi
 
@@ -90,7 +97,8 @@ downloadJavaSdk()
         tar -xf $tarFileNameWithoutGZ --directory extracted
         cd "extracted/jdk-${JDK_VERSION}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
-        echo "Version=$JDK_VERSION" >> $metadataFile
+        echo "$sdkVersionMetadataName=$JDK_VERSION" >> $metadataFile
+		echo "Os_type=$debianFlavor" >> $metadataFile
         return
     fi
 
@@ -110,8 +118,9 @@ downloadJavaSdk()
         cd "extracted/jdk-${JDK_VERSION}+${JDK_BUILD_NUMBER}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
 
-        echo "Version=$JDK_VERSION" >> $metadataFile
+        echo "$sdkVersionMetadataName=$JDK_VERSION" >> $metadataFile
         echo "JdkFullVersion=$JDK_VERSION+$JDK_BUILD_NUMBER" >> $metadataFile
+		echo "Os_type=$debianFlavor" >> $metadataFile
     fi
 }
 
