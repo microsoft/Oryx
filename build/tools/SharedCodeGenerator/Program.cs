@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Oryx.SharedCodeGenerator.Outputs;
+using SharedCodeGenerator;
 
 namespace Microsoft.Oryx.SharedCodeGenerator
 {
@@ -142,11 +143,11 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         }
 
         /// <summary>
-        /// Writes all versions found in a text file at a given path
-        /// to a stream.
+        /// Writes all versions found in text files in a directory
+        /// to a stream, in order of version.
         /// </summary>
         /// <param name="sw">stream writer instance to write the versions to</param>
-        /// <param name="versionsPath">path at which the versionsToBuild.txt file is found.</param>
+        /// <param name="versionsPath">directory at which the versionsToBuild.txt and optional legacyVersions.txt file is found.</param>
         private static void AddVersions(StreamWriter sw, string versionsPath)
         {
             foreach (var osTypeDirPath in Directory.GetDirectories(versionsPath))
@@ -156,6 +157,8 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                 sw.WriteLine($"### {osType}");
                 sw.WriteLine();
                 var versionFile = Path.Join(osTypeDirPath, "versionsToBuild.txt");
+                var legacyVersionFile = Path.Join(osTypeDirPath, "legacyVersions.txt");
+                var supportedVersions = new List<string>();
                 using (var reader = new StreamReader(versionFile))
                 {
                     string line;
@@ -168,8 +171,33 @@ namespace Microsoft.Oryx.SharedCodeGenerator
 
                         var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
                         var versionPart = parts[0];
-                        sw.WriteLine($"- {versionPart}");
+                        supportedVersions.Add(versionPart);
                     }
+                }
+
+                if (File.Exists(legacyVersionFile))
+                {
+                    using (var reader = new StreamReader(legacyVersionFile))
+                    {
+                        string line;
+                        while ((line = reader.ReadLine()) != null)
+                        {
+                            line = line.Trim();
+
+                            if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
+                            {
+                                continue;
+                            }
+
+                            supportedVersions.Add(line);
+                        }
+                    }
+                }
+
+                supportedVersions.Sort(new VersionComparer());
+                foreach (var version in supportedVersions)
+                {
+                    sw.WriteLine($"- {version}");
                 }
 
                 sw.WriteLine();
