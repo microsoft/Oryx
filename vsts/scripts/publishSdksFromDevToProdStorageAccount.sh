@@ -54,18 +54,28 @@ function copyPlatformBlobsToProd() {
     copyPlatformBlobsToProdForDebianFlavor "$platformName" "stretch"
     copyPlatformBlobsToProdForDebianFlavor "$platformName" "buster"
     copyPlatformBlobsToProdForDebianFlavor "$platformName" "bullseye"
-    copyPlatformBlobsToProdForDebianFlavor "$platformName" "vso-focal"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "focal-scm"
 }
 
 function copyPlatformBlobsToProdForDebianFlavor() {
     local platformName="$1"
     local debianFlavor="$2"
     local versionsFile="$REPO_DIR/platforms/$platformName/versions/$debianFlavor/versionsToBuild.txt"
+    local defaultFile=""
+    local binaryPrefix=""
 
     if [ "$platformName" == "php-composer" ]; then
         versionsFile="$REPO_DIR/platforms/php/composer/versions/$debianFlavor/versionsToBuild.txt"
     elif [ "$platformName" == "maven" ]; then
         versionsFile="$REPO_DIR/platforms/java/maven/versions/$debianFlavor/versionsToBuild.txt"
+    fi
+
+    if [ "$debianFlavor" == "stretch" ]; then
+        defaultFile="defaultVersion.txt"
+        binaryPrefix="$platformName"
+    else
+        defaultFile="defaultVersion.$debianFlavor.txt"
+        binaryPrefix="$platformName-$debianFlavor"
     fi
 
     # Here '3' is a file descriptor which is specifically used to read the versions file.
@@ -80,14 +90,10 @@ function copyPlatformBlobsToProdForDebianFlavor() {
 
         IFS=',' read -ra LINE_INFO <<< "$line"
         version=$(echo -e "${LINE_INFO[0]}" | sed -e 's/^[[:space:]]*//')
-        if [ "$debianFlavor" == "stretch" ]; then
-            copyBlob "$platformName" "$platformName-$version.tar.gz"
-        else
-            copyBlob "$platformName" "$platformName-$debianFlavor-$version.tar.gz"
-        fi
+        copyBlob "$platformName" "$binaryPrefix-$version.tar.gz"
 	done 3< "$versionsFile"
 
-    copyBlob "$platformName" defaultVersion.$debianFlavor.txt
+    copyBlob "$platformName" "$defaultFile"
 }
 
 if [ ! -f "$azCopyDir/azcopy" ]; then

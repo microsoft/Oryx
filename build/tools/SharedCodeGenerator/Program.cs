@@ -111,6 +111,9 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                     foreach (var platformSubDirPath in platformSubDirPaths)
                     {
                         var platformSubDirPathInfo = new DirectoryInfo(platformSubDirPath);
+
+                        // maven and composer exist within the java and php directories with
+                        // their own versions, and we want to include those in the file
                         switch (platformSubDirPathInfo.Name)
                         {
                             case "versions":
@@ -138,6 +141,12 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             }
         }
 
+        /// <summary>
+        /// Writes all versions found in a text file at a given path
+        /// to a stream.
+        /// </summary>
+        /// <param name="sw">stream writer instance to write the versions to</param>
+        /// <param name="versionsPath">path at which the versionsToBuild.txt file is found.</param>
         private static void AddVersions(StreamWriter sw, string versionsPath)
         {
             foreach (var osTypeDirPath in Directory.GetDirectories(versionsPath))

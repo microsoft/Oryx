@@ -21,6 +21,9 @@
     <Rule Id="SA1611" Action="None" /> <!-- ElementParametersMustBeDocumented -->
     <Rule Id="SA1615" Action="None" /> <!-- ElementReturnValueMustBeDocumented -->
     <Rule Id="SA1618" Action="None" /> <!-- GenericTypeParametersMustBeDocumented -->
+    
+    <!-- Documentation text should end in a period -->
+    <Rule Id="SA1629" Action="None" />
 
     <!-- Files must have an XML header -->
     <Rule Id="SA1633" Action="None" />

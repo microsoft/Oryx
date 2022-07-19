@@ -16,6 +16,7 @@ echo
 debianFlavor="$DEBIAN_FLAVOR"
 
 fileName="dotnet.tar.gz"
+
 # TODO: PR2 configure this to account for the different debian flavors once the Version metadata has
 # been generated for each package
 if [ -z "$debianFlavor" ]; then

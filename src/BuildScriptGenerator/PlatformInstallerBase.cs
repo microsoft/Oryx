@@ -46,6 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             snippet
                 .AppendLine()
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")
+                .AppendLine("SDK_DEBIAN_TYPE=$DEBIAN_FLAVOR")
                 .AppendLine("echo")
                 .AppendLine(
                 $"echo \"Downloading and extracting '{platformName}' version '{version}' to '{versionDirInTemp}'...\"")
@@ -54,20 +55,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"cd {versionDirInTemp}")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine($"platformName=\"{platformName}\"")
+
+                // TODO: PR2 remove this if statement, as bullseye images will be supported
+                .AppendLine($"if [ \"$DEBIAN_FLAVOR\" = \"bullseye\" ]; then")
+                .AppendLine($"SDK_DEBIAN_TYPE=\"buster\"")
+                .AppendLine("fi")
                 .AppendLine("echo \"Detecting image debian flavor: $DEBIAN_FLAVOR.\"")
                 .AppendLine($"if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")
                 .AppendLine(
                 $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
-
-                // TODO: PR2 remove this elif statement, as bullseye images will be supported
-                .AppendLine($"elif [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianBullseye}\" ]; then")
-                .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-buster-{version}.tar.gz\" " +
-                $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("else")
                 .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" " +
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$SDK_DEBIAN_TYPE-{version}.tar.gz\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")

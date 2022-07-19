@@ -435,7 +435,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "vso-focal")]
-        [InlineData(NetCoreApp30MvcApp, "3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData(NetCoreApp31MvcApp, "3.1", DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
         public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion,
@@ -544,8 +544,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         // TODO: PR2 update this to look for correct error message once CLI can use version metadata
         // to detect that the runtime and sdk versions don't exist in the storage account
-        [Fact, Trait("category", "githubactions")]
-        public void Fails_ToInstallStretchSdk_OnNonStretchImage()
+        [Theory, Trait("category", "githubactions")]
+        [InlineData("github-actions-buster")]
+        [InlineData("github-actions-bullseye")]
+        [InlineData("vso-focal")]
+        public void DotnetFails_ToInstallStretchSdk_OnNonStretchImage(string imageTag)
         {
             // this version only exists on stretch. There is no version of it in the storage accounts
             // for other flavors
@@ -568,7 +571,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage("github-actions-buster"),
+                ImageId = _imageHelper.GetBuildImage(imageTag),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
