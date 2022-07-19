@@ -10,6 +10,19 @@ namespace SharedCodeGenerator
 {
     internal class VersionComparer : IComparer<string>
     {
+        /// <summary>
+        /// The Version class only supports the format of Major.Minor[.Patch][.Release] so this
+        /// compares version strings that are either of the following formats:
+        /// - Major.Minor[.Patch][.Release]
+        /// - Major.Minor[.Patch][.Release]-<somestring>
+        /// ------------------
+        /// Example inputs:
+        /// 6.0
+        /// 5.9
+        /// 6.0.1
+        /// 6.0.100-preview.1.21103.13
+        /// </summary>
+        /// <returns>1 if s1 is greater, -1 if s2 is greater, 0 if the same</returns>
         public int Compare(string s1 = default, string s2 = default)
         {
             var split1 = s1.Split("-");
