@@ -16,5 +16,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string ContainerMetadataUrlFormat = "{0}/{1}?restype=container&comp=list&include=metadata";
         public const string SdkDownloadSentinelFileName = ".oryx-sdkdownload-sentinel";
         public const string SdkVersionMetadataName = "SDK_Version";
+        public const string LegacySdkVersionMetadataName = "Version";
     }
 }
