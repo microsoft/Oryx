@@ -50,7 +50,7 @@ getNode() {
 		fi
 
 		docker run \
-			-v $hostNodeArtifactsDir:$volumeContainerDir \
+			-v /$hostNodeArtifactsDir:$volumeContainerDir \
 			$imageName \
 			bash -c "/tmp/scripts/build.sh $version && cp -f /tmp/compressedSdk/* /tmp/sdk"
 		

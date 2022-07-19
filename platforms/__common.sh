@@ -129,7 +129,7 @@ getSdkFromImage() {
 	echo
 	docker run \
 		--rm \
-		-v $hostVolumeDir:$volumeContainerDir \
+		-v /$hostVolumeDir:$volumeContainerDir \
 		$imageName \
 		bash -c "cp -f /tmp/compressedSdk/* /tmp/sdk"
 }
