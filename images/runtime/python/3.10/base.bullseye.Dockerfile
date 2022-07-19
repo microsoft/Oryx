@@ -13,10 +13,10 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
 FROM oryxdevmcr.azurecr.io/private/oryx/oryx-run-base-${DEBIAN_FLAVOR} as main
+ARG DEBIAN_FLAVOR
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
-ARG DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
 
 RUN apt-get update \
     && apt-get upgrade -y \
