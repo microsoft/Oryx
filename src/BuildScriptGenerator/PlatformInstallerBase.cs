@@ -55,6 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"cd {versionDirInTemp}")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine($"platformName=\"{platformName}\"")
+
                 // Temporarily use buster SDKs in bullseye image until bullseye SDKs are supported in storage account.
                 // Bug item: 1578477
                 .AppendLine($"if [ \"$DEBIAN_FLAVOR\" = \"bullseye\" ]; then")
