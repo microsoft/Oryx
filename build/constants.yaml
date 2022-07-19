@@ -264,6 +264,7 @@
     versions-to-build-file-name: versionsToBuild.txt
     container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata'
     sdk-download-sentinel-file-name: .oryx-sdkdownload-sentinel
+    sdk-version-metadata-name: SDK_Version
   outputs:
     - type: shell
       directory: images

@@ -98,11 +98,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var httpClient = this.HttpClientFactory.CreateClient("general");
 
-            // TODO: PR2 use commented out logic to determine default file name once the ostype specific defaults exist
-
-            // var defaultVersionUrl = this.commonOptions.DebianFlavor == OsTypes.DebianStretch
-            //     ? $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}"
-            //     : $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFilePrefix}.{this.commonOptions.DebianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
+            // TODO: PR2 use {SdkStorageConstants.DefaultVersionFilePrefix}.{this.commonOptions.DebianFlavor}.{SdkStorageConstants.DefaultVersionFileType}
+            // to determine default file name once the ostype specific defaults exist
             var defaultVersionUrl = $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}";
 
             this.logger.LogDebug("Getting the default version from url {defaultVersionUrl}.", defaultVersionUrl);
