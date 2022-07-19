@@ -331,10 +331,13 @@ namespace Oryx.Integration.Tests
             using (var streamReader = new StreamReader(versionFile))
             {
                 string line = null;
-                while ((line = streamReader.ReadLine()) != null && !string.IsNullOrEmpty(line))
+                while ((line = streamReader.ReadLine()) != null)
                 {
-                    // ignore comments
-                    if (line.StartsWith("#"))
+                    // Remove extraneous whitespace
+                    line = line.Trim();
+
+                    // ignore comments or empty lines
+                    if (line.StartsWith("#") || string.IsNullOrEmpty(line))
                     {
                         continue;
                     }
@@ -363,10 +366,13 @@ namespace Oryx.Integration.Tests
             using (var streamReader = new StreamReader(file))
             {
                 string line = null;
-                while ((line = streamReader.ReadLine()) != null && !string.IsNullOrEmpty(line))
+                while ((line = streamReader.ReadLine()) != null)
                 {
-                    // ignore comments
-                    if (line.StartsWith("#"))
+                    // Remove extraneous whitespace
+                    line = line.Trim();
+
+                    // ignore comments or empty lines
+                    if (line.StartsWith("#") || string.IsNullOrEmpty(line))
                     {
                         continue;
                     }
