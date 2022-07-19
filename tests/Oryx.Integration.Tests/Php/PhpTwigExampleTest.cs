@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Collection("Php integration")]
     public class PhpTwigExampleTest : PhpEndToEndTestsBase
     {
         public PhpTwigExampleTest(ITestOutputHelper output, TestTempDirTestFixture fixture)

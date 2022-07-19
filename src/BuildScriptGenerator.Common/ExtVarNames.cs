@@ -10,6 +10,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string ScmCommitIdEnvVarName = "SCM_COMMIT_ID";
         public const string PhpOrigin = "PHP_ORIGIN";
         public const string DebianFlavor = "DEBIAN_FLAVOR";
+        public const string PhpFpmMaxChildrenEnvVarName = "FPM_MAX_CHILDREN";
+        public const string PhpFpmStartServersEnvVarName = "FPM_START_SERVERS";
+        public const string PhpFpmMinSpareServersEnvVarName = "FPM_MIN_SPARE_SERVERS";
+        public const string PhpFpmMaxSpareServersEnvVarName = "FPM_MAX_SPARE_SERVERS";
         public const string UserAppInsightsKeyEnv = "APPINSIGHTS_INSTRUMENTATIONKEY";
         public const string UserAppInsightsAgentExtensionVersion = "ApplicationInsightsAgent_EXTENSION_VERSION";
         public const string UserAppInsightsConnectionStringEnv = "APPLICATIONINSIGHTS_CONNECTION_STRING";

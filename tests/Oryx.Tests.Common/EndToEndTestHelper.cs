@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Tests.Common
     public static class EndToEndTestHelper
     {
         private const int MaxRetryCount = 100;
-        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(100);
+        private static readonly TimeSpan DelayBetweenRetries = TimeSpan.FromSeconds(10);
 
         public static Task BuildRunAndAssertAppAsync(
             string appName,
@@ -192,6 +192,62 @@ namespace Microsoft.Oryx.Tests.Common
                 dockerCli);
         }
 
+        //  The sequence of steps are:
+        //  1.  Copies the sample app from host machine's git repo to a different folder (under 'tmp/<reserved-name>' folder
+        //      in CI machine and in the 'bin\debug\' folder in non-CI machine). The copying is necessary to not muck
+        //      with git tracked samples folder and also a single sample could be used for verification in multiple tests.
+        //  2.  Volume mounts the directory to the build image and build it.
+        //  3.  Volume mounts the same directory to runtime image and runs the application.
+        //  4.  Waits a set period of time before forcibly exiting the container, if it has not already exited.
+        //  5.  Asserts that the application fails, and returns the standard error output from the container.
+        public static async Task<string> BuildRunAndAssertFailureAsync(
+            ITestOutputHelper output,
+            IEnumerable<DockerVolume> volumes,
+            string buildImage,
+            string buildCmd,
+            string[] buildArgs,
+            string runtimeImageName,
+            List<EnvironmentVariable> environmentVariables,
+            int port,
+            string link,
+            string runCmd,
+            string[] runArgs,
+            TimeSpan waitTimeForContainerExit)
+        {
+            var dockerCli = new DockerCli(waitTimeForContainerExit, null);
+
+            // Build
+            var buildAppResult = dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImage,
+                EnvironmentVariables = environmentVariables,
+                Volumes = volumes,
+                RunContainerInBackground = false,
+                CommandToExecuteOnRun = buildCmd,
+                CommandArguments = buildArgs,
+            });
+
+            await RunAssertsAsync(
+               () =>
+               {
+                   Assert.True(buildAppResult.IsSuccess);
+                   return Task.CompletedTask;
+               },
+               buildAppResult,
+               output);
+
+            // Run and return debug output of failed container
+            return RunAndAssertFailure(
+                runtimeImageName,
+                volumes,
+                environmentVariables,
+                port,
+                link,
+                runCmd,
+                runArgs,
+                dockerCli);
+        }
+
         public static async Task RunAndAssertAppAsync(
             string imageName,
             ITestOutputHelper output,
@@ -210,7 +266,7 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 // Docker run the runtime container as a foreground process. This way we can catch any errors
                 // that might occur when the application is being started.
-                runResult = dockerCli.RunAndDoNotWaitForProcessExit(new DockerRunArguments
+                runResult = await dockerCli.RunAndWaitForContainerStartAsync(new DockerRunArguments
                 {
                     ImageId = imageName,
                     EnvironmentVariables = environmentVariables,
@@ -264,6 +320,48 @@ namespace Microsoft.Oryx.Tests.Common
                     }
                 }
             }
+        }
+
+        public static string RunAndAssertFailure(
+            string imageName,
+            IEnumerable<DockerVolume> volumes,
+            List<EnvironmentVariable> environmentVariables,
+            int port,
+            string link,
+            string runCmd,
+            string[] runArgs,
+            DockerCli dockerCli)
+        {
+            DockerRunCommandResult runResult = null;
+            try
+            {
+                // Docker run the runtime container as a foreground process. This way we can catch any errors
+                // that might occur when the application is being started.
+                runResult = dockerCli.Run(new DockerRunArguments
+                {
+                    ImageId = imageName,
+                    EnvironmentVariables = environmentVariables,
+                    Volumes = volumes,
+                    PortInContainer = port,
+                    Link = link,
+                    CommandToExecuteOnRun = runCmd,
+                    CommandArguments = runArgs,
+                });
+
+                // An exception should have occurred while the process started,
+                // causing it to fail and the container to exit
+                Assert.NotEqual(0, runResult.ExitCode);
+                Assert.True(runResult.HasExited);
+            }
+            finally
+            {
+                if (runResult != null)
+                {
+                    // Stop the container so that shared resources (like ports) are disposed.
+                    dockerCli.StopContainer(runResult.ContainerName);
+                }
+            }
+            return runResult?.GetDebugInfo();
         }
 
         public static Task RunPackAndAssertAppAsync(
