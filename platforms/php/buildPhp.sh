@@ -44,7 +44,7 @@ buildPhp() {
 		metadataFile="$targetDir/php-$version-metadata.txt"
 		# Continue adding the version metadata with the name of Version
 		# which is what our legacy CLI will use
-		sdkVersionMetadataName="Version"
+		sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
 	else
 		phpSdkFileName=php-$debianFlavor-$version.tar.gz
 		metadataFile="$targetDir/php-$debianFlavor-$version-metadata.txt"
@@ -72,7 +72,7 @@ buildPhp() {
 		getSdkFromImage $imageName "$targetDir"
 		
 		echo "$sdkVersionMetadataName=$version" >> $metadataFile
-		echo "Os_type=$debianFlavor" >> $metadataFile
+		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
 	fi
 }
 
@@ -94,7 +94,7 @@ buildPhpComposer() {
 		metadataFile="$targetDir/php-composer-$version-metadata.txt"
 		# Continue adding the version metadata with the name of Version
 		# which is what our legacy CLI will use
-		sdkVersionMetadataName="Version"
+		sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
 	else
 		composerSdkFileName=php-composer-$debianFlavor-$version.tar.gz
 		metadataFile="$targetDir/php-composer-$debianFlavor-$version-metadata.txt"
@@ -125,7 +125,7 @@ buildPhpComposer() {
 		getSdkFromImage $imageName "$targetDir"
 		
 		echo "$sdkVersionMetadataName=$version" >> $metadataFile
-		echo "Os_type=$debianFlavor" >> $metadataFile
+		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
 	fi
 }
 

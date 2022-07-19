@@ -266,6 +266,7 @@
     sdk-download-sentinel-file-name: .oryx-sdkdownload-sentinel
     sdk-version-metadata-name: SDK_Version
     legacy-sdk-version-metadata-name: Version
+    os-type-metadata-name: Os_type
   outputs:
     - type: shell
       directory: images

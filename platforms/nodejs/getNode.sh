@@ -29,7 +29,7 @@ getNode() {
 			metadataFile="$hostNodeArtifactsDir/nodejs-$version-metadata.txt"
 			# Continue adding the version metadata with the name of Version
 			# which is what our legacy CLI will use
-			sdkVersionMetadataName="Version"
+			sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
 	else
 			tarFileName=nodejs-$debianFlavor-$version.tar.gz
 			metadataFile="$hostNodeArtifactsDir/nodejs-$debianFlavor-$version-metadata.txt"
@@ -55,7 +55,7 @@ getNode() {
 			bash -c "/tmp/scripts/build.sh $version && cp -f /tmp/compressedSdk/* /tmp/sdk"
 		
 		echo "$sdkVersionMetadataName=$version" >> $metadataFile
-		echo "Os_type=$debianFlavor" >> $metadataFile
+		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
 	fi
 }
 

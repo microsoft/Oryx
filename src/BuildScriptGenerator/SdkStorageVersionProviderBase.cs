@@ -34,9 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         protected IHttpClientFactory HttpClientFactory { get; }
 
-        protected PlatformVersionInfo GetAvailableVersionsFromStorage(
-            string platformName,
-            string versionMetadataElementName)
+        protected PlatformVersionInfo GetAvailableVersionsFromStorage(string platformName)
         {
             // TODO: PR2 configure this to account for the different debian flavors once the Version metadata has
             // been generated for each package
@@ -57,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     var versionElement = childElements
                         .Where(e => string.Equals("Metadata", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault()?.Elements()
-                        .Where(e => string.Equals(versionMetadataElementName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                        .Where(e => string.Equals(SdkStorageConstants.LegacySdkVersionMetadataName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault();
 
                     if (versionElement != null)
@@ -74,6 +72,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     : $"{platformName}-{this.commonOptions.DebianFlavor}-(?<version>.*?).tar.gz";
 
                 // try to parse the version from the file name, as we currently don't supply version metadata to non-stretch sdks
+                // TODO: PR2 Add logic to use SdkStorageConstants.SdkVersionMetadataName and SdkStorageConstants.OsTypeMetadataName
+                // to determine the supported sdks
                 var fileName = childElements
                         .Where(e => string.Equals("Name", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault();

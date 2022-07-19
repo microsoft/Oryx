@@ -13,3 +13,4 @@ CONTAINER_METADATA_URL_FORMAT='{0}/{1}?restype=container&comp=list&include=metad
 SDK_DOWNLOAD_SENTINEL_FILE_NAME='.oryx-sdkdownload-sentinel'
 SDK_VERSION_METADATA_NAME='SDK_Version'
 LEGACY_SDK_VERSION_METADATA_NAME='Version'
+OS_TYPE_METADATA_NAME='Os_type'

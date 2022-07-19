@@ -15,3 +15,4 @@ const ContainerMetadataUrlFormat string = "{0}/{1}?restype=container&comp=list&i
 const SdkDownloadSentinelFileName string = ".oryx-sdkdownload-sentinel"
 const SdkVersionMetadataName string = "SDK_Version"
 const LegacySdkVersionMetadataName string = "Version"
+const OsTypeMetadataName string = "Os_type"
