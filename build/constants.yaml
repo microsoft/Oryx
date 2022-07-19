@@ -5,6 +5,15 @@
     app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
     scm-commit-id-env-var-name: SCM_COMMIT_ID
     php-origin: PHP_ORIGIN
+    php-fpm-configuration-file: "/usr/local/etc/php-fpm.d/www.conf"
+    php-fpm-max-children-env-var-name: "FPM_MAX_CHILDREN"
+    php-fpm-start-servers-env-var-name: "FPM_START_SERVERS"
+    php-fpm-min-spare-servers-env-var-name: "FPM_MIN_SPARE_SERVERS"
+    php-fpm-max-spare-servers-env-var-name: "FPM_MAX_SPARE_SERVERS"
+    php-fpm-max-children-setting-name: "pm.max_children"
+    php-fpm-start-servers-setting-name: "pm.start_servers"
+    php-fpm-min-spare-servers-setting-name: "pm.min_spare_servers"
+    php-fpm-max-spare-servers-setting-name: "pm.max_spare_servers"
     debian-flavor: DEBIAN_FLAVOR
     user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
     user-app-insights-agent-extension-version: ApplicationInsightsAgent_EXTENSION_VERSION
