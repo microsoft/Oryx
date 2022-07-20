@@ -24,9 +24,9 @@ parameters:
   - name: phpVersions
     type: object
     default:
-      - 7.4
-      - 8.0
-      - 8.1
+      - 74
+      - 80
+      - 81
   - name: golangVersions
     type: object
     default:
