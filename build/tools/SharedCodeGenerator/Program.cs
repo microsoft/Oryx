@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Oryx.SharedCodeGenerator.Outputs;
-using SharedCodeGenerator;
 
 namespace Microsoft.Oryx.SharedCodeGenerator
 {
@@ -120,17 +119,17 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                             case "versions":
                                 sw.WriteLine($"## {platformName}");
                                 sw.WriteLine();
-                                AddVersions(sw, platformSubDirPath);
+                                AddVersions(sw, platformSubDirPath, platformName);
                                 break;
                             case "maven":
                                 sw.WriteLine($"## {platformName} maven");
                                 sw.WriteLine();
-                                AddVersions(sw, Path.Join(platformSubDirPath, "versions"));
+                                AddVersions(sw, Path.Join(platformSubDirPath, "versions"), "maven");
                                 break;
                             case "composer":
                                 sw.WriteLine($"## {platformName} composer");
                                 sw.WriteLine();
-                                AddVersions(sw, Path.Join(platformSubDirPath, "versions"));
+                                AddVersions(sw, Path.Join(platformSubDirPath, "versions"), "composer");
                                 break;
                         }
 
@@ -148,7 +147,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         /// </summary>
         /// <param name="sw">stream writer instance to write the versions to</param>
         /// <param name="versionsPath">directory at which the versionsToBuild.txt and optional legacyVersions.txt file is found.</param>
-        private static void AddVersions(StreamWriter sw, string versionsPath)
+        private static void AddVersions(StreamWriter sw, string versionsPath, string platformName)
         {
             foreach (var osTypeDirPath in Directory.GetDirectories(versionsPath))
             {
@@ -158,7 +157,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                 sw.WriteLine();
                 var versionFile = Path.Join(osTypeDirPath, "versionsToBuild.txt");
                 var legacyVersionFile = Path.Join(osTypeDirPath, "legacyVersions.txt");
-                var supportedVersions = new List<string>();
+                var supportedVersions = new List<VersionInfo>();
                 using (var reader = new StreamReader(versionFile))
                 {
                     string line;
@@ -171,7 +170,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
 
                         var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
                         var versionPart = parts[0];
-                        supportedVersions.Add(versionPart);
+                        supportedVersions.Add(new VersionInfo(versionPart, platformName));
                     }
                 }
 
@@ -189,15 +188,15 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                                 continue;
                             }
 
-                            supportedVersions.Add(line);
+                            supportedVersions.Add(new VersionInfo(line, platformName));
                         }
                     }
                 }
 
-                supportedVersions.Sort(new VersionComparer());
+                supportedVersions.Sort();
                 foreach (var version in supportedVersions)
                 {
-                    sw.WriteLine($"- {version}");
+                    sw.WriteLine($"- {version.DisplayVersion}");
                 }
 
                 sw.WriteLine();
