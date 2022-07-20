@@ -57,8 +57,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"platformName=\"{platformName}\"")
 
                 // TODO: PR2 remove this if statement, as bullseye images will be supported
-                .AppendLine($"if [ \"$DEBIAN_FLAVOR\" = \"bullseye\" ]; then")
-                .AppendLine($"SDK_DEBIAN_TYPE=\"buster\"")
+                .AppendLine($"if [ \"$DEBIAN_FLAVOR\" = \"{OsTypes.DebianBullseye}\" ]; then")
+                .AppendLine($"SDK_DEBIAN_TYPE=\"{OsTypes.DebianBuster}\"")
                 .AppendLine("fi")
                 .AppendLine("echo \"Detecting image debian flavor: $DEBIAN_FLAVOR.\"")
                 .AppendLine($"if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")

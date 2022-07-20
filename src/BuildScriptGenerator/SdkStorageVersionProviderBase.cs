@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 // TODO: PR2 Remove this logic, as we will be able to depend on bullseye images existing in the sdk storage
                 var patternText = this.commonOptions.DebianFlavor == OsTypes.DebianBullseye
-                    ? $"{platformName}-buster-(?<version>.*?).tar.gz"
+                    ? $"{platformName}-{OsTypes.DebianBuster}-(?<version>.*?).tar.gz"
                     : $"{platformName}-{this.commonOptions.DebianFlavor}-(?<version>.*?).tar.gz";
 
                 // try to parse the version from the file name, as we currently don't supply version metadata to non-stretch sdks

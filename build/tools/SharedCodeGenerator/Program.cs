@@ -169,7 +169,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                         }
 
                         var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
-                        var versionPart = parts[0];
+                        var versionPart = parts[0].Trim();
                         supportedVersions.Add(new VersionInfo(versionPart, platformName));
                     }
                 }
