@@ -278,6 +278,8 @@
     # supported versions by searching for all SDKs that contain a Version metadata field.
     sdk-version-metadata-name: SDK_Version
     legacy-sdk-version-metadata-name: Version
+    dotnet-runtime-version-metadata-name: Dotnet_runtime_version
+    legacy-dotnet-runtime-version-metadata-name: Runtime_version
     os-type-metadata-name: Os_type
   outputs:
     - type: shell

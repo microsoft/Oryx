@@ -17,6 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string SdkDownloadSentinelFileName = ".oryx-sdkdownload-sentinel";
         public const string SdkVersionMetadataName = "SDK_Version";
         public const string LegacySdkVersionMetadataName = "Version";
+        public const string DotnetRuntimeVersionMetadataName = "Dotnet_runtime_version";
+        public const string LegacyDotnetRuntimeVersionMetadataName = "Runtime_version";
         public const string OsTypeMetadataName = "Os_type";
     }
 }
