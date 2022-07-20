@@ -273,6 +273,9 @@
     versions-to-build-file-name: versionsToBuild.txt
     container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata'
     sdk-download-sentinel-file-name: .oryx-sdkdownload-sentinel
+    # The following metadata names control the field that is uploaded to sdk storage alongside each sdk.
+    # Legacy is used to provide backwards compatibility for images with an older CLI, as they depend on identifying
+    # supported versions by searching for all SDKs that contain a Version metadata field.
     sdk-version-metadata-name: SDK_Version
     legacy-sdk-version-metadata-name: Version
     os-type-metadata-name: Os_type

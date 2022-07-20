@@ -26,7 +26,8 @@ namespace Oryx.Integration.Tests
         private readonly string _repoRootDir;
 
         private readonly string[] _debianFlavors = 
-        { 
+        {
+            // TODO: PR2 OsTypes.DebianBullseye can be added once bullseye images are uploaded
             OsTypes.DebianBuster, OsTypes.DebianStretch, OsTypes.UbuntuFocalScm, /* OsTypes.DebianBullseye */
         };
 

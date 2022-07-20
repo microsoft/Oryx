@@ -19,19 +19,19 @@ downloadMavenBinary()
     local version="$1"
     tarFileName="maven-$version.tar.gz"
     metadataFile=""
-	sdkVersionMetadataName=""
+    sdkVersionMetadataName=""
 
     if [ "$debianFlavor" == "stretch" ]; then
             # Use default sdk file name
             tarFileName=maven-$version.tar.gz
             metadataFile="$hostMavenArtifactsDir/maven-$version-metadata.txt"
-			# Continue adding the version metadata with the name of Version
-			# which is what our legacy CLI will use
-			sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+            # Continue adding the version metadata with the name of Version
+            # which is what our legacy CLI will use
+            sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
     else
             tarFileName=maven-$debianFlavor-$version.tar.gz
             metadataFile="$hostMavenArtifactsDir/maven-$debianFlavor-$version-metadata.txt"
-			sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
+            sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
     fi
 
     if shouldBuildSdk maven $tarFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk maven; then
@@ -43,7 +43,7 @@ downloadMavenBinary()
         tar -zcf "$hostMavenArtifactsDir/$tarFileName" .
 
         echo "$sdkVersionMetadataName=$version" >> $metadataFile
-		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
+        echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
     fi
 }
 
