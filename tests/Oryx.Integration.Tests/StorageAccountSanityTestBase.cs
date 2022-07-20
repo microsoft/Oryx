@@ -27,8 +27,7 @@ namespace Oryx.Integration.Tests
 
         private readonly string[] _debianFlavors = 
         {
-            // TODO: PR2 OsTypes.DebianBullseye can be added once bullseye images are uploaded
-            OsTypes.DebianBuster, OsTypes.DebianStretch, OsTypes.UbuntuFocalScm, /* OsTypes.DebianBullseye */
+            OsTypes.DebianBuster, OsTypes.DebianStretch, OsTypes.UbuntuFocalScm, OsTypes.DebianBullseye
         };
 
         public StorageAccountSanityTestBase(
@@ -46,7 +45,7 @@ namespace Oryx.Integration.Tests
         public void DotNetCoreContainer_HasExpectedListOfBlobs()
         {
             var platformName = "dotnet";
-            AssertExpectedListOfBlobs(platformName, "version", platformName);
+            AssertExpectedListOfBlobs(platformName, platformName);
         }
 
         [Fact]
@@ -60,7 +59,7 @@ namespace Oryx.Integration.Tests
         public void GolangCoreContainer_HasExpectedListOfBlobs()
         {
             var platformName = "golang";
-            AssertExpectedListOfBlobs(platformName, "version", platformName);
+            AssertExpectedListOfBlobs(platformName, platformName);
         }
 
         [Fact]
@@ -74,7 +73,7 @@ namespace Oryx.Integration.Tests
         public void PythonContainer_HasExpectedListOfBlobs()
         {
             var platformName = "python";
-            AssertExpectedListOfBlobs(platformName, "version", platformName);
+            AssertExpectedListOfBlobs(platformName, platformName);
         }
 
         [Fact]
@@ -89,7 +88,7 @@ namespace Oryx.Integration.Tests
         {
             // Arrange & Act
             var platformName = "nodejs";
-            AssertExpectedListOfBlobs(platformName, "version", platformName);
+            AssertExpectedListOfBlobs(platformName, platformName);
         }
 
         [Fact]
@@ -103,14 +102,14 @@ namespace Oryx.Integration.Tests
         public void PhpComposerCoreContainer_HasExpectedListOfBlobs()
         {
             var platformName = "php-composer";
-            AssertExpectedListOfBlobs(platformName, "version", "php", "composer");
+            AssertExpectedListOfBlobs(platformName, "php", "composer");
         }
 
         [Fact]
         public void PhpContainer_HasExpectedListOfBlobs()
         {
             var platformName = "php";
-            AssertExpectedListOfBlobs(platformName, "version", platformName);
+            AssertExpectedListOfBlobs(platformName, platformName);
         }
 
         [Fact]
@@ -124,7 +123,7 @@ namespace Oryx.Integration.Tests
         public void RubyContainer_HasExpectedListOfBlobs()
         {
             var platformName = "ruby";
-            AssertExpectedListOfBlobs(platformName, "version", platformName);
+            AssertExpectedListOfBlobs(platformName, platformName);
         }
 
         [Fact]
@@ -138,7 +137,7 @@ namespace Oryx.Integration.Tests
         public void JavaContainer_HasExpectedListOfBlobs()
         {
             var platformName = "java";
-            AssertExpectedListOfBlobs(platformName, "version", platformName);
+            AssertExpectedListOfBlobs(platformName, platformName);
         }
 
         [Fact]
@@ -152,7 +151,7 @@ namespace Oryx.Integration.Tests
         [Fact]
         public void MavenContainer_HasExpectedListOfBlobs()
         {
-            AssertExpectedListOfBlobs("maven", "version", "java", "maven");
+            AssertExpectedListOfBlobs("maven", "java", "maven");
         }
 
         [Fact]
@@ -174,12 +173,12 @@ namespace Oryx.Integration.Tests
             }
         }
 
-        private void AssertExpectedListOfBlobs(string platformName, string metadataElementName, params string[] expectedPlatformPath)
+        private void AssertExpectedListOfBlobs(string platformName, params string[] expectedPlatformPath)
         {
             foreach (var debianFlavor in _debianFlavors)
             {
                 // Arrange & Act
-                var actualVersions = GetVersionsFromContainer(debianFlavor, platformName, metadataElementName);
+                var actualVersions = GetVersionsFromContainer(debianFlavor, platformName);
                 var expectedVersions = GetListOfVersionsToBuild(debianFlavor, expectedPlatformPath);
 
                 // Assert
@@ -197,45 +196,33 @@ namespace Oryx.Integration.Tests
             return XDocument.Parse(blobList);
         }
 
-        private List<string> GetVersionsFromContainer(string debianFlavor, string platformName, string metadataElementName)
+        private List<string> GetVersionsFromContainer(string debianFlavor, string platformName)
         {
-            // TODO: PR2 configure this to account for the different debian flavors once the Version metadata has
-            // been generated for each package
             var xdoc = GetMetadata(platformName);
             var supportedVersions = new List<string>();
-            foreach (var blobElement in xdoc.XPathSelectElements($"//Blobs/Blob"))
+            var isStretch = string.Equals(debianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase);
+
+            var sdkVersionMetadataName = isStretch
+                ? SdkStorageConstants.LegacySdkVersionMetadataName
+                : SdkStorageConstants.SdkVersionMetadataName;
+
+            foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
             {
-                var childElements = blobElement.Elements();
-                if (debianFlavor == OsTypes.DebianStretch)
-                {
-                    var versionElement = childElements
-                        .Where(e => string.Equals("Metadata", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
-                        .FirstOrDefault()?.Elements()
-                        .Where(e => string.Equals(metadataElementName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
-                        .FirstOrDefault();
+                var childElements = metadataElement.Elements();
+                var versionElement = childElements
+                    .Where(e => string.Equals(sdkVersionMetadataName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault();
 
-                    if (versionElement != null)
-                    {
-                        supportedVersions.Add(versionElement.Value);
-                    }
-                }
-                else
-                {
-                    var fileName = childElements
-                        .Where(e => string.Equals("Name", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
-                        .FirstOrDefault();
+                var osTypeElement = childElements
+                    .Where(e => string.Equals(SdkStorageConstants.OsTypeMetadataName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault();
 
-                    if (fileName != null)
-                    {
-                        var patternText = $"{platformName}-{debianFlavor}-(?<version>.*?).tar.gz";
-                        Regex expression = new Regex(patternText);
-                        Match match = expression.Match(fileName.Value);
-                        if (match.Success)
-                        {
-                            var result = match.Groups["version"].Value;
-                            supportedVersions.Add(result);
-                        }
-                    }
+                // if the os type is stretch and we find a blob with the correct version metadata, we add as a supported version
+                // otherwise, we check the blob for the correct version metadata and ensure that its os type/debian flavor matches
+                if (versionElement != null &&
+                    (isStretch || (osTypeElement != null && string.Equals(debianFlavor, osTypeElement.Value, StringComparison.OrdinalIgnoreCase))))
+                {
+                    supportedVersions.Add(versionElement.Value);
                 }
             }
 
@@ -244,11 +231,11 @@ namespace Oryx.Integration.Tests
 
         private string GetDefaultVersionFromContainer(string debianFlavor, string platformName)
         {
-            // TODO: PR2 replace this with the defaultVersion.{debianFlavor}.txt once we actually have the blobs in the
-            // storage account
-            var defaultVersionContent = _httpClient
-                .GetStringAsync($"{_storageUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}")
-                .Result;
+            var defaultFile = string.Equals(debianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
+                ? SdkStorageConstants.DefaultVersionFileName
+                : $"{SdkStorageConstants.DefaultVersionFilePrefix}.{debianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
+            var defaultVersionUrl = $"{_storageUrl}/{platformName}/{defaultFile}";
+            var defaultVersionContent = _httpClient.GetStringAsync(defaultVersionUrl).Result;
 
             string defaultVersion = null;
             using (var stringReader = new StringReader(defaultVersionContent))

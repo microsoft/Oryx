@@ -8,6 +8,7 @@ using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -542,8 +543,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        // TODO: PR2 update this to look for correct error message once CLI can use version metadata
-        // to detect that the runtime and sdk versions don't exist in the storage account
         [Theory, Trait("category", "githubactions")]
         [InlineData("github-actions-buster")]
         [InlineData("github-actions-bullseye")]
@@ -582,6 +581,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.False(result.IsSuccess);
+                    Assert.Contains($"Error: Platform '{DotNetCoreConstants.PlatformName}' version '{runtimeVersion}' is unsupported.", result.StdErr);
                 },
                 result.GetDebugInfo());
         }

@@ -11,11 +11,13 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public class DotNetCoreSdkStorageVersionProvider : SdkStorageVersionProviderBase, IDotNetCoreVersionProvider
     {
+        private readonly BuildScriptGeneratorOptions commonOptions;
         private Dictionary<string, string> versionMap;
         private string defaultRuntimeVersion;
 
@@ -43,8 +45,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public void GetVersionInfo()
         {
-            // TODO: PR2 configure this to account for the different debian flavors once the Version metadata has
-            // been generated for each package. We also need the Runtime_Version metadata for this method
             if (this.versionMap == null)
             {
                 var httpClient = this.HttpClientFactory.CreateClient("general");
@@ -58,11 +58,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // keys represent runtime version, values represent sdk version
                 var supportedVersions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+                var sdkVersionMetadataName = SdkStorageConstants.SdkVersionMetadataName;
+                var runtimeVersionMetadataName = SdkStorageConstants.DotnetRuntimeVersionMetadataName;
+
+                if (this.commonOptions.DebianFlavor == OsTypes.DebianStretch)
+                {
+                    sdkVersionMetadataName = SdkStorageConstants.LegacySdkVersionMetadataName;
+                    runtimeVersionMetadataName = SdkStorageConstants.LegacyDotnetRuntimeVersionMetadataName;
+                }
+
                 foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
                 {
                     var childElements = metadataElement.Elements();
+
                     var runtimeVersionElement = childElements.Where(e => string.Equals(
-                            DotNetCoreConstants.StorageSdkMetadataRuntimeVersionElementName,
+                            runtimeVersionMetadataName,
                             e.Name.LocalName,
                             StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault();
@@ -70,12 +80,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     if (runtimeVersionElement != null)
                     {
                         var sdkVersionElement = childElements.Where(e => string.Equals(
-                                DotNetCoreConstants.StorageSdkMetadataSdkVersionElementName,
+                                sdkVersionMetadataName,
                                 e.Name.LocalName,
                                 StringComparison.OrdinalIgnoreCase))
                             .FirstOrDefault();
 
-                        supportedVersions[runtimeVersionElement.Value] = sdkVersionElement.Value;
+                        var osTypeElement = childElements.Where(e => string.Equals(
+                                SdkStorageConstants.OsTypeMetadataName,
+                                e.Name.LocalName,
+                                StringComparison.OrdinalIgnoreCase))
+                            .FirstOrDefault();
+
+                        if (this.commonOptions.DebianFlavor == OsTypes.DebianStretch || this.commonOptions.DebianFlavor == osTypeElement.Value)
+                        {
+                            supportedVersions[runtimeVersionElement.Value] = sdkVersionElement.Value;
+                        }
                     }
                 }
 
