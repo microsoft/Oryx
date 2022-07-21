@@ -22,6 +22,10 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         private const string VarPrefix = "${";
         private const string VarSuffix = "}";
 
+        private const string VersionsToBuildFile = "versionsToBuild.txt";
+        private const string LegacyVersionsFile = "legacyVersions.txt";
+        private const string SupportedVersionsOutputFile = "supportedPlatformVerions.md";
+
         public static int Main(string[] args)
         {
             if (args.Length != 2)
@@ -97,7 +101,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         private static void GenerateSupportedPlatformsReadmeFile(string repoDir)
         {
             var platformsDir = Path.Combine(repoDir, "platforms");
-            var targetReadmeFilePath = Path.Combine(repoDir, "doc", "supportedPlatformVerions.md");
+            var targetReadmeFilePath = Path.Combine(repoDir, "doc", SupportedVersionsOutputFile);
             Console.WriteLine($"Writing file '{targetReadmeFilePath}'");
             using (var sw = new StreamWriter(File.Open(targetReadmeFilePath, FileMode.Create)))
             {
@@ -155,8 +159,8 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                 var osType = osTypeDirInfo.Name;
                 sw.WriteLine($"### {osType}");
                 sw.WriteLine();
-                var versionFile = Path.Join(osTypeDirPath, "versionsToBuild.txt");
-                var legacyVersionFile = Path.Join(osTypeDirPath, "legacyVersions.txt");
+                var versionFile = Path.Join(osTypeDirPath, VersionsToBuildFile);
+                var legacyVersionFile = Path.Join(osTypeDirPath, LegacyVersionsFile);
                 var supportedVersions = new List<VersionInfo>();
                 using (var reader = new StreamReader(versionFile))
                 {
