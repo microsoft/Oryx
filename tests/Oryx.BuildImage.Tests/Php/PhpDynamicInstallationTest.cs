@@ -33,6 +33,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 );
                 var imageHelper = new ImageTestHelper();
                 data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage(), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php81Version, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"), PhpVersions.ComposerVersion);
 

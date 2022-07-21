@@ -16,7 +16,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Collection("Php integration")]
     public class PhpWordPressFpmTest : PhpEndToEndTestsBase
     {
         public PhpWordPressFpmTest(ITestOutputHelper output, TestTempDirTestFixture fixture)

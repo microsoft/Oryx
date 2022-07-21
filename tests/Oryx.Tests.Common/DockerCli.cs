@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 
@@ -17,9 +18,11 @@ namespace Microsoft.Oryx.Tests.Common
     {
         private const string CreatedContainerPrefix = "oryxtests_";
         private const string DockerCmd = "docker";
+        private const int TotalContainerStartupRetries = 100;
 
         private readonly TimeSpan _waitTimeForExit;
         private readonly IEnumerable<EnvironmentVariable> _globalEnvVars;
+        private readonly TimeSpan _containerStartupRetryDelay = TimeSpan.FromSeconds(5);
 
         public DockerCli(IEnumerable<EnvironmentVariable> globalEnvVars = null)
             : this(TimeSpan.FromMinutes(90), globalEnvVars)
@@ -145,6 +148,26 @@ namespace Microsoft.Oryx.Tests.Common
                 outputBuilder,
                 errorBuilder,
                 $"{DockerCmd} {string.Join(" ", arguments)}");
+        }
+
+        public async Task<DockerRunCommandProcessResult> RunAndWaitForContainerStartAsync(DockerRunArguments dockerRunArguments)
+        {
+            var dockerCommand = RunAndDoNotWaitForProcessExit(dockerRunArguments);
+
+            var retry = 0;
+            while (!dockerCommand.Process.HasExited && retry < TotalContainerStartupRetries)
+            {
+                // This invokes the docker ps command, which returns an empty string until the container starts.
+                if (!string.IsNullOrEmpty(GetContainerStatus(dockerCommand.ContainerName)))
+                {
+                    break;
+                }
+
+                await Task.Delay(_containerStartupRetryDelay);
+                retry++;
+            }
+
+            return dockerCommand;
         }
 
         public DockerCommandResult RemoveContainer(string containerName, bool forceRemove)
