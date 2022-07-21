@@ -57,6 +57,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"platformName=\"{platformName}\"")
 
                 // TODO: PR2 remove this if statement, as bullseye images will be supported
+                // Temporarily use buster SDKs in bullseye image until bullseye SDKs are supported in storage account.
+                // Bug item: 1578477
                 .AppendLine($"if [ \"$DEBIAN_FLAVOR\" = \"{OsTypes.DebianBullseye}\" ]; then")
                 .AppendLine($"SDK_DEBIAN_TYPE=\"{OsTypes.DebianBuster}\"")
                 .AppendLine("fi")
