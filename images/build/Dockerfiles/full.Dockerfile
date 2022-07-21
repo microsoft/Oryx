@@ -23,6 +23,7 @@ ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
 # docker multi-stage builds
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/ /opt/
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
@@ -67,6 +68,12 @@ RUN apt-get update \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && echo "full" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+
+RUN set -ex \
+    && tmpDir="/opt/tmp" \
+    && imagesDir="$tmpDir/images" \
+    # enables custom logging
+    && cp -f $imagesDir/build/logger.sh /opt/oryx/logger
 
 ENV ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io"
 ENV ENABLE_DYNAMIC_INSTALL="true"

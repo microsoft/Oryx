@@ -26,25 +26,27 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Fact, Trait("category", "php-8.0")]
-        public void PipelineTestInvocationsPhp80()
+        public async Task PipelineTestInvocationsPhp80Async()
         {   
             string phpVersion80 = "8.0";
-            ExifExample(phpVersion80);
-            PhpFpmExifExample(phpVersion80);
+            await Task.WhenAll(
+                ExifExampleAsync(phpVersion80),
+                PhpFpmExifExampleAsync(phpVersion80));
         }
 
         [Fact, Trait("category", "php-7.4")]
-        public void PipelineTestInvocationsPhp74()
+        public async Task PipelineTestInvocationsPhp74Async()
         {
             string phpVersion74 = "7.4";
-            ExifExample(phpVersion74);
-            PhpFpmExifExample(phpVersion74);
+            await Task.WhenAll(
+                ExifExampleAsync(phpVersion74),
+                PhpFpmExifExampleAsync(phpVersion74));
         }
 
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task ExifExample(string phpVersion)
+        public async Task ExifExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "exif-example";
@@ -80,7 +82,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task PhpFpmExifExample(string phpVersion)
+        public async Task PhpFpmExifExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "exif-example";

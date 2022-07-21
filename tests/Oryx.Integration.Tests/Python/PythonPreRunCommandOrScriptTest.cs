@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "Bug 1410367") ]
-        public async Task CanBuildAndRunPythonApp_UsingPreRunCommand_WithDynamicInstall()
+        public async Task CanBuildAndRunPythonApp_UsingPreRunCommand_WithDynamicInstallAsync()
         {
             // Arrange
             var pythonVersion = "3.7";
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "Bug 1410367") ]
-        public async Task CanBuildAndRunPythonApp_UsingPreRunScript_WithDynamicInstall()
+        public async Task CanBuildAndRunPythonApp_UsingPreRunScript_WithDynamicInstallAsync()
         {
             // Arrange
             var pythonVersion = "3.7";
@@ -151,7 +151,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact (Skip = "Bug 1410367")]
-        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFile()
+        public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange
             var version = "3.8";

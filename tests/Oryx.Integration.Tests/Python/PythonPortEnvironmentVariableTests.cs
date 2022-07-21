@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task PythonStartupScript_UsesPortEnvironmentVariableValue()
+        public async Task PythonStartupScript_UsesPortEnvironmentVariableValueAsync()
         {
             // Arrange
             var appName = "django-app";
@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task PythonStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresent()
+        public async Task PythonStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresentAsync()
         {
             // Arrange
             var appName = "django-app";

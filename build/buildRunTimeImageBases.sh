@@ -40,16 +40,16 @@ then
 fi
 
 echo
-echo "Building the common base image wih bullseye, buster and stretch flavor '$RUNTIME_BASE_IMAGE_NAME'..."
+echo "Building the common base image wih bullseye and buster flavor '$RUNTIME_BASE_IMAGE_NAME'..."
 echo
 # Build the common base image first, so other images that depend on it get the latest version.
 # We don't retrieve this image from a repository but rather build locally to make sure we get
 # the latest version of its own base image.
 docker build \
     --pull \
-    --build-arg DEBIAN_FLAVOR=stretch \
+    --build-arg DEBIAN_FLAVOR=buster \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
-    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-stretch" \
+    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-buster" \
     $REPO_DIR
 
 docker build \
@@ -70,12 +70,6 @@ dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)
 bullseyeNodeDockerFiles=()
 
 if [ "$runtimeSubDir" == "node" ]; then
-    docker build \
-        --build-arg DEBIAN_FLAVOR=stretch \
-        -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
-        -t "oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-stretch" \
-        $REPO_DIR
-
     docker build \
         --build-arg DEBIAN_FLAVOR=bullseye \
         -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
@@ -134,10 +128,6 @@ for dockerFile in $dockerFiles; do
     docker build -f $dockerFile \
         -t $localImageTagName \
         --build-arg CACHEBUST=$(date +%s) \
-        --build-arg NODE6_VERSION=$NODE6_VERSION \
-        --build-arg NODE8_VERSION=$NODE8_VERSION \
-        --build-arg NODE10_VERSION=$NODE10_VERSION \
-        --build-arg NODE12_VERSION=$NODE12_VERSION \
         --build-arg NODE14_VERSION=$NODE14_VERSION \
         --build-arg NODE16_VERSION=$NODE16_VERSION \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \

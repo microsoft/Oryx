@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Bug 1410367") ]
         [InlineData("7.4")]
-        public async Task PhpApp(string phpVersion)
+        public async Task PhpAppAsync(string phpVersion)
         {
             await RunTestAsync(
                 "php",

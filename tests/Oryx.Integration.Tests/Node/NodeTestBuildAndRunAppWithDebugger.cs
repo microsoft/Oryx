@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-12-8")]
+    [Trait("category", "node-14-8")]
     public class NodeTestBuildAndRunAppWithDebugger : NodeEndToEndTestsBase
     {
         public NodeTestBuildAndRunAppWithDebugger(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [MemberData(
            nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
            MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRunNodeApp_WithDebugger(string nodeVersion)
+        public async Task CanBuildAndRunNodeApp_WithDebuggerAsync(string nodeVersion)
         {
             // Arrange
             var appOutputDirVolume = CreateAppOutputDirVolume();

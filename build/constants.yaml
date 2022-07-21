@@ -33,7 +33,7 @@
     dot-net-50-sdk-version: 5.0.408
     dot-net-60-sdk-version: 6.0.301
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.100-preview.5.22307.18
+    dot-net-70-sdk-version: 7.0.100-preview.6.22352.1
     # Ensure that the below list of runtime versions are sorted in ascending order
     runtime-versions: [1.0, 1.1, 2.0, 2.1, 2.2, 3.0, 3.1, 5.0, 6.0, 7.0]    
   outputs:
@@ -45,7 +45,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20220621.1
+    dot-net-core-runtime-base-tag: 20220713.1
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
 
@@ -79,10 +79,10 @@
     aspnet-core-app-60: 6.0.6
     aspnet-core-app-60-sha: 1a5c0f85820f0eb589700df94de6dbff45fe4089a37f1cd5b1fac33476a2cbd8d5c6f129e55b3716f5a7a2616f1a5a720c52238f21b28a510a3e5c8bcb8c516c
 
-    net-core-app-70: 7.0.0-preview.5.22301.12
-    net-core-app-70-sha: faf8450e1387b3329168c43a95f091f6c41a1230cfd0f4df2e5e1a501a8f8f82e41893cbe1f5f10b247c3ae58ce24ac4c18fd5533756307e50e439ec70ce0e4b
-    aspnet-core-app-70: 7.0.0-preview.5.22303.8
-    aspnet-core-app-70-sha: 40809e8687d7b4d3c11b6778830dac364fa61bfcbd362474ee4de77a2bd4fe25a80edaa2e64807cd6daeb8391fced9e4077b02adfe88196a831e4112fd60e48b
+    net-core-app-70: 7.0.0-preview.6.22324.4
+    net-core-app-70-sha: 304b509b478fbed7e5ec97d9c75821249b933fb5c814c4f14078611d17cd8f95ccdf6c48049c02ed2f033ece61acc17e0a23a59c2a6aca9d191892d0224af45d
+    aspnet-core-app-70: 7.0.0-preview.6.22330.3
+    aspnet-core-app-70-sha: a7aa5f3b788645a39957fa27cce84ca1e7dcfcf7a334d52097e891d3b26b8c8ba981c1f3bbab17831110339e1e62a74e6a54eee15311b8294a2d2c845a07cdbd
 
 
   outputs:
@@ -129,8 +129,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20220603.1
-    php-fpm-runtime-base-tag: 20220603.1
+    php-runtime-base-tag: 20220707.2
+    php-fpm-runtime-base-tag: 20220713.2
     composer-version: 2.0.8
     composer-setup-sha384: 906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8
     composer1-9-version: 1.9.3
@@ -139,12 +139,12 @@
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
     # hashes are for .tar.xz
-    php81-version: 8.1.0
+    php81-version: 8.1.6
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php81-tar-sha256: a1317eff0723a2b3d3122bbfe107a1158570ea2822dc35a5fb360086db0f6bbc
-    php80-version: 8.0.17
+    php81-tar-sha256: da38d65bb0d5dd56f711cd478204f2b62a74a2c2b0d2d523a78d6eb865b2364c
+    php80-version: 8.0.19
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: bdbd792901c156c4d1710c9d266732d3c17f6ff63850d6660b9d8d3411188424
+    php80-tar-sha256: ba62219c4b0486cbb2a04f0796749a46b0ee1f5a142ed454212b4e2460cb0fab
     php74-version: 7.4.28
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
     php74-tar-sha256: a04014cd1646b90547907e2e0ac5371594533960de317b6c7ac70bcb42db92fb

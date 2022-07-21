@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-12-3")]
+    [Trait("category", "node-14-3")]
     public class NodeNextJsAppTest : NodeEndToEndTestsBase
     {
         public const string AppName = "blog-starter-nextjs";
@@ -24,10 +24,10 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "next blogger app is broken")]
-        public async Task CanBuildAndRun_BlogStarterNextJsApp_WithoutZippingNodeModules()
+        public async Task CanBuildAndRun_BlogStarterNextJsApp_WithoutZippingNodeModulesAsync()
         {
             // Arrange
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             var volume = CreateAppVolume(AppName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -68,10 +68,10 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "next blogger app is broken")]
-        public async Task CanBuildAndRun_BlogStarterNextJsApp_UsingZippedNodeModules()
+        public async Task CanBuildAndRun_BlogStarterNextJsApp_UsingZippedNodeModulesAsync()
         {
             // Arrange
-            var nodeVersion = "12";
+            var nodeVersion = "14";
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;

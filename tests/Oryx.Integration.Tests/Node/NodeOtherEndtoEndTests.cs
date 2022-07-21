@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.Integration.Tests
     public class NodeOtherEndtoEndTests : NodeEndToEndTestsBase
     {
 
-        protected static string NodeVersion = "12";
+        protected static string NodeVersion = "14";
 
         public NodeOtherEndtoEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
             : base(output, testTempDirTestFixture)
@@ -27,8 +27,8 @@ namespace Microsoft.Oryx.Integration.Tests
         
 
         [Fact]
-        [Trait("category", "node-12-5")]
-        public async Task CanBuildAndRunNodeApp_UsingCustomManifestFileLocation()
+        [Trait("category", "node-14-5")]
+        public async Task CanBuildAndRunNodeApp_UsingCustomManifestFileLocationAsync()
         {
             // Arrange
             var manifestDirPath = Directory.CreateDirectory(
@@ -79,8 +79,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-5")]
-        public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules_WithoutExtracting()
+        [Trait("category", "node-14-5")]
+        public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules_WithoutExtractingAsync()
         {
             // Arrange
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
@@ -133,7 +133,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory(Skip = "Bug#1071724")]
         [InlineData("true")]
         [InlineData("false")]
-        public async Task CopiesNodeModulesInSubDirectory_ToDestinationAre_WithoutCompressedNodeModules(string pruneDevDependency)
+        public async Task CopiesNodeModulesInSubDirectory_ToDestinationAre_WithoutCompressedNodeModulesAsync(string pruneDevDependency)
         {
             // Arrange
             // Use a separate volume for output due to rsync errors
@@ -179,8 +179,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-5")]
-        public async Task CanBuildAndRunNodeApp_OnSecondBuild_AfterZippingNodeModules_InFirstBuild()
+        [Trait("category", "node-14-5")]
+        public async Task CanBuildAndRunNodeApp_OnSecondBuild_AfterZippingNodeModules_InFirstBuildAsync()
         {
             // Arrange
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
@@ -230,8 +230,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-5")]
-        public async Task CanBuildAndRunNodeApp_OnSecondBuild_AfterNotZippingNodeModules_InFirstBuild()
+        [Trait("category", "node-14-5")]
+        public async Task CanBuildAndRunNodeApp_OnSecondBuild_AfterNotZippingNodeModules_InFirstBuildAsync()
         {
             // Arrange
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
@@ -281,8 +281,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-5")]
-        public async Task NodeStartupScript_UsesPortEnvironmentVariableValue()
+        [Trait("category", "node-14-5")]
+        public async Task NodeStartupScript_UsesPortEnvironmentVariableValueAsync()
         {
             // Arrange
             var nodeVersion = NodeVersion;
@@ -324,10 +324,10 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("ecosystem.config.js"), Trait("category", "node-12-5")]
-        [InlineData("ecosystem.config.yaml"), Trait("category", "node-12-5")]
-        [InlineData("ecosystem.config.yml"), Trait("category", "node-12-5")]
-        public async Task CanRunNodeApp_WithoutPm2_EvenThoughPm2SpecificFilesArePresentInRepo(string pm2ConfigFileName)
+        [InlineData("ecosystem.config.js"), Trait("category", "node-14-5")]
+        [InlineData("ecosystem.config.yaml"), Trait("category", "node-14-5")]
+        [InlineData("ecosystem.config.yml"), Trait("category", "node-14-5")]
+        public async Task CanRunNodeApp_WithoutPm2_EvenThoughPm2SpecificFilesArePresentInRepoAsync(string pm2ConfigFileName)
         {
             // Arrange
             // NOTE: this version does not have PM2 installed and so if PM2 was used in the startup script this test
@@ -373,8 +373,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
-        public async Task NodeStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresent()
+        [Trait("category", "node-14-6")]
+        public async Task NodeStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresentAsync()
         {
             // Arrange
             var nodeVersion = NodeVersion;
@@ -416,8 +416,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
-        public async Task CanBuildAndRunNodeApp_UsingYarnForBuild_AndExplicitOutputFile()
+        [Trait("category", "node-14-6")]
+        public async Task CanBuildAndRunNodeApp_UsingYarnForBuild_AndExplicitOutputFileAsync()
         {
             // Arrange
             var appName = "webfrontend-yarnlock";
@@ -449,8 +449,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         // Run on Linux only as TypeScript seems to create symlinks and this does not work on Windows machines.
-        [EnableOnPlatform("LINUX"), Trait("category", "node-12-6")]
-        public async Task CanBuildNodeAppUsingScriptsNodeInPackageJson()
+        [EnableOnPlatform("LINUX"), Trait("category", "node-14-6")]
+        public async Task CanBuildNodeAppUsingScriptsNodeInPackageJsonAsync()
         {
             // Arrange
             var appName = "NodeAndTypeScriptHelloWorld";
@@ -491,8 +491,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
-        public async Task Node_Lab2AppServiceApp()
+        [Trait("category", "node-14-6")]
+        public async Task Node_Lab2AppServiceAppAsync()
         {
             // Arrange
             var appName = "lab2-appservice";
@@ -533,8 +533,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "bug: 1505700")] 
-        // [Trait("category", "node-12-6")]
-        public async Task Node_SoundCloudNgrxApp()
+        // [Trait("category", "node-14-6")]
+        public async Task Node_SoundCloudNgrxAppAsync()
         {
             // Arrange
             var appName = "soundcloud-ngrx";
@@ -577,8 +577,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
-        public async Task Node_CreateReactAppSample()
+        [Trait("category", "node-14-6")]
+        public async Task Node_CreateReactAppSampleAsync()
         {
             // Arrange
             var appName = "create-react-app-sample";
@@ -619,7 +619,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "get rid of single image, #1088920")]
-        public async Task Node_CreateReactAppSample_SingleImage()
+        public async Task Node_CreateReactAppSample_SingleImageAsync()
         {
             // Arrange
             var appName = "create-react-app-sample";
@@ -657,7 +657,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "get rid of single image, #1088920")]
-        public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomScript()
+        public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomScriptAsync()
         {
             // Arrange
             var appName = "linxnodeexpress";
@@ -701,7 +701,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "get rid of single image, #1088920")]
-        public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnly()
+        public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnlyAsync()
         {
             // Arrange
             var appName = "linxnodeexpress";
@@ -743,8 +743,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
-        public async Task CanBuildAndRunNodeApp_UsingNestedOutputDirectory()
+        [Trait("category", "node-14-6")]
+        public async Task CanBuildAndRunNodeApp_UsingNestedOutputDirectoryAsync()
         {
             // Arrange
             var appName = "webfrontend";
@@ -768,7 +768,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "12"),
+                _imageHelper.GetRuntimeImage("node", "14"),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -784,8 +784,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-12-6")]
-        public async Task CanBuildAndRunNodeApp_UsingIntermediateDir_AndNestedOutputDirectory()
+        [Trait("category", "node-14-6")]
+        public async Task CanBuildAndRunNodeApp_UsingIntermediateDir_AndNestedOutputDirectoryAsync()
         {
             // Arrange
             var appName = "webfrontend";
@@ -809,7 +809,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "12"),
+                _imageHelper.GetRuntimeImage("node", "14"),
                 ContainerPort,
                 "/bin/sh",
                 new[]

@@ -27,25 +27,24 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Fact, Trait("category", "php-8.0")]
-        public void PipelineTestInvocationsPhp80()
+        public async Task PipelineTestInvocationsPhp80Async()
         {
             string phpVersion80 = "8.0";
-            PhpWithWordPress51(phpVersion80);
-            CanBuildAndRun_Wordpress_SampleApp(phpVersion80);
+            await CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion80);
         }
 
         [Fact, Trait("category", "php-7.4")]
-        public void  PipelineTestInvocationsPhp74()
+        public async Task PipelineTestInvocationsPhp74Async()
         {
             string phpVersion74 = "7.4";
-            PhpWithWordPress51(phpVersion74);
-            CanBuildAndRun_Wordpress_SampleApp(phpVersion74);
+            await Task.WhenAll(
+                PhpWithWordPress51Async(phpVersion74),
+                CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion74));
         }
 
         [Theory]
-        [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task PhpWithWordPress51(string phpVersion)
+        public async Task PhpWithWordPress51Async(string phpVersion)
         {
             // Arrange
             string hostDir = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
@@ -94,7 +93,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task CanBuildAndRun_Wordpress_SampleApp(string phpVersion)
+        public async Task CanBuildAndRun_Wordpress_SampleAppAsync(string phpVersion)
         {
             // Arrange
             var appName = "wordpress-example";

@@ -3,7 +3,15 @@
 set -ex
 
 apt-get update && apt-get install mariadb-server --yes
-service mysql start
+
+# As of mariadb 10.5, which bullseye is using, the service name is now mariadb
+# instead of mysql, but the mysql command is still symlinked.
+# See: https://mariadb.com/kb/en/changes-improvements-in-mariadb-105/#binaries-named-mariadb-mysql-symlinked
+if service --status-all | grep -Fq 'mysql'; then    
+    service mysql start
+else
+    service mariadb start
+fi
 
 PASSWDDB="Wordpress@123"
 MAINDB="wordpressdb"

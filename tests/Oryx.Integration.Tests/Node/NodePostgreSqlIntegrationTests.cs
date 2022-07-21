@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory (Skip = "Bug 1410367")]
         [InlineData("github-actions")]
         [InlineData("latest")]
-        public async Task NodeApp_PostgreSqlDB(string imageTag)
+        public async Task NodeApp_PostgreSqlDBAsync(string imageTag)
         {
             await RunTestAsync(
                 "nodejs",

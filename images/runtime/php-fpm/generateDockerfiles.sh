@@ -24,8 +24,6 @@ if [ "$ImageDebianFlavor" == "bullseye" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BULLSEYE[@]}")
 elif [ "$ImageDebianFlavor" == "buster" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")
-elif  [ "$ImageDebianFlavor" == "stretch" ];then
-	PHP_VERSION_ARRAY=("${VERSION_ARRAY[@]}")
 fi
 
 for PHP_VERSION in "${PHP_VERSION_ARRAY[@]}"

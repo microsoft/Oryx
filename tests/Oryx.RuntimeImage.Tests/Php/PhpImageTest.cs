@@ -43,10 +43,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1", PhpVersions.Php81Version)]
         [InlineData("8.0", PhpVersions.Php80Version)]
         [InlineData("7.4", PhpVersions.Php74Version)]
-        [InlineData("7.3", PhpVersions.Php73Version)]
-        [InlineData("7.2", PhpVersions.Php72Version)]
-        [InlineData("7.0", PhpVersions.Php70Version)]
-        [InlineData("5.6", PhpVersions.Php56Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesImageName(string imageTag, string expectedPhpVersion)
         {
@@ -69,10 +65,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
-        [InlineData("5.6")]
         public void GraphicsExtension_Gd_IsInstalled(string imageTag)
         {
             // Arrange & Act
@@ -94,11 +86,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
-        [InlineData("5.6")]
-        public async Task Check_If_Apache_Allows_Casing_In_PHP_File_Extension(string imageTag)
+        public async Task Check_If_Apache_Allows_Casing_In_PHP_File_ExtensionAsync(string imageTag)
         {
             // Arrange
             var appName = "imagick-example";
@@ -165,36 +153,9 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("7.0")]
-        [InlineData("5.6")]
-        // mcrypt only exists in 5.6 and 7.0, it's deprecated from php 7.2  and newer
-        public void Mcrypt_IsInstalled(string imageTag)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
-                CommandToExecuteOnRun = "php",
-                CommandArguments = new[] { "-m", " | grep mcrypt);" }
-            });
-
-            // Assert
-            var output = result.StdOut.ToString();
-            RunAsserts(() =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains("mcrypt", output);
-                },
-                result.GetDebugInfo());
-
-        }
-
-        [Theory]
         [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
         public void MongoDb_IsInstalled(string imageTag)
         {
             // Arrange & Act
@@ -218,8 +179,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
         public void MySqlnd_Azure_IsInstalled(string imageTag)
         {
             // Arrange & Act
@@ -245,10 +204,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
-        [InlineData("5.6")]
         public void PhpRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -287,9 +242,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        [InlineData("7.3")]
-        [InlineData("7.2")]
-        [InlineData("7.0")]
         public void Redis_IsInstalled(string imageTag)
         {
             // Arrange & Act
