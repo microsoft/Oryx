@@ -42,6 +42,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return stringBuilder;
         }
 
+        public static StringBuilder AppendPlatformSpecificSkeletonDepenendenciesInstallation(this StringBuilder stringBuilder, PlatformInstallerBase platformInstaller)
+        {
+            platformInstaller.InstallPlatformSpecificSkeletonDependencies(stringBuilder);
+
+            return stringBuilder;
+        }
+
+        public static StringBuilder AppendCommonSkeletonDepenendenciesInstallation(this StringBuilder stringBuilder)
+        {
+            PlatformInstallerBase.InstallCommonSkeletonDependencies(stringBuilder);
+
+            return stringBuilder;
+        }
+
         public static StringBuilder AppendFormatWithLine(
             this StringBuilder stringBuilder,
             string format,

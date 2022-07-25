@@ -4,8 +4,10 @@
 // --------------------------------------------------------------------------------------------
 
 using System.IO;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -30,6 +32,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 builtInDir: DotNetCoreConstants.DefaultDotNetCoreSdkVersionsInstallDir,
                 dynamicInstallDir: Path.Combine(
                     this.CommonOptions.DynamicInstallRootDir, DotNetCoreConstants.PlatformName));
+        }
+
+        public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
+        {
+            stringBuilder.AppendLine($"echo 'Installing {DotNetCoreConstants.PlatformName} specific dependencies...'");
+
+            stringBuilder.AppendLine("apt-get update");
+            stringBuilder.AppendLine("apt-get install -y --no-install-recommends \\");
+
+            // .NET Core dependencies (this is universal for all versions of .NET Core)
+            stringBuilder.AppendLine("libc6 libgcc1 libgssapi-krb5-2 libstdc++6 zlib1g libuuid1 libunwind8");
+            stringBuilder.AppendLine("rm -rf /var/lib/apt/lists/*");
+
+            InstallPythonToolingAndLanguage(stringBuilder);
         }
     }
 }
