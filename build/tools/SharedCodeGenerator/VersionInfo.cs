@@ -49,11 +49,6 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             // Throws ArgumentException if SemVer library found invalid version format.
             if (displayVersion.Contains('-') || !displayVersion.Any(c => char.IsLetter(c)))
             {
-                if (Version.TryParse(semanticVersionStr, out var dotnetVersion))
-                {
-                    return new SemVer.Version(dotnetVersion.ToString(3));
-                }
-
                 return new SemVer.Version(semanticVersionStr);
             }
 
