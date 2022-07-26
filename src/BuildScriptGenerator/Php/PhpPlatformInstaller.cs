@@ -39,10 +39,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             stringBuilder.AppendLine($"echo 'Installing {PhpConstants.PlatformName} specific dependencies...'");
 
-            stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
-            stringBuilder.AppendLine("imagesDir=\"$tmpDir/images\"");
-            stringBuilder.AppendLine("$imagesDir/build/php/prereqs/installPrereqs.sh");
-
             // Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
             stringBuilder.AppendLine("if [ \"${DEBIAN_FLAVOR}\" = \"buster\" ]; then");
             stringBuilder.AppendAptGetInstallPackages(
@@ -57,6 +53,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 "libxml2-dev",
                 "xz-utils");
             stringBuilder.AppendLine("else");
+            stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
+            stringBuilder.AppendLine("imagesDir=\"$tmpDir/images\"");
+            stringBuilder.AppendLine("$imagesDir/build/php/prereqs/installPrereqs.sh");
             stringBuilder.AppendAptGetInstallPackages(
                 "libcurl3",
                 "libicu57",
