@@ -3,7 +3,14 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
+using Microsoft.Oryx.BuildScriptGenerator.Python;
+using Microsoft.Oryx.BuildScriptGenerator.Ruby;
 using System;
+using System.Collections.Generic;
+using System.Dynamic;
 using System.Globalization;
 using Xunit.Abstractions;
 
@@ -131,6 +138,12 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A runtime image that can be pulled for testing.</returns>
         public string GetRuntimeImage(string platformName, string platformVersion)
         {
+
+            if (PlatformVersionToOsType.TryGetValue(platformName, out var versionToOsType) && versionToOsType.TryGetValue(platformVersion, out var osType))
+            {
+                return $"{_repoPrefix}/{platformName}:{platformVersion}-{osType}{_tagSuffix}";
+            }
+            
             return $"{_repoPrefix}/{platformName}:{platformVersion}{_tagSuffix}";
         }
 
@@ -300,5 +313,59 @@ namespace Microsoft.Oryx.Tests.Common
 
             return _tagSuffix;
         }
+
+        private Dictionary<string, Dictionary<string, string>> PlatformVersionToOsType = new Dictionary<string, Dictionary<string, string>>
+        {
+            {
+                DotNetCoreConstants.PlatformName,
+                new Dictionary<string, string>
+                {
+                    { "3.0", "buster" },
+                    { "3.1", "bullseye" },
+                    { "5.0", "buster" },
+                    { "6.0", "buster" },
+                    { "7.0", "buster" },
+                }
+            },
+            {
+                NodeConstants.PlatformName,
+                new Dictionary<string, string>
+                {
+                    { "14", "bullseye" },
+                    { "16", "bullseye" },
+                }
+            },
+            {
+                PhpConstants.PlatformName,
+                new Dictionary<string, string>
+                {
+                    { "7.4", "bullseye" },
+                    { "8.0", "buster" },
+                    { "8.1", "bullseye" },
+                    { "7.4-fpm", "bullseye" },
+                    { "8.0-fpm", "buster" },
+                    { "8.1-fpm", "bullseye" },
+                }
+            },
+            {
+                PythonConstants.PlatformName,
+                new Dictionary<string, string>
+                {
+                    { "3.7", "bullseye" },
+                    { "3.8", "bullseye" },
+                    { "3.9", "buster" },
+                    { "3.10", "bullseye" },
+                }
+            },
+            {
+                RubyConstants.PlatformName,
+                new Dictionary<string, string>
+                {
+                    { "2.5", "buster" },
+                    { "2,6", "buster" },
+                    { "2.7", "buster" },
+                }
+            },
+        };
     }
 }

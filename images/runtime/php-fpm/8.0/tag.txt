@@ -1,1 +1,1 @@
-php:8.0-fpm
+php:8.0-fpm-buster
