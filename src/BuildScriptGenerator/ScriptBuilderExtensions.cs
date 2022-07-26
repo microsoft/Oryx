@@ -56,6 +56,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             return stringBuilder;
         }
 
+        public static StringBuilder AppendAptGetInstallPackages(this StringBuilder stringBuilder, params string[] packagesToInstall)
+        {
+            stringBuilder.AppendLine("apt-get update");
+            stringBuilder.AppendLine("apt-get upgrade -y");
+            stringBuilder.AppendLine("apt-get install -y --no-install-recommends \\");
+            stringBuilder.AppendLine($"  {string.Join(" ", packagesToInstall)}");
+            stringBuilder.AppendLine("rm -rf /var/lib/apt/lists/*");
+
+            return stringBuilder;
+        }
+
         public static StringBuilder AppendFormatWithLine(
             this StringBuilder stringBuilder,
             string format,

@@ -38,12 +38,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             stringBuilder.AppendLine($"echo 'Installing {DotNetCoreConstants.PlatformName} specific dependencies...'");
 
-            stringBuilder.AppendLine("apt-get update");
-            stringBuilder.AppendLine("apt-get install -y --no-install-recommends \\");
-
             // .NET Core dependencies (this is universal for all versions of .NET Core)
-            stringBuilder.AppendLine("libc6 libgcc1 libgssapi-krb5-2 libstdc++6 zlib1g libuuid1 libunwind8");
-            stringBuilder.AppendLine("rm -rf /var/lib/apt/lists/*");
+            stringBuilder.AppendAptGetInstallPackages(
+                "libc6",
+                "libgcc1",
+                "libgssapi-krb5-2",
+                "libstdc++6",
+                "zlib1g",
+                "libuuid1",
+                "libunwind8");
 
             InstallPythonToolingAndLanguage(stringBuilder);
         }

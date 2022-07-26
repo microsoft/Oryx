@@ -39,22 +39,35 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         {
             stringBuilder.AppendLine($"echo 'Installing {PhpConstants.PlatformName} specific dependencies...'");
 
+            stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
+            stringBuilder.AppendLine("imagesDir=\"$tmpDir/images\"");
+            stringBuilder.AppendLine("$imagesDir/build/php/prereqs/installPrereqs.sh");
+
             // Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
             stringBuilder.AppendLine("if [ \"${DEBIAN_FLAVOR}\" = \"buster\" ]; then");
-            stringBuilder.AppendLine("  apt-get update");
-            stringBuilder.AppendLine("  apt-get install -y --no-install-recommends \\");
-
-            // buster dependencies
-            stringBuilder.AppendLine("  ca-certificates libargon2-0 libcurl4-openssl-dev libedit-dev libonig-dev \\");
-            stringBuilder.AppendLine("  libncurses6 libsodium-dev libsqlite3-dev libxml2-dev xz-utils");
+            stringBuilder.AppendAptGetInstallPackages(
+                "ca-certificates",
+                "libargon2-0",
+                "libcurl4-openssl-dev",
+                "libedit-dev",
+                "libonig-dev",
+                "libncurses6",
+                "libsodium-dev",
+                "libsqlite3-dev",
+                "libxml2-dev",
+                "xz-utils");
             stringBuilder.AppendLine("else");
-            stringBuilder.AppendLine("  apt-get update");
-            stringBuilder.AppendLine("  apt-get install -y --no-install-recommends \\");
-
-            // other OS type dependencies
-            stringBuilder.AppendLine("  libcurl3 libicu57 liblttng-ust0 libssl1.0.2");
+            stringBuilder.AppendAptGetInstallPackages(
+                "libcurl3",
+                "libicu57",
+                "liblttng-ust0",
+                "libssl1.0.2",
+                "libargon2-0",
+                "libonig-dev",
+                "libncurses5-dev",
+                "libxml2-dev",
+                "libedit-dev");
             stringBuilder.AppendLine("fi");
-            stringBuilder.AppendLine("rm -rf /var/lib/apt/lists/*");
         }
     }
 }

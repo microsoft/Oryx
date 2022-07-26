@@ -34,10 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static void InstallCommonSkeletonDependencies(StringBuilder stringBuilder)
         {
             stringBuilder.AppendLine("echo 'Installing common platform dependencies...'");
-            stringBuilder.AppendLine("  apt-get update");
-            stringBuilder.AppendLine("  apt-get install -y --no-install-recommends \\");
-            stringBuilder.AppendLine("    git");
-            stringBuilder.AppendLine("rm -rf /var/lib/apt/lists/*");
+            stringBuilder.AppendAptGetInstallPackages("git", "tk-dev", "uuid-dev");
         }
 
         public static void InstallPythonToolingAndLanguage(StringBuilder stringBuilder)
@@ -46,12 +43,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             // Install Python tooling
             stringBuilder.AppendLine("PYTHONIOENCODING=\"UTF-8\"");
-            stringBuilder.AppendLine("apt-get update");
-            stringBuilder.AppendLine("apt-get upgrade -y");
-            stringBuilder.AppendLine("apt-get install -y --no-install-recommends \\");
-            stringBuilder.AppendLine("  make unzip build-essential libpq-dev moreutils python3-pip rsync swig \\");
-            stringBuilder.AppendLine("  tk-dev unixodbc-dev uuid-dev");
-            stringBuilder.AppendLine("rm -rf /var/lib/apt/lists/*");
+            stringBuilder.AppendAptGetInstallPackages(
+                "make",
+                "unzip",
+                "build-essential",
+                "libpq-dev",
+                "moreutils",
+                "python3-pip",
+                "rsync",
+                "swig",
+                "tk-dev",
+                "unixodbc-dev",
+                "uuid-dev");
 
             // Install Python 3.8
             stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
