@@ -23,7 +23,16 @@ namespace Microsoft.Oryx.Integration.Tests
         // Unique category traits are needed to run each
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
-        [Fact, Trait("category", "php-8.0")]
+        [Fact, Trait("category", "php-81")]
+        public async Task PipelineTestInvocationsPhp81Async()
+        {   
+            string phpVersion81 = "8.1";
+            await Task.WhenAll(
+                TwigExampleAsync(phpVersion81),
+                PhpFpmTwigExampleAsync(phpVersion81));
+        }
+
+        [Fact, Trait("category", "php-80")]
         public async Task PipelineTestInvocationsPhp80Async()
         {   
             string phpVersion80 = "8.0";
@@ -32,7 +41,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 PhpFpmTwigExampleAsync(phpVersion80));
         }
 
-        [Fact, Trait("category", "php-7.4")]
+        [Fact, Trait("category", "php-74")]
         public async Task PipelineTestInvocationsPhp74Async()
         {
             string phpVersion74 = "7.4";
@@ -42,6 +51,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
         // Twig does not support PHP < 7
@@ -78,6 +88,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
         // Twig does not support PHP < 7
