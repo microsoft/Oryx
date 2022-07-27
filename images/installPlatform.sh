@@ -48,6 +48,9 @@ if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
 	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 elif [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "focal-scm" ]; then
   fileName="$PLATFORM_NAME-$debianFlavor-$VERSION.tar.gz"
+elif [ "$debianFlavor" == "bullseye" ] && [ "$PLATFORM_NAME" == "php" ] && [ "$VERSION" == "8.1.6" ]; then
+  # Temporary: Specific case for PHP 8.1.6 being used in bullseye build image
+  fileName="$PLATFORM_NAME-bullseye-$VERSION.tar.gz"
 else
   # Bullseye SDKs are not supported so using buster version for now.
   fileName="$PLATFORM_NAME-buster-$VERSION.tar.gz"

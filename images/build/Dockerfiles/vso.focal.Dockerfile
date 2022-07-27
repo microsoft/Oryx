@@ -86,7 +86,7 @@ RUN set -ex \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
     # https://github.com/docker-library/python/issues/147
-    && PYTHONIOENCODING="UTF-8" \    
+    && PYTHONIOENCODING="UTF-8" \
     && apt-get update \
     && apt-get upgrade -y \
     # It's not clear whether these are needed at runtime...

@@ -42,7 +42,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu67 \
-            libcurl4 \ 
+            libcurl4 \
             libssl1.1 \
         && rm -rf /var/lib/apt/lists/* \
         && curl -LO http://security.debian.org/debian-security/pool/updates/main/libx/libxml2/libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb \
@@ -52,7 +52,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu63 \
-            libcurl4 \ 
+            libcurl4 \
             libssl1.1 \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
@@ -97,6 +97,7 @@ RUN set -ex \
 
 FROM main AS final
 ARG SDK_STORAGE_BASE_URL_VALUE
+ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG AI_KEY
 
@@ -105,7 +106,7 @@ COPY --from=intermediate /opt /opt
 # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
 RUN ${IMAGES_DIR}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates" \
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
-    
+
 # Install PHP pre-reqs	# Install PHP pre-reqs
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ] || [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
     apt-get update \
@@ -121,6 +122,55 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ] || [ "${DEBIAN_FLAVOR}" = "bullseye" ];
     else \
         .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
     fi 
+
+# Temporary: Install Python 3.11 for bullseye
+RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
+    export PYTHON_VERSION="3.11.04b" \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential \ 
+        tk-dev \
+        uuid-dev \
+        libgeos-dev \
+    && cp ${IMAGES_DIR}/receiveGpgKeys.sh /tmp \
+    && ${BUILD_DIR}/buildPythonSdkByVersion.sh 3.11.0b4 \
+    && set -ex \
+    && cd /opt/python/ \
+    && ln -s 3.11.0b4 3.11 \
+    && ln -s 3.11 3 \
+    && echo /opt/python/3.11.04b/lib >> /etc/ld.so.conf.d/python.conf \
+    && ldconfig \
+    && cd /opt/python/3.11.04b/bin \
+    && ln -nsf idle3 idle \
+    && ln -nsf pydoc3 pydoc \
+    && ln -nsf python3-config python-config \
+    && rm -rf /var/lib/apt/lists/* ; \
+fi
+
+# Temporary: Install node 18.7.0 for bullseye
+RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
+    apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        make \
+        jq \
+    && curl -sL https://git.io/n-install | bash -s -- -ny - \
+    && set -ex \
+    && ~/n/bin/n -d 18.7.0 \
+    && mkdir -p /opt/node \
+    && cp -r /usr/local/n/versions/node/18.7.0 /opt/node \
+    && rm -rf /usr/local/n ~/n \
+    && rm -r /var/lib/apt/lists/* ; \
+fi
+
+# Temporary: Install PHP 8.1.6 for bullseye
+RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
+    . ${BUILD_DIR}/__phpVersions.sh \
+    && ${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh \
+    && ${IMAGES_DIR}/installPlatform.sh php $PHP81_VERSION \
+    && cd /opt/php \
+    && ln -s $PHP81_VERSION 8 \
+    && ln -s $PHP81_VERSION lts ; \
+fi
 
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
@@ -155,7 +205,7 @@ RUN tmpDir="/opt/tmp" \
 #
 # Even though this adds a new docker layer we are doing this 
 # because we want to avoid duplication (which is always error-prone)
-ENV ORYX_PATHS="/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
+ENV ORYX_PATHS="/opt/python/3.11.04b/bin:/opt/node/18.7.0/bin:/opt/php/lts/bin:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
 
 ENV LANG="C.UTF-8" \
     ORIGINAL_PATH="$PATH" \
