@@ -325,6 +325,7 @@ namespace Microsoft.Oryx.Tests.Common
                     { "5.0", "buster" },
                     { "6.0", "buster" },
                     { "7.0", "buster" },
+                    { "dynamic", "buster" },
                 }
             },
             {
@@ -333,6 +334,7 @@ namespace Microsoft.Oryx.Tests.Common
                 {
                     { "14", "bullseye" },
                     { "16", "bullseye" },
+                    { "dynamic", "buster" },
                 }
             },
             {
@@ -355,6 +357,7 @@ namespace Microsoft.Oryx.Tests.Common
                     { "3.8", "bullseye" },
                     { "3.9", "buster" },
                     { "3.10", "bullseye" },
+                    { "dynamic", "buster" },
                 }
             },
             {
@@ -364,6 +367,7 @@ namespace Microsoft.Oryx.Tests.Common
                     { "2.5", "buster" },
                     { "2.6", "buster" },
                     { "2.7", "buster" },
+                    { "dynamic", "buster" },
                 }
             },
         };
