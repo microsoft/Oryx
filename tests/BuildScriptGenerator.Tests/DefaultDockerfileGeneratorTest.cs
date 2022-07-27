@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("nodejs", "10", "10")]
         [InlineData("nodejs", "12", "12")]
         [InlineData("nodejs", "~12", "12")] // Test semver spec
-        [InlineData("nodejs", "~8", "8.12")] // Test semver spec 
+        [InlineData("nodejs", "~8", "8")] // Test semver spec 
         [InlineData("nodejs", "<13", "12")] // Test semver
         [InlineData("php", "5.6", "5.6")]
         [InlineData("php", "7.3", "7.3")]
