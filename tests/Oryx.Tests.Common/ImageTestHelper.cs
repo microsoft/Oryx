@@ -317,7 +317,7 @@ namespace Microsoft.Oryx.Tests.Common
         private Dictionary<string, Dictionary<string, string>> PlatformVersionToOsType = new Dictionary<string, Dictionary<string, string>>
         {
             {
-                DotNetCoreConstants.PlatformName,
+                DotNetCoreConstants.RuntimePlatformName,
                 new Dictionary<string, string>
                 {
                     { "3.0", "buster" },
@@ -328,7 +328,7 @@ namespace Microsoft.Oryx.Tests.Common
                 }
             },
             {
-                NodeConstants.PlatformName,
+                NodeConstants.NodeToolName,
                 new Dictionary<string, string>
                 {
                     { "14", "bullseye" },
@@ -362,7 +362,7 @@ namespace Microsoft.Oryx.Tests.Common
                 new Dictionary<string, string>
                 {
                     { "2.5", "buster" },
-                    { "2,6", "buster" },
+                    { "2.6", "buster" },
                     { "2.7", "buster" },
                 }
             },

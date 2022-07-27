@@ -23,7 +23,7 @@ RUN set -ex \
  && ln -s 2.7.2 2.7 \
  && ln -s 2.7 2
 
-ENV PATH="/opt/ruby/2.7/bin:${PATH}"
+ENV PATH="/opt/ruby/2/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
@@ -34,5 +34,5 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/oryx
-
+    
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
