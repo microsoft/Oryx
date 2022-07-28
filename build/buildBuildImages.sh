@@ -187,6 +187,13 @@ function buildGitHubActionsImage() {
 	fi
 
 	buildBuildScriptGeneratorImage
+
+	# Temporary: Pass in the Oryx PATH needed for bullseye since it cannot be conditionally set in a Dockerfile
+	local tempOryxPaths=""
+	if [ "$debianFlavor" == "bullseye" ]; then
+		# Note: Double ':' is needed between each path to prevent strange Windows "path resolution" issue seen
+		tempOryxPaths="/opt/python/3.11.04b/bin::/opt/node/18.7.0/bin::/opt/php/lts/bin:"
+	fi
 	
 	echo
 	echo "-------------Creating build image for GitHub Actions-------------------"
@@ -194,6 +201,7 @@ function buildGitHubActionsImage() {
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
+		--build-arg TEMP_ORYX_PATHS=$tempOryxPaths \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
 		.

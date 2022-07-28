@@ -97,6 +97,7 @@ RUN set -ex \
 
 FROM main AS final
 ARG SDK_STORAGE_BASE_URL_VALUE
+ARG TEMP_ORYX_PATHS
 ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG AI_KEY
@@ -205,7 +206,7 @@ RUN tmpDir="/opt/tmp" \
 #
 # Even though this adds a new docker layer we are doing this 
 # because we want to avoid duplication (which is always error-prone)
-ENV ORYX_PATHS="/opt/python/3.11.04b/bin:/opt/node/18.7.0/bin:/opt/php/lts/bin:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
+ENV ORYX_PATHS="${TEMP_ORYX_PATHS}/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
 
 ENV LANG="C.UTF-8" \
     ORIGINAL_PATH="$PATH" \
