@@ -27,6 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             ILoggerFactory loggerFactory)
             : base(commonOptions, httpClientFactory, loggerFactory)
         {
+            this.commonOptions = commonOptions.Value;
         }
 
         public Dictionary<string, string> SupportedVersionsMap { get; }
