@@ -4,7 +4,7 @@ variables:
 stages:
 - stage: Build
   jobs:
-    - job: Golang_Bullseye
+  - job: Golang_Bullseye
     timeoutInMinutes: 250
     pool:
       name: AzurePipelines-EO

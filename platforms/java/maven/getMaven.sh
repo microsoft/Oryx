@@ -12,7 +12,7 @@ mkdir -p "$hostMavenArtifactsDir"
 rm -rf /tmp/maven
 mkdir -p /tmp/maven
 cd /tmp/maven
-baseUrl="http://www.gtlib.gatech.edu/pub/apache/maven/maven-3"
+baseUrl="https://archive.apache.org/dist/maven/maven-3"
 
 downloadMavenBinary()
 {
