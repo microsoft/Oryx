@@ -238,7 +238,8 @@ namespace Oryx.Integration.Tests
 
         private string GetDefaultVersionFromContainer(string debianFlavor, string platformName)
         {
-            var defaultFile = string.Equals(debianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
+            var defaultFile = string.IsNullOrEmpty(debianFlavor)
+                    || string.Equals(debianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
                 ? SdkStorageConstants.DefaultVersionFileName
                 : $"{SdkStorageConstants.DefaultVersionFilePrefix}.{debianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
             var defaultVersionUrl = $"{_storageUrl}/{platformName}/{defaultFile}";

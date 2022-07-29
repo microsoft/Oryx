@@ -78,7 +78,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var httpClient = this.HttpClientFactory.CreateClient("general");
 
-            var defaultFile = string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
+            var defaultFile = string.IsNullOrEmpty(this.commonOptions.DebianFlavor)
+                    || string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
                 ? SdkStorageConstants.DefaultVersionFileName
                 : $"{SdkStorageConstants.DefaultVersionFilePrefix}.{this.commonOptions.DebianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
             var defaultVersionUrl = $"{sdkStorageBaseUrl}/{platformName}/{defaultFile}";
