@@ -5,7 +5,7 @@ stages:
 - stage: Build
   jobs:
   - job: Php_Bullseye_SDK 
-    timeoutInMinutes: 250
+    timeoutInMinutes: 500
     pool:
       name: AzurePipelines-EO
       demands:
@@ -17,7 +17,7 @@ stages:
         debianFlavor: 'bullseye'
   
   - job: Php_Stretch_SDK 
-    timeoutInMinutes: 250
+    timeoutInMinutes: 500
     pool:
       name: AzurePipelines-EO
       demands:
@@ -29,7 +29,7 @@ stages:
         debianFlavor: 'stretch'
   
   - job: Php_Buster_SDK 
-    timeoutInMinutes: 250
+    timeoutInMinutes: 500
     pool:
       name: AzurePipelines-EO
       demands:
@@ -41,7 +41,7 @@ stages:
         debianFlavor: 'buster'
   
   - job: Php_Ubuntu_SDK
-    timeoutInMinutes: 250
+    timeoutInMinutes: 500
     pool:
       name: AzurePipelines-EO
       demands:
