@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         private static void GenerateSupportedPlatformsReadmeFile(string repoDir)
         {
             var platformsDir = Path.Combine(repoDir, "platforms");
-            var targetReadmeFilePath = Path.Combine(repoDir, "doc", "supportedPlatformVerions.md");
+            var targetReadmeFilePath = Path.Combine(repoDir, "doc", "supportedPlatformVersions.md");
             Console.WriteLine($"Writing file '{targetReadmeFilePath}'");
             using (var sw = new StreamWriter(File.Open(targetReadmeFilePath, FileMode.Create)))
             {
