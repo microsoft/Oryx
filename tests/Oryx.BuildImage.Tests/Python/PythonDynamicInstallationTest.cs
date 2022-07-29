@@ -328,15 +328,41 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "jamstack")]
-        public void BuildsPython_AfterInstallingStretchSpecificSdk()
+        public static TheoryData<string, string> SupportedVersionAndImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string, string>();
+                var imageHelper = new ImageTestHelper();
+
+                // stretch
+                data.Add(PythonVersions.Python27Version, imageHelper.GetAzureFunctionsJamStackBuildImage());
+
+                //buster
+                data.Add(PythonVersions.Python36Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-buster"));
+                data.Add(PythonVersions.Python37Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-buster"));
+                data.Add(PythonVersions.Python38Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-buster"));
+                data.Add(PythonVersions.Python39Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-buster"));
+
+
+                //bullseye
+                data.Add(PythonVersions.Python37Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
+                data.Add(PythonVersions.Python38Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
+                data.Add(PythonVersions.Python310Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
+                return data;
+            }
+        }
+
+
+
+        [Theory, Trait("category", "jamstack")]
+        [MemberData(nameof(SupportedVersionAndImageNameData))]
+        public void BuildsPython_AfterInstallingSupportedSdk(string version, string imageName)
         {
             // Arrange
-            var version = "2.7.15";
-
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
                 $"python/{version}";
-            var appName = "flask-app";
+            var appName = "http-server-py";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
@@ -353,7 +379,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage("stretch"),
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -372,7 +398,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        public static TheoryData<string, string> VersionAndImageNameData
+        public static TheoryData<string, string> UnsupportedVersionAndImageNameData
         {
             get
             {
@@ -388,8 +414,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "jamstack")]
-        [MemberData(nameof(VersionAndImageNameData))]
-        public void PythonFails_ToInstallStretchSdk_OnNonStretchImage(string version, string imageName)
+        [MemberData(nameof(UnsupportedVersionAndImageNameData))]
+        public void PythonFails_ToInstallUnsupportedSdk(string version, string imageName)
         {
             // Arrange
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
