@@ -344,7 +344,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(PythonVersions.Python38Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-buster"));
                 data.Add(PythonVersions.Python39Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-buster"));
 
-
                 //bullseye
                 data.Add(PythonVersions.Python37Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
                 data.Add(PythonVersions.Python38Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
