@@ -84,7 +84,7 @@ if [ $PHP_MAJOR == '5' ]; then
 	versionDevReqs='libssl1.0-dev'
 fi
 
-if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 7.3.* ]]; then 
+if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.2.* ]]; then 
 	apt-get update
 	apt-get install -y --no-install-recommends libargon2-dev libonig-dev
 fi	
