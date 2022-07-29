@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Tests.Common;
@@ -371,14 +372,26 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        public static TheoryData<string, string> VersionAndImageNameData
+        {
+            get
+            {
+                var data = new TheoryData<string, string>();
+                var imageHelper = new ImageTestHelper();
+                data.Add(PythonVersions.Python27Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-buster"));
+
+                data.Add(PythonVersions.Python27Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
+                data.Add(PythonVersions.Python36Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
+                data.Add(PythonVersions.Python39Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
+                return data;
+            }
+        }
+
         [Theory, Trait("category", "jamstack")]
-        [InlineData("azfunc-jamstack-buster")]
-        [InlineData("azfunc-jamstack-bullseye")]
-        public void PythonFails_ToInstallStretchSdk_OnNonStretchImage(string imageTag)
+        [MemberData(nameof(VersionAndImageNameData))]
+        public void PythonFails_ToInstallStretchSdk_OnNonStretchImage(string version, string imageName)
         {
             // Arrange
-            var version = "2.7.15";
-
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
                 $"python/{version}";
             var appName = "flask-app";
@@ -398,7 +411,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(imageTag),
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

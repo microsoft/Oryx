@@ -543,14 +543,34 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "githubactions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("github-actions-bullseye")]
-        public void DotnetFails_ToInstallStretchSdk_OnNonStretchImage(string imageTag)
+        public static TheoryData<string, string> VersionAndImageNameData
         {
-            // this version only exists on stretch. There is no version of it in the storage accounts
-            // for other flavors
-            var runtimeVersion = "2.1.22";
+            get
+            {
+                var data = new TheoryData<string, string>();
+                var imageHelper = new ImageTestHelper();
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp10, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp11, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp22, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp30, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+
+
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp10, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp11, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp21, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp22, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp30, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp50, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp60, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp70, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                return data;
+            }
+        }
+
+        [Theory, Trait("category", "githubactions")]
+        [MemberData(nameof(VersionAndImageNameData))]
+        public void DotnetFails_ToInstallStretchSdk_OnNonStretchImage(string runtimeVersion, string imageName)
+        {
             var appName = NetCoreApp21WebApp;
 
             var volume = CreateSampleAppVolume(appName);
@@ -569,7 +589,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(imageTag),
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
