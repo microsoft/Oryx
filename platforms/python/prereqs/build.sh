@@ -47,6 +47,10 @@ if [ "$debianFlavor" == "stretch" ]; then
     echo "Hack flavor is: "$debianHackFlavor
 
     pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
+
+    if [[ $PYTHON_VERSION == 3.6* ]]; then
+        PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/pip/3.6/get-pip.py"
+    fi
     PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
     PIP_VERSION="20.2.3"
 else
