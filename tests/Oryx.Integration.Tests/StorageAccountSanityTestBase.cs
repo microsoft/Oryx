@@ -113,6 +113,13 @@ namespace Oryx.Integration.Tests
         }
 
         [Fact]
+        public void PhpContainer_HasExpectedDefaultVersion()
+        {
+            var platformName = "php";
+            AssertExpectedDefaultVersion(platformName, "php");
+        }
+
+        [Fact]
         public void PhpComposerContainer_HasExpectedDefaultVersion()
         {
             var platformName = "php-composer";
