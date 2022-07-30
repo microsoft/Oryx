@@ -1,0 +1,36 @@
+variables:
+- group: Oryx
+
+jobs:
+    - job: CreateReleaseTag
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      steps:
+      - checkout: self
+        clean: true
+
+      - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+        displayName: 'Component Detection - OSS Compliance'
+        inputs:
+          ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk 3.1.x'
+        inputs:
+          version: 3.1.x
+
+      - task: ShellScript@2
+        displayName: 'Publish SDKs from dev to prod storage account'
+        env:
+          DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
+          PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
+        inputs:
+          scriptPath: ./vsts/scripts/moveProdSdksToDevStorageAccount.sh
+    
+      - task: ShellScript@2
+        displayName: 'Test Dev storage account'
+        inputs:
+          scriptPath: ./build/testIntegration.sh
+          args: StorageAccountTests=Dev
