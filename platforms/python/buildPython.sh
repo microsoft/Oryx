@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -ex
+set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
@@ -17,16 +17,29 @@ debianFlavor=$1
 mkdir -p "$targetDir"
 
 builtPythonPrereqs=false
+builtPythonHackPrereqs=false
 buildPythonPrereqsImage() {
     debianType=$debianFlavor
 	# stretch is out of support for python, but we still need to build stretch based
 	# binaries because of static sites, they need to move to buster based jamstack image
 	# before we can remove this hack
-    if [ "$debianFlavor" == "stretch" ]; then
-        debianType="focal-scm"
-    fi
-
-	if ! $builtPythonPrereqs; then
+    IFS='.' read -ra SPLIT_VERSION <<< "$version"
+    if [ "$debianFlavor" == "stretch" ] \
+	&& [ "${SPLIT_VERSION[0]}" == "3" ] \
+	&& [ "${SPLIT_VERSION[1]}" -ge "10" ]; then
+		if ! $builtPythonHackPrereqs; then
+			debianType="focal-scm"
+			echo "Building Python hack pre-requisites image..."
+			echo
+			docker build  \
+				--build-arg DEBIAN_FLAVOR=$debianFlavor \
+				--build-arg DEBIAN_HACK_FLAVOR=$debianType \
+				-f "$pythonPlatformDir/prereqs/Dockerfile"  \
+				-t "oryxdevmcr.azurecr.io/private/oryx/python-build-prereqs" $REPO_DIR
+			builtPythonHackPrereqs=true
+			builtPythonPrereqs=false
+		fi
+	elif ! $builtPythonPrereqs; then
 		echo "Building Python pre-requisites image..."
 		echo
 		docker build  \
@@ -35,7 +48,8 @@ buildPythonPrereqsImage() {
 			   -f "$pythonPlatformDir/prereqs/Dockerfile"  \
 			   -t "oryxdevmcr.azurecr.io/private/oryx/python-build-prereqs" $REPO_DIR
 		builtPythonPrereqs=true
-	fi
+		builtPythonHackPrereqs=false
+    fi
 }
 
 buildPython() {
@@ -61,9 +75,7 @@ buildPython() {
 	fi
 
 	if shouldBuildSdk python $pythonSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk python; then
-		if ! $builtPythonPrereqs; then
-			buildPythonPrereqsImage
-		fi
+		buildPythonPrereqsImage
 		
 		echo "Building Python version '$version' in a docker image..."
 		echo
