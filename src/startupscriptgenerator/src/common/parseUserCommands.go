@@ -28,14 +28,17 @@ func ParseUserRunCommand(sourcePath string) string {
 	for scanner.Scan() {
 		//fmt.Println(scanner.Text())
 		indexOfRunHeading := strings.Index(scanner.Text(), runHeading)
+		isRunHeadingExists := indexOfRunHeading > 0
+		isCurrentLineContainsAnyHeading := strings.Contains(scanner.Text(), ":")
 
-		if indexOfRunHeading < 0 && strings.Contains(scanner.Text(), ":") && isRunCommandFound {
+		if !isRunHeadingExists && isCurrentLineContainsAnyHeading && isRunCommandFound {
 			// runCommand already found
 			// not considering any other customized commands
 			break
 		}
 
-		if isRunCommandFound || (indexOfRunHeading >= 0 && len(scanner.Text()) > len(runHeading)) {
+		isValidRunCommand := indexOfRunHeading >= 0 && len(scanner.Text()) > len(runHeading)
+		if isRunCommandFound || isValidRunCommand {
 			if isRunCommandFound {
 				runCommand += "\n"
 				runCommand += strings.TrimSpace(scanner.Text())

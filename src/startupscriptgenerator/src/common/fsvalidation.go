@@ -62,14 +62,8 @@ func WriteScript(filePath string, command string) {
 
 // Appends command to a file
 func AppendScript(filePath string, command string) {
-	if command == "" {
-		return
-	}
-	fmt.Println("Appending output script to '" + filePath + "'")
 
-	// Ensures directory
-	dir := filepath.Dir(filePath)
-	if !PathExists(dir) {
+	if command == "" {
 		return
 	}
 
@@ -79,6 +73,7 @@ func AppendScript(filePath string, command string) {
 	}
 	defer file.Close()
 
+	fmt.Println("Appending provided command to '" + filePath + "'")
 	// Appends the command at the end of the file
 	if _, err := file.WriteString("\n" + command); err != nil {
 		return
