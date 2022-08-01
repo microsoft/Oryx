@@ -22,12 +22,12 @@ jobs:
           version: 3.1.x
 
       - task: ShellScript@2
-        displayName: 'Publish SDKs from dev to prod storage account'
+        displayName: 'Restore SDKs in dev with those from the prod storage account'
         env:
           DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
           PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
         inputs:
-          scriptPath: ./vsts/scripts/replaceDevSdksWithProdSdks.sh
+          scriptPath: ./vsts/scripts/restoreDevStorageAccountFromProd.sh
     
       - task: ShellScript@2
         displayName: 'Test Dev storage account'

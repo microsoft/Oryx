@@ -27,13 +27,14 @@ function blobExistsInDev() {
 	fi
 }
 
-function copyBlobFromDevToProd() {
+function copyBlobFromProdToDev() {
     local platformName="$1"
     local blobName="$2"
 
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName; then
         echo
         echo "Blob '$blobName' exists in Dev storage container '$platformName'. Overwriting it..."
+        # azcopy copy [source] [destination] [flags]
         "$azCopyDir/azcopy" copy \
             "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" \
             "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" --overwrite true
@@ -43,6 +44,7 @@ function copyBlobFromDevToProd() {
     else
         echo
         echo "Blob '$blobName' does not exist in Dev storage container '$platformName'. Copying it..."
+        # azcopy copy [source] [destination] [flags]
         "$azCopyDir/azcopy" copy \
             "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" \
             "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN"
@@ -65,18 +67,18 @@ function copyPlatformBlobsToDev() {
     while IFS= read -u 3 -r line || [[ -n $line ]]
 	do
         # Ignore whitespace and comments
-        if [ -z "$line" ] || [[ $line = \#* ]] ; then
+        if [[ $line =~ ^[[:space:]]+$ ]] || [[ $line = \#* ]] ; then
             continue
         fi
 
         IFS=',' read -ra LINE_INFO <<< "$line"
         version=$(echo -e "${LINE_INFO[0]}" | sed -e 's/^[[:space:]]*//')
-        copyBlobFromDevToProd "$platformName" "$platformName-$version.tar.gz"
-        copyBlobFromDevToProd "$platformName" "$platformName-focal-scm-$version.tar.gz"
-        copyBlobFromDevToProd "$platformName" "$platformName-buster-$version.tar.gz"
+        copyBlobFromProdToDev "$platformName" "$platformName-$version.tar.gz"
+        copyBlobFromProdToDev "$platformName" "$platformName-focal-scm-$version.tar.gz"
+        copyBlobFromProdToDev "$platformName" "$platformName-buster-$version.tar.gz"
 	done 3< "$versionsFile"
 
-    copyBlobFromDevToProd "$platformName" defaultVersion.txt
+    copyBlobFromProdToDev "$platformName" defaultVersion.txt
 }
 
 if [ ! -f "$azCopyDir/azcopy" ]; then
