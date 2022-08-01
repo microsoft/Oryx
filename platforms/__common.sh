@@ -139,8 +139,9 @@ buildPlatform() {
 	local funcToCall="$2"
 	while IFS= read -r VERSION_INFO || [[ -n $VERSION_INFO ]]
 	do
+		VERSION_INFO="$(echo -e "${VERSION_INFO}" | sed -e 's/^[[:space:]]*//')"
 		# Ignore whitespace and comments
-		if [[ $VERSION_INFO =~ ^[[:space:]]+$ ]] || [[ $VERSION_INFO = \#* ]] ; then
+		if [ -z "$VERSION_INFO" ] || [[ $VERSION_INFO = \#* ]] ; then
 			continue
 		fi
 
