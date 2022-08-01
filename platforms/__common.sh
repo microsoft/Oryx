@@ -140,7 +140,7 @@ buildPlatform() {
 	while IFS= read -r VERSION_INFO || [[ -n $VERSION_INFO ]]
 	do
 		# Ignore whitespace and comments
-		if [ -z "$VERSION_INFO" ] || [[ $VERSION_INFO = \#* ]] ; then
+		if [[ $VERSION_INFO =~ ^[[:space:]]+$ ]] || [[ $VERSION_INFO = \#* ]] ; then
 			continue
 		fi
 

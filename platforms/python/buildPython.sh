@@ -22,7 +22,8 @@ buildPythonPrereqsImage() {
 	# stretch is out of support for python, but we still need to build stretch based
 	# binaries because of static sites, they need to move to buster based jamstack image
 	# before we can remove this hack
-    if [ "$debianFlavor" == "stretch" ]; then
+	IFS='.' read -ra SPLIT_VERSION <<< "$version"
+    if [ "$debianFlavor" == "stretch" ] && [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "10" ]; then
         debianType="focal-scm"
     fi
 
