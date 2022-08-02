@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.IO;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -29,6 +30,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
                 version,
                 builtInDir: RubyConstants.InstalledRubyVersionsDir,
                 dynamicInstallDir: Path.Combine(this.CommonOptions.DynamicInstallRootDir, RubyConstants.PlatformName));
+        }
+
+        public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
+        {
+            stringBuilder.AppendLine($"echo 'Installing {RubyConstants.PlatformName} specific dependencies...'");
+
+            // .NET Core dependencies (this is universal for all versions of .NET Core)
+            stringBuilder.AppendAptGetInstallPackages("libyaml-dev");
         }
     }
 }

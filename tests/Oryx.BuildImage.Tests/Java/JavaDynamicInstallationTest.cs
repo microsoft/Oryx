@@ -37,7 +37,22 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(VersionsData))]
-        public void BuildsMavenArcheTypeSampleWithDynamicInstallation(string version)
+        public void BuildsMavenArcheTypeSampleWithDynamicInstallationGithubActions(string version)
+        {
+            BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetGitHubActionsBuildImage());
+        }
+
+        [Theory, Trait("category", "cli")]
+        [MemberData(nameof(VersionsData))]
+        public void BuildsMavenArcheTypeSampleWithDynamicInstallationCli(string version)
+        {
+            BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetCliImage());
+            BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetCliImage("cli-buster"));
+        }
+
+        [Theory, Trait("category", "githubactions")]
+        [MemberData(nameof(VersionsData))]
+        public void BuildsMavenArcheTypeSampleWithDynamicInstallation(string version, string imageName)
         {
             // Arrange
             var appName = "MavenArcheType";
@@ -53,7 +68,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

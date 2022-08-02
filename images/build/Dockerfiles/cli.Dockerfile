@@ -43,6 +43,8 @@ RUN apt-get update \
         libgssapi-krb5-2 \
         libstdc++6 \
         zlib1g \
+        rsync \
+        libgdiplus \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \

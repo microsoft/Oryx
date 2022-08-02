@@ -50,9 +50,43 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
+        public static TheoryData<string, string, string> VersionAndImageNameDataCli
+        {
+            get
+            {
+                var data = new TheoryData<string, string, string>();
+                var imageHelper = new ImageTestHelper();
+                data.Add(PhpVersions.Php73Version, imageHelper.GetCliImage(),PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.ComposerVersion);
+
+                // test latest php-composer version
+                data.Add(PhpVersions.Php73Version, imageHelper.GetCliImage(), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.Composer23Version);
+                return data;
+            }
+        }
+
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(VersionAndImageNameData))]
-        public void BuildsAppByInstallingSdkDynamically(string phpVersion, string imageName, string phpComposerVersion)
+        public void BuildsAppByInstallingSdkDynamicallyGithubActions(string phpVersion, string imageName, string phpComposerVersion)
+        {
+            BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion);
+        }
+
+        [Theory, Trait("category", "cli")]
+        [MemberData(nameof(VersionAndImageNameDataCli))]
+        public void BuildsAppByInstallingSdkDynamicallyCli(string phpVersion, string imageName, string phpComposerVersion)
+        {
+            BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion);
+        }
+
+        private void BuildsAppByInstallingSdkDynamically(string phpVersion, string imageName, string phpComposerVersion)
         {
             // Arrange
             var appName = "twig-example";

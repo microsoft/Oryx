@@ -34,9 +34,38 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
+        public static TheoryData<string, string> ImageNameDataCli
+        {
+            get
+            {
+                var data = new TheoryData<string, string>();
+                var imageTestHelper = new ImageTestHelper();
+                data.Add("12.22.11", imageTestHelper.GetCliImage());
+                data.Add("14.19.1", imageTestHelper.GetCliImage());
+                data.Add("16.14.2", imageTestHelper.GetCliImage());
+
+                data.Add("12.22.11", imageTestHelper.GetCliImage("cli-buster"));
+                data.Add("14.19.1", imageTestHelper.GetCliImage("cli-buster"));
+                data.Add("16.14.2", imageTestHelper.GetCliImage("cli-buster"));
+                return data;
+            }
+        }
+
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(string version, string buildImageName)
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationGithubActions(string version, string buildImageName)
+        {
+            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
+        }
+
+        [Theory, Trait("category", "cli")]
+        [MemberData(nameof(ImageNameDataCli))]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCli(string version, string buildImageName)
+        {
+            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
+        }
+
+        private void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(string version, string buildImageName)
         {
             // Arrange
             var devPackageName = "nodemon";

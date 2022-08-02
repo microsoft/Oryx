@@ -23,7 +23,28 @@ namespace Microsoft.Oryx.BuildImage.Tests
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "java", sampleAppName));
 
         [Fact, Trait("category", "githubactions")]
-        public void BuildsMavenArcheTypeSample()
+        public void JavaSampleAppsTestsGithubActions()
+        {
+            var imageTag = "githubactions";
+            BuildsMavenArcheTypeSample(imageTag);
+            BuildsMavenJ2EESample(imageTag);
+            BuildsMavenSimpleJavaApp(imageTag);
+            BuildsSpringBootSampleApp(imageTag);
+        }
+
+
+        [Theory, Trait("category", "cli")]
+        [InlineData("cli")]
+        [InlineData("cli-buster")]
+        public void JavaSampleAppsTestsCli(string imageTag)
+        {
+            BuildsMavenArcheTypeSample(imageTag);
+            BuildsMavenJ2EESample(imageTag);
+            BuildsMavenSimpleJavaApp(imageTag);
+            BuildsSpringBootSampleApp(imageTag);
+        }
+
+        private void BuildsMavenArcheTypeSample(string imageTag)
         {
             // Arrange
             var appName = "MavenArcheType";
@@ -39,7 +60,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetBuildImage(imageTag),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -55,8 +76,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
-        public void BuildsMavenJ2EESample()
+        private void BuildsMavenJ2EESample(string imageTag)
         {
             // Arrange
             var appName = "MavenJ2EESample";
@@ -72,7 +92,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetBuildImage(imageTag),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -88,8 +108,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
-        public void BuildsMavenSimpleJavaApp()
+        private void BuildsMavenSimpleJavaApp(string imageTag)
         {
             // Arrange
             var appName = "MavenSimpleJavaApp";
@@ -105,7 +124,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetBuildImage(imageTag),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -121,8 +140,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
-        public void BuildsSpringBootSampleApp()
+        private void BuildsSpringBootSampleApp(string imageTag)
         {
             // Arrange
             var appName = "SprintBootSample";
@@ -138,7 +156,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetBuildImage(imageTag),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static void InstallCommonSkeletonDependencies(StringBuilder stringBuilder)
         {
             stringBuilder.AppendLine("echo 'Installing common platform dependencies...'");
-            stringBuilder.AppendAptGetInstallPackages("git", "tk-dev", "uuid-dev");
+            stringBuilder.AppendAptGetInstallPackages("git");
         }
 
         public static void InstallPythonToolingAndLanguage(StringBuilder stringBuilder)
@@ -50,7 +50,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 "libpq-dev",
                 "moreutils",
                 "python3-pip",
-                "rsync",
                 "swig",
                 "tk-dev",
                 "unixodbc-dev",
