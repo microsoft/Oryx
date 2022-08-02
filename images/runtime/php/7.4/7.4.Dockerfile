@@ -263,5 +263,5 @@ CMD ["apache2-foreground"]
 RUN curl -LO http://ftp.de.debian.org/debian/pool/main/a/apache2/apache2-data_2.4.54-2_all.deb \
 && dpkg --install apache2-data_2.4.54-2_all.deb \
 && apt-get update \
-&& apt --fix-broken install \
+&& apt --fix-broken install --assume-yes\
 && apt-get upgrade; 
