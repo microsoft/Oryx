@@ -137,7 +137,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        public async Task CanBuildAndRun_Adds_Oryx_AppInsights_Codeless_Configuration()
         public async Task CanBuildAndRun_Adds_Oryx_AppInsights_Codeless_ConfigurationAsync()
         {
             // Arrange
