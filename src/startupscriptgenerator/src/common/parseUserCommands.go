@@ -16,6 +16,7 @@ func ParseUserRunCommand(sourcePath string) string {
 
 	appsvcFile, err := os.Open(sourcePath)
 	if err != nil {
+		fmt.Println(err)
 		return ""
 	}
 	defer appsvcFile.Close()
@@ -52,6 +53,7 @@ func ParseUserRunCommand(sourcePath string) string {
 	fmt.Println("User provided run command: " + runCommand)
 
 	if err := scanner.Err(); err != nil {
+		fmt.Println(err)
 		return ""
 	}
 

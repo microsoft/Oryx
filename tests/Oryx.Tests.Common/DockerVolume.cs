@@ -64,10 +64,13 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 throw new ArgumentException($"'{nameof(hostDir)}' must point to an existing directory.");
             }
+
             var dirInfo = new DirectoryInfo(hostDir);
+
             // Copy the host directory to a different location and mount that one as it's always possible that a
             // single sample app could be tested by different tests and we do not want to modify its original state
             // and also it would not be nice to see changes in git repository when running tests.
+
             // Since Docker containers run as 'root' and any content written into the mounted directory is owned by
             // the 'root', the CI agent which runs as a non-root account cannot delete that content, so we try to
             // create content in a well known location on the CI agent so that these folders are deleted during the
@@ -86,6 +89,7 @@ namespace Microsoft.Oryx.Tests.Common
                 // Put the folders in a well known location which the CI build definition looks for to clean up.
                 tempDirRoot = Path.Combine(Path.GetTempPath(), MountedHostDirRootName);
             }
+
             var writableHostDir = hostDir;
             if (!writeToHostDir)
             {
@@ -106,7 +110,9 @@ namespace Microsoft.Oryx.Tests.Common
                     workingDirectory: null,
                     waitTimeForExit: null);
             }
+
             var containerDirName = dirInfo.Name;
+
             // Note: Path.Combine is the ideal solution here but this would fail when we run the
             // tests on a windows machine (which most of us use).
             var containerDir = $"{ContainerDirRoot}/{containerDirName}";
