@@ -253,4 +253,4 @@ CMD ["php-fpm"]
 RUN curl -LO http://ftp.de.debian.org/debian/pool/main/a/apache2/apache2-data_2.4.54-2_all.deb \
 && dpkg --install apache2-data_2.4.54-2_all.deb \
 && apt-get update \
-&& apt-get upgrade; fi \
+&& apt-get upgrade; 
