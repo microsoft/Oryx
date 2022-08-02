@@ -1,6 +1,6 @@
 variables:
   group: Oryx
-  destinationStorageAccount: https://oryxsdkssandbox.blob.core.windows.net/
+  destinationStorageAccount: https://oryxsdkssandbox.blob.core.windows.net
 
 jobs:
     - job: CreateReleaseTag
@@ -31,9 +31,9 @@ jobs:
         inputs:
           scriptPath: ./vsts/scripts/copySdksFromProdToStorageAccount.sh
           args:  ${{ variables.destinationStorageAccount }}
-    
+      
       - task: ShellScript@2
-        displayName: 'Test Dev storage account'
+        displayName: 'Test Prod storage account'
         inputs:
           scriptPath: ./build/testIntegration.sh
-          args: StorageAccountTests=Dev
+          args: StorageAccountTests=Prod
