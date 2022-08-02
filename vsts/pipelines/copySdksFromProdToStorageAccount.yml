@@ -1,5 +1,6 @@
 variables:
-- group: Oryx
+  group: Oryx
+  destinationStorageAccount: https://oryxsdkssandbox.blob.core.windows.net/
 
 jobs:
     - job: CreateReleaseTag
@@ -22,12 +23,14 @@ jobs:
           version: 3.1.x
 
       - task: ShellScript@2
-        displayName: 'Restore SDKs in dev with those from the prod storage account'
+        displayName: 'Copy SDKs from the prod storage account to a destination storage account'
         env:
           DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
+          SANDBOX_STORAGE_SAS_TOKEN: $(SANDBOX-STORAGE-SAS-TOKEN)
           PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
         inputs:
-          scriptPath: ./vsts/scripts/restoreDevStorageAccountFromProd.sh
+          scriptPath: ./vsts/scripts/copySdksFromProdToStorageAccount.sh
+          args:  ${{ variables.destinationStorageAccount }}
     
       - task: ShellScript@2
         displayName: 'Test Dev storage account'
