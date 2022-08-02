@@ -78,8 +78,6 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
-            var appsvcFilePath = Path.Combine(hostDir, "appsvc.yaml");  // dummy file
-            BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(File.ReadAllText(appsvcFilePath));
             var tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(tmpDir);
             try
@@ -90,8 +88,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 var appDir = volume.ContainerDir;
                 var appOutputDirVolume = CreateAppOutputDirVolume();
                 var appOutputDir = appOutputDirVolume.ContainerDir;
-                var rootFilePath = "/appsvc.yaml";
-                var runCommand = "gunicorn myapp.app --workers 5";
+                var rootFilePath = appOutputDirVolume.ContainerDir + "/appsvc.yaml";
+                var runCommand = "echo 'Hello Azure! New Feature!!'";
                 var buildImageScript = new ShellScriptBuilder()
                    .AddDefaultTestEnvironmentVariables()
                    .AddCommand(
@@ -99,9 +97,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
                    .ToString();
                 var runtimeImageScript = new ShellScriptBuilder()
-                    .AddCommand("ls")
-                    .AddCommand("pwd")
-                    .CreateFile(rootFilePath, runCommand)
+                    .CreateFile(rootFilePath, $"\"run: {runCommand}\"")
                     .AddCommand(
                     $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort} -output {tmpContainerDir}/run.sh")
                     .AddCommand($".{tmpContainerDir}/run.sh")
@@ -130,11 +126,8 @@ namespace Microsoft.Oryx.Integration.Tests
                     {
                         var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                         Assert.Contains("Welcome to ASP.NET Core MVC!", data);
-                        Assert.NotNull(buildConfigFile);
-                        Assert.NotNull(buildConfigFile.Run);
-                        Assert.NotEmpty(buildConfigFile.Run);
                         var runScript = File.ReadAllText(Path.Combine(tmpDir, "run.sh"));
-                        Assert.Contains(buildConfigFile.Run, runScript);
+                        Assert.Contains(runCommand, runScript);
                     });
             }
             finally
