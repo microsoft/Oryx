@@ -50,9 +50,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetCliImage("cli-buster"));
         }
 
-        [Theory, Trait("category", "githubactions")]
-        [MemberData(nameof(VersionsData))]
-        public void BuildsMavenArcheTypeSampleWithDynamicInstallation(string version, string imageName)
+        private void BuildsMavenArcheTypeSampleWithDynamicInstallation(string version, string imageName)
         {
             // Arrange
             var appName = "MavenArcheType";
