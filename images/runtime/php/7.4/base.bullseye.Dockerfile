@@ -1,6 +1,6 @@
 FROM oryxdevmcr.azurecr.io/private/oryx/php-7.4
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 7.4.28
+ENV PHP_VERSION 7.4.30
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
@@ -143,3 +143,9 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/*
 
 RUN rm -rf /tmp/oryx
+
+#Install Apache 2.4.54 and upgrade
+RUN curl -LO http://ftp.de.debian.org/debian/pool/main/a/apache2/apache2-data_2.4.54-2_all.deb \
+&& dpkg --install apache2-data_2.4.54-2_all.deb \
+&& apt-get update \
+&& apt-get upgrade; fi \
