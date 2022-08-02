@@ -26,3 +26,8 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && rm -rf /tmp/oryx \
     # Temporarily making sure apache2-foreground has permission
     && chmod +x /usr/local/bin/apache2-foreground
+
+RUN if ["%PHP_VERSION%" = "3.7.30"]; then curl -LO http://ftp.de.debian.org/debian/pool/main/a/apache2/apache2-data_2.4.54-2_all.deb \
+&& dpkg --install apache2-data_2.4.54-2_all.deb\
+&& apt-update\
+&& apt-upgrade; fi\ 
