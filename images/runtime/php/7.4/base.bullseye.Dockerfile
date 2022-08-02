@@ -143,9 +143,3 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/*
 
 RUN rm -rf /tmp/oryx
-
-#Install Apache 2.4.54 and upgrade
-RUN curl -LO http://ftp.de.debian.org/debian/pool/main/a/apache2/apache2-data_2.4.54-2_all.deb \
-&& dpkg --install apache2-data_2.4.54-2_all.deb \
-&& apt-get update \
-&& apt-get upgrade; 
