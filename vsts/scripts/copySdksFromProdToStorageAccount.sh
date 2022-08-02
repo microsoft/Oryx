@@ -11,11 +11,11 @@ source $REPO_DIR/platforms/__common.sh
 
 azCopyDir="/tmp/azcopy-tool"
 
-function blobExistsInDev() {
+function blobExistsInDestination() {
 	local containerName="$1"
 	local blobName="$2"
 	local exitCode=1
-	curl -I $DEV_SDK_STORAGE_BASE_URL/$containerName/$blobName 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
+	curl -I $destinationSdk/$containerName/$blobName 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
 	grep "HTTP/1.1 200 OK" /tmp/curlOut.txt &> /dev/null
 	exitCode=$?
 	rm -f /tmp/curlOut.txt
@@ -27,31 +27,31 @@ function blobExistsInDev() {
 	fi
 }
 
-function copyBlobFromProdToDev() {
+function copyBlobFromProdToDestination() {
     local platformName="$1"
     local blobName="$2"
 
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName; then
         echo
-        echo "Blob '$blobName' exists in Dev storage container '$platformName'. Overwriting it..."
+        echo "Blob '$blobName' exists in storage container '$destinationSdk/$platformName'. Overwriting it..."
         # azcopy copy [source] [destination] [flags]
-        "$azCopyDir/azcopy" copy \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" \
-            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" --overwrite true
-    elif blobExistsInDev $platformName $blobName; then
+        # "$azCopyDir/azcopy" copy \
+        #     "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" \
+        #     "$destinationSdk/$platformName/$blobName$sasToken" --overwrite true
+    elif blobExistsInDestination $platformName $blobName; then
         echo
-        echo "Blob '$blobName' already exists in Dev storage container '$platformName'. Skipping copying it..."
+        echo "Blob '$blobName' already exists in storage container '$destinationSdk/$platformName'. Skipping copying it..."
     else
         echo
-        echo "Blob '$blobName' does not exist in Dev storage container '$platformName'. Copying it..."
+        echo "Blob '$blobName' does not exist in storage container '$destinationSdk/$platformName'. Copying it..."
         # azcopy copy [source] [destination] [flags]
-        "$azCopyDir/azcopy" copy \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" \
-            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN"
+        # "$azCopyDir/azcopy" copy \
+        #     "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" \
+        #     "$destinationSdk/$platformName/$blobName$sasToken"
     fi
 }
 
-function copyPlatformBlobsToDev() {
+function copyPlatformBlobsToDestination() {
     local platformName="$1"
     local versionsFile="$REPO_DIR/platforms/$platformName/versionsToBuild.txt"
 
@@ -73,31 +73,45 @@ function copyPlatformBlobsToDev() {
 
         IFS=',' read -ra LINE_INFO <<< "$line"
         version=$(echo -e "${LINE_INFO[0]}" | sed -e 's/^[[:space:]]*//')
-        copyBlobFromProdToDev "$platformName" "$platformName-$version.tar.gz"
-        copyBlobFromProdToDev "$platformName" "$platformName-focal-scm-$version.tar.gz"
-        copyBlobFromProdToDev "$platformName" "$platformName-buster-$version.tar.gz"
+        copyBlobFromProdToDestination "$platformName" "$platformName-$version.tar.gz"
+        copyBlobFromProdToDestination "$platformName" "$platformName-focal-scm-$version.tar.gz"
+        copyBlobFromProdToDestination "$platformName" "$platformName-buster-$version.tar.gz"
 	done 3< "$versionsFile"
 
-    copyBlobFromProdToDev "$platformName" defaultVersion.txt
+    copyBlobFromProdToDestination "$platformName" defaultVersion.txt
 }
 
-if [ ! -f "$azCopyDir/azcopy" ]; then
-    curl -SL https://aka.ms/downloadazcopy-v10-linux -o /tmp/azcopy_download.tar.gz
-    tar -xvf /tmp/azcopy_download.tar.gz -C /tmp
-    rm -rf /tmp/azcopy_download.tar.gz
-    mkdir -p $azCopyDir
-    cp /tmp/azcopy_linux_amd64_*/azcopy $azCopyDir
+# if [ ! -f "$azCopyDir/azcopy" ]; then
+#     curl -SL https://aka.ms/downloadazcopy-v10-linux -o /tmp/azcopy_download.tar.gz
+#     tar -xvf /tmp/azcopy_download.tar.gz -C /tmp
+#     rm -rf /tmp/azcopy_download.tar.gz
+#     mkdir -p $azCopyDir
+#     cp /tmp/azcopy_linux_amd64_*/azcopy $azCopyDir
 
-    echo "Version of azcopy tool being used:"
-    $azCopyDir/azcopy --version
+#     echo "Version of azcopy tool being used:"
+#     $azCopyDir/azcopy --version
+# fi
+
+destinationSdk=""
+sasToken=""
+
+if [ "$1" = $SANDBOX_SDK_STORAGE_BASE_URL ]; then
+    destinationSdk=$SANDBOX_SDK_STORAGE_BASE_URL
+    sasToken=$SANDBOX_STORAGE_SAS_TOKEN
+elif [ "$1" = $DEV_SDK_STORAGE_BASE_URL ]; then
+    destinationSdk=$DEV_SDK_STORAGE_BASE_URL
+    sasToken=$DEV_STORAGE_SAS_TOKEN
+else
+	echo "Error: $1 is an invalid storage account url."
+	exit 1
 fi
 
-copyPlatformBlobsToDev "dotnet"
-copyPlatformBlobsToDev "python"
-copyPlatformBlobsToDev "nodejs"
-copyPlatformBlobsToDev "php"
-copyPlatformBlobsToDev "php-composer"
-copyPlatformBlobsToDev "ruby"
-copyPlatformBlobsToDev "java"
-copyPlatformBlobsToDev "maven"
-copyPlatformBlobsToDev "golang"
+copyPlatformBlobsToDestination "dotnet"
+copyPlatformBlobsToDestination "python"
+copyPlatformBlobsToDestination "nodejs"
+copyPlatformBlobsToDestination "php"
+copyPlatformBlobsToDestination "php-composer"
+copyPlatformBlobsToDestination "ruby"
+copyPlatformBlobsToDestination "java"
+copyPlatformBlobsToDestination "maven"
+copyPlatformBlobsToDestination "golang"
