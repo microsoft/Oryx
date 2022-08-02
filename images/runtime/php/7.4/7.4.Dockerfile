@@ -64,6 +64,8 @@ RUN set -eux; \
 	ln -sfT /dev/stdout "$APACHE_LOG_DIR/access.log"; \
 	ln -sfT /dev/stdout "$APACHE_LOG_DIR/other_vhosts_access.log"; \
 	chown -R --no-dereference "$APACHE_RUN_USER:$APACHE_RUN_GROUP" "$APACHE_LOG_DIR"
+# smoke test
+apache2 -v
 
 # Apache + PHP requires preforking Apache for best results
 RUN a2dismod mpm_event && a2enmod mpm_prefork
