@@ -83,10 +83,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [MemberData(nameof(VersionAndImageNameDataCli))]
         public void BuildsAppByInstallingSdkDynamicallyCli(string phpVersion, string imageName, string phpComposerVersion)
         {
-            BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion);
+            BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion, "/opt/php");
         }
 
-        private void BuildsAppByInstallingSdkDynamically(string phpVersion, string imageName, string phpComposerVersion)
+        private void BuildsAppByInstallingSdkDynamically(
+            string phpVersion, 
+            string imageName, 
+            string phpComposerVersion, 
+            string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
         {
             // Arrange
             var appName = "twig-example";
@@ -115,8 +119,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 Assert.True(result.IsSuccess);
                 Assert.Contains(
-                    $"PHP executable: " +
-                    BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot, result.StdOut);
+                    $"PHP executable: " + installationRoot, result.StdOut);
                 Assert.Contains("Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
                 Assert.Contains($"\'php-composer\' version \'{phpComposerVersion}\'", result.StdOut);
             },
