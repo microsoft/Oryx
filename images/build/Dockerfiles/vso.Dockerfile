@@ -13,7 +13,7 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     DYNAMIC_INSTALL_ROOT_DIR="/opt" \
     DEBIAN_FLAVOR="stretch"
 
-COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 
 RUN buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \
@@ -65,4 +65,5 @@ RUN buildDir="/opt/tmp/build" \
     && cd /opt/maven \
     && ln -s $MAVEN_VERSION lts \
     && rm -rf /opt/tmp \
-    && echo "vso" > /opt/oryx/.imagetype
+    && echo "vso" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype

@@ -19,7 +19,6 @@ declare -r ORYX_IMAGE_TAG_PLACEHOLDER="%IMAGE_TAG%"
 
 source "$RUBY_VERSIONS_PATH"
 
-declare -r RUBY_STRETCH_VERSION_ARRAY=()
 declare -r RUBY_BUSTER_VERSION_ARRAY=($RUBY27_VERSION $RUBY26_VERSION $RUBY25_VERSION)
 
 ImageDebianFlavor="$1"
@@ -29,8 +28,6 @@ VERSIONS_DIRECTORY=()
 
 if [ "$ImageDebianFlavor" == "buster" ];then
 	VERSIONS_DIRECTORY=("${RUBY_BUSTER_VERSION_ARRAY[@]}")
-elif  [ "$ImageDebianFlavor" == "stretch" ];then
-	VERSIONS_DIRECTORY=("${RUBY_STRETCH_VERSION_ARRAY[@]}")
 fi
 
 for VERSION_DIRECTORY in "${VERSION_DIRECTORY[@]}"

@@ -7,6 +7,7 @@ package main
 
 import (
 	"common"
+	"common/consts"
 	"strings"
 )
 
@@ -42,6 +43,7 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("cd " + gen.SourcePath + "\n")
 	common.SetEnvironmentVariableInScript(&scriptBuilder, portEnvVariable, gen.BindPort, DefaultBindPort)
 	scriptBuilder.WriteString("if [  -n \"$PHP_ORIGIN\" ] && [ \"$PHP_ORIGIN\" = \"php-fpm\" ]; then\n")
+	gen.SetFpmConfiguration(&scriptBuilder)
 	scriptBuilder.WriteString("   export NGINX_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
 	scriptBuilder.WriteString("   service nginx start\n")
 	scriptBuilder.WriteString("else\n")
@@ -65,4 +67,17 @@ func (gen *PhpStartupScriptGenerator) getStartupCommand() string {
 		startupCommand = "php-fpm"
 	}
 	return startupCommand
+}
+
+func (gen *PhpStartupScriptGenerator) SetFpmConfiguration(scriptBuilder *strings.Builder) {
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMaxChildren, consts.FpmMaxChildrenSettingName)
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmStartServers, consts.FpmStartServersSettingName)
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMaxSpareServers, consts.FpmMaxSpareServersSettingName)
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMinSpareServers, consts.FpmMinSpareServersSettingName)
+}
+
+func AddFpmConfigurationToScript(scriptBuilder *strings.Builder, envVarValue string, fpmSettingName string) {
+	if envVarValue != "" {
+		scriptBuilder.WriteString("   sed -i \"s/" + fpmSettingName + " = .*/" + fpmSettingName + " = " + envVarValue + "/g\" " + consts.FpmConfigurationFile + "\n")
+	}
 }

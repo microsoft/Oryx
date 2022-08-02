@@ -22,14 +22,14 @@ ENABLE\_MULTIPLATFORM\_BUILD | Apply more than one toolset if repo indicates it 
 PLATFORM\_NAME               | Specify which platform the app is using. Possible values are: nodejs, hugo, python, dotnet, php, ruby, java.                   | ""      | "python"
 PLATFORM\_VERSION            | Specify which platform version the app is using           | ""      | "3.7.1"
 REQUIRED\_OS\_PACKAGES       | Indicate if it requires OS packages for Node or Python packages | `false` | `true`, `false`
-CREATE\_PACKAGE              | Indicate if it shoud create packages for the app          | `false` | `true`, `false`
+CREATE\_PACKAGE              | Indicate if it should create packages for the app          | `false` | `true`, `false`
 
 Setting name for .NET apps   | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
 DOTNET\_VERSION              | Specify which .NET version the app is using                    | ""      | "5.0.100"
 DISABLE\_DOTNETCORE\_BUILD   | Do not apply .NET Core build even if repo indicates it         | `false` | `true`, `false`
 PROJECT                      | repo-relative path to directory with `.csproj` file for build  | ""      | "src/WebApp1/WebApp1.csproj"
-MSBUILD\_CONFIGURATION       | Configuration (Debug or Relase) that is used to build a .NET Core project | `Release` | `Debug`, `Release`
+MSBUILD\_CONFIGURATION       | Configuration (Debug or Release) that is used to build a .NET Core project | `Release` | `Debug`, `Release`
 
 Setting name for Nodejs apps | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
@@ -54,7 +54,11 @@ Setting name for Php apps    | Description                                      
 -----------------------------|----------------------------------------------------------------|---------|----------------
 PHP\_VERSION                 | Specify which Php version the app is using                     | ""      | "7.4"
 PHP\_COMPOSER\_VERSION       | Specify which Php composer version the app is using            | ""      | "7.2.15"
-DISABLE\_PHP\_BUILD          | Do not apply Php build even if repo indicates it         | `false` | `true`, `false`
+DISABLE\_PHP\_BUILD          | Do not apply Php build even if repo indicates it               | `false` | `true`, `false`
+FPM\_MAX\_CHILDREN           | The maximum number of child processes to be created            | `5`     | "20"
+FPM\_START\_SERVERS          | The number of child processes created on startup               | `min_spare_servers + (max_spare_servers - min_spare_servers) / 2` | "10"
+FPM\_MAX\_SPARE\_SERVERS     | The desired maximum number of idle server processes            | `3`      | "15"
+FPM\_MIN\_SPARE\_SERVERS     | The desired minimum number of idle server processes            | `1`      | "5"
 
 Setting name for Java apps | Description                                                    | Default | Example
 ---------------------------|----------------------------------------------------------------|---------|----------------
@@ -84,71 +88,71 @@ Secondly `oryx-manifest.toml` is used in the runtime to determine how to run the
 Node fields                     |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
 NodeVersion                     | Platform's version that Oryx will use to run the app                                      | "14.15.1"  
-OutputDirPath                   | Output is in separate volume due to rsync errors                                          | ".nuxt" 
+OutputDirPath                   | Output is in separate volume due to rsync errors                                          | ".nuxt"
 OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         | "\|lTpVCq2KGuY=.e6f14074_"
-SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "nodejs/helloworld-nuxtjs/" 
-PlatformName                    | Name of Oryx supported platform name                                                      | "nodejs"       
-CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
-nodejs_npm_registry_url         | URL of the npm registry                                                                   | "https://foobar.com/" 
+SourceDirectoryInBuildContainer | Directory inside Docker container containing source code                                  | "nodejs/helloworld-nuxtjs/"
+PlatformName                    | Name of Oryx supported platform name                                                      | "nodejs"
+CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false"
+nodejs_npm_registry_url         | URL of the npm registry                                                                   | "https://foobar.com/"
 
 Golang fields                   |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
 GolangVersion                   | Platform's version that Oryx will use to run the app                                      | "1.17"  
 OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         | "\|lTpVCq2KGuY=.e6f14074_"
-SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "golang/hello-world/" 
-PlatformName                    | Name of Oryx supported platform name                                                      | "golang"       
-CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
+SourceDirectoryInBuildContainer | Directory inside Docker container containing source code                                  | "golang/hello-world/"
+PlatformName                    | Name of Oryx supported platform name                                                      | "golang"
+CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false"
 
 Python fields                   |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
-PythonVersion                   | Platform's version that Oryx will use to run the app                                      | "3.8.6" 
-virtualEnvName                  | Name of the virtual environmen running in the Docker container                            | "pythonenv3.8"
+PythonVersion                   | Platform's version that Oryx will use to run the app                                      | "3.8.6"
+virtualEnvName                  | Name of the virtual environment running in the Docker container                           | "pythonenv3.8"
 OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         | "\|lTpVCq2KGuY=.e6f14074_"
-SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "nodejs/helloworld-nuxtjs/" 
-PlatformName                    | Name of Oryx supported platform name                                                      | "python"       
-CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
+SourceDirectoryInBuildContainer | Directory inside Docker container containing source code                                  | "nodejs/helloworld-nuxtjs/"
+PlatformName                    | Name of Oryx supported platform name                                                      | "python"
+CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false"
 packagedir                      | Packages will be downloaded to given directory instead of VM. Optional field, must be set as ENV var or passed in as a property in `oryx` command. | "." (Example command: ` oryx build python-flask-sample-app/ --package --property packagedir=.`)
-packagewheel                    | Wheels are built with universal flag. `packagedir` parameter is required                 | "universal"  (Example command: ` oryx build python-flask-sample-app/ --package --property packagedir=. --property packagewheel=universal`)
-compress_virtualenv             | Determines if app is compressed. When running the app, virtaul env must be extracted from this file. Default is false | "false"
+packagewheel                    | Wheels are built with universal flag. `packagedir` parameter is required                  | "universal"  (Example command: ` oryx build python-flask-sample-app/ --package --property packagedir=. --property packagewheel=universal`)
+compress_virtualenv             | Determines if app is compressed. When running the app, virtual env must be extracted from this file. Default is false | "false"
 
 Dotnet fields                   |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
 DotNetCoreSdkVersion            | Platform's version that Oryx will use to run the app                                      | "3.1.406"
 StartupDllFileName              | Executable used to run the application                                                    |  "NetCoreApp31.MvcApp.dll"
 OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         |  "\|lTpVCq2KGuY=.e6f14074_"
-SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "nodejs/helloworld-nuxtjs/" 
-PlatformName                    | Name of Oryx supported platform name                                                      |   "dotnet"       
+SourceDirectoryInBuildContainer | Directory inside Docker container containing source code                                  | "nodejs/helloworld-nuxtjs/"
+PlatformName                    | Name of Oryx supported platform name                                                      |   "dotnet"
 CompressDestinationDir          | Determines whether app is compressed to allow decompression, for performance improvements | "false"
-OutputType                      | `OutputType` specified in .csproj | "Library" 
+OutputType                      | `OutputType` specified in .csproj | "Library"
 
 Php fields                      |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
 PhpVersion                      | Platform's version that Oryx will use to run the app                                      | "8.0.3"
 OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         | "\|lTpVCq2KGuY=.e6f14074_"
-SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "nodejs/helloworld-nuxtjs/" 
-PlatformName                    | Name of Oryx supported platform name                                                      | "php"       
+SourceDirectoryInBuildContainer | Directory inside Docker container containing source code                                  | "nodejs/helloworld-nuxtjs/"
+PlatformName                    | Name of Oryx supported platform name                                                      | "php"
 CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false"
 
 Ruby fields                     |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
 RubyVersion                     | Platform's version that Oryx will use to run the app                                      | "2.7.2"
 OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         | "\|lTpVCq2KGuY=.e6f14074_"
-SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "nodejs/helloworld-nuxtjs/" 
-PlatformName                    | Name of Oryx supported platform name                                                      | "ruby"       
-CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
+SourceDirectoryInBuildContainer | Directory inside Docker container containing source code                                  | "nodejs/helloworld-nuxtjs/"
+PlatformName                    | Name of Oryx supported platform name                                                      | "ruby"
+CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false"
 
 Java fields                     |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
 JavaVersion                     | Platform's version that Oryx will use to run the app                                      | "11.0.8"
 OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         | "\|lTpVCq2KGuY=.e6f14074_"
-SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "nodejs/helloworld-nuxtjs/" 
-PlatformName                    | Name of Oryx supported platform name                                                      | "java"       
-CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
+SourceDirectoryInBuildContainer | Directory inside Docker container containing source code                                  | "nodejs/helloworld-nuxtjs/"
+PlatformName                    | Name of Oryx supported platform name                                                      | "java"
+CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false"
 
 Hugo fields                     |       Description                                                                         |      Example
 --------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
 HugoVersion                     | Platform's version that Oryx will use to run the app                                      | "0.81.0"
 OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         | "\|lTpVCq2KGuY=.e6f14074_"
-SourceDirectoryInBuildContainer | Directory inside Docker container contaiing source code                                   | "nodejs/helloworld-nuxtjs/" 
-PlatformName                    | Name of Oryx supported platform name                                                      | "hugo"       
-CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false" 
+SourceDirectoryInBuildContainer | Directory inside Docker container containing source code                                  | "nodejs/helloworld-nuxtjs/"
+PlatformName                    | Name of Oryx supported platform name                                                      | "hugo"
+CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false"

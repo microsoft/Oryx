@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -13,7 +13,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
-FROM %RUNTIME_BASE_IMAGE_NAME%
+FROM mcr.microsoft.com/oryx/base:%RUNTIME_BASE_IMAGE_TAG%
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
@@ -21,6 +21,7 @@ ARG USER_DOTNET_AI_VERSION
 ENV USER_DOTNET_AI_VERSION=${USER_DOTNET_AI_VERSION}
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 ENV DOTNET_VERSION=%DOTNET_VERSION%
+ENV ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN echo $USER_DOTNET_AI_VERSION && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \

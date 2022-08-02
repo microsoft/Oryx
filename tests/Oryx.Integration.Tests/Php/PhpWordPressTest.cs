@@ -26,26 +26,34 @@ namespace Microsoft.Oryx.Integration.Tests
         // Unique category traits are needed to run each
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
-        [Fact, Trait("category", "php-8.0")]
-        public void PipelineTestInvocationsPhp80()
+        [Fact, Trait("category", "php-81")]
+        public async Task PipelineTestInvocationsPhp81Async()
         {
-            string phpVersion80 = "8.0";
-            PhpWithWordPress51(phpVersion80);
-            CanBuildAndRun_Wordpress_SampleApp(phpVersion80);
+            string phpVersion81 = "8.1";
+            await CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion81);
         }
 
-        [Fact, Trait("category", "php-7.4")]
-        public void  PipelineTestInvocationsPhp74()
+        [Fact, Trait("category", "php-80")]
+        public async Task PipelineTestInvocationsPhp80Async()
+        {
+            string phpVersion80 = "8.0";
+            await CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion80);
+        }
+
+        [Fact, Trait("category", "php-74")]
+        public async Task PipelineTestInvocationsPhp74Async()
         {
             string phpVersion74 = "7.4";
-            PhpWithWordPress51(phpVersion74);
-            CanBuildAndRun_Wordpress_SampleApp(phpVersion74);
+            await Task.WhenAll(
+                PhpWithWordPress51Async(phpVersion74),
+                CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion74));
         }
 
         [Theory]
+        [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task PhpWithWordPress51(string phpVersion)
+        public async Task PhpWithWordPress51Async(string phpVersion)
         {
             // Arrange
             string hostDir = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
@@ -92,9 +100,10 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task CanBuildAndRun_Wordpress_SampleApp(string phpVersion)
+        public async Task CanBuildAndRun_Wordpress_SampleAppAsync(string phpVersion)
         {
             // Arrange
             var appName = "wordpress-example";

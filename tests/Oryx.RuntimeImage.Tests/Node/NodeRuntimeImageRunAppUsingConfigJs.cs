@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
-        public async Task RunNodeAppUsingConfigJs(string nodeVersion)
+        public async Task RunNodeAppUsingConfigJsAsync(string nodeVersion)
         {
 
             var appName = "express-config-js";

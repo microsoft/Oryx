@@ -1,6 +1,7 @@
 ARG DEBIAN_FLAVOR
 
 ### oryx run-script image
+# DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
 FROM golang:1.15-${DEBIAN_FLAVOR} as startupScriptGens
 
 # GOPATH is set to "/go" in the base image
@@ -22,7 +23,8 @@ ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
 # docker multi-stage builds
-COPY --from=buildscriptgenerator /opt/ /opt/
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/ /opt/
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
@@ -64,7 +66,14 @@ RUN apt-get update \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && echo "full" > /opt/oryx/.imagetype
+    && echo "full" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+
+RUN set -ex \
+    && tmpDir="/opt/tmp" \
+    && imagesDir="$tmpDir/images" \
+    # enables custom logging
+    && cp -f $imagesDir/build/logger.sh /opt/oryx/logger
 
 ENV ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io"
 ENV ENABLE_DYNAMIC_INSTALL="true"

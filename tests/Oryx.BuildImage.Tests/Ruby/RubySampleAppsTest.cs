@@ -23,19 +23,23 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
-        public static TheoryData<string> ImageNameData
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
         {
-            get
-            {
-                var data = new TheoryData<string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-                data.Add(imageTestHelper.GetVsoBuildImage("vso-focal"));
-                return data;
-            }
+            var imageTestHelper = new ImageTestHelper();
+            Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
+                imageTestHelper.GetVsoBuildImage("vso-focal"));
         }
 
-        [Fact]
+        [Fact, Trait("category", "jamstack")]
+        public void PipelineTestInvocationJamstack()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
+                imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        }
+
+        [Fact, Trait("category", "vso-focal")]
         public void GeneratesScript_AndBuildSinatraApp()
         {
             // Arrange
@@ -68,7 +72,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "vso-focal")]
         public void GeneratesScript_AndBuildRailsApp()
         {
             // Arrange
@@ -102,7 +106,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "vso-focal")]
         public void Builds_JekyllStaticWebApp_When_Apptype_Is_SetAs_StaticSiteApplications()
         {
             // Arrange
@@ -115,6 +119,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} ")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(
                 $"{ManifestFilePropertyKeys.PlatformName}=\"{RubyConstants.PlatformName}\"",
                 $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -132,10 +137,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             });
         }
 
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void Builds_JekyllStaticWebApp_UsingCustomBuildCommand(string buildImage)
+        private void Builds_JekyllStaticWebApp_UsingCustomBuildCommand(string buildImage)
         {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // Arrange
             var appName = "Jekyll-app";
             var volume = CreateSampleAppVolume(appName);
@@ -148,6 +154,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} ")
                 .AddFileExistsCheck($"{appOutputDir}/example.txt")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(
                 $"{ManifestFilePropertyKeys.PlatformName}=\"{RubyConstants.PlatformName}\"",
                 $"{appOutputDir}/{FilePaths.BuildManifestFileName}")

@@ -1,5 +1,5 @@
 ARG DEBIAN_FLAVOR
-FROM githubrunners-buildpackdeps-${DEBIAN_FLAVOR} AS main
+FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-${DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 # Install basic build tools
@@ -44,7 +44,10 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
             libicu67 \
             libcurl4 \ 
             libssl1.1 \
-        && rm -rf /var/lib/apt/lists/* ; \
+        && rm -rf /var/lib/apt/lists/* \
+        && curl -LO http://security.debian.org/debian-security/pool/updates/main/libx/libxml2/libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb \
+        && dpkg -i libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb \
+        && rm libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb ; \
     elif [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
@@ -64,8 +67,8 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
 
 # Install Yarn, HUGO
 FROM main AS intermediate
-COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
-COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images" 
 RUN ${IMAGES_DIR}/build/installHugo.sh
@@ -142,7 +145,8 @@ RUN tmpDir="/opt/tmp" \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f /etc/apt/sources.list.d/buster.list \
-    && echo "githubactions" > /opt/oryx/.imagetype
+    && echo "githubactions" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
 # For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 

@@ -10,7 +10,8 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "php-7.4")]
+    [Collection("Php integration")]
+    [Trait("category", "php-74")]
     [Trait("db", "postgres")]
     public class PhpPostgreSqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgreSqlDbContainerFixture>
     {
@@ -21,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Bug 1410367") ]
         [InlineData("7.4")]
-        public async Task PhpApp(string phpVersion)
+        public async Task PhpAppAsync(string phpVersion)
         {
             await RunTestAsync(
                 "php",

@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # From https://github.com/docker-library/php.git
-FROM php-fpm-run-base-${DEBIAN_FLAVOR}
+FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-run-base-${DEBIAN_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # do NOT merge this content with above line because the 
@@ -14,9 +14,9 @@ RUN set -eux \
 		gnupg2 \
 		apt-transport-https \
 	&& curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-	&& curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+	&& curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list \
 	&& apt-get update \
-	&& ACCEPT_EULA=Y apt-get install -y msodbcsql17 unixodbc-dev
+	&& ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
 
 ENV PHP_INI_DIR /usr/local/etc/php
 RUN set -eux; \
@@ -45,9 +45,9 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 ENV GPG_KEYS 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544 F1F692238FBC1666E5A5CCD4199F9DFEF6FFBAFD
 
 
-ENV PHP_VERSION 8.1.0
-ENV PHP_URL="https://www.php.net/get/php-8.1.0.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-8.1.0.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="a1317eff0723a2b3d3122bbfe107a1158570ea2822dc35a5fb360086db0f6bbc" PHP_MD5=""
+ENV PHP_VERSION 8.1.6
+ENV PHP_URL="https://www.php.net/get/php-8.1.6.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-8.1.6.tar.xz.asc/from/this/mirror"
+ENV PHP_SHA256="da38d65bb0d5dd56f711cd478204f2b62a74a2c2b0d2d523a78d6eb865b2364c" PHP_MD5=""
 
 RUN set -eux; \
 	\

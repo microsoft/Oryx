@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
@@ -29,23 +30,30 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
-        public static TheoryData<string> ImageNameData
+        [Fact, Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
         {
-            get
-            {
-                var data = new TheoryData<string>();
-                data.Add(Settings.BuildImageName);
-                data.Add(Settings.LtsVersionsBuildImageName);
-                var imageTestHelper = new ImageTestHelper();
-                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-                return data;
-            }
+            GeneratesScript_AndBuilds(Settings.BuildImageName);
         }
 
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuilds(string buildImageName)
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
         {
+            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
+        }
+
+        [Fact, Trait("category", "jamstack")]
+        public void PipelineTestInvocationJamstack()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        }
+
+        private void GeneratesScript_AndBuilds(string buildImageName)
+        {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // Arrange
             var devPackageName = "nodemon";
             var prodPackageName = "express";
@@ -77,7 +85,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
@@ -114,7 +122,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void Build_CopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -144,7 +152,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_ReplacesContentInDestinationDir_WhenDestinationDirIsNotEmpty()
         {
             // Arrange
@@ -212,7 +220,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             return script;
         }
 
-        [Fact(Skip = "structured data is not logged as custom dimension in file, 801985")]
+        [Fact(Skip = "structured data is not logged as custom dimension in file, 801985"), Trait("category", "latest")]
         public void ErrorDetectingNode_FailedExitCode_StringContentFound()
         {
             var appDir = "/tmp/app1";
@@ -246,7 +254,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "structured data is not logged as custom dimension in file, 801985")]
+        [Fact(Skip = "structured data is not logged as custom dimension in file, 801985"), Trait("category", "latest")]
         public void ErrorDetectingNode_FailedExitCode_StringContentNotFound()
         {
             var appDir = "/tmp/app1";
@@ -277,7 +285,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
             // Arrange
@@ -308,7 +316,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_WhenExplicitPlatformAndVersion_AreProvided()
         {
             // Arrange
@@ -317,9 +325,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -344,7 +354,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption()
         {
             // Arrange
@@ -379,7 +389,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void CanBuild_UsingScriptGeneratedBy_ScriptOnlyOption_AndWhenExplicitPlatformAndVersion_AreProvided()
         {
             // Arrange
@@ -414,7 +424,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
@@ -445,7 +455,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
@@ -475,6 +485,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact(Skip = "Work item 819489 - output folder as a subdirectory of source is not yet supported.)")]
+        [Trait("category", "latest")]
         public void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
@@ -504,7 +515,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
         {
             // Arrange
@@ -568,7 +579,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsNodeApp_AndZipsNodeModules_WithTarGz_IfZipNodeModulesIsTarGz()
         {
             // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
@@ -603,7 +614,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsNodeApp_AndZipsNodeModules_IfCompressNodeModulesIsZip()
         {
             // NOTE: Use intermediate directory(which here is local to container) to avoid errors like
@@ -617,6 +628,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var buildScript = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p compress_node_modules=zip")
                 .AddFileExistsCheck($"{appOutputDir}/node_modules.zip")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
                 .AddStringExistsInFileCheck(
                 "compressedNodeModulesFile=\"node_modules.zip\"",
@@ -641,7 +653,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsNodeApp_AndDoesNotZipNodeModules_IfZipNodeModulesIsFalse()
         {
             // Arrange
@@ -672,7 +684,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir()
         {
             // Arrange
@@ -705,7 +717,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void GeneratesScript_AndBuilds_UsingSuppliedPackageDir_WhenPackageDirAndSourceDirAreSame()
         {
             // Arrange
@@ -741,7 +753,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "jamstack")]
         public void BuildsNodeApp_AndDoesNotCopyDevDependencies_IfPruneDevDependenciesIsTrue_AndNoProdDependencies()
         {
             // Arrange
@@ -774,7 +786,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "jamstack")]
         [InlineData("empty-dependencies")]
         [InlineData("no-dependeny-nodes")]
         public void BuildsNodeApp_IfPruneDevDependenciesIsTrue_AndNoProd_OrDevDependencies(string appName)
@@ -809,7 +821,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData("webfrontend")]
         [InlineData("webfrontend-yarnlock")]
         public void BuildsNodeApp_AndDoesNotCopyDevDependencies_IfPruneDevDependenciesIsTrue(string appName)
@@ -856,7 +868,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsNodeApp_DoesNotPruneDevDependencies_IfPruneDevDependenciesIsFalse()
         {
             // Arrange
@@ -901,7 +913,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void BuildsApp_ByRunningCustomBuildCommand_AndSkipNpmInstallCommand()
         {
             // Arrange
@@ -935,7 +947,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void BuildsApp_ByRunningCustomBuildScript_AndSkipNpmInstallCommand()
         {
             // Arrange
@@ -967,7 +979,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void  CanBuildAndRunNodeApp_WithWorkspace_UsingYarn2ForBuild()
         {
             // Arrange
@@ -1001,7 +1013,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void CanBuildAndRunNodeAppWithoutWorkspace_UsingYarn2ForBuild()
         {
             // Arrange
@@ -1031,7 +1043,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void BuildsApp_ByRunningNpmInstall_AndCustomRunBuildCommand()
         {
             // Arrange
@@ -1066,7 +1078,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void CanBuildAppHavingAppDynamicsNpmPackage()
         {
             // Arrange
@@ -1102,7 +1114,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void CanBuildAppHavingUsingYarnEngine()
         {
             // Arrange  
@@ -1142,7 +1154,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void CanBuildVuePressSampleAppWithPruneDevDependencies()
         {
             // Arrange
@@ -1178,6 +1190,44 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact, Trait("category", "ltsversions")]
+        public void GeneratesScript_AndLoggerFormatCheck()
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/" + SampleAppName + "-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand($"echo RandomText >> {appDir}/Program.cs") // triggers a failure
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --package --property package_directory='oryxteststring'")
+                .ToString();
+            // Regex will match:
+            // "yyyy-mm-dd hh:mm:ss"|WARNING|Package directory '/oryxtests/webfrontend/oryxteststring' does not exist.
+            Regex regex = new Regex(@"""[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (0[0-9]|1[0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])""\|WARNING\|Package directory '/oryxtests/webfrontend/oryxteststring' does not exist.");
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.LtsVersionsBuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(SampleAppName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.False(result.IsSuccess);
+                    Match match = regex.Match(result.StdOut);
+                    Assert.True(match.Success);
                 },
                 result.GetDebugInfo());
         }

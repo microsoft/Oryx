@@ -3,8 +3,8 @@ FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
-COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \
@@ -35,7 +35,8 @@ RUN apt-get update \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && echo "cli" > /opt/oryx/.imagetype
+    && echo "cli" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \

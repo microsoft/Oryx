@@ -24,26 +24,38 @@ namespace Microsoft.Oryx.Integration.Tests
         // Unique category traits are needed to run each
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
-        [Fact, Trait("category", "php-8.0")]
-        public void PipelineTestInvocationsPhp80()
+        [Fact, Trait("category", "php-81")]
+        public async Task PipelineTestInvocationsPhp81Async()
         {   
-            string phpVersion80 = "8.0";
-            GreetingsAppTest(phpVersion80);
-            PhpFpmGreetingsAppTest(phpVersion80);
+            string phpVersion81 = "8.1";
+            await Task.WhenAll(
+                GreetingsAppTestAsync(phpVersion81),
+                PhpFpmGreetingsAppTestAsync(phpVersion81));
         }
 
-        [Fact, Trait("category", "php-7.4")]
-        public void PipelineTestInvocationsPhp74()
+        [Fact, Trait("category", "php-80")]
+        public async Task PipelineTestInvocationsPhp80Async()
+        {   
+            string phpVersion80 = "8.0";
+            await Task.WhenAll(
+                GreetingsAppTestAsync(phpVersion80),
+                PhpFpmGreetingsAppTestAsync(phpVersion80));
+        }
+
+        [Fact, Trait("category", "php-74")]
+        public async Task PipelineTestInvocationsPhp74Async()
         {
             string phpVersion74 = "7.4";
-            GreetingsAppTest(phpVersion74);
-            PhpFpmGreetingsAppTest(phpVersion74);
+            await Task.WhenAll(
+                GreetingsAppTestAsync(phpVersion74),
+                PhpFpmGreetingsAppTestAsync(phpVersion74));
         }
 
         [Theory]
+        [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task GreetingsAppTest(string phpVersion)
+        public async Task GreetingsAppTestAsync(string phpVersion)
         {
             // Arrange
             var appName = "greetings";
@@ -77,9 +89,10 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
-        public async Task PhpFpmGreetingsAppTest(string phpVersion)
+        public async Task PhpFpmGreetingsAppTestAsync(string phpVersion)
         {
             // Arrange
             var appName = "greetings";

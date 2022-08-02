@@ -22,8 +22,9 @@ namespace Oryx.BuildImage.Tests.Node
         {
         }
 
-        [Theory]
-        [InlineData("angularsample", "dist")]
+        [Theory, Trait("category", "jamstack")]
+        // Temporarily blocking Angular 14 app: Work item 1565890
+        // [InlineData("angular14", "dist")]
         // Temporarily blocking next app as next build is failing accross npm
         // [InlineData("blog-starter-nextjs", ".next")]
         [InlineData("hackernews-nuxtjs", ".nuxt")]
@@ -40,6 +41,7 @@ namespace Oryx.BuildImage.Tests.Node
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(
                 $"{NodeManifestFilePropertyKeys.OutputDirPath}=\"{expectedOutputDirPath}\"",
                 $"{appOutputDir}/{FilePaths.BuildManifestFileName}")

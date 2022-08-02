@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("github-actions")]
         [InlineData("github-actions-buster")]
         [InlineData("latest")]
-        public async Task Python37App_MicrosoftSqlServerDB(string imageTag)
+        public async Task Python37App_MicrosoftSqlServerDBAsync(string imageTag)
         {
             // Arrange
             var appName = "mssqlserver-sample";

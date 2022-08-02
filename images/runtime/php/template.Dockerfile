@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -11,9 +11,11 @@ ARG RELEASE_TAG_NAME=unspecified
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
+#Bake in client certificate path into image to avoid downloading it
+ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN ./build.sh php /opt/startupcmdgen/startupcmdgen
 
-FROM %RUNTIME_BASE_IMAGE_NAME%
+FROM mcr.microsoft.com/oryx/base:%RUNTIME_BASE_IMAGE_TAG%
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
@@ -10,9 +10,11 @@ ARG RELEASE_TAG_NAME=unspecified
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
+#Bake in client certificate path into image to avoid downloading it
+ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM %BASE_TAG% as main
+FROM oryxdevmcr.azurecr.io/private/oryx/%BASE_TAG% as main
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}

@@ -19,8 +19,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
-        [InlineData("2.7")]
-        [InlineData("3.6")]
         [InlineData("3.7")]
         [InlineData("3.8")]
         [InlineData("3.9")]
@@ -60,8 +58,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("2.7")]
-        [InlineData("3.6")]
         [InlineData("3.7")]
         [InlineData("3.8")]
         [InlineData("3.9")]
@@ -90,7 +86,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("3.6", "Python " + PythonVersions.Python36Version)]
         [InlineData("3.7", "Python " + PythonVersions.Python37Version)]
         [InlineData("3.8", "Python " + PythonVersions.Python38Version)]
         [InlineData("3.9", "Python " + PythonVersions.Python39Version)]
@@ -112,34 +107,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact]
-        [Trait(TestConstants.Category, TestConstants.Release)]
-        public void Python2MatchesImageName()
-        {
-            string pythonVersion = "2.7";
-            string expectedOutput = "Python " + PythonVersions.Python27Version;
-
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("python", pythonVersion),
-                CommandToExecuteOnRun = "python",
-                CommandArguments = new[] { "--version" }
-            });
-
-            // Assert
-            var actualOutput = result.StdErr.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    //bugs.python.org >> issue18338 weird but true, earlier than python 3.4
-                    // sends python --version output to STDERR
                     Assert.Equal(expectedOutput, actualOutput);
                 },
                 result.GetDebugInfo());

@@ -37,11 +37,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Theory]
+        [Theory, Trait("category", "githubactions")]
         [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
         [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0.0-preview.1.22076.8")]
+        [InlineData(NetCore7PreviewMvcApp, "7.0.0-preview.6.22324.4")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion)
@@ -51,6 +51,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
@@ -58,6 +59,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
             var majorPart = runtimeVersion.Split('.')[0];
@@ -89,7 +91,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
@@ -143,7 +145,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresExplicitRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
@@ -169,6 +171,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(volume.MountedHostDir, DotNetCoreConstants.GlobalJsonFileName),
                 globalJsonContent);
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
@@ -176,6 +179,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} --log-file log.txt")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -205,7 +209,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
@@ -231,11 +235,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(volume.MountedHostDir, DotNetCoreConstants.GlobalJsonFileName),
                 globalJsonContent);
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -265,7 +271,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_UsingPreviewVersionOfSdk()
         {
             // Arrange
@@ -290,11 +296,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 globalJsonContent);
 
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -324,7 +332,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsAppAfterInstallingAllRequiredPlatforms()
         {
             // Arrange
@@ -361,7 +369,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_IntoCustomDynamicInstallationDir()
         {
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
@@ -387,6 +395,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(volume.MountedHostDir, DotNetCoreConstants.GlobalJsonFileName),
                 globalJsonContent);
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
@@ -395,6 +404,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{expectedDynamicInstallRootDir}/{DotNetCoreConstants.PlatformName}/{expectedSdkVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -424,7 +434,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "vso-focal")]
         [InlineData(NetCoreApp30MvcApp, "3.0", DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
         public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
             string appName,
@@ -436,6 +446,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var preInstalledSdkLink = $"/home/codespace/.dotnet/sdk";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
@@ -450,6 +461,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDirectoryExistsCheck($"/opt/dotnet/{sdkVersion}")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/{sdkVersion}")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .AddCommand("/home/codespace/.dotnet/dotnet --list-sdks")
                 .ToString();

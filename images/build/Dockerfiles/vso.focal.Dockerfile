@@ -1,4 +1,4 @@
-FROM githubrunners-buildpackdeps-focal AS main
+FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-focal AS main
 
 # Install basic build tools
 # Configure locale (required for Python)
@@ -60,8 +60,8 @@ RUN LANG="C.UTF-8" \
 # since this intermediate stage is copied to final stage.
 # For example, if we put yarn-cache here it is going to impact perf since it more than 500MB
 FROM main AS intermediate
-COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
-COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
  
 FROM main AS final
 ARG AI_KEY
@@ -253,7 +253,8 @@ RUN buildDir="/opt/tmp/build" \
     && wget http://pear.php.net/go-pear.phar \
     && php go-pear.phar \
     && pecl install -f libsodium \
-    && echo "vso-focal" > /opt/oryx/.imagetype
+    && echo "vso-focal" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 # install few more tools for VSO
 RUN gem install bundler rake ruby-debug-ide debase jekyll

@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
     {
         public PlatformsCommandTest(ITestOutputHelper output) : base(output) { }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void ListsPlatformsAndVersionsAvailableForDynamicInstall()
         {
             // Arrange
@@ -85,8 +85,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(phpPlatform);
                     Assert.NotNull(phpPlatform.Versions);
                     Assert.True(phpPlatform.Versions.Any());
-                    Assert.True(phpPlatform.Versions.Contains("5.6.40"));
-                    Assert.True(phpPlatform.Versions.Contains("8.1.0"));
+                    Assert.True(phpPlatform.Versions.Contains("8.1.6"));
 
                     var hugoPlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(HugoConstants.PlatformName))

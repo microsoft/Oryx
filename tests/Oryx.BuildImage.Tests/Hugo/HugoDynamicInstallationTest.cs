@@ -22,22 +22,25 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        public static TheoryData<string> ImageNameData
+        [Fact, Trait("category", "jamstack")]
+        public void PipelineTestInvocationJamstack()
         {
-            get
-            {
-                var imageTestHelper = new ImageTestHelper();
-                var data = new TheoryData<string>();
-                data.Add(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-                data.Add(imageTestHelper.GetGitHubActionsBuildImage());
-                return data;
-            }
+            var imageTestHelper = new ImageTestHelper();
+            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
-        [Theory]
-        [MemberData(nameof(ImageNameData))]
-        public void InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(string imageName)
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocationGithubactions()
         {
+            var imageTestHelper = new ImageTestHelper();
+            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetGitHubActionsBuildImage());
+        }
+
+        private void InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(string imageName)
+        {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
             // Arrange
             var hugoVersion = "0.59.1";
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/hugo/{hugoVersion}";
@@ -73,7 +76,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "githubactions")]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
@@ -117,7 +120,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange
@@ -160,7 +163,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsApplication_ByDynamicallyInstallingIntoCustomDynamicInstallationDir()
         {
             // Arrange
@@ -202,7 +205,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             return $"rm -rf {DefaultInstallationRootDir}; mkdir -p {DefaultInstallationRootDir}";
         }
 
-        [Fact]
+        [Fact, Trait("category", "jamstack")]
         public void JamStackImageHasGoLangInstalled()
         {
             // Arrange

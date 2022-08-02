@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnv(string pythonVersion)
+        public async Task CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync(string pythonVersion)
         {
             // Arrange
             var appName = "shapely-flask-app";
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRun_ShapelyFlaskApp_PackageDir(string pythonVersion)
+        public async Task CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync(string pythonVersion)
         {
             // Arrange
             const string packageDir = "orx_packages";

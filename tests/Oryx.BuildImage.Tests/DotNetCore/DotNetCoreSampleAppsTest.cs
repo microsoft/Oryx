@@ -28,9 +28,36 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", sampleAppName));
 
+        [Fact, Trait("category", "latest")]
+        public void PipelineTestInvocationLatest()
+        {
+            Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.BuildImageName);
+            GDIPlusLibrary_IsPresentInTheImage("latest");
+        }
+
+        [Fact, Trait("category", "ltsversions")]
+        public void PipelineTestInvocationLtsVersions()
+        {
+            Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.LtsVersionsBuildImageName);
+            GDIPlusLibrary_IsPresentInTheImage("lts-versions");
+        }
+
+        [Fact, Trait("category", "vso-focal")]
+        public void PipelineTestInvocationVsoFocal()
+        {
+            GDIPlusLibrary_IsPresentInTheImage("vso-focal");
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void PipelineTestInvocation()
+        {
+            GDIPlusLibrary_IsPresentInTheImage("github-actions");
+            GDIPlusLibrary_IsPresentInTheImage("github-actions-buster");
+        }
+
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
-        [Fact (Skip="NetCore11 is no longer officially supported")]
+        [Fact (Skip="NetCore11 is no longer officially supported"), Trait("category", "latest")]
         public void Builds_NetCore10App_UsingNetCore11_DotNetSdkVersion()
         {
             // Arrange
@@ -39,10 +66,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/aspnetcore10-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 1.1.13")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck(manifestFile)
+                .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
 
@@ -74,7 +103,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion()
         {
             // Arrange
@@ -86,6 +115,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .ToString();
 
             // Act
@@ -108,7 +138,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_NetCore20App_UsingNetCore21_DotNetSdkVersion()
         {
             // Arrange
@@ -120,6 +150,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1.22")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .ToString();
 
             // Act
@@ -177,7 +208,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_NetCore22App_UsingNetCore22_DotNetSdkVersion()
         {
             // Arrange
@@ -210,7 +241,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_NetCore30App_UsingNetCore30_DotNetSdkVersion()
         {
             // Arrange
@@ -243,7 +274,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion()
         {
             // Arrange
@@ -252,7 +283,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 3.1.8")
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform dotnet " +
+                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp31}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
@@ -271,12 +305,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion), 
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion_CustomError()
         {
             // Arrange
@@ -285,8 +321,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo RandomText >> {appDir}/Program.cs") // triggers a failure
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 3.1.8")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform dotnet " +
+                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp31}")
                 .ToString();
             // Regex will match:
             // "yyyy-mm-dd hh:mm:ss"|ERROR|Micro
@@ -313,7 +352,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_Net5MvcApp_UsingNet5_DotNetSdkVersion()
         {
             // Arrange
@@ -348,9 +387,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
-
         // This test is necessary once .NET 6 preview 5 come out.
-        [Fact]
+        [Fact, Trait("category", "jamstack")]
         public void Builds_Net6BlazorWasmApp_RunsAOTCompilationInstallCommands()
         {
             // Arrange
@@ -361,7 +399,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform dotnet " +
-                $"--platform-version 6")
+                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp60}")
                 .ToString();
 
             // Act
@@ -384,7 +422,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
         {
             // Arrange
@@ -449,7 +487,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void Build_CopiesContentCreatedByPreAndPostBuildScript_ToExplicitOutputDirectory()
         {
             // NOTE: Here we are trying to verify that the pre and post build scripts are able to access the
@@ -515,7 +553,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_Executes_InlinePreAndPostBuildCommands()
         {
             // Arrange
@@ -556,7 +594,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Build_DoesNotClean_DestinationDirectory_ByDefault()
         {
             // Arrange
@@ -592,7 +630,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsApplication_InIntermediateDirectory_WhenIntermediateDirectorySwitchIsUsed()
         {
             // Arrange
@@ -628,7 +666,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void BuildsMultiWebAppRepoApp_InIntermediateDirectory_WhenIntermediateDirectorySwitchIsUsed()
         {
             // Arrange
@@ -666,7 +704,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_AzureFunctionsProject()
         {
             // Arrange
@@ -678,7 +716,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1.22")
                 .AddFileExistsCheck($"{appOutputDir}/bin/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
+                .AddStringExistsInFileCheck(
+                    $"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", 
+                    $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
             // Act
@@ -701,7 +742,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact(Skip = "Skipping till we fix Bug#1288173")]
+        [Fact(Skip = "Skipping till we fix Bug#1288173"), Trait("category", "latest")]
         public void Builds_SingleBlazorWasmProject_Without_Setting_Apptype_Option()
         {
             // Arrange
@@ -715,6 +756,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
                 $"--platform-version 5.0.0")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(
                 ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
@@ -742,7 +784,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_AzureBlazorWasmFunctionProject_By_Setting_Apptype_Via_BuildCommand()
         {
             // Arrange
@@ -755,6 +797,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} " +
                 $"--platform dotnet --platform-version 3.1.8")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
@@ -781,7 +824,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "jamstack")]
         public void Builds_AzureFunctionProject_FromBlazorFunctionRepo_When_Apptype_Is_SetAs_Functions()
         {
             // Arrange
@@ -794,6 +837,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir}/MessageFunction -o {appOutputDir} --apptype functions --platform dotnet " +
                 $"--platform-version 3.1")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .ToString();
 
             // Act
@@ -814,12 +858,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.419"), result.StdOut);
+                    Assert.Contains(
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion),
+                        result.StdOut);
                 },
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "latest")]
         public void Builds_Application_Checks_OutputType_In_Manifest()
         {
             // Arrange
@@ -831,6 +877,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(
                 $"{appDir}/ -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.OutputType}=\"Exe\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
@@ -856,11 +903,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "latest")]
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-       //[InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
+        //[InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion), Trait("category", "latest")]
         public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
         {
             // Arrange
@@ -895,7 +942,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void Builds_AndCopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -928,7 +975,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
+        [Fact, Trait("category", "ltsversions")]
         public void SubsequentBuilds_CopyOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -1000,7 +1047,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         /// Tests that a v3 Azure Function app targeting .NET Core 3.1 can be built with the Jamstack image.
         /// </summary>
         /// <remarks>Find supported Azure Function app target frameworks here: https://docs.microsoft.com/en-us/azure/static-web-apps/apis</remarks>
-        [Fact]
+        [Fact, Trait("category", "jamstack")]
         public void JamstackImage_CanBuild_NetCore31_V3Functions_apps()
         {
             // Arrange
@@ -1011,6 +1058,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
@@ -1037,7 +1085,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         /// Tests that a v4 Azure Function app targeting .NET 6.0 can be built with the Jamstack image.
         /// </summary>
         /// <remarks>Find supported Azure Function app target frameworks here: https://docs.microsoft.com/en-us/azure/static-web-apps/apis</remarks>
-        [Fact]
+        [Fact, Trait("category", "jamstack")]
         public void JamstackImage_CanBuild_Dotnet6_V4Functions_apps()
         {
             // Arrange
@@ -1048,6 +1096,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
@@ -1074,7 +1123,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         /// Tests that a v4 isolated Azure Function app targeting .NET 6 can be built with the Jamstack image.
         /// </summary>
         /// <remarks>Find supported Azure Function app target frameworks here: https://docs.microsoft.com/en-us/azure/static-web-apps/apis</remarks>
-        [Fact]
+        [Fact, Trait("category", "jamstack")]
         public void JamstackImage_CanBuild_Dotnet6_Isolated_apps()
         {
             // Arrange
@@ -1085,6 +1134,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
+                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck($"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 

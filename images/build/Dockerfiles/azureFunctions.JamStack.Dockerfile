@@ -2,7 +2,7 @@ ARG PARENT_DEBIAN_FLAVOR
 FROM oryxdevmcr.azurecr.io/public/oryx/build:github-${PARENT_DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
 
-COPY --from=support-files-image-for-build /tmp/oryx/ /tmp
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /tmp
 
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     ORYX_BUILDIMAGE_TYPE="jamstack" \
@@ -52,4 +52,5 @@ RUN set -ex \
     && ln -s $PYTHON38_VERSION 3.8 \
     && ln -s $PYTHON38_VERSION latest \
     && ln -s $PYTHON38_VERSION stable \
-    && echo "jamstack" > /opt/oryx/.imagetype
+    && echo "jamstack" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype

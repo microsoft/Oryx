@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
             _tcpStream = _tcpClient.GetStream();
         }
 
-        public async Task<string> Initialize()
+        public async Task<string> InitializeAsync()
         {
             var reqArgs = new Messages.InitializeRequestArguments { ClientName = _name };
             var req = new Messages.InitializeRequest { SequenceNumber = _sequence++, Args = reqArgs };
@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
             // Write out the request
             await _tcpStream.WriteAsync(reqData, 0, reqData.Length);
 
-            return await RecvRawMessage();
+            return await RecvRawMessageAsync();
         }
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.Integration.Tests.VSCodeDebugProtocol
         /// For example - ignores the Content-Length headers completely.
         /// </summary>
         /// <returns>Array of message bodies received.</returns>
-        private async Task<string> RecvRawMessage()
+        private async Task<string> RecvRawMessageAsync()
         {
             var rawResData = new byte[256];
             int bytesRecvd = await _tcpStream.ReadAsync(rawResData, 0, rawResData.Length);

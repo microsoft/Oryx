@@ -1,4 +1,4 @@
-FROM githubrunners-buildpackdeps-stretch AS main
+FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-stretch AS main
 
 # Install basic build tools
 # Configure locale (required for Python)
@@ -47,8 +47,8 @@ RUN LANG="C.UTF-8" \
 # since this intermediate stage is copied to final stage.
 # For example, if we put yarn-cache here it is going to impact perf since it more than 500MB
 FROM main AS intermediate
-COPY --from=support-files-image-for-build /tmp/oryx/ /opt/tmp
-COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
+COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
  
 FROM main AS final
 ARG AI_KEY
@@ -184,6 +184,7 @@ RUN set -ex \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && rm -f /etc/apt/sources.list.d/buster.list \
     && echo "ltsversions" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
 # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
     && ${imagesDir}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates" \
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
