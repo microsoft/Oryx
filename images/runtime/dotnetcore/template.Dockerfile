@@ -21,6 +21,7 @@ ARG USER_DOTNET_AI_VERSION
 ENV USER_DOTNET_AI_VERSION=${USER_DOTNET_AI_VERSION}
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 ENV DOTNET_VERSION=%DOTNET_VERSION%
+ENV ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN echo $USER_DOTNET_AI_VERSION && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
