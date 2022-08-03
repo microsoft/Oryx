@@ -21,9 +21,5 @@ ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
-RUN if ["%PHP_VERSION%" = "3.7.30"]; then curl -LO http://ftp.de.debian.org/debian/pool/main/a/apache2/apache2-data_2.4.54-2_all.deb \
-&& dpkg --install apache2-data_2.4.54-2_all.deb\
-&& apt-update\
-&& apt-upgrade; fi\ 
 
 
