@@ -20,7 +20,24 @@ grep -oPm1 "(?<=<Name>)[^<]+" <<< "$xml" | while read -r fileName ; do
         echo "No match found for $fileName. Skipping..."
         continue
     fi
-    metadata=$(curl -I --silent "$storageAccount/$container/$fileName?comp=metadata" | grep x-ms-meta)
-    echo "Match found.     ostype: $ostype     version: $version       metadata: $metadata"
-
+    metadata=$(curl -I --silent "$storageAccount/$container/$fileName?comp=metadata" | grep x-ms-meta | tr '\n' ' ' | sed 's/:\s/=/g' | sed 's/x-ms-meta-//g')
+    if [ $ostype = "stretch" ] ; then
+        metadataToAdd="Os_type=stretch"
+        echo "Adding metadata to $fileName: $metadataToAdd"
+        # az storage blob metadata update \
+        # --container-name $container \
+        # --name $fileName \
+        # --account-name oryxsdksdev \
+        # --sas-token $DEV_STORAGE_ACCOUNT_SAS_TOKEN 
+        # --metadata $metadata Os_type=stretch
+    else
+        metadataToAdd="Os_type=$ostype Sdk_version=$version"
+        echo "Adding metadata to $fileName: $metadataToAdd"
+        # az storage blob metadata update \
+        # --container-name $container \
+        # --name $fileName \
+        # --account-name oryxsdksdev \
+        # --sas-token $DEV_STORAGE_ACCOUNT_SAS_TOKEN 
+        # --metadata $metadata Os_type=$ostype Sdk_version=$version
+    fi
 done
