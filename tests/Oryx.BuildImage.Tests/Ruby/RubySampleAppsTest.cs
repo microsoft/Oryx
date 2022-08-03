@@ -48,6 +48,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var imageTestHelper = new ImageTestHelper();
             Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
                 imageTestHelper.GetCliImage(imageTag));
+            GeneratesScript_AndBuildRailsApp(imageTestHelper.GetCliImage(imageTag));
         }
 
         [Fact, Trait("category", "vso-focal")]
@@ -92,7 +93,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddCommand($"cd {appDir} && bundle update")
+                .AddCommand($"cd {appDir}")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
 
