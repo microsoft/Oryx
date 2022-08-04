@@ -86,25 +86,28 @@ touch $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 
 function createImageNameWithReleaseTag() {
 	local imageNameToBeTaggedUniquely="$1"
+	local debianFlavor="$2"
+	
+	IFS=':' read -ra IMAGE_NAME <<< "$imageNameToBeTaggedUniquely"
+	local repo="${IMAGE_NAME[0]}"
+	local tag="$debianFlavor"
 	# Retag build image with build number tags
 	if [ "$AGENT_BUILD" == "true" ]
 	then
-		IFS=':' read -ra IMAGE_NAME <<< "$imageNameToBeTaggedUniquely"
-		local repo="${IMAGE_NAME[0]}"
-		local tag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
-		if [ ${#IMAGE_NAME[@]} -eq 2 ]; then
-			local uniqueImageName="$imageNameToBeTaggedUniquely-$tag"
-		else
-			local uniqueImageName="$repo:$tag"
-		fi
-
-		echo
-		echo "Retagging image '$imageNameToBeTaggedUniquely' as '$uniqueImageName'..."
-		docker tag "$imageNameToBeTaggedUniquely" "$uniqueImageName"
-
-		# Write image list to artifacts file
-		echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+		tag="$debianFlavor-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 	fi
+	if [ ${#IMAGE_NAME[@]} -eq 2 ]; then
+		local uniqueImageName="$imageNameToBeTaggedUniquely-$tag"
+	else
+		local uniqueImageName="$repo:$tag"
+	fi
+
+	echo
+	echo "Retagging image '$imageNameToBeTaggedUniquely' as '$uniqueImageName'..."
+	docker tag "$imageNameToBeTaggedUniquely" "$uniqueImageName"
+
+	# Write image list to artifacts file
+	echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 }
 
 function buildGitHubRunnersUbuntuBaseImage() {
@@ -198,7 +201,7 @@ function buildGitHubActionsImage() {
 		-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
 		.
 
-	createImageNameWithReleaseTag $builtImageName
+	createImageNameWithReleaseTag $builtImageName $debianFlavor
 
 	echo
 	echo "$builtImageName image history"
@@ -246,7 +249,7 @@ function buildJamStackImage() {
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		.
 	
-	createImageNameWithReleaseTag $builtImageName
+	createImageNameWithReleaseTag $builtImageName $debianFlavor
 
 	echo
 	echo "$builtImageName image history"
@@ -290,7 +293,7 @@ function buildLtsVersionsImage() {
 		-f "$ltsBuildImageDockerFile" \
 		.
 
-	createImageNameWithReleaseTag $builtImageName
+	createImageNameWithReleaseTag $builtImageName $debianFlavor
 
 	echo
 	echo "$builtImageName image history"
@@ -322,7 +325,7 @@ function buildLatestImages() {
 		-f "$BUILD_IMAGES_DOCKERFILE" \
 		.
 
-	createImageNameWithReleaseTag $builtImageName
+	createImageNameWithReleaseTag $builtImageName $debianFlavor
 
 	echo
 	echo "$builtImageName image history"
@@ -355,7 +358,7 @@ function buildVsoFocalImage() {
 		-f "$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE" \
 		.
 
-	createImageNameWithReleaseTag $builtImageName
+	createImageNameWithReleaseTag $builtImageName $debianFlavor
 
 	echo
 	echo "$builtImageName image history"
@@ -394,7 +397,7 @@ function buildCliImage() {
 		-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
 		.
 
-	createImageNameWithReleaseTag $builtImageName
+	createImageNameWithReleaseTag $builtImageName $debianFlavor
 
 	echo
 	echo "$builtImageName image history"
@@ -433,7 +436,7 @@ function buildFullImage() {
 		-f "$BUILD_IMAGES_FULL_DOCKERFILE" \
 		.
 
-	createImageNameWithReleaseTag $builtImageName
+	createImageNameWithReleaseTag $builtImageName $debianFlavor
 
 	echo
 	echo "$builtImageName image history"
