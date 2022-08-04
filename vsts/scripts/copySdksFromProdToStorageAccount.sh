@@ -33,14 +33,14 @@ function copyBlobContainerFromProdToDestination() {
         echo
         echo "Overwriting blob container '$platformName' in storage account '$destinationSdk'."
         # azcopy copy [source] [destination] [flags]
-        if [ $dryRun == "true" ] ; then
-            "$azCopyDir/azcopy" copy \
-                "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
-                "$destinationSdk/$platformName$sasToken" --overwrite true --recursive --dry-run
-        else
+        if [ $dryRun == "false" ] ; then
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
                 "$destinationSdk/$platformName$sasToken" --overwrite true --recursive
+        else
+            "$azCopyDir/azcopy" copy \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
+                "$destinationSdk/$platformName$sasToken" --overwrite true --recursive --dry-run
         fi
     elif blobContainerExistsInDestination $platformName; then
         echo
@@ -49,14 +49,14 @@ function copyBlobContainerFromProdToDestination() {
         echo
         echo "Blob container '$platformName' does not exist in storage account '$destinationSdk'. Copying it from $PROD_SDK_STORAGE_BASE_URL..."
         # azcopy copy [source] [destination] [flags]
-        if [ $dryRun == "true" ] ; then
-            "$azCopyDir/azcopy" copy \
-                "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
-                "$destinationSdk/$platformName$sasToken" --overwrite false --recursive --dry-run
-        else
+        if [ $dryRun == "false" ] ; then
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
                 "$destinationSdk/$platformName$sasToken" --overwrite false --recursive
+        else
+            "$azCopyDir/azcopy" copy \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
+                "$destinationSdk/$platformName$sasToken" --overwrite false --recursive --dry-run
         fi
     fi
 }
