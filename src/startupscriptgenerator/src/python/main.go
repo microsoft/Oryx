@@ -87,6 +87,9 @@ func main() {
 
 		command := entrypointGenerator.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, command)
+
+		userRunCommand := common.ParseUserRunCommand(fullAppPath + "/appsvc.yaml")
+		common.AppendScript(*outputPathPtr, userRunCommand)
 	}
 
 	if setupEnvCommand.Parsed() {

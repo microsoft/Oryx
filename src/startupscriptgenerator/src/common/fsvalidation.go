@@ -69,6 +69,7 @@ func AppendScript(filePath string, command string) {
 
 	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0755)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 	defer file.Close()
@@ -77,6 +78,8 @@ func AppendScript(filePath string, command string) {
 	// Appends the command at the end of the file
 	if _, err := file.WriteString("\n" + command); err != nil {
 		return
+	} else {
+		fmt.Println(err)
 	}
 }
 

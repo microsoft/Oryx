@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -127,6 +128,74 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Hello World", output);
                     Assert.Contains("oryx oryx oryx", output);
                 });
+        }
+
+        [Fact, Trait("category", "php-81")]
+        public async Task CanBuildAndRun_Greetings_WithCustomizedRunCommand()
+        {
+            // Arrange
+            var appName = "greetings";
+            var phpVersion = "8.1";
+            var phpimageVersion = string.Concat(phpVersion, "-", "fpm");
+            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
+            var tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(tmpDir);
+            try
+            {
+                var tmpVolume = DockerVolume.CreateMirror(tmpDir, true);
+                var tmpContainerDir = tmpVolume.ContainerDir;
+                var volume = DockerVolume.CreateMirror(hostDir);
+                var appDir = volume.ContainerDir;
+                var appOutputDirVolume = CreateAppOutputDirVolume();
+                var appOutputDir = appOutputDirVolume.ContainerDir;
+                var appsvcFile = appOutputDirVolume.ContainerDir + "/appsvc.yaml";
+                var runCommand = "echo 'Hello Azure! New Feature!!'";
+                var buildImageScript = new ShellScriptBuilder()
+                   .AddDefaultTestEnvironmentVariables()
+                   .AddCommand(
+                    $"oryx build {appDir} -i /tmp/int --platform php " +
+                    $"--platform-version {phpVersion} -o {appOutputDir}")
+                   .ToString();
+                var runtimeImageScript = new ShellScriptBuilder()
+                    .CreateFile(appsvcFile, $"\"run: {runCommand}\"")
+                    .AddCommand(
+                    $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort} -output {tmpContainerDir}/run.sh")
+                    .AddCommand($".{tmpContainerDir}/run.sh")
+                    .ToString();
+
+                await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                    appName,
+                    _output,
+                    new DockerVolume[] { volume, appOutputDirVolume, tmpVolume },
+                    _imageHelper.GetGitHubActionsBuildImage(),
+                    "/bin/sh",
+                    new[]
+                    {
+                    "-c",
+                    buildImageScript
+                    },
+                    _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                    ContainerPort,
+                    "/bin/sh",
+                    new[]
+                    {
+                    "-c",
+                    runtimeImageScript
+                    },
+                    async (hostPort) =>
+                    {
+                        var output = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                        Assert.Contains("Hello World", output);
+                        Assert.Contains("oryx oryx oryx", output);
+
+                        var runScript = File.ReadAllText(Path.Combine(tmpDir, "run.sh"));
+                        Assert.Contains(runCommand, runScript);
+                    });
+            }
+            finally
+            {
+                Directory.Delete(tmpDir, true);
+            }
         }
     }
 }

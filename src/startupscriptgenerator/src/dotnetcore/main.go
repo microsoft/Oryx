@@ -130,6 +130,7 @@ func main() {
 		}
 
 		common.WriteScript(fullOutputPath, command)
+
 		userRunCommand := common.ParseUserRunCommand(fullAppPath + "/appsvc.yaml")
 		common.AppendScript(fullOutputPath, userRunCommand)
 	}

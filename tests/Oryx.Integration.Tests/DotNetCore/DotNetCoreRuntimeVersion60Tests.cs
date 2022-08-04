@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 var appDir = volume.ContainerDir;
                 var appOutputDirVolume = CreateAppOutputDirVolume();
                 var appOutputDir = appOutputDirVolume.ContainerDir;
-                var rootFilePath = appOutputDirVolume.ContainerDir + "/appsvc.yaml";
+                var appsvcFile = appOutputDirVolume.ContainerDir + "/appsvc.yaml";
                 var runCommand = "echo 'Hello Azure! New Feature!!'";
                 var buildImageScript = new ShellScriptBuilder()
                    .AddDefaultTestEnvironmentVariables()
@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
                    .ToString();
                 var runtimeImageScript = new ShellScriptBuilder()
-                    .CreateFile(rootFilePath, $"\"run: {runCommand}\"")
+                    .CreateFile(appsvcFile, $"\"run: {runCommand}\"")
                     .AddCommand(
                     $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort} -output {tmpContainerDir}/run.sh")
                     .AddCommand($".{tmpContainerDir}/run.sh")
@@ -126,6 +126,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     {
                         var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                         Assert.Contains("Welcome to ASP.NET Core MVC!", data);
+
                         var runScript = File.ReadAllText(Path.Combine(tmpDir, "run.sh"));
                         Assert.Contains(runCommand, runScript);
                     });
