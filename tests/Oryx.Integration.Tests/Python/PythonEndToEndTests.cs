@@ -10,6 +10,8 @@ using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
+using System.IO;
+using System;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
@@ -247,6 +249,69 @@ namespace Microsoft.Oryx.Integration.Tests
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
                     Assert.Contains("Hello World!", data);
                 });
+        }
+
+        [Fact]
+        public async Task CanBuildAndRun_Tweeter3AppAsync_WithCustomizedRunCommand()
+        {
+            // Arrange
+            var appName = "tweeter3";
+            var hostDir = Path.Combine(_hostSamplesDir, "python", appName);
+            var tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(tmpDir);
+
+            try
+            {
+                var tmpVolume = DockerVolume.CreateMirror(tmpDir, true);
+                var tmpContainerDir = tmpVolume.ContainerDir;
+                var volume = CreateAppVolume(appName);
+                var appDir = volume.ContainerDir;
+                var appOutputDirVolume = CreateAppOutputDirVolume();
+                var appOutputDir = appOutputDirVolume.ContainerDir;
+                var appsvcFile = appOutputDirVolume.ContainerDir + "/appsvc.yaml";
+                var runCommand = "echo 'Hello Azure! New Feature!!'";
+                var buildScript = new ShellScriptBuilder()
+                    .SetEnvironmentVariable(EnvironmentSettingsKeys.PostBuildCommand, "scripts/postbuild.sh")
+                    .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                    $"--platform {PythonConstants.PlatformName} --platform-version 3.7")
+                    .ToString();
+                var runtimeImageScript = new ShellScriptBuilder()
+                    .CreateFile(appsvcFile, $"\"run: {runCommand}\"")
+                    .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort} -output {tmpContainerDir}/run.sh")
+                    .AddCommand(DefaultStartupFilePath)
+                    .ToString();
+
+                await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                    appName,
+                    _output,
+                    new[] { volume, appOutputDirVolume, tmpVolume },
+                    "/bin/bash",
+                    new[]
+                    {
+                    "-c",
+                    buildScript
+                    },
+                    _imageHelper.GetRuntimeImage("python", "3.7"),
+                    ContainerPort,
+                    "/bin/bash",
+                    new[]
+                    {
+                    "-c",
+                    runtimeImageScript
+                    },
+                    async (hostPort) =>
+                    {
+                        var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                        Assert.Contains("logged in as: bob", data);
+
+                        string runScript = File.ReadAllText(Path.Combine(tmpDir, "run.sh"));
+                        Assert.Contains(runCommand, runScript);
+                    });
+            }
+            finally
+            {
+                Directory.Delete(tmpDir, true);
+            }
         }
     }
 }
