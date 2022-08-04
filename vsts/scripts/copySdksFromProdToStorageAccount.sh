@@ -33,9 +33,15 @@ function copyBlobContainerFromProdToDestination() {
         echo
         echo "Overwriting blob container '$platformName' in storage account '$destinationSdk'."
         # azcopy copy [source] [destination] [flags]
-        "$azCopyDir/azcopy" copy \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$PROD_STORAGE_SAS_TOKEN" \
-            "$destinationSdk/$platformName/$sasToken" --overwrite true --recursive true
+        if [ $dryRun == "true" ] ; then
+            "$azCopyDir/azcopy" copy \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
+                "$destinationSdk/$platformName$sasToken" --overwrite true --recursive --dry-run
+        else
+            "$azCopyDir/azcopy" copy \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
+                "$destinationSdk/$platformName$sasToken" --overwrite true --recursive
+        fi
     elif blobContainerExistsInDestination $platformName; then
         echo
         echo "Blob container '$platformName' already exists in storage account '$destinationSdk'. Skipping copying it..."
@@ -43,9 +49,15 @@ function copyBlobContainerFromProdToDestination() {
         echo
         echo "Blob container '$platformName' does not exist in storage account '$destinationSdk'. Copying it from $PROD_SDK_STORAGE_BASE_URL..."
         # azcopy copy [source] [destination] [flags]
-        "$azCopyDir/azcopy" copy \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$PROD_STORAGE_SAS_TOKEN" \
-            "$destinationSdk/$platformName/$sasToken" --overwrite false --recursive true
+        if [ $dryRun == "true" ] ; then
+            "$azCopyDir/azcopy" copy \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
+                "$destinationSdk/$platformName$sasToken" --overwrite false --recursive --dry-run
+        else
+            "$azCopyDir/azcopy" copy \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
+                "$destinationSdk/$platformName$sasToken" --overwrite false --recursive
+        fi
     fi
 }
 
@@ -71,6 +83,12 @@ elif [ "$1" = $DEV_SDK_STORAGE_BASE_URL ]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
 else
 	echo "Error: $1 is an invalid storage account url."
+	exit 1
+fi
+
+dryRun=$2
+if [ $dryRun != "true" ] && [ $dryRun != "false" ]; then
+	echo "Error: Dry run must be true or false. Was: '$dryRun'"
 	exit 1
 fi
 
