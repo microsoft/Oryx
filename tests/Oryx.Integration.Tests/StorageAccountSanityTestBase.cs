@@ -224,8 +224,9 @@ namespace Oryx.Integration.Tests
                     .Where(e => string.Equals(SdkStorageConstants.OsTypeMetadataName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
                     .FirstOrDefault();
 
-                // if the os type is stretch and we find a blob with the correct version metadata, we add as a supported version
-                // otherwise, we check the blob for the correct version metadata and ensure that its os type/debian flavor matches
+                // if a matching version element is not found, we do not add as a supported version
+                // if the os type is stretch and we find a blob with a 'Version' metadata, we know it is a supported version
+                // otherwise, we check the blob for 'Sdk_version' metadata AND ensure 'Os_type' metadata matches current debianFlavor
                 if (versionElement != null &&
                     (isStretch || (osTypeElement != null && string.Equals(debianFlavor, osTypeElement.Value, StringComparison.OrdinalIgnoreCase))))
                 {

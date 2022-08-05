@@ -33,6 +33,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         protected IHttpClientFactory HttpClientFactory { get; }
 
+        /// <summary>
+        /// Pulls all files in the <paramref name="platformName"/> storage container and determines
+        /// the supported and default versions.
+        /// -----------
+        /// We determine what versions are available differently based on the OS type where the oryx
+        /// command was run.
+        /// For <see cref="OsTypes.DebianStretch"/> we use the existance of <see cref="SdkStorageConstants.LegacySdkVersionMetadataName"/>
+        /// metadata as the indicator for a supported version.
+        /// For other <see cref="OsTypes"/> we use both <see cref="SdkStorageConstants.SdkVersionMetadataName"/> and
+        /// matching <see cref="SdkStorageConstants.OsTypeMetadataName"/> metadata to indicate a matching version.
+        /// </summary>
+        /// <param name="platformName">Name of the platform to get the supported versions for</param>
+        /// <returns><see cref="PlatformVersionInfo"/> containing supported and default versions</returns>
         protected PlatformVersionInfo GetAvailableVersionsFromStorage(string platformName)
         {
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
@@ -61,8 +74,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     .Where(e => string.Equals(SdkStorageConstants.OsTypeMetadataName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
                     .FirstOrDefault();
 
-                // if the os type is stretch and we find a blob with the correct version metadata, we add as a supported version
-                // otherwise, we check the blob for the correct version metadata and ensure that its os type/debian flavor matches
+                // if a matching version element is not found, we do not add as a supported version
+                // if the os type is stretch and we find a blob with a 'Version' metadata, we know it is a supported version
+                // otherwise, we check the blob for 'Sdk_version' metadata AND ensure 'Os_type' metadata matches current debianFlavor
                 if (versionElement != null &&
                     (isStretch || (osTypeElement != null && string.Equals(this.commonOptions.DebianFlavor, osTypeElement.Value, StringComparison.OrdinalIgnoreCase))))
                 {

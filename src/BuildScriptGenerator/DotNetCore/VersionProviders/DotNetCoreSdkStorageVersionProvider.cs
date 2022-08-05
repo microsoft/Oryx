@@ -44,6 +44,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return this.versionMap;
         }
 
+        /// <summary>
+        /// Pulls all files in the dotnet storage container and determines the supported and default versions.
+        /// -----------
+        /// This works slightly differently than <see cref="SdkStorageVersionProviderBase.GetAvailableVersionsFromStorage"/>,
+        /// as the dotnet supported versions are a mapping of runtime version -> sdk version. This means that we need to find
+        /// both runtime version and sdk version metadata associated with each file.
+        /// </summary>
         public void GetVersionInfo()
         {
             if (this.versionMap == null)
@@ -78,6 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                             StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault();
 
+                    // do not add a supported version if the correct runtime metadata was not found
                     if (runtimeVersionElement != null)
                     {
                         var sdkVersionElement = childElements.Where(e => string.Equals(
@@ -92,7 +100,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                                 StringComparison.OrdinalIgnoreCase))
                             .FirstOrDefault();
 
-                        if (this.commonOptions.DebianFlavor == OsTypes.DebianStretch || this.commonOptions.DebianFlavor == osTypeElement.Value)
+                        // add supported version for stretch if runtime version and sdk version metadata is found
+                        // add supported version for other os types if runtime version, sdk version, and matching os type metadata is found
+                        if (sdkVersionElement != null
+                            && (this.commonOptions.DebianFlavor == OsTypes.DebianStretch || this.commonOptions.DebianFlavor == osTypeElement.Value))
                         {
                             supportedVersions[runtimeVersionElement.Value] = sdkVersionElement.Value;
                         }
