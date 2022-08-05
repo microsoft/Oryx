@@ -26,10 +26,10 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _defaultRepoPrefix = "oryxdevmcr.azurecr.io/public/oryx";
         private const string _restrictedPermissionsImageRepoPrefix = "oryxtests";
 
-        private const string _azureFunctionsJamStack = "azfunc-jamstack";
+        private const string _azureFunctionsJamStackStretch = "azfunc-jamstack-stretch";
         private const string _azureFunctionsJamStackBuster = "azfunc-jamstack-buster";
         private const string _azureFunctionsJamStackBullseye = "azfunc-jamstack-bullseye";
-        private const string _gitHubActions = "github-actions";
+        private const string _gitHubActionsStretch = "github-actions-stretch";
         private const string _gitHubActionsBuster = "github-actions-buster";
         private const string _gitHubActionsBullseye = "github-actions-bullseye";
         private const string _vso = "vso";
@@ -38,8 +38,10 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _packRepository = "pack";
         private const string _cliRepository = "cli";
         private const string _cliBusterRepository = "cli-buster";
-        private const string _latestTag = "latest";
-        private const string _ltsVersionsTag = "lts-versions";
+        private const string _cliStretchTag = "stretch";
+        private const string _cliBusterTag = "buster";
+        private const string _latestTag = "latest-stretch";
+        private const string _ltsVersionsStretch = "lts-versions-stretch";
         private const string _ltsVersionsBuster = "lts-versions-buster";
 
         private readonly ITestOutputHelper _output;
@@ -129,7 +131,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         /// <summary>
         /// Constructs a runtime image from the given parameters that follows the format
-        /// '{image}/{platformName}:{platformVersion}{tagSuffix}'. The base image can be set with the environment
+        /// '{image}/{platformName}:{platformVersion}-{osType}{tagSuffix}'. The base image can be set with the environment
         /// variable ORYX_TEST_IMAGE_BASE, otherwise the default base 'oryxdevmcr.azurecr.io/public/oryx' will be used.
         /// If a tag suffix was set with the environment variable ORYX_TEST_TAG_SUFFIX, it will be appended to the tag.
         /// </summary>
@@ -139,7 +141,8 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetRuntimeImage(string platformName, string platformVersion)
         {
 
-            if (PlatformVersionToOsType.TryGetValue(platformName, out var versionToOsType) && versionToOsType.TryGetValue(platformVersion, out var osType))
+            if (PlatformVersionToOsType.TryGetValue(platformName, out var versionToOsType) 
+                && versionToOsType.TryGetValue(platformVersion, out var osType))
             {
                 return $"{_repoPrefix}/{platformName}:{platformVersion}-{osType}{_tagSuffix}";
             }
@@ -170,7 +173,7 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetBuildImage();
             }
-            else if (string.Equals(tag, _ltsVersionsTag))
+            else if (string.Equals(tag, _ltsVersionsStretch))
             {
                 return GetLtsVersionsBuildImage();
             }
@@ -182,7 +185,7 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetVsoBuildImage(_vsoUbuntu);
             }
-            else if (string.Equals(tag, _gitHubActions))
+            else if (string.Equals(tag, _gitHubActionsStretch))
             {
                 return GetGitHubActionsBuildImage();
             }
@@ -198,9 +201,9 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetLtsVersionsBuildImage(_ltsVersionsBuster);
             }
-            else if (string.Equals(tag, _azureFunctionsJamStack))
+            else if (string.Equals(tag, _azureFunctionsJamStackStretch))
             {
-                return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStack);
+                return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStackStretch);
             }
             else if (string.Equals(tag, _azureFunctionsJamStackBuster))
             {
@@ -221,7 +224,7 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
         public string GetLtsVersionsBuildImage()
         {
-            return $"{_repoPrefix}/{_buildRepository}:{_ltsVersionsTag}{_tagSuffix}";
+            return $"{_repoPrefix}/{_buildRepository}:{_ltsVersionsStretch}{_tagSuffix}";
         }
 
         /// <summary>
@@ -239,7 +242,7 @@ namespace Microsoft.Oryx.Tests.Common
             } else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _azureFunctionsJamStackBullseye)) {
                 return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBullseye}{_tagSuffix}";
             } else {
-                return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStack}{_tagSuffix}";
+                return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackStretch}{_tagSuffix}";
             }
         }
 
@@ -250,7 +253,7 @@ namespace Microsoft.Oryx.Tests.Common
             } else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseye)) {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
             } else {
-                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsStretch}{_tagSuffix}";
             }
         }
 
@@ -266,7 +269,7 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_ltsVersionsBuster}{_tagSuffix}";
             }
-            return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
+            return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsStretch}{_tagSuffix}";
         }
 
         /// <summary>
@@ -289,14 +292,13 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A 'cli' image that can be pulled for testing.</returns>
         public string GetCliImage(string debianFlavor = null)
         {
-            var tag = GetTestTag();
             if (!string.IsNullOrEmpty(debianFlavor)
                 && string.Equals(debianFlavor.ToLower(), _cliBusterRepository))
             {
-                return $"{_repoPrefix}/{_cliBusterRepository}:{tag}";
+                return $"{_repoPrefix}/{_cliBusterRepository}:{_cliBusterTag}{_tagSuffix}";
             }
 
-            return $"{_repoPrefix}/{_cliRepository}:{tag}";
+            return $"{_repoPrefix}/{_cliRepository}:{_cliStretchTag}{_tagSuffix}";
         }
 
         private string GetTestTag()

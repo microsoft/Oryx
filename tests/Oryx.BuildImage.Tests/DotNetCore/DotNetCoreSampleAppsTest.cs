@@ -32,14 +32,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLatest()
         {
             Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.BuildImageName);
-            GDIPlusLibrary_IsPresentInTheImage("latest");
+            GDIPlusLibrary_IsPresentInTheImage("latest-stretch");
         }
 
         [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
             Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.LtsVersionsBuildImageName);
-            GDIPlusLibrary_IsPresentInTheImage("lts-versions");
+            GDIPlusLibrary_IsPresentInTheImage("lts-versions-stretch");
         }
 
         [Fact, Trait("category", "vso-focal")]
@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocation()
         {
-            GDIPlusLibrary_IsPresentInTheImage("github-actions");
+            GDIPlusLibrary_IsPresentInTheImage("github-actions-stretch");
             GDIPlusLibrary_IsPresentInTheImage("github-actions-buster");
         }
 
@@ -1014,11 +1014,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("github-actions")]
+        [InlineData("github-actions-stretch")]
         [InlineData("github-actions-buster")]
-        [InlineData("lts-versions")]
+        [InlineData("lts-versions-stretch")]
         [InlineData("vso-focal")]
-        [InlineData("latest")]
+        [InlineData("latest-stretch")]
         public void GDIPlusLibrary_IsPresentInTheImage(string tagName)
         {
             // Arrange

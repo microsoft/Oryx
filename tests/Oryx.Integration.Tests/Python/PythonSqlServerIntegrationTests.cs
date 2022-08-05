@@ -27,9 +27,9 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug #1274414")]
-        [InlineData("github-actions")]
+        [InlineData("github-actions-stretch")]
         [InlineData("github-actions-buster")]
-        [InlineData("latest")]
+        [InlineData("latest-stretch")]
         public async Task Python37App_MicrosoftSqlServerDBAsync(string imageTag)
         {
             // Arrange

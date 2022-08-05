@@ -20,8 +20,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "bug: 1505700 may be intermittent")]
-        [InlineData("latest")]
-        [InlineData("github-actions")]
+        [InlineData("latest-stretch")]
+        [InlineData("github-actions-stretch")]
         public async Task NodeApp_MySqlDBAsync(string imageTag)
         {
             await RunTestAsync(

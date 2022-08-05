@@ -28,8 +28,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "latest")]
         public void PipelineTestInvocationLatest()
         {
-            InstalledNodeModulesExecutablesAreOnPath("latest");
-            InstalledPythonExecutablesAreOnPath("latest");
+            InstalledNodeModulesExecutablesAreOnPath("latest-stretch");
+            InstalledPythonExecutablesAreOnPath("latest-stretch");
             var imageTestHelper = new ImageTestHelper();
             BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
                 imageTestHelper.GetBuildImage());
@@ -38,8 +38,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
-            InstalledNodeModulesExecutablesAreOnPath("lts-versions");
-            InstalledPythonExecutablesAreOnPath("lts-versions");
+            InstalledNodeModulesExecutablesAreOnPath("lts-versions-stretch");
+            InstalledPythonExecutablesAreOnPath("lts-versions-stretch");
             var imageTestHelper = new ImageTestHelper();
             BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
                 imageTestHelper.GetLtsVersionsBuildImage());

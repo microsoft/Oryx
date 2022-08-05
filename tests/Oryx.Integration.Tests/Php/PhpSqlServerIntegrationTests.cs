@@ -34,9 +34,9 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion80 = "8.0";
             await Task.WhenAll(
-                PhpApp_UsingPdoAsync(phpVersion80, "github-actions"),
+                PhpApp_UsingPdoAsync(phpVersion80, "github-actions-stretch"),
                 PhpApp_UsingPdoAsync(phpVersion80, "github-actions-buster"),
-                PhpApp_UsingPdoAsync(phpVersion80, "latest"));
+                PhpApp_UsingPdoAsync(phpVersion80, "latest-stretch"));
         }
 
         [Fact, Trait("category", "php-74")]
@@ -44,18 +44,18 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             await Task.WhenAll(
-                PhpApp_UsingPdoAsync(phpVersion74, "github-actions"),
+                PhpApp_UsingPdoAsync(phpVersion74, "github-actions-stretch"),
                 PhpApp_UsingPdoAsync(phpVersion74, "github-actions-buster"),
-                PhpApp_UsingPdoAsync(phpVersion74, "latest"));
+                PhpApp_UsingPdoAsync(phpVersion74, "latest-stretch"));
         }
 
         [Theory]
-        [InlineData("7.4", "github-actions")]
+        [InlineData("7.4", "github-actions-stretch")]
         [InlineData("7.4", "github-actions-buster")]
-        [InlineData("7.4", "latest")]
-        [InlineData("8.0", "github-actions")]
+        [InlineData("7.4", "latest-stretch")]
+        [InlineData("8.0", "github-actions-stretch")]
         [InlineData("8.0", "github-actions-buster")]
-        [InlineData("8.0", "latest")]
+        [InlineData("8.0", "latest-stretch")]
         public async Task PhpApp_UsingPdoAsync(string phpVersion, string imageTag)
         {
             // Arrange
