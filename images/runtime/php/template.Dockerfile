@@ -26,3 +26,4 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && rm -rf /tmp/oryx \
     # Temporarily making sure apache2-foreground has permission
     && chmod +x /usr/local/bin/apache2-foreground
+
