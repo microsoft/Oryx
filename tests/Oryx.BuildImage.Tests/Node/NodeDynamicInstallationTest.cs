@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
+        [Theory, Trait("category", "githubactions")]
         [InlineData("14.19.1", "14.19.1")]
         [InlineData("16", NodeVersions.Node16Version)]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation_DefaultEnvVar(string defaultVersion, string expectedVersion)
@@ -102,7 +102,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    // Actual output from `node --version` starts with a 'v'
                     Assert.Contains($"{ManifestFilePropertyKeys.NodeVersion}=\"{expectedVersion}\"", result.StdOut);
                 },
                 result.GetDebugInfo());

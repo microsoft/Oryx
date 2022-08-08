@@ -351,6 +351,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     return detectedVersion;
                 }
 
+                // Explicitly specified default version by user wins over detected default
+                if (!string.IsNullOrEmpty(this.phpScriptGeneratorOptions.DefaultVersion))
+                {
+                    return this.phpScriptGeneratorOptions.DefaultVersion;
+                }
+
                 // Fallback to default version
                 var versionInfo = this.phpVersionProvider.GetVersionInfo();
                 return versionInfo.DefaultVersion;

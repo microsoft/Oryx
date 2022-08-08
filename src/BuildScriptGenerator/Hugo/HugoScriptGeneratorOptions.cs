@@ -8,5 +8,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
     public class HugoScriptGeneratorOptions
     {
         public string HugoVersion { get; set; }
+
+        public string DefaultVersion { get; set; }
     }
 }
