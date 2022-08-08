@@ -82,7 +82,7 @@ elif [ "$1" = $DEV_SDK_STORAGE_BASE_URL ]; then
     destinationSdk=$DEV_SDK_STORAGE_BASE_URL
     sasToken=$DEV_STORAGE_SAS_TOKEN
 else
-	echo "Error: $1 is an invalid storage account url."
+	echo "Error: $1 is an invalid destination storage account url."
 	exit 1
 fi
 
