@@ -34,6 +34,7 @@ MSBUILD\_CONFIGURATION       | Configuration (Debug or Release) that is used to 
 Setting name for Nodejs apps | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
 NODE\_VERSION                | Specify which Node version the app is using                    | ""      | "14.15.0"
+NODE\_DEFAULT\_VERSION       | Specify which Node version the app defaults to if not detected | ""      | "14.15.0"
 DISABLE\_NODEJS\_BUILD       | Do not apply Node.js build even if repo indicates it           | `false` | `true`, `false`
 CUSTOM_BUILD_COMMAND         | Custom build command to be run to build Node app               | ""  | "npm ci"
 RUN_BUILD_COMMAND            | Custom run build command to be run after package install commands  | ""  | "npm run build"
