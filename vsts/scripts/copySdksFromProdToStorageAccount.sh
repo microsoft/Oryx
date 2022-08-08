@@ -88,7 +88,7 @@ fi
 
 dryRun=$2
 if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then
-	echo "Error: Dry run must be true or false. Was: '$dryRun'"
+	echo "Error: Dry run must be True or False. Was: '$dryRun'"
 	exit 1
 fi
 
