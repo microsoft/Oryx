@@ -87,7 +87,7 @@ else
 fi
 
 dryRun=$2
-if [ $dryRun != "true" ] && [ $dryRun != "false" ]; then
+if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then
 	echo "Error: Dry run must be true or false. Was: '$dryRun'"
 	exit 1
 fi
