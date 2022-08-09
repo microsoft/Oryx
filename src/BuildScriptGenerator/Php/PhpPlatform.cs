@@ -352,12 +352,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 }
 
                 // Explicitly specified default version by user wins over detected default
-                if (!string.IsNullOrEmpty(this.phpScriptGeneratorOptions.DefaultVersion))
+                if (!string.IsNullOrEmpty(this.phpScriptGeneratorOptions.PhpDefaultVersion))
                 {
-                    return this.phpScriptGeneratorOptions.DefaultVersion;
+                    return this.phpScriptGeneratorOptions.PhpDefaultVersion;
                 }
 
-                // Fallback to default version
+                // Fallback to default version detection
                 var versionInfo = this.phpVersionProvider.GetVersionInfo();
                 return versionInfo.DefaultVersion;
             }
@@ -376,7 +376,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     return detectedVersion;
                 }
 
-                // Fallback to default version
+                // Explicitly specified default version by user wins over detected default
+                if (!string.IsNullOrEmpty(this.phpScriptGeneratorOptions.PhpComposerDefaultVersion))
+                {
+                    return this.phpScriptGeneratorOptions.PhpComposerDefaultVersion;
+                }
+
+                // Fallback to default version detection
                 return PhpVersions.ComposerVersion;
             }
         }

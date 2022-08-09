@@ -13,6 +13,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public string PythonVersion { get; set; }
 
+        public string DefaultVersion { get; set; }
+
         public string CustomRequirementsTxtPath { get; set; }
     }
 }
