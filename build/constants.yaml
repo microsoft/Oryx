@@ -33,7 +33,7 @@
     dot-net-50-sdk-version: 5.0.408
     dot-net-60-sdk-version: 6.0.301
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.100-preview.6.22352.1
+    dot-net-70-sdk-version: 7.0.100-preview.7.22377.5
     # Ensure that the below list of runtime versions are sorted in ascending order
     runtime-versions: [1.0, 1.1, 2.0, 2.1, 2.2, 3.0, 3.1, 5.0, 6.0, 7.0]    
   outputs:
