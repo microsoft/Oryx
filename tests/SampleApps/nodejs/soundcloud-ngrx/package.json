@@ -17,7 +17,7 @@
     "node": ">=8.1"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --display-chunks",
+    "build": "cross-env NODE_ENV=production webpack",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "clean": "run-p clean:build clean:dist",
     "clean:build": "del-cli build",
@@ -31,7 +31,7 @@
     "pretest": "run-s clean:coverage lint",
     "pretest:server": "npm run build",
     "server": "cross-env NODE_ENV=development nodemon -w 'server/**/*.*' server/main.js",
-    "server:dev": "cross-env NODE_ENV=development webpack-dev-server",
+    "server:dev": "cross-env NODE_ENV=development webpack serve",
     "start": "npm run server:dev",
     "test": "run-s test:client test:server",
     "test:client": "cross-env NODE_ENV=test karma start --single-run",
@@ -40,7 +40,7 @@
     "version": "npm run changelog && git add CHANGELOG.md"
   },
   "dependencies": {
-    "@ngtools/webpack": "7.0.1",
+    "@ngtools/webpack": "11.2.19",
     "compression": "~1.6.2",
     "express": "~4.15.3",
     "helmet": "~3.6.1",
@@ -100,9 +100,11 @@
     "tslib": "~1.7.1",
     "tslint": "~5.4.3",
     "typescript": "~2.3.4",
-    "webpack": "3.0.0",
-    "webpack-dev-server": "2.5.0",
+    "webpack": "5.74.0",
+    "webpack-cli": "4.10.0",
+    "webpack-dev-server": "4.9.3",
     "webpack-md5-hash": "~0.0.5",
+    "webpack-shell-plugin-next": "^2.2.2",
     "zone.js": "~0.8.12"
   }
 }

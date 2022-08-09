@@ -1,12 +1,11 @@
 const path = require('path');
 
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
-const CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
+const SplitChunksPlugin = require('webpack/lib/optimize/SplitChunksPlugin');
 const ContextReplacementPlugin = require('webpack/lib/ContextReplacementPlugin');
 const DefinePlugin = require('webpack/lib/DefinePlugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const NgcWebpackPlugin = require('ngc-webpack').NgcWebpackPlugin;
-const UglifyJsPlugin = require('webpack/lib/optimize/UglifyJsPlugin');
 const WebpackMd5Hash = require('webpack-md5-hash');
 
 
@@ -111,7 +110,7 @@ if (ENV_DEVELOPMENT) {
   config.output.filename = '[name].js';
 
   config.plugins.push(
-    new CommonsChunkPlugin({
+    new SplitChunksPlugin({
       name: ['main', 'polyfills'],
       minChunks: Infinity
     }),
@@ -162,11 +161,11 @@ if (ENV_PRODUCTION) {
   config.output.filename = '[name].[chunkhash].js';
 
   config.plugins.push(
-    new CommonsChunkPlugin({
+    new SplitChunksPlugin({
       name: 'polyfills',
       chunks: ['polyfills']
     }),
-    new CommonsChunkPlugin({
+    new SplitChunksPlugin({
       name: 'vendor',
       chunks: ['main'],
       minChunks: module => /node_modules/.test(module.resource)
@@ -179,27 +178,8 @@ if (ENV_PRODUCTION) {
     }),
     new NgcWebpackPlugin({
       disabled: false,
-      tsConfig: path.resolve('tsconfig.aot.json')
-    }),
-    new UglifyJsPlugin({
-      comments: false,
-      compress: {
-        comparisons: true,
-        conditionals: true,
-        dead_code: true, // eslint-disable-line camelcase
-        evaluate: true,
-        if_return: true, // eslint-disable-line camelcase
-        join_vars: true, // eslint-disable-line camelcase
-        negate_iife: false, // eslint-disable-line camelcase
-        screw_ie8: true, // eslint-disable-line camelcase
-        sequences: true,
-        unused: true,
-        warnings: false
-      },
-      mangle: {
-        screw_ie8: true // eslint-disable-line camelcase
-      },
-      sourceMaps: false
+      tsConfig: path.resolve('tsconfig.aot.json'),
+      tsConfigPath : './tsconfig.aot.json'
     }),
     new WebpackMd5Hash()
   );

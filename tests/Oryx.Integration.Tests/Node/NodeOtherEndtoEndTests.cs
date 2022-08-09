@@ -532,13 +532,13 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "bug: 1505700")] 
+        [Fact] 
         // [Trait("category", "node-14-6")]
         public async Task Node_SoundCloudNgrxAppAsync()
         {
             // Arrange
             var appName = "soundcloud-ngrx";
-            var nodeVersion = "8.11";
+            var nodeVersion = "14";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
