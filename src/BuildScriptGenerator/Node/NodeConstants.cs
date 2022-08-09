@@ -50,7 +50,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string NodeLtsVersion = NodeVersions.Node14Version;
         public const string InstalledNodeVersionsDir = "/opt/nodejs/";
         public const string NodeVersion = "NODE_VERSION";
-        public const string NodeDefaultVersion = "NODE_DEFAULT_VERSION";
         public const string LegacyZipNodeModules = "ENABLE_NODE_MODULES_ZIP";
     }
 }

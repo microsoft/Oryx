@@ -83,7 +83,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .SetEnvironmentVariable(NodeConstants.NodeDefaultVersion, defaultVersion)
+                .SetEnvironmentVariable(SettingsKeys.NodeDefaultVersion, defaultVersion)
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --debug")
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
