@@ -8,6 +8,7 @@ using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -494,15 +495,96 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
-        public void BuildsApplication_AfterInstallingStretchSpecificSdk()
+        public static TheoryData<string, string, string, string> SupportedVersionAndImageNameData
         {
-            // this version only exists on stretch. There is no version of it in the storage accounts
-            // for other flavors
-            var runtimeVersion = "2.1.22";
-            var sdkVersion = "2.1.810";
-            var appName = NetCoreApp21WebApp;
+            get
+            {
+                var data = new TheoryData<string, string, string, string>();
+                var imageHelper = new ImageTestHelper();
 
+                // stretch
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp11,
+                    DotNetCoreSdkVersions.DotNetCore11SdkVersion,
+                    NetCoreApp11WebApp,
+                    imageHelper.GetGitHubActionsBuildImage());
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp22,
+                    DotNetCoreSdkVersions.DotNetCore22SdkVersion,
+                    NetCoreApp22WebApp,
+                    imageHelper.GetGitHubActionsBuildImage());
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp30,
+                    DotNetCoreSdkVersions.DotNetCore30SdkVersion,
+                    NetCoreApp30WebApp,
+                    imageHelper.GetGitHubActionsBuildImage());
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp31,
+                    DotNetCoreSdkVersions.DotNetCore31SdkVersion,
+                    NetCoreApp31MvcApp,
+                    imageHelper.GetGitHubActionsBuildImage());
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp50,
+                    DotNetCoreSdkVersions.DotNet50SdkVersion,
+                    NetCoreApp50MvcApp,
+                    imageHelper.GetGitHubActionsBuildImage());
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp60,
+                    DotNetCoreSdkVersions.DotNet60SdkVersion,
+                    NetCore6PreviewWebApp,
+                    imageHelper.GetGitHubActionsBuildImage());
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp70,
+                    DotNetCoreSdkVersions.DotNet70SdkVersion,
+                    NetCore7PreviewMvcApp,
+                    imageHelper.GetGitHubActionsBuildImage());
+
+                //buster
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp21,
+                    DotNetCoreSdkVersions.DotNetCore21SdkVersion,
+                    NetCoreApp21WebApp,
+                    imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp31,
+                    DotNetCoreSdkVersions.DotNetCore31SdkVersion,
+                    NetCoreApp31MvcApp,
+                    imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp50,
+                    DotNetCoreSdkVersions.DotNet50SdkVersion,
+                    NetCoreApp50MvcApp,
+                    imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp60,
+                    DotNetCoreSdkVersions.DotNet60SdkVersion,
+                    NetCore6PreviewWebApp,
+                    imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp70,
+                    DotNetCoreSdkVersions.DotNet70SdkVersion,
+                    NetCore7PreviewMvcApp,
+                    imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+
+
+                //buullseye
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp31,
+                    DotNetCoreSdkVersions.DotNetCore31SdkVersion,
+                    NetCoreApp31MvcApp,
+                    imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                return data;
+            }
+        }
+
+        [Theory, Trait("category", "githubactions")]
+        [MemberData(nameof(SupportedVersionAndImageNameData))]
+        public void BuildsApplication_AfterInstallingSupportedSdk(
+            string runtimeVersion, 
+            string sdkVersion, 
+            string appName,
+            string imageName)
+        {
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -519,7 +601,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage("stretch"),
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -542,16 +624,31 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        // TODO: PR2 update this to look for correct error message once CLI can use version metadata
-        // to detect that the runtime and sdk versions don't exist in the storage account
-        [Theory, Trait("category", "githubactions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("github-actions-bullseye")]
-        public void DotnetFails_ToInstallStretchSdk_OnNonStretchImage(string imageTag)
+        public static TheoryData<string, string> UnsupportedVersionAndImageNameData
         {
-            // this version only exists on stretch. There is no version of it in the storage accounts
-            // for other flavors
-            var runtimeVersion = "2.1.22";
+            get
+            {
+                var data = new TheoryData<string, string>();
+                var imageHelper = new ImageTestHelper();
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp11, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp22, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp30, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp11, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp21, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp22, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp30, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp50, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp60, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp70, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                return data;
+            }
+        }
+
+        [Theory, Trait("category", "githubactions")]
+        [MemberData(nameof(UnsupportedVersionAndImageNameData))]
+        public void DotnetFails_ToInstallUnsupportedSdk(string runtimeVersion, string imageName)
+        {
             var appName = NetCoreApp21WebApp;
 
             var volume = CreateSampleAppVolume(appName);
@@ -570,7 +667,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(imageTag),
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -582,6 +679,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.False(result.IsSuccess);
+                    Assert.Contains($"Error: Platform '{DotNetCoreConstants.PlatformName}' version '{runtimeVersion}' is unsupported.", result.StdErr);
                 },
                 result.GetDebugInfo());
         }

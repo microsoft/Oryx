@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
@@ -34,10 +33,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         protected IHttpClientFactory HttpClientFactory { get; }
 
+        /// <summary>
+        /// Pulls all files in the <paramref name="platformName"/> storage container and determines
+        /// the supported and default versions.
+        /// -----------
+        /// We determine what versions are available differently based on the OS type where the oryx
+        /// command was run.
+        /// For <see cref="OsTypes.DebianStretch"/> we use the existance of <see cref="SdkStorageConstants.LegacySdkVersionMetadataName"/>
+        /// metadata as the indicator for a supported version.
+        /// For other <see cref="OsTypes"/> we use both <see cref="SdkStorageConstants.SdkVersionMetadataName"/> and
+        /// matching <see cref="SdkStorageConstants.OsTypeMetadataName"/> metadata to indicate a matching version.
+        /// </summary>
+        /// <param name="platformName">Name of the platform to get the supported versions for</param>
+        /// <returns><see cref="PlatformVersionInfo"/> containing supported and default versions</returns>
         protected PlatformVersionInfo GetAvailableVersionsFromStorage(string platformName)
         {
-            // TODO: PR2 configure this to account for the different debian flavors once the Version metadata has
-            // been generated for each package
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
 
@@ -47,46 +57,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var xdoc = XDocument.Parse(blobList);
             var supportedVersions = new List<string>();
 
-            foreach (var blobElement in xdoc.XPathSelectElements($"//Blobs/Blob"))
+            var isStretch = string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase);
+
+            var sdkVersionMetadataName = isStretch
+                ? SdkStorageConstants.LegacySdkVersionMetadataName
+                : SdkStorageConstants.SdkVersionMetadataName;
+
+            foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
             {
-                var childElements = blobElement.Elements();
-                if (this.commonOptions.DebianFlavor == OsTypes.DebianStretch)
+                var childElements = metadataElement.Elements();
+                var versionElement = childElements
+                    .Where(e => string.Equals(sdkVersionMetadataName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault();
+
+                var osTypeElement = childElements
+                    .Where(e => string.Equals(SdkStorageConstants.OsTypeMetadataName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault();
+
+                // if a matching version element is not found, we do not add as a supported version
+                // if the os type is stretch and we find a blob with a 'Version' metadata, we know it is a supported version
+                // otherwise, we check the blob for 'Sdk_version' metadata AND ensure 'Os_type' metadata matches current debianFlavor
+                if (versionElement != null &&
+                    (isStretch || (osTypeElement != null && string.Equals(this.commonOptions.DebianFlavor, osTypeElement.Value, StringComparison.OrdinalIgnoreCase))))
                 {
-                    var versionElement = childElements
-                        .Where(e => string.Equals("Metadata", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
-                        .FirstOrDefault()?.Elements()
-                        .Where(e => string.Equals(SdkStorageConstants.LegacySdkVersionMetadataName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
-                        .FirstOrDefault();
-
-                    if (versionElement != null)
-                    {
-                        supportedVersions.Add(versionElement.Value);
-                    }
-
-                    continue;
-                }
-
-                // TODO: PR2 Remove this logic, as we will be able to depend on bullseye images existing in the sdk storage
-                var patternText = this.commonOptions.DebianFlavor == OsTypes.DebianBullseye
-                    ? $"{platformName}-{OsTypes.DebianBuster}-(?<version>.*?).tar.gz"
-                    : $"{platformName}-{this.commonOptions.DebianFlavor}-(?<version>.*?).tar.gz";
-
-                // try to parse the version from the file name, as we currently don't supply version metadata to non-stretch sdks
-                // TODO: PR2 Add logic to use SdkStorageConstants.SdkVersionMetadataName and SdkStorageConstants.OsTypeMetadataName
-                // to determine the supported sdks
-                var fileName = childElements
-                        .Where(e => string.Equals("Name", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
-                        .FirstOrDefault();
-
-                if (fileName != null)
-                {
-                    Regex expression = new Regex(patternText);
-                    Match match = expression.Match(fileName.Value);
-                    if (match.Success)
-                    {
-                        var result = match.Groups["version"].Value;
-                        supportedVersions.Add(result);
-                    }
+                    supportedVersions.Add(versionElement.Value);
                 }
             }
 
@@ -98,9 +92,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var httpClient = this.HttpClientFactory.CreateClient("general");
 
-            // TODO: PR2 use {SdkStorageConstants.DefaultVersionFilePrefix}.{this.commonOptions.DebianFlavor}.{SdkStorageConstants.DefaultVersionFileType}
-            // to determine default file name once the ostype specific defaults exist
-            var defaultVersionUrl = $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}";
+            var defaultFile = string.IsNullOrEmpty(this.commonOptions.DebianFlavor)
+                    || string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
+                ? SdkStorageConstants.DefaultVersionFileName
+                : $"{SdkStorageConstants.DefaultVersionFilePrefix}.{this.commonOptions.DebianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
+            var defaultVersionUrl = $"{sdkStorageBaseUrl}/{platformName}/{defaultFile}";
 
             this.logger.LogDebug("Getting the default version from url {defaultVersionUrl}.", defaultVersionUrl);
 

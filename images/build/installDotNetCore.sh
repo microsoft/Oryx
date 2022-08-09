@@ -17,14 +17,12 @@ debianFlavor="$DEBIAN_FLAVOR"
 
 fileName="dotnet.tar.gz"
 
-# TODO: PR2 configure this to account for the different debian flavors once the Version metadata has
-# been generated for each package
 if [ -z "$debianFlavor" ]; then
-  # Use default sdk file name
-	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
+    # Use default sdk file name
+    fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 elif [ "$debianFlavor" == "stretch" ]; then
-	# Use default sdk file name
-	fileName="dotnet-$DOTNET_SDK_VER.tar.gz"
+    # Use default sdk file name
+    fileName="dotnet-$DOTNET_SDK_VER.tar.gz"
 else
     fileName="dotnet-$debianFlavor-$DOTNET_SDK_VER.tar.gz"
 fi
