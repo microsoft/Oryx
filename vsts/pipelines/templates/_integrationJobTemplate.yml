@@ -2,17 +2,6 @@ parameters:
   - name: nodeVersions
     type: object
     default:
-      - 12
-      - 12-2
-      - 12-3
-      - 12-4
-      - 12-5
-      - 12-6
-      - 12-7
-      - 12-8
-      - 12-9
-      - 12-10
-      - 12-11
       - 14
       - 14-3
       - 14-4
@@ -32,6 +21,12 @@ parameters:
       - 60
       - dynamic
       - runtime
+  - name: phpVersions
+    type: object
+    default:
+      - 74
+      - 80
+      - 81
   - name: golangVersions
     type: object
     default:
@@ -179,9 +174,11 @@ jobs:
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
 
-- job: Job_PhpIntegrationTests8_0
-  displayName: Run Php Integration Tests 8.0
-  dependsOn:
+# Php integration tests
+- ${{ each phpVersion in parameters.phpVersions }}:
+  - job:
+    displayName: 'Run Php ${{ phpVersion }} Integration Tests'
+    dependsOn:
     - Job_BuildImage_Latest
     - Job_BuildImage_LtsVersions
     - Job_BuildImage_Jamstack
@@ -191,61 +188,27 @@ jobs:
     - Job_BuildImage_Cli
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
-  pool:
-    name: AzurePipelines-EO
-    demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-  variables:
-    skipComponentGovernanceDetection: true
-  timeoutInMinutes: 300
-  steps:
-  - script: |
-      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestBuildImages;]false"
-      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php-8.0"
-      echo "##vso[task.setvariable variable=TestIntegration;]true"
-      echo "##vso[task.setvariable variable=PushBuildImages;]false"
-      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
-    displayName: 'Set variables'
-  - template: _setReleaseTag.yml
-  - template: _buildTemplate.yml
-
-- job: Job_PhpIntegrationTests7_4
-  displayName: Run Php Integration Tests 7.4
-  dependsOn:
-    - Job_BuildImage_Latest
-    - Job_BuildImage_LtsVersions
-    - Job_BuildImage_Jamstack
-    - Job_BuildImage_GithubActions
-    - Job_BuildImage_VsoFocal
-    - Job_BuildImage_Full
-    - Job_BuildImage_Cli
-    - Job_BuildImage_Buildpack
-    - Job_RuntimeImages
-  pool:
-    name: AzurePipelines-EO
-    demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-  variables:
-    skipComponentGovernanceDetection: true
-  timeoutInMinutes: 300
-  steps:
-  - script: |
-      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestBuildImages;]false"
-      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php-7.4"
-      echo "##vso[task.setvariable variable=TestIntegration;]true"
-      echo "##vso[task.setvariable variable=PushBuildImages;]false"
-      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
-    displayName: 'Set variables'
-  - template: _setReleaseTag.yml
-  - template: _buildTemplate.yml
+    pool:
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    variables:
+      skipComponentGovernanceDetection: true
+    timeoutInMinutes: 300
+    steps:
+        - script: |
+            echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+            echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=TestBuildImages;]false"
+            echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=php-${{ phpVersion }}"
+            echo "##vso[task.setvariable variable=TestIntegration;]true"
+            echo "##vso[task.setvariable variable=PushBuildImages;]false"
+            echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+          displayName: 'Set variables'
+        - template: _setReleaseTag.yml
+        - template: _buildTemplate.yml
 
 - job: Job_RubyIntegrationTests
   displayName: Run Ruby Integration Tests

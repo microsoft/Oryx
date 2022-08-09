@@ -48,10 +48,11 @@ if [ "$debianFlavor" == "stretch" ]; then
 
     pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
     PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
-
+    
     if [[ $PYTHON_VERSION == 3.6* ]]; then
         PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/pip/3.6/get-pip.py"
     fi
+
     PIP_VERSION="20.2.3"
 else
 	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
