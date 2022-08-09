@@ -14,8 +14,6 @@ parameters:
   type: boolean
   default: true
 
-trigger: none
-
 jobs:
     - job: CreateReleaseTag
       pool:
@@ -51,3 +49,6 @@ jobs:
         inputs:
           scriptPath: ./build/testIntegration.sh
           args: StorageAccountTests=Prod
+
+trigger: none
+pr: none
