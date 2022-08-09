@@ -13,5 +13,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
         public const string InstalledGolangVersionsDir = "/opt/golang/";
         public const string DynamicInstalledGolangVersionsDir = "/tmp/oryx/platforms/golang";
         public const string GolangVersionEnvVarName = "GOLANG_VERSION";
+        public const string GolangDefaultVersionEnvVarName = "GOLANG_DEFAULT_VERSION";
     }
 }
