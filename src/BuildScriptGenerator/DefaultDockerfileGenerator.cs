@@ -47,13 +47,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GenerateDockerfile(DockerfileContext ctx)
         {
+            var createScriptArguments = new Dictionary<string, string>();
             var dockerfileBuildImageName = "cli";
             var dockerfileBuildImageTag = "stable";
+
+            if (!string.IsNullOrEmpty(this.commonOptions.BuildImage))
+            {
+                var buildImageSplit = this.commonOptions.BuildImage.Split(':');
+                dockerfileBuildImageName = buildImageSplit[0];
+                dockerfileBuildImageTag = buildImageSplit[1];
+            }
 
             var dockerfileRuntimeImage = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformName) ?
                 ConvertToRuntimeName(this.commonOptions.RuntimePlatformName) : string.Empty;
             var dockerfileRuntimeImageTag = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformVersion) ?
                 this.commonOptions.RuntimePlatformVersion : string.Empty;
+
+            if (!string.IsNullOrEmpty(this.commonOptions.BindPort))
+            {
+                createScriptArguments.Add("bindPort", this.commonOptions.BindPort);
+            }
+
             var compatiblePlatforms = this.GetCompatiblePlatforms(ctx);
             if (!compatiblePlatforms.Any())
             {
@@ -95,12 +109,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
             }
 
+            var formattedCreateScriptArguments = createScriptArguments.Any() ?
+                string.Join(' ', createScriptArguments.Select(arg => $"-{arg.Key} {arg.Value}")) : string.Empty;
+
             var properties = new DockerfileProperties()
             {
                 RuntimeImageName = dockerfileRuntimeImage,
                 RuntimeImageTag = dockerfileRuntimeImageTag,
                 BuildImageName = dockerfileBuildImageName,
                 BuildImageTag = dockerfileBuildImageTag,
+                CreateScriptArguments = formattedCreateScriptArguments,
             };
 
             var generatedDockerfile = TemplateHelper.Render(
