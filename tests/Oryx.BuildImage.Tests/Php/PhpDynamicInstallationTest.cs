@@ -50,9 +50,47 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
+        public static TheoryData<string, string, string> VersionAndImageNameDataCli
+        {
+            get
+            {
+                var data = new TheoryData<string, string, string>();
+                var imageHelper = new ImageTestHelper();
+                data.Add(PhpVersions.Php73Version, imageHelper.GetCliImage(),PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.ComposerVersion);
+
+                // test latest php-composer version
+                data.Add(PhpVersions.Php73Version, imageHelper.GetCliImage(), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.Composer23Version);
+                return data;
+            }
+        }
+
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(VersionAndImageNameData))]
-        public void BuildsAppByInstallingSdkDynamically(string phpVersion, string imageName, string phpComposerVersion)
+        public void BuildsAppByInstallingSdkDynamicallyGithubActions(string phpVersion, string imageName, string phpComposerVersion)
+        {
+            BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion);
+        }
+
+        [Theory, Trait("category", "cli")]
+        [MemberData(nameof(VersionAndImageNameDataCli))]
+        public void BuildsAppByInstallingSdkDynamicallyCli(string phpVersion, string imageName, string phpComposerVersion)
+        {
+            BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion, "/opt/php");
+        }
+
+        private void BuildsAppByInstallingSdkDynamically(
+            string phpVersion, 
+            string imageName, 
+            string phpComposerVersion, 
+            string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
         {
             // Arrange
             var appName = "twig-example";
@@ -81,8 +119,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 Assert.True(result.IsSuccess);
                 Assert.Contains(
-                    $"PHP executable: " +
-                    BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot, result.StdOut);
+                    $"PHP executable: " + installationRoot, result.StdOut);
                 Assert.Contains("Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
                 Assert.Contains($"\'php-composer\' version \'{phpComposerVersion}\'", result.StdOut);
             },

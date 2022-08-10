@@ -55,6 +55,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GDIPlusLibrary_IsPresentInTheImage("github-actions-buster");
         }
 
+        [Fact, Trait("category", "cli")]
+        public void PipelineTestInvocationCli()
+        {
+            GDIPlusLibrary_IsPresentInTheImage("cli");
+            GDIPlusLibrary_IsPresentInTheImage("cli-buster");
+            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage());
+            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage("cli-buster"));
+        }
+
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
         [Fact (Skip="NetCore11 is no longer officially supported"), Trait("category", "latest")]
@@ -274,8 +283,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
-        public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion()
+        [Theory, Trait("category", "latest")]
+        [InlineData(Settings.BuildImageName)]
+        public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(string imageName)
         {
             // Arrange
             var appName = "NetCoreApp31.MvcApp";
@@ -293,7 +303,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
