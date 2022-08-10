@@ -33,7 +33,7 @@
     dot-net-50-sdk-version: 5.0.408
     dot-net-60-sdk-version: 6.0.301
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.100-preview.6.22352.1
+    dot-net-70-sdk-version: 7.0.100-preview.7.22377.5
     # Ensure that the below list of runtime versions are sorted in ascending order
     runtime-versions: [1.0, 1.1, 2.0, 2.1, 2.2, 3.0, 3.1, 5.0, 6.0, 7.0]    
   outputs:
@@ -79,10 +79,10 @@
     aspnet-core-app-60: 6.0.6
     aspnet-core-app-60-sha: 1a5c0f85820f0eb589700df94de6dbff45fe4089a37f1cd5b1fac33476a2cbd8d5c6f129e55b3716f5a7a2616f1a5a720c52238f21b28a510a3e5c8bcb8c516c
 
-    net-core-app-70: 7.0.0-preview.6.22324.4
-    net-core-app-70-sha: 304b509b478fbed7e5ec97d9c75821249b933fb5c814c4f14078611d17cd8f95ccdf6c48049c02ed2f033ece61acc17e0a23a59c2a6aca9d191892d0224af45d
-    aspnet-core-app-70: 7.0.0-preview.6.22330.3
-    aspnet-core-app-70-sha: a7aa5f3b788645a39957fa27cce84ca1e7dcfcf7a334d52097e891d3b26b8c8ba981c1f3bbab17831110339e1e62a74e6a54eee15311b8294a2d2c845a07cdbd
+    net-core-app-70: 7.0.0-preview.7.22375.6
+    net-core-app-70-sha: 9814a4e5a55b7137ec27b423ae4a557792af6cced035ab42876de012cb160adabbe054f043b61ed21a8385deb62075ab0a028f6599954ed3519ffe8cf824d30a
+    aspnet-core-app-70: 7.0.0-preview.7.22376.6
+    aspnet-core-app-70-sha: 7d4861a28a42df31a7e2c740d17e1b0eb78e860a2ccdb25eec754a2098593a3adac00687294209d847a8fa618019a2d1b1d5fdd3f9aea37ffdc19164c862c558
 
 
   outputs:
