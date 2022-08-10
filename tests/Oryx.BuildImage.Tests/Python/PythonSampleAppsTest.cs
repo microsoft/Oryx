@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions");
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsStretch);
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions-buster");
         }
 
@@ -183,7 +183,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("github-actions-stretch")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData("github-actions-buster")]
         [InlineData("lts-versions-stretch")]
         [InlineData("latest-stretch")]

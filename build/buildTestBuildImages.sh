@@ -19,8 +19,8 @@ echo "Building build images for tests..."
 
 echo "Building stretch based github action image for tests..."
 docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions" \
-    --build-arg PARENT_IMAGE_BASE=github-actions \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-stretch" \
+    --build-arg PARENT_IMAGE_BASE=github-actions-stretch \
     -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
     .
 

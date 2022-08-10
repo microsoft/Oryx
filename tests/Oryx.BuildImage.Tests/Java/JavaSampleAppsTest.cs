@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void JavaSampleAppsTestsGithubActions()
         {
-            var imageTag = "github-actions";
+            var imageTag = ImageTestHelperConstants.GitHubActionsStretch;
             BuildsMavenArcheTypeSample(imageTag);
             BuildsMavenJ2EESample(imageTag);
             BuildsMavenSimpleJavaApp(imageTag);

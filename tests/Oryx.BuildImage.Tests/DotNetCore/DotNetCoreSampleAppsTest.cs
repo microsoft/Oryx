@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocation()
         {
-            GDIPlusLibrary_IsPresentInTheImage("github-actions-stretch");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsStretch);
             GDIPlusLibrary_IsPresentInTheImage("github-actions-buster");
         }
 
@@ -1024,7 +1024,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("github-actions-stretch")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData("github-actions-buster")]
         [InlineData("lts-versions-stretch")]
         [InlineData("vso-focal")]

@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -20,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory (Skip = "Bug 1410367")]
-        [InlineData("github-actions-stretch")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData("latest-stretch")]
         public async Task NodeApp_PostgreSqlDBAsync(string imageTag)
         {

@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -27,12 +28,12 @@ namespace Microsoft.Oryx.Integration.Tests
             string phpVersion74 = "7.4";
             await Task.WhenAll(
                 PhpApp_UsingMysqliAsync(phpVersion74, "latest-stretch"),
-                PhpApp_UsingMysqliAsync(phpVersion74, "github-actions-stretch"));
+                PhpApp_UsingMysqliAsync(phpVersion74, ImageTestHelperConstants.GitHubActionsStretch));
         }
 
         [Theory]
         [InlineData("7.4", "latest-stretch")]
-        [InlineData("7.4", "github-actions-stretch")]
+        [InlineData("7.4", ImageTestHelperConstants.GitHubActionsStretch)]
         public async Task PhpApp_UsingMysqliAsync(string phpVersion, string imageTag)
         {
             await RunTestAsync(

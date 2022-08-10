@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -21,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "bug: 1505700 may be intermittent")]
         [InlineData("latest-stretch")]
-        [InlineData("github-actions-stretch")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
         public async Task NodeApp_MySqlDBAsync(string imageTag)
         {
             await RunTestAsync(

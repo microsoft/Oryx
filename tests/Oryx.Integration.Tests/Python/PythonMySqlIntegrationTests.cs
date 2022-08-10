@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -21,11 +22,11 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Bug 1410367") ]
         [InlineData("mysql-pymysql-sample", "latest-stretch")]
-        [InlineData("mysql-pymysql-sample", "github-actions-stretch")]
+        [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData("mysql-mysqlconnector-sample", "latest-stretch")]
-        [InlineData("mysql-mysqlconnector-sample", "github-actions-stretch")]
+        [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData("mysql-mysqlclient-sample", "latest-stretch")]
-        [InlineData("mysql-mysqlclient-sample", "github-actions")]
+        [InlineData("mysql-mysqlclient-sample", ImageTestHelperConstants.GitHubActionsStretch)]
         public async Task Python37App_MySqlDB_UsingPyMySql_UsingLtsVersionsBuildImageAsync(
             string sampleAppName,
             string imageTag)
