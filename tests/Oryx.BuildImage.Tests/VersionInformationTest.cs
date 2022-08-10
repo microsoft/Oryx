@@ -63,9 +63,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             var imageTestHelper = new ImageTestHelper();
             PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
-                imageTestHelper.GetVsoBuildImage("vso-focal"));
+                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu));
             OryxBuildImage_Contains_VersionAndCommit_Information(
-                imageTestHelper.GetVsoBuildImage("vso-focal"));
+                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu));
         }
 
         [Fact, Trait("category", "jamstack")]
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "vso-focal")]
-        [InlineData("vso-focal")]
+        [InlineData(ImageTestHelperConstants.VsoUbuntu)]
         public void OryxVsoBuildImage_Contains_PHP_Xdebug(string imageVersion)
         {
             var imageTestHelper = new ImageTestHelper();
@@ -148,10 +148,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "vso-focal")]
-        [InlineData("bundler", "vso-focal")]
-        [InlineData("rake", "vso-focal")]
-        [InlineData("ruby-debug-ide", "vso-focal")]
-        [InlineData("debase", "vso-focal")]
+        [InlineData("bundler", ImageTestHelperConstants.VsoUbuntu)]
+        [InlineData("rake", ImageTestHelperConstants.VsoUbuntu)]
+        [InlineData("ruby-debug-ide", ImageTestHelperConstants.VsoUbuntu)]
+        [InlineData("debase", ImageTestHelperConstants.VsoUbuntu)]
         public void OryxVsoBuildImage_Contains_Required_Ruby_Gems(string gemName, string imageVersion)
         {
             var imageTestHelper = new ImageTestHelper();

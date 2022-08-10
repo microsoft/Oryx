@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationVsoFocal()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage("vso-focal"));
+            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu));
         }
 
         [Fact, Trait("category", "jamstack")]

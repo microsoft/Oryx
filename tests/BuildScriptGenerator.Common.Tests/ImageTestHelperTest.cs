@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
 
         private const string _buildRepository = "build";
         private const string _packRepository = "pack";
-        private const string _latestTag = "latest-stretch";
+        private const string _latestTag = ImageTestHelperConstants.LatestTag;
         private const string _ltsVersionsTag = "lts-versions-stretch";
 
         private readonly ITestOutputHelper _output;

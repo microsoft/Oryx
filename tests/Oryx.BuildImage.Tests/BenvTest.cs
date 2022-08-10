@@ -28,8 +28,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "latest")]
         public void PipelineTestInvocationLatest()
         {
-            InstalledNodeModulesExecutablesAreOnPath("latest-stretch");
-            InstalledPythonExecutablesAreOnPath("latest-stretch");
+            InstalledNodeModulesExecutablesAreOnPath(ImageTestHelperConstants.LatestTag);
+            InstalledPythonExecutablesAreOnPath(ImageTestHelperConstants.LatestTag);
             var imageTestHelper = new ImageTestHelper();
             BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
                 imageTestHelper.GetBuildImage());
@@ -38,8 +38,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
-            InstalledNodeModulesExecutablesAreOnPath("lts-versions-stretch");
-            InstalledPythonExecutablesAreOnPath("lts-versions-stretch");
+            InstalledNodeModulesExecutablesAreOnPath(ImageTestHelperConstants.LtsVersionsStretch);
+            InstalledPythonExecutablesAreOnPath(ImageTestHelperConstants.LtsVersionsStretch);
             var imageTestHelper = new ImageTestHelper();
             BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
                 imageTestHelper.GetLtsVersionsBuildImage());
@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             var imageTestHelper = new ImageTestHelper();
             BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
-                imageTestHelper.GetVsoBuildImage("vso-focal"));
+                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu));
         }
 
         [Theory, Trait("category", "latest")]
@@ -176,7 +176,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage("vso-focal");
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -201,7 +201,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage("vso-focal");
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -229,7 +229,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage("vso-focal");
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -260,7 +260,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage("vso-focal");
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -376,7 +376,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage("vso-focal");
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -399,7 +399,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage("vso-focal");
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert

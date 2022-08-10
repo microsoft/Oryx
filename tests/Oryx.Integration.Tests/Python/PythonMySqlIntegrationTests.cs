@@ -21,11 +21,11 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug 1410367") ]
-        [InlineData("mysql-pymysql-sample", "latest-stretch")]
+        [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.LatestTag)]
         [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData("mysql-mysqlconnector-sample", "latest-stretch")]
+        [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.LatestTag)]
         [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData("mysql-mysqlclient-sample", "latest-stretch")]
+        [InlineData("mysql-mysqlclient-sample", ImageTestHelperConstants.LatestTag)]
         [InlineData("mysql-mysqlclient-sample", ImageTestHelperConstants.GitHubActionsStretch)]
         public async Task Python37App_MySqlDB_UsingPyMySql_UsingLtsVersionsBuildImageAsync(
             string sampleAppName,
@@ -39,9 +39,9 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug 1410367") ]
-        [InlineData("mysql-pymysql-sample", "github-actions-buster")]
-        [InlineData("mysql-mysqlconnector-sample", "github-actions-buster")]
-        [InlineData("mysql-mysqlclient-sample", "github-actions-buster")]
+        [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData("mysql-mysqlclient-sample", ImageTestHelperConstants.GitHubActionsBuster)]
         public async Task Python39App_MySqlDB_UsingPyMySql_UsingBusterBuildImageAsync(
             string sampleAppName,
             string imageTag)

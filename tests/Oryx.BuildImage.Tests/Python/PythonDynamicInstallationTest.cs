@@ -35,8 +35,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var imageTestHelper = new ImageTestHelper();
             GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.1");
             GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3");
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage("github-actions-buster"), "3.9.0");
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.10.4");      
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), "3.9.0");
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), "3.10.4");      
         }
 
         [Fact, Trait("category", "cli")]
@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"),
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

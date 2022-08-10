@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             var imageTestHelper = new ImageTestHelper();
             GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
-                RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage("vso-focal"));
+                RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu));
         }
 
         [Fact, Trait("category", "githubactions")]

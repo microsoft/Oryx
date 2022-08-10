@@ -39,19 +39,19 @@ function tagBuildImageForIntegrationTest() {
 
 echo "Build image filter is set"
 
-tagBuildImageForIntegrationTest "$imagefilter/build" ""
-tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions" 
+tagBuildImageForIntegrationTest "$imagefilter/build" "stretch"
+tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions-stretch" 
 tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions-buster"
-tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack"
+tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-stretch"
 tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-buster"
 tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-bullseye" 
-tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions"
+tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-stretch"
 tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-buster"
 tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-bullseye"
 tagBuildImageForIntegrationTest "$imagefilter/build" "vso-focal"
 tagBuildImageForIntegrationTest "$imagefilter/build" "full-buster"
-tagBuildImageForIntegrationTest "$imagefilter/cli" ""
-tagBuildImageForIntegrationTest "$imagefilter/cli-buster" ""
+tagBuildImageForIntegrationTest "$imagefilter/cli" "stretch"
+tagBuildImageForIntegrationTest "$imagefilter/cli-buster" "buster"
 tagBuildImageForIntegrationTest "$imagefilter/pack" ""
 
 

@@ -32,27 +32,27 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLatest()
         {
             Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.BuildImageName);
-            GDIPlusLibrary_IsPresentInTheImage("latest-stretch");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.LatestTag);
         }
 
         [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
             Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.LtsVersionsBuildImageName);
-            GDIPlusLibrary_IsPresentInTheImage("lts-versions-stretch");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.LtsVersionsStretch);
         }
 
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
-            GDIPlusLibrary_IsPresentInTheImage("vso-focal");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.VsoUbuntu);
         }
 
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocation()
         {
             GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsStretch);
-            GDIPlusLibrary_IsPresentInTheImage("github-actions-buster");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
         [Fact, Trait("category", "cli")]
@@ -1025,10 +1025,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData("github-actions-buster")]
-        [InlineData("lts-versions-stretch")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
         [InlineData("vso-focal")]
-        [InlineData("latest-stretch")]
+        [InlineData(ImageTestHelperConstants.LatestTag)]
         public void GDIPlusLibrary_IsPresentInTheImage(string tagName)
         {
             // Arrange

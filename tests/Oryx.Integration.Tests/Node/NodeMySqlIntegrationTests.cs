@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "bug: 1505700 may be intermittent")]
-        [InlineData("latest-stretch")]
+        [InlineData(ImageTestHelperConstants.LatestTag)]
         [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
         public async Task NodeApp_MySqlDBAsync(string imageTag)
         {
