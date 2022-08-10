@@ -58,16 +58,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var imageHelper = new ImageTestHelper();
                 data.Add(PhpVersions.Php73Version, imageHelper.GetCliImage(),PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(), PhpVersions.ComposerVersion);
-                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.ComposerVersion);
-                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.ComposerVersion);
-                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.ComposerVersion);
 
                 // test latest php-composer version
                 data.Add(PhpVersions.Php73Version, imageHelper.GetCliImage(), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(), PhpVersions.Composer23Version);
-                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.Composer23Version);
-                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.Composer23Version);
-                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage("cli-buster"), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.Composer23Version);
                 return data;
             }
         }

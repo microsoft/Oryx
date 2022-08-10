@@ -275,8 +275,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("latest")]
-        [InlineData("lts-versions")]
+        [InlineData(ImageTestHelperConstants.LatestTag)]
+        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
         public void InstalledNodeModulesExecutablesAreOnPath(string tag)
         {
             // Arrange
@@ -301,8 +301,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("latest")]
-        [InlineData("lts-versions")]
+        [InlineData(ImageTestHelperConstants.LatestTag)]
+        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
         public void InstalledPythonExecutablesAreOnPath(string tag)
         {
             // Arrange

@@ -37,8 +37,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli")]
-        [InlineData("cli")]
-        [InlineData("cli-buster")]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
         public void PipelineTestInvocationCli(string imageTag)
         {
             var imageTestHelper = new ImageTestHelper();

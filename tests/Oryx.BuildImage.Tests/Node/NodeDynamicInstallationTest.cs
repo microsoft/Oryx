@@ -44,9 +44,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add("14.19.1", imageTestHelper.GetCliImage());
                 data.Add("16.14.2", imageTestHelper.GetCliImage());
 
-                data.Add("12.22.11", imageTestHelper.GetCliImage("cli-buster"));
-                data.Add("14.19.1", imageTestHelper.GetCliImage("cli-buster"));
-                data.Add("16.14.2", imageTestHelper.GetCliImage("cli-buster"));
+                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
                 return data;
             }
         }

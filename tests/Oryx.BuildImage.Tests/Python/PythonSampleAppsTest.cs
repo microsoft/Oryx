@@ -31,16 +31,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLatest()
         {
             GeneratesScript_AndBuilds(Settings.BuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage("latest");
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("latest");
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.LatestTag);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LatestTag);
         }
 
         [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
             GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage("lts-versions");
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("lts-versions");
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.LtsVersionsStretch);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LtsVersionsStretch);
         }
 
         [Fact, Trait("category", "vso-focal")]
@@ -57,8 +57,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli")]
-        [InlineData("cli")]
-        [InlineData("cli-buster")]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
         public void PipelineTestInvocationCli(string imageTag)
         {
             GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
@@ -1457,7 +1457,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
-        [InlineData("vso-focal")]
+        [InlineData(ImageTestHelperConstants.VsoUbuntu)]
         [InlineData(ImageTestHelperConstants.LatestTag)]
         public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName)
         {

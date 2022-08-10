@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var imageTestHelper = new ImageTestHelper();
             GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage(), "3.8.1", "/opt");
             GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage(), "3.8.3", "/opt");
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage("cli-buster"), "3.9.0", "/opt");
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), "3.9.0", "/opt");
         }
 
         private void GeneratesScript_AndBuildsPython(

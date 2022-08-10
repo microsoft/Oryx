@@ -43,8 +43,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli")]
-        [InlineData("cli")]
-        [InlineData("cli-buster")]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
         public void GeneratesScript_AndBuildGolangAppWithDynamicInstall_Cli(string imageTag)
         {
             GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage(imageTag));

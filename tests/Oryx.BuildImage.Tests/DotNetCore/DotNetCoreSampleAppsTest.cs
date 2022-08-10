@@ -58,10 +58,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "cli")]
         public void PipelineTestInvocationCli()
         {
-            GDIPlusLibrary_IsPresentInTheImage("cli");
-            GDIPlusLibrary_IsPresentInTheImage("cli-buster");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliRepository);
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliBusterRepository);
             Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage());
-            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage("cli-buster"));
+            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
         }
 
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
@@ -1027,7 +1027,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
         [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
-        [InlineData("vso-focal")]
+        [InlineData(ImageTestHelperConstants.VsoUbuntu)]
         [InlineData(ImageTestHelperConstants.LatestTag)]
         public void GDIPlusLibrary_IsPresentInTheImage(string tagName)
         {

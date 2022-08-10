@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             BuildsApplication_ByDynamicallyInstallingSDKs(
                 appName, runtimeVersion, _imageHelper.GetCliImage());
             BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage("cli-buster"));
+                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
         }
 
         private void BuildsApplication_ByDynamicallyInstallingSDKs(

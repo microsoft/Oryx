@@ -97,9 +97,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli")]
-        [InlineData(PhpVersions.Php74Version, "cli")]
-        [InlineData(PhpVersions.Php73Version, "cli")]
-        [InlineData(PhpVersions.Php80Version, "cli-buster")]
+        [InlineData(PhpVersions.Php74Version, ImageTestHelperConstants.CliRepository)]
+        [InlineData(PhpVersions.Php73Version, ImageTestHelperConstants.CliRepository)]
+        [InlineData(PhpVersions.Php80Version, ImageTestHelperConstants.CliBusterRepository)]
         public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(string phpVersion, string imageTag)
         {
             // Arrange
