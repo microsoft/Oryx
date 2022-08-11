@@ -69,7 +69,7 @@ func AppendScript(filePath string, command string) {
 
 	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0755)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Unable to read provided file to append command to. Error: " + err.Error())
 		return
 	}
 	defer file.Close()
@@ -77,9 +77,8 @@ func AppendScript(filePath string, command string) {
 	fmt.Println("Appending provided command to '" + filePath + "'")
 	// Appends the command at the end of the file
 	if _, err := file.WriteString("\n" + command); err != nil {
+		fmt.Println("Unable to write in the file. Error: " + err.Error())
 		return
-	} else {
-		fmt.Println(err)
 	}
 }
 

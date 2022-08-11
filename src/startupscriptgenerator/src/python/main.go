@@ -10,6 +10,7 @@ import (
 	"common/consts"
 	"flag"
 	"fmt"
+	"path/filepath"
 	"strings"
 )
 
@@ -88,7 +89,7 @@ func main() {
 		command := entrypointGenerator.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, command)
 
-		userRunCommand := common.ParseUserRunCommand(fullAppPath + "/appsvc.yaml")
+		userRunCommand := common.ParseUserRunCommand(filepath.Join(fullAppPath, common.AppSvcFileName))
 		common.AppendScript(*outputPathPtr, userRunCommand)
 	}
 

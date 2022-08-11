@@ -131,7 +131,7 @@ func main() {
 
 		common.WriteScript(fullOutputPath, command)
 
-		userRunCommand := common.ParseUserRunCommand(fullAppPath + "/appsvc.yaml")
+		userRunCommand := common.ParseUserRunCommand(filepath.Join(fullAppPath, common.AppSvcFileName))
 		common.AppendScript(fullOutputPath, userRunCommand)
 	}
 

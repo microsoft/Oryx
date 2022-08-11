@@ -16,7 +16,6 @@ func ParseUserRunCommand(sourcePath string) string {
 
 	appsvcFile, err := os.Open(sourcePath)
 	if err != nil {
-		fmt.Println(err)
 		return ""
 	}
 	defer appsvcFile.Close()
@@ -27,18 +26,16 @@ func ParseUserRunCommand(sourcePath string) string {
 	scanner := bufio.NewScanner(appsvcFile)
 
 	for scanner.Scan() {
-		//fmt.Println(scanner.Text())
 		indexOfRunHeading := strings.Index(scanner.Text(), runHeading)
-		isRunHeadingExists := indexOfRunHeading > 0
 		isCurrentLineContainsAnyHeading := strings.Contains(scanner.Text(), ":")
 
-		if !isRunHeadingExists && isCurrentLineContainsAnyHeading && isRunCommandFound {
+		if isCurrentLineContainsAnyHeading && isRunCommandFound {
 			// runCommand already found
 			// not considering any other customized commands
 			break
 		}
 
-		isValidRunCommand := indexOfRunHeading >= 0 && len(scanner.Text()) > len(runHeading)
+		isValidRunCommand := indexOfRunHeading == 0 && len(scanner.Text()) > len(runHeading)
 		if isRunCommandFound || isValidRunCommand {
 			if isRunCommandFound {
 				runCommand += "\n"

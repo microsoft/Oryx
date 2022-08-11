@@ -11,6 +11,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -102,7 +103,7 @@ func main() {
 		script := gen.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, script)
 
-		userRunCommand := common.ParseUserRunCommand(fullAppPath + "/appsvc.yaml")
+		userRunCommand := common.ParseUserRunCommand(filepath.Join(fullAppPath, common.AppSvcFileName))
 		common.AppendScript(*outputPathPtr, userRunCommand)
 	}
 
