@@ -6,6 +6,8 @@
 
 set -ex
 
+debianFlavor=$DEBIAN_FLAVOR
+
 # libpq-dev is for PostgreSQL
 apt-get update \
     && apt-get upgrade -y \
@@ -26,17 +28,17 @@ apt-get update \
         libgdal-dev \
         python3-gdal \
     && rm -rf /var/lib/apt/lists/*
- 
+
 # Microsoft SQL Server 2017
 # https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 export ACCEPT_EULA=Y \
     && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
-if [ "${DEBIAN_FLAVOR}" == "bullseye" ]; then \
+if [ "$debianFlavor" == "bullseye" ]; then \
     curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
-elif [ "${DEBIAN_FLAVOR}" == "buster" ]; then \
+elif [ "$debianFlavor" == "buster" ]; then \
     curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
-elif [ "${DEBIAN_FLAVOR}" == "stretch" ]; then \
+elif [ "$debianFlavor" == "stretch" ]; then \
     curl https://packages.microsoft.com/config/debian/9/prod.list > /etc/apt/sources.list.d/mssql-release.list
 fi
 
