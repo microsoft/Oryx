@@ -58,9 +58,9 @@ apt-get update \
 
 mkdir -p /etc/unixODBC
 cat >/etc/unixODBC/odbcinst.ini <<EOL
-[ODBC Driver 17 for SQL Server]
-Description=Microsoft ODBC Driver 17 for SQL Server
-Driver=/opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.2.so.0.1
+[ODBC Driver 18 for SQL Server]
+Description=Microsoft ODBC Driver 18 for SQL Server
+Driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.1.so.1.1
 Threading=1
 UsageCount=1
 EOL
