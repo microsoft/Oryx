@@ -32,15 +32,14 @@ apt-get update \
 export ACCEPT_EULA=Y \
     && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
-if [ "${DEBIAN_FLAVOR}" != "bullseye" ]; then \
+if [ "${DEBIAN_FLAVOR}" == "bullseye" ]; then \
     curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
-elif [ "${DEBIAN_FLAVOR}" != "buster" ]; then \
+elif [ "${DEBIAN_FLAVOR}" == "buster" ]; then \
     curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
-elif [ "${DEBIAN_FLAVOR}" != "stretch" ]; then \
+elif [ "${DEBIAN_FLAVOR}" == "stretch" ]; then \
     curl https://packages.microsoft.com/config/debian/9/prod.list > /etc/apt/sources.list.d/mssql-release.list
 fi
 
-exit
 apt-get update \
     && apt-get install -y --no-install-recommends \
         locales \
