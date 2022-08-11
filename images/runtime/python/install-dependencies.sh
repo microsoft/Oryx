@@ -53,6 +53,7 @@ apt-get update \
     && source ~/.bashrc \
     && apt-get install -y --no-install-recommends \
         unixodbc-dev \
+        msodbcsql17 \
         libgssapi-krb5-2
 
 mkdir -p /etc/unixODBC
