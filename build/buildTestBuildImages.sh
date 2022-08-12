@@ -49,7 +49,7 @@ echo
 
 echo "Building stretch based full build image for tests..."
 docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:latest" \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:latest-stretch" \
     -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
     .
 
@@ -58,8 +58,8 @@ echo
 
 echo "Building stretch based lts-version image for tests..."
 docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions" \
-    --build-arg PARENT_IMAGE_BASE=lts-versions \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions-stretch" \
+    --build-arg PARENT_IMAGE_BASE=lts-versions-stretch \
     -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
     .
 
