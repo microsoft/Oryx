@@ -13,5 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public string MSBuildConfiguration { get; set; }
 
         public string DotNetCoreRuntimeVersion { get; set; }
+
+        public string DefaultRuntimeVersion { get; set; }
     }
 }
