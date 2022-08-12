@@ -103,7 +103,8 @@ ARG AI_KEY
 COPY --from=intermediate /opt /opt
 
 # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
-RUN ${IMAGES_DIR}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates" \
+RUN ${IMAGES_DIR}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083" \
+    && update-ca-certificates \
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
 
 # Install PHP pre-reqs	# Install PHP pre-reqs
