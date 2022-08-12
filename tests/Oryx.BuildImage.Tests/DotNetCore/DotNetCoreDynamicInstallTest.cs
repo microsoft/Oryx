@@ -42,10 +42,34 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
         [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0.0-preview.6.22324.4")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs(
+        [InlineData(NetCore7PreviewMvcApp, "7.0.0-preview.7.22375.6")]
+        public void BuildsApplication_ByDynamicallyInstallingSDKs_GithubActions(
             string appName,
             string runtimeVersion)
+        {
+            BuildsApplication_ByDynamicallyInstallingSDKs(
+                appName, runtimeVersion, _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage());
+        }
+
+        [Theory, Trait("category", "cli")]
+        [InlineData(NetCoreApp21WebApp, "2.1")]
+        [InlineData(NetCoreApp31MvcApp, "3.1")]
+        [InlineData(NetCoreApp50MvcApp, "5.0")]
+        [InlineData(NetCore7PreviewMvcApp, "7.0.0-preview.7.22375.6")]
+        public void BuildsApplication_ByDynamicallyInstallingSDKs_Cli(
+            string appName,
+            string runtimeVersion)
+        {
+            BuildsApplication_ByDynamicallyInstallingSDKs(
+                appName, runtimeVersion, _imageHelper.GetCliImage());
+            BuildsApplication_ByDynamicallyInstallingSDKs(
+                appName, runtimeVersion, _imageHelper.GetCliImage("cli-buster"));
+        }
+
+        private void BuildsApplication_ByDynamicallyInstallingSDKs(
+            string appName,
+            string runtimeVersion,
+            string imageName)
         {
             // Arrange
             var volume = CreateSampleAppVolume(appName);
@@ -69,7 +93,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage(),
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

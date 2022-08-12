@@ -27,6 +27,7 @@ CREATE\_PACKAGE              | Indicate if it should create packages for the app
 Setting name for .NET apps   | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
 DOTNET\_VERSION              | Specify which .NET version the app is using                    | ""      | "5.0.100"
+DOTNET\_DEFAULT\_VERSION     | Specify which .NET version the app defaults to if none detected | ""      | "5.0.100"
 DISABLE\_DOTNETCORE\_BUILD   | Do not apply .NET Core build even if repo indicates it         | `false` | `true`, `false`
 PROJECT                      | repo-relative path to directory with `.csproj` file for build  | ""      | "src/WebApp1/WebApp1.csproj"
 MSBUILD\_CONFIGURATION       | Configuration (Debug or Release) that is used to build a .NET Core project | `Release` | `Debug`, `Release`
@@ -34,6 +35,7 @@ MSBUILD\_CONFIGURATION       | Configuration (Debug or Release) that is used to 
 Setting name for Nodejs apps | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
 NODE\_VERSION                | Specify which Node version the app is using                    | ""      | "14.15.0"
+NODE\_DEFAULT\_VERSION       | Specify which Node version the app defaults to if none detected | ""      | "14.15.0"
 DISABLE\_NODEJS\_BUILD       | Do not apply Node.js build even if repo indicates it           | `false` | `true`, `false`
 CUSTOM_BUILD_COMMAND         | Custom build command to be run to build Node app               | ""  | "npm ci"
 RUN_BUILD_COMMAND            | Custom run build command to be run after package install commands  | ""  | "npm run build"
@@ -45,6 +47,7 @@ NPM\_REGISTRY\_URL           | Specify the npm registry url.                    
 Setting name for Python apps | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
 PYTHON\_VERSION              | Specify which Python version the app is using                  | ""      | "2.7.1"
+PYTHON\_DEFAULT\_VERSION     | Specify which Python version the app defaults to if none detected | ""      | "2.7.1"
 DISABLE\_PYTHON\_BUILD       | Do not apply Python build even if repo indicates it            | `false` | `true`, `false`
 VIRTUALENV\_NAME             | Specify Python virtual environment name                        | ""      | "antenv2.7"
 DISABLE\_COLLECTSTATIC       | Disable running `collectstatic` when building Django apps.     | `false` | `true`, `false`
@@ -53,7 +56,9 @@ CUSTOM\_REQUIREMENTSTXT\_PATH| Specify where a requirements.txt is locating. If 
 Setting name for Php apps    | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
 PHP\_VERSION                 | Specify which Php version the app is using                     | ""      | "7.4"
+PHP\_DEFAULT\_VERSION        | Specify which Php version the app defaults to if none detected | ""      | "7.4"
 PHP\_COMPOSER\_VERSION       | Specify which Php composer version the app is using            | ""      | "7.2.15"
+PHP\__COMPOSER\_DEFAULT\_VERSION | Specify which Php composer version the app defaults to if none detected | ""      | "7.2.15"
 DISABLE\_PHP\_BUILD          | Do not apply Php build even if repo indicates it               | `false` | `true`, `false`
 FPM\_MAX\_CHILDREN           | The maximum number of child processes to be created            | `5`     | "20"
 FPM\_START\_SERVERS          | The number of child processes created on startup               | `min_spare_servers + (max_spare_servers - min_spare_servers) / 2` | "10"
@@ -63,18 +68,28 @@ FPM\_MIN\_SPARE\_SERVERS     | The desired minimum number of idle server process
 Setting name for Java apps | Description                                                    | Default | Example
 ---------------------------|----------------------------------------------------------------|---------|----------------
 JAVA\_VERSION              | Specify which Java version the app is using                    | ""      | "14.0.2"
+JAVA\_DEFAULT\_VERSION     | Specify which Java version the app defaults to if none detected | ""      | "14.0.2"
 MAVEN\_VERSION             | Specify which Maven version the app is using                   | ""      | "3.6.3"
+MAVEN\_DEFAULT\_VERSION     | Specify which Maven version the app defaults to if none detected | ""      | "3.6.3"
 DISABLE\_JAVA_\_BUILD      | Do not apply Java build even if repo indicates it              | `false` | `true`, `false`
 
 Setting name for Ruby apps | Description                                                    | Default | Example
 ---------------------------|----------------------------------------------------------------|---------|----------------
 RUBY\_VERSION              | Specify which Ruby version the app is using                    | ""      | "2.7.1"
+RUBY\_DEFAULT\_VERSION     | Specify which Ruby version the app defaults to if none detected | ""      | "2.7.1"
 DISABLE\_RUBY_\_BUILD      | Do not apply Ruby build even if repo indicates it              | `false` | `true`, `false`
 
 Setting name for Hugo apps | Description                                                    | Default | Example
 ---------------------------|----------------------------------------------------------------|---------|----------------
 HUGO\_VERSION              | Specify which Hugo version the app is using                    | ""      | "0.76.3"
+HUGO\_DEFAULT\_VERSION     | Specify which Hugo version the app defaults to if none detected | ""      | "0.76.3"
 DISABLE\_HUGO\_BUILD       | Do not apply Hugo build even if repo indicates it              | `false` | `true`, `false`
+
+Setting name for Golang apps | Description                                                       | Default | Example
+-----------------------------|-------------------------------------------------------------------|---------|----------------
+GOLANG\_VERSION              | Specify which Golang version the app is using                     | ""      | "0.76.3"
+GOLANG\_DEFAULT\_VERSION     | Specify which Golang version the app defaults to if none detected | ""      | "0.76.3"
+DISABLE\_GOLANG\_BUILD       | Do not apply Golang build even if repo indicates it               | `false` | `true`, `false`
 
 
 

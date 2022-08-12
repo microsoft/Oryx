@@ -24,6 +24,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
         {
             options.JavaVersion = this.GetStringValue(SettingsKeys.JavaVersion);
             options.MavenVersion = this.GetStringValue(SettingsKeys.MavenVersion);
+            options.JavaDefaultVersion = this.GetStringValue(SettingsKeys.JavaDefaultVersion);
+            options.MavenDefaultVersion = this.GetStringValue(SettingsKeys.MavenDefaultVersion);
         }
     }
 }

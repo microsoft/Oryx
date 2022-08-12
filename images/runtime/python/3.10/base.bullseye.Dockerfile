@@ -48,7 +48,7 @@ RUN chmod +x /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/build.sh && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        build-essential \ 
+        build-essential \
         tk-dev \
         uuid-dev \
         libgeos-dev

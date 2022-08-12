@@ -49,7 +49,7 @@ RUN LANG="C.UTF-8" \
 FROM main AS intermediate
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
- 
+
 FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE

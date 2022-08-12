@@ -281,7 +281,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
                     return detectedVersion;
                 }
 
-                // Fallback to default version
+                // Explicitly specified default version by user wins over detected default
+                if (!string.IsNullOrEmpty(this.rubyScriptGeneratorOptions.DefaultVersion))
+                {
+                    return this.rubyScriptGeneratorOptions.DefaultVersion;
+                }
+
+                // Fallback to default version detection
                 var versionInfo = this.rubyVersionProvider.GetVersionInfo();
                 return versionInfo.DefaultVersion;
             }

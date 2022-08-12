@@ -41,14 +41,25 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.10.4");      
         }
 
-        private void GeneratesScript_AndBuildsPython(string imageName, string version)
+        [Fact, Trait("category", "cli")]
+        public void PipelineTestInvocationCli()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage(), "3.8.1", "/opt");
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage(), "3.8.3", "/opt");
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage("cli-buster"), "3.9.0", "/opt");
+        }
+
+        private void GeneratesScript_AndBuildsPython(
+            string imageName, 
+            string version, 
+            string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
         {
             // Please note:
             // This test method has at least 1 wrapper function that pases the imageName parameter.
 
             // Arrange
-            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
-                $"python/{version}";
+            var installationDir = $"{installationRoot}/python/{version}";
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
