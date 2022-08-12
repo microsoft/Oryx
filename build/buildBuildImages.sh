@@ -223,13 +223,10 @@ function buildJamStackImage() {
 
 	buildGitHubActionsImage $debianFlavor
 
-	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+	if [ -z "$debianFlavor" ]; then
 		debianFlavor="stretch"
-		parentImageTag=actions
-	else 
-		debianFlavor=$debianFlavor
-		parentImageTag=actions-$debianFlavor
 	fi
+	parentImageTag=actions-$debianFlavor
 	devImageTag=$devImageTag-$debianFlavor
 	echo "dev image tag: "$devImageTag
 	builtImageName=$builtImageName-$debianFlavor
