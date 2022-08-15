@@ -18,9 +18,9 @@ RUN apt-get update \
         http://nginx.org/packages/debian `lsb_release -cs` nginx" \
         | tee /etc/apt/sources.list.d/nginx.list \
     && echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" \
-        | sudo tee /etc/apt/preferences.d/99nginx \
+        | tee /etc/apt/preferences.d/99nginx \
     && apt update \
-    && apt install nginx
+    && apt install nginx -y
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
