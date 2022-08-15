@@ -10,7 +10,25 @@ ENV NGINX_RUN_USER www-data
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 # Install NGINX 
 RUN apt-get update \
-    && apt-get install nano nginx -y
+    && apt-get install nano curl gnupg2 ca-certificates debian-archive-keyring htop -y
+RUN /bin/bash -c "apt-get update && apt-get install lsb-release -y"
+RUN /bin/bash -c "curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor" \
+    | tee /usr/share/keyrings/nginx-archive-keyring.gpg
+RUN /bin/bash -c "gpg --quiet --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg"
+RUN /bin/bash -c 'echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] http://nginx.org/packages/debian `lsb_release -cs` nginx"' \
+    | tee /etc/apt/sources.list.d/nginx.list
+RUN /bin/bash -c 'echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n"' \
+    | tee /etc/apt/preferences.d/99nginx
+# RUN set -eux; \
+#     { \
+#         echo 'Package: *'; \
+#         echo 'Pin: origin nginx.org'; \
+#         echo 'Pin: release o=nginx'; \
+#         echo 'Pin-Priority: 900'; \
+#     } > /etc/apt/preferences.d/99nginx
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install nginx -y
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
