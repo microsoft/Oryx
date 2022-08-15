@@ -16,10 +16,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         private const string _tagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
         private const string _defaultImageBase = "oryxdevmcr.azurecr.io/public/oryx";
 
-        private const string _buildRepository = "build";
+        private const string _buildRepository = "build-stretch";
         private const string _packRepository = "pack";
-        private const string _latestTag = "latest";
-        private const string _ltsVersionsTag = "lts-versions";
+        private const string _latestTag = "latest-stretch";
+        private const string _ltsVersionsTag = "lts-versions-stretch";
 
         private readonly ITestOutputHelper _output;
 
@@ -247,7 +247,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:github-actions";
+            var expected = "oryxtests/build:github-actions-stretch";
 
             // Act
             var actual = imageHelper.GetGitHubActionsBuildImage();
@@ -261,7 +261,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:latest";
+            var expected = "oryxtests/build:latest-stretch";
 
             // Act
             var actual = imageHelper.GetBuildImage();
@@ -275,7 +275,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:lts-versions";
+            var expected = "oryxtests/build:lts-versions-stretch";
 
             // Act
             var actual = imageHelper.GetLtsVersionsBuildImage();

@@ -9,10 +9,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
 {
     internal static class Settings
     {
-        public const string BuildImageName = "oryxtests/build:latest";
-        public const string BuildImageWithRootAccess = "oryx/build:latest";
-        public const string LtsVersionsBuildImageName = "oryxtests/build:lts-versions";
-        public const string LtsVersionsBuildImageWithRootAccess = "oryx/build:lts-versions";
+        public const string BuildImageName = "oryxtests/build:latest-stretch";
+        public const string BuildImageWithRootAccess = "oryx/build:latest-stretch";
+        public const string LtsVersionsBuildImageName = "oryxtests/build:lts-versions-stretch";
+        public const string LtsVersionsBuildImageWithRootAccess = "oryx/build:lts-versions-stretch";
 
         public const string OryxVersion = "0.2.";
 
