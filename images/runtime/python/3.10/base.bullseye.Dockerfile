@@ -39,7 +39,7 @@ COPY platforms/__common.sh /tmp/
 RUN true
 COPY platforms/python/prereqs/build.sh /tmp/
 RUN true
-COPY platforms/python/versionsToBuild.txt /tmp/
+COPY platforms/python/versions/${DEBIAN_FLAVOR}/versionsToBuild.txt /tmp/
 RUN true
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN true

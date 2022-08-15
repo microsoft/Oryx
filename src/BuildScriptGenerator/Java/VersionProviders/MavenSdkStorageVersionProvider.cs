@@ -22,9 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            return this.GetAvailableVersionsFromStorage(
-                platformName: "maven",
-                versionMetadataElementName: "Version");
+            return this.GetAvailableVersionsFromStorage(platformName: "maven");
         }
     }
 }

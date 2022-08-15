@@ -5,6 +5,16 @@
     app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
     scm-commit-id-env-var-name: SCM_COMMIT_ID
     php-origin: PHP_ORIGIN
+    php-fpm-configuration-file: "/usr/local/etc/php-fpm.d/www.conf"
+    php-fpm-max-children-env-var-name: "FPM_MAX_CHILDREN"
+    php-fpm-start-servers-env-var-name: "FPM_START_SERVERS"
+    php-fpm-min-spare-servers-env-var-name: "FPM_MIN_SPARE_SERVERS"
+    php-fpm-max-spare-servers-env-var-name: "FPM_MAX_SPARE_SERVERS"
+    php-fpm-max-children-setting-name: "pm.max_children"
+    php-fpm-start-servers-setting-name: "pm.start_servers"
+    php-fpm-min-spare-servers-setting-name: "pm.min_spare_servers"
+    php-fpm-max-spare-servers-setting-name: "pm.max_spare_servers"
+    debian-flavor: DEBIAN_FLAVOR
     user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
     user-app-insights-agent-extension-version: ApplicationInsightsAgent_EXTENSION_VERSION
     user-app-insights-connection-string-env: APPLICATIONINSIGHTS_CONNECTION_STRING
@@ -117,7 +127,7 @@
     python37-version: 3.7.12
     python38-version: 3.8.12
     python39-version: 3.9.7
-    python310-version: 3.10.0
+    python310-version: 3.10.4
     # Ensure that the below list of runtime versions are sorted in ascending order
     runtime-versions: [2.7, 3.6, 3.8, 3.9, 3.10]
   outputs:
@@ -132,7 +142,8 @@
     php-runtime-base-tag: 20220803.3
     php-fpm-runtime-base-tag: 20220803.2
     composer-version: 2.0.8
-    composer-setup-sha384: 906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8
+    # retrieved from https://composer.github.io/pubkeys.html
+    composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
     composer1-9-version: 1.9.3
     composer1-10-version: 1.10.19
     composer2-0-version: 2.0.8
@@ -196,6 +207,7 @@
   constants:
     compressed-output-file-name: oryx_output.tar.gz
     build-manifest-file-name: oryx-manifest.toml
+    os-type-file-name: .ostype
     build-commands-file-name: oryx-build-commands.txt
     run-script-generator-dir: /opt/startupcmdgen
     node-app-insights-loader-file-name: applicationinsights/out/Bootstrap/Oryx.js
@@ -204,6 +216,18 @@
     bash: /bin/bash
     benv: /opt/oryx/benv
     pre-run-command-env-var-name: PRE_RUN_COMMAND
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator.Common
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+    - type: go
+      directory: src/startupscriptgenerator/src/common/consts
+- name: os-types
+  constants:
+    debian-stretch: stretch
+    debian-bullseye: bullseye
+    debian-buster: buster
+    ubuntu-focal-scm: focal-scm
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator.Common
@@ -246,9 +270,19 @@
     prod-sdk-storage-base-url: https://oryxsdksprod.blob.core.windows.net
     prod-sdk-cdn-storage-base-url: https://oryx-cdn.microsoft.io
     default-version-file-name: defaultVersion.txt
+    default-version-file-prefix: defaultVersion
+    default-version-file-type: txt
     versions-to-build-file-name: versionsToBuild.txt
     container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata'
     sdk-download-sentinel-file-name: .oryx-sdkdownload-sentinel
+    # The following metadata names control the field that is uploaded to sdk storage alongside each sdk.
+    # Legacy is used to provide backwards compatibility for images with an older CLI, as they depend on identifying
+    # supported versions by searching for all SDKs that contain a Version metadata field.
+    sdk-version-metadata-name: Sdk_version
+    legacy-sdk-version-metadata-name: Version
+    dotnet-runtime-version-metadata-name: Dotnet_runtime_version
+    legacy-dotnet-runtime-version-metadata-name: Runtime_version
+    os-type-metadata-name: Os_type
   outputs:
     - type: shell
       directory: images

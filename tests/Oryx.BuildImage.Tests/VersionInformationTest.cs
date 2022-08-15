@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _dockerCli = new DockerCli();
         }
 
-        [Fact, Trait("category", "latest")]
+        [SkippableFact, Trait("category", "latest")]
         public void PipelineTestInvocationLatest()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             OryxBuildImage_Contains_VersionAndCommit_Information(Settings.BuildImageName);
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [SkippableFact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             OryxBuildImage_Contains_VersionAndCommit_Information(Settings.LtsVersionsBuildImageName);
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [SkippableFact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 imageTestHelper.GetVsoBuildImage("vso-focal"));
         }
 
-        [Fact, Trait("category", "jamstack")]
+        [SkippableFact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
-        [Fact, Trait("category", "githubactions")]
+        [SkippableFact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {
             var imageTestHelper = new ImageTestHelper();

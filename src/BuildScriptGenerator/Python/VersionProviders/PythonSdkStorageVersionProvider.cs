@@ -22,9 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         // To enable unit testing
         public virtual PlatformVersionInfo GetVersionInfo()
         {
-            return this.GetAvailableVersionsFromStorage(
-                platformName: ToolNameConstants.PythonName,
-                versionMetadataElementName: "Version");
+            return this.GetAvailableVersionsFromStorage(platformName: ToolNameConstants.PythonName);
         }
     }
 }

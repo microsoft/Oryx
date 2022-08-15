@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildImage.Tests;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -161,6 +162,86 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     $"PHP executable: " +
                     expectedDynamicInstallRootDir, result.StdOut);
                 Assert.Contains($"Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
+            },
+            result.GetDebugInfo());
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void BuildPhpApp_AfterInstallingStretchSpecificSdk()
+        {
+            // Arrange
+            var version = "7.0.33"; // version only exists on stretch
+            var composerVersion = "1.10.0";
+
+            var appName = "twig-example";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .SetEnvironmentVariable("PHP_COMPOSER_VERSION", composerVersion)
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {version}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage("stretch"),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains(
+                    $"PHP executable: " +
+                    BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot, result.StdOut);
+                Assert.Contains("Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
+                Assert.Contains($"\'php-composer\' version \'{composerVersion}\'", result.StdOut);
+            },
+            result.GetDebugInfo());
+        }
+
+        [Theory, Trait("category", "githubactions")]
+        [InlineData("github-actions-buster")]
+        [InlineData("github-actions-bullseye")]
+        public void PhpFails_ToInstallStretchSdk_OnNonStretchImage(string imageTag)
+        {
+            // Arrange
+            var version = "7.0.33"; // version only exists on stretch
+            var composerVersion = "1.10.0";
+
+            var appName = "twig-example";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .SetEnvironmentVariable("PHP_COMPOSER_VERSION", composerVersion)
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {version}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(imageTag),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(() =>
+            {
+                Assert.False(result.IsSuccess);
+                Assert.Contains($"Error: Platform '{PhpConstants.PlatformName}' version '{version}' is unsupported.", result.StdErr);
             },
             result.GetDebugInfo());
         }

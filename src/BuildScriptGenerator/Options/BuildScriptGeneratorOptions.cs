@@ -80,5 +80,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool CompressDestinationDir { get; set; }
 
         public string CustomRequirementsTxtPath { get; set; }
+
+        public string DebianFlavor { get; set; }
     }
 }

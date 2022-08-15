@@ -43,10 +43,10 @@ func main() {
 		viperConfig := common.GetViperConfiguration(fullAppPath)
 		configuration.PhpOrigin = viperConfig.GetString(consts.PhpOrigin)
 		configuration.PreRunCommand = viperConfig.GetString(consts.PreRunCommandEnvVarName)
-		configuration.FpmMaxChildren = viperConfig.GetString(consts.FpmMaxChildrenEnvVarName)
-		configuration.FpmStartServers = viperConfig.GetString(consts.FpmStartServersEnvVarName)
-		configuration.FpmMinSpareServers = viperConfig.GetString(consts.FpmMinSpareServersEnvVarName)
-		configuration.FpmMaxSpareServers = viperConfig.GetString(consts.FpmMaxSpareServersEnvVarName)
+		configuration.FpmMaxChildren = viperConfig.GetString(consts.PhpFpmMaxChildrenEnvVarName)
+		configuration.FpmStartServers = viperConfig.GetString(consts.PhpFpmStartServersEnvVarName)
+		configuration.FpmMinSpareServers = viperConfig.GetString(consts.PhpFpmMinSpareServersEnvVarName)
+		configuration.FpmMaxSpareServers = viperConfig.GetString(consts.PhpFpmMaxSpareServersEnvVarName)
 
 		entrypointGenerator := PhpStartupScriptGenerator{
 			SourcePath:    fullAppPath,
