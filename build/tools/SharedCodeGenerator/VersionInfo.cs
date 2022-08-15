@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             }
             else
             {
-                this.SemanticVersion = ToSemanticVersion(this.DisplayVersion);
+                this.SemanticVersion = new SemVer.Version(this.DisplayVersion, loose: true);
             }
         }
 
@@ -39,24 +39,5 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             this.nonSemverPlatforms.Contains(this.Platform)
             ? this.Version.CompareTo(other.Version)
             : this.SemanticVersion.CompareTo(other.SemanticVersion);
-
-        private static SemVer.Version ToSemanticVersion(string displayVersion)
-        {
-            var semanticVersionStr = displayVersion;
-
-            // The display version is in preview version format or it's a non-preview version
-            // Both cases can be handled by SemVer library.
-            // Throws ArgumentException if SemVer library found invalid version format.
-            if (displayVersion.Contains('-') || !displayVersion.Any(c => char.IsLetter(c)))
-            {
-                return new SemVer.Version(semanticVersionStr);
-            }
-
-            // The display version is an invalid preview version
-            var index = displayVersion.Length;
-            index = displayVersion.ToList().FindIndex(c => char.IsLetter(c));
-            semanticVersionStr = displayVersion.Insert(index, "-");
-            return new SemVer.Version(semanticVersionStr, loose: true);
-        }
     }
 }

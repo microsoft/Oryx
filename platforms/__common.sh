@@ -139,8 +139,9 @@ buildPlatform() {
 	local funcToCall="$2"
 	while IFS= read -r VERSION_INFO || [[ -n $VERSION_INFO ]]
 	do
+		# remove all whitespace before first character
 		VERSION_INFO="$(echo -e "${VERSION_INFO}" | sed -e 's/^[[:space:]]*//')"
-		# Ignore whitespace and comments
+		# Ignore empty lines and comments
 		if [ -z "$VERSION_INFO" ] || [[ $VERSION_INFO = \#* ]] ; then
 			continue
 		fi
