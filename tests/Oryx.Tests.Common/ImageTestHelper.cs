@@ -318,10 +318,10 @@ namespace Microsoft.Oryx.Tests.Common
 
             if (_tagSuffix.StartsWith("-"))
             {
-                return _tagSuffix.TrimStart('-');
+                return $"{_latestTag}{_tagSuffix}";
             }
 
-            return _tagSuffix;
+            return $"{_latestTag}-{_tagSuffix}";
         }
 
         private Dictionary<string, Dictionary<string, string>> PlatformVersionToOsType = new Dictionary<string, Dictionary<string, string>>
