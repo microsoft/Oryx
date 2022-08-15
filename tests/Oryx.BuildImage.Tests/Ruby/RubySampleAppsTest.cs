@@ -28,7 +28,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             var imageTestHelper = new ImageTestHelper();
             Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
-                imageTestHelper.GetVsoBuildImage("vso-focal"));
+                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu));
+            GeneratesScript_AndBuildRailsApp(imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu));
         }
 
         [Fact, Trait("category", "jamstack")]
@@ -37,6 +38,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var imageTestHelper = new ImageTestHelper();
             Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
                 imageTestHelper.GetAzureFunctionsJamStackBuildImage());
+        }
+
+        [Theory, Trait("category", "cli")]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        public void PipelineTestInvocationCli(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
+                imageTestHelper.GetCliImage(imageTag));
+            GeneratesScript_AndBuildRailsApp(imageTestHelper.GetCliImage(imageTag));
         }
 
         [Fact, Trait("category", "vso-focal")]
@@ -55,7 +67,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage("vso-focal"),
+                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -72,8 +84,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "vso-focal")]
-        public void GeneratesScript_AndBuildRailsApp()
+        private void GeneratesScript_AndBuildRailsApp(string imageName)
         {
             // Arrange
             var appName = "ruby-on-rails-app";
@@ -82,14 +93,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddCommand($"cd {appDir} && bundle update")
+                .AddCommand($"cd {appDir}")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage("vso-focal"),
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -129,7 +140,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage("vso-focal"),
+                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

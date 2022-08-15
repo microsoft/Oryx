@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -20,9 +21,9 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug 1410367") ]
-        [InlineData("github-actions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("latest")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData(ImageTestHelperConstants.LatestTag)]
         public async Task Python37App_PostgreSqlDBAsync(string imageTag)
         {
             await RunTestAsync(

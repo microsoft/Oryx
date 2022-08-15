@@ -49,6 +49,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
+        [Theory, Trait("category", "cli")]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        public void PipelineTestInvocationCli(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(imageTag));
+        }
+
         private void GeneratesScript_AndBuilds(string buildImageName)
         {
             // Please note:

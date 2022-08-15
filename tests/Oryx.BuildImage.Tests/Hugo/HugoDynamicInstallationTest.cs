@@ -36,6 +36,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetGitHubActionsBuildImage());
         }
 
+        [Theory, Trait("category", "cli")]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        public void PipelineTestInvocationCli(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage(imageTag));
+        }
+
         private void InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(string imageName)
         {
             // Please note:

@@ -31,30 +31,39 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLatest()
         {
             GeneratesScript_AndBuilds(Settings.BuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage("latest");
-            JamSpell_CanBe_Installed_In_The_BuildImage("latest");
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("latest");
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.LatestTag);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LatestTag);
         }
 
         [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
             GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage("lts-versions");
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("lts-versions");
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.LtsVersionsStretch);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LtsVersionsStretch);
         }
 
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
-            JamSpell_CanBe_Installed_In_The_BuildImage("vso-focal");
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.VsoUbuntu);
         }
 
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions");
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions-buster");
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsStretch);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        [Theory, Trait("category", "cli")]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        public void PipelineTestInvocationCli(string imageTag)
+        {
+            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
+            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
         }
 
         [Theory]
@@ -174,10 +183,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("github-actions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("lts-versions")]
-        [InlineData("latest")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
+        [InlineData(ImageTestHelperConstants.LatestTag)]
         public void DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(string imageTag)
         {
             // Arrange
@@ -798,7 +807,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage("vso-focal"),
+                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -1447,9 +1456,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("lts-versions")]
-        [InlineData("vso-focal")]
-        [InlineData("latest")]
+        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
+        [InlineData(ImageTestHelperConstants.VsoUbuntu)]
+        [InlineData(ImageTestHelperConstants.LatestTag)]
         public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName)
         {
             // Arrange

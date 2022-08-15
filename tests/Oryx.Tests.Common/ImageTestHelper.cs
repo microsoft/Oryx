@@ -21,26 +21,28 @@ namespace Microsoft.Oryx.Tests.Common
     /// </summary>
     public class ImageTestHelper
     {
-        private const string _repoPrefixEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
-        private const string _tagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
-        private const string _defaultRepoPrefix = "oryxdevmcr.azurecr.io/public/oryx";
-        private const string _restrictedPermissionsImageRepoPrefix = "oryxtests";
+        private const string _repoPrefixEnvironmentVariable = ImageTestHelperConstants.RepoPrefixEnvironmentVariable;
+        private const string _tagSuffixEnvironmentVariable = ImageTestHelperConstants.TagSuffixEnvironmentVariable;
+        private const string _defaultRepoPrefix = ImageTestHelperConstants.DefaultRepoPrefix;
+        private const string _restrictedPermissionsImageRepoPrefix = ImageTestHelperConstants.RestrictedPermissionsImageRepoPrefix;
 
-        private const string _azureFunctionsJamStack = "azfunc-jamstack";
-        private const string _azureFunctionsJamStackBuster = "azfunc-jamstack-buster";
-        private const string _azureFunctionsJamStackBullseye = "azfunc-jamstack-bullseye";
-        private const string _gitHubActions = "github-actions";
-        private const string _gitHubActionsBuster = "github-actions-buster";
-        private const string _gitHubActionsBullseye = "github-actions-bullseye";
-        private const string _vso = "vso";
-        private const string _vsoUbuntu = "vso-focal";
-        private const string _buildRepository = "build";
-        private const string _packRepository = "pack";
-        private const string _cliRepository = "cli";
-        private const string _cliBusterRepository = "cli-buster";
-        private const string _latestTag = "latest";
-        private const string _ltsVersionsTag = "lts-versions";
-        private const string _ltsVersionsBuster = "lts-versions-buster";
+        private const string _azureFunctionsJamStackStretch = ImageTestHelperConstants.AzureFunctionsJamStackStretch;
+        private const string _azureFunctionsJamStackBuster = ImageTestHelperConstants.AzureFunctionsJamStackBuster;
+        private const string _azureFunctionsJamStackBullseye = ImageTestHelperConstants.AzureFunctionsJamStackBullseye;
+        private const string _gitHubActionsStretch = ImageTestHelperConstants.GitHubActionsStretch;
+        private const string _gitHubActionsBuster = ImageTestHelperConstants.GitHubActionsBuster;
+        private const string _gitHubActionsBullseye = ImageTestHelperConstants.GitHubActionsBullseye;
+        private const string _vso = ImageTestHelperConstants.Vso;
+        private const string _vsoUbuntu = ImageTestHelperConstants.VsoUbuntu;
+        private const string _buildRepository = ImageTestHelperConstants.BuildRepository;
+        private const string _packRepository = ImageTestHelperConstants.PackRepository;
+        private const string _cliRepository = ImageTestHelperConstants.CliRepository;
+        private const string _cliBusterRepository = ImageTestHelperConstants.CliBusterRepository;
+        private const string _cliStretchTag = ImageTestHelperConstants.CliStretchTag;
+        private const string _cliBusterTag = ImageTestHelperConstants.CliBusterTag;
+        private const string _latestTag = ImageTestHelperConstants.LatestTag;
+        private const string _ltsVersionsStretch = ImageTestHelperConstants.LtsVersionsStretch;
+        private const string _ltsVersionsBuster = ImageTestHelperConstants.LtsVersionsBuster;
 
         private readonly ITestOutputHelper _output;
         private string _repoPrefix;
@@ -129,7 +131,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         /// <summary>
         /// Constructs a runtime image from the given parameters that follows the format
-        /// '{image}/{platformName}:{platformVersion}{tagSuffix}'. The base image can be set with the environment
+        /// '{image}/{platformName}:{platformVersion}-{osType}{tagSuffix}'. The base image can be set with the environment
         /// variable ORYX_TEST_IMAGE_BASE, otherwise the default base 'oryxdevmcr.azurecr.io/public/oryx' will be used.
         /// If a tag suffix was set with the environment variable ORYX_TEST_TAG_SUFFIX, it will be appended to the tag.
         /// </summary>
@@ -139,7 +141,8 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetRuntimeImage(string platformName, string platformVersion)
         {
 
-            if (PlatformVersionToOsType.TryGetValue(platformName, out var versionToOsType) && versionToOsType.TryGetValue(platformVersion, out var osType))
+            if (PlatformVersionToOsType.TryGetValue(platformName, out var versionToOsType) 
+                && versionToOsType.TryGetValue(platformVersion, out var osType))
             {
                 return $"{_repoPrefix}/{platformName}:{platformVersion}-{osType}{_tagSuffix}";
             }
@@ -170,7 +173,7 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetBuildImage();
             }
-            else if (string.Equals(tag, _ltsVersionsTag))
+            else if (string.Equals(tag, _ltsVersionsStretch))
             {
                 return GetLtsVersionsBuildImage();
             }
@@ -182,7 +185,7 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetVsoBuildImage(_vsoUbuntu);
             }
-            else if (string.Equals(tag, _gitHubActions))
+            else if (string.Equals(tag, _gitHubActionsStretch))
             {
                 return GetGitHubActionsBuildImage();
             }
@@ -198,9 +201,9 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetLtsVersionsBuildImage(_ltsVersionsBuster);
             }
-            else if (string.Equals(tag, _azureFunctionsJamStack))
+            else if (string.Equals(tag, _azureFunctionsJamStackStretch))
             {
-                return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStack);
+                return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStackStretch);
             }
             else if (string.Equals(tag, _azureFunctionsJamStackBuster))
             {
@@ -209,6 +212,14 @@ namespace Microsoft.Oryx.Tests.Common
             else if (string.Equals(tag, _azureFunctionsJamStackBullseye))
             {
                 return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStackBullseye);
+            }
+            else if (string.Equals(tag, _cliRepository))
+            {
+                return GetCliImage(_cliRepository);
+            }
+            else if (string.Equals(tag, _cliBusterRepository))
+            {
+                return GetCliImage(_cliBusterRepository);
             }
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
@@ -221,7 +232,7 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
         public string GetLtsVersionsBuildImage()
         {
-            return $"{_repoPrefix}/{_buildRepository}:{_ltsVersionsTag}{_tagSuffix}";
+            return $"{_repoPrefix}/{_buildRepository}:{_ltsVersionsStretch}{_tagSuffix}";
         }
 
         /// <summary>
@@ -239,7 +250,7 @@ namespace Microsoft.Oryx.Tests.Common
             } else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _azureFunctionsJamStackBullseye)) {
                 return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBullseye}{_tagSuffix}";
             } else {
-                return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStack}{_tagSuffix}";
+                return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackStretch}{_tagSuffix}";
             }
         }
 
@@ -250,7 +261,7 @@ namespace Microsoft.Oryx.Tests.Common
             } else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseye)) {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
             } else {
-                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsStretch}{_tagSuffix}";
             }
         }
 
@@ -266,7 +277,7 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_ltsVersionsBuster}{_tagSuffix}";
             }
-            return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
+            return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsStretch}{_tagSuffix}";
         }
 
         /// <summary>
@@ -289,14 +300,13 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A 'cli' image that can be pulled for testing.</returns>
         public string GetCliImage(string debianFlavor = null)
         {
-            var tag = GetTestTag();
             if (!string.IsNullOrEmpty(debianFlavor)
                 && string.Equals(debianFlavor.ToLower(), _cliBusterRepository))
             {
-                return $"{_repoPrefix}/{_cliBusterRepository}:{tag}";
+                return $"{_repoPrefix}/{_cliBusterRepository}:{_cliBusterTag}{_tagSuffix}";
             }
 
-            return $"{_repoPrefix}/{_cliRepository}:{tag}";
+            return $"{_repoPrefix}/{_cliRepository}:{_cliStretchTag}{_tagSuffix}";
         }
 
         private string GetTestTag()
@@ -371,5 +381,31 @@ namespace Microsoft.Oryx.Tests.Common
                 }
             },
         };
+    }
+
+    public static class ImageTestHelperConstants 
+    {
+        public const string RepoPrefixEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
+        public const string TagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
+        public const string DefaultRepoPrefix = "oryxdevmcr.azurecr.io/public/oryx";
+        public const string RestrictedPermissionsImageRepoPrefix = "oryxtests";
+
+        public const string AzureFunctionsJamStackStretch = "azfunc-jamstack-stretch";
+        public const string AzureFunctionsJamStackBuster = "azfunc-jamstack-buster";
+        public const string AzureFunctionsJamStackBullseye = "azfunc-jamstack-bullseye";
+        public const string GitHubActionsStretch = "github-actions-stretch";
+        public const string GitHubActionsBuster = "github-actions-buster";
+        public const string GitHubActionsBullseye = "github-actions-bullseye";
+        public const string Vso = "vso";
+        public const string VsoUbuntu = "vso-focal";
+        public const string BuildRepository = "build";
+        public const string PackRepository = "pack";
+        public const string CliRepository = "cli";
+        public const string CliBusterRepository = "cli-buster";
+        public const string CliStretchTag = "stretch";
+        public const string CliBusterTag = "buster";
+        public const string LatestTag = "latest-stretch";
+        public const string LtsVersionsStretch = "lts-versions-stretch";
+        public const string LtsVersionsBuster = "lts-versions-buster";
     }
 }

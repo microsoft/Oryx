@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             var imageTestHelper = new ImageTestHelper();
             GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
-                RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage("vso-focal"));
+                RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu));
         }
 
         [Fact, Trait("category", "githubactions")]
@@ -39,6 +39,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 RubyVersions.Ruby30Version, imageTestHelper.GetGitHubActionsBuildImage());
             GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
                 RubyVersions.Ruby31Version, imageTestHelper.GetGitHubActionsBuildImage());
+        }
+
+        [Theory, Trait("category", "cli")]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        public void PipelineTestInvocationCli(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby30Version, imageTestHelper.GetCliImage(imageTag));
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby31Version, imageTestHelper.GetCliImage(imageTag));
         }
 
         private void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string version, string buildImageName)

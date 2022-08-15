@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.IO;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -32,6 +33,40 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 version,
                 builtInDir: PhpConstants.InstalledPhpVersionsDir,
                 dynamicInstallDir: Path.Combine(this.CommonOptions.DynamicInstallRootDir, PhpConstants.PlatformName));
+        }
+
+        public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
+        {
+            stringBuilder.AppendLine($"echo 'Installing {PhpConstants.PlatformName} specific dependencies...'");
+
+            // Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
+            stringBuilder.AppendLine("if [ \"${DEBIAN_FLAVOR}\" = \"buster\" ]; then");
+            stringBuilder.AppendAptGetInstallPackages(
+                "ca-certificates",
+                "libargon2-0",
+                "libcurl4-openssl-dev",
+                "libedit-dev",
+                "libonig-dev",
+                "libncurses6",
+                "libsodium-dev",
+                "libsqlite3-dev",
+                "libxml2-dev",
+                "xz-utils");
+            stringBuilder.AppendLine("else");
+            stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
+            stringBuilder.AppendLine("imagesDir=\"$tmpDir/images\"");
+            stringBuilder.AppendLine("$imagesDir/build/php/prereqs/installPrereqs.sh");
+            stringBuilder.AppendAptGetInstallPackages(
+                "libcurl3",
+                "libicu57",
+                "liblttng-ust0",
+                "libssl1.0.2",
+                "libargon2-0",
+                "libonig-dev",
+                "libncurses5-dev",
+                "libxml2-dev",
+                "libedit-dev");
+            stringBuilder.AppendLine("fi");
         }
     }
 }

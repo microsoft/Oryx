@@ -47,8 +47,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GenerateDockerfile(DockerfileContext ctx)
         {
-            var dockerfileBuildImageName = "build";
-            var dockerfileBuildImageTag = "azfunc-jamstack";
+            var dockerfileBuildImageName = "cli";
+            var dockerfileBuildImageTag = "stable";
 
             var dockerfileRuntimeImage = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformName) ?
                 ConvertToRuntimeName(this.commonOptions.RuntimePlatformName) : string.Empty;
@@ -136,6 +136,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
+        /// When looking for a satifying runtime version, format it so that tags '8' and '8.1' are treated as
+        /// '8.99999.99999' and '8.1.99999', respectively. This allows the tags to be treated as the "maximum
+        /// version within the provided major or minor version that Oryx supports" during version comparison.
+        /// </summary>
+        /// <param name="runtimeVersions">The list of runtime versions supported for a platform.</param>
+        /// <returns>A list of tuples containing the original runtime version and its formatted version.</returns>
+        private static IEnumerable<(string OriginalRuntimeVersion, string FormattedRuntimeVersion)> FormatRuntimeVersions(IEnumerable<string> runtimeVersions)
+        {
+            return runtimeVersions.Select(v => FormatRuntimeVersion(v));
+        }
+
+        /// <summary>
+        /// When looking for a satifying runtime version, format it so that tags '8' and '8.1' are treated as
+        /// '8.99999.99999' and '8.1.99999', respectively. This allows the tags to be treated as the "maximum
+        /// version within the provided major or minor version that Oryx supports" during version comparison.
+        /// </summary>
+        /// <param name="runtimeVersion">The runtime version supported for a platform.</param>
+        /// <returns>A tuple containing the original runtime version and its formatted version.</returns>
+        private static (string OriginalRuntimeVersion, string FormattedRuntimeVersion) FormatRuntimeVersion(string runtimeVersion)
+        {
+            var formattedVersion = runtimeVersion;
+            var segments = runtimeVersion.Split('.');
+            for (int i = 0; i < 3 - segments.Length; i++)
+            {
+                formattedVersion += ".99999";
+            }
+
+            return (runtimeVersion, formattedVersion);
+        }
+
+        /// <summary>
         /// Determines the version of the runtime image to use in the Dockerfile using the following logic:
         /// (1) If both the platform name and version are provided, attempt to find the maximum satisfying version
         /// from the supported runtime version list that meets the version spec "~{VERSION}". If no version can be found,
@@ -166,7 +197,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         platformVersion = $"~{platformVersion}";
                     }
 
-                    return SemanticVersionResolver.GetMaxSatisfyingVersion(platformVersion, runtimeVersions) ?? runtimeVersions.LastOrDefault();
+                    var formattedRuntimeVersions = FormatRuntimeVersions(runtimeVersions);
+                    var satisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(platformVersion, formattedRuntimeVersions.Select(v => v.FormattedRuntimeVersion));
+                    if (satisfyingVersion == null)
+                    {
+                        return runtimeVersions.LastOrDefault();
+                    }
+
+                    return formattedRuntimeVersions
+                        .Where(v => string.Equals(v.FormattedRuntimeVersion, satisfyingVersion))
+                        .Select(v => v.OriginalRuntimeVersion)
+                        .FirstOrDefault();
                 }
 
                 return runtimeVersions.LastOrDefault();

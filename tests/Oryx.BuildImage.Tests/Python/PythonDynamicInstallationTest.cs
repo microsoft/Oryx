@@ -35,18 +35,29 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var imageTestHelper = new ImageTestHelper();
             GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.1");
             GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3");
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage("github-actions-buster"), "3.9.0");
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.10.4");      
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), "3.9.0");
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), "3.10.4");      
         }
 
-        private void GeneratesScript_AndBuildsPython(string imageName, string version)
+        [Fact, Trait("category", "cli")]
+        public void PipelineTestInvocationCli()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage(), "3.8.1", "/opt");
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage(), "3.8.3", "/opt");
+            GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), "3.9.0", "/opt");
+        }
+
+        private void GeneratesScript_AndBuildsPython(
+            string imageName, 
+            string version, 
+            string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
         {
             // Please note:
             // This test method has at least 1 wrapper function that pases the imageName parameter.
 
             // Arrange
-            var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
-                $"python/{version}";
+            var installationDir = $"{installationRoot}/python/{version}";
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -100,7 +111,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"),
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
