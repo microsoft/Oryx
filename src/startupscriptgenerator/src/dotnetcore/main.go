@@ -130,6 +130,9 @@ func main() {
 		}
 
 		common.WriteScript(fullOutputPath, command)
+
+		userRunCommand := common.ParseUserRunCommand(filepath.Join(fullAppPath, consts.AppSvcFileName))
+		common.AppendScript(fullOutputPath, userRunCommand)
 	}
 
 	if setupEnvCommand.Parsed() {

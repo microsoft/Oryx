@@ -9,6 +9,7 @@ import (
 	"common"
 	"common/consts"
 	"flag"
+	"path/filepath"
 )
 
 func main() {
@@ -58,5 +59,8 @@ func main() {
 
 		command := entrypointGenerator.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, command)
+
+		userRunCommand := common.ParseUserRunCommand(filepath.Join(fullAppPath, consts.AppSvcFileName))
+		common.AppendScript(*outputPathPtr, userRunCommand)
 	}
 }

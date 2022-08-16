@@ -60,6 +60,28 @@ func WriteScript(filePath string, command string) {
 	ioutil.WriteFile(filePath, []byte(command), 0755)
 }
 
+// Appends command to a file
+func AppendScript(filePath string, command string) {
+
+	if command == "" {
+		return
+	}
+
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0755)
+	if err != nil {
+		fmt.Println("Unable to read provided file to append command to. Error: " + err.Error())
+		return
+	}
+	defer file.Close()
+
+	fmt.Println("Appending provided command to '" + filePath + "'")
+	// Appends the command at the end of the file
+	if _, err := file.WriteString("\n" + command); err != nil {
+		fmt.Println("Unable to write in the file. Error: " + err.Error())
+		return
+	}
+}
+
 // Try to add a permission to a file
 func TryAddPermission(filePath string, permission os.FileMode) bool {
 	err := os.Chmod(filePath, permission)
