@@ -85,7 +85,7 @@ func main() {
 		script := gen.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, script)
 
-		userRunCommand := common.ParseUserRunCommand(filepath.Join(fullAppPath, common.AppSvcFileName))
+		userRunCommand := common.ParseUserRunCommand(filepath.Join(fullAppPath, consts.AppSvcFileName))
 		common.AppendScript(*outputPathPtr, userRunCommand)
 	}
 
