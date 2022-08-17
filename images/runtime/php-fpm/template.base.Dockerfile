@@ -8,29 +8,20 @@ ENV PHP_ORIGIN php-fpm
 ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
-# Install NGINX 
-RUN apt-get update \
-    && apt-get install nano curl gnupg2 ca-certificates lsb-release debian-archive-keyring -y \
-    && curl https://nginx.org/keys/nginx_signing.key | gpg --dearmor \
-        | tee /usr/share/keyrings/nginx-archive-keyring.gpg >/dev/null \
-    && gpg --quiet --import --import-options import-show /usr/share/keyrings/nginx-archive-keyring.gpg \
-    && echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
-        http://nginx.org/packages/mainline/debian `lsb_release -cs` nginx" \
-        | tee /etc/apt/sources.list.d/nginx.list \
-    && echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" \
-        | tee /etc/apt/preferences.d/99nginx \
-    && apt update \
-    && apt install nginx -y
+# Install NGINX latest stable version using APT Method with Nginx Repository instead of distribution-provided one:
+# - https://www.linuxcapable.com/how-to-install-latest-nginx-mainline-or-stable-on-debian-11/
+RUN apt-get update
+RUN apt install curl nano -y
+RUN curl -sSL https://packages.sury.org/nginx/README.txt | bash -x
+RUN apt-get update
+RUN yes '' | apt-get install nginx-core nginx-common nginx nginx-full -y
 RUN ls -l /etc/nginx
-RUN mkdir -p /etc/nginx/modules-enabled
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
-COPY images/runtime/php-fpm/nginx_conf/mime.types /etc/nginx/mime.types
-COPY images/runtime/php-fpm/nginx_conf/modules-enabled/ /etc/nginx/modules-enabled/
-COPY images/runtime/php-fpm/nginx_conf/nginx.conf /etc/nginx/nginx.conf
-# RUN sed -ri -e 's!worker_connections 768!worker_connections 10068!g' /etc/nginx/nginx.conf
-# RUN sed -ri -e 's!# multi_accept on!multi_accept on!g' /etc/nginx/nginx.conf
+RUN sed -ri -e 's!worker_connections 768!worker_connections 10068!g' /etc/nginx/nginx.conf
+RUN sed -ri -e 's!# multi_accept on!multi_accept on!g' /etc/nginx/nginx.conf
 RUN ls -l /etc/nginx
+RUN nginx -t
 # Edit the default port setting
 ENV NGINX_PORT 8080
 
