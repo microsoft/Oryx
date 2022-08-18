@@ -18,6 +18,8 @@ namespace Microsoft.Oryx.Tests.Common
             RootDirPath = Path.Combine(Path.GetTempPath(), "oryxtests", Guid.NewGuid().ToString());
 
             Directory.CreateDirectory(RootDirPath);
+
+            Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", "stretch");
         }
 
         public string RootDirPath { get; }
