@@ -1,5 +1,4 @@
 ARG PARENT_IMAGE_BASE
-ARG DEBIAN_FLAVOR
 
 FROM oryxdevmcr.azurecr.io/public/oryx/build:${PARENT_IMAGE_BASE} as oryx-githubactions
 

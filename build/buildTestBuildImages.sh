@@ -76,40 +76,37 @@ docker build \
 echo
 echo
 
-echo "Building bullseye based github action as base image for tests..."
+echo "Building image that uses bullseye based github action as a base but doesn't have all required environment variables..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-bullseye-base" \
     --build-arg PARENT_IMAGE_BASE=github-actions-bullseye \
-    --build-arg DEBIAN_FLAVOR=bullseye \
     -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_BUILDIMAGE_DOCKERFILE" \
     .
 
 echo
 echo
 
-echo "Building buster based github action as base image for tests..."
+echo "Building image that uses buster based github action as a base but doesn't have all required environment variables..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-buster-base" \
     --build-arg PARENT_IMAGE_BASE=github-actions-buster \
-    --build-arg DEBIAN_FLAVOR=buster \
     -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_BUILDIMAGE_DOCKERFILE" \
     .
 
 echo
 echo
 
-echo "Building stretch based github action as base image for tests..."
+echo "Building image that uses stretch based github action as a base but doesn't have all required environment variables..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-base" \
     --build-arg PARENT_IMAGE_BASE=github-actions \
-    --build-arg DEBIAN_FLAVOR=stretch \
     -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_BUILDIMAGE_DOCKERFILE" \
     .
 
 echo
 echo
 
-echo "Building bullseye based github action as base with environment image for tests..."
+echo "Building image that uses bullseye based github action as a base and has all required environment variables..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-bullseye-base-withenv" \
     --build-arg PARENT_IMAGE_BASE=github-actions-bullseye \
@@ -120,7 +117,7 @@ docker build \
 echo
 echo
 
-echo "Building buster based github action as base with environment image for tests..."
+echo "Building image that uses buster based github action as a base and has all required environment variables..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-buster-base-withenv" \
     --build-arg PARENT_IMAGE_BASE=github-actions-buster \
@@ -131,7 +128,7 @@ docker build \
 echo
 echo
 
-echo "Building stretch based github action as base with environment image for tests..."
+echo "Building image that uses stretch based github action as a base and has all required environment variables..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-base-withenv" \
     --build-arg PARENT_IMAGE_BASE=github-actions \
