@@ -110,7 +110,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine($"platformName=\"{platformName}\"")
                 .AppendLine("echo \"Detecting image debian flavor: $DEBIAN_FLAVOR.\"")
-                .AppendLine($"if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")
+                .AppendLine($"if [ -z \"$DEBIAN_FLAVOR\" ]; then")
+                .AppendLine(
+                $"echo \"Image debian flavor not found. Falling back to debian flavor in the " +
+                $"{Path.Join("//opt", "oryx", FilePaths.OsTypeFileName)} file.\"")
+                .AppendLine($"export DEBIAN_FLAVOR={this.CommonOptions.DebianFlavor}")
+                .AppendLine("fi")
+                .AppendLine($"if [ -z \"$DEBIAN_FLAVOR\" ]; then")
+                .AppendLine(
+                $"echo \"Error: Image debian flavor not found in DEBIAN_FLAVOR environment variable or the " +
+                $"{Path.Join("//opt", "oryx", FilePaths.OsTypeFileName)} file. Exiting...\"")
+                .AppendLine("exit 1")
+                .AppendLine($"elif [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")
                 .AppendLine(
                 $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
                 $"--output {tarFile} >/dev/null 2>&1")

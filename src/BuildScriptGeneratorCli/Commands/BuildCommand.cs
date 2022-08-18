@@ -407,16 +407,31 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                             options.ScriptOnly = false;
 
                             // for Debian Flavor, we first check for existance of an environment variable
-                            // which contains the os type. If this does not exist, look for the
-                            // FilePaths.OsTypeFileName file which should contain the correct value
-                            var ostypeFilePath = Path.Join(options.ManifestDir, FilePaths.OsTypeFileName);
-                            if (string.IsNullOrWhiteSpace(options.DebianFlavor) && File.Exists(ostypeFilePath))
+                            // which contains the os type. If this does not exist, parse the
+                            // FilePaths.OsTypeFileName file for the correct flavor
+                            if (string.IsNullOrWhiteSpace(options.DebianFlavor))
                             {
-                                // these file contents are in the format <OS_type>|<Os_version>, e.g. DEBIAN|bullseye
-                                // we want the Os_version part only
-                                var fullOsTypeFileContents = File.ReadAllText(ostypeFilePath);
-                                var osVersion = fullOsTypeFileContents.Split("|").TakeLast(1).SingleOrDefault().Trim();
-                                options.DebianFlavor = osVersion;
+                                var ostypeFilePath = Path.Join("//opt", "oryx", FilePaths.OsTypeFileName);
+                                if (File.Exists(ostypeFilePath))
+                                {
+                                    if (this.DebugMode)
+                                    {
+                                        console.WriteLine(
+                                            $"Warning: DEBIAN_FLAVOR environment variable not found. " +
+                                            $"Falling back to debian flavor in the {ostypeFilePath} file.");
+                                    }
+
+                                    // these file contents are in the format <OS_type>|<Os_version>, e.g. DEBIAN|BULLSEYE
+                                    // we want the Os_version part only, as all lowercase
+                                    var fullOsTypeFileContents = File.ReadAllText(ostypeFilePath);
+                                    options.DebianFlavor = fullOsTypeFileContents.Split("|").TakeLast(1).SingleOrDefault().Trim().ToLowerInvariant();
+                                }
+                                else
+                                {
+                                    console.WriteErrorLine(
+                                        $"Error: Image debian flavor not found in DEBIAN_FLAVOR environment variable or the " +
+                                        $"{Path.Join("//opt", "oryx", FilePaths.OsTypeFileName)} file. Exiting...");
+                                }
                             }
                         });
                 });
