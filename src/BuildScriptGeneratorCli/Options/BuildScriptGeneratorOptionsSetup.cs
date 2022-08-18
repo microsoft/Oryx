@@ -73,19 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
                 options.DynamicInstallRootDir = dynamicInstallRootDir;
             }
 
-            // for Debian Flavor, we first check for existance of an environment variable
-            // which contains the os type. If this does not exist, look for the
-            // FilePaths.OsTypeFileName file which should contain the correct value
-            var debianFlavor = this.GetStringValue(SettingsKeys.DebianFlavor);
-            var ostypeFile = options.ManifestDir
-            if (!string.IsNullOrWhiteSpace(debianFlavor))
-            {
-                options.DebianFlavor = debianFlavor;
-            } 
-            else if ()
-            {
-
-            }
+            options.DebianFlavor = this.GetStringValue(SettingsKeys.DebianFlavor);
         }
     }
 }
