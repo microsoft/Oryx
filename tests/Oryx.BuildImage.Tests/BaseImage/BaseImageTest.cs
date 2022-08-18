@@ -198,7 +198,8 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
         public void FailsToBuildApplication_WithOryxBaseImage_NoDebianFlavor(
             string runtimeVersion,
             string appName,
-            string imageName)
+            string imageName,
+            string expectedDebianFlavor)
         {
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -229,6 +230,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
                 {
                     Assert.False(result.IsSuccess);
                     Assert.Contains(NoDebianFlavorError, result.StdErr);
+                    Assert.DoesNotContain($"{DetectedDebianFlavorMessage} {expectedDebianFlavor}", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
