@@ -56,7 +56,10 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
         }
 
         /// <summary>
-        /// 
+        /// This test uses an image that has Oryx githubactions as a base image, but does not provide 
+        /// the DEBIAN_FLAVOR environment variable to the final image.
+        /// This means that the Oryx CLI must parse the <see cref="FilePaths.OsTypeFileName"/> file
+        /// to provide the debian flavor.
         /// </summary>
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(VersionAndNoEnvBaseImageNameData))]
@@ -127,7 +130,10 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
         }
 
         /// <summary>
-        /// 
+        /// This test uses an image that has Oryx githubactions as a base image, and provides
+        /// the DEBIAN_FLAVOR environment variable to the final image.
+        /// This means that the Oryx CLI should be able to use that environment variable instead
+        /// of the <see cref="FilePaths.OsTypeFileName"/> file to provide the debian flavor.
         /// </summary>
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(VersionAndWithEnvBaseImageNameData))]
@@ -167,7 +173,9 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
         }
 
         /// <summary>
-        /// 
+        /// This test uses an image that has Oryx githubactions as a base image. We manually remove the
+        /// DEBIAN_FLAVOR environment variable and <see cref="FilePaths.OsTypeFileName"/>.
+        /// This means that the Oryx CLI cannot determine the debian flavor, and should exit with an error.
         /// </summary>
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(VersionAndWithEnvBaseImageNameData))]
