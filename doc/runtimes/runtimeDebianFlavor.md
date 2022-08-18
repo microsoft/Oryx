@@ -26,14 +26,11 @@ The information won't show in runtime image tags, but we can always check the de
 ### dotnet
 - 3.0, 5.0, 6.0, 7.0
 
-### nodejs
-- 14, 16
-
 ### php
-- 8.0, 8.1
+- 8.0
 
 ### php-fpm
-- 8.0, 8.1
+- 8.0
 
 ### python
 - 3.9
@@ -48,13 +45,13 @@ The information won't show in runtime image tags, but we can always check the de
 - 3.1
 
 ### php
-- 7.4
+- 7.4, 8.1
 
 ### php-fpm
-- 7.4
+- 7.4, 8.1
 
 ### nodejs
-- 18
+- 14, 16, 18
 
 ### python
 - 3.7, 3.8, 3.10, 3.11
