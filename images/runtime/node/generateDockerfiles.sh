@@ -12,7 +12,7 @@ source $REPO_DIR/build/__nodeVersions.sh
 
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r DOCKERFILE_TEMPLATE="$DIR/template.Dockerfile"
-declare -r RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER="%RUNTIME_BASE_IMAGE_NAME%"
+declare -r RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER="%RUNTIME_BASE_IMAGE_TAG%"
 declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE18_VERSION $NODE16_VERSION $NODE14_VERSION)
 
 echo "$1"
