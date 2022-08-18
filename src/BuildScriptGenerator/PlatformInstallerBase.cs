@@ -109,13 +109,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"cd {versionDirInTemp}")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine($"platformName=\"{platformName}\"")
-                .AppendLine("echo \"Detecting image debian flavor: $DEBIAN_FLAVOR.\"")
                 .AppendLine($"if [ -z \"$DEBIAN_FLAVOR\" ]; then")
                 .AppendLine(
                 $"echo \"Image debian flavor not found in environment variable \'DEBIAN_FLAVOR\'. " +
                 $"Falling back to the Oryx detected debian flavor: {this.CommonOptions.DebianFlavor}.\"")
                 .AppendLine($"export DEBIAN_FLAVOR={this.CommonOptions.DebianFlavor}")
                 .AppendLine("fi")
+                .AppendLine("echo \"Detected image debian flavor: $DEBIAN_FLAVOR.\"")
                 .AppendLine($"if [ -z \"$DEBIAN_FLAVOR\" ]; then")
                 .AppendLine(
                 $"echo \"Error: Image debian flavor not found in \'DEBIAN_FLAVOR\' environment variable or the " +

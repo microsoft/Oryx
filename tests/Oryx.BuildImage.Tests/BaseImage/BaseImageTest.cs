@@ -24,32 +24,36 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
 
         private readonly string OsTypeMessage = "Warning: DEBIAN_FLAVOR environment variable not found. Falling back to debian flavor in the";
         private readonly string NoDebianFlavorError = "Error: Image debian flavor not found in";
+        private readonly string DetectedDebianFlavorMessage = "Detected image debian flavor:";
 
-        public static TheoryData<string, string, string> VersionAndNoEnvBaseImageNameData
+        public static TheoryData<string, string, string, string> VersionAndNoEnvBaseImageNameData
         {
             get
             {
-                var data = new TheoryData<string, string, string>();
+                var data = new TheoryData<string, string, string, string>();
                 var imageHelper = new ImageTestHelper();
 
                 // stretch
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsAsBaseBuildImage());
+                    imageHelper.GetGitHubActionsAsBaseBuildImage(),
+                    "stretch");
 
                 //buster
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsAsBaseBuildImage("github-actions-buster-base"));
+                    imageHelper.GetGitHubActionsAsBaseBuildImage("github-actions-buster-base"),
+                    "buster");
 
 
                 //bullseye
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsAsBaseBuildImage("github-actions-bullseye-base"));
+                    imageHelper.GetGitHubActionsAsBaseBuildImage("github-actions-bullseye-base"),
+                    "bullseye");
 
                 return data;
             }
@@ -66,7 +70,8 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
         public void BuildsApplication_WithOryxBaseImage_UsingOsTypeFile(
             string runtimeVersion,
             string appName,
-            string imageName)
+            string imageName,
+            string expectedDebianFlavor)
         {
            var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -95,35 +100,39 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(OsTypeMessage, result.StdOut);
+                    Assert.Contains($"{DetectedDebianFlavorMessage} {expectedDebianFlavor}", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
 
-        public static TheoryData<string, string, string> VersionAndWithEnvBaseImageNameData
+        public static TheoryData<string, string, string, string> VersionAndWithEnvBaseImageNameData
         {
             get
             {
-                var data = new TheoryData<string, string, string>();
+                var data = new TheoryData<string, string, string, string>();
                 var imageHelper = new ImageTestHelper();
 
                 // stretch
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsAsBaseWithEnvBuildImage());
+                    imageHelper.GetGitHubActionsAsBaseWithEnvBuildImage(),
+                    "stretch");
 
                 //buster
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsAsBaseWithEnvBuildImage("github-actions-buster-base-withenv"));
+                    imageHelper.GetGitHubActionsAsBaseWithEnvBuildImage("github-actions-buster-base-withenv"),
+                    "buster");
 
 
                 //bullseye
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsAsBaseWithEnvBuildImage("github-actions-bullseye-base-withenv"));
+                    imageHelper.GetGitHubActionsAsBaseWithEnvBuildImage("github-actions-bullseye-base-withenv"),
+                    "bullseye");
 
                 return data;
             }
@@ -140,7 +149,8 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
         public void BuildsApplication_WithOryxBaseImage_UsingDebianFlavorEnv(
             string runtimeVersion,
             string appName,
-            string imageName)
+            string imageName,
+            string expectedDebianFlavor)
         {
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -168,6 +178,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
                 {
                     Assert.True(result.IsSuccess);
                     Assert.DoesNotContain(OsTypeMessage, result.StdOut);
+                    Assert.Contains($"{DetectedDebianFlavorMessage} {expectedDebianFlavor}", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
