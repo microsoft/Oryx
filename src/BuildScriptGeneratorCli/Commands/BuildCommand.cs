@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
@@ -404,6 +405,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                             options.ManifestDir = this.ManifestDir;
                             options.Properties = buildProperties;
                             options.ScriptOnly = false;
+
+                            // for Debian Flavor, we first check for existance of an environment variable
+                            // which contains the os type. If this does not exist, look for the
+                            // FilePaths.OsTypeFileName file which should contain the correct value
+                            var ostypeFilePath = Path.Join(options.ManifestDir, FilePaths.OsTypeFileName);
+                            if (string.IsNullOrWhiteSpace(options.DebianFlavor) && File.Exists(ostypeFilePath))
+                            {
+                                // these file contents are in the format <OS_type>|<Os_version>, e.g. DEBIAN|bullseye
+                                // we want the Os_version part only
+                                var fullOsTypeFileContents = File.ReadAllText(ostypeFilePath);
+                                var osVersion = fullOsTypeFileContents.Split("|").TakeLast(1).SingleOrDefault().Trim();
+                                options.DebianFlavor = osVersion;
+                            }
                         });
                 });
 

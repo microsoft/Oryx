@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using BuildScriptGeneratorLib = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
@@ -74,8 +73,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
                 options.DynamicInstallRootDir = dynamicInstallRootDir;
             }
 
+            // for Debian Flavor, we first check for existance of an environment variable
+            // which contains the os type. If this does not exist, look for the
+            // FilePaths.OsTypeFileName file which should contain the correct value
             var debianFlavor = this.GetStringValue(SettingsKeys.DebianFlavor);
-            options.DebianFlavor = string.IsNullOrWhiteSpace(debianFlavor) ? OsTypes.DebianStretch : debianFlavor;
+            var ostypeFile = options.ManifestDir
+            if (!string.IsNullOrWhiteSpace(debianFlavor))
+            {
+                options.DebianFlavor = debianFlavor;
+            } 
+            else if ()
+            {
+
+            }
         }
     }
 }
