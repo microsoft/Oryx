@@ -674,6 +674,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 return detectedVersion;
             }
 
+            // Explicitly specified default version by user wins over detected default
+            if (!string.IsNullOrEmpty(this.pythonScriptGeneratorOptions.DefaultVersion))
+            {
+                return this.pythonScriptGeneratorOptions.DefaultVersion;
+            }
+
             // Fallback to default version
             var versionInfo = this.versionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;

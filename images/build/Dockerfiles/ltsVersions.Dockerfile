@@ -49,7 +49,7 @@ RUN LANG="C.UTF-8" \
 FROM main AS intermediate
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
- 
+
 FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE
@@ -185,8 +185,9 @@ RUN set -ex \
     && rm -f /etc/apt/sources.list.d/buster.list \
     && echo "ltsversions" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
-# as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
-    && ${imagesDir}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates" \
+    # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
+    && ${imagesDir}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083" \
+    && update-ca-certificates \
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
 
 ENTRYPOINT [ "benv" ]

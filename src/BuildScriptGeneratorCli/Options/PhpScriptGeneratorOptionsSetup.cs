@@ -24,6 +24,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
         {
             options.PhpVersion = this.GetStringValue(SettingsKeys.PhpVersion);
             options.PhpComposerVersion = this.GetStringValue(SettingsKeys.PhpComposerVersion);
+            options.PhpDefaultVersion = this.GetStringValue(SettingsKeys.PhpDefaultVersion);
+            options.PhpComposerDefaultVersion = this.GetStringValue(SettingsKeys.PhpComposerDefaultVersion);
         }
     }
 }

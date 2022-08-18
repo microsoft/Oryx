@@ -9,10 +9,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
-using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Golang;
 
@@ -229,7 +226,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
                     return detectedVersion;
                 }
 
-                // Fallback to default version
+                // Explicitly specified default version by user wins over detected default
+                if (!string.IsNullOrEmpty(this.goScriptGeneratorOptions.DefaultVersion))
+                {
+                    return this.goScriptGeneratorOptions.DefaultVersion;
+                }
+
+                // Fallback to default version detection
                 var versionInfo = this.goVersionProvider.GetVersionInfo();
                 return versionInfo.DefaultVersion;
             }

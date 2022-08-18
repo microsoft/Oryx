@@ -33,17 +33,25 @@ buildPhp() {
 	local imageName="oryx/php-sdk"
 	local targetDir="$volumeHostDir/php"
 	local phpSdkFileName=""
+	local metadataFile=""
+	local sdkVersionMetadataName=""
 
 	mkdir -p "$targetDir"
 	
-    if [ "$debianFlavor" == "stretch" ]; then
-        # Use default php sdk file name
-        phpSdkFileName=php-$version.tar.gz
-    else
-        phpSdkFileName=php-$debianFlavor-$version.tar.gz
-    fi
+	if [ "$debianFlavor" == "stretch" ]; then
+		# Use default php sdk file name
+		phpSdkFileName=php-$version.tar.gz
+		metadataFile="$targetDir/php-$version-metadata.txt"
+		# Continue adding the version metadata with the name of Version
+		# which is what our legacy CLI will use
+		sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+	else
+		phpSdkFileName=php-$debianFlavor-$version.tar.gz
+		metadataFile="$targetDir/php-$debianFlavor-$version-metadata.txt"
+		sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
+	fi
 
-	cp "$phpPlatformDir/defaultVersion.txt" "$targetDir"
+	cp "$phpPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
 
 	if shouldBuildSdk php $phpSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk php; then
 		if ! $builtPhpPrereqs; then
@@ -63,7 +71,8 @@ buildPhp() {
 
 		getSdkFromImage $imageName "$targetDir"
 		
-		echo "version=$version" >> "$targetDir/php-$version-metadata.txt"
+		echo "$sdkVersionMetadataName=$version" >> $metadataFile
+		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
 	fi
 }
 
@@ -73,16 +82,24 @@ buildPhpComposer() {
 	local imageName="oryx/php-composer-sdk"
 	local targetDir="$volumeHostDir/php-composer"
 	local composerSdkFileName="php-composer-$version.tar.gz"
+	local metadataFile=""
+	local sdkVersionMetadataName=""
 	mkdir -p "$targetDir"
 
-	cp "$phpPlatformDir/composer/defaultVersion.txt" "$targetDir"
+	cp "$phpPlatformDir/composer/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
 
 	if [ "$debianFlavor" == "stretch" ]; then
-        # Use default php sdk file name
-        composerSdkFileName=php-composer-$version.tar.gz
-    else
-        composerSdkFileName=php-composer-$debianFlavor-$version.tar.gz
-    fi
+		# Use default php sdk file name
+		composerSdkFileName=php-composer-$version.tar.gz
+		metadataFile="$targetDir/php-composer-$version-metadata.txt"
+		# Continue adding the version metadata with the name of Version
+		# which is what our legacy CLI will use
+		sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+	else
+		composerSdkFileName=php-composer-$debianFlavor-$version.tar.gz
+		metadataFile="$targetDir/php-composer-$debianFlavor-$version-metadata.txt"
+		sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
+	fi
 
 	if shouldBuildSdk php-composer $composerSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk php-composer; then
 		if ! $builtPhpPrereqs; then
@@ -107,16 +124,17 @@ buildPhpComposer() {
 
 		getSdkFromImage $imageName "$targetDir"
 		
-		echo "Version=$version" >> "$targetDir/php-composer-$version-metadata.txt"
+		echo "$sdkVersionMetadataName=$version" >> $metadataFile
+		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
 	fi
 }
 
 echo "Building Php..."
 echo
-buildPlatform "$phpPlatformDir/versionsToBuild.txt" buildPhp
+buildPlatform "$phpPlatformDir/versions/$debianFlavor/versionsToBuild.txt" buildPhp
 
 echo
 echo "Building Php composer..."
 echo
-buildPlatform "$phpPlatformDir/composer/versionsToBuild.txt" buildPhpComposer
+buildPlatform "$phpPlatformDir/composer/versions/$debianFlavor/versionsToBuild.txt" buildPhpComposer
 

@@ -129,7 +129,7 @@ getSdkFromImage() {
 	echo
 	docker run \
 		--rm \
-		-v $hostVolumeDir:$volumeContainerDir \
+		-v /$hostVolumeDir:$volumeContainerDir \
 		$imageName \
 		bash -c "cp -f /tmp/compressedSdk/* /tmp/sdk"
 }
@@ -139,7 +139,9 @@ buildPlatform() {
 	local funcToCall="$2"
 	while IFS= read -r VERSION_INFO || [[ -n $VERSION_INFO ]]
 	do
-		# Ignore whitespace and comments
+		# remove all whitespace before first character
+		VERSION_INFO="$(echo -e "${VERSION_INFO}" | sed -e 's/^[[:space:]]*//')"
+		# Ignore empty lines and comments
 		if [ -z "$VERSION_INFO" ] || [[ $VERSION_INFO = \#* ]] ; then
 			continue
 		fi
