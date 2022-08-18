@@ -32,7 +32,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             GeneratesScript_AndBuilds(Settings.BuildImageName);
             JamSpell_CanBe_Installed_In_The_BuildImage("latest");
-            JamSpell_CanBe_Installed_In_The_BuildImage("latest");
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("latest");
         }
 
@@ -55,6 +54,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions");
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions-buster");
+        }
+
+        [Theory, Trait("category", "cli")]
+        [InlineData("cli")]
+        [InlineData("cli-buster")]
+        public void PipelineTestInvocationCli(string imageTag)
+        {
+            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
+            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
         }
 
         [Theory]

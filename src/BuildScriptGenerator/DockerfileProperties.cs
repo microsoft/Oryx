@@ -26,5 +26,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// Gets or sets the tag of the image used to build the application in the Dockerfile.
         /// </summary>
         public string BuildImageTag { get; set; }
+
+        /// <summary>
+        /// Gets or sets the additional arguments that should be provided to the 'oryx create-script' command
+        /// in the runtime image of the Dockerfile.
+        /// </summary>
+        public string CreateScriptArguments { get; set; }
     }
 }

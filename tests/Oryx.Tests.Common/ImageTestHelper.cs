@@ -197,6 +197,14 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStackBullseye);
             }
+            else if (string.Equals(tag, _cliRepository))
+            {
+                return GetCliImage(_cliRepository);
+            }
+            else if (string.Equals(tag, _cliBusterRepository))
+            {
+                return GetCliImage(_cliBusterRepository);
+            }
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
 

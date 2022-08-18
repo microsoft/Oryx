@@ -37,7 +37,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "ltsversions")]
-        public void GeneratesScript_AndBuildGolangAppWithDynamicInstall()
+        public void GeneratesScript_AndBuildGolangAppWithDynamicInstall_Lts()
+        {
+            GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetLtsVersionsBuildImage());
+        }
+
+        [Theory, Trait("category", "cli")]
+        [InlineData("cli")]
+        [InlineData("cli-buster")]
+        public void GeneratesScript_AndBuildGolangAppWithDynamicInstall_Cli(string imageTag)
+        {
+            GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage(imageTag));
+        }
+
+        private void GeneratesScript_AndBuildGolangAppWithDynamicInstall(string imageName)
         {
             var imageTestHelper = new ImageTestHelper();
 
@@ -54,7 +67,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = imageTestHelper.GetLtsVersionsBuildImage(),
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

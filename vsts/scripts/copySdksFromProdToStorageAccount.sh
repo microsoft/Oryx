@@ -33,7 +33,7 @@ function copyBlobContainerFromProdToDestination() {
         echo
         echo "Overwriting blob container '$platformName' in storage account '$destinationSdk'."
         # azcopy copy [source] [destination] [flags]
-        if [ $dryRun == "false" ] ; then
+        if [ $dryRun == "False" ] ; then
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
                 "$destinationSdk/$platformName$sasToken" --overwrite true --recursive
@@ -49,7 +49,7 @@ function copyBlobContainerFromProdToDestination() {
         echo
         echo "Blob container '$platformName' does not exist in storage account '$destinationSdk'. Copying it from $PROD_SDK_STORAGE_BASE_URL..."
         # azcopy copy [source] [destination] [flags]
-        if [ $dryRun == "false" ] ; then
+        if [ $dryRun == "False" ] ; then
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
                 "$destinationSdk/$platformName$sasToken" --overwrite false --recursive
@@ -87,8 +87,8 @@ else
 fi
 
 dryRun=$2
-if [ $dryRun != "true" ] && [ $dryRun != "false" ]; then
-	echo "Error: Dry run must be true or false. Was: '$dryRun'"
+if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then
+	echo "Error: Dry run must be True or False. Was: '$dryRun'"
 	exit 1
 fi
 

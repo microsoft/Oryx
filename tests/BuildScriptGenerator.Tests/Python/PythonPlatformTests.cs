@@ -4,10 +4,14 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
+using Castle.Core.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Golang;
+using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Python;
@@ -337,6 +341,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 $"Supported versions: {supportedVersion}",
                 exception.Message);
 
+        }
+
+        [Theory]
+        [InlineData(null, "3.8.12", null, "3.8.12")]
+        [InlineData(null, "3.8.12", "3.7.9", "3.8.12")]
+        [InlineData(null, null, "3.7.9", "3.7.9")]
+        [InlineData("3.9.7", "3.8.12", "3.7.9", "3.9.7")]
+        public void Detect_ReturnsExpectedVersion_BasedOnHierarchy(
+            string detectedVersion,
+            string envVarDefaultVersion,
+            string detectedDefaultVersion,
+            string expectedSdkVersion)
+        {
+            // Arrange
+            var context = CreateContext();
+            var options = new PythonScriptGeneratorOptions();
+            options.DefaultVersion = envVarDefaultVersion;
+            var platform = CreatePlatform(
+                detectedVersion: detectedVersion,
+                defaultVersion: detectedDefaultVersion,
+                pythonScriptGeneratorOptions: options,
+                supportedVersions: new[] { detectedVersion, detectedDefaultVersion, envVarDefaultVersion }.Where(x => !x.IsNullOrEmpty()).ToArray());
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(PythonConstants.PlatformName, result.Platform);
+            Assert.Equal(expectedSdkVersion, result.PlatformVersion);
         }
         private PythonPlatform CreatePlatform(
             IPythonVersionProvider pythonVersionProvider,

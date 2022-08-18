@@ -51,12 +51,31 @@ function copyBlob() {
 
 function copyPlatformBlobsToProd() {
     local platformName="$1"
-    local versionsFile="$REPO_DIR/platforms/$platformName/versionsToBuild.txt"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "stretch"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "buster"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "bullseye"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "focal-scm"
+}
+
+function copyPlatformBlobsToProdForDebianFlavor() {
+    local platformName="$1"
+    local debianFlavor="$2"
+    local versionsFile="$REPO_DIR/platforms/$platformName/versions/$debianFlavor/versionsToBuild.txt"
+    local defaultFile=""
+    local binaryPrefix=""
 
     if [ "$platformName" == "php-composer" ]; then
-        versionsFile="$REPO_DIR/platforms/php/composer/versionsToBuild.txt"
+        versionsFile="$REPO_DIR/platforms/php/composer/versions/$debianFlavor/versionsToBuild.txt"
     elif [ "$platformName" == "maven" ]; then
-        versionsFile="$REPO_DIR/platforms/java/maven/versionsToBuild.txt"
+        versionsFile="$REPO_DIR/platforms/java/maven/versions/$debianFlavor/versionsToBuild.txt"
+    fi
+
+    if [ "$debianFlavor" == "stretch" ]; then
+        defaultFile="defaultVersion.txt"
+        binaryPrefix="$platformName"
+    else
+        defaultFile="defaultVersion.$debianFlavor.txt"
+        binaryPrefix="$platformName-$debianFlavor"
     fi
 
     # Here '3' is a file descriptor which is specifically used to read the versions file.
@@ -71,12 +90,10 @@ function copyPlatformBlobsToProd() {
 
         IFS=',' read -ra LINE_INFO <<< "$line"
         version=$(echo -e "${LINE_INFO[0]}" | sed -e 's/^[[:space:]]*//')
-        copyBlob "$platformName" "$platformName-$version.tar.gz"
-        copyBlob "$platformName" "$platformName-focal-scm-$version.tar.gz"
-        copyBlob "$platformName" "$platformName-buster-$version.tar.gz"
+        copyBlob "$platformName" "$binaryPrefix-$version.tar.gz"
 	done 3< "$versionsFile"
 
-    copyBlob "$platformName" defaultVersion.txt
+    copyBlob "$platformName" "$defaultFile"
 }
 
 if [ ! -f "$azCopyDir/azcopy" ]; then

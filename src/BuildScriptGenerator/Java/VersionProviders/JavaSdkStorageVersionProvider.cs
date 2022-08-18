@@ -26,9 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         {
             if (this.platformVersionInfo == null)
             {
-                this.platformVersionInfo = this.GetAvailableVersionsFromStorage(
-                    platformName: JavaConstants.PlatformName,
-                    versionMetadataElementName: "Version");
+                this.platformVersionInfo = this.GetAvailableVersionsFromStorage(platformName: JavaConstants.PlatformName);
             }
 
             return this.platformVersionInfo;

@@ -26,9 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             if (this.platformVersionInfo == null)
             {
-                this.platformVersionInfo = this.GetAvailableVersionsFromStorage(
-                    platformName: "nodejs",
-                    versionMetadataElementName: "Version");
+                this.platformVersionInfo = this.GetAvailableVersionsFromStorage(platformName: "nodejs");
             }
 
             return this.platformVersionInfo;
