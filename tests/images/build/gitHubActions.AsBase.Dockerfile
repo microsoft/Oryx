@@ -17,8 +17,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     NUGET_PACKAGES=/var/nuget \
     NUGET_XMLDOC_MODE=skip \
     ORIGINAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-    ORYX_AI_INSTRUMENTATION_KEY=4aadba6b-30c8-42db-9b93-024d5c62b887 \
-    ORYX_SDK_STORAGE_BASE_URL=https://oryx-cdn.microsoft.io \
+    ORYX_SDK_STORAGE_BASE_URL=https://oryxsdksdev.blob.core.windows.net \
     PATH=$ORYX_PATHS:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.dotnet/tools:/opt/nodejs/9/bin \
     PYTHONIOENCODING=UTF-8
 
