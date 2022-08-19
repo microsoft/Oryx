@@ -14,7 +14,7 @@ using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
+namespace Microsoft.Oryx.BuildImage.Tests
 {
     public class BaseImageTest : SampleAppsTestBase
     {
@@ -70,7 +70,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
         /// This means that the Oryx CLI must parse the <see cref="FilePaths.OsTypeFileName"/> file
         /// to provide the debian flavor.
         /// </summary>
-        [Theory, Trait("category", "githubactions")]
+        [Theory, Trait("category", "dotnetcore-dynamic")]
         [MemberData(nameof(VersionAndNoEnvBaseImageNameData))]
         public void BuildsApplication_WithOryxBaseImage_UsingOsTypeFile(
             string runtimeVersion,
@@ -149,7 +149,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
         /// This means that the Oryx CLI should be able to use that environment variable instead
         /// of the <see cref="FilePaths.OsTypeFileName"/> file to provide the debian flavor.
         /// </summary>
-        [Theory, Trait("category", "githubactions")]
+        [Theory, Trait("category", "dotnetcore-dynamic")]
         [MemberData(nameof(VersionAndWithEnvBaseImageNameData))]
         public void BuildsApplication_WithOryxBaseImage_UsingDebianFlavorEnv(
             string runtimeVersion,
@@ -193,7 +193,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.BaseImage
         /// DEBIAN_FLAVOR environment variable and <see cref="FilePaths.OsTypeFileName"/>.
         /// This means that the Oryx CLI cannot determine the debian flavor, and should exit with an error.
         /// </summary>
-        [Theory, Trait("category", "githubactions")]
+        [Theory, Trait("category", "dotnetcore-dynamic")]
         [MemberData(nameof(VersionAndWithEnvBaseImageNameData))]
         public void FailsToBuildApplication_WithOryxBaseImage_NoDebianFlavor(
             string runtimeVersion,

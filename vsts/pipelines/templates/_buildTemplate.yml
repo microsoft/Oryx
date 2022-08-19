@@ -152,7 +152,7 @@ steps:
   inputs:
     type: FilePath
     scriptPath: ./build/buildTestBuildImages.sh
-  condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
+  condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Test integration'
