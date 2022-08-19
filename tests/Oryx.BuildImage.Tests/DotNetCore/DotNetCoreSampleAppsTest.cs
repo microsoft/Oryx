@@ -843,6 +843,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand(
                 $"{appDir}/MessageFunction -o {appOutputDir} --apptype functions --platform dotnet " +
                 $"--platform-version 3.1")
