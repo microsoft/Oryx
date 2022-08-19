@@ -8,15 +8,20 @@ ENV PHP_ORIGIN php-fpm
 ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
-# Install NGINX 
-RUN apt-get update \
-    && apt-get install nano nginx -y
+# Install NGINX latest stable version using APT Method with Nginx Repository instead of distribution-provided one:
+# - https://www.linuxcapable.com/how-to-install-latest-nginx-mainline-or-stable-on-debian-11/
+RUN apt-get update
+RUN apt install curl nano -y
+RUN curl -sSL https://packages.sury.org/nginx/README.txt | bash -x
+RUN apt-get update
+RUN yes '' | apt-get install nginx-core nginx-common nginx nginx-full -y
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
 RUN sed -ri -e 's!worker_connections 768!worker_connections 10068!g' /etc/nginx/nginx.conf
 RUN sed -ri -e 's!# multi_accept on!multi_accept on!g' /etc/nginx/nginx.conf
 RUN ls -l /etc/nginx
+RUN nginx -t
 # Edit the default port setting
 ENV NGINX_PORT 8080
 
