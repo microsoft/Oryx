@@ -590,13 +590,23 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     NetCore7PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
 
-
-                //buullseye
+                //bullseye
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     DotNetCoreSdkVersions.DotNetCore31SdkVersion,
                     NetCoreApp31MvcApp,
                     imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp60,
+                    DotNetCoreSdkVersions.DotNet60SdkVersion,
+                    NetCore6PreviewWebApp,
+                    imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp70,
+                    DotNetCoreSdkVersions.DotNet70SdkVersion,
+                    NetCore7PreviewMvcApp,
+                    imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                
                 return data;
             }
         }
@@ -663,8 +673,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(DotNetCoreRunTimeVersions.NetCoreApp22, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
                 data.Add(DotNetCoreRunTimeVersions.NetCoreApp30, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
                 data.Add(DotNetCoreRunTimeVersions.NetCoreApp50, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
-                data.Add(DotNetCoreRunTimeVersions.NetCoreApp60, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
-                data.Add(DotNetCoreRunTimeVersions.NetCoreApp70, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
                 return data;
             }
         }

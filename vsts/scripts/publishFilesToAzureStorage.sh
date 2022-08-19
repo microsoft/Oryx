@@ -41,7 +41,7 @@ uploadFiles() {
             checksum=$(sha256sum $fileToUpload | cut -d " " -f 1)
         fi
         
-        if shouldOverwriteSdk || shouldOverwritePlatformSdk $platform || [[ "$fileToUpload" == defaultVersion* ]]; then
+        if shouldOverwriteSdk || shouldOverwritePlatformSdk $platform || [[ "$fileToUpload" == *defaultVersion*txt ]]; then
             az storage blob upload \
             --name $fileName \
             --file "$fileToUpload" \
