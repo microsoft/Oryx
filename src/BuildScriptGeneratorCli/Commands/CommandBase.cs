@@ -96,10 +96,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 logger?.LogError(exc, "Exception caught");
 
                 console.WriteErrorLine(Constants.GenericErrorMessage);
-                if (this.DebugMode)
-                {
-                    console.WriteErrorLine(exc.ToString());
-                }
+                console.WriteErrorLine(exc.ToString());
 
                 return ProcessConstants.ExitFailure;
             }
