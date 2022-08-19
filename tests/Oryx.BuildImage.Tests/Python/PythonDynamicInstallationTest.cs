@@ -358,6 +358,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 //bullseye
                 data.Add(PythonVersions.Python37Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
                 data.Add(PythonVersions.Python38Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
+                data.Add(PythonVersions.Python39Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
                 data.Add(PythonVersions.Python310Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
                 return data;
             }
@@ -418,7 +419,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
                 data.Add(PythonVersions.Python27Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
                 data.Add(PythonVersions.Python36Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
-                data.Add(PythonVersions.Python39Version, imageHelper.GetAzureFunctionsJamStackBuildImage("azfunc-jamstack-bullseye"));
                 return data;
             }
         }
