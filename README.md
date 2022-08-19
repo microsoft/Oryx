@@ -28,7 +28,7 @@ container and run.
 
 # Supported platforms and versions
 
-[Link](./doc/supportedPlatformVerions.md)
+[Link](./doc/supportedPlatformVersions.md)
 
 Patches (0.0.**x**) are applied as soon as possible after they are released upstream.
 
