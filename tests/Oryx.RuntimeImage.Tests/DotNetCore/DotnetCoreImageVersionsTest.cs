@@ -4,7 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Text.RegularExpressions;
+using System.Linq;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -112,12 +112,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             });
 
             // Assert
-            var actualOutput = new Regex("\\s{2,}").Replace(result.StdOut.ReplaceNewLine(), string.Empty);
+            var actualOutput = string.Join("", result.StdOut.ReplaceNewLine().Where(c => !char.IsWhiteSpace(c)));
             RunAsserts(
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(new Regex("\\s{1,}").Replace(expectedOutput, string.Empty), actualOutput);
+                    Assert.Contains(string.Join("", expectedOutput.Where(c => !char.IsWhiteSpace(c))), actualOutput);
                 },
                 result.GetDebugInfo());
         }
