@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Text.RegularExpressions;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -111,12 +112,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             });
 
             // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
+            var actualOutput = new Regex("\\s{2,}").Replace(result.StdOut.ReplaceNewLine(), string.Empty);
             RunAsserts(
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedOutput, actualOutput);
+                    Assert.Contains(new Regex("\\s{1,}").Replace(expectedOutput, string.Empty), actualOutput);
                 },
                 result.GetDebugInfo());
         }
