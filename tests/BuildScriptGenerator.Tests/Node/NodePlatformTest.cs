@@ -613,6 +613,77 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
+        public void Detect_ReturnsEnvDefaultVersion_IfNoVersionProvidedByDetector()
+        {
+            // Arrange
+            var expectedVersion = "8.11.2";
+            var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
+            nodeScriptGeneratorOptions.DefaultVersion = expectedVersion;
+            var platform = CreateNodePlatform(
+                supportedNodeVersions: new[] { "6.11.0", expectedVersion, "10.14.0" },
+                defaultVersion: null,
+                detectedVersion: null,
+                nodeScriptGeneratorOptions: nodeScriptGeneratorOptions);
+            var context = CreateContext();
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(NodeConstants.PlatformName, result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsEnvDefaultVersion_IfNoVersionProvidedByDetector_WithProviderDefaultVersion()
+        {
+            // Arrange
+            var expectedVersion = "8.11.2";
+            var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
+            nodeScriptGeneratorOptions.DefaultVersion = expectedVersion;
+            var platform = CreateNodePlatform(
+                supportedNodeVersions: new[] { "6.11.0", expectedVersion, "10.14.0" },
+                defaultVersion: "6.11.0",
+                detectedVersion: null,
+                nodeScriptGeneratorOptions: nodeScriptGeneratorOptions);
+            var context = CreateContext();
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(NodeConstants.PlatformName, result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
+        }
+
+        [Fact]
+        public void Detect_ReturnsNodeVersion_IfDefaultVersionEnvVarProvided()
+        {
+            // Arrange
+            var expectedVersion = "8.11.2";
+            var notExpectedVersion = "6.11.0";
+            var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
+            nodeScriptGeneratorOptions.DefaultVersion = notExpectedVersion;
+            nodeScriptGeneratorOptions.NodeVersion = expectedVersion;
+            var platform = CreateNodePlatform(
+                supportedNodeVersions: new[] { notExpectedVersion, expectedVersion, "10.14.0" },
+                defaultVersion: notExpectedVersion,
+                detectedVersion: notExpectedVersion,
+                nodeScriptGeneratorOptions: nodeScriptGeneratorOptions);
+            var context = CreateContext();
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(NodeConstants.PlatformName, result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
+        }
+
+        [Fact]
         public void Detect_ReturnsDefaultVersionOfVersionProvider_IfNoVersionProvidedByDetector_OrOptions()
         {
             // Arrange
@@ -646,6 +717,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 supportedNodeVersions: supportedVersions,
                 defaultVersion: defaultVersion,
                 detectedVersion: null);
+            var context = CreateContext();
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(NodeConstants.PlatformName, result.Platform);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
+        }
+
+        [Theory]
+        [InlineData(new[] { "8.11.1", "8.11.13", "9.10.12" }, "8", "8.11.13")]
+        [InlineData(new[] { "8.11.1", "8.11.13", "9.10.12" }, "8.11", "8.11.13")]
+        [InlineData(new[] { "8.11.1", "8.11.13", "9.10.12" }, "8.11.1", "8.11.1")]
+        public void Detect_ReturnsMaximumSatisfyingVersion_WhenDefaultVersionEnvVarHasOnlyPartialVersionParts(
+            string[] supportedVersions,
+            string defaultVersion,
+            string expectedVersion)
+        {
+            // Arrange
+            var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
+            nodeScriptGeneratorOptions.DefaultVersion = defaultVersion;
+            var platform = CreateNodePlatform(
+                supportedNodeVersions: supportedVersions,
+                defaultVersion: null,
+                detectedVersion: null,
+                nodeScriptGeneratorOptions: nodeScriptGeneratorOptions);
             var context = CreateContext();
 
             // Act

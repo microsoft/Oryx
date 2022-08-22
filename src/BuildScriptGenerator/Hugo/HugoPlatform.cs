@@ -205,6 +205,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 return detectedVersion;
             }
 
+            // Explicitly specified default version by user wins over detected default
+            if (!string.IsNullOrEmpty(this.hugoScriptGeneratorOptions.DefaultVersion))
+            {
+                return this.hugoScriptGeneratorOptions.DefaultVersion;
+            }
+
             // Fallback to default version
             return HugoConstants.Version;
         }

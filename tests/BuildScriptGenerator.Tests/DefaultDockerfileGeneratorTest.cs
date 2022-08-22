@@ -271,6 +271,109 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 dockerfile);
         }
 
+        /// <summary>
+        /// Tests that the platform name and version provided will be used directly in the generated Dockerfile
+        /// and uses the provided build image and tag in the Dockerfile.
+        /// </summary>
+        /// <param name="platformName">The name of the platform for the build and run.</param>
+        /// <param name="detectedPlatformVersion">The platform version that is "detected".</param>
+        /// <param name="commandArgPlatformVersion">The version provided to the "oryx dockerfile" command.</param>
+        /// <param name="expectedRuntimeImageTag">The expected runtime tag of the Dockerfile produced.</param>
+        [Theory]
+        [InlineData("dotnet", "2.0", "2.0", "2.0")]
+        public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatformAndVersion_AndProvidedBuildImage(
+            string platformName,
+            string detectedPlatformVersion,
+            string commandArgPlatformVersion,
+            string expectedRuntimeImageTag)
+        {
+            // Arrange
+            var buildImageName = "build";
+            var buildImageTag = "latest";
+            var buildImage = $"{buildImageName}:{buildImageTag}";
+            var detector = new TestPlatformDetectorUsingPlatformName(
+                detectedPlatformName: platformName,
+                detectedPlatformVersion: detectedPlatformVersion);
+            var platform = new TestProgrammingPlatform(
+                platformName,
+                new string[] { },
+                detector: detector);
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                BuildImage = buildImage,
+                PlatformName = platformName,
+                PlatformVersion = commandArgPlatformVersion,
+                RuntimePlatformName = platformName,
+                RuntimePlatformVersion = commandArgPlatformVersion,
+            };
+            var generator = CreateDefaultDockerfileGenerator(platform, commonOptions);
+            var ctx = CreateDockerfileContext();
+
+            // Act
+            var dockerfile = generator.GenerateDockerfile(ctx);
+
+            // Assert
+            Assert.NotNull(dockerfile);
+            Assert.NotEqual(string.Empty, dockerfile);
+            Assert.Contains(string.Format(_buildImageFormat, buildImageName, buildImageTag), dockerfile);
+            Assert.Contains(string.Format(_argRuntimeFormat,
+                ConvertToRuntimeName(platformName),
+                expectedRuntimeImageTag),
+                dockerfile);
+            Assert.True(detector.DetectInvoked);
+        }
+
+        /// <summary>
+        /// Tests that the platform name and version provided will be used directly in the generated Dockerfile
+        /// and uses the provided bind port as a part of the 'oryx create-script' call in the Dockerfile.
+        /// </summary>
+        /// <param name="platformName">The name of the platform for the build and run.</param>
+        /// <param name="detectedPlatformVersion">The platform version that is "detected".</param>
+        /// <param name="commandArgPlatformVersion">The version provided to the "oryx dockerfile" command.</param>
+        /// <param name="expectedRuntimeImageTag">The expected runtime tag of the Dockerfile produced.</param>
+        [Theory]
+        [InlineData("dotnet", "2.0", "2.0", "2.0")]
+        public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatformAndVersion_AndProvidedBindPort(
+            string platformName,
+            string detectedPlatformVersion,
+            string commandArgPlatformVersion,
+            string expectedRuntimeImageTag)
+        {
+            // Arrange
+            var bindPort = "8080";
+            var detector = new TestPlatformDetectorUsingPlatformName(
+                detectedPlatformName: platformName,
+                detectedPlatformVersion: detectedPlatformVersion);
+            var platform = new TestProgrammingPlatform(
+                platformName,
+                new string[] { },
+                detector: detector);
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                BindPort = bindPort,
+                PlatformName = platformName,
+                PlatformVersion = commandArgPlatformVersion,
+                RuntimePlatformName = platformName,
+                RuntimePlatformVersion = commandArgPlatformVersion,
+            };
+            var generator = CreateDefaultDockerfileGenerator(platform, commonOptions);
+            var ctx = CreateDockerfileContext();
+
+            // Act
+            var dockerfile = generator.GenerateDockerfile(ctx);
+
+            // Assert
+            Assert.NotNull(dockerfile);
+            Assert.NotEqual(string.Empty, dockerfile);
+            Assert.Contains(string.Format(_buildImageFormat, _buildImageName, _buildImageTag), dockerfile);
+            Assert.Contains(string.Format(_argRuntimeFormat,
+                ConvertToRuntimeName(platformName),
+                expectedRuntimeImageTag),
+                dockerfile);
+            Assert.Contains($"oryx create-script -bindPort {bindPort}", dockerfile);
+            Assert.True(detector.DetectInvoked);
+        }
+
         private DockerfileContext CreateDockerfileContext()
         {
             return new DockerfileContext();

@@ -94,7 +94,7 @@ for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
 
     # Set $getTagName_result to the following format: {platformName}:{platformVersion}
-    getTagName $dockerFileDir $runtimeImageDebianFlavor
+    getTagName $dockerFileDir debian-$runtimeImageDebianFlavor
 
     # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
     localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result"

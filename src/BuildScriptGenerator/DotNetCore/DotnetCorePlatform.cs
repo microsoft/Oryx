@@ -420,7 +420,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return detectedVersion;
             }
 
-            // Fallback to default version
+            // Explicitly specified default version by user wins over detected default
+            if (!string.IsNullOrEmpty(this.dotNetCoreScriptGeneratorOptions.DefaultRuntimeVersion))
+            {
+                return this.dotNetCoreScriptGeneratorOptions.DefaultRuntimeVersion;
+            }
+
+            // Fallback to default version detection
             var defaultVersion = this.versionProvider.GetDefaultRuntimeVersion();
             return defaultVersion;
         }

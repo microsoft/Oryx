@@ -44,6 +44,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
             libicu67 \
             libcurl4 \
             libssl1.1 \
+            libyaml-dev \
         && rm -rf /var/lib/apt/lists/* \
         && curl -LO http://security.debian.org/debian-security/pool/updates/main/libx/libxml2/libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb \
         && dpkg -i libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb \
@@ -103,7 +104,8 @@ ARG AI_KEY
 COPY --from=intermediate /opt /opt
 
 # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
-RUN ${IMAGES_DIR}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates" \
+RUN ${IMAGES_DIR}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083" \
+    && update-ca-certificates \
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
 
 # Install PHP pre-reqs	# Install PHP pre-reqs

@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact, Trait("category", "latest")]
         public void CanBuildPython2AppHavingRequirementsTxtFile()
         {
             // Arrange
@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu),
+                ImageId = _imageHelper.GetBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

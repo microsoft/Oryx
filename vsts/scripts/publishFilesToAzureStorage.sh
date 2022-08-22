@@ -18,7 +18,7 @@ uploadFiles() {
         return
     fi
 
-    allFiles=$(find $artifactsDir -type f -name '*.tar.gz' -o -name 'defaultVersion.txt')
+    allFiles=$(find $artifactsDir -type f -name '*.tar.gz' -o -name 'defaultVersion.*txt')
     for fileToUpload in $allFiles
     do
         fileName=$(basename $fileToUpload)
@@ -41,7 +41,7 @@ uploadFiles() {
             checksum=$(sha256sum $fileToUpload | cut -d " " -f 1)
         fi
         
-        if shouldOverwriteSdk || shouldOverwritePlatformSdk $platform; then
+        if shouldOverwriteSdk || shouldOverwritePlatformSdk $platform || [[ "$fileToUpload" == *defaultVersion*txt ]]; then
             az storage blob upload \
             --name $fileName \
             --file "$fileToUpload" \

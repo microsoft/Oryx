@@ -101,7 +101,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")
-                .AppendLine("SDK_DEBIAN_TYPE=$DEBIAN_FLAVOR")
                 .AppendLine("echo")
                 .AppendLine(
                 $"echo \"Downloading and extracting '{platformName}' version '{version}' to '{versionDirInTemp}'...\"")
@@ -110,20 +109,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"cd {versionDirInTemp}")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine($"platformName=\"{platformName}\"")
-
-                // Temporarily use buster SDKs in bullseye image until bullseye SDKs are supported in storage account.
-                // Bug item: 1578477
-                .AppendLine($"if [ \"$DEBIAN_FLAVOR\" = \"bullseye\" ]; then")
-                .AppendLine($"SDK_DEBIAN_TYPE=\"buster\"")
-                .AppendLine("fi")
-                .AppendLine($"if [[ \"$platformName\" = \"php\" || \"$platformName\" = \"php-composer\" ]] && [[ \"$DEBIAN_FLAVOR\" != \"stretch\" ]]; then")
                 .AppendLine("echo \"Detecting image debian flavor: $DEBIAN_FLAVOR.\"")
+                .AppendLine($"if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")
                 .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$SDK_DEBIAN_TYPE-{version}.tar.gz\" " +
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("else")
                 .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")

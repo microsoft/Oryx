@@ -49,7 +49,7 @@ echo
 
 echo "Building stretch based full build image for tests..."
 docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:latest-stretch" \
+    -t "$ORYXTESTS_BUILDIMAGE_REPO:stretch" \
     -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
     .
 

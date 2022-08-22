@@ -181,9 +181,9 @@ function buildGitHubActionsImage() {
 	if [ -z "$debianFlavor" ] ; then
 		debianFlavor="stretch"
 	fi
-	devImageTag=$devImageTag-$debianFlavor
+	devImageTag=$devImageTag-debian-$debianFlavor
 	echo "dev image tag: "$devImageTag
-	builtImageName=$builtImageName-$debianFlavor
+	builtImageName=$builtImageName-debian-$debianFlavor
 	echo "built image name: "$builtImageName
 
 	buildBuildScriptGeneratorImage
@@ -226,10 +226,10 @@ function buildJamStackImage() {
 	if [ -z "$debianFlavor" ]; then
 		debianFlavor="stretch"
 	fi
-	parentImageTag=actions-$debianFlavor
-	devImageTag=$devImageTag-$debianFlavor
+	parentImageTag=actions-debian-$debianFlavor
+	devImageTag=$devImageTag-debian-$debianFlavor
 	echo "dev image tag: "$devImageTag
-	builtImageName=$builtImageName-$debianFlavor
+	builtImageName=$builtImageName-debian-$debianFlavor
 	echo "built image name: "$builtImageName
 
 	# NOTE: do not pass in label as it is inherited from base image
@@ -260,14 +260,14 @@ function buildLtsVersionsImage() {
 	local builtImageName="$ACR_BUILD_LTS_VERSIONS_IMAGE_NAME"
 	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
 
-	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+	if [ -z "$debianFlavor" ]; then
 		debianFlavor="stretch"
 	else
 		ltsBuildImageDockerFile="$BUILD_IMAGES_LTS_VERSIONS_BUSTER_DOCKERFILE"
 	fi
-	testImageName=$testImageName-$debianFlavor
-	devImageTag=$devImageTag-$debianFlavor
-	builtImageName=$builtImageName-$debianFlavor
+	testImageName=$testImageName-debian-$debianFlavor
+	devImageTag=$devImageTag-debian-$debianFlavor
+	builtImageName=$builtImageName-debian-$debianFlavor
 	echo "dev image tag: "$devImageTag
 	echo "built image name: "$builtImageName
 	echo "test image name: "$testImageName
@@ -314,7 +314,7 @@ function buildLatestImages() {
 
 	echo
 	echo "-------------Creating latest build images-------------------"
-	local builtImageName="$ACR_BUILD_IMAGES_REPO:latest-$debianFlavor"
+	local builtImageName="$ACR_BUILD_IMAGES_REPO:debian-$debianFlavor"
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
@@ -334,7 +334,7 @@ function buildLatestImages() {
 	echo
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
-	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:latest-$debianFlavor"
+	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:debian-$debianFlavor"
 	docker build -t $testImageName \
 		-f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
 		.
@@ -361,23 +361,24 @@ function buildVsoFocalImage() {
 	echo "$builtImageName image history"
 	docker history $builtImageName
 
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:vso-focal"
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:ubuntu-vso-focal"
 }
 
 function buildCliImage() {
 	buildBuildScriptGeneratorImage
 	
 	local debianFlavor=$1
-	local devImageTag=cli
+	local devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO"
+	local devImageTag="debian-$debianFlavor"
 	local builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
 
 	if [ -z "$debianFlavor" ] || [ $debianFlavor == "stretch" ] ; then
 		debianFlavor="stretch"
-		builtImageName="$builtImageName:$debianFlavor"
+		builtImageName="$builtImageName:debian-$debianFlavor"
 	else
-		builtImageName="$builtImageName-$debianFlavor:$debianFlavor"
+		builtImageName="$builtImageName-$debianFlavor:debian-$debianFlavor"
+		devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO-buster"
 	fi
-	devImageTag="$devImageTag-$debianFlavor"
 	echo "dev image tag: "$devImageTag
 	echo "built image name: "$builtImageName
 
@@ -397,7 +398,7 @@ function buildCliImage() {
 	echo "$builtImageName image history"
 	docker history $builtImageName
 
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:$devImageTag"
+	docker tag $builtImageName "$devImageRepo:$devImageTag"
 }
 
 function buildFullImage() {
@@ -410,9 +411,9 @@ function buildFullImage() {
 	if [ -z "$debianFlavor" ] ; then
 		debianFlavor="stretch"
 	fi
-	devImageTag=$devImageTag-$debianFlavor
+	devImageTag=$devImageTag-debian-$debianFlavor
 	echo "dev image tag: "$devImageTag
-	builtImageName=$builtImageName-$debianFlavor
+	builtImageName=$builtImageName-debian-$debianFlavor
 	echo "built image name: "$builtImageName
 
 	echo

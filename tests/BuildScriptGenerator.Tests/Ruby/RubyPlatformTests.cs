@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.BuildScriptGenerator.Ruby;
 using Microsoft.Oryx.Detector.Ruby;
 using Xunit;
@@ -314,6 +315,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Ruby
 
             // Assert
             Assert.Null(actualScriptSnippet);
+        }
+
+        [Theory]
+        [InlineData(null, "1.17", null, "1.17")]
+        [InlineData(null, "1.17", "1.16", "1.17")]
+        [InlineData(null, null, "1.16", "1.16")]
+        [InlineData("1.18", "1.17", "1.16", "1.18")]
+        public void Detect_ReturnsExpectedVersion_BasedOnHierarchy(
+            string detectedVersion,
+            string envVarDefaultVersion,
+            string detectedDefaultVersion,
+            string expectedSdkVersion)
+        {
+            // Arrange
+            var context = CreateContext();
+            var options = new RubyScriptGeneratorOptions();
+            options.DefaultVersion = envVarDefaultVersion;
+            var platform = CreateRubyPlatform(
+                detectedVersion: detectedVersion,
+                defaultVersion: detectedDefaultVersion,
+                rubyScriptGeneratorOptions: options,
+                supportedRubyVersions: new[] { detectedVersion, detectedDefaultVersion, envVarDefaultVersion });
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(RubyConstants.PlatformName, result.Platform);
+            Assert.Equal(expectedSdkVersion, result.PlatformVersion);
         }
 
         private RubyPlatform CreateRubyPlatform(
