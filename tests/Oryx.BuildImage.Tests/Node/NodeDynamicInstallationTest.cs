@@ -352,11 +352,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("18.0.0", "github-actions-bullseye")]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationOnBullseyeImage(string version, string buildImageName)
         {
-            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
-        }
-
-        private void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(string version, string buildImageName)
-        {
             // Arrange
             var devPackageName = "nodemon";
             var prodPackageName = "express";
