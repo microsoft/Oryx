@@ -109,7 +109,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"cd {versionDirInTemp}")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine($"platformName=\"{platformName}\"")
-                .AppendLine("echo \"Detecting image debian flavor: $DEBIAN_FLAVOR.\"")
+                .AppendLine($"export DEBIAN_FLAVOR={this.CommonOptions.DebianFlavor}")
+                .AppendLine("echo \"Detected image debian flavor: $DEBIAN_FLAVOR.\"")
                 .AppendLine($"if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")
                 .AppendLine(
                 $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
