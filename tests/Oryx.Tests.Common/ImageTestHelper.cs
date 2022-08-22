@@ -131,7 +131,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         /// <summary>
         /// Constructs a runtime image from the given parameters that follows the format
-        /// '{image}/{platformName}:{platformVersion}-{osType}{tagSuffix}'. The base image can be set with the environment
+        /// '{image}/{platformName}:{platformVersion}-{osType}-{osFlavor}{tagSuffix}'. The base image can be set with the environment
         /// variable ORYX_TEST_IMAGE_BASE, otherwise the default base 'oryxdevmcr.azurecr.io/public/oryx' will be used.
         /// If a tag suffix was set with the environment variable ORYX_TEST_TAG_SUFFIX, it will be appended to the tag.
         /// </summary>
@@ -330,54 +330,54 @@ namespace Microsoft.Oryx.Tests.Common
                 DotNetCoreConstants.RuntimePlatformName,
                 new Dictionary<string, string>
                 {
-                    { "3.0", "buster" },
-                    { "3.1", "bullseye" },
-                    { "5.0", "buster" },
-                    { "6.0", "buster" },
-                    { "7.0", "buster" },
-                    { "dynamic", "buster" },
+                    { "3.0", "debian-buster" },
+                    { "3.1", "debian-bullseye" },
+                    { "5.0", "debian-buster" },
+                    { "6.0", "debian-buster" },
+                    { "7.0", "debian-buster" },
+                    { "dynamic", "debian-buster" },
                 }
             },
             {
                 NodeConstants.NodeToolName,
                 new Dictionary<string, string>
                 {
-                    { "14", "bullseye" },
-                    { "16", "bullseye" },
-                    { "dynamic", "buster" },
+                    { "14", "debian-bullseye" },
+                    { "16", "debian-bullseye" },
+                    { "dynamic", "debian-buster" },
                 }
             },
             {
                 PhpConstants.PlatformName,
                 new Dictionary<string, string>
                 {
-                    { "7.4", "bullseye" },
-                    { "8.0", "buster" },
-                    { "8.1", "bullseye" },
-                    { "7.4-fpm", "bullseye" },
-                    { "8.0-fpm", "buster" },
-                    { "8.1-fpm", "bullseye" },
+                    { "7.4", "debian-bullseye" },
+                    { "8.0", "debian-buster" },
+                    { "8.1", "debian-bullseye" },
+                    { "7.4-fpm", "debian-bullseye" },
+                    { "8.0-fpm", "debian-buster" },
+                    { "8.1-fpm", "debian-bullseye" },
                 }
             },
             {
                 PythonConstants.PlatformName,
                 new Dictionary<string, string>
                 {
-                    { "3.7", "bullseye" },
-                    { "3.8", "bullseye" },
-                    { "3.9", "buster" },
-                    { "3.10", "bullseye" },
-                    { "dynamic", "buster" },
+                    { "3.7", "debian-bullseye" },
+                    { "3.8", "debian-bullseye" },
+                    { "3.9", "debian-buster" },
+                    { "3.10", "debian-bullseye" },
+                    { "dynamic", "debian-buster" },
                 }
             },
             {
                 RubyConstants.PlatformName,
                 new Dictionary<string, string>
                 {
-                    { "2.5", "buster" },
-                    { "2.6", "buster" },
-                    { "2.7", "buster" },
-                    { "dynamic", "buster" },
+                    { "2.5", "debian-buster" },
+                    { "2.6", "debian-buster" },
+                    { "2.7", "debian-buster" },
+                    { "dynamic", "debian-buster" },
                 }
             },
         };
@@ -390,22 +390,22 @@ namespace Microsoft.Oryx.Tests.Common
         public const string DefaultRepoPrefix = "oryxdevmcr.azurecr.io/public/oryx";
         public const string RestrictedPermissionsImageRepoPrefix = "oryxtests";
 
-        public const string AzureFunctionsJamStackStretch = "azfunc-jamstack-stretch";
-        public const string AzureFunctionsJamStackBuster = "azfunc-jamstack-buster";
-        public const string AzureFunctionsJamStackBullseye = "azfunc-jamstack-bullseye";
-        public const string GitHubActionsStretch = "github-actions-stretch";
-        public const string GitHubActionsBuster = "github-actions-buster";
-        public const string GitHubActionsBullseye = "github-actions-bullseye";
+        public const string AzureFunctionsJamStackStretch = "azfunc-jamstack-debian-stretch";
+        public const string AzureFunctionsJamStackBuster = "azfunc-jamstack-debian-buster";
+        public const string AzureFunctionsJamStackBullseye = "azfunc-jamstack-debian-bullseye";
+        public const string GitHubActionsStretch = "github-actions-debian-stretch";
+        public const string GitHubActionsBuster = "github-actions-debian-buster";
+        public const string GitHubActionsBullseye = "github-actions-debian-bullseye";
         public const string Vso = "vso";
-        public const string VsoUbuntu = "vso-focal";
+        public const string VsoUbuntu = "ubuntu-vso-focal";
         public const string BuildRepository = "build";
         public const string PackRepository = "pack";
         public const string CliRepository = "cli";
         public const string CliBusterRepository = "cli-buster";
-        public const string CliStretchTag = "stretch";
-        public const string CliBusterTag = "buster";
-        public const string LatestTag = "latest-stretch";
-        public const string LtsVersionsStretch = "lts-versions-stretch";
-        public const string LtsVersionsBuster = "lts-versions-buster";
+        public const string CliStretchTag = "debian-stretch";
+        public const string CliBusterTag = "debian-buster";
+        public const string LatestTag = "debian-stretch";
+        public const string LtsVersionsStretch = "lts-versions-debian-stretch";
+        public const string LtsVersionsBuster = "lts-versions-debian-buster";
     }
 }

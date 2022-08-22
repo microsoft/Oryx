@@ -7,8 +7,8 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public class Settings
     {
-        public const string BuildImageName = "oryxtests/build:latest-stretch";
-        public const string WithRootAccessBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:latest-stretch";
+        public const string BuildImageName = "oryxtests/build:stretch";
+        public const string WithRootAccessBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:stretch";
         public const string LtsVersionsBuildImageName = "oryxtests/build:lts-versions-stretch";
         public const string WithRootAccessLtsVersionsBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-stretch";
         public const string GitHubActionsBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-stretch";

@@ -261,7 +261,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:latest-stretch";
+            var expected = "oryxtests/build:stretch";
 
             // Act
             var actual = imageHelper.GetBuildImage();
