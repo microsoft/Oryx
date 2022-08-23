@@ -39,11 +39,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3");
             GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-buster"), "3.9.0");
             GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.10.4");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.11.0b1");
 
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.7.12");
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.8.6");
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-buster"), "3.9.7");
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.10.4");
+            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.11.0b1");
         }
 
         [Fact, Trait("category", "cli")]
@@ -149,6 +151,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "jamstack")]
         [InlineData("3.10.4")]
+        [InlineData("3.11.0b1")]
         public void GeneratesScript_AndBuildsPython_JamstackBuildImage(string version)
         {
             // Arrange
