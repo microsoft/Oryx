@@ -43,8 +43,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "cli")]
         [InlineData(ImageTestHelperConstants.CliRepository)]
-        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
         public void PipelineTestInvocationCli(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby30Version, imageTestHelper.GetCliImage(imageTag));
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby31Version, imageTestHelper.GetCliImage(imageTag));
+        }
+
+        [Theory, Trait("category", "cli-buster")]
+        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        public void PipelineTestInvocationCliBuster(string imageTag)
         {
             var imageTestHelper = new ImageTestHelper();
             GeneratesScript_AndBuildSinatraAppWithDynamicInstall(

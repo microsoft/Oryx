@@ -44,7 +44,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add("12.22.11", imageTestHelper.GetCliImage());
                 data.Add("14.19.1", imageTestHelper.GetCliImage());
                 data.Add("16.14.2", imageTestHelper.GetCliImage());
+                return data;
+            }
+        }
 
+        public static TheoryData<string, string> ImageNameDataCliBuster
+        {
+            get
+            {
+                var data = new TheoryData<string, string>();
+                var imageTestHelper = new ImageTestHelper();
                 data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
                 data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
                 data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
@@ -62,6 +71,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "cli")]
         [MemberData(nameof(ImageNameDataCli))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCli(string version, string buildImageName)
+        {
+            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
+        }
+
+        [Theory, Trait("category", "cli-buster")]
+        [MemberData(nameof(ImageNameDataCliBuster))]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBuster(string version, string buildImageName)
         {
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }

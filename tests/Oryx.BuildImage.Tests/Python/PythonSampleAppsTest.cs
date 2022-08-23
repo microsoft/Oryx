@@ -58,8 +58,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "cli")]
         [InlineData(ImageTestHelperConstants.CliRepository)]
-        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
         public void PipelineTestInvocationCli(string imageTag)
+        {
+            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
+            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
+        }
+
+        [Theory, Trait("category", "cli-buster")]
+        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        public void PipelineTestInvocationCliBuster(string imageTag)
         {
             GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
             JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);

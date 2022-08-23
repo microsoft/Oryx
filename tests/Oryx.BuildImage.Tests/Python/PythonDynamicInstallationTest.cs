@@ -52,7 +52,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var imageTestHelper = new ImageTestHelper();
             GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(), "3.8.1", "/opt");
             GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(), "3.8.3", "/opt");
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), "3.9.0", "/opt");
+        }
+
+        [Fact, Trait("category", "cli-buster")]
+        public void PipelineTestInvocationCliBuster()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), "3.9.0", "/opt");
         }
 
         private void GeneratesScript_AndBuildsPython_FlaskApp(
