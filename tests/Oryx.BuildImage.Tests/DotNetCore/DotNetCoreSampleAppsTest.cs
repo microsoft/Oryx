@@ -58,22 +58,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "cli")]
         public void PipelineTestInvocationCli()
         {
-<<<<<<< HEAD
             GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliRepository);
-            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliBusterRepository);
-            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage());
-            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
-=======
-            GDIPlusLibrary_IsPresentInTheImage("cli");
             Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage());
         }
 
         [Fact, Trait("category", "cli-buster")]
         public void PipelineTestInvocationCliBuster()
         {
-            GDIPlusLibrary_IsPresentInTheImage("cli-buster");
-            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage("cli-buster"));
->>>>>>> main
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliBusterRepository);
+            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
         }
 
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
