@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "cli")]
-        public void PipelineTestInvocationCli(string imageTag)
+        public void PipelineTestInvocationCli()
         {
             var imageTestHelper = new ImageTestHelper();
             InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage("cli"));
