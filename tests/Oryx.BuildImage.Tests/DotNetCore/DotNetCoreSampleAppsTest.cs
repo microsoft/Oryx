@@ -59,8 +59,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationCli()
         {
             GDIPlusLibrary_IsPresentInTheImage("cli");
-            GDIPlusLibrary_IsPresentInTheImage("cli-buster");
             Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage());
+        }
+
+        [Fact, Trait("category", "cli-buster")]
+        public void PipelineTestInvocationCliBuster()
+        {
+            GDIPlusLibrary_IsPresentInTheImage("cli-buster");
             Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage("cli-buster"));
         }
 

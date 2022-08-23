@@ -42,6 +42,7 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
   pool:
@@ -78,6 +79,7 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
     pool:
@@ -114,6 +116,7 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
     pool:
@@ -150,6 +153,7 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
     pool:
@@ -186,6 +190,7 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
     pool:
@@ -220,6 +225,7 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
   pool:
@@ -254,6 +260,7 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
   pool:
