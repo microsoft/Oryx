@@ -148,6 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")
                 .AppendLine("oryxImageDetectorFile=\"/opt/oryx/.imagetype\"")
+                .AppendLine("oryxOsDetectorFile=\"/opt/oryx/.ostype\"")
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"jamstack\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
                 .AppendLine($"PATH=/opt/dotnet/{version}/dotnet:$PATH")
@@ -182,6 +183,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo \"image detector file exists, platform is ruby..\"")
                 .AppendLine($"mkdir -p /home/codespace/.ruby")
                 .AppendLine($"ln -sfn /opt/ruby/{version} /home/codespace/.ruby/current")
+                .AppendLine("fi")
+                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ -f \"$oryxOsDetectorFile\" ] && [ \"$platformName\" = \"python\" ] && grep -q \"githubactions\" \"$oryxImageDetectorFile\" && grep -q \"BULLSEYE\" \"$oryxOsDetectorFile\"; then")
+                .AppendLine($"  echo \"image detector file exists, platform is python..\"")
+                .AppendLine($"  echo \"OS detector file exists, OS is bullseye..\"")
+                .AppendLine($"  if [ '{version}' == 3.7* ] || [ '{version}' == 3.8* ]; then")
+                .AppendLine($"    curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb")
+                .AppendLine($"    dpkg -i libffi6_3.2.1-9_amd64.deb")
+                .AppendLine($"    rm libffi6_3.2.1-9_amd64.deb")
+                .AppendLine($"  fi")
                 .AppendLine("fi")
 
                 // Write out a sentinel file to indicate download and extraction was successful
