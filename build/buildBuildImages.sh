@@ -264,6 +264,7 @@ function buildLtsVersionsImage() {
 		debianFlavor="stretch"
 	else
 		testImageFile=$ORYXTESTS_LTS_VERSIONS_BUSTER_BUILDIMAGE_DOCKERFILE
+		ltsBuildImageDockerFile=$BUILD_IMAGES_LTS_VERSIONS_BUSTER_DOCKERFILE
 	fi
 	testImageName=$testImageName-debian-$debianFlavor
 	devImageTag=$devImageTag-debian-$debianFlavor
