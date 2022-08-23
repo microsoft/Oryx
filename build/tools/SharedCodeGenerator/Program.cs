@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
 
         private const string VersionsToBuildFile = "versionsToBuild.txt";
         private const string LegacyVersionsFile = "legacyVersions.txt";
-        private const string SupportedVersionsOutputFile = "supportedPlatformVerions.md";
+        private const string SupportedVersionsOutputFile = "supportedPlatformVersions.md";
 
         public static int Main(string[] args)
         {

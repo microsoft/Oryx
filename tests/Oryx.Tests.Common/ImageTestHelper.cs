@@ -32,6 +32,12 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _gitHubActionsStretch = ImageTestHelperConstants.GitHubActionsStretch;
         private const string _gitHubActionsBuster = ImageTestHelperConstants.GitHubActionsBuster;
         private const string _gitHubActionsBullseye = ImageTestHelperConstants.GitHubActionsBullseye;
+        private const string _gitHubActionsStretchBase = ImageTestHelperConstants.GitHubActionsStretchBase;
+        private const string _gitHubActionsBusterBase = ImageTestHelperConstants.GitHubActionsBusterBase;
+        private const string _gitHubActionsBullseyeBase = ImageTestHelperConstants.GitHubActionsBullseyeBase;
+        private const string _gitHubActionsStretchBaseWithEnv = ImageTestHelperConstants.GitHubActionsStretchBaseWithEnv;
+        private const string _gitHubActionsBusterBaseWithEnv = ImageTestHelperConstants.GitHubActionsBusterBaseWithEnv;
+        private const string _gitHubActionsBullseyeBaseWithEnv = ImageTestHelperConstants.GitHubActionsBullseyeBaseWithEnv;
         private const string _vso = ImageTestHelperConstants.Vso;
         private const string _vsoUbuntu = ImageTestHelperConstants.VsoUbuntu;
         private const string _buildRepository = ImageTestHelperConstants.BuildRepository;
@@ -265,6 +271,38 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
+        public string GetGitHubActionsAsBaseBuildImage(string debianFlavor = null)
+        {
+            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBusterBase))
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBusterBase}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseyeBase))
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBullseyeBase}";
+            }
+            else
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsStretchBase}";
+            }
+        }
+
+        public string GetGitHubActionsAsBaseWithEnvBuildImage(string debianFlavor = null)
+        {
+            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBusterBaseWithEnv))
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBusterBaseWithEnv}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseyeBaseWithEnv))
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBullseyeBaseWithEnv}";
+            }
+            else
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsStretchBaseWithEnv}";
+            }
+        }
+
         public string GetVsoBuildImage(string debianFlavor=null)
         {
             return $"{_repoPrefix}/{_buildRepository}:{_vsoUbuntu}{_tagSuffix}";
@@ -396,6 +434,12 @@ namespace Microsoft.Oryx.Tests.Common
         public const string GitHubActionsStretch = "github-actions-debian-stretch";
         public const string GitHubActionsBuster = "github-actions-debian-buster";
         public const string GitHubActionsBullseye = "github-actions-debian-bullseye";
+        public const string GitHubActionsStretchBase = "github-actions-debian-stretch-base";
+        public const string GitHubActionsBusterBase = "github-actions-debian-buster-base";
+        public const string GitHubActionsBullseyeBase = "github-actions-debian-bullseye-base";
+        public const string GitHubActionsStretchBaseWithEnv = "github-actions-debian-stretch-base-withenv";
+        public const string GitHubActionsBusterBaseWithEnv = "github-actions-debian-buster-base-withenv";
+        public const string GitHubActionsBullseyeBaseWithEnv = "github-actions-debian-bullseye-base-withenv";
         public const string Vso = "vso";
         public const string VsoUbuntu = "ubuntu-vso-focal";
         public const string BuildRepository = "build";

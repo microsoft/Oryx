@@ -27,30 +27,35 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLtsVersions()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.1");
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.3");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.1");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.3");
         }
 
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.1");
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3");
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), "3.9.0");
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), "3.10.4");      
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.1");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(), "3.8.3");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), "3.9.0");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), "3.10.4");
+
+            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), "3.7.12");
+            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), "3.8.6");
+            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), "3.9.7");
+            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), "3.10.4");
         }
 
         [Fact, Trait("category", "cli")]
         public void PipelineTestInvocationCli()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage(), "3.8.1", "/opt");
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage(), "3.8.3", "/opt");
-            GeneratesScript_AndBuildsPython(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), "3.9.0", "/opt");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(), "3.8.1", "/opt");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(), "3.8.3", "/opt");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), "3.9.0", "/opt");
         }
 
-        private void GeneratesScript_AndBuildsPython(
+        private void GeneratesScript_AndBuildsPython_FlaskApp(
             string imageName, 
             string version, 
             string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
@@ -61,6 +66,49 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var installationDir = $"{installationRoot}/python/{version}";
             var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand(GetSnippetToCleanUpExistingInstallation())
+                .AddBuildCommand(
+                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = imageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: {installationDir}/bin/python3",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        private void GeneratesScript_AndBuildsPython_PyodbcApp(
+            string imageName,
+            string version,
+            string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
+        {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
+            // Arrange
+            var installationDir = $"{installationRoot}/python/{version}";
+            var appName = "pyodbc-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";

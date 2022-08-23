@@ -129,7 +129,6 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddCommand($"oryx setupEnv -appPath {appOutputDir}")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();

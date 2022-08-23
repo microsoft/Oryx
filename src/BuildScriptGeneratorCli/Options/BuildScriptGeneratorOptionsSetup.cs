@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using BuildScriptGeneratorLib = Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
@@ -74,8 +73,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
                 options.DynamicInstallRootDir = dynamicInstallRootDir;
             }
 
-            var debianFlavor = this.GetStringValue(SettingsKeys.DebianFlavor);
-            options.DebianFlavor = string.IsNullOrWhiteSpace(debianFlavor) ? OsTypes.DebianStretch : debianFlavor;
+            options.DebianFlavor = this.GetStringValue(SettingsKeys.DebianFlavor);
         }
     }
 }
