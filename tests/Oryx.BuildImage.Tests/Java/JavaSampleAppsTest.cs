@@ -35,8 +35,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "cli")]
         [InlineData("cli")]
-        [InlineData("cli-buster")]
         public void JavaSampleAppsTestsCli(string imageTag)
+        {
+            BuildsMavenArcheTypeSample(imageTag);
+            BuildsMavenJ2EESample(imageTag);
+            BuildsMavenSimpleJavaApp(imageTag);
+            BuildsSpringBootSampleApp(imageTag);
+        }
+
+        [Theory, Trait("category", "cli-buster")]
+        [InlineData("cli-buster")]
+        public void JavaSampleAppsTestsCliBuster(string imageTag)
         {
             BuildsMavenArcheTypeSample(imageTag);
             BuildsMavenJ2EESample(imageTag);
