@@ -329,7 +329,7 @@ function buildLatestImages() {
 	docker history $builtImageName
 	echo
 
-	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:debian-$debianFlavor"
 
 	echo
 	echo "Building a base image for tests..."
