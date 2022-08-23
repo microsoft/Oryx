@@ -45,17 +45,17 @@ function tagBuildImage() {
     echo -------------------------------------------------------------------------------
 }
 
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "stretch" "$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "lts-versions-stretch" "lts-versions-stretch-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "lts-versions-buster" "lts-versions-buster-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack-stretch" "azfunc-jamstack-stretch-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack-buster" "azfunc-jamstack-buster-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack-bullseye" "azfunc-jamstack-bullseye-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-stretch" "github-actions-stretch-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-buster" "github-actions-buster-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-bullseye" "github-actions-bullseye-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-focal-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso-focal" "vso-focal-$RELEASE_TAG_NAME"
-tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:full-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "full-buster" "full-buster-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:debian-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "debian-stretch" "debian-stretch-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-debian-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "lts-versions-debian-stretch" "lts-versions-debian-stretch-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "lts-versions-debian-buster" "lts-versions-debian-buster-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-debian-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack-debian-stretch" "azfunc-jamstack-debian-stretch-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack-debian-buster" "azfunc-jamstack-debian-buster-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-debian-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "azfunc-jamstack-debian-bullseye" "azfunc-jamstack-debian-bullseye-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-debian-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-debian-stretch" "github-actions-debian-stretch-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-debian-buster" "github-actions-debian-buster-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-debian-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-debian-bullseye" "github-actions-debian-bullseye-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:ubuntu-vso-focal-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "ubuntu-vso-focal" "ubuntu-vso-focal-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:full-debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "full-debian-buster" "full-debian-buster-$RELEASE_TAG_NAME"
 
 echo "printing pme tags from $outPmeFileMCR"
 cat $outPmeFileMCR
