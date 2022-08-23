@@ -9,10 +9,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
 {
     internal static class Settings
     {
-        public const string BuildImageName = "oryxtests/build:stretch";
-        public const string BuildImageWithRootAccess = "oryx/build:stretch";
-        public const string LtsVersionsBuildImageName = "oryxtests/build:lts-versions-stretch";
-        public const string LtsVersionsBuildImageWithRootAccess = "oryx/build:lts-versions-stretch";
+        public const string BuildImageName = "oryxtests/build:debian-stretch";
+        public const string BuildImageWithRootAccess = "oryx/build:debian-stretch";
+        public const string LtsVersionsBuildImageName = "oryxtests/build:lts-versions-debian-stretch";
+        public const string LtsVersionsBuildImageWithRootAccess = "oryx/build:lts-versions-debian-stretch";
 
         public const string OryxVersion = "0.2.";
 

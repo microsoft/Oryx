@@ -260,10 +260,10 @@ function buildLtsVersionsImage() {
 	local builtImageName="$ACR_BUILD_LTS_VERSIONS_IMAGE_NAME"
 	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
 
-	if [ -z "$debianFlavor" ]; then
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
 		debianFlavor="stretch"
 	else
-		ltsBuildImageDockerFile="$BUILD_IMAGES_LTS_VERSIONS_BUSTER_DOCKERFILE"
+		testImageFile=$ORYXTESTS_LTS_VERSIONS_BUSTER_BUILDIMAGE_DOCKERFILE
 	fi
 	testImageName=$testImageName-debian-$debianFlavor
 	devImageTag=$devImageTag-debian-$debianFlavor

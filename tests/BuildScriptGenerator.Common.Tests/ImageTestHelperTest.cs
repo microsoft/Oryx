@@ -247,7 +247,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:github-actions-stretch";
+            var expected = "oryxtests/build:github-actions-debian-stretch";
 
             // Act
             var actual = imageHelper.GetGitHubActionsBuildImage();
@@ -261,7 +261,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:stretch";
+            var expected = "oryxtests/build:debian-stretch";
 
             // Act
             var actual = imageHelper.GetBuildImage();
@@ -275,7 +275,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:lts-versions-stretch";
+            var expected = "oryxtests/build:lts-versions-debian-stretch";
 
             // Act
             var actual = imageHelper.GetLtsVersionsBuildImage();
