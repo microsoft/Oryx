@@ -6,7 +6,7 @@ Below are the supported runtime versions for Oryx that can be pulled via Microso
 _Note_: the `{version}` used as the tag of the runtime image corresponds to the latest minor _or_ patch version supported by Oryx, _i.e._, `node:8`
 corresponds to the latest version of node `8.x.x` supported by Oryx, and `node:8.0` corresponds to the latest version of node `8.0.x` supported.
 
-The full list of supported platform versions for Oryx can be found [here](supportedPlatformVerions.md).
+The full list of supported platform versions for Oryx can be found [here](supportedPlatformVersions.md).
 
 ## .NET
 
