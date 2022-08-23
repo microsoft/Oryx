@@ -7,8 +7,8 @@
 # Folder structure is used to decide the tag name
 # For example, if a Dockerfile is located at "images/runtime/node/10.1.0/Dockerfile",
 # then the tag name would be 'node:10.1.0' (i.e. the path between 'runtime' and 'Dockerfile' segments)
-# Additionally, if a os type such as bullseye is passed in, we append the os type to the tag as well like
-# node:10.1.0-bullseye
+# Additionally, if a os type such as debian-bullseye is passed in, we append the os type to the tag as well like
+# node:10.1.0-debian-bullseye
 function getTagName()
 {
 	if [ ! -d $1 ]

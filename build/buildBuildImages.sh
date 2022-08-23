@@ -105,7 +105,7 @@ function createImageNameWithReleaseTag() {
 		# Write image list to artifacts file
 		echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 	else
-		# Write non-ci image list to artifacts file
+		# Write non-ci image to artifacts file as is, for local testing
 		echo "$imageNameToBeTaggedUniquely" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 	fi
 }
