@@ -25,6 +25,12 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _gitHubActions = "github-actions";
         private const string _gitHubActionsBuster = "github-actions-buster";
         private const string _gitHubActionsBullseye = "github-actions-bullseye";
+        private const string _gitHubActionsBase = "github-actions-base";
+        private const string _gitHubActionsBusterBase = "github-actions-buster-base";
+        private const string _gitHubActionsBullseyeBase = "github-actions-bullseye-base";
+        private const string _gitHubActionsBaseWithEnv = "github-actions-base-withenv";
+        private const string _gitHubActionsBusterBaseWithEnv = "github-actions-buster-base-withenv";
+        private const string _gitHubActionsBullseyeBaseWithEnv = "github-actions-bullseye-base-withenv";
         private const string _vso = "vso";
         private const string _vsoUbuntu = "vso-focal";
         private const string _buildRepository = "build";
@@ -246,6 +252,38 @@ namespace Microsoft.Oryx.Tests.Common
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
             } else {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActions}{_tagSuffix}";
+            }
+        }
+
+        public string GetGitHubActionsAsBaseBuildImage(string debianFlavor = null)
+        {
+            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBusterBase))
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBusterBase}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseyeBase))
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBullseyeBase}";
+            }
+            else
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBase}";
+            }
+        }
+
+        public string GetGitHubActionsAsBaseWithEnvBuildImage(string debianFlavor = null)
+        {
+            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBusterBaseWithEnv))
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBusterBaseWithEnv}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseyeBaseWithEnv))
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBullseyeBaseWithEnv}";
+            }
+            else
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBaseWithEnv}";
             }
         }
 
