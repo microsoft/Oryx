@@ -471,6 +471,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildCliImage
 	buildBuildPackImage
 	buildFullImage "buster"
+	buildFullImage "bullseye"
 elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
 	buildGitHubActionsImage "buster"
@@ -498,8 +499,11 @@ elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
 	buildLtsVersionsImage "buster"
 elif [ "$imageTypeToBuild" == "latest" ]; then
 	buildLatestImages
-elif [ "$imageTypeToBuild" == "full" ]; then
-	buildFullImage "buster"
+elif [ "$imageTypeToBuild" == "full-bullseye" ]; then
+    echo "entering here"
+	buildFullImage "bullseye"
+elif ["$imageTypeToBuild" == "full-buster"]; then
+    buildFullImage "buster"
 elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage
 elif [ "$imageTypeToBuild" == "cli" ]; then

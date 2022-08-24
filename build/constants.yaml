@@ -111,6 +111,8 @@
     golang17-tar-sha256: 6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d
     golang18-version: 1.18
     golang18-tar-sha256: e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f
+    golang19-version: 1.19
+    golang19-tar-sha256: 464b6b66591f6cf055bc5df90a9750bf5fbc9d038722bb84a9d56a2bea974be6
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
