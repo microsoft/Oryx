@@ -300,6 +300,7 @@ jobs:
       version: 3.1.x
   - task: ShellScript@2
     displayName: 'Test Dev storage account'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     inputs:
       scriptPath: ./build/testIntegration.sh
       args: StorageAccountTests=Dev

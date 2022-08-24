@@ -1,3 +1,6 @@
+parameters:
+  destinationSdkStorageAccount: 'oryxsdksdev'
+
 steps:
 
 - checkout: self
@@ -18,7 +21,7 @@ steps:
   inputs:
     azureSubscription: oryxSP
     scriptPath: ./vsts/scripts/publishFilesToAzureStorage.sh
-    arguments: oryxsdksdev
+    arguments: ${{ parameters.destinationSdkStorageAccount }}
 
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 3.1.x'
@@ -27,6 +30,7 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Test Dev storage account'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   inputs:
     scriptPath: ./build/testIntegration.sh
     args: StorageAccountTests=Dev
