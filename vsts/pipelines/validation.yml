@@ -1,4 +1,8 @@
 parameters:
+  - name: storageAccountUrl
+    displayName: Storage Account Url
+    type: string
+    default: https://oryxsdksdev.blob.core.windows.net
   - name: buildImages
     type: object
     default:
@@ -67,6 +71,7 @@ jobs:
     - template: templates/_buildTemplate.yml
       parameters:
           imageType: ${{ buildImage.value }}
+          storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
@@ -85,5 +90,7 @@ jobs:
       echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$(Build.BuildNumber)"
     displayName: 'Set variables'
   - template: templates/_buildTemplate.yml
+    parameters:
+        storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 trigger: none

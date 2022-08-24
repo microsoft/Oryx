@@ -803,9 +803,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app1-output";
             var commandListFile = $"{appOutputDir}/{buildCommandsFileName}";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --buildcommands-file {buildCommandsFileName}")
                 .AddFileExistsCheck($"{commandListFile}")
                 .AddStringExistsInFileCheck("PlatformWithVersion=", $"{commandListFile}")

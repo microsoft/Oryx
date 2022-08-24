@@ -1,4 +1,8 @@
 parameters:
+  - name: storageAccountUrl
+    displayName: Storage Account Url
+    type: string
+    default: https://oryxsdksdev.blob.core.windows.net
   - name: nodeVersions
     type: object
     default:
@@ -66,6 +70,8 @@ jobs:
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
+    parameters:
+        storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 # DotNetCore integration tests
 - ${{ each dotNetCoreVersion in parameters.dotNetCoreVersions }}:
@@ -103,6 +109,8 @@ jobs:
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
+          parameters:
+              storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 # NodeJS integration tests
 - ${{ each nodeVersion in parameters.nodeVersions }}:
@@ -140,6 +148,8 @@ jobs:
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
+          parameters:
+              storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 # Golang integration tests
 - ${{ each golangVersion in parameters.golangVersions }}:
@@ -177,6 +187,8 @@ jobs:
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
+          parameters:
+              storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 # Php integration tests
 - ${{ each phpVersion in parameters.phpVersions }}:
@@ -214,6 +226,8 @@ jobs:
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
+          parameters:
+              storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 - job: Job_RubyIntegrationTests
   displayName: Run Ruby Integration Tests
@@ -249,6 +263,8 @@ jobs:
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
+    parameters:
+        storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 - job: Job_DbIntegrationTests
   displayName: Run Database Integration Tests
@@ -284,6 +300,8 @@ jobs:
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
+    parameters:
+        storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 - job: Job_DevStorageAccountTest
   displayName: Test Dev Storage Account

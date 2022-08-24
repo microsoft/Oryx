@@ -1,4 +1,10 @@
 parameters:
+  - name: storageAccountUrl
+    displayName: Storage Account Url
+    type: string
+    default: https://oryx-cdn.microsoft.io
+    values:
+    - https://oryx-cdn.microsoft.io
   - name: buildImages
     type: object
     default:
@@ -138,6 +144,7 @@ stages:
         - template: templates/_buildTemplate.yml
           parameters:
             imageType: ${{ buildImage.value }}
+            storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
     - job: Job_RuntimeImages
       displayName: Build and Test Runtime Images
@@ -166,8 +173,12 @@ stages:
       - template: templates/_setReleaseTag.yml
 
       - template: templates/_buildTemplate.yml
+        parameters:
+          storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
     - template: templates/_integrationJobTemplate.yml
+      parameters:
+          storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
   - stage: Release
     displayName: Release Stage
