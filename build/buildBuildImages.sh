@@ -66,7 +66,7 @@ echo
 echo "Image type to build is set to: $imageTypeToBuild"
 
 if [ -z "$sdkStorageAccountUrl" ]; then
-	$sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
+	sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
 fi
 
 echo

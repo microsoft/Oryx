@@ -14,6 +14,35 @@ source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__sdkStorageConstants.sh
 
+# https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
+PARAMS=""
+while (( "$#" )); do
+  case "$1" in
+    -s|--sdk-storage-account-url)
+      sdkStorageAccountUrl=$2
+      shift 2
+      ;;
+    --) # end argument parsing
+      shift
+      break
+      ;;
+    -*|--*=) # unsupported flags
+      echo "Error: Unsupported flag $1" >&2
+      exit 1
+      ;;
+    *) # preserve positional arguments
+      PARAMS="$PARAMS $1"
+      shift
+      ;;
+  esac
+done
+# set positional arguments in their proper place
+eval set -- "$PARAMS"
+
+if [ -z "$sdkStorageAccountUrl" ]; then
+  sdkStorageAccountUrl=$DEV_SDK_STORAGE_BASE_URL
+fi
+
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
 runtimeImageDebianFlavor="buster"

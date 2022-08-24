@@ -122,6 +122,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Test build images'
+  env:
+    ORYX_TEST_SDK_STORAGE_URL: ${{ storageAccountUrl }}
   inputs:
     scriptPath: ./build/testBuildImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME) ${{ parameters.imageType }}
