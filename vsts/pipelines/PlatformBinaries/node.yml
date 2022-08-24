@@ -1,6 +1,12 @@
 variables:
   - group: Oryx
 
+parameters:
+- name: destinationStorageAccount
+  displayName: Destination Storage Account
+  type: string
+  default: oryxsdksdev
+
 stages:
 - stage: Build
   jobs:
@@ -64,6 +70,8 @@ stages:
         - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
     steps:
     - template: ../templates/_platformBinariesReleaseTemplate.yml
+      parameters:
+        destinationSdkStorageAccount: '${{ parameters.destinationStorageAccount }}'
 
 trigger:
   batch: true

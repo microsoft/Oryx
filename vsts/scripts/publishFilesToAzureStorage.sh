@@ -47,6 +47,7 @@ uploadFiles() {
             --file "$fileToUpload" \
             --container-name $platform \
             --account-name $storageAccount \
+            --sas-token $sasToken \
             --metadata \
                 Buildnumber="$BUILD_BUILDNUMBER" \
                 Commit="$commit" \
@@ -60,6 +61,7 @@ uploadFiles() {
             --file "$fileToUpload" \
             --container-name $platform \
             --account-name $storageAccount \
+            --sas-token $sasToken \
             --metadata \
                 Buildnumber="$BUILD_BUILDNUMBER" \
                 Commit="$commit" \
@@ -69,6 +71,18 @@ uploadFiles() {
         fi
     done
 }
+
+storageAccountUrl="https://$storageAccount.blob.core.windows.net"
+sasToken=""
+
+if [ "$storageAccountUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]; then
+    sasToken=$SANDBOX_STORAGE_SAS_TOKEN
+elif [ "$storageAccountUrl" == $DEV_SDK_STORAGE_BASE_URL ]; then
+    sasToken=$DEV_STORAGE_SAS_TOKEN
+else
+	echo "Error: $1 is an invalid destination storage account."
+	exit 1
+fi
 
 platforms=("nodejs" "python" "dotnet" "php" "php-composer" "ruby" "java" "maven" "golang")
 for platform in "${platforms[@]}"
