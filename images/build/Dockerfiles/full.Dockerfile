@@ -28,7 +28,6 @@ COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/ /opt/
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
-       echo "here!!"
         apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu67 \

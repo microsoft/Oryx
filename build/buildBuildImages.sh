@@ -500,7 +500,6 @@ elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
 elif [ "$imageTypeToBuild" == "latest" ]; then
 	buildLatestImages
 elif [ "$imageTypeToBuild" == "full-bullseye" ]; then
-    echo "entering here"
 	buildFullImage "bullseye"
 elif ["$imageTypeToBuild" == "full-buster"]; then
     buildFullImage "buster"
