@@ -1,6 +1,5 @@
 parameters:
   - name: storageAccountUrl
-    displayName: Storage Account Url
     type: string
     default: https://oryxsdksdev.blob.core.windows.net
   - name: nodeVersions
@@ -67,11 +66,10 @@ jobs:
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
       echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+      echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
-    parameters:
-        storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 # DotNetCore integration tests
 - ${{ each dotNetCoreVersion in parameters.dotNetCoreVersions }}:
@@ -106,11 +104,10 @@ jobs:
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
             echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
-          parameters:
-              storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 # NodeJS integration tests
 - ${{ each nodeVersion in parameters.nodeVersions }}:
@@ -145,11 +142,10 @@ jobs:
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
             echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
-          parameters:
-              storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 # Golang integration tests
 - ${{ each golangVersion in parameters.golangVersions }}:
@@ -184,11 +180,10 @@ jobs:
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
             echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
-          parameters:
-              storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 # Php integration tests
 - ${{ each phpVersion in parameters.phpVersions }}:
@@ -223,11 +218,10 @@ jobs:
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
             echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
-          parameters:
-              storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 - job: Job_RubyIntegrationTests
   displayName: Run Ruby Integration Tests
@@ -260,11 +254,10 @@ jobs:
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
       echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+      echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
-    parameters:
-        storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 - job: Job_DbIntegrationTests
   displayName: Run Database Integration Tests
@@ -297,11 +290,10 @@ jobs:
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
       echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+      echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
-    parameters:
-        storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 - job: Job_DevStorageAccountTest
   displayName: Test Dev Storage Account
