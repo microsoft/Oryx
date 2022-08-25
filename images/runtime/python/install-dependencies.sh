@@ -48,6 +48,7 @@ apt-get update \
         apt-transport-https \
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
     && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
     && ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
     && echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc \
@@ -61,6 +62,12 @@ cat >/etc/unixODBC/odbcinst.ini <<EOL
 [ODBC Driver 18 for SQL Server]
 Description=Microsoft ODBC Driver 18 for SQL Server
 Driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.1.so.1.1
+Threading=1
+UsageCount=1
+
+[ODBC Driver 17 for SQL Server]
+Description=Microsoft ODBC Driver 17 for SQL Server
+Driver=/opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.2.so.0.1
 Threading=1
 UsageCount=1
 EOL
