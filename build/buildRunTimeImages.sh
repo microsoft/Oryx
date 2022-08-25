@@ -40,8 +40,10 @@ done
 eval set -- "$PARAMS"
 
 if [ -z "$sdkStorageAccountUrl" ]; then
-  sdkStorageAccountUrl=$DEV_SDK_STORAGE_BASE_URL
+  sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
 fi
+echo
+echo "SDK storage account url set to: $sdkStorageAccountUrl"
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
@@ -139,7 +141,7 @@ for dockerFile in $dockerFiles; do
         -t $localImageTagName \
         --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
         --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
-        --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+        --build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
         --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION \
         $args \

@@ -12,6 +12,13 @@ declare -r testProjectName="Oryx.BuildImage.Tests"
 
 # Load all variables
 source $REPO_DIR/build/__variables.sh
+source $REPO_DIR/build/__sdkStorageConstants.sh
+
+if [ -z "$ORYX_TEST_SDK_STORAGE_URL" ]; then
+    echo
+    echo "Setting environment variable 'ORYX_TEST_SDK_STORAGE_URL' to default value '$DEV_SDK_STORAGE_BASE_URL'."
+    export ORYX_TEST_SDK_STORAGE_URL="$DEV_SDK_STORAGE_BASE_URL"
+fi
 
 if [ "$1" = "skipBuildingImages" ]
 then
@@ -20,7 +27,7 @@ then
 else
     echo
     echo "Invoking script '$buildBuildImagesScript'..."
-    $buildBuildImagesScript "$0"
+    $buildBuildImagesScript -s $ORYX_TEST_SDK_STORAGE_URL "$0"
 fi
 
 if [ -n "$2" ]

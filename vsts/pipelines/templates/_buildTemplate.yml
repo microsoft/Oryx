@@ -94,14 +94,14 @@ steps:
   displayName: 'Build Buster runtime images'
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
-    args: buster
+    args: -s ${{ parameters.storageAccountUrl }} buster
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Build Bullseye runtime images'
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
-    args: bullseye
+    args: -s ${{ parameters.storageAccountUrl }} bullseye 
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - script: |
@@ -131,6 +131,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Test runtime images'
+  env:
+    ORYX_TEST_SDK_STORAGE_URL: ${{ storageAccountUrl }}
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
@@ -159,6 +161,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Test integration'
+  env:
+    ORYX_TEST_SDK_STORAGE_URL: ${{ storageAccountUrl }}
   inputs:
     scriptPath: ./build/testIntegration.sh
     args: $(TestIntegrationCaseFilter) ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)

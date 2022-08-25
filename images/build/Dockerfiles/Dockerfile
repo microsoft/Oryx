@@ -31,8 +31,6 @@ RUN ./build.sh ruby       /opt/startupcmdgen/ruby
 ###
 
 FROM main AS final
-
-
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 # https://github.com/docker-library/python/issues/147
