@@ -161,8 +161,6 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Test integration'
-  env:
-    ORYX_TEST_SDK_STORAGE_URL: ${{ storageAccountUrl }}
   inputs:
     scriptPath: ./build/testIntegration.sh
     args: $(TestIntegrationCaseFilter) ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
@@ -171,6 +169,7 @@ steps:
     SQLSERVER_DATABASE_NAME: $(SQLSERVER-DATABASE-NAME)
     SQLSERVER_DATABASE_USERNAME: $(SQLSERVER-DATABASE-USERNAME)
     SQLSERVER_DATABASE_PASSWORD: $(SQLSERVER-DATABASE-PASSWORD)
+    ORYX_TEST_SDK_STORAGE_URL: ${{ storageAccountUrl }}
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: CopyFiles@2
