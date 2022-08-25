@@ -325,6 +325,14 @@ function buildLatestImages() {
 
 	createImageNameWithReleaseTag $builtImageName
 
+	# retag latest image with no tag so that it by default can be pulled 4 separate ways:
+	# - build
+	# - build:latest
+	# - build:<releaseTag>
+	# - build:<osType>-<osVersion>-<releaseTag>
+	docker tag $builtImageName "$ACR_BUILD_IMAGES_REPO"
+	createImageNameWithReleaseTag $ACR_BUILD_IMAGES_REPO
+
 	echo
 	echo "$builtImageName image history"
 	docker history $builtImageName

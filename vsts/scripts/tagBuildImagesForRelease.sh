@@ -45,6 +45,7 @@ function tagBuildImage() {
     echo -------------------------------------------------------------------------------
 }
 
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:debian-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "debian-stretch" "debian-stretch-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-debian-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "lts-versions-debian-stretch" "lts-versions-debian-stretch-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "lts-versions-debian-buster" "lts-versions-debian-buster-$RELEASE_TAG_NAME"
