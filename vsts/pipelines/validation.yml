@@ -71,7 +71,7 @@ jobs:
     - template: templates/_buildTemplate.yml
       parameters:
           imageType: ${{ buildImage.value }}
-          storageAccountUrl: ${{ parameters.storageAccountUrl }}
+          storageAccountUrl: ${{ storageAccountUrl }}
 
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
@@ -91,6 +91,6 @@ jobs:
     displayName: 'Set variables'
   - template: templates/_buildTemplate.yml
     parameters:
-        storageAccountUrl: ${{ parameters.storageAccountUrl }}
+        storageAccountUrl: ${{ storageAccountUrl }}
 
 trigger: none
