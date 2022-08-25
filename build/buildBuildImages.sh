@@ -362,7 +362,7 @@ function buildVsoFocalImage() {
 	echo "$builtImageName image history"
 	docker history $builtImageName
 
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:ubuntu-vso-focal"
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:vso-ubuntu-focal"
 }
 
 function buildCliImage() {

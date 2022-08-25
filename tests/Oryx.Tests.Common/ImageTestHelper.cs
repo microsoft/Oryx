@@ -441,7 +441,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string GitHubActionsBusterBaseWithEnv = "github-actions-debian-buster-base-withenv";
         public const string GitHubActionsBullseyeBaseWithEnv = "github-actions-debian-bullseye-base-withenv";
         public const string Vso = "vso";
-        public const string VsoUbuntu = "ubuntu-vso-focal";
+        public const string VsoUbuntu = "vso-ubuntu-focal";
         public const string BuildRepository = "build";
         public const string PackRepository = "pack";
         public const string CliRepository = "cli";

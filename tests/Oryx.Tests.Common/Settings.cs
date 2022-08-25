@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string CliBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/cli:debian-stretch";
         public const string CliBusterBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/cli-buster:debian-buster";
         public const string LtsVerionsBusterBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-debian-buster";
-        public const string VsoUbuntuBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:ubuntu-vso-focal";
+        public const string VsoUbuntuBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:vso-ubuntu-focal";
 
         public const string RemoveTestContainersEnvironmentVariableName = "ORYX_REMOVE_TEST_CONTAINERS";
 

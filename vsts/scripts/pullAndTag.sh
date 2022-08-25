@@ -48,7 +48,7 @@ tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-debian-bul
 tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-stretch"
 tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-buster"
 tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-bullseye"
-tagBuildImageForIntegrationTest "$imagefilter/build" "ubuntu-vso-focal"
+tagBuildImageForIntegrationTest "$imagefilter/build" "vso-ubuntu-focal"
 tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-buster"
 tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-stretch"
 tagBuildImageForIntegrationTest "$imagefilter/cli-buster" "debian-buster"
