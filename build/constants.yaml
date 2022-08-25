@@ -216,6 +216,7 @@
     bash: /bin/bash
     benv: /opt/oryx/benv
     pre-run-command-env-var-name: PRE_RUN_COMMAND
+    app-svc-file-name: appsvc.yaml
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator.Common
