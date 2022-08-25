@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
 
         private const string _buildRepository = ImageTestHelperConstants.BuildRepository;
         private const string _packRepository = ImageTestHelperConstants.PackRepository;
-        private const string _latestTag = ImageTestHelperConstants.LatestTag;
+        private const string _latestTag = ImageTestHelperConstants.LatestStretchTag;
         private const string _ltsVersionsTag = ImageTestHelperConstants.LtsVersionsStretch;
 
         private readonly ITestOutputHelper _output;

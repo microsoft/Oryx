@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory (Skip = "Bug 1410367")]
         [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData(ImageTestHelperConstants.LatestTag)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public async Task NodeApp_PostgreSqlDBAsync(string imageTag)
         {
             await RunTestAsync(

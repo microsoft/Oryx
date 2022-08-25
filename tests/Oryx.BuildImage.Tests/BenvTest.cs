@@ -28,8 +28,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "latest")]
         public void PipelineTestInvocationLatest()
         {
-            InstalledNodeModulesExecutablesAreOnPath(ImageTestHelperConstants.LatestTag);
-            InstalledPythonExecutablesAreOnPath(ImageTestHelperConstants.LatestTag);
+            InstalledNodeModulesExecutablesAreOnPath(ImageTestHelperConstants.LatestStretchTag);
+            InstalledPythonExecutablesAreOnPath(ImageTestHelperConstants.LatestStretchTag);
             var imageTestHelper = new ImageTestHelper();
             BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
                 imageTestHelper.GetBuildImage());
@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             var imageTestHelper = new ImageTestHelper();
             BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
-                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu));
+                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
         }
 
         [Theory, Trait("category", "latest")]
@@ -176,7 +176,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -201,7 +201,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -229,7 +229,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -260,7 +260,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -275,7 +275,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(ImageTestHelperConstants.LatestTag)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
         public void InstalledNodeModulesExecutablesAreOnPath(string tag)
         {
@@ -301,7 +301,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(ImageTestHelperConstants.LatestTag)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
         public void InstalledPythonExecutablesAreOnPath(string tag)
         {
@@ -376,7 +376,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert
@@ -399,7 +399,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu);
+            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal);
             var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
 
             // Assert

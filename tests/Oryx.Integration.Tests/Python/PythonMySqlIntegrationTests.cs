@@ -21,11 +21,11 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug 1410367") ]
-        [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.LatestTag)]
+        [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.LatestStretchTag)]
         [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.LatestTag)]
+        [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.LatestStretchTag)]
         [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData("mysql-mysqlclient-sample", ImageTestHelperConstants.LatestTag)]
+        [InlineData("mysql-mysqlclient-sample", ImageTestHelperConstants.LatestStretchTag)]
         [InlineData("mysql-mysqlclient-sample", ImageTestHelperConstants.GitHubActionsStretch)]
         public async Task Python37App_MySqlDB_UsingPyMySql_UsingLtsVersionsBuildImageAsync(
             string sampleAppName,

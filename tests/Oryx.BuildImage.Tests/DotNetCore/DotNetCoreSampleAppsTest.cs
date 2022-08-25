@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLatest()
         {
             Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.BuildImageName);
-            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.LatestTag);
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.LatestStretchTag);
         }
 
         [Fact, Trait("category", "ltsversions")]
@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
-            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.VsoUbuntu);
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.VsoFocal);
         }
 
         [Fact, Trait("category", "githubactions")]
@@ -1032,8 +1032,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
         [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
-        [InlineData(ImageTestHelperConstants.VsoUbuntu)]
-        [InlineData(ImageTestHelperConstants.LatestTag)]
+        [InlineData(ImageTestHelperConstants.VsoFocal)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public void GDIPlusLibrary_IsPresentInTheImage(string tagName)
         {
             // Arrange

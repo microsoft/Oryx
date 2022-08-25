@@ -28,8 +28,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             var imageTestHelper = new ImageTestHelper();
             Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
-                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu));
-            GeneratesScript_AndBuildRailsApp(imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu));
+                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
+            GeneratesScript_AndBuildRailsApp(imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
         }
 
         [Fact, Trait("category", "jamstack")]
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu),
+                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -149,7 +149,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu),
+                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await Task.WhenAll(
                 PhpApp_UsingPdoAsync(phpVersion80, ImageTestHelperConstants.GitHubActionsStretch),
                 PhpApp_UsingPdoAsync(phpVersion80, ImageTestHelperConstants.GitHubActionsBuster),
-                PhpApp_UsingPdoAsync(phpVersion80, ImageTestHelperConstants.LatestTag));
+                PhpApp_UsingPdoAsync(phpVersion80, ImageTestHelperConstants.LatestStretchTag));
         }
 
         [Fact, Trait("category", "php-74")]
@@ -46,16 +46,16 @@ namespace Microsoft.Oryx.Integration.Tests
             await Task.WhenAll(
                 PhpApp_UsingPdoAsync(phpVersion74, ImageTestHelperConstants.GitHubActionsStretch),
                 PhpApp_UsingPdoAsync(phpVersion74, ImageTestHelperConstants.GitHubActionsBuster),
-                PhpApp_UsingPdoAsync(phpVersion74, ImageTestHelperConstants.LatestTag));
+                PhpApp_UsingPdoAsync(phpVersion74, ImageTestHelperConstants.LatestStretchTag));
         }
 
         [Theory]
         [InlineData("7.4", ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData("7.4", ImageTestHelperConstants.GitHubActionsBuster)]
-        [InlineData("7.4", ImageTestHelperConstants.LatestTag)]
+        [InlineData("7.4", ImageTestHelperConstants.LatestStretchTag)]
         [InlineData("8.0", ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData("8.0", ImageTestHelperConstants.GitHubActionsBuster)]
-        [InlineData("8.0", ImageTestHelperConstants.LatestTag)]
+        [InlineData("8.0", ImageTestHelperConstants.LatestStretchTag)]
         public async Task PhpApp_UsingPdoAsync(string phpVersion, string imageTag)
         {
             // Arrange

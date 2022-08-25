@@ -31,8 +31,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLatest()
         {
             GeneratesScript_AndBuilds(Settings.BuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.LatestTag);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LatestTag);
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.LatestStretchTag);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LatestStretchTag);
         }
 
         [Fact, Trait("category", "ltsversions")]
@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
-            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.VsoUbuntu);
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.VsoFocal);
         }
 
         [Fact, Trait("category", "githubactions")]
@@ -194,7 +194,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
         [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
-        [InlineData(ImageTestHelperConstants.LatestTag)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public void DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(string imageTag)
         {
             // Arrange
@@ -815,7 +815,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoUbuntu),
+                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -1465,8 +1465,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
-        [InlineData(ImageTestHelperConstants.VsoUbuntu)]
-        [InlineData(ImageTestHelperConstants.LatestTag)]
+        [InlineData(ImageTestHelperConstants.VsoFocal)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName)
         {
             // Arrange

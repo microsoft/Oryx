@@ -378,7 +378,7 @@ function buildCliImage() {
 		builtImageName="$builtImageName:debian-$debianFlavor"
 	else
 		builtImageName="$builtImageName-$debianFlavor:debian-$debianFlavor"
-		devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO-buster"
+		devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO-$debianFlavor"
 	fi
 	echo "dev image tag: "$devImageTag
 	echo "built image name: "$builtImageName

@@ -1,8 +1,11 @@
-FROM oryxdevmcr.azurecr.io/private/oryx/php-8.1
+# DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
+FROM php:8.1-bullseye
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 8.1.6
 
 RUN a2enmod rewrite expires include deflate remoteip headers
+#Bake in client certificate path into image to avoid downloading it
+ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 
 ENV APACHE_RUN_USER www-data
 # Edit the default DocumentRoot setting

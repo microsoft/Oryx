@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData(ImageTestHelperConstants.LatestTag)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public async Task NodeApp_MicrosoftSqlServerDBAsync(string imageTag)
         {
             // Arrange

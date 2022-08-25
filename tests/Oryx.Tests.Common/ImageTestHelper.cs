@@ -39,14 +39,14 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _gitHubActionsBusterBaseWithEnv = ImageTestHelperConstants.GitHubActionsBusterBaseWithEnv;
         private const string _gitHubActionsBullseyeBaseWithEnv = ImageTestHelperConstants.GitHubActionsBullseyeBaseWithEnv;
         private const string _vso = ImageTestHelperConstants.Vso;
-        private const string _vsoUbuntu = ImageTestHelperConstants.VsoUbuntu;
+        private const string _vsoUbuntu = ImageTestHelperConstants.VsoFocal;
         private const string _buildRepository = ImageTestHelperConstants.BuildRepository;
         private const string _packRepository = ImageTestHelperConstants.PackRepository;
         private const string _cliRepository = ImageTestHelperConstants.CliRepository;
         private const string _cliBusterRepository = ImageTestHelperConstants.CliBusterRepository;
         private const string _cliStretchTag = ImageTestHelperConstants.CliStretchTag;
         private const string _cliBusterTag = ImageTestHelperConstants.CliBusterTag;
-        private const string _latestTag = ImageTestHelperConstants.LatestTag;
+        private const string _latestTag = ImageTestHelperConstants.LatestStretchTag;
         private const string _ltsVersionsStretch = ImageTestHelperConstants.LtsVersionsStretch;
         private const string _ltsVersionsBuster = ImageTestHelperConstants.LtsVersionsBuster;
 
@@ -441,14 +441,14 @@ namespace Microsoft.Oryx.Tests.Common
         public const string GitHubActionsBusterBaseWithEnv = "github-actions-debian-buster-base-withenv";
         public const string GitHubActionsBullseyeBaseWithEnv = "github-actions-debian-bullseye-base-withenv";
         public const string Vso = "vso";
-        public const string VsoUbuntu = "vso-ubuntu-focal";
+        public const string VsoFocal = "vso-ubuntu-focal";
         public const string BuildRepository = "build";
         public const string PackRepository = "pack";
         public const string CliRepository = "cli";
         public const string CliBusterRepository = "cli-buster";
         public const string CliStretchTag = "debian-stretch";
         public const string CliBusterTag = "debian-buster";
-        public const string LatestTag = "debian-stretch";
+        public const string LatestStretchTag = "debian-stretch";
         public const string LtsVersionsStretch = "lts-versions-debian-stretch";
         public const string LtsVersionsBuster = "lts-versions-debian-buster";
     }
