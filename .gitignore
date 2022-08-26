@@ -284,3 +284,6 @@ src/startupscriptgenerator/src/**/__debug_bin
 src/startupscriptgenerator/src/**/run.sh
 !**/dynamic/Dockerfile
 !**/dynamic/buster.Dockerfile
+/images/runtime/python/3.10/bullseye.Dockerfile
+/images/runtime/python/3.7/bullseye.Dockerfile
+/images/runtime/python/3.8/bullseye.Dockerfile
