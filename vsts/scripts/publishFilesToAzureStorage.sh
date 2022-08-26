@@ -9,7 +9,7 @@ set -ex
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
 commit=$(git rev-parse HEAD)
-storageAccount="$1"
+storageAccountName="$1"
 
 uploadFiles() {
     local platform="$1"
@@ -46,7 +46,7 @@ uploadFiles() {
             --name $fileName \
             --file "$fileToUpload" \
             --container-name $platform \
-            --account-name $storageAccount \
+            --account-name $storageAccountName \
             --sas-token $sasToken \
             --metadata \
                 Buildnumber="$BUILD_BUILDNUMBER" \
@@ -60,7 +60,7 @@ uploadFiles() {
             --name $fileName \
             --file "$fileToUpload" \
             --container-name $platform \
-            --account-name $storageAccount \
+            --account-name $storageAccountName \
             --sas-token $sasToken \
             --metadata \
                 Buildnumber="$BUILD_BUILDNUMBER" \
@@ -72,7 +72,7 @@ uploadFiles() {
     done
 }
 
-storageAccountUrl="https://$storageAccount.blob.core.windows.net"
+storageAccountUrl="https://$storageAccountName.blob.core.windows.net"
 sasToken=""
 
 if [ "$storageAccountUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]; then

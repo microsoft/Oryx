@@ -1,7 +1,7 @@
 parameters:
     platformName: ''
     debianFlavor: ''
-    destinationSdkStorageAccount: ''
+    destinationSdkStorageAccountName: ''
   
 steps:
 - checkout: self
@@ -21,7 +21,7 @@ steps:
   displayName: 'Building platform binaries'
   inputs:
     scriptPath: ./build/buildPlatformBinaries.sh
-    args: ${{ parameters.platformName }} ${{ parameters.debianFlavor }} https://${{ parameters.destinationSdkStorageAccount }}.blob.core.windows.net
+    args: ${{ parameters.platformName }} ${{ parameters.debianFlavor }} https://${{ parameters.destinationSdkStorageAccountName }}.blob.core.windows.net
 
 - task: CopyFiles@2
   displayName: 'Copy artifacts from source repo to agent artifacts folder'

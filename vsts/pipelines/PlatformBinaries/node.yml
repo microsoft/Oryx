@@ -2,8 +2,8 @@ variables:
   - group: Oryx
 
 parameters:
-- name: destinationStorageAccount
-  displayName: Destination Storage Account
+- name: destinationStorageAccountName
+  displayName: Destination Storage Account Name
   type: string
   default: oryxsdksdev
 
@@ -21,6 +21,7 @@ stages:
       parameters:
         platformName: 'nodejs'
         debianFlavor: 'bullseye'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
   - job: Node_Buster
     timeoutInMinutes: 250
@@ -33,6 +34,7 @@ stages:
       parameters:
         platformName: 'nodejs'
         debianFlavor: 'buster'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
   - job: Node_Stretch
     timeoutInMinutes: 250
@@ -45,6 +47,7 @@ stages:
       parameters:
         platformName: 'nodejs'
         debianFlavor: 'stretch'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
   
   - job: Node_Ubuntu
     timeoutInMinutes: 250
@@ -57,6 +60,7 @@ stages:
       parameters:
         platformName: 'nodejs'
         debianFlavor: 'focal-scm'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
 - stage: Release
   dependsOn: Build
@@ -71,7 +75,7 @@ stages:
     steps:
     - template: ../templates/_platformBinariesReleaseTemplate.yml
       parameters:
-        destinationSdkStorageAccount: '${{ parameters.destinationStorageAccount }}'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
 trigger:
   batch: true

@@ -2,8 +2,8 @@ variables:
   - group: Oryx
 
 parameters:
-- name: destinationStorageAccount
-  displayName: Destination Storage Account
+- name: destinationStorageAccountName
+  displayName: Destination Storage Account Name
   type: string
   default: oryxsdksdev
 
@@ -21,7 +21,7 @@ stages:
       parameters:
         platformName: 'dotnet'
         debianFlavor: 'bullseye'
-        destinationSdkStorageAccount: '${{ parameters.destinationStorageAccount }}'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
   - job: DotNetCore_Buster
     timeoutInMinutes: 250
@@ -34,7 +34,7 @@ stages:
       parameters:
         platformName: 'dotnet'
         debianFlavor: 'buster'
-        destinationSdkStorageAccount: '${{ parameters.destinationStorageAccount }}'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
   - job: DotNetCore_Stretch
     timeoutInMinutes: 250
@@ -47,7 +47,7 @@ stages:
       parameters:
         platformName: 'dotnet'
         debianFlavor: 'stretch'
-        destinationSdkStorageAccount: '${{ parameters.destinationStorageAccount }}'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
         
   - job: DotNetCore_Ubuntu
     timeoutInMinutes: 250
@@ -60,7 +60,7 @@ stages:
       parameters:
         platformName: 'dotnet'
         debianFlavor: 'focal-scm'
-        destinationSdkStorageAccount: '${{ parameters.destinationStorageAccount }}'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
 - stage: Release
   dependsOn: Build
@@ -75,7 +75,7 @@ stages:
     steps:
     - template: ../templates/_platformBinariesReleaseTemplate.yml
       parameters:
-        destinationSdkStorageAccount: '${{ parameters.destinationStorageAccount }}'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
 trigger:
   batch: true
