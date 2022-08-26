@@ -34,13 +34,22 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
             libcurl4 \
             libssl1.1 \
         && rm -rf /var/lib/apt/lists/* ; \
-    else \
+    elif [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
       apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu63 \
             libcurl4 \
             libssl1.1 \
-             && rm -rf /var/lib/apt/lists/* ; \
+        && rm -rf /var/lib/apt/lists/* ; \
+    else \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libcurl3 \
+            libicu57 \
+            liblttng-ust0 \
+            libssl1.0.2 \
+        && rm -rf /var/lib/apt/lists/* ; \
+  
     fi
 
 RUN apt-get update \
