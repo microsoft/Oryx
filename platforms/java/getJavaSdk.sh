@@ -7,6 +7,7 @@ source $REPO_DIR/platforms/__common.sh
 javaPlatformDir="$REPO_DIR/platforms/java"
 hostJavaArtifactsDir="$volumeHostDir/java"
 debianFlavor="$1"
+sdkStorageAccountUrl="$2"
 mkdir -p "$hostJavaArtifactsDir"
 
 rm -rf /tmp/java
@@ -102,7 +103,7 @@ downloadJavaSdk()
         return
     fi
 
-    if shouldBuildSdk java $tarFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk java; then
+    if shouldBuildSdk java $tarFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk java; then
         local baseUrl="https://github.com/AdoptOpenJDK/openjdk${majorVersion}-binaries/releases/download"
         if [ "$majorVersion" == "10" ] && [ "$JDK_BUILD_NUMBER" == "13" ]; then
             url="$baseUrl/jdk-10.0.2%2B13.1/OpenJDK10U-jdk_x64_linux_hotspot_10.0.2_13.tar.gz"
