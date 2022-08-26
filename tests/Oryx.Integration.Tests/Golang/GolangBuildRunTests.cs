@@ -39,6 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
+            var imageTestHelper = new ImageTestHelper();
             var runtimeImageScript = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
@@ -51,7 +52,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"oryxdevmcr.azurecr.io/public/oryx/build:full-{debianFlavor}",
+                imageName: $"{imageTestHelper.GetBuildImage("full")}-{debianFlavor}",
                 output: _output,
                 volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                 environmentVariables: null,

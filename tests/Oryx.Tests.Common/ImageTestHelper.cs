@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _latestTag = "latest";
         private const string _ltsVersionsTag = "lts-versions";
         private const string _ltsVersionsBuster = "lts-versions-buster";
+        private const string _full = "full";
 
         private readonly ITestOutputHelper _output;
         private string _repoPrefix;
@@ -211,6 +212,11 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetCliImage(_cliBusterRepository);
             }
+            else if (string.Equals(tag, _full))
+            {
+                return GetFullBuildImage();
+            }
+
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
 
@@ -345,6 +351,11 @@ namespace Microsoft.Oryx.Tests.Common
             }
 
             return _tagSuffix;
+        }
+
+        private string GetFullBuildImage()
+        {
+            return $"{_repoPrefix}/{_buildRepository}:{_full}";
         }
     }
 }
