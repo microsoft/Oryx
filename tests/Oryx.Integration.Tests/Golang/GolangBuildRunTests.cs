@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"{imageTestHelper.GetBuildImage("full")}-{debianFlavor}",
+                imageName: $"{imageTestHelper.GetBuildImage($"full-{debianFlavor}")}",
                 output: _output,
                 volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                 environmentVariables: null,
