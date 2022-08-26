@@ -79,7 +79,7 @@ if [ "$storageAccountUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
 elif [ "$storageAccountUrl" == $DEV_SDK_STORAGE_BASE_URL ]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
-elif [ "$1" == $PAULDORSCH_SDK_STORAGE_BASE_URL ]; then
+elif [ "$storageAccountUrl" == $PAULDORSCH_SDK_STORAGE_BASE_URL ]; then
     sasToken=$PAULDORSCH_PERSONAL_STORAGE_SAS_TOKEN
 else
 	echo "Error: $1 is an invalid destination storage account."
