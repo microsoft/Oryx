@@ -33,6 +33,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Test Dev storage account'
+  env:
+    ORYX_TEST_SDK_STORAGE_URL: ${{ parameters.destinationSdkStorageAccount }}
   inputs:
     scriptPath: ./build/testIntegration.sh
     args: StorageAccountTests=Dev
