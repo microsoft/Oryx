@@ -13,6 +13,7 @@ source $REPO_DIR/platforms/__common.sh
 dotNetPlatformDir="$REPO_DIR/platforms/dotnet"
 targetDir="$volumeHostDir/dotnet"
 debianFlavor="$1"
+sdkStorageAccountUrl="$2"
 mkdir -p "$targetDir"
 
 getDotNetCoreSdk() {
@@ -39,7 +40,7 @@ getDotNetCoreSdk() {
 			runtimeVersionMetadataName="$DOTNET_RUNTIME_VERSION_METADATA_NAME"
 	fi
 
-	if shouldBuildSdk dotnet $downloadedFile || shouldOverwriteSdk || shouldOverwritePlatformSdk dotnet; then
+	if shouldBuildSdk dotnet $downloadedFile $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk dotnet; then
 		echo "Downloading .NET Core SDK version '$sdkVersion'..."
 		echo
 

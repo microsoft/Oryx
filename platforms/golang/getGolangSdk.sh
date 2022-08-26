@@ -13,6 +13,7 @@ source $REPO_DIR/platforms/__common.sh
 golangPlatformDir="$REPO_DIR/platforms/golang"
 targetDir="$volumeHostDir/golang"
 debianFlavor="$1"
+sdkStorageAccountUrl="$2"
 mkdir -p "$targetDir"
 
 getGolangSdk() {
@@ -37,7 +38,7 @@ getGolangSdk() {
 		sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 	fi
 
-	if shouldBuildSdk golang $downloadedFile || shouldOverwriteSdk || shouldOverwritePlatformSdk golang; then
+	if shouldBuildSdk golang $downloadedFile $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk golang; then
 		echo "Downloading golang SDK version '$sdkVersion'..."
 		echo
 
