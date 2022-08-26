@@ -1,6 +1,6 @@
 parameters:
   - name: storageAccountUrl
-    displayName: Storage Account Url
+    displayName: SDK storage account URL for testing
     type: string
     default: https://oryxsdksdev.blob.core.windows.net
   - name: buildImages

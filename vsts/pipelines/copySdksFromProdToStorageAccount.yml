@@ -2,8 +2,8 @@ variables:
 - group: Oryx
 
 parameters:
-- name: destinationStorageAccount
-  displayName: Destination Storage Account
+- name: destinationStorageAccountName
+  displayName: Destination Storage Account Name
   type: string
   default: oryxsdksdev
 - name: dryRun
@@ -39,7 +39,7 @@ jobs:
           PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
         inputs:
           scriptPath: ./vsts/scripts/copySdksFromProdToStorageAccount.sh
-          args:  https://${{ parameters.destinationStorageAccount }}.blob.core.windows.net ${{ parameters.dryRun }}
+          args:  https://${{ parameters.destinationStorageAccountName }}.blob.core.windows.net ${{ parameters.dryRun }}
 
 trigger: none
 pr: none

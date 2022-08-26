@@ -1,6 +1,6 @@
 parameters:
   - name: storageAccountUrl
-    displayName: Storage Account Url
+    displayName: SDK storage account URL for production images and testing
     type: string
     default: https://oryx-cdn.microsoft.io
     values:

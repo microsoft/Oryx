@@ -1,5 +1,5 @@
 parameters:
-  destinationSdkStorageAccount: 'oryxsdksdev'
+  destinationSdkStorageAccountName: 'oryxsdksdev'
 
 steps:
 
@@ -23,7 +23,7 @@ steps:
     SANDBOX_STORAGE_SAS_TOKEN: $(SANDBOX-STORAGE-SAS-TOKEN)
   inputs:
     scriptPath: ./vsts/scripts/publishFilesToAzureStorage.sh
-    args: ${{ parameters.destinationSdkStorageAccount }}
+    args: ${{ parameters.destinationSdkStorageAccountName }}
 
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 3.1.x'
@@ -33,7 +33,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Test Dev storage account'
   env:
-    ORYX_TEST_SDK_STORAGE_URL: ${{ parameters.destinationSdkStorageAccount }}
+    ORYX_TEST_SDK_STORAGE_URL: https://${{ parameters.destinationSdkStorageAccountName }}.blob.core.windows.net
   inputs:
     scriptPath: ./build/testIntegration.sh
     args: StorageAccountTests=Dev
