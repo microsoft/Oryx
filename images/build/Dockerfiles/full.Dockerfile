@@ -2,7 +2,7 @@ ARG DEBIAN_FLAVOR
 
 ### oryx run-script image
 # DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
-FROM golang:1.15-${DEBIAN_FLAVOR} as startupScriptGens
+FROM golang:1.19-${DEBIAN_FLAVOR} as startupScriptGens
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -27,8 +27,15 @@ COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tm
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/ /opt/
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
-RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
         apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu67 \
+            libcurl4 \
+            libssl1.1 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    elif [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+      apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu63 \
             libcurl4 \
@@ -42,6 +49,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
             liblttng-ust0 \
             libssl1.0.2 \
         && rm -rf /var/lib/apt/lists/* ; \
+  
     fi
 
 RUN apt-get update \
