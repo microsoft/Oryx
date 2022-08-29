@@ -301,7 +301,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
-                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp31}")
+                $"--platform-version {FinalStretchVersions.FinalStretchNetCoreApp31RunTimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
@@ -321,7 +321,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion), 
+                        string.Format(SdkVersionMessageFormat, FinalStretchVersions.FinalStretchDotNetCore31SdkVersion), 
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -340,7 +340,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddCommand($"echo RandomText >> {appDir}/Program.cs") // triggers a failure
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
-                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp31}")
+                $"--platform-version {FinalStretchVersions.FinalStretchNetCoreApp31RunTimeVersion}")
                 .ToString();
             // Regex will match:
             // "yyyy-mm-dd hh:mm:ss"|ERROR|Micro
@@ -414,7 +414,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform dotnet " +
-                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp60}")
+                $"--platform-version {FinalStretchVersions.FinalStretchNetCoreApp60RunTimeVersion}")
                 .ToString();
 
             // Act
@@ -876,7 +876,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion),
+                        string.Format(SdkVersionMessageFormat, FinalStretchVersions.FinalStretchDotNetCore31SdkVersion),
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -924,7 +924,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-        //[InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion), Trait("category", "latest")]
         public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
         {
             // Arrange

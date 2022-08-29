@@ -110,6 +110,9 @@
     final-stretch-net-core-app-60-run-time-version: 6.0.6
     final-stretch-aspnet-core-app-60-run-time-version: 6.0.6
   outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
     - type: shell
       directory: build
       file-name-prefix: __
