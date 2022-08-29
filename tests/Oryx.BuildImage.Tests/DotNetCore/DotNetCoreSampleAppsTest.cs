@@ -432,7 +432,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNet60SdkVersion), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, FinalStretchVersions.FinalStretchDotNet60SdkVersion), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
