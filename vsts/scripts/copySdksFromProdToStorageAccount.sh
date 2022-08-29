@@ -79,7 +79,7 @@ if [ "$1" == $SANDBOX_SDK_STORAGE_BASE_URL ]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
 elif [ "$1" == $DEV_SDK_STORAGE_BASE_URL ]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
-else [ "$1" == $PAULDORSCH_SDK_STORAGE_BASE_URL ]; then
+else
     sasToken=$PERSONAL_STORAGE_SAS_TOKEN
 fi
 
