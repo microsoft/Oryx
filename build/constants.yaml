@@ -103,11 +103,11 @@
 - name: final-stretch-versions
   constants:
     final-stretch-dot-net-core-31-sdk-version: 3.1.420
-    final-stretch-net-core-app-31-run-time-version: 3.1.26
+    final-stretch-dot-net-core-app-31-run-time-version: 3.1.26
     final-stretch-aspnet-core-app-31-run-time-version: 3.1.26
 
     final-stretch-dot-net-60-sdk-version: 6.0.301
-    final-stretch-net-core-app-60-run-time-version: 6.0.6
+    final-stretch-dot-net-core-app-60-run-time-version: 6.0.6
     final-stretch-aspnet-core-app-60-run-time-version: 6.0.6
   outputs:
     - type: csharp

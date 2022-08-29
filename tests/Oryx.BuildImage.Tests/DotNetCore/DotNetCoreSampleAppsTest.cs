@@ -301,7 +301,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
-                $"--platform-version {FinalStretchVersions.FinalStretchNetCoreApp31RunTimeVersion}")
+                $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
@@ -340,7 +340,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddCommand($"echo RandomText >> {appDir}/Program.cs") // triggers a failure
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
-                $"--platform-version {FinalStretchVersions.FinalStretchNetCoreApp31RunTimeVersion}")
+                $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion}")
                 .ToString();
             // Regex will match:
             // "yyyy-mm-dd hh:mm:ss"|ERROR|Micro
@@ -414,7 +414,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform dotnet " +
-                $"--platform-version {FinalStretchVersions.FinalStretchNetCoreApp60RunTimeVersion}")
+                $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion}")
                 .ToString();
 
             // Act
@@ -852,7 +852,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     SdkStorageConstants.DevSdkStorageBaseUrl)
                 .AddBuildCommand(
                 $"{appDir}/MessageFunction -o {appOutputDir} --apptype functions --platform dotnet " +
-                $"--platform-version 3.1")
+                $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .ToString();
