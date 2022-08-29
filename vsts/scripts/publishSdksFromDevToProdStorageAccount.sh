@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -ex
+set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
@@ -41,10 +41,9 @@ function copyBlob() {
         echo
         echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
         if [ $dryRun == "False"]; then
-            # "$azCopyDir/azcopy" copy \
-            #     "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
-            #     "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true
-            echo "Actually overwriting $blobName..."
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true
         else
             "$azCopyDir/azcopy" copy \
                 "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
@@ -57,10 +56,9 @@ function copyBlob() {
         echo
         echo "Blob '$blobName' does not exist in Prod storage container '$platformName'. Copying it..."
         if [ $dryRun == "False"]; then
-            # "$azCopyDir/azcopy" copy \
-            #     "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
-            #     "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
-            echo "Actually copying $blobName..."
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
         else
             "$azCopyDir/azcopy" copy \
                 "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
