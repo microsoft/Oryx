@@ -11,6 +11,12 @@ source $REPO_DIR/platforms/__common.sh
 
 azCopyDir="/tmp/azcopy-tool"
 
+dryRun=$1
+if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then
+	echo "Error: Dry run must be True or False. Was: '$dryRun'"
+	exit 1
+fi
+
 function blobExistsInProd() {
 	local containerName="$1"
 	local blobName="$2"
@@ -34,18 +40,32 @@ function copyBlob() {
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName; then
         echo
         echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
-        "$azCopyDir/azcopy" copy \
-            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true
+        if [ $dryRun == "False"]; then
+            # "$azCopyDir/azcopy" copy \
+            #     "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+            #     "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true
+            echo "Actually overwriting $blobName..."
+        else
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true --dry-run
+        fi
     elif blobExistsInProd $platformName $blobName; then
         echo
         echo "Blob '$blobName' already exists in Prod storage container '$platformName'. Skipping copying it..."
     else
         echo
         echo "Blob '$blobName' does not exist in Prod storage container '$platformName'. Copying it..."
-        "$azCopyDir/azcopy" copy \
-            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
+        if [ $dryRun == "False"]; then
+            # "$azCopyDir/azcopy" copy \
+            #     "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+            #     "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
+            echo "Actually copying $blobName..."
+        else
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --dry-run
+        fi
     fi
 }
 
