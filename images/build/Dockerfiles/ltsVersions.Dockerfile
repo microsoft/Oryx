@@ -113,6 +113,7 @@ RUN set -ex \
     && find $nugetPackagesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
+    && . $buildDir/__finalStretchVersions.sh \
     && ln -s $DOT_NET_CORE_21_SDK_VERSION 2-lts \
     && ln -s $FINAL_STRETCH_DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s 3-lts lts \
