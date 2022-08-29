@@ -46,7 +46,7 @@ stages:
   - stage: PublishSDKsToProduction
     jobs:
     - deployment: PublishSDKsToProduction
-      environment: oryx-prod
+      environment: oryx-prod # maps to the oryx-prod ADO environment, which requires manual approval to begin this stage
       pool:
         name: AzurePipelines-EO
         demands:
