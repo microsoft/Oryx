@@ -2,9 +2,9 @@ variables:
 - group: Oryx
 
 stages:
-  - stage: Component Detection
+  - stage: ComponentDetection
     jobs:
-    - job: Component Detection
+    - job: ComponentDetection
       pool:
         name: AzurePipelines-EO
         demands:
@@ -18,9 +18,9 @@ stages:
         inputs:
           ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
-  - stage: Dry Run
+  - stage: DryRun
     jobs:
-    - job: Dry Run
+    - job: DryRun
       pool:
         name: AzurePipelines-EO
         demands:
@@ -43,10 +43,10 @@ stages:
           scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh
           args: True # dry run
 
-  - stage: Publish SDKs To Production
+  - stage: PublishSDKsToProduction
     jobs:
-    - deployment: Publish SDKs To Production
-      environment: 'oryx-prod'
+    - deployment: PublishSDKsToProduction
+      environment: oryx-prod
       pool:
         name: AzurePipelines-EO
         demands:
