@@ -71,6 +71,7 @@ stages:
               inputs:
                 scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh
                 args: False # no dry run
+
             - task: ShellScript@2
               displayName: 'Test prod storage account'
               inputs:
