@@ -13,6 +13,7 @@ source $REPO_DIR/platforms/__common.sh
 nodePlatformDir="$REPO_DIR/platforms/nodejs"
 hostNodeArtifactsDir="$volumeHostDir/nodejs"
 debianFlavor="$1"
+sdkStorageAccountUrl="$2"
 mkdir -p "$hostNodeArtifactsDir"
 
 builtNodeImage=false
@@ -36,7 +37,7 @@ getNode() {
 			sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 	fi
 
-	if shouldBuildSdk nodejs $tarFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk nodejs; then
+	if shouldBuildSdk nodejs $tarFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk nodejs; then
 		echo "Getting Node version '$version'..."
 		echo
 

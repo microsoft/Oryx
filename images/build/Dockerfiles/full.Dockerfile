@@ -20,7 +20,9 @@ RUN ./build.sh golang     /opt/startupcmdgen/golang
 ### oryx build image
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
 ARG DEBIAN_FLAVOR
+ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE}
 
 # docker multi-stage builds
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
@@ -83,6 +85,5 @@ RUN set -ex \
     # enables custom logging
     && cp -f $imagesDir/build/logger.sh /opt/oryx/logger
 
-ENV ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io"
 ENV ENABLE_DYNAMIC_INSTALL="true"
 ENV PATH="$PATH:/opt/oryx"

@@ -14,6 +14,7 @@ source $REPO_DIR/build/__pythonVersions.sh
 pythonPlatformDir="$REPO_DIR/platforms/python"
 targetDir="$volumeHostDir/python"
 debianFlavor=$1
+sdkStorageAccountUrl="$2"
 mkdir -p "$targetDir"
 
 builtPythonPrereqs=false
@@ -74,7 +75,7 @@ buildPython() {
 			sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 	fi
 
-	if shouldBuildSdk python $pythonSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk python; then
+	if shouldBuildSdk python $pythonSdkFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk python; then
 		buildPythonPrereqsImage
 		
 		echo "Building Python version '$version' in a docker image..."

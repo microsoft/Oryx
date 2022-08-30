@@ -158,11 +158,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
                 "exit 1; fi");
         }
 
+        /// <summary>
+        /// Append a command to the shell script that sets the ORYX_SDK_STORAGE_BASE_URL to the value
+        /// of ORYX_TEST_SDK_STORAGE_URL if ORYX_TEST_SDK_STORAGE_URL exists in the environment that is executing this code.
+        /// Otherwise, use the Oryx dev sdk storage account for testing.
+        /// This allows us to change the storage account that tests use without regenerating any images.
+        /// </summary>
         public ShellScriptBuilder AddDefaultTestEnvironmentVariables()
         {
-            return this.SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl);
+            var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
+
+            return testStorageAccountUrl != null
+                ? this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, testStorageAccountUrl)
+                : this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, SdkStorageConstants.DevSdkStorageBaseUrl);
         }
 
         public override string ToString()

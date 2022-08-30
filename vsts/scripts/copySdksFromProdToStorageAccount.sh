@@ -72,14 +72,12 @@ if [ ! -f "$azCopyDir/azcopy" ]; then
     $azCopyDir/azcopy --version
 fi
 
-destinationSdk=""
+destinationSdk="$1"
 sasToken=""
 
-if [ "$1" = $SANDBOX_SDK_STORAGE_BASE_URL ]; then
-    destinationSdk=$SANDBOX_SDK_STORAGE_BASE_URL
+if [ "$1" == $SANDBOX_SDK_STORAGE_BASE_URL ]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
-elif [ "$1" = $DEV_SDK_STORAGE_BASE_URL ]; then
-    destinationSdk=$DEV_SDK_STORAGE_BASE_URL
+elif [ "$1" == $DEV_SDK_STORAGE_BASE_URL ]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
 else
 	echo "Error: $1 is an invalid destination storage account url."

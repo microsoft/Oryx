@@ -232,6 +232,7 @@
     bash: /bin/bash
     benv: /opt/oryx/benv
     pre-run-command-env-var-name: PRE_RUN_COMMAND
+    app-svc-file-name: appsvc.yaml
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator.Common
@@ -281,6 +282,7 @@
   constants:
     enable-dynamic-install-key: ENABLE_DYNAMIC_INSTALL
     sdk-storage-base-url-key-name: ORYX_SDK_STORAGE_BASE_URL
+    testing-sdk-storage-url-key-name: ORYX_TEST_SDK_STORAGE_URL
     dev-sdk-storage-base-url: https://oryxsdksdev.blob.core.windows.net
     sandbox-sdk-storage-base-url: https://oryxsdkssandbox.blob.core.windows.net
     prod-sdk-storage-base-url: https://oryxsdksprod.blob.core.windows.net

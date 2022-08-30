@@ -14,6 +14,7 @@ source $REPO_DIR/build/__rubyVersions.sh
 rubyPlatformDir="$REPO_DIR/platforms/ruby"
 targetDir="$volumeHostDir/ruby"
 debianFlavor=$1
+sdkStorageAccountUrl="$2"
 mkdir -p "$targetDir"
 
 builtRubyPrereqs=false
@@ -50,7 +51,7 @@ buildRuby() {
 		sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 	fi 
 
-	if shouldBuildSdk ruby $rubySdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk ruby; then
+	if shouldBuildSdk ruby $rubySdkFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk ruby; then
 		if ! $builtRubyPrereqs; then
 			buildRubyPrereqsImage
 		fi

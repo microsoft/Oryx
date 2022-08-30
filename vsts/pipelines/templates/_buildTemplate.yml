@@ -2,7 +2,7 @@ parameters:
   ascName: oryxSP
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
-  imageType: null    
+  imageType: null
 
 steps:
 - script: |
@@ -86,21 +86,21 @@ steps:
   displayName: 'Build build images'
   inputs:
     scriptPath: ./build/buildBuildImages.sh
-    args: -t ${{ parameters.imageType }}
+    args: -t ${{ parameters.imageType }} -s $(storageAccountUrl)
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Build Buster runtime images'
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
-    args: buster
+    args: -s $(storageAccountUrl) buster
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: ShellScript@2
   displayName: 'Build Bullseye runtime images'
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
-    args: bullseye
+    args: -s $(storageAccountUrl) bullseye 
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - script: |
@@ -121,6 +121,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Test build images'
+  env:
+    ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
   inputs:
     scriptPath: ./build/testBuildImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME) ${{ parameters.imageType }}
@@ -128,6 +130,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Test runtime images'
+  env:
+    ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
@@ -164,6 +168,7 @@ steps:
     SQLSERVER_DATABASE_NAME: $(SQLSERVER-DATABASE-NAME)
     SQLSERVER_DATABASE_USERNAME: $(SQLSERVER-DATABASE-USERNAME)
     SQLSERVER_DATABASE_PASSWORD: $(SQLSERVER-DATABASE-PASSWORD)
+    ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: CopyFiles@2

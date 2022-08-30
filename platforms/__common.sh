@@ -16,8 +16,9 @@ imageName="oryx/platformsdk"
 blobExists() {
 	local containerName="$1"
 	local blobName="$2"
+	local sdkStorageAccountUrl="$3"
 	local exitCode=1
-	curl -I $DEV_SDK_STORAGE_BASE_URL/$containerName/$blobName 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
+	curl -I $sdkStorageAccountUrl/$containerName/$blobName 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
 	grep "HTTP/1.1 200 OK" /tmp/curlOut.txt &> /dev/null
 	exitCode=$?
 	rm -f /tmp/curlOut.txt
@@ -32,9 +33,10 @@ blobExists() {
 shouldBuildSdk() {
 	local containerName="$1"
 	local blobName="$2"
+	local sdkStorageAccountUrl="$3"
 
 	# return whatever exit code the following returns
-	blobExists $containerName $blobName
+	blobExists $containerName $blobName $sdkStorageAccountUrl
 	exitCode=$?
 	if [ "$exitCode" == 0 ]; then
 		return 1
