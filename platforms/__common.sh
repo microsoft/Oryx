@@ -8,7 +8,6 @@
 # to be supplied in the parent script sourcing this file.
 source "$REPO_DIR/build/__variables.sh"
 source "$REPO_DIR/build/__sdkStorageConstants.sh"
-source "$REPO_DIR/build/__personalSdkStorageConstants.sh"
 
 volumeHostDir="$ARTIFACTS_DIR/platformSdks"
 volumeContainerDir="/tmp/sdk"

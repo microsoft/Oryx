@@ -297,13 +297,6 @@
       namespace: Microsoft.Oryx.BuildScriptGenerator.Common
     - type: go
       directory: src/startupscriptgenerator/src/common/consts
-- name: personal-sdk-storage-constants
-  constants:
-    pauldorsch-sdk-storage-base-url: https://oryxsdkspauldorsch.blob.core.windows.net
-  outputs:
-    - type: shell
-      directory: build
-      file-name-prefix: __
 - name: runtime-dynamic-installation-constants
   constants:
     node-installation-dir: '/tmp/oryx/nodejs'
