@@ -45,7 +45,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.8.6");
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-buster"), "3.9.7");
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.10.4");
-            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.11.0b1");
+            //Pyodbc package not yet supported for python 3.11 versions: https://pyreadiness.org/3.11/
+            //GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage("github-actions-bullseye"), "3.11.0b1");
         }
 
         [Fact, Trait("category", "cli")]
