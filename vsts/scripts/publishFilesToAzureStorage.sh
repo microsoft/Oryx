@@ -80,7 +80,7 @@ if [ "$storageAccountUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]; then
 elif [ "$storageAccountUrl" == $DEV_SDK_STORAGE_BASE_URL ]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
 # check if the peronal sas token has been found in the oryx key vault
-elif [ "$PERSONAL_STORAGE_SAS_TOKEN" != "$($storageAccountName-PERSONAL-STORAGE-SAS-TOKEN)" ]; then
+elif [ "$PERSONAL_STORAGE_SAS_TOKEN" != "\$($storageAccountName-PERSONAL-STORAGE-SAS-TOKEN)" ]; then
     sasToken=$PERSONAL_STORAGE_SAS_TOKEN
 else
 	echo "Error: $storageAccountUrl is an invalid destination storage account url."
