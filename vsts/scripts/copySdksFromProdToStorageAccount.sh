@@ -79,8 +79,11 @@ if [ "$1" == $SANDBOX_SDK_STORAGE_BASE_URL ]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
 elif [ "$1" == $DEV_SDK_STORAGE_BASE_URL ]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
-else
+elif [ -n "$PERSONAL_STORAGE_SAS_TOKEN"]; then
     sasToken=$PERSONAL_STORAGE_SAS_TOKEN
+else
+	echo "Error: $destinationSdk is an invalid destination storage account url."
+	exit 1
 fi
 
 dryRun=$2

@@ -79,8 +79,11 @@ if [ "$storageAccountUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
 elif [ "$storageAccountUrl" == $DEV_SDK_STORAGE_BASE_URL ]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
-else
+elif [ -n "$PERSONAL_STORAGE_SAS_TOKEN" ]; then
     sasToken=$PERSONAL_STORAGE_SAS_TOKEN
+else
+	echo "Error: $storageAccountUrl is an invalid destination storage account url."
+	exit 1
 fi
 
 platforms=("nodejs" "python" "dotnet" "php" "php-composer" "ruby" "java" "maven" "golang")
