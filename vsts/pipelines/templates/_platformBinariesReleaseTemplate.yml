@@ -21,7 +21,7 @@ steps:
   env:
     DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
     SANDBOX_STORAGE_SAS_TOKEN: $(SANDBOX-STORAGE-SAS-TOKEN)
-    PERSONAL_STORAGE_SAS_TOKEN: $(${{ parameters.destinationStorageAccountName }}-PERSONAL-STORAGE-SAS-TOKEN)
+    PERSONAL_STORAGE_SAS_TOKEN: $(${{ parameters.destinationSdkStorageAccountName }}-PERSONAL-STORAGE-SAS-TOKEN)
   inputs:
     scriptPath: ./vsts/scripts/publishFilesToAzureStorage.sh
     args: ${{ parameters.destinationSdkStorageAccountName }}
