@@ -266,6 +266,7 @@ images/runtime/dotnetcore/*/stretch.Dockerfile
 images/runtime/python/*/Dockerfile
 images/runtime/python/*/buster.Dockerfile
 images/runtime/python/*/stretch.Dockerfile
+images/runtime/python/*/bullseye.Dockerfile
 images/runtime/php/*/Dockerfile
 images/runtime/php/*/buster.Dockerfile
 images/runtime/php/*/stretch.Dockerfile
