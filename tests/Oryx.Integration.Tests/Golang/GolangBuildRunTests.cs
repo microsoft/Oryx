@@ -22,28 +22,37 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact]
-        public async Task CanRunApp_WithoutBuildManifestFileAsync()
+
+
+        [Theory]
+        [InlineData("1.17", "buster")]
+        [InlineData("1.17", "bullseye")]
+        [InlineData("1.18", "buster")]
+        [InlineData("1.18", "bullseye")]
+        [InlineData("1.19", "buster")]
+        [InlineData("1.19", "bullseye")]
+        public async Task CanRunApp_WithoutBuildManifestFileAsync(string golangVersion, string debianFlavor)
         {
             // Arrange
-            var golangVersion = "1.17";
             var hostDir = Path.Combine(_hostSamplesDir, "golang", GolangHelloWorldWebApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
+            var imageTestHelper = new ImageTestHelper();
             var runtimeImageScript = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " + 
                 $"--platform {GolangConstants.PlatformName} --platform-version {golangVersion}")
                 .AddCommand(
-                $"oryx run-script {appOutputDir} --output {DefaultStartupFilePath} --debug")
+                $"oryx run-script --platform {GolangConstants.PlatformName} --platform-version {golangVersion} {appOutputDir}  --output {DefaultStartupFilePath} --debug")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: "oryxdevmcr.azurecr.io/public/oryx/build:full",
+                imageName: $"{imageTestHelper.GetBuildImage($"full-{debianFlavor}")}",
                 output: _output,
                 volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                 environmentVariables: null,

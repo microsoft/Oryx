@@ -182,7 +182,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DotNetAlias_UsesLtsVersion_ByDefault(string buildImageName)
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
+            var expectedOutput = FinalStretchVersions.FinalStretchDotNetCore31SdkVersion;
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -206,7 +206,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "latest")]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
+        [InlineData(FinalStretchVersions.FinalStretchDotNetCore31SdkVersion)]
         public void DotNetAlias_UsesVersion_SetOnBenv(string expectedSdkVersion)
         {
             // Arrange
@@ -518,7 +518,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore30SdkVersion;
             var script = new ShellScriptBuilder()
                 //.SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
-                .SetEnvironmentVariable(environmentVariableName, DotNetCoreSdkVersions.DotNetCore31SdkVersion)
+                .SetEnvironmentVariable(environmentVariableName, FinalStretchVersions.FinalStretchDotNetCore31SdkVersion)
                 .Source($"benv {argumentName}={DotNetCoreSdkVersions.DotNetCore30SdkVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
@@ -549,7 +549,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore30SdkVersion;
             var script = new ShellScriptBuilder()
-                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
+                .Source($"benv dotnet={FinalStretchVersions.FinalStretchDotNetCore31SdkVersion}")
                 .Source($"benv dotnet_version={DotNetCoreSdkVersions.DotNetCore30SdkVersion}")
                 // benv should update the PATH environment in such a way that we should version 1
                 .AddCommand("dotnet --version")
@@ -675,7 +675,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BenvShouldSetUpEnviroment_UsingExactNames()
         {
             // Arrange
-            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
+            var expectedDotNetVersion = FinalStretchVersions.FinalStretchDotNetCore31SdkVersion;
             var script = new ShellScriptBuilder()
                 .Source("benv dotnet_foo=1")
                 .AddCommand("dotnet --version")

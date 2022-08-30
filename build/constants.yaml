@@ -93,12 +93,26 @@
     net-core-app-70-sha: 9814a4e5a55b7137ec27b423ae4a557792af6cced035ab42876de012cb160adabbe054f043b61ed21a8385deb62075ab0a028f6599954ed3519ffe8cf824d30a
     aspnet-core-app-70: 7.0.0-preview.7.22376.6
     aspnet-core-app-70-sha: 7d4861a28a42df31a7e2c740d17e1b0eb78e860a2ccdb25eec754a2098593a3adac00687294209d847a8fa618019a2d1b1d5fdd3f9aea37ffdc19164c862c558
-
-
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
       namespace: Microsoft.Oryx.BuildScriptGenerator.DotNetCore
+    - type: shell
+      directory: build
+      file-name-prefix: __
+- name: final-stretch-versions
+  constants:
+    final-stretch-dot-net-core-31-sdk-version: 3.1.420
+    final-stretch-dot-net-core-app-31-run-time-version: 3.1.26
+    final-stretch-aspnet-core-app-31-run-time-version: 3.1.26
+
+    final-stretch-dot-net-60-sdk-version: 6.0.301
+    final-stretch-dot-net-core-app-60-run-time-version: 6.0.6
+    final-stretch-aspnet-core-app-60-run-time-version: 6.0.6
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
     - type: shell
       directory: build
       file-name-prefix: __
@@ -111,6 +125,8 @@
     golang17-tar-sha256: 6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d
     golang18-version: 1.18
     golang18-tar-sha256: e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f
+    golang19-version: 1.19
+    golang19-tar-sha256: 464b6b66591f6cf055bc5df90a9750bf5fbc9d038722bb84a9d56a2bea974be6
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
