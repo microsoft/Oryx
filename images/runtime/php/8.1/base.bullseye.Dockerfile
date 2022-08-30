@@ -1,7 +1,7 @@
 # DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
 FROM php:8.1-bullseye
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.1.6
+ENV PHP_VERSION 8.1.9
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 #Bake in client certificate path into image to avoid downloading it
