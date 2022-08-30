@@ -150,7 +150,15 @@ getPythonGpgByVersion() {
 
 
 echo
+# TODO: Determine if we need to continue building newer versions of Python from scratch
+echo "Building python 3.11 or newer from source code..."
 
 getPythonGpgByVersion "/tmp/versionsToBuild.txt" $version
 IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
-source /tmp/oryx/images/installPlatform.sh python $version --dir /opt/python/$version --links false
+
+if  [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "11" ]
+then
+    buildPythonfromSource $version $pythonVersionGPG
+else
+    source /tmp/oryx/images/installPlatform.sh python $version --dir /opt/python/$version --links false
+fi
