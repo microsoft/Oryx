@@ -75,17 +75,20 @@ fi
 destinationSdkUrl="https://$1.blob.core.windows.net"
 sasToken=""
 
-if [ "$destinationSdkUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]; then
+# case insensitive matching because both secrets and urls are case insensitive
+shopt -s nocasematch
+if [[ "$destinationSdkUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
-elif [ "$destinationSdkUrl" == $DEV_SDK_STORAGE_BASE_URL ]; then
+elif [[ "$destinationSdkUrl" == $DEV_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
-# check if the peronal sas token has been found in the oryx key vault
-elif [ "$PERSONAL_STORAGE_SAS_TOKEN" != "\$($1-PERSONAL-STORAGE-SAS-TOKEN)" ]; then 
+# check if the personal sas token has been found in the oryx key vault
+elif [[ "$PERSONAL_STORAGE_SAS_TOKEN" != "\$($1-PERSONAL-STORAGE-SAS-TOKEN)" ]]; then 
     sasToken=$PERSONAL_STORAGE_SAS_TOKEN
 else
 	echo "Error: $destinationSdkUrl is an invalid destination storage account url."
 	exit 1
 fi
+shopt -u nocasematch
 
 dryRun=$2
 if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then
