@@ -40,6 +40,9 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _latestTag = "latest";
         private const string _ltsVersionsTag = "lts-versions";
         private const string _ltsVersionsBuster = "lts-versions-buster";
+        private const string _full = "full";
+        private const string _fullBullseye = "full-bullseye";
+        private const string _fullBuster = "full-buster";
 
         private readonly ITestOutputHelper _output;
         private string _repoPrefix;
@@ -211,6 +214,19 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetCliImage(_cliBusterRepository);
             }
+            else if (string.Equals(tag, _full))
+            {
+                return GetFullBuildImage(_full);
+            }
+            else if (string.Equals(tag, _fullBullseye))
+            {
+                return GetFullBuildImage(_fullBullseye);
+            }
+            else if (string.Equals(tag, _fullBuster))
+            {
+                return GetFullBuildImage(_fullBuster);
+            }
+
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
 
@@ -345,6 +361,22 @@ namespace Microsoft.Oryx.Tests.Common
             }
 
             return _tagSuffix;
+        }
+
+        private string GetFullBuildImage(string debianFlavor = null)
+        {
+            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _fullBuster))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_fullBuster}{_tagSuffix}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _fullBullseye))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_fullBullseye}{_tagSuffix}";
+            }
+            else
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_full}{_tagSuffix}";
+            }
         }
     }
 }

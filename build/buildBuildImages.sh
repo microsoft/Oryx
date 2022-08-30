@@ -426,8 +426,8 @@ function buildFullImage() {
 
 	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
 		debianFlavor="stretch"
-	elif  [ "$debianFlavor" == "buster" ]; then
-		debianFlavor="buster"
+	elif  [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "bullseye" ]; then
+		debianFlavor=$debianFlavor
 		devImageTag=$devImageTag-$debianFlavor
 		echo "dev image tag: "$devImageTag
 		builtImageName=$builtImageName-$debianFlavor
@@ -482,6 +482,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildCliImage
 	buildBuildPackImage
 	buildFullImage "buster"
+	buildFullImage "bullseye"
 elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
 	buildGitHubActionsImage "buster"
@@ -510,6 +511,7 @@ elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
 elif [ "$imageTypeToBuild" == "latest" ]; then
 	buildLatestImages
 elif [ "$imageTypeToBuild" == "full" ]; then
+	buildFullImage "bullseye"
 	buildFullImage "buster"
 elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage
