@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 var httpClient = this.HttpClientFactory.CreateClient("general");
                 var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-                var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, "dotnet", string.Empty);
+                var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, DotNetCoreConstants.PlatformName, string.Empty);
                 var blobList = httpClient
                     .GetStringAsync(url)
                     .Result;
@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // and consolidate blobs from all the pages.
                 do
                 {
-                    url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, "dotnet", marker);
+                    url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, DotNetCoreConstants.PlatformName, marker);
                     var blobListFromNextMarker = httpClient.GetStringAsync(url).Result;
                     var xdocFromNextMarker = XDocument.Parse(blobListFromNextMarker);
                     marker = xdocFromNextMarker.Root.Element("NextMarker").Value;
