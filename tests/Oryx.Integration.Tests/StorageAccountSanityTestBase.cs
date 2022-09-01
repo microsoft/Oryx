@@ -202,12 +202,15 @@ namespace Oryx.Integration.Tests
             var blobList = _httpClient.GetStringAsync(url).Result;
             XDocument xdoc = XDocument.Parse(blobList);
             var marker = xdoc.Root.Element("NextMarker").Value;
+            // if <NextMarker> element's value is not empty, we iterate through every page by appending marker value to the url
+            // and consolidate blobs from all the pages.
             do
             {
                 url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, _storageUrl, platformName, marker);
                 var blobListFromNextMarker = _httpClient.GetStringAsync(url).Result;
-                marker = XDocument.Parse(blobListFromNextMarker).Root.Element("NextMarker").Value;
-                xdoc.Descendants("Blobs").LastOrDefault().AddAfterSelf(XDocument.Parse(blobListFromNextMarker).Descendants("Blobs"));
+                var xdocFromNextMarker = XDocument.Parse(blobListFromNextMarker);
+                marker = xdocFromNextMarker.Root.Element("NextMarker").Value;
+                xdoc.Descendants("Blobs").LastOrDefault().AddAfterSelf(xdocFromNextMarker.Descendants("Blobs"));
             }
             while (!string.IsNullOrEmpty(marker));
             return xdoc;

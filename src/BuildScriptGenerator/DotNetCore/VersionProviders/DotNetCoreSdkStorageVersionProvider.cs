@@ -57,11 +57,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 var httpClient = this.HttpClientFactory.CreateClient("general");
                 var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
+                var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, "dotnet", string.Empty);
                 var blobList = httpClient
-                    .GetStringAsync($"{sdkStorageBaseUrl}/dotnet?restype=container&comp=list&include=metadata")
+                    .GetStringAsync(url)
                     .Result;
 
                 var xdoc = XDocument.Parse(blobList);
+                var marker = xdoc.Root.Element("NextMarker").Value;
 
                 // keys represent runtime version, values represent sdk version
                 var supportedVersions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -74,6 +76,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     sdkVersionMetadataName = SdkStorageConstants.LegacySdkVersionMetadataName;
                     runtimeVersionMetadataName = SdkStorageConstants.LegacyDotnetRuntimeVersionMetadataName;
                 }
+
+                // if <NextMarker> element's value is not empty, we iterate through every page by appending marker value to the url
+                // and consolidate blobs from all the pages.
+                do
+                {
+                    url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, "dotnet", marker);
+                    var blobListFromNextMarker = httpClient.GetStringAsync(url).Result;
+                    var xdocFromNextMarker = XDocument.Parse(blobListFromNextMarker);
+                    marker = xdocFromNextMarker.Root.Element("NextMarker").Value;
+                    xdoc.Descendants("Blobs").LastOrDefault().AddAfterSelf(xdocFromNextMarker.Descendants("Blobs"));
+                }
+                while (!string.IsNullOrEmpty(marker));
 
                 foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
                 {
