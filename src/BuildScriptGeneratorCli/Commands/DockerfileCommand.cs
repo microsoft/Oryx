@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
@@ -78,33 +79,49 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            var sourceRepo = new LocalSourceRepo(this.SourceDir, loggerFactory);
-            var ctx = new DockerfileContext
+            var buildEventProps = new Dictionary<string, string>()
             {
-                SourceRepo = sourceRepo,
+                { "platform", this.PlatformName },
+                { "platformVersion", this.PlatformVersion },
+                { "runtimePlatformName", this.RuntimePlatformName },
             };
 
-            var dockerfileGenerator = serviceProvider.GetRequiredService<IDockerfileGenerator>();
-            var dockerfile = dockerfileGenerator.GenerateDockerfile(ctx);
-            if (string.IsNullOrEmpty(dockerfile))
+            int exitCode;
+            var logger = serviceProvider.GetRequiredService<ILogger<DockerfileCommand>>();
+            using (var timedEvent = logger.LogTimedEvent("DockerFileCommand", buildEventProps))
             {
-                console.WriteErrorLine("Couldn't generate dockerfile.");
-                return ProcessConstants.ExitFailure;
+                ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+                var sourceRepo = new LocalSourceRepo(this.SourceDir, loggerFactory);
+                var ctx = new DockerfileContext
+                {
+                    SourceRepo = sourceRepo,
+                };
+
+                var dockerfile = serviceProvider.GetRequiredService<IDockerfileGenerator>().GenerateDockerfile(ctx);
+                if (string.IsNullOrEmpty(dockerfile))
+                {
+                    exitCode = ProcessConstants.ExitFailure;
+                    console.WriteErrorLine("Couldn't generate dockerfile.");
+                }
+                else
+                {
+                    exitCode = ProcessConstants.ExitSuccess;
+                    if (string.IsNullOrEmpty(this.OutputPath))
+                    {
+                        console.WriteLine(dockerfile);
+                    }
+                    else
+                    {
+                        this.OutputPath.SafeWriteAllText(dockerfile);
+                        this.OutputPath = Path.GetFullPath(this.OutputPath).TrimEnd('/').TrimEnd('\\');
+                        console.WriteLine($"Dockerfile written to '{this.OutputPath}'.");
+                    }
+                }
+
+                timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 
-            if (string.IsNullOrEmpty(this.OutputPath))
-            {
-                console.WriteLine(dockerfile);
-            }
-            else
-            {
-                this.OutputPath.SafeWriteAllText(dockerfile);
-                this.OutputPath = Path.GetFullPath(this.OutputPath).TrimEnd('/').TrimEnd('\\');
-                console.WriteLine($"Dockerfile written to '{this.OutputPath}'.");
-            }
-
-            return ProcessConstants.ExitSuccess;
+            return exitCode;
         }
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
