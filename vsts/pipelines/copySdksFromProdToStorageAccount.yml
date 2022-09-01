@@ -2,13 +2,10 @@ variables:
 - group: Oryx
 
 parameters:
-- name: destinationStorageAccount
-  displayName: Destination Storage Account
+- name: destinationStorageAccountName
+  displayName: Destination Storage Account Name
   type: string
-  default: https://oryxsdkssandbox.blob.core.windows.net
-  values:
-  - https://oryxsdkssandbox.blob.core.windows.net
-  - https://oryxsdksdev.blob.core.windows.net
+  default: oryxsdksdev
 - name: dryRun
   displayName: Dry Run?
   type: boolean
@@ -40,15 +37,10 @@ jobs:
           DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
           SANDBOX_STORAGE_SAS_TOKEN: $(SANDBOX-STORAGE-SAS-TOKEN)
           PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
+          PERSONAL_STORAGE_SAS_TOKEN: $(${{ upper(parameters.destinationStorageAccountName) }}-PERSONAL-STORAGE-SAS-TOKEN)
         inputs:
           scriptPath: ./vsts/scripts/copySdksFromProdToStorageAccount.sh
-          args:  ${{ parameters.destinationStorageAccount }} ${{ parameters.dryRun }}
-      
-      - task: ShellScript@2
-        displayName: 'Test Prod storage account'
-        inputs:
-          scriptPath: ./build/testIntegration.sh
-          args: StorageAccountTests=Prod
+          args:  ${{ parameters.destinationStorageAccountName }} ${{ parameters.dryRun }}
 
 trigger: none
 pr: none

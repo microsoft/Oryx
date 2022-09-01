@@ -11,6 +11,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
 source $REPO_DIR/build/__phpVersions.sh
 debianFlavor=$1
+sdkStorageAccountUrl="$2"
 phpPlatformDir="$REPO_DIR/platforms/php"
 
 builtPhpPrereqs=false
@@ -53,7 +54,7 @@ buildPhp() {
 
 	cp "$phpPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
 
-	if shouldBuildSdk php $phpSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk php; then
+	if shouldBuildSdk php $phpSdkFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk php; then
 		if ! $builtPhpPrereqs; then
 			buildPhpPrereqsImage
 		fi
@@ -101,7 +102,7 @@ buildPhpComposer() {
 		sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 	fi
 
-	if shouldBuildSdk php-composer $composerSdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk php-composer; then
+	if shouldBuildSdk php-composer $composerSdkFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk php-composer; then
 		if ! $builtPhpPrereqs; then
 			buildPhpPrereqsImage
 		fi
