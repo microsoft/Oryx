@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Integration.Tests;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -198,22 +199,7 @@ namespace Oryx.Integration.Tests
 
         private XDocument GetMetadata(string platformName)
         {
-            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, _storageUrl, platformName, string.Empty);
-            var blobList = _httpClient.GetStringAsync(url).Result;
-            XDocument xdoc = XDocument.Parse(blobList);
-            var marker = xdoc.Root.Element("NextMarker").Value;
-            // if <NextMarker> element's value is not empty, we iterate through every page by appending marker value to the url
-            // and consolidate blobs from all the pages.
-            do
-            {
-                url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, _storageUrl, platformName, marker);
-                var blobListFromNextMarker = _httpClient.GetStringAsync(url).Result;
-                var xdocFromNextMarker = XDocument.Parse(blobListFromNextMarker);
-                marker = xdocFromNextMarker.Root.Element("NextMarker").Value;
-                xdoc.Descendants("Blobs").LastOrDefault().AddAfterSelf(xdocFromNextMarker.Descendants("Blobs"));
-            }
-            while (!string.IsNullOrEmpty(marker));
-            return xdoc;
+            return ListBlobsHelper.GetAllBlobs(_storageUrl, platformName, _httpClient);
         }
 
         private List<string> GetVersionsFromContainer(string debianFlavor, string platformName)

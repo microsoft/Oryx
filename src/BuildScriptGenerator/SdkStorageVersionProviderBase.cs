@@ -51,10 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platformName, string.Empty);
-            var blobList = httpClient.GetStringAsync(url).Result;
-            var xdoc = XDocument.Parse(blobList);
-            var marker = xdoc.Root.Element("NextMarker").Value;
+            var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient);
             var supportedVersions = new List<string>();
 
             var isStretch = string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase);
@@ -62,18 +59,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var sdkVersionMetadataName = isStretch
                 ? SdkStorageConstants.LegacySdkVersionMetadataName
                 : SdkStorageConstants.SdkVersionMetadataName;
-
-            // if <NextMarker> element's value is not empty, we iterate through every page by appending marker value to the url
-            // and consolidate blobs from all the pages.
-            do
-            {
-                url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platformName, marker);
-                var blobListFromNextMarker = httpClient.GetStringAsync(url).Result;
-                var xdocFromNextMarker = XDocument.Parse(blobListFromNextMarker);
-                marker = xdocFromNextMarker.Root.Element("NextMarker").Value;
-                xdoc.Descendants("Blobs").LastOrDefault().AddAfterSelf(xdocFromNextMarker.Descendants("Blobs"));
-            }
-            while (!string.IsNullOrEmpty(marker));
             foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
             {
                 var childElements = metadataElement.Elements();
