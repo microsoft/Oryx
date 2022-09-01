@@ -275,7 +275,7 @@
     default-version-file-prefix: defaultVersion
     default-version-file-type: txt
     versions-to-build-file-name: versionsToBuild.txt
-    container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata'
+    container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata&marker={2}'
     sdk-download-sentinel-file-name: .oryx-sdkdownload-sentinel
     # The following metadata names control the field that is uploaded to sdk storage alongside each sdk.
     # Legacy is used to provide backwards compatibility for images with an older CLI, as they depend on identifying

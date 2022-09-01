@@ -198,9 +198,19 @@ namespace Oryx.Integration.Tests
 
         private XDocument GetMetadata(string platformName)
         {
-            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, _storageUrl, platformName);
+            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, _storageUrl, platformName, string.Empty);
             var blobList = _httpClient.GetStringAsync(url).Result;
-            return XDocument.Parse(blobList);
+            XDocument xdoc = XDocument.Parse(blobList);
+            var marker = xdoc.Root.Element("NextMarker").Value;
+            do
+            {
+                url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, _storageUrl, platformName, marker);
+                var blobListFromNextMarker = _httpClient.GetStringAsync(url).Result;
+                marker = XDocument.Parse(blobListFromNextMarker).Root.Element("NextMarker").Value;
+                xdoc.Descendants("Blobs").LastOrDefault().AddAfterSelf(XDocument.Parse(blobListFromNextMarker).Descendants("Blobs"));
+            }
+            while (!string.IsNullOrEmpty(marker));
+            return xdoc;
         }
 
         private List<string> GetVersionsFromContainer(string debianFlavor, string platformName)
