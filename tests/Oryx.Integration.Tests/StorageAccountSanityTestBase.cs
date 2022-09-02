@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Integration.Tests;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -198,9 +199,7 @@ namespace Oryx.Integration.Tests
 
         private XDocument GetMetadata(string platformName)
         {
-            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, _storageUrl, platformName);
-            var blobList = _httpClient.GetStringAsync(url).Result;
-            return XDocument.Parse(blobList);
+            return ListBlobsHelper.GetAllBlobs(_storageUrl, platformName, _httpClient);
         }
 
         private List<string> GetVersionsFromContainer(string debianFlavor, string platformName)
