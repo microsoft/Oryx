@@ -84,6 +84,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 { "platform", this.PlatformName },
                 { "platformVersion", this.PlatformVersion },
                 { "runtimePlatformName", this.RuntimePlatformName },
+                { "runtimePlatformVersion", this.RuntimePlatformVersion },
+                { "buildImage", this.BuildImage },
             };
 
             int exitCode;

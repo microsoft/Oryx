@@ -47,90 +47,104 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GenerateDockerfile(DockerfileContext ctx)
         {
-            var createScriptArguments = new Dictionary<string, string>();
-            var dockerfileBuildImageName = "cli";
-            var dockerfileBuildImageTag = "stable";
-
-            if (!string.IsNullOrEmpty(this.commonOptions.BuildImage))
+            using (var timedEvent = this.logger.LogTimedEvent("GenerateDockerfile"))
             {
-                var buildImageSplit = this.commonOptions.BuildImage.Split(':');
-                dockerfileBuildImageName = buildImageSplit[0];
-                dockerfileBuildImageTag = buildImageSplit[1];
-            }
+                var createScriptArguments = new Dictionary<string, string>();
+                var dockerfileBuildImageName = "cli";
+                var dockerfileBuildImageTag = "stable";
 
-            var dockerfileRuntimeImage = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformName) ?
-                ConvertToRuntimeName(this.commonOptions.RuntimePlatformName) : string.Empty;
-            var dockerfileRuntimeImageTag = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformVersion) ?
-                this.commonOptions.RuntimePlatformVersion : string.Empty;
-
-            if (!string.IsNullOrEmpty(this.commonOptions.BindPort))
-            {
-                createScriptArguments.Add("bindPort", this.commonOptions.BindPort);
-            }
-
-            var compatiblePlatforms = this.GetCompatiblePlatforms(ctx);
-            if (!compatiblePlatforms.Any())
-            {
-                throw new UnsupportedPlatformException(Labels.UnableToDetectPlatformMessage);
-            }
-
-            foreach (var platformAndDetectorResult in compatiblePlatforms)
-            {
-                var platform = platformAndDetectorResult.Key;
-                var platformDetectorResult = platformAndDetectorResult.Value;
-                var detectedRuntimeName = ConvertToRuntimeName(platform.Name);
-
-                // If the runtime platform name wasn't previously provided, see if we can use the current detected platform as the runtime image.
-                if (string.IsNullOrEmpty(dockerfileRuntimeImage))
+                if (!string.IsNullOrEmpty(this.commonOptions.BuildImage))
                 {
-                    // If the detected platform isn't in our currently list of runtime versions, skip it with a notice to the user.
-                    if (!this.supportedRuntimeVersions.ContainsKey(detectedRuntimeName))
+                    var buildImageSplit = this.commonOptions.BuildImage.Split(':');
+                    dockerfileBuildImageName = buildImageSplit[0];
+                    dockerfileBuildImageTag = buildImageSplit[1];
+                }
+
+                var dockerfileRuntimeImage = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformName) ?
+                    ConvertToRuntimeName(this.commonOptions.RuntimePlatformName) : string.Empty;
+                var dockerfileRuntimeImageTag = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformVersion) ?
+                    this.commonOptions.RuntimePlatformVersion : string.Empty;
+
+                if (!string.IsNullOrEmpty(this.commonOptions.BindPort))
+                {
+                    createScriptArguments.Add("bindPort", this.commonOptions.BindPort);
+                }
+
+                var compatiblePlatforms = this.GetCompatiblePlatforms(ctx);
+                if (!compatiblePlatforms.Any())
+                {
+                    throw new UnsupportedPlatformException(Labels.UnableToDetectPlatformMessage);
+                }
+
+                foreach (var platformAndDetectorResult in compatiblePlatforms)
+                {
+                    var platform = platformAndDetectorResult.Key;
+                    var platformDetectorResult = platformAndDetectorResult.Value;
+                    var detectedRuntimeName = ConvertToRuntimeName(platform.Name);
+
+                    // If the runtime platform name wasn't previously provided, see if we can use the current detected platform as the runtime image.
+                    if (string.IsNullOrEmpty(dockerfileRuntimeImage))
                     {
-                        this.logger.LogDebug($"The detected platform {platform.Name} does not currently have a supported runtime image." +
-                                               $"If this Dockerfile command or image is outdated, please provide the runtime platform name manually.");
-                        continue;
+                        // If the detected platform isn't in our currently list of runtime versions, skip it with a notice to the user.
+                        if (!this.supportedRuntimeVersions.ContainsKey(detectedRuntimeName))
+                        {
+                            this.logger.LogDebug($"The detected platform {platform.Name} does not currently have a supported runtime image." +
+                                                   $"If this Dockerfile command or image is outdated, please provide the runtime platform name manually.");
+                            continue;
+                        }
+
+                        dockerfileRuntimeImage = detectedRuntimeName;
                     }
 
-                    dockerfileRuntimeImage = detectedRuntimeName;
+                    // If the runtime platform version wasn't previously provided, see if we can detect one from the current detected platform.
+                    // Note: we first need to ensure that the current detected platform is the same as the runtime platform name previously set or pvodied.
+                    if (!string.IsNullOrEmpty(dockerfileRuntimeImage) && dockerfileRuntimeImage.Equals(detectedRuntimeName, StringComparison.OrdinalIgnoreCase) &&
+                         string.IsNullOrEmpty(dockerfileRuntimeImageTag))
+                    {
+                        dockerfileRuntimeImageTag = this.ConvertToRuntimeVersion(dockerfileRuntimeImage, platformDetectorResult.PlatformVersion);
+                    }
+
+                    // If the runtime image has been set manually or by the platform detection result, stop searching.
+                    if (!string.IsNullOrEmpty(dockerfileRuntimeImage))
+                    {
+                        break;
+                    }
                 }
 
-                // If the runtime platform version wasn't previously provided, see if we can detect one from the current detected platform.
-                // Note: we first need to ensure that the current detected platform is the same as the runtime platform name previously set or pvodied.
-                if (!string.IsNullOrEmpty(dockerfileRuntimeImage) && dockerfileRuntimeImage.Equals(detectedRuntimeName, StringComparison.OrdinalIgnoreCase) &&
-                     string.IsNullOrEmpty(dockerfileRuntimeImageTag))
-                {
-                    dockerfileRuntimeImageTag = this.ConvertToRuntimeVersion(dockerfileRuntimeImage, platformDetectorResult.PlatformVersion);
-                }
+                var formattedCreateScriptArguments = createScriptArguments.Any() ?
+                    string.Join(' ', createScriptArguments.Select(arg => $"-{arg.Key} {arg.Value}")) : string.Empty;
 
-                // If the runtime image has been set manually or by the platform detection result, stop searching.
-                if (!string.IsNullOrEmpty(dockerfileRuntimeImage))
+                var properties = new DockerfileProperties()
                 {
-                    break;
-                }
+                    RuntimeImageName = dockerfileRuntimeImage,
+                    RuntimeImageTag = dockerfileRuntimeImageTag,
+                    BuildImageName = dockerfileBuildImageName,
+                    BuildImageTag = dockerfileBuildImageTag,
+                    CreateScriptArguments = formattedCreateScriptArguments,
+                };
+
+                var generatedDockerfile = TemplateHelper.Render(
+                    TemplateHelper.TemplateResource.Dockerfile,
+                    properties,
+                    this.logger);
+
+                // Remove the Container Registry Analysis snippet, if it exists in the template.
+                var pattern = "# DisableDockerDetector \".*?\"\n";
+                generatedDockerfile = Regex.Replace(generatedDockerfile, pattern, string.Empty);
+
+                var buildEventProps = new Dictionary<string, string>()
+                {
+                    { "runtimeImageName", properties.RuntimeImageName },
+                    { "runtimeImageTag", properties.RuntimeImageTag },
+                    { "buildImageName", properties.BuildImageName },
+                    { "buildImageTag", properties.BuildImageTag },
+                    { "createScriptArguments", properties.CreateScriptArguments },
+                    { "generatedDockerfile", generatedDockerfile },
+                };
+                timedEvent.SetProperties(buildEventProps);
+
+                return generatedDockerfile;
             }
-
-            var formattedCreateScriptArguments = createScriptArguments.Any() ?
-                string.Join(' ', createScriptArguments.Select(arg => $"-{arg.Key} {arg.Value}")) : string.Empty;
-
-            var properties = new DockerfileProperties()
-            {
-                RuntimeImageName = dockerfileRuntimeImage,
-                RuntimeImageTag = dockerfileRuntimeImageTag,
-                BuildImageName = dockerfileBuildImageName,
-                BuildImageTag = dockerfileBuildImageTag,
-                CreateScriptArguments = formattedCreateScriptArguments,
-            };
-
-            var generatedDockerfile = TemplateHelper.Render(
-                TemplateHelper.TemplateResource.Dockerfile,
-                properties,
-                this.logger);
-
-            // Remove the Container Registry Analysis snippet, if it exists in the template.
-            var pattern = "# DisableDockerDetector \".*?\"\n";
-            generatedDockerfile = Regex.Replace(generatedDockerfile, pattern, string.Empty);
-
-            return generatedDockerfile;
         }
 
         /// <summary>
