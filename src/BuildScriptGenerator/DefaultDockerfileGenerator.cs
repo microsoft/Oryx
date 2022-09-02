@@ -138,8 +138,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     { "runtimeImageTag", properties.RuntimeImageTag },
                     { "buildImageName", properties.BuildImageName },
                     { "buildImageTag", properties.BuildImageTag },
-                    { "createScriptArguments", properties.CreateScriptArguments },
-                    { "generatedDockerfile", generatedDockerfile },
                 };
                 timedEvent.SetProperties(buildEventProps);
 
