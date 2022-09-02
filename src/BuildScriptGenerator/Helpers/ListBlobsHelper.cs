@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // and consolidate blobs from all the pages.
             do
             {
-                url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, DotNetCoreConstants.PlatformName, marker);
+                url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform, marker);
                 var blobListFromNextMarker = httpClient.GetStringAsync(url).Result;
                 var xdocFromNextMarker = XDocument.Parse(blobListFromNextMarker);
                 marker = xdocFromNextMarker.Root.Element("NextMarker").Value;
