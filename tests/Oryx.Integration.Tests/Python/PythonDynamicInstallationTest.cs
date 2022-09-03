@@ -110,8 +110,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
         [Theory]
-        [InlineData(PythonVersions.Python310Version)]
-        [InlineData(PythonVersions.Python311Version)]
+        [InlineData("3.10")]
+        [InlineData("3.11")]
         public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
             string pythonVersion)
         {
@@ -140,7 +140,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", "3.10"),
+                _imageHelper.GetRuntimeImage("python", pythonVersion),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
