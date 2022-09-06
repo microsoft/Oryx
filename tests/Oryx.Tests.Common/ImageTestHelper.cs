@@ -49,6 +49,9 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _latestTag = ImageTestHelperConstants.LatestStretchTag;
         private const string _ltsVersionsStretch = ImageTestHelperConstants.LtsVersionsStretch;
         private const string _ltsVersionsBuster = ImageTestHelperConstants.LtsVersionsBuster;
+        private const string _fullStretch = ImageTestHelperConstants.FullStretch;
+        private const string _fullBullseye = ImageTestHelperConstants.FullBullseye;
+        private const string _fullBuster = ImageTestHelperConstants.FullBuster;
 
         private readonly ITestOutputHelper _output;
         private string _repoPrefix;
@@ -227,6 +230,19 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetCliImage(_cliBusterRepository);
             }
+            else if (string.Equals(tag, _fullStretch))
+            {
+                return GetFullBuildImage(_fullStretch);
+            }
+            else if (string.Equals(tag, _fullBullseye))
+            {
+                return GetFullBuildImage(_fullBullseye);
+            }
+            else if (string.Equals(tag, _fullBuster))
+            {
+                return GetFullBuildImage(_fullBuster);
+            }
+
             throw new NotSupportedException($"A build image cannot be created with the given tag '{tag}'.");
         }
 
@@ -361,6 +377,22 @@ namespace Microsoft.Oryx.Tests.Common
 
             return $"{_latestTag}-{_tagSuffix}";
         }
+        
+        private string GetFullBuildImage(string debianFlavor = null)
+        {
+            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _fullBuster))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_fullBuster}{_tagSuffix}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _fullBullseye))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_fullBullseye}{_tagSuffix}";
+            }
+            else
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_fullStretch}{_tagSuffix}";
+            }
+        }
 
         private Dictionary<string, Dictionary<string, string>> PlatformVersionToOsType = new Dictionary<string, Dictionary<string, string>>
         {
@@ -451,5 +483,8 @@ namespace Microsoft.Oryx.Tests.Common
         public const string LatestStretchTag = "debian-stretch";
         public const string LtsVersionsStretch = "lts-versions-debian-stretch";
         public const string LtsVersionsBuster = "lts-versions-debian-buster";
+        public const string FullStretch = "full-debian-stretch";
+        public const string FullBuster = "full-debian-buster";
+        public const string FullBullseye = "full-debian-bullseye";
     }
 }

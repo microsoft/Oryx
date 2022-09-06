@@ -554,8 +554,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     NetCoreApp30WebApp,
                     imageHelper.GetGitHubActionsBuildImage());
                 data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp31,
-                    DotNetCoreSdkVersions.DotNetCore31SdkVersion,
+                    FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion,
+                    FinalStretchVersions.FinalStretchDotNetCore31SdkVersion,
                     NetCoreApp31MvcApp,
                     imageHelper.GetGitHubActionsBuildImage());
                 data.Add(
@@ -564,8 +564,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     NetCoreApp50MvcApp,
                     imageHelper.GetGitHubActionsBuildImage());
                 data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp60,
-                    DotNetCoreSdkVersions.DotNet60SdkVersion,
+                    FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion,
+                    FinalStretchVersions.FinalStretchDotNet60SdkVersion,
                     NetCore6PreviewWebApp,
                     imageHelper.GetGitHubActionsBuildImage());
                 data.Add(

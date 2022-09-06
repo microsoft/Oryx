@@ -3,12 +3,13 @@ ARG DEBIAN_FLAVOR
 # Use the curl flavor of buildpack-deps as the base image, which is lighter than the standard flavor; more information here: https://hub.docker.com/_/buildpack-deps
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl as main
 ARG DEBIAN_FLAVOR
+ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 
-ENV ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io" \
+ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     ENABLE_DYNAMIC_INSTALL="true" \
     PATH="/usr/local/go/bin:/opt/python/latest/bin:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts:$PATH" \
     DYNAMIC_INSTALL_ROOT_DIR="/opt" \

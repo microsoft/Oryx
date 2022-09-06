@@ -11,12 +11,13 @@ function downloadFileAndVerifyChecksum() {
     local version="$2"
     local downloadedFileName="$3"
     local downloadableFileName="$3"
+    local sdkStorageAccountUrl="$4"
     local headersFile="/tmp/headers.txt"
 
-    echo "Downloading $platformName version '$version'..."
+    echo "Downloading $platformName version '$version' from '$sdkStorageAccountUrl'..."
     request="curl 
         -D $headersFile 
-        -SL $DEV_SDK_STORAGE_BASE_URL/$platformName/$downloadableFileName 
+        -SL $sdkStorageAccountUrl/$platformName/$downloadableFileName 
         --output $downloadedFileName"
     $__CURRENT_DIR/retry.sh "$request"
     # Use all lowercase letters to find the header and it's value

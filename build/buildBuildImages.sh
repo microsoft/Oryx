@@ -41,6 +41,10 @@ while (( "$#" )); do
       imageTypeToBuild=$2
       shift 2
       ;;
+    -s|--sdk-storage-account-url)
+      sdkStorageAccountUrl=$2
+      shift 2
+      ;;
     --) # end argument parsing
       shift
       break
@@ -60,6 +64,13 @@ eval set -- "$PARAMS"
 
 echo
 echo "Image type to build is set to: $imageTypeToBuild"
+
+if [ -z "$sdkStorageAccountUrl" ]; then
+	sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
+fi
+
+echo
+echo "SDK storage account url set to: $sdkStorageAccountUrl"
 
 declare -r supportFilesImageName="oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build"
 
@@ -192,7 +203,7 @@ function buildGitHubActionsImage() {
 	echo "-------------Creating build image for GitHub Actions-------------------"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
@@ -282,7 +293,7 @@ function buildLtsVersionsImage() {
 	echo "-------------Creating lts versions build image-------------------"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$ltsBuildImageDockerFile" \
 		.
@@ -359,7 +370,7 @@ function buildVsoFocalImage() {
 	local builtImageName="$ACR_BUILD_VSO_FOCAL_IMAGE_NAME"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE" \
 		.
@@ -395,7 +406,7 @@ function buildCliImage() {
 	echo "-------------Creating CLI image-------------------"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
@@ -429,7 +440,7 @@ function buildFullImage() {
 	echo "-------------Creating full image-------------------"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_FULL_DOCKERFILE" \
@@ -470,6 +481,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildCliImage
 	buildBuildPackImage
 	buildFullImage "buster"
+	buildFullImage "bullseye"
 elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
 	buildGitHubActionsImage "buster"
@@ -498,6 +510,7 @@ elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
 elif [ "$imageTypeToBuild" == "latest" ]; then
 	buildLatestImages
 elif [ "$imageTypeToBuild" == "full" ]; then
+	buildFullImage "bullseye"
 	buildFullImage "buster"
 elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage

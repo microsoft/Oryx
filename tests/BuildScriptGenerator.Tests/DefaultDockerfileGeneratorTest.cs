@@ -124,8 +124,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("php", "5.6", "5.6")]
         [InlineData("php", "7.3", "7.3")]
         [InlineData("python", "2.7", "2.7")]
-        [InlineData("python", "3.7", "3.10")] // 3.7.x not currently a runtime, use latest
-        [InlineData("python", "3.8", "3.8")]
+        [InlineData("python", "3.7", "3.11")] // 3.7.x not currently a runtime, use latest
+        [InlineData("python", "3.8.1", "3.8")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatform(
             string platformName,
             string detectedPlatformVersion,
@@ -182,7 +182,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("php", "5.6", "5.6")]
         [InlineData("php", "7.3", "7.3")]
         [InlineData("python", "2.7", "2.7")]
-        [InlineData("python", "3.7", "3.10")] // 3.7.x not currently a runtime, use latest
+        [InlineData("python", "3.7", "3.11")] // 3.7.x not currently a runtime, use latest
         [InlineData("python", "3.8.1", "3.8")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForNoProvidedPlatform(
             string platformName,

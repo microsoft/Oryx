@@ -102,18 +102,20 @@ RUN set -ex \
     && DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
 	&& NUGET_PACKAGES="$nugetPackagesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
+    && . $buildDir/__finalStretchVersions.sh \
     && DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
+    && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_CORE_31_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPackagesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
+    && . $buildDir/__finalStretchVersions.sh \
     && ln -s $DOT_NET_CORE_21_SDK_VERSION 2-lts \
-    && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
+    && ln -s $FINAL_STRETCH_DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s 3-lts lts \
     # Install Hugo
     && $imagesDir/build/installHugo.sh \

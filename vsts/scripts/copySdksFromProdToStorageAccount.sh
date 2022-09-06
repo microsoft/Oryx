@@ -14,7 +14,7 @@ azCopyDir="/tmp/azcopy-tool"
 function blobContainerExistsInDestination() {
 	local containerName="$1"
 	local exitCode=1
-	curl -I "$destinationSdk/$containerName?restype=container" 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
+	curl -I "$destinationSdkUrl/$containerName?restype=container" 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
 	grep "HTTP/1.1 200 OK" /tmp/curlOut.txt &> /dev/null
 	exitCode=$?
 	rm -f /tmp/curlOut.txt
@@ -31,32 +31,32 @@ function copyBlobContainerFromProdToDestination() {
 
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName; then
         echo
-        echo "Overwriting blob container '$platformName' in storage account '$destinationSdk'."
+        echo "Overwriting blob container '$platformName' in storage account '$destinationSdkUrl'."
         # azcopy copy [source] [destination] [flags]
         if [ $dryRun == "False" ] ; then
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
-                "$destinationSdk/$platformName$sasToken" --overwrite true --recursive
+                "$destinationSdkUrl/$platformName$sasToken" --overwrite true --recursive
         else
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
-                "$destinationSdk/$platformName$sasToken" --overwrite true --recursive --dry-run
+                "$destinationSdkUrl/$platformName$sasToken" --overwrite true --recursive --dry-run
         fi
     elif blobContainerExistsInDestination $platformName; then
         echo
-        echo "Blob container '$platformName' already exists in storage account '$destinationSdk'. Skipping copying it..."
+        echo "Blob container '$platformName' already exists in storage account '$destinationSdkUrl'. Skipping copying it..."
     else
         echo
-        echo "Blob container '$platformName' does not exist in storage account '$destinationSdk'. Copying it from $PROD_SDK_STORAGE_BASE_URL..."
+        echo "Blob container '$platformName' does not exist in storage account '$destinationSdkUrl'. Copying it from $PROD_SDK_STORAGE_BASE_URL..."
         # azcopy copy [source] [destination] [flags]
         if [ $dryRun == "False" ] ; then
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
-                "$destinationSdk/$platformName$sasToken" --overwrite false --recursive
+                "$destinationSdkUrl/$platformName$sasToken" --overwrite false --recursive
         else
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
-                "$destinationSdk/$platformName$sasToken" --overwrite false --recursive --dry-run
+                "$destinationSdkUrl/$platformName$sasToken" --overwrite false --recursive --dry-run
         fi
     fi
 }
@@ -72,19 +72,23 @@ if [ ! -f "$azCopyDir/azcopy" ]; then
     $azCopyDir/azcopy --version
 fi
 
-destinationSdk=""
+destinationSdkUrl="https://$1.blob.core.windows.net"
 sasToken=""
 
-if [ "$1" = $SANDBOX_SDK_STORAGE_BASE_URL ]; then
-    destinationSdk=$SANDBOX_SDK_STORAGE_BASE_URL
+# case insensitive matching because both secrets and urls are case insensitive
+shopt -s nocasematch
+if [[ "$destinationSdkUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
-elif [ "$1" = $DEV_SDK_STORAGE_BASE_URL ]; then
-    destinationSdk=$DEV_SDK_STORAGE_BASE_URL
+elif [[ "$destinationSdkUrl" == $DEV_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
+# check if the personal sas token has been found in the oryx key vault
+elif [[ "$PERSONAL_STORAGE_SAS_TOKEN" != "\$($1-PERSONAL-STORAGE-SAS-TOKEN)" ]]; then 
+    sasToken=$PERSONAL_STORAGE_SAS_TOKEN
 else
-	echo "Error: $1 is an invalid destination storage account url."
+	echo "Error: $destinationSdkUrl is an invalid destination storage account url."
 	exit 1
 fi
+shopt -u nocasematch
 
 dryRun=$2
 if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then

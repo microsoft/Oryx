@@ -50,11 +50,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
-
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platformName);
-            var blobList = httpClient.GetStringAsync(url).Result;
-            var xdoc = XDocument.Parse(blobList);
+            var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient);
             var supportedVersions = new List<string>();
 
             var isStretch = string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase);
@@ -62,7 +59,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var sdkVersionMetadataName = isStretch
                 ? SdkStorageConstants.LegacySdkVersionMetadataName
                 : SdkStorageConstants.SdkVersionMetadataName;
-
             foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
             {
                 var childElements = metadataElement.Elements();
