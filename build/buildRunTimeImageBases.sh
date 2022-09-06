@@ -13,7 +13,7 @@ source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__nodeVersions.sh
 
-declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
+declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE18_VERSION $NODE16_VERSION $NODE14_VERSION)
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
@@ -130,6 +130,7 @@ for dockerFile in $dockerFiles; do
         --build-arg CACHEBUST=$(date +%s) \
         --build-arg NODE14_VERSION=$NODE14_VERSION \
         --build-arg NODE16_VERSION=$NODE16_VERSION \
+        --build-arg NODE18_VERSION=$NODE18_VERSION \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
         $labels \
         .
