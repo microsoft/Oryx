@@ -272,7 +272,7 @@ images/runtime/python/*/bullseye.Dockerfile
 images/runtime/php/*/Dockerfile
 images/runtime/php/*/buster.Dockerfile
 images/runtime/php/*/stretch.Dockerfile
-images/runtime/php/*/bullseye.Dockerfile
+images/runtime/php/**/bullseye.Dockerfile
 images/runtime/php-fpm/*/Dockerfile
 images/runtime/php-fpm/*/buster.Dockerfile
 images/runtime/php-fpm/*/stretch.Dockerfile
