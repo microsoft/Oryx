@@ -40,7 +40,7 @@ function copyBlob() {
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName; then
         echo
         echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
-        if [ $dryRun == "False"]; then
+        if [ $dryRun == "False" ]; then
             "$azCopyDir/azcopy" copy \
                 "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true
@@ -55,7 +55,7 @@ function copyBlob() {
     else
         echo
         echo "Blob '$blobName' does not exist in Prod storage container '$platformName'. Copying it..."
-        if [ $dryRun == "False"]; then
+        if [ $dryRun == "False" ]; then
             "$azCopyDir/azcopy" copy \
                 "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
