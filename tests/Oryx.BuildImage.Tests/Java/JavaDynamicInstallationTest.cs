@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [MemberData(nameof(VersionsData))]
         public void BuildsMavenArcheTypeSampleWithDynamicInstallationCliBuster(string version)
         {
-            BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetCliImage("cli-buster"));
+            BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
         }
 
         private void BuildsMavenArcheTypeSampleWithDynamicInstallation(string version, string imageName)

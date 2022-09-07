@@ -22,16 +22,14 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-
-
         [Theory]
-        [InlineData("1.17", "buster")]
-        [InlineData("1.17", "bullseye")]
-        [InlineData("1.18", "buster")]
-        [InlineData("1.18", "bullseye")]
-        [InlineData("1.19", "buster")]
-        [InlineData("1.19", "bullseye")]
-        public async Task CanRunApp_WithoutBuildManifestFileAsync(string golangVersion, string debianFlavor)
+        [InlineData("1.17", ImageTestHelperConstants.FullBuster)]
+        [InlineData("1.17", ImageTestHelperConstants.FullBullseye)]
+        [InlineData("1.18", ImageTestHelperConstants.FullBuster)]
+        [InlineData("1.18", ImageTestHelperConstants.FullBullseye)]
+        [InlineData("1.19", ImageTestHelperConstants.FullBuster)]
+        [InlineData("1.19", ImageTestHelperConstants.FullBullseye)]
+        public async Task CanRunApp_WithoutBuildManifestFileAsync(string golangVersion, string imageTag)
         {
             // Arrange
             var hostDir = Path.Combine(_hostSamplesDir, "golang", GolangHelloWorldWebApp);
@@ -52,7 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: $"{imageTestHelper.GetBuildImage($"full-{debianFlavor}")}",
+                imageName: imageTestHelper.GetBuildImage(imageTag),
                 output: _output,
                 volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                 environmentVariables: null,

@@ -54,9 +54,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliImage("cli-buster"));
-                data.Add("14.19.1", imageTestHelper.GetCliImage("cli-buster"));
-                data.Add("16.14.2", imageTestHelper.GetCliImage("cli-buster"));
+                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
                 return data;
             }
         }
@@ -293,7 +293,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage("stretch"),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -309,8 +309,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("github-actions-bullseye")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBullseye)]
         public void NodeFails_ToInstallStretchSdk_OnNonStretchImage(string imageTag)
         {
             // Arrange
@@ -349,7 +349,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [InlineData("18.0.0", "github-actions-bullseye")]
+        [InlineData("18.0.0", ImageTestHelperConstants.GitHubActionsBullseye)]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationOnBullseyeImage(string version, string buildImageName)
         {
             // Arrange

@@ -27,8 +27,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("github-actions")]
-        [InlineData("latest")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public async Task NodeApp_MicrosoftSqlServerDBAsync(string imageTag)
         {
             // Arrange
