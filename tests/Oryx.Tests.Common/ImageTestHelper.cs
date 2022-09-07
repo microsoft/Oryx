@@ -414,6 +414,7 @@ namespace Microsoft.Oryx.Tests.Common
                 {
                     { "14", "debian-bullseye" },
                     { "16", "debian-bullseye" },
+                    { "18", "debian-bullseye" },
                     { "dynamic", "debian-buster" },
                 }
             },
@@ -437,6 +438,7 @@ namespace Microsoft.Oryx.Tests.Common
                     { "3.8", "debian-bullseye" },
                     { "3.9", "debian-buster" },
                     { "3.10", "debian-bullseye" },
+                    { "3.11", "debian-bullseye" },
                     { "dynamic", "debian-buster" },
                 }
             },
