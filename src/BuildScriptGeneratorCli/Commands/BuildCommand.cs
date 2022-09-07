@@ -129,6 +129,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var oryxVersion = Program.GetVersion();
             var oryxCommitId = Program.GetMetadataValue(Program.GitCommit);
             var oryxReleaseTagName = Program.GetMetadataValue(Program.ReleaseTagName);
+
+            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+
             var buildEventProps = new Dictionary<string, string>()
             {
                 { "oryxVersion", oryxVersion },
@@ -139,11 +142,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     string.Join(' ', environment.GetCommandLineArgs())
                 },
                 { "sourceRepoCommitId", sourceRepoCommitId },
+                { "platformName", this.PlatformName },
+                { "userCallerId", options.UserCallerId },
             };
 
             logger.LogEvent("BuildRequested", buildEventProps);
-
-            var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
             var beginningOutputLog = GetBeginningCommandOutputLog();
             console.WriteLine(beginningOutputLog);
