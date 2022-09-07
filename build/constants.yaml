@@ -155,7 +155,7 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20220827.1
+    php-runtime-base-tag: 20220906.1
     php-fpm-runtime-base-tag: 20220827.1
     composer-version: 2.0.8
     # retrieved from https://composer.github.io/pubkeys.html
