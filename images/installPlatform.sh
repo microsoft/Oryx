@@ -43,17 +43,14 @@ VERSION="$2"
 
 debianFlavor=$DEBIAN_FLAVOR
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
-
-sdkStorageAccountUrl="$ORYX_SDK_STORAGE_BASE_URL"
-if [ -z "$sdkStorageAccountUrl" ]; then
-  sdkStorageAccountUrl=$DEV_SDK_STORAGE_BASE_URL
-fi
-
 if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
   # Use default sdk file name
 	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
-else
+elif [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "focal-scm" ]; then
   fileName="$PLATFORM_NAME-$debianFlavor-$VERSION.tar.gz"
+else
+  # Bullseye SDKs are not supported so using buster version for now.
+  fileName="$PLATFORM_NAME-buster-$VERSION.tar.gz"
 fi
 
 platformDir="/opt/$PLATFORM_NAME"
@@ -63,7 +60,7 @@ if [ -z "$targetDir" ]; then
 fi
 
 START_TIME=$SECONDS
-downloadFileAndVerifyChecksum $PLATFORM_NAME $VERSION $fileName $sdkStorageAccountUrl
+downloadFileAndVerifyChecksum $PLATFORM_NAME $VERSION $fileName
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo "Downloaded and verified checksum in $ELAPSED_TIME sec(s)."
 
