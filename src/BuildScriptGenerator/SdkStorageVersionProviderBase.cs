@@ -33,28 +33,48 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         protected IHttpClientFactory HttpClientFactory { get; }
 
-        protected PlatformVersionInfo GetAvailableVersionsFromStorage(
-            string platformName,
-            string versionMetadataElementName)
+        /// <summary>
+        /// Pulls all files in the <paramref name="platformName"/> storage container and determines
+        /// the supported and default versions.
+        /// -----------
+        /// We determine what versions are available differently based on the OS type where the oryx
+        /// command was run.
+        /// For <see cref="OsTypes.DebianStretch"/> we use the existance of <see cref="SdkStorageConstants.LegacySdkVersionMetadataName"/>
+        /// metadata as the indicator for a supported version.
+        /// For other <see cref="OsTypes"/> we use both <see cref="SdkStorageConstants.SdkVersionMetadataName"/> and
+        /// matching <see cref="SdkStorageConstants.OsTypeMetadataName"/> metadata to indicate a matching version.
+        /// </summary>
+        /// <param name="platformName">Name of the platform to get the supported versions for</param>
+        /// <returns><see cref="PlatformVersionInfo"/> containing supported and default versions</returns>
+        protected PlatformVersionInfo GetAvailableVersionsFromStorage(string platformName)
         {
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
-
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platformName);
-            var blobList = httpClient.GetStringAsync(url).Result;
-            var xdoc = XDocument.Parse(blobList);
+            var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient);
             var supportedVersions = new List<string>();
 
+            var isStretch = string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase);
+
+            var sdkVersionMetadataName = isStretch
+                ? SdkStorageConstants.LegacySdkVersionMetadataName
+                : SdkStorageConstants.SdkVersionMetadataName;
             foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
             {
                 var childElements = metadataElement.Elements();
-                var versionElement = childElements.Where(e => string.Equals(
-                        versionMetadataElementName,
-                        e.Name.LocalName,
-                        StringComparison.OrdinalIgnoreCase))
+                var versionElement = childElements
+                    .Where(e => string.Equals(sdkVersionMetadataName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
                     .FirstOrDefault();
-                if (versionElement != null)
+
+                var osTypeElement = childElements
+                    .Where(e => string.Equals(SdkStorageConstants.OsTypeMetadataName, e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault();
+
+                // if a matching version element is not found, we do not add as a supported version
+                // if the os type is stretch and we find a blob with a 'Version' metadata, we know it is a supported version
+                // otherwise, we check the blob for 'Sdk_version' metadata AND ensure 'Os_type' metadata matches current debianFlavor
+                if (versionElement != null &&
+                    (isStretch || (osTypeElement != null && string.Equals(this.commonOptions.DebianFlavor, osTypeElement.Value, StringComparison.OrdinalIgnoreCase))))
                 {
                     supportedVersions.Add(versionElement.Value);
                 }
@@ -68,7 +88,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var httpClient = this.HttpClientFactory.CreateClient("general");
 
-            var defaultVersionUrl = $"{sdkStorageBaseUrl}/{platformName}/{SdkStorageConstants.DefaultVersionFileName}";
+            var defaultFile = string.IsNullOrEmpty(this.commonOptions.DebianFlavor)
+                    || string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
+                ? SdkStorageConstants.DefaultVersionFileName
+                : $"{SdkStorageConstants.DefaultVersionFilePrefix}.{this.commonOptions.DebianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
+            var defaultVersionUrl = $"{sdkStorageBaseUrl}/{platformName}/{defaultFile}";
+
             this.logger.LogDebug("Getting the default version from url {defaultVersionUrl}.", defaultVersionUrl);
 
             // get default version

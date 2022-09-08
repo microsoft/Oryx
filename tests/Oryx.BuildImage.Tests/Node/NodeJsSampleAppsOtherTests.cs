@@ -49,6 +49,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
+        [Fact, Trait("category", "cli")]
+        public void PipelineTestInvocationCli()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage());
+        }
+
+        [Fact, Trait("category", "cli-buster")]
+        public void PipelineTestInvocationCliBuster()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+        }
+
         private void GeneratesScript_AndBuilds(string buildImageName)
         {
             // Please note:
@@ -692,9 +706,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(_hostSamplesDir, "nodejs", "node-nested-nodemodules"));
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=another-directory")
                 .AddFileExistsCheck($"{appDir}/another-directory/kudu-bug-0.0.0.tgz")
                 .ToString();
@@ -725,9 +737,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(_hostSamplesDir, "nodejs", "monorepo-lerna-yarn"));
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(
                     SettingsKeys.EnableNodeMonorepoBuild,
                     true.ToString())

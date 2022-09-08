@@ -41,6 +41,10 @@ while (( "$#" )); do
       imageTypeToBuild=$2
       shift 2
       ;;
+    -s|--sdk-storage-account-url)
+      sdkStorageAccountUrl=$2
+      shift 2
+      ;;
     --) # end argument parsing
       shift
       break
@@ -60,6 +64,13 @@ eval set -- "$PARAMS"
 
 echo
 echo "Image type to build is set to: $imageTypeToBuild"
+
+if [ -z "$sdkStorageAccountUrl" ]; then
+	sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
+fi
+
+echo
+echo "SDK storage account url set to: $sdkStorageAccountUrl"
 
 declare -r supportFilesImageName="oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build"
 
@@ -104,6 +115,9 @@ function createImageNameWithReleaseTag() {
 
 		# Write image list to artifacts file
 		echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	else
+		# Write non-ci image to artifacts file as is, for local testing
+		echo "$imageNameToBeTaggedUniquely" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 	fi
 }
 
@@ -175,16 +189,13 @@ function buildGitHubActionsImage() {
 	local devImageTag=github-actions
 	local builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
 
-	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+	if [ -z "$debianFlavor" ] ; then
 		debianFlavor="stretch"
-		echo "Debian Flavor is: "$debianFlavor
-	elif [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "bullseye" ]; then
-		debianFlavor=$debianFlavor
-		devImageTag=$devImageTag-$debianFlavor
-		echo "dev image tag: "$devImageTag
-		builtImageName=$builtImageName-$debianFlavor
-		echo "built image name: "$builtImageName
 	fi
+	devImageTag=$devImageTag-debian-$debianFlavor
+	echo "dev image tag: "$devImageTag
+	builtImageName=$builtImageName-debian-$debianFlavor
+	echo "built image name: "$builtImageName
 
 	buildBuildScriptGeneratorImage
 	
@@ -192,7 +203,7 @@ function buildGitHubActionsImage() {
 	echo "-------------Creating build image for GitHub Actions-------------------"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
@@ -223,17 +234,14 @@ function buildJamStackImage() {
 
 	buildGitHubActionsImage $debianFlavor
 
-	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+	if [ -z "$debianFlavor" ]; then
 		debianFlavor="stretch"
-		parentImageTag=actions
-	elif  [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "bullseye" ]; then
-		debianFlavor=$debianFlavor
-		parentImageTag=actions-$debianFlavor
-		devImageTag=$devImageTag-$debianFlavor
-		echo "dev image tag: "$devImageTag
-		builtImageName=$builtImageName-$debianFlavor
-		echo "built image name: "$builtImageName
 	fi
+	parentImageTag=actions-debian-$debianFlavor
+	devImageTag=$devImageTag-debian-$debianFlavor
+	echo "dev image tag: "$devImageTag
+	builtImageName=$builtImageName-debian-$debianFlavor
+	echo "built image name: "$builtImageName
 
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
@@ -264,17 +272,17 @@ function buildLtsVersionsImage() {
 	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
 
 	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
-		echo "dev image tag: "$devImageTag
-		echo "built image name: "$builtImageName
+		debianFlavor="stretch"
 	else
-		devImageTag=$devImageTag-$debianFlavor
-		builtImageName=$builtImageName-$debianFlavor
-		ltsBuildImageDockerFile="$BUILD_IMAGES_LTS_VERSIONS_BUSTER_DOCKERFILE"
-		testImageName=$testImageName-buster
-		echo "dev image tag: "$devImageTag
-		echo "built image name: "$builtImageName
-		echo "test image name: "$testImageName
+		testImageFile=$ORYXTESTS_LTS_VERSIONS_BUSTER_BUILDIMAGE_DOCKERFILE
+		ltsBuildImageDockerFile=$BUILD_IMAGES_LTS_VERSIONS_BUSTER_DOCKERFILE
 	fi
+	testImageName=$testImageName-debian-$debianFlavor
+	devImageTag=$devImageTag-debian-$debianFlavor
+	builtImageName=$builtImageName-debian-$debianFlavor
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
+	echo "test image name: "$testImageName
 
 	buildBuildScriptGeneratorImage
 	buildGitHubRunnersBaseImage $debianFlavor
@@ -285,7 +293,7 @@ function buildLtsVersionsImage() {
 	echo "-------------Creating lts versions build image-------------------"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$ltsBuildImageDockerFile" \
 		.
@@ -310,11 +318,15 @@ function buildLtsVersionsImage() {
 }
 
 function buildLatestImages() {
-	buildLtsVersionsImage
+	local debianFlavor=$1
+	if [ -z "$debianFlavor" ] ; then
+		debianFlavor="stretch"
+	fi
+	buildLtsVersionsImage $debianFlavor
 
 	echo
 	echo "-------------Creating latest build images-------------------"
-	local builtImageName="$ACR_BUILD_IMAGES_REPO"
+	local builtImageName="$ACR_BUILD_IMAGES_REPO:debian-$debianFlavor"
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
@@ -324,17 +336,25 @@ function buildLatestImages() {
 
 	createImageNameWithReleaseTag $builtImageName
 
+	# retag latest image with no tag so that it by default can be pulled 4 separate ways:
+	# - build
+	# - build:latest
+	# - build:<releaseTag>
+	# - build:<osType>-<osVersion>-<releaseTag>
+	docker tag $builtImageName "$ACR_BUILD_IMAGES_REPO"
+	createImageNameWithReleaseTag $ACR_BUILD_IMAGES_REPO
+
 	echo
 	echo "$builtImageName image history"
 	docker history $builtImageName
 	echo
 
-	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:debian-$debianFlavor"
 
 	echo
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
-	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO"
+	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:debian-$debianFlavor"
 	docker build -t $testImageName \
 		-f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
 		.
@@ -350,7 +370,7 @@ function buildVsoFocalImage() {
 	local builtImageName="$ACR_BUILD_VSO_FOCAL_IMAGE_NAME"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE" \
 		.
@@ -361,10 +381,7 @@ function buildVsoFocalImage() {
 	echo "$builtImageName image history"
 	docker history $builtImageName
 
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:vso-focal"
-
-	echo
-	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:vso-ubuntu-focal"
 }
 
 function buildVsoImage() {
@@ -412,24 +429,25 @@ function buildCliImage() {
 	buildBuildScriptGeneratorImage
 	
 	local debianFlavor=$1
-	local devImageTag=cli
+	local devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO"
+	local devImageTag="debian-$debianFlavor"
 	local builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
 
-	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+	if [ -z "$debianFlavor" ] || [ $debianFlavor == "stretch" ] ; then
 		debianFlavor="stretch"
-	elif  [ "$debianFlavor" == "buster" ]; then
-		debianFlavor="buster"
-		devImageTag=$devImageTag-$debianFlavor
-		echo "dev image tag: "$devImageTag
-		builtImageName=$builtImageName-$debianFlavor
-		echo "built image name: "$builtImageName
+		builtImageName="$builtImageName:debian-$debianFlavor"
+	else
+		builtImageName="$builtImageName-$debianFlavor:debian-$debianFlavor"
+		devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO-$debianFlavor"
 	fi
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
 
 	echo
 	echo "-------------Creating CLI image-------------------"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
@@ -441,10 +459,7 @@ function buildCliImage() {
 	echo "$builtImageName image history"
 	docker history $builtImageName
 
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:$devImageTag"
-
-	echo
-	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	docker tag $builtImageName "$devImageRepo:$devImageTag"
 }
 
 function buildFullImage() {
@@ -454,21 +469,19 @@ function buildFullImage() {
 	local devImageTag=full
 	local builtImageName="$ACR_BUILD_FULL_IMAGE_NAME"
 
-	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+	if [ -z "$debianFlavor" ] ; then
 		debianFlavor="stretch"
-	elif  [ "$debianFlavor" == "buster" ]; then
-		debianFlavor="buster"
-		devImageTag=$devImageTag-$debianFlavor
-		echo "dev image tag: "$devImageTag
-		builtImageName=$builtImageName-$debianFlavor
-		echo "built image name: "$builtImageName
 	fi
+	devImageTag=$devImageTag-debian-$debianFlavor
+	echo "dev image tag: "$devImageTag
+	builtImageName=$builtImageName-debian-$debianFlavor
+	echo "built image name: "$builtImageName
 
 	echo
 	echo "-------------Creating full image-------------------"
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_FULL_DOCKERFILE" \
@@ -481,9 +494,6 @@ function buildFullImage() {
 	docker history $builtImageName
 
 	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:$devImageTag"
-
-	echo
-	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 }
 
 function buildBuildPackImage() {
@@ -513,6 +523,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildCliImage
 	buildBuildPackImage
 	buildFullImage "buster"
+	buildFullImage "bullseye"
 elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
 	buildGitHubActionsImage "buster"
@@ -541,6 +552,7 @@ elif [ "$imageTypeToBuild" == "ltsversions-buster" ]; then
 elif [ "$imageTypeToBuild" == "latest" ]; then
 	buildLatestImages
 elif [ "$imageTypeToBuild" == "full" ]; then
+	buildFullImage "bullseye"
 	buildFullImage "buster"
 elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoFocalImage

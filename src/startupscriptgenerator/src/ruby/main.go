@@ -10,6 +10,7 @@ import (
 	"common/consts"
 	"flag"
 	"fmt"
+	"path/filepath"
 	"strings"
 )
 
@@ -73,16 +74,19 @@ func main() {
 		configuration.PreRunCommand = viperConfig.GetString(consts.PreRunCommandEnvVarName)
 
 		gen := RubyStartupScriptGenerator{
-			SourcePath:                      fullAppPath,
-			UserStartupCommand:              *userStartupCommandPtr,
-			DefaultAppFilePath:              fullDefaultAppFilePath,
-			RailEnv:                         *railEnvironment,
-			BindPort:                        *bindPortPtr,
-			Manifest:                        buildManifest,
-			Configuration:                   configuration,
+			SourcePath:         fullAppPath,
+			UserStartupCommand: *userStartupCommandPtr,
+			DefaultAppFilePath: fullDefaultAppFilePath,
+			RailEnv:            *railEnvironment,
+			BindPort:           *bindPortPtr,
+			Manifest:           buildManifest,
+			Configuration:      configuration,
 		}
 		script := gen.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, script)
+
+		userRunCommand := common.ParseUserRunCommand(filepath.Join(fullAppPath, consts.AppSvcFileName))
+		common.AppendScript(*outputPathPtr, userRunCommand)
 	}
 
 	if setupEnvCommand.Parsed() {

@@ -1,4 +1,8 @@
 parameters:
+  - name: storageAccountUrl
+    displayName: SDK storage account URL for testing
+    type: string
+    default: https://oryxsdksdev.blob.core.windows.net
   - name: buildImages
     type: object
     default:
@@ -26,6 +30,9 @@ parameters:
       - 
         key: Cli
         value: cli
+      - 
+        key: CliBuster
+        value: cli-buster
       - 
         key: Buildpack
         value: buildpack
@@ -96,6 +103,7 @@ stages:
               echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
               echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
               echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$(Build.BuildNumber)"
+              echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
             displayName: 'Set variables'
           - template: templates/_buildTemplate.yml
             parameters:
@@ -120,9 +128,12 @@ stages:
           echo "##vso[task.setvariable variable=PushBuildImages;]false"
           echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
           echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$(Build.BuildNumber)"
+          echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
         displayName: 'Set variables'
       - template: templates/_buildTemplate.yml
 
     - template: templates/_integrationJobTemplate.yml
+      parameters:
+        storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
 trigger: none

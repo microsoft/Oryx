@@ -5,6 +5,16 @@
     app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
     scm-commit-id-env-var-name: SCM_COMMIT_ID
     php-origin: PHP_ORIGIN
+    php-fpm-configuration-file: "/usr/local/etc/php-fpm.d/www.conf"
+    php-fpm-max-children-env-var-name: "FPM_MAX_CHILDREN"
+    php-fpm-start-servers-env-var-name: "FPM_START_SERVERS"
+    php-fpm-min-spare-servers-env-var-name: "FPM_MIN_SPARE_SERVERS"
+    php-fpm-max-spare-servers-env-var-name: "FPM_MAX_SPARE_SERVERS"
+    php-fpm-max-children-setting-name: "pm.max_children"
+    php-fpm-start-servers-setting-name: "pm.start_servers"
+    php-fpm-min-spare-servers-setting-name: "pm.min_spare_servers"
+    php-fpm-max-spare-servers-setting-name: "pm.max_spare_servers"
+    debian-flavor: DEBIAN_FLAVOR
     user-app-insights-key-env: APPINSIGHTS_INSTRUMENTATIONKEY
     user-app-insights-agent-extension-version: ApplicationInsightsAgent_EXTENSION_VERSION
     user-app-insights-connection-string-env: APPLICATIONINSIGHTS_CONNECTION_STRING
@@ -28,12 +38,12 @@
     dot-net-core-21-sdk-version: 2.1.818
     dot-net-core-22-sdk-version: 2.2.207
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.420
+    dot-net-core-31-sdk-version: 3.1.422
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.408
-    dot-net-60-sdk-version: 6.0.301
+    dot-net-60-sdk-version: 6.0.400
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.100-preview.6.22352.1
+    dot-net-70-sdk-version: 7.0.100-preview.7.22377.5
     # Ensure that the below list of runtime versions are sorted in ascending order
     runtime-versions: [1.0, 1.1, 2.0, 2.1, 2.2, 3.0, 3.1, 5.0, 6.0, 7.0]    
   outputs:
@@ -45,7 +55,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20220713.1
+    dot-net-core-runtime-base-tag: 20220822.2
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
 
@@ -64,31 +74,45 @@
     aspnet-core-app-30: 3.0.3
     aspnet-core-app-30-sha: d88366ac20204c5acb4b80bc40396d608d6c067b25baeef54204e77dde48fb515bd463743745a0982ba8c9182fc751306a4e796f91060b2d013ffbea7d9a2dc8
 
-    net-core-app-31: 3.1.26
-    net-core-app-31-sha: 03676885ec4d1f5ba184678a6b774f8e385abfff800a6bcee6f85557b39e9cdde500be49b5d6c956fc95cdfb9f33d31e467548bb498a52bc4fd639b3cb87c8d0
-    aspnet-core-app-31: 3.1.26
-    aspnet-core-app-31-sha: 8bbf06012cdd2cff23c592e0d3c49d032d77add4dda8fba1d7ba73e6cc4ae97b1676908b14cdc7fc2fe723302e1efd27a44b48190a91d69c0e41bb5edb47501f
+    net-core-app-31: 3.1.28
+    net-core-app-31-sha: b0760d463b8935a14bc247899b692038ded7d476a0cf2ed262eaac8ee6840350b29738cd1ab4961ba93b05f1802e7aba6e3c5e27e06ec9cb5e244149c52adea4
+    aspnet-core-app-31: 3.1.28
+    aspnet-core-app-31-sha: fd66f9c0d0e9ed57abe5f81650c2ff49c694e05927e5280dbbdee1a9eb4299f0710bdc06ae0af0737c0a0584970b24d3eb952434b45ad8984fe3e37ca95cc1b1
     
     net-core-app-50: 5.0.17
     net-core-app-50-sha: a9c4784930a977abbc42aff1337dda06ec588c1ec4769a59f9fcab4d5df4fc9efe65f8e61e5433db078f67a94ea2dfe870c32c482a50d4c16283ffacacff4261
     aspnet-core-app-50: 5.0.17
     aspnet-core-app-50-sha: d8e87804e9e86273c6512785bd5a6f0e834ff3f4bbebc11c4fcdf16ab4fdfabd0d981a756955267c1aa9bbeec596de3728ce9b2e6415d2d80daef0d999a5df6d
 
-    net-core-app-60: 6.0.6
-    net-core-app-60-sha: 4fe090f934f0ba4e64a63dfccbac97d49b19a913f2a7d73abe85efd604ee5577cefd65d6e0dc02086e9fa28be4ce2bbaecb33ea70d022714138ed54deea58c72
-    aspnet-core-app-60: 6.0.6
-    aspnet-core-app-60-sha: 1a5c0f85820f0eb589700df94de6dbff45fe4089a37f1cd5b1fac33476a2cbd8d5c6f129e55b3716f5a7a2616f1a5a720c52238f21b28a510a3e5c8bcb8c516c
+    net-core-app-60: 6.0.8
+    net-core-app-60-sha: c776813bf87c25766b31a3a514d124d0526086ceea514a10f104d70ba435c91a6bd3c8bf10c6662b4df2b13ffcdf385518f3418e51d05cccec6a2cf2c26099de
+    aspnet-core-app-60: 6.0.8
+    aspnet-core-app-60-sha: b74676ca0d2f47a95533739fd36977bb1552890a81820ee51b29b3d6514398f0952362417bbb31fad4bdf031803cb3e8d2aaf065dfb154a78a1b471a536d4abd
 
-    net-core-app-70: 7.0.0-preview.6.22324.4
-    net-core-app-70-sha: 304b509b478fbed7e5ec97d9c75821249b933fb5c814c4f14078611d17cd8f95ccdf6c48049c02ed2f033ece61acc17e0a23a59c2a6aca9d191892d0224af45d
-    aspnet-core-app-70: 7.0.0-preview.6.22330.3
-    aspnet-core-app-70-sha: a7aa5f3b788645a39957fa27cce84ca1e7dcfcf7a334d52097e891d3b26b8c8ba981c1f3bbab17831110339e1e62a74e6a54eee15311b8294a2d2c845a07cdbd
-
-
+    net-core-app-70: 7.0.0-preview.7.22375.6
+    net-core-app-70-sha: 9814a4e5a55b7137ec27b423ae4a557792af6cced035ab42876de012cb160adabbe054f043b61ed21a8385deb62075ab0a028f6599954ed3519ffe8cf824d30a
+    aspnet-core-app-70: 7.0.0-preview.7.22376.6
+    aspnet-core-app-70-sha: 7d4861a28a42df31a7e2c740d17e1b0eb78e860a2ccdb25eec754a2098593a3adac00687294209d847a8fa618019a2d1b1d5fdd3f9aea37ffdc19164c862c558
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
       namespace: Microsoft.Oryx.BuildScriptGenerator.DotNetCore
+    - type: shell
+      directory: build
+      file-name-prefix: __
+- name: final-stretch-versions
+  constants:
+    final-stretch-dot-net-core-31-sdk-version: 3.1.420
+    final-stretch-dot-net-core-app-31-run-time-version: 3.1.26
+    final-stretch-aspnet-core-app-31-run-time-version: 3.1.26
+
+    final-stretch-dot-net-60-sdk-version: 6.0.301
+    final-stretch-dot-net-core-app-60-run-time-version: 6.0.6
+    final-stretch-aspnet-core-app-60-run-time-version: 6.0.6
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
     - type: shell
       directory: build
       file-name-prefix: __
@@ -101,6 +125,8 @@
     golang17-tar-sha256: 6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d
     golang18-version: 1.18
     golang18-tar-sha256: e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f
+    golang19-version: 1.19
+    golang19-tar-sha256: 464b6b66591f6cf055bc5df90a9750bf5fbc9d038722bb84a9d56a2bea974be6
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -110,16 +136,17 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-runtime-base-tag: 20220609.1
+    python-runtime-base-tag: 20220609.2
     pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
     python37-version: 3.7.12
     python38-version: 3.8.12
     python39-version: 3.9.7
-    python310-version: 3.10.0
+    python310-version: 3.10.4
+    python311-version: 3.11.0b1
     # Ensure that the below list of runtime versions are sorted in ascending order
-    runtime-versions: [2.7, 3.6, 3.8, 3.9, 3.10]
+    runtime-versions: [2.7, 3.6, 3.8, 3.9, 3.10, 3.11]
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -129,25 +156,26 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20220707.2
-    php-fpm-runtime-base-tag: 20220713.2
+    php-runtime-base-tag: 20220827.1
+    php-fpm-runtime-base-tag: 20220827.1
     composer-version: 2.0.8
-    composer-setup-sha384: 906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8
+    # retrieved from https://composer.github.io/pubkeys.html
+    composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
     composer1-9-version: 1.9.3
     composer1-10-version: 1.10.19
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
     # hashes are for .tar.xz
-    php81-version: 8.1.6
+    php81-version: 8.1.9
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php81-tar-sha256: da38d65bb0d5dd56f711cd478204f2b62a74a2c2b0d2d523a78d6eb865b2364c
-    php80-version: 8.0.19
+    php81-tar-sha256: 53477e73e6254dc942b68913a58d815ffdbf6946baf61a1f8ef854de524c27bf
+    php80-version: 8.0.22
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: ba62219c4b0486cbb2a04f0796749a46b0ee1f5a142ed454212b4e2460cb0fab
-    php74-version: 7.4.28
+    php80-tar-sha256: 130937c0fa3050cd33d6c415402f6ccbf0682ae83eb8d39c91164224ddfe57f1
+    php74-version: 7.4.30
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
-    php74-tar-sha256: a04014cd1646b90547907e2e0ac5371594533960de317b6c7ac70bcb42db92fb
+    php74-tar-sha256: ea72a34f32c67e79ac2da7dfe96177f3c451c3eefae5810ba13312ed398ba70d
     php73-version: 7.3.27
     php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
     php73-tar-sha256: 65f616e2d5b6faacedf62830fa047951b0136d5da34ae59e6744cbaf5dca148d
@@ -196,6 +224,7 @@
   constants:
     compressed-output-file-name: oryx_output.tar.gz
     build-manifest-file-name: oryx-manifest.toml
+    os-type-file-name: .ostype
     build-commands-file-name: oryx-build-commands.txt
     run-script-generator-dir: /opt/startupcmdgen
     node-app-insights-loader-file-name: applicationinsights/out/Bootstrap/Oryx.js
@@ -204,6 +233,19 @@
     bash: /bin/bash
     benv: /opt/oryx/benv
     pre-run-command-env-var-name: PRE_RUN_COMMAND
+    app-svc-file-name: appsvc.yaml
+  outputs:
+    - type: csharp
+      directory: src/BuildScriptGenerator.Common
+      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+    - type: go
+      directory: src/startupscriptgenerator/src/common/consts
+- name: os-types
+  constants:
+    debian-stretch: stretch
+    debian-bullseye: bullseye
+    debian-buster: buster
+    ubuntu-focal-scm: focal-scm
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator.Common
@@ -212,7 +254,7 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20220607.3
+    node-runtime-base-tag: 20220610.1
     yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
@@ -222,6 +264,7 @@
     node12-version: 12.22.11
     node14-version: 14.19.1
     node16-version: 16.14.2
+    node18-version: 18.2.0
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 6.14.15
@@ -229,7 +272,7 @@
     runtime-versions: [4.4, 4.5, 4.8, 6, 6.2, 6.6, 6.9, 6.10,
                       6.11, 8, 8.0, 8.1, 8.2, 8.8, 8.9, 8.11,
                       8.12, 9.4, 10, 10.1, 10.10, 10.12, 10.14,
-                      12, 14, 16]
+                      12, 14, 16, 18]
   outputs:
     - type: shell
       directory: build
@@ -241,13 +284,25 @@
   constants:
     enable-dynamic-install-key: ENABLE_DYNAMIC_INSTALL
     sdk-storage-base-url-key-name: ORYX_SDK_STORAGE_BASE_URL
+    testing-sdk-storage-url-key-name: ORYX_TEST_SDK_STORAGE_URL
     dev-sdk-storage-base-url: https://oryxsdksdev.blob.core.windows.net
+    sandbox-sdk-storage-base-url: https://oryxsdkssandbox.blob.core.windows.net
     prod-sdk-storage-base-url: https://oryxsdksprod.blob.core.windows.net
     prod-sdk-cdn-storage-base-url: https://oryx-cdn.microsoft.io
     default-version-file-name: defaultVersion.txt
+    default-version-file-prefix: defaultVersion
+    default-version-file-type: txt
     versions-to-build-file-name: versionsToBuild.txt
-    container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata'
+    container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata&marker={2}'
     sdk-download-sentinel-file-name: .oryx-sdkdownload-sentinel
+    # The following metadata names control the field that is uploaded to sdk storage alongside each sdk.
+    # Legacy is used to provide backwards compatibility for images with an older CLI, as they depend on identifying
+    # supported versions by searching for all SDKs that contain a Version metadata field.
+    sdk-version-metadata-name: Sdk_version
+    legacy-sdk-version-metadata-name: Version
+    dotnet-runtime-version-metadata-name: Dotnet_runtime_version
+    legacy-dotnet-runtime-version-metadata-name: Runtime_version
+    os-type-metadata-name: Os_type
   outputs:
     - type: shell
       directory: images

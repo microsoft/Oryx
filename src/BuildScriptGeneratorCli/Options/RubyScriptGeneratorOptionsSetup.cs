@@ -23,6 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
         public void Configure(RubyScriptGeneratorOptions options)
         {
             options.RubyVersion = this.GetStringValue(SettingsKeys.RubyVersion);
+            options.DefaultVersion = this.GetStringValue(SettingsKeys.RubyDefaultVersion);
             options.CustomBuildCommand = this.GetStringValue(SettingsKeys.CustomBuildCommand);
         }
     }

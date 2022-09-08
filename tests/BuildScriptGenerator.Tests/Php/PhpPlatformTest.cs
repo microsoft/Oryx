@@ -3,14 +3,17 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Castle.Core.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Php;
+using System.Linq;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
@@ -437,6 +440,38 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             Assert.NotNull(actualScriptSnippet);
             Assert.Contains(expectedPhpScript, actualScriptSnippet);
             Assert.Contains(expectedPhpComposerScript, actualScriptSnippet);
+        }
+
+        [Theory]
+        [InlineData(null, "7.4.30", null, "7.4.30")]
+        [InlineData(null, "7.4.30", "7.3.1", "7.4.30")]
+        [InlineData(null, null, "7.3.1", "7.3.1")]
+        [InlineData("8.0.6", "7.4.30", "7.3.1", "8.0.6")]
+        public void Detect_ReturnsExpectedVersion_BasedOnHierarchy(
+            string detectedVersion,
+            string envVarDefaultVersion,
+            string detectedDefaultVersion,
+            string expectedSdkVersion)
+        {
+            // Arrange
+            var repo = new MemorySourceRepo();
+            repo.AddFile("<?php echo true; ?>", "foo.php");
+            var context = CreateContext(repo);
+            var options = new PhpScriptGeneratorOptions();
+            options.PhpDefaultVersion = envVarDefaultVersion;
+            var platform = CreatePhpPlatform(
+                detectedVersion: detectedVersion,
+                defaultVersion: detectedDefaultVersion,
+                phpScriptGeneratorOptions: options,
+                supportedPhpVersions: new[] { detectedVersion, detectedDefaultVersion, envVarDefaultVersion }.Where(x => !x.IsNullOrEmpty()).ToArray());
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(PhpConstants.PlatformName, result.Platform);
+            Assert.Equal(expectedSdkVersion, result.PlatformVersion);
         }
 
         private PhpPlatform CreatePhpPlatform(

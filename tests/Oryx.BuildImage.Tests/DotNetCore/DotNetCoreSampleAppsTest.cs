@@ -32,27 +32,41 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLatest()
         {
             Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.BuildImageName);
-            GDIPlusLibrary_IsPresentInTheImage("latest");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.LatestStretchTag);
         }
 
         [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
             Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.LtsVersionsBuildImageName);
-            GDIPlusLibrary_IsPresentInTheImage("lts-versions");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.LtsVersionsStretch);
         }
 
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
-            GDIPlusLibrary_IsPresentInTheImage("vso-focal");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.VsoFocal);
         }
 
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocation()
         {
-            GDIPlusLibrary_IsPresentInTheImage("github-actions");
-            GDIPlusLibrary_IsPresentInTheImage("github-actions-buster");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsStretch);
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        [Fact, Trait("category", "cli")]
+        public void PipelineTestInvocationCli()
+        {
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliRepository);
+            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage());
+        }
+
+        [Fact, Trait("category", "cli-buster")]
+        public void PipelineTestInvocationCliBuster()
+        {
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliBusterRepository);
+            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
         }
 
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
@@ -274,8 +288,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
-        public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion()
+        [Theory, Trait("category", "latest")]
+        [InlineData(Settings.BuildImageName)]
+        public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(string imageName)
         {
             // Arrange
             var appName = "NetCoreApp31.MvcApp";
@@ -286,14 +301,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
-                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp31}")
+                $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = imageName,
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -306,7 +321,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion), 
+                        string.Format(SdkVersionMessageFormat, FinalStretchVersions.FinalStretchDotNetCore31SdkVersion), 
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -325,7 +340,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddCommand($"echo RandomText >> {appDir}/Program.cs") // triggers a failure
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
-                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp31}")
+                $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion}")
                 .ToString();
             // Regex will match:
             // "yyyy-mm-dd hh:mm:ss"|ERROR|Micro
@@ -399,7 +414,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform dotnet " +
-                $"--platform-version {DotNetCoreRunTimeVersions.NetCoreApp60}")
+                $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion}")
                 .ToString();
 
             // Act
@@ -417,7 +432,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNet60SdkVersion), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, FinalStretchVersions.FinalStretchDotNet60SdkVersion), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -833,9 +848,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir}/MessageFunction -o {appOutputDir} --apptype functions --platform dotnet " +
-                $"--platform-version 3.1")
+                $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .ToString();
@@ -859,7 +875,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore31SdkVersion),
+                        string.Format(SdkVersionMessageFormat, FinalStretchVersions.FinalStretchDotNetCore31SdkVersion),
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -907,7 +923,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-        //[InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion), Trait("category", "latest")]
         public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
         {
             // Arrange
@@ -1014,11 +1029,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("github-actions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("lts-versions")]
-        [InlineData("vso-focal")]
-        [InlineData("latest")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
+        [InlineData(ImageTestHelperConstants.VsoFocal)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public void GDIPlusLibrary_IsPresentInTheImage(string tagName)
         {
             // Arrange
@@ -1132,6 +1147,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/isolatedapp-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")

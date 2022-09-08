@@ -14,6 +14,37 @@ source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__sdkStorageConstants.sh
 
+# https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
+PARAMS=""
+while (( "$#" )); do
+  case "$1" in
+    -s|--sdk-storage-account-url)
+      sdkStorageAccountUrl=$2
+      shift 2
+      ;;
+    --) # end argument parsing
+      shift
+      break
+      ;;
+    -*|--*=) # unsupported flags
+      echo "Error: Unsupported flag $1" >&2
+      exit 1
+      ;;
+    *) # preserve positional arguments
+      PARAMS="$PARAMS $1"
+      shift
+      ;;
+  esac
+done
+# set positional arguments in their proper place
+eval set -- "$PARAMS"
+
+if [ -z "$sdkStorageAccountUrl" ]; then
+  sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
+fi
+echo
+echo "SDK storage account url set to: $sdkStorageAccountUrl"
+
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
 runtimeImageDebianFlavor="buster"
@@ -94,7 +125,7 @@ for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
 
     # Set $getTagName_result to the following format: {platformName}:{platformVersion}
-    getTagName $dockerFileDir
+    getTagName $dockerFileDir debian-$runtimeImageDebianFlavor
 
     # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
     localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result"
@@ -110,7 +141,7 @@ for dockerFile in $dockerFiles; do
         -t $localImageTagName \
         --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
         --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
-        --build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
+        --build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
         --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION \
         $args \

@@ -43,4 +43,5 @@
   <ItemGroup>
     <Content Remove="..\SampleApps\python\django-app\Dockerfile" />
   </ItemGroup>
+
 </Project>

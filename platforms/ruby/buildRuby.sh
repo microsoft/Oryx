@@ -14,6 +14,7 @@ source $REPO_DIR/build/__rubyVersions.sh
 rubyPlatformDir="$REPO_DIR/platforms/ruby"
 targetDir="$volumeHostDir/ruby"
 debianFlavor=$1
+sdkStorageAccountUrl="$2"
 mkdir -p "$targetDir"
 
 builtRubyPrereqs=false
@@ -34,15 +35,23 @@ buildRuby() {
 	local sha="$2"
 	local imageName="oryx/ruby"
 	local rubySdkFileName=""
+	local metadataFile=""
+	local sdkVersionMetadataName=""
 
 	if [ "$debianFlavor" == "stretch" ]; then
 		# Use default python sdk file name
 		rubySdkFileName=ruby-$version.tar.gz
+		metadataFile="$targetDir/ruby-$version-metadata.txt"
+		# Continue adding the version metadata with the name of Version
+		# which is what our legacy CLI will use
+		sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
 	else
 		rubySdkFileName=ruby-$debianFlavor-$version.tar.gz
+		metadataFile="$targetDir/ruby-$debianFlavor-$version-metadata.txt"
+		sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 	fi 
 
-	if shouldBuildSdk ruby $rubySdkFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk ruby; then
+	if shouldBuildSdk ruby $rubySdkFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk ruby; then
 		if ! $builtRubyPrereqs; then
 			buildRubyPrereqsImage
 		fi
@@ -67,13 +76,14 @@ buildRuby() {
 
 		getSdkFromImage $imageName "$targetDir"
 
-		echo "Version=$version" >> "$targetDir/ruby-$version-metadata.txt"
+		echo "$sdkVersionMetadataName=$version" >> $metadataFile
+		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
 	fi
 }
 
 echo "Building Ruby..."
 echo
-buildPlatform "$rubyPlatformDir/versionsToBuild.txt" buildRuby
+buildPlatform "$rubyPlatformDir/versions/$debianFlavor/versionsToBuild.txt" buildRuby
 
 # Write the default version
-cp "$rubyPlatformDir/defaultVersion.txt" $targetDir 
+cp "$rubyPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"

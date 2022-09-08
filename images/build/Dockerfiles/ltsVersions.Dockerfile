@@ -49,7 +49,7 @@ RUN LANG="C.UTF-8" \
 FROM main AS intermediate
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
- 
+
 FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE
@@ -102,18 +102,20 @@ RUN set -ex \
     && DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
 	&& NUGET_PACKAGES="$nugetPackagesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
+    && . $buildDir/__finalStretchVersions.sh \
     && DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_31_SDK_VERSION \
+    && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_CORE_31_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPackagesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
+    && . $buildDir/__finalStretchVersions.sh \
     && ln -s $DOT_NET_CORE_21_SDK_VERSION 2-lts \
-    && ln -s $DOT_NET_CORE_31_SDK_VERSION 3-lts \
+    && ln -s $FINAL_STRETCH_DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s 3-lts lts \
     # Install Hugo
     && $imagesDir/build/installHugo.sh \
@@ -185,8 +187,9 @@ RUN set -ex \
     && rm -f /etc/apt/sources.list.d/buster.list \
     && echo "ltsversions" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
-# as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
-    && ${imagesDir}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083 && update-ca-certificates" \
+    # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
+    && ${imagesDir}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083" \
+    && update-ca-certificates \
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
 
 ENTRYPOINT [ "benv" ]

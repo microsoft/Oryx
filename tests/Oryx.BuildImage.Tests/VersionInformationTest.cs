@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _dockerCli = new DockerCli();
         }
 
-        [Fact, Trait("category", "latest")]
+        [SkippableFact, Trait("category", "latest")]
         public void PipelineTestInvocationLatest()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             OryxBuildImage_Contains_VersionAndCommit_Information(Settings.BuildImageName);
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [SkippableFact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -58,17 +58,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
             OryxBuildImage_Contains_VersionAndCommit_Information(Settings.LtsVersionsBuildImageName);
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [SkippableFact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
             var imageTestHelper = new ImageTestHelper();
             PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
-                imageTestHelper.GetVsoBuildImage("vso-focal"));
+                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
             OryxBuildImage_Contains_VersionAndCommit_Information(
-                imageTestHelper.GetVsoBuildImage("vso-focal"));
+                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
         }
 
-        [Fact, Trait("category", "jamstack")]
+        [SkippableFact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
-        [Fact, Trait("category", "githubactions")]
+        [SkippableFact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "vso-focal")]
-        [InlineData("vso-focal")]
+        [InlineData(ImageTestHelperConstants.VsoFocal)]
         public void OryxVsoBuildImage_Contains_PHP_Xdebug(string imageVersion)
         {
             var imageTestHelper = new ImageTestHelper();
@@ -148,10 +148,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "vso-focal")]
-        [InlineData("bundler", "vso-focal")]
-        [InlineData("rake", "vso-focal")]
-        [InlineData("ruby-debug-ide", "vso-focal")]
-        [InlineData("debase", "vso-focal")]
+        [InlineData("bundler", ImageTestHelperConstants.VsoFocal)]
+        [InlineData("rake", ImageTestHelperConstants.VsoFocal)]
+        [InlineData("ruby-debug-ide", ImageTestHelperConstants.VsoFocal)]
+        [InlineData("debase", ImageTestHelperConstants.VsoFocal)]
         public void OryxVsoBuildImage_Contains_Required_Ruby_Gems(string gemName, string imageVersion)
         {
             var imageTestHelper = new ImageTestHelper();
@@ -182,7 +182,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DotNetAlias_UsesLtsVersion_ByDefault(string buildImageName)
         {
             // Arrange
-            var expectedOutput = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
+            var expectedOutput = FinalStretchVersions.FinalStretchDotNetCore31SdkVersion;
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -206,7 +206,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "latest")]
         [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
         [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore31SdkVersion)]
+        [InlineData(FinalStretchVersions.FinalStretchDotNetCore31SdkVersion)]
         public void DotNetAlias_UsesVersion_SetOnBenv(string expectedSdkVersion)
         {
             // Arrange
@@ -518,7 +518,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore30SdkVersion;
             var script = new ShellScriptBuilder()
                 //.SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
-                .SetEnvironmentVariable(environmentVariableName, DotNetCoreSdkVersions.DotNetCore31SdkVersion)
+                .SetEnvironmentVariable(environmentVariableName, FinalStretchVersions.FinalStretchDotNetCore31SdkVersion)
                 .Source($"benv {argumentName}={DotNetCoreSdkVersions.DotNetCore30SdkVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
@@ -549,7 +549,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore30SdkVersion;
             var script = new ShellScriptBuilder()
-                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
+                .Source($"benv dotnet={FinalStretchVersions.FinalStretchDotNetCore31SdkVersion}")
                 .Source($"benv dotnet_version={DotNetCoreSdkVersions.DotNetCore30SdkVersion}")
                 // benv should update the PATH environment in such a way that we should version 1
                 .AddCommand("dotnet --version")
@@ -581,7 +581,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             // Arrange
             var phpVersion = PhpVersions.Php73Version;
-            if (buildImageName.Contains("oryxdevmcr.azurecr.io/public/oryx/build:vso-focal"))
+            if (buildImageName.Contains("oryxdevmcr.azurecr.io/public/oryx/build:vso-ubuntu-focal"))
             {
                 phpVersion = PhpVersions.Php81Version;
             }
@@ -675,7 +675,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BenvShouldSetUpEnviroment_UsingExactNames()
         {
             // Arrange
-            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore31SdkVersion;
+            var expectedDotNetVersion = FinalStretchVersions.FinalStretchDotNetCore31SdkVersion;
             var script = new ShellScriptBuilder()
                 .Source("benv dotnet_foo=1")
                 .AddCommand("dotnet --version")

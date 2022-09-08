@@ -1,11 +1,24 @@
 ARG DEBIAN_FLAVOR
-FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
+
+# Use the curl flavor of buildpack-deps as the base image, which is lighter than the standard flavor; more information here: https://hub.docker.com/_/buildpack-deps
+FROM buildpack-deps:${DEBIAN_FLAVOR}-curl as main
 ARG DEBIAN_FLAVOR
+ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 
+ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
+    ENABLE_DYNAMIC_INSTALL="true" \
+    PATH="/usr/local/go/bin:/opt/python/latest/bin:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts:$PATH" \
+    DYNAMIC_INSTALL_ROOT_DIR="/opt" \
+    PYTHONIOENCODING="UTF-8" \
+    LANG="C.UTF-8" \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
+
+# Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
+# Also install some PHP requirements (unsure why it's gated by buster flavor, maybe due to some libraries being released per debian flavor, but we should try to install these pre-reqs no matter what)
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
@@ -25,26 +38,25 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-# .NET Core dependencies
+# .NET Core dependencies for running Oryx
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
         libstdc++6 \
         zlib1g \
+        rsync \
+        libgdiplus \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && echo "cli" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
-
+    
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
-    && chmod +x /opt/oryx/benv
-
-ENV ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io"
-ENV ENABLE_DYNAMIC_INSTALL="true"
-ENV PATH="$PATH:/opt/oryx"
-ENV DYNAMIC_INSTALL_ROOT_DIR="/opt"
+    && cp -f $tmpDir/images/build/logger.sh /opt/oryx/logger \
+    && chmod +x /opt/oryx/benv \
+    && chmod +x /opt/oryx/logger
 
 ENTRYPOINT [ "benv" ]

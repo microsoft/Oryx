@@ -11,6 +11,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string CSharpProjectFileExtension = "csproj";
         public const string FSharpProjectFileExtension = "fsproj";
         public const string GlobalJsonFileName = "global.json";
+        public const string RuntimePlatformName = "dotnetcore";
 
         public const string NetCoreApp10 = "netcoreapp1.0";
         public const string NetCoreApp11 = "netcoreapp1.1";

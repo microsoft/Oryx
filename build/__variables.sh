@@ -26,6 +26,8 @@ declare -r ORYXTESTS_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/Dockerf
 declare -r ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/ltsVersions.Dockerfile"
 declare -r ORYXTESTS_LTS_VERSIONS_BUSTER_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/ltsVersions.buster.Dockerfile"
 declare -r ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/gitHubActions.Dockerfile"
+declare -r ORYXTESTS_GITHUB_ACTIONS_ASBASE_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/gitHubActions.AsBase.Dockerfile"
+declare -r ORYXTESTS_GITHUB_ACTIONS_ASBASE_WITHENV_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/gitHubActions.AsBaseWithEnv.Dockerfile"
 declare -r RUNTIME_IMAGES_SRC_DIR="$REPO_DIR/images/runtime"
 declare -r BUILD_IMAGES_CLI_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/cli.Dockerfile"
 declare -r BUILD_IMAGES_FULL_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/full.Dockerfile"
@@ -73,7 +75,7 @@ declare -r ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:azfun
 declare -r ACR_BUILD_FULL_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:full"
 declare -r ACR_BUILD_LTS_VERSIONS_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:lts-versions"
 declare -r ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:github-actions"
-declare -r ACR_BUILD_VSO_FOCAL_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-focal"
+declare -r ACR_BUILD_VSO_FOCAL_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-ubuntu-focal"
 declare -r ACR_BUILD_VSO_BULLSEYE_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-bullseye"
 
 declare -r BASE_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/base"

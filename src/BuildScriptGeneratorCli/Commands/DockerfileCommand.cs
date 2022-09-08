@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
@@ -27,6 +28,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         [Argument(0, Description = "The source directory. If no value is provided, the current directory is used.")]
         [DirectoryExists]
         public string SourceDir { get; set; }
+
+        [Option(
+            "--build-image <build-image>",
+            CommandOptionType.SingleValue,
+            Description = "The mcr.microsoft.com/oryx build image to use in the dockerfile, provided in the format '<image>:<tag>'." +
+                          "If no value is provided, the 'cli:stable' Oryx image will be used.")]
+        public string BuildImage { get; set; }
 
         [Option(
             OptionTemplates.Platform,
@@ -56,6 +64,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public string RuntimePlatformVersion { get; set; }
 
         [Option(
+            "--bind-port <port>",
+            CommandOptionType.SingleValue,
+            Description = "The port where the application will bind to in the runtime image. If not provided, the default port will " +
+                          "vary based on the platform used; Python uses 80, all other platforms used 8080.")]
+        public string BindPort { get; set; }
+
+        [Option(
             "--output",
             CommandOptionType.SingleValue,
             Description = "The path that the dockerfile will be written to. " +
@@ -64,33 +79,51 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-            var sourceRepo = new LocalSourceRepo(this.SourceDir, loggerFactory);
-            var ctx = new DockerfileContext
+            var buildEventProps = new Dictionary<string, string>()
             {
-                SourceRepo = sourceRepo,
+                { "platform", this.PlatformName },
+                { "platformVersion", this.PlatformVersion },
+                { "runtimePlatformName", this.RuntimePlatformName },
+                { "runtimePlatformVersion", this.RuntimePlatformVersion },
+                { "buildImage", this.BuildImage },
             };
 
-            var dockerfileGenerator = serviceProvider.GetRequiredService<IDockerfileGenerator>();
-            var dockerfile = dockerfileGenerator.GenerateDockerfile(ctx);
-            if (string.IsNullOrEmpty(dockerfile))
+            int exitCode;
+            var logger = serviceProvider.GetRequiredService<ILogger<DockerfileCommand>>();
+            using (var timedEvent = logger.LogTimedEvent("DockerFileCommand", buildEventProps))
             {
-                console.WriteErrorLine("Couldn't generate dockerfile.");
-                return ProcessConstants.ExitFailure;
+                ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+                var sourceRepo = new LocalSourceRepo(this.SourceDir, loggerFactory);
+                var ctx = new DockerfileContext
+                {
+                    SourceRepo = sourceRepo,
+                };
+
+                var dockerfile = serviceProvider.GetRequiredService<IDockerfileGenerator>().GenerateDockerfile(ctx);
+                if (string.IsNullOrEmpty(dockerfile))
+                {
+                    exitCode = ProcessConstants.ExitFailure;
+                    console.WriteErrorLine("Couldn't generate dockerfile.");
+                }
+                else
+                {
+                    exitCode = ProcessConstants.ExitSuccess;
+                    if (string.IsNullOrEmpty(this.OutputPath))
+                    {
+                        console.WriteLine(dockerfile);
+                    }
+                    else
+                    {
+                        this.OutputPath.SafeWriteAllText(dockerfile);
+                        this.OutputPath = Path.GetFullPath(this.OutputPath).TrimEnd('/').TrimEnd('\\');
+                        console.WriteLine($"Dockerfile written to '{this.OutputPath}'.");
+                    }
+                }
+
+                timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 
-            if (string.IsNullOrEmpty(this.OutputPath))
-            {
-                console.WriteLine(dockerfile);
-            }
-            else
-            {
-                this.OutputPath.SafeWriteAllText(dockerfile);
-                this.OutputPath = Path.GetFullPath(this.OutputPath).TrimEnd('/').TrimEnd('\\');
-                console.WriteLine($"Dockerfile written to '{this.OutputPath}'.");
-            }
-
-            return ProcessConstants.ExitSuccess;
+            return exitCode;
         }
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
@@ -100,6 +133,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 console.WriteErrorLine($"Could not find the source directory '{this.SourceDir}'.");
                 return false;
+            }
+
+            // Must provide build image in the format '<image>:<tag>'
+            if (!string.IsNullOrEmpty(this.BuildImage))
+            {
+                var buildImageSplit = this.BuildImage.Split(':');
+                if (buildImageSplit.Length != 2)
+                {
+                    console.WriteErrorLine("Provided build image must be in the format '<image>:<tag>'.");
+                    return false;
+                }
             }
 
             // Invalid to specify platform version without platform name
@@ -124,6 +168,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.WriteLine($"WARNING: Unable to find provided runtime platform name '{this.RuntimePlatformName}' in " +
                                       $"supported list of runtime platform names: {string.Join(", ", this.supportedRuntimePlatforms)}. " +
                                       $"The provided runtime platform name will be used in case this Dockerfile command or image is outdated.");
+                }
+            }
+
+            // Validate provided port is an integer and is in the range [0, 65535]
+            if (!string.IsNullOrEmpty(this.BindPort))
+            {
+                if (!int.TryParse(this.BindPort, out int port) || port < 0 || port > 65535)
+                {
+                    console.WriteErrorLine($"Provided bind port '{this.BindPort}' is not valid.");
+                    return false;
                 }
             }
 
@@ -171,6 +225,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private CustomConfigurationSource GetCommandLineConfigSource()
         {
             var commandLineConfigSource = new CustomConfigurationSource();
+            commandLineConfigSource.Set(SettingsKeys.BindPort, this.BindPort);
+            commandLineConfigSource.Set(SettingsKeys.BuildImage, this.BuildImage);
             commandLineConfigSource.Set(SettingsKeys.PlatformName, this.PlatformName);
             commandLineConfigSource.Set(SettingsKeys.PlatformVersion, this.PlatformVersion);
             commandLineConfigSource.Set(SettingsKeys.RuntimePlatformName, this.RuntimePlatformName);

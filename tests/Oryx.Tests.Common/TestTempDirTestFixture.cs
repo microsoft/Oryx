@@ -18,6 +18,11 @@ namespace Microsoft.Oryx.Tests.Common
             RootDirPath = Path.Combine(Path.GetTempPath(), "oryxtests", Guid.NewGuid().ToString());
 
             Directory.CreateDirectory(RootDirPath);
+
+            // set DEBIAN_FLAVOR environment variable to any flavor
+            // this is for when we are not running the CLI in an image, since all
+            // images should already have an env var set
+            Environment.SetEnvironmentVariable("DEBIAN_FLAVOR", "stretch");
         }
 
         public string RootDirPath { get; }

@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.IO;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -29,6 +30,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 version,
                 builtInDir: PythonConstants.InstalledPythonVersionsDir,
                 dynamicInstallDir: Path.Combine(this.CommonOptions.DynamicInstallRootDir, PythonConstants.PlatformName));
+        }
+
+        public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
+        {
+            stringBuilder.AppendLine($"echo 'Installing {PythonConstants.PlatformName} specific dependencies...'");
+
+            InstallPythonToolingAndLanguage(stringBuilder);
         }
     }
 }

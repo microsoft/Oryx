@@ -9,7 +9,7 @@ set -ex
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
 commit=$(git rev-parse HEAD)
-storageAccount="$1"
+storageAccountName="$1"
 
 uploadFiles() {
     local platform="$1"
@@ -18,7 +18,7 @@ uploadFiles() {
         return
     fi
 
-    allFiles=$(find $artifactsDir -type f -name '*.tar.gz' -o -name 'defaultVersion.txt')
+    allFiles=$(find $artifactsDir -type f -name '*.tar.gz' -o -name 'defaultVersion.*txt')
     for fileToUpload in $allFiles
     do
         fileName=$(basename $fileToUpload)
@@ -41,12 +41,13 @@ uploadFiles() {
             checksum=$(sha256sum $fileToUpload | cut -d " " -f 1)
         fi
         
-        if shouldOverwriteSdk || shouldOverwritePlatformSdk $platform; then
+        if shouldOverwriteSdk || shouldOverwritePlatformSdk $platform || [[ "$fileToUpload" == *defaultVersion*txt ]]; then
             az storage blob upload \
             --name $fileName \
             --file "$fileToUpload" \
             --container-name $platform \
-            --account-name $storageAccount \
+            --account-name $storageAccountName \
+            --sas-token $sasToken \
             --metadata \
                 Buildnumber="$BUILD_BUILDNUMBER" \
                 Commit="$commit" \
@@ -59,7 +60,8 @@ uploadFiles() {
             --name $fileName \
             --file "$fileToUpload" \
             --container-name $platform \
-            --account-name $storageAccount \
+            --account-name $storageAccountName \
+            --sas-token $sasToken \
             --metadata \
                 Buildnumber="$BUILD_BUILDNUMBER" \
                 Commit="$commit" \
@@ -69,6 +71,24 @@ uploadFiles() {
         fi
     done
 }
+
+storageAccountUrl="https://$storageAccountName.blob.core.windows.net"
+sasToken=""
+
+# case insensitive matching because both secrets and urls are case insensitive
+shopt -s nocasematch
+if [[ "$storageAccountUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]]; then
+    sasToken=$SANDBOX_STORAGE_SAS_TOKEN
+elif [[ "$storageAccountUrl" == $DEV_SDK_STORAGE_BASE_URL ]]; then
+    sasToken=$DEV_STORAGE_SAS_TOKEN
+# check if the personal sas token has been found in the oryx key vault
+elif [[ "$PERSONAL_STORAGE_SAS_TOKEN" != "\$($storageAccountName-PERSONAL-STORAGE-SAS-TOKEN)" ]]; then
+    sasToken=$PERSONAL_STORAGE_SAS_TOKEN
+else
+	echo "Error: $storageAccountUrl is an invalid destination storage account url."
+	exit 1
+fi
+shopt -u nocasematch
 
 platforms=("nodejs" "python" "dotnet" "php" "php-composer" "ruby" "java" "maven" "golang")
 for platform in "${platforms[@]}"

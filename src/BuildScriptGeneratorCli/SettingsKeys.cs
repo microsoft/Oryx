@@ -7,6 +7,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     public static class SettingsKeys
     {
+        public const string BindPort = "BIND_PORT";
+        public const string BuildImage = "BUILD_IMAGE";
         public const string PlatformName = "PLATFORM_NAME";
         public const string PlatformVersion = "PLATFORM_VERSION";
         public const string RuntimePlatformName = "RUNTIME_PLATFORM_NAME";
@@ -16,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string EnableDynamicInstall = "ENABLE_DYNAMIC_INSTALL";
         public const string DisableCheckers = "DISABLE_CHECKERS";
         public const string DisableDotNetCoreBuild = "DISABLE_DOTNETCORE_BUILD";
-        public const string DisableGolangeBuild = "DISABLE_GOLANG_BUILD";
+        public const string DisableGolangBuild = "DISABLE_GOLANG_BUILD";
         public const string DisableNodeJSBuild = "DISABLE_NODEJS_BUILD";
         public const string DisablePythonBuild = "DISABLE_PYTHON_BUILD";
         public const string DisablePhpBuild = "DISABLE_PHP_BUILD";
@@ -30,17 +32,27 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string PostBuildScriptPath = "POST_BUILD_SCRIPT_PATH";
         public const string PostBuildCommand = "POST_BUILD_COMMAND";
         public const string DotNetVersion = "DOTNET_VERSION";
+        public const string DotNetDefaultVersion = "DOTNET_DEFAULT_VERSION";
         public const string NodeVersion = "NODE_VERSION";
+        public const string NodeDefaultVersion = "NODE_DEFAULT_VERSION";
         public const string CustomRunBuildCommand = "RUN_BUILD_COMMAND";
         public const string CustomBuildCommand = "CUSTOM_BUILD_COMMAND";
         public const string PythonVersion = "PYTHON_VERSION";
+        public const string PythonDefaultVersion = "PYTHON_DEFAULT_VERSION";
         public const string GolangVersion = "GOLANG_VERSION";
+        public const string GolangDefaultVersion = "GOLANG_DEFAULT_VERSION";
         public const string PhpVersion = "PHP_VERSION";
+        public const string PhpDefaultVersion = "PHP_DEFAULT_VERSION";
         public const string PhpComposerVersion = "PHP_COMPOSER_VERSION";
+        public const string PhpComposerDefaultVersion = "PHP_COMPOSER_DEFAULT_VERSION";
         public const string HugoVersion = "HUGO_VERSION";
+        public const string HugoDefaultVersion = "HUGO_DEFAULT_VERSION";
         public const string RubyVersion = "RUBY_VERSION";
+        public const string RubyDefaultVersion = "RUBY_DEFAULT_VERSION";
         public const string JavaVersion = "JAVA_VERSION";
+        public const string JavaDefaultVersion = "JAVA_DEFAULT_VERSION";
         public const string MavenVersion = "MAVEN_VERSION";
+        public const string MavenDefaultVersion = "MAVEN_DEFAULT_VERSION";
         public const string Project = "PROJECT";
         public const string MSBuildConfiguration = "MSBUILD_CONFIGURATION";
         public const string DisableCollectStatic = "DISABLE_COLLECTSTATIC";
@@ -55,5 +67,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string DynamicInstallRootDir = "DYNAMIC_INSTALL_ROOT_DIR";
         public const string DisableRecursiveLookUp = "DISABLE_RECURSIVE_LOOKUP";
         public const string CustomRequirementsTxtPath = "CUSTOM_REQUIREMENTSTXT_PATH";
+        public const string DebianFlavor = "DEBIAN_FLAVOR";
     }
 }

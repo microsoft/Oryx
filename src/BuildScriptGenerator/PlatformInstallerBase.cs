@@ -28,6 +28,57 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         protected ILogger Logger { get; }
 
+        /// <summary>
+        /// Install tooling that is common to all platforms.
+        /// </summary>
+        public static void InstallCommonSkeletonDependencies(StringBuilder stringBuilder)
+        {
+            stringBuilder.AppendLine("echo 'Installing common platform dependencies...'");
+            stringBuilder.AppendAptGetInstallPackages("git");
+        }
+
+        public static void InstallPythonToolingAndLanguage(StringBuilder stringBuilder)
+        {
+            stringBuilder.AppendLine("echo 'Installing python tooling and language...'");
+
+            // Install Python tooling
+            stringBuilder.AppendLine("PYTHONIOENCODING=\"UTF-8\"");
+            stringBuilder.AppendAptGetInstallPackages(
+                "make",
+                "unzip",
+                "build-essential",
+                "libpq-dev",
+                "moreutils",
+                "python3-pip",
+                "swig",
+                "tk-dev",
+                "unixodbc-dev",
+                "uuid-dev");
+
+            // Install Python 3.8
+            stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
+            stringBuilder.AppendLine("imagesDir=\"$tmpDir/images\"");
+            stringBuilder.AppendLine("buildDir=\"$tmpDir/build\"");
+            stringBuilder.AppendLine("mkdir -p /usr/local/share/pip-cache/lib");
+            stringBuilder.AppendLine("chmod -R 777 /usr/local/share/pip-cache");
+            stringBuilder.AppendLine("pip3 install pip --upgrade");
+            stringBuilder.AppendLine("python3 -m pip install --upgrade cython");
+            stringBuilder.AppendLine("pip3 install --upgrade cython");
+            stringBuilder.AppendLine(". $buildDir/__pythonVersions.sh");
+            stringBuilder.AppendLine("$imagesDir/installPlatform.sh python $PYTHON38_VERSION");
+            stringBuilder.AppendLine("[ -d \"/opt/python/$PYTHON38_VERSION\" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf");
+            stringBuilder.AppendLine("ldconfig");
+            stringBuilder.AppendLine("cd /opt/python");
+            stringBuilder.AppendLine("ln -s $PYTHON38_VERSION 3.8");
+            stringBuilder.AppendLine("ln -s $PYTHON38_VERSION latest");
+            stringBuilder.AppendLine("ln -s $PYTHON38_VERSION stable");
+        }
+
+        public virtual void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
+        {
+            stringBuilder.AppendLine("echo 'No platform specific dependencies to install.'");
+        }
+
         protected string GetInstallerScriptSnippet(
             string platformName,
             string version,
@@ -45,8 +96,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var snippet = new StringBuilder();
             snippet
                 .AppendLine()
+                .AppendLine($"if grep -q cli \"/opt/oryx/.imagetype\"; then")
+                .AppendCommonSkeletonDepenendenciesInstallation()
+                .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
+                .AppendLine("fi")
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")
-                .AppendLine("SDK_DEBIAN_TYPE=$DEBIAN_FLAVOR")
                 .AppendLine("echo")
                 .AppendLine(
                 $"echo \"Downloading and extracting '{platformName}' version '{version}' to '{versionDirInTemp}'...\"")
@@ -55,20 +109,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"cd {versionDirInTemp}")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine($"platformName=\"{platformName}\"")
-
-                // Temporarily use buster SDKs in bullseye image until bullseye SDKs are supported in storage account.
-                // Bug item: 1578477
-                .AppendLine($"if [ \"$DEBIAN_FLAVOR\" = \"bullseye\" ]; then")
-                .AppendLine($"SDK_DEBIAN_TYPE=\"buster\"")
-                .AppendLine("fi")
-                .AppendLine($"if [[ \"$platformName\" = \"php\" || \"$platformName\" = \"php-composer\" ]] && [[ \"$DEBIAN_FLAVOR\" != \"stretch\" ]]; then")
-                .AppendLine("echo \"Detecting image debian flavor: $DEBIAN_FLAVOR.\"")
+                .AppendLine($"export DEBIAN_FLAVOR={this.CommonOptions.DebianFlavor}")
+                .AppendLine("echo \"Detected image debian flavor: $DEBIAN_FLAVOR.\"")
+                .AppendLine($"if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")
                 .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$SDK_DEBIAN_TYPE-{version}.tar.gz\" " +
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("else")
                 .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")
@@ -99,6 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")
                 .AppendLine("oryxImageDetectorFile=\"/opt/oryx/.imagetype\"")
+                .AppendLine("oryxOsDetectorFile=\"/opt/oryx/.ostype\"")
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"jamstack\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
                 .AppendLine($"PATH=/opt/dotnet/{version}/dotnet:$PATH")
@@ -133,6 +183,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo \"image detector file exists, platform is ruby..\"")
                 .AppendLine($"mkdir -p /home/codespace/.ruby")
                 .AppendLine($"ln -sfn /opt/ruby/{version} /home/codespace/.ruby/current")
+                .AppendLine("fi")
+                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ -f \"$oryxOsDetectorFile\" ] && [ \"$platformName\" = \"python\" ] && grep -q \"githubactions\" \"$oryxImageDetectorFile\" && grep -q \"BULLSEYE\" \"$oryxOsDetectorFile\"; then")
+                .AppendLine($"  echo \"image detector file exists, platform is python..\"")
+                .AppendLine($"  echo \"OS detector file exists, OS is bullseye..\"")
+                .AppendLine($"  if [ '{version}' == 3.7* ] || [ '{version}' == 3.8* ]; then")
+                .AppendLine($"    curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb")
+                .AppendLine($"    dpkg -i libffi6_3.2.1-9_amd64.deb")
+                .AppendLine($"    rm libffi6_3.2.1-9_amd64.deb")
+                .AppendLine($"  fi")
                 .AppendLine("fi")
 
                 // Write out a sentinel file to indicate download and extraction was successful
