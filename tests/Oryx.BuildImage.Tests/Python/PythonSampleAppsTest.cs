@@ -814,6 +814,43 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Theory, Trait("category", "vso-focal")]
+        [InlineData("flask-app")]
+        [InlineData("django-realworld-example-app")]
+        public void BuildPythonApps_AndHasLzmaModule(string appName)
+        {
+            // Arrange
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app1-output";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(
+                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
+                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddCommand($"python -V")
+                .AddCommand($"python -c \"import lzma\"")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetVsoBuildImage("bullseye"),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
         [Fact, Trait("category", "latest")]
         public void Build_VirtualEnv_Unzipped_ByDefault()
         {

@@ -21,9 +21,6 @@ parameters:
         key: VsoBullseye
         value: vso-bullseye
       - 
-        key: VsoBullseye
-        value: vso-bullseye
-      - 
         key: Full
         value: full
       - 

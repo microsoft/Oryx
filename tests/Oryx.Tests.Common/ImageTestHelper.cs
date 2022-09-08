@@ -27,6 +27,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _gitHubActionsBullseye = "github-actions-bullseye";
         private const string _vso = "vso";
         private const string _vsoUbuntu = "vso-focal";
+        private const string _vsoBullseye = "vso-bullseye";
         private const string _buildRepository = "build";
         private const string _packRepository = "pack";
         private const string _cliRepository = "cli";
@@ -243,7 +244,8 @@ namespace Microsoft.Oryx.Tests.Common
 
         public string GetVsoBuildImage(string debianFlavor=null)
         {
-            return $"{_repoPrefix}/{_buildRepository}:{_vsoUbuntu}{_tagSuffix}";
+            string vsoImage = !string.IsNullOrEmpty(debianFlavor) && debianFlavor == "bullseye" ? _vsoBullseye : _vsoUbuntu;
+            return $"{_repoPrefix}/{_buildRepository}:{vsoImage}{_tagSuffix}";
         }
 
         public string GetLtsVersionsBuildImage(string debianFlavor = null)
