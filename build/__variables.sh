@@ -32,6 +32,7 @@ declare -r BUILD_IMAGES_FULL_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/full
 declare -r BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/azureFunctions.JamStack.Dockerfile"
 declare -r BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubActions.Dockerfile"
 declare -r BUILD_IMAGES_VSO_FOCAL_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/vso.focal.Dockerfile"
+declare -r BUILD_IMAGES_VSO_BULLSEYE_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/vso.bullseye.Dockerfile"
 declare -r BUILD_IMAGES_BUILDSCRIPTGENERATOR_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/buildScriptGenerator.Dockerfile"
 declare -r BUILD_IMAGES_SUPPORT_FILES_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/supportFilesForBuildingBuildImages.Dockerfile"
 declare -r BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubRunners.BuildPackDepsStretch.Dockerfile"
@@ -73,6 +74,7 @@ declare -r ACR_BUILD_FULL_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:full"
 declare -r ACR_BUILD_LTS_VERSIONS_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:lts-versions"
 declare -r ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:github-actions"
 declare -r ACR_BUILD_VSO_FOCAL_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-focal"
+declare -r ACR_BUILD_VSO_BULLSEYE_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-bullseye"
 
 declare -r BASE_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/base"
 

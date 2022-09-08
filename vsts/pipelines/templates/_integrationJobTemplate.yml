@@ -76,6 +76,7 @@ jobs:
     - Job_BuildImage_Jamstack
     - Job_BuildImage_GithubActions
     - Job_BuildImage_VsoFocal
+    - Job_BuildImage_VsoBullseye
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
     - Job_BuildImage_Buildpack

@@ -54,6 +54,7 @@ tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-bullseye-
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions" "github-actions-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-buster" "github-actions-buster-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-bullseye" "github-actions-bullseye-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso-bullseye" "vso-bullseye-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-focal-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso-focal" "vso-focal-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:full-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "full-buster" "full-buster-$RELEASE_TAG_NAME"
 

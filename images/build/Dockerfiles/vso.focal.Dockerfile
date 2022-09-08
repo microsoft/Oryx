@@ -1,4 +1,4 @@
-FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-focal AS main
+FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:bullseye AS main
 
 # Install basic build tools
 # Configure locale (required for Python)
@@ -12,7 +12,7 @@ RUN LANG="C.UTF-8" \
         unzip \
         # The tools in this package are used when installing packages for Python
         build-essential \
-        swig3.0 \
+        # swig3.0 \
         # Required for Microsoft SQL Server
         unixodbc-dev \
         # Required for PostgreSQL
@@ -46,13 +46,13 @@ RUN LANG="C.UTF-8" \
     # This is the folder containing 'links' to benv and build script generator
     && apt-get update \
     && apt-get upgrade -y \
-    && add-apt-repository universe \
+    # && add-apt-repository universe \
     && apt-get install -y --no-install-recommends python2 \
     && rm -rf /var/lib/apt/lists/* \
     # 'get-pip.py' has been moved to ' https://bootstrap.pypa.io/pip/2.7/get-pip.py' from 'https://bootstrap.pypa.io/2.7/get-pip.py'
-    && curl  https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
-    && python2 get-pip.py \
-    && pip install pip --upgrade \
+    #&& curl  https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
+    #&& python2 get-pip.py \
+    #&& pip install pip --upgrade \
     && pip3 install pip --upgrade \
     && mkdir -p /opt/oryx
 
@@ -87,12 +87,16 @@ RUN set -ex \
     && buildDir="$tmpDir/build" \
     # https://github.com/docker-library/python/issues/147
     && PYTHONIOENCODING="UTF-8" \    
+    # new next line
+    && add-apt-repository --remove ppa:xapienz/curl34 \
     && apt-get update \
     && apt-get upgrade -y \
     # It's not clear whether these are needed at runtime...
     && apt-get install -y --no-install-recommends \
         tk-dev \
         uuid-dev \
+        curl \
+        gnupg \
     && rm -rf /var/lib/apt/lists/* \
     # Install .NET Core SDKs
     && nugetPackagesDir="/var/nuget" \
@@ -165,6 +169,8 @@ RUN set -ex \
     && ln -sfn /opt/python/$PYTHON310_VERSION /home/codespace/.python/current \
     # Install PHP pre-reqs
     && $imagesDir/build/php/prereqs/installPrereqs.sh \
+    # new next line
+    #&& add-apt-repository --remove ppa:xapienz/curl34 \
     && mkdir -p /home/codespace/.php \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
@@ -203,10 +209,13 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
 # Now adding remaining of VSO platform features
 RUN buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \
+    # new next line
+    && add-apt-repository --remove ppa:xapienz/curl34 \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         apt-transport-https \
         nano \
+        sed \
     && rm -rf /var/lib/apt/lists/* \
     && curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor > conda.gpg \
     && install -o root -g root -m 644 conda.gpg /usr/share/keyrings/conda-archive-keyring.gpg \
@@ -216,6 +225,7 @@ RUN buildDir="/opt/tmp/build" \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         conda=${CONDA_VERSION} \
+        sed \
     && rm -rf /var/lib/apt/lists/* \
     && echo $$CONDA_SCRIPT \
     &&. $CONDA_SCRIPT \
@@ -251,13 +261,28 @@ RUN buildDir="/opt/tmp/build" \
     && npm install -g lerna@4.0.0 \
     && PATH="$PATH:/opt/php/lts/bin" \
     && wget http://pear.php.net/go-pear.phar \
+    && ls . \
     && php go-pear.phar \
+    #&& mkdir -p pear/tmp/pear/install \
+    #&& wget https://pear.php.net/go-pear.phar \
+    #&& export PHP_PEAR_PHP_BIN=/usr/local/php74/bin/php \
+    #&& export PATH=${HOME}/pear/bin:/usr/local/php74/bin:${PATH} \
+    #&& ls /usr/local/php74/bin/ \
+    #&& /opt/php/8.1.6/bin/php go-pear.phar \
+    && pecl version \
+    && which pecl \
+    && which sed \
+    && ln -sv /bin/sed /usr/bin/sed \
+    && echo "hello world" \
     && pecl install -f libsodium \
     && echo "vso-focal" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 # install few more tools for VSO
-RUN gem install bundler rake ruby-debug-ide debase jekyll
+#RUN gem install bundler rake ruby-debug-ide debase jekyll --backtrace
+RUN gem install bundler rake --backtrace
+RUN apt-get update \
+    && apt-get install jekyll -y --no-install-recommends
 RUN  yes | pecl install xdebug \
     && export PHP_LOCATION=$(dirname $(dirname $(which php))) \
     && echo "zend_extension=$(find ${PHP_LOCATION}/lib/php/extensions/ -name xdebug.so)" > ${PHP_LOCATION}/ini/conf.d/xdebug.ini \

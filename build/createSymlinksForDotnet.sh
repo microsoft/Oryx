@@ -9,8 +9,8 @@ set -e
 oryxImageDetectorFile="/opt/oryx/.imagetype"
 SYMLINK_DIRECTORY_NAME=""
 
-if [ -f "$oryxImageDetectorFile" ] && grep -q "vso-focal" "$oryxImageDetectorFile"; then
-    echo "image detector file exists, image is vso-focal based.."
+if [ -f "$oryxImageDetectorFile" ] && grep -q "vso-" "$oryxImageDetectorFile"; then
+    echo "image detector file exists, image is vso based.."
     SYMLINK_DIRECTORY_NAME="codespace"
 fi
 

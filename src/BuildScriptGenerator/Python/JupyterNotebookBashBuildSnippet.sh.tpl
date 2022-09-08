@@ -53,7 +53,7 @@ echo "Done in $ELAPSED_TIME sec(s)."
 
 ReadImageType=$(cat /opt/oryx/.imagetype)
 
-if [ "$ReadImageType" = "vso-focal" ]
+if [ "$ReadImageType" = "vso-focal" ] || [ "$ReadImageType" = "vso-bullseye" ]
 then
 	echo $ReadImageType
 else
