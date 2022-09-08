@@ -27,7 +27,9 @@ ENV PATH="/opt/ruby/2/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
+ARG AI_CONNECTION_STRING
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING} 
 RUN ${IMAGES_DIR}/runtime/ruby/install-dependencies.sh
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \

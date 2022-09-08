@@ -17,7 +17,9 @@ FROM mcr.microsoft.com/oryx/base:node-16-20220610.1
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
+ARG AI_CONNECTION_STRING
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING} 
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 

@@ -65,7 +65,9 @@ ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
+ARG AI_CONNECTION_STRING
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING} 
 
 RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN pip install --upgrade pip \

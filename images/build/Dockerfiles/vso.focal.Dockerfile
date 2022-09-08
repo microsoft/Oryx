@@ -66,6 +66,7 @@ COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildsc
 FROM main AS final
 ARG AI_KEY
 ARG SDK_STORAGE_BASE_URL_VALUE
+ARG AI_CONNECTION_STRING
 
 # add an environment variable to determine debian_flavor
 # to correctly download platform sdk during platform installation
@@ -281,6 +282,7 @@ ENV NUGET_XMLDOC_MODE="skip" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_PREFER_USER_INSTALLED_SDKS=true \
     ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
+    ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING} \
     PYTHONIOENCODING="UTF-8"
 
 ENTRYPOINT [ "benv" ]
