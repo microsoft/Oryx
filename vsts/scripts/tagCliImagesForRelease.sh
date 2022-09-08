@@ -19,8 +19,8 @@ if [ -f "$outPmeFile" ]; then
     rm $outPmeFile
 fi
 
-cliImage="$sourceImageRepo/cli:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
-cliBusterImage="$sourceImageRepo/cli-buster:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+cliImage="$sourceImageRepo/cli:debian-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+cliBusterImage="$sourceImageRepo/cli-buster:debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 echo "Pulling CLI image '$cliImage'..."
 docker pull "$cliImage"
 
