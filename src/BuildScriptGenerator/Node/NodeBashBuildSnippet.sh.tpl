@@ -206,7 +206,7 @@ npm pack
 
 ReadImageType=$(cat /opt/oryx/.imagetype)
 
-if [ "$ReadImageType" = "vso-focal" || "$ReadImageType" = "vso-bullseye" ]
+if [ "$ReadImageType" = "vso-focal" ] || [ "$ReadImageType" = "vso-debian-bullseye" ]
 then
 	echo $ReadImageType
 	cat "$COMMAND_MANIFEST_FILE"

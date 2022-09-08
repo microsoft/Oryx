@@ -842,7 +842,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .SetEnvironmentVariable(
                     SdkStorageConstants.SdkStorageBaseUrlKeyName,
                     SdkStorageConstants.DevSdkStorageBaseUrl)
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version 3.10.4")
                 .AddCommand($"python -V")
                 .AddCommand($"python -c \"import lzma\"")
                 .ToString();
@@ -850,7 +850,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage("bullseye"),
+                ImageId = _imageHelper.GetVsoBuildImage("vso-debian-bullseye"),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

@@ -289,7 +289,7 @@ RUN buildDir="/opt/tmp/build" \
     && ln -sv /bin/sed /usr/bin/sed \
     && echo "hello world" \
     && pecl install -f libsodium \
-    && echo "vso-bullseye" > /opt/oryx/.imagetype \
+    && echo "vso-debian-bullseye" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 # install few more tools for VSO

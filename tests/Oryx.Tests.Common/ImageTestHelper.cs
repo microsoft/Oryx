@@ -335,8 +335,12 @@ namespace Microsoft.Oryx.Tests.Common
 
         public string GetVsoBuildImage(string debianFlavor = null)
         {
-            string _vsoImage = !string.IsNullOrEmpty(debianFlavor) && debianFlavor == "bullseye" ? _vsoBullseye : _vsoUbuntu;
-            return $"{_repoPrefix}/{_buildRepository}:{_vsoImage}{_tagSuffix}";
+            if (!string.IsNullOrEmpty(debianFlavor)
+                && string.Equals(debianFlavor.ToLower(), _vsoBullseye))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_vsoBullseye}{_tagSuffix}";
+            }
+            return $"{_repoPrefix}/{_buildRepository}:{_vsoUbuntu}{_tagSuffix}";
         }
 
         public string GetLtsVersionsBuildImage(string debianFlavor = null)
@@ -491,7 +495,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string GitHubActionsBullseyeBaseWithEnv = "github-actions-debian-bullseye-base-withenv";
         public const string Vso = "vso";
         public const string VsoFocal = "vso-ubuntu-focal";
-        public const string VsoBullseye = "vso-bullseye";
+        public const string VsoBullseye = "vso-debian-bullseye";
         public const string BuildRepository = "build";
         public const string PackRepository = "pack";
         public const string CliRepository = "cli";
