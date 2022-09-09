@@ -51,12 +51,9 @@ func SetGlobalOperationID(buildManifest BuildManifest) {
 }
 
 func GetLogger(name string) *Logger {
-	if(len(strings.TrimSpace(consts.ApplicationInsightsConnectionStringEnvVarName)) != 0)
-	{
-		key := os.Getenv(consts.ApplicationInsightsConnectionStringEnvVarName) 
-	}
-	else
-	{
+	if consts.ApplicationInsightsConnectionStringEnvVarName != "" {
+		key := os.Getenv(consts.ApplicationInsightsConnectionStringEnvVarName)
+	} else {
 		key := os.Getenv(consts.ApplicationInsightsInstrumentationKeyEnvVarName) 
 	}
 	logger := Logger{
