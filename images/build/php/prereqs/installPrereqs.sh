@@ -45,8 +45,6 @@ sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/bust
 } > /etc/apt/preferences.d/argon2-buster;
 apt-get update
 apt-get install -y --no-install-recommends \
-    libsodium-dev \
-    sed \
-    grep
+    libsodium-dev
 rm -rf /var/lib/apt/lists/*
 ##</argon2>##
