@@ -12,7 +12,6 @@ RUN LANG="C.UTF-8" \
         unzip \
         # The tools in this package are used when installing packages for Python
         build-essential \
-        # swig3.0 \
         # Required for Microsoft SQL Server
         unixodbc-dev \
         # Required for PostgreSQL
@@ -46,13 +45,8 @@ RUN LANG="C.UTF-8" \
     # This is the folder containing 'links' to benv and build script generator
     && apt-get update \
     && apt-get upgrade -y \
-    # && add-apt-repository universe \
     && apt-get install -y --no-install-recommends python2 \
     && rm -rf /var/lib/apt/lists/* \
-    # 'get-pip.py' has been moved to ' https://bootstrap.pypa.io/pip/2.7/get-pip.py' from 'https://bootstrap.pypa.io/2.7/get-pip.py'
-    #&& curl  https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py \
-    #&& python2 get-pip.py \
-    #&& pip install pip --upgrade \
     && pip3 install pip --upgrade \
     && mkdir -p /opt/oryx
 
@@ -183,8 +177,6 @@ RUN set -ex \
     && ln -sfn /opt/python/$PYTHON310_VERSION /home/codespace/.python/current \
     # Install PHP pre-reqs
     && $imagesDir/build/php/prereqs/installPrereqs.sh \
-    # new next line
-    #&& add-apt-repository --remove ppa:xapienz/curl34 \
     && mkdir -p /home/codespace/.php \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
@@ -223,8 +215,6 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
 # Now adding remaining of VSO platform features
 RUN buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \
-    # new next line
-    && add-apt-repository --remove ppa:xapienz/curl34 \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         apt-transport-https \
@@ -277,12 +267,6 @@ RUN buildDir="/opt/tmp/build" \
     && wget http://pear.php.net/go-pear.phar \
     && ls . \
     && php go-pear.phar \
-    #&& mkdir -p pear/tmp/pear/install \
-    #&& wget https://pear.php.net/go-pear.phar \
-    #&& export PHP_PEAR_PHP_BIN=/usr/local/php74/bin/php \
-    #&& export PATH=${HOME}/pear/bin:/usr/local/php74/bin:${PATH} \
-    #&& ls /usr/local/php74/bin/ \
-    #&& /opt/php/8.1.6/bin/php go-pear.phar \
     && pecl version \
     && which pecl \
     && which sed \
@@ -293,7 +277,6 @@ RUN buildDir="/opt/tmp/build" \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 # install few more tools for VSO
-#RUN gem install bundler rake ruby-debug-ide debase jekyll --backtrace
 RUN gem install bundler rake --backtrace
 RUN apt-get update \
     && apt-get install jekyll -y --no-install-recommends
