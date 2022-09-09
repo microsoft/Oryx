@@ -11,20 +11,20 @@ COPY src/startupscriptgenerator/src .
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
 ARG RELEASE_TAG_NAME=unspecified
-ARG AI_CONNECTION_STRING
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
-ENV ORYX_AI_CONNECTION_STRING =${AI_CONNECTION_STRING}
 RUN ./build.sh golang     /opt/startupcmdgen/golang
 
 ### oryx build image
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
 ARG DEBIAN_FLAVOR
 ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
+ARG AI_CONNECTION_STRING
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE}
+ENV ORYX_AI_CONNECTION_STRING =${AI_CONNECTION_STRING}
 
 # docker multi-stage builds
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
