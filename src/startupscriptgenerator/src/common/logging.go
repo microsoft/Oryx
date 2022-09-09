@@ -51,7 +51,14 @@ func SetGlobalOperationID(buildManifest BuildManifest) {
 }
 
 func GetLogger(name string) *Logger {
-	key := os.Getenv(consts.ApplicationInsightsInstrumentationKeyEnvVarName)
+	if(len(strings.TrimSpace(consts.ApplicationInsightsConnectionStringEnvVarName)) != 0)
+	{
+		key := os.Getenv(consts.ApplicationInsightsConnectionStringEnvVarName) 
+	}
+	else
+	{
+		key := os.Getenv(consts.ApplicationInsightsInstrumentationKeyEnvVarName) 
+	}
 	logger := Logger{
 		AiClient:    appinsights.NewTelemetryClient(key),
 		LoggerName:  name,
