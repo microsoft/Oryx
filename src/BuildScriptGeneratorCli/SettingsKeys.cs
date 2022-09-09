@@ -68,6 +68,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string DisableRecursiveLookUp = "DISABLE_RECURSIVE_LOOKUP";
         public const string CustomRequirementsTxtPath = "CUSTOM_REQUIREMENTSTXT_PATH";
         public const string DebianFlavor = "DEBIAN_FLAVOR";
-        public const string UserCallerId = "USER_CALLER_ID";
+        public const string CallerId = "USER_CALLER_ID";
     }
 }

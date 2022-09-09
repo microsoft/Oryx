@@ -143,7 +143,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 },
                 { "sourceRepoCommitId", sourceRepoCommitId },
                 { "platformName", this.PlatformName },
-                { "userCallerId", options.UserCallerId },
             };
 
             logger.LogEvent("BuildRequested", buildEventProps);

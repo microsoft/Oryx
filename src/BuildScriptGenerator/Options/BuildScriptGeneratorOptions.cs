@@ -83,6 +83,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string DebianFlavor { get; set; }
 
-        public string UserCallerId { get; set; }
+        public string CallerId { get; set; }
     }
 }
