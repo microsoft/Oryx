@@ -345,6 +345,15 @@ namespace Microsoft.Oryx.Tests.Common
 
             var aiKeyOverride = Environment.GetEnvironmentVariable(
                 "TEST_OVERRIDE_" + LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
+            var aiConnectionStringOverride = Environment.GetEnvironmentVariable("TEST_OVERRIDE_" + LoggingConstants.ApplicationInsightsConnectionStringKeyEnvironmentVariableName);
+            if (!string.IsNullOrEmpty(aiConnectionStringOverride))
+            {
+                AddEnvVarArg(
+                    args,
+                    new EnvironmentVariable(
+                        LoggingConstants.ApplicationInsightsConnectionStringKeyEnvironmentVariableName,
+                        aiConnectionStringOverride));
+            }
             if (!string.IsNullOrWhiteSpace(aiKeyOverride))
             {
                 AddEnvVarArg(

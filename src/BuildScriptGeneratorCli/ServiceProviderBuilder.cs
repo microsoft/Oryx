@@ -72,6 +72,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var aiKey = disableTelemetry ? string.Empty : Environment.GetEnvironmentVariable(
                 LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
+            var aiConnectionString = disableTelemetry ? string.Empty : Environment.GetEnvironmentVariable(LoggingConstants.ApplicationInsightsConnectionStringKeyEnvironmentVariableName);
+            if (!string.IsNullOrEmpty(aiConnectionString))
+            {
+                var aiTarget = new ApplicationInsights.NLogTarget.ApplicationInsightsTarget()
+                {
+                    Name = "ai",
+                    InstrumentationKey = aiKey,
+                };
+                config.AddTarget(aiTarget);
+                config.AddRuleForAllLevels(aiTarget);
+            }
+
             if (!string.IsNullOrWhiteSpace(aiKey))
             {
                 var aiTarget = new ApplicationInsights.NLogTarget.ApplicationInsightsTarget()
