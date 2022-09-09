@@ -78,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var aiTarget = new ApplicationInsights.NLogTarget.ApplicationInsightsTarget()
                 {
                     Name = "ai",
-                    InstrumentationKey = aiKey,
+                    InstrumentationKey = aiConnectionString,
                 };
                 config.AddTarget(aiTarget);
                 config.AddRuleForAllLevels(aiTarget);
