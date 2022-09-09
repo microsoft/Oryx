@@ -89,7 +89,6 @@ RUN set -ex \
     && apt-get install -y --no-install-recommends \
         tk-dev \
         uuid-dev \
-        curl \
         gnupg \
     && rm -rf /var/lib/apt/lists/* \
     # Install .NET Core SDKs
@@ -151,20 +150,6 @@ RUN set -ex \
     && . $buildDir/__pythonVersions.sh \
     && $imagesDir/installPlatform.sh python $PYTHON39_VERSION \
     && $imagesDir/installPlatform.sh python $PYTHON310_VERSION \
-    # build python directly from sources
-    #&& INSTALLATION_DIRECTORY=/opt/python/3.10.4/bin \
-    #&& mkdir -p $INSTALLATION_DIRECTORY \
-    #&& wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz \
-    #&& tar xzf Python-3.10.4.tgz -C /tmp/ \
-    #&& cd /tmp/Python-3.10.4 \
-    #&& ./configure --enable-optimizations \
-    #&& make altinstall \
-    #&& python3.10 -V \
-    #&& cp -R /tmp/Python-3.10.4/* /opt/python/3.10.4/bin/ \
-    #&& cp /opt/python/3.10.4/bin/python /opt/python/3.10.4/bin/python3.10 \
-    #&& cd $INSTALLATION_DIRECTORY \
-    #&& ls \
-    #&& ln -s /opt/python/3.10/bin/python /usr/bin/python \
     && [ -d "/opt/python/$PYTHON39_VERSION" ] && echo /opt/python/$PYTHON39_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && [ -d "/opt/python/$PYTHON310_VERSION" ] && echo /opt/python/$PYTHON310_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
@@ -219,7 +204,6 @@ RUN buildDir="/opt/tmp/build" \
     && apt-get install -y --no-install-recommends \
         apt-transport-https \
         nano \
-        sed \
     && rm -rf /var/lib/apt/lists/* \
     && curl https://repo.anaconda.com/pkgs/misc/gpgkeys/anaconda.asc | gpg --dearmor > conda.gpg \
     && install -o root -g root -m 644 conda.gpg /usr/share/keyrings/conda-archive-keyring.gpg \
@@ -229,7 +213,6 @@ RUN buildDir="/opt/tmp/build" \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
         conda=${CONDA_VERSION} \
-        sed \
     && rm -rf /var/lib/apt/lists/* \
     && echo $$CONDA_SCRIPT \
     &&. $CONDA_SCRIPT \
@@ -265,13 +248,8 @@ RUN buildDir="/opt/tmp/build" \
     && npm install -g lerna@4.0.0 \
     && PATH="$PATH:/opt/php/lts/bin" \
     && wget http://pear.php.net/go-pear.phar \
-    && ls . \
     && php go-pear.phar \
     && pecl version \
-    && which pecl \
-    && which sed \
-    && ln -sv /bin/sed /usr/bin/sed \
-    && echo "hello world" \
     && pecl install -f libsodium \
     && echo "vso-debian-bullseye" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
