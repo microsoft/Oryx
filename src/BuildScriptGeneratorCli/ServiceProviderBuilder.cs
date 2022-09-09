@@ -83,8 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 config.AddTarget(aiTarget);
                 config.AddRuleForAllLevels(aiTarget);
             }
-
-            if (!string.IsNullOrWhiteSpace(aiKey))
+            else if (!string.IsNullOrWhiteSpace(aiKey))
             {
                 var aiTarget = new ApplicationInsights.NLogTarget.ApplicationInsightsTarget()
                 {
