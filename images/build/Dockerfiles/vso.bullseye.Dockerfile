@@ -150,21 +150,21 @@ RUN set -ex \
     && pip3 install --upgrade cython \
     && . $buildDir/__pythonVersions.sh \
     && $imagesDir/installPlatform.sh python $PYTHON39_VERSION \
-    # && $imagesDir/installPlatform.sh python $PYTHON310_VERSION \
-    # build python directly from source
-    && INSTALLATION_DIRECTORY=/opt/python/3.10.4/bin \
-    && mkdir -p $INSTALLATION_DIRECTORY \
-    && wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz \
-    && tar xzf Python-3.10.4.tgz -C /tmp/ \
-    && cd /tmp/Python-3.10.4 \
-    && ./configure --enable-optimizations \
-    && make altinstall \
-    && python3.10 -V \
-    && cp -R /tmp/Python-3.10.4/* /opt/python/3.10.4/bin/ \
-    && cp /opt/python/3.10.4/bin/python /opt/python/3.10.4/bin/python3.10 \
-    && cd $INSTALLATION_DIRECTORY \
-    && ls \
-    && ln -s /opt/python/3.10/bin/python /usr/bin/python \
+    && $imagesDir/installPlatform.sh python $PYTHON310_VERSION \
+    # build python directly from sources
+    #&& INSTALLATION_DIRECTORY=/opt/python/3.10.4/bin \
+    #&& mkdir -p $INSTALLATION_DIRECTORY \
+    #&& wget https://www.python.org/ftp/python/3.10.4/Python-3.10.4.tgz \
+    #&& tar xzf Python-3.10.4.tgz -C /tmp/ \
+    #&& cd /tmp/Python-3.10.4 \
+    #&& ./configure --enable-optimizations \
+    #&& make altinstall \
+    #&& python3.10 -V \
+    #&& cp -R /tmp/Python-3.10.4/* /opt/python/3.10.4/bin/ \
+    #&& cp /opt/python/3.10.4/bin/python /opt/python/3.10.4/bin/python3.10 \
+    #&& cd $INSTALLATION_DIRECTORY \
+    #&& ls \
+    #&& ln -s /opt/python/3.10/bin/python /usr/bin/python \
     && [ -d "/opt/python/$PYTHON39_VERSION" ] && echo /opt/python/$PYTHON39_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && [ -d "/opt/python/$PYTHON310_VERSION" ] && echo /opt/python/$PYTHON310_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
