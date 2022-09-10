@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _gitHubActionsBullseyeBaseWithEnv = ImageTestHelperConstants.GitHubActionsBullseyeBaseWithEnv;
         private const string _vso = ImageTestHelperConstants.Vso;
         private const string _vsoUbuntu = ImageTestHelperConstants.VsoFocal;
+        private const string _vsoBullseye = ImageTestHelperConstants.VsoBullseye;
         private const string _buildRepository = ImageTestHelperConstants.BuildRepository;
         private const string _packRepository = ImageTestHelperConstants.PackRepository;
         private const string _cliRepository = ImageTestHelperConstants.CliRepository;
@@ -150,12 +151,12 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetRuntimeImage(string platformName, string platformVersion)
         {
 
-            if (PlatformVersionToOsType.TryGetValue(platformName, out var versionToOsType) 
+            if (PlatformVersionToOsType.TryGetValue(platformName, out var versionToOsType)
                 && versionToOsType.TryGetValue(platformVersion, out var osType))
             {
                 return $"{_repoPrefix}/{platformName}:{platformVersion}-{osType}{_tagSuffix}";
             }
-            
+
             return $"{_repoPrefix}/{platformName}:{platformVersion}{_tagSuffix}";
         }
 
@@ -193,6 +194,10 @@ namespace Microsoft.Oryx.Tests.Common
             else if (string.Equals(tag, _vsoUbuntu))
             {
                 return GetVsoBuildImage(_vsoUbuntu);
+            }
+            else if (string.Equals(tag, _vsoBullseye))
+            {
+                return GetVsoBuildImage(_vsoBullseye);
             }
             else if (string.Equals(tag, _gitHubActionsStretch))
             {
@@ -263,26 +268,35 @@ namespace Microsoft.Oryx.Tests.Common
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
         /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
-        public string GetAzureFunctionsJamStackBuildImage(string debianFlavor=null)
+        public string GetAzureFunctionsJamStackBuildImage(string debianFlavor = null)
         {
             if (!string.IsNullOrEmpty(debianFlavor)
                 && string.Equals(debianFlavor.ToLower(), _azureFunctionsJamStackBuster))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBuster}{_tagSuffix}";
-            } else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _azureFunctionsJamStackBullseye)) {
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _azureFunctionsJamStackBullseye))
+            {
                 return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBullseye}{_tagSuffix}";
-            } else {
+            }
+            else
+            {
                 return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackStretch}{_tagSuffix}";
             }
         }
 
-        public string GetGitHubActionsBuildImage(string debianFlavor=null)
+        public string GetGitHubActionsBuildImage(string debianFlavor = null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBuster)) {
+            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBuster))
+            {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBuster}{_tagSuffix}";
-            } else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseye)) {
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseye))
+            {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
-            } else {
+            }
+            else
+            {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsStretch}{_tagSuffix}";
             }
         }
@@ -319,8 +333,13 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
-        public string GetVsoBuildImage(string debianFlavor=null)
+        public string GetVsoBuildImage(string debianFlavor = null)
         {
+            if (!string.IsNullOrEmpty(debianFlavor)
+                && string.Equals(debianFlavor.ToLower(), _vsoBullseye))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_vsoBullseye}{_tagSuffix}";
+            }
             return $"{_repoPrefix}/{_buildRepository}:{_vsoUbuntu}{_tagSuffix}";
         }
 
@@ -377,7 +396,7 @@ namespace Microsoft.Oryx.Tests.Common
 
             return $"{_latestTag}-{_tagSuffix}";
         }
-        
+
         private string GetFullBuildImage(string debianFlavor = null)
         {
             if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _fullBuster))
@@ -455,7 +474,7 @@ namespace Microsoft.Oryx.Tests.Common
         };
     }
 
-    public static class ImageTestHelperConstants 
+    public static class ImageTestHelperConstants
     {
         public const string RepoPrefixEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
         public const string TagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
@@ -476,6 +495,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string GitHubActionsBullseyeBaseWithEnv = "github-actions-debian-bullseye-base-withenv";
         public const string Vso = "vso";
         public const string VsoFocal = "vso-ubuntu-focal";
+        public const string VsoBullseye = "vso-debian-bullseye";
         public const string BuildRepository = "build";
         public const string PackRepository = "pack";
         public const string CliRepository = "cli";

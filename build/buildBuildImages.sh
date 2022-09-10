@@ -360,19 +360,32 @@ function buildLatestImages() {
 		.
 }
 
-function buildVsoFocalImage() {
+function buildVsoImage() {
 	buildBuildScriptGeneratorImage
 	buildGitHubRunnersUbuntuBaseImage
+	local debianFlavor=$1
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "focal" ]; then
+		BUILD_IMAGE=$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE
+		local builtImageName="$ACR_BUILD_VSO_FOCAL_IMAGE_NAME"
+		local tagName="vso-ubuntu-focal"
+	elif  [ "$debianFlavor" == "bullseye" ]; then
+		BUILD_IMAGE=$BUILD_IMAGES_VSO_BULLSEYE_DOCKERFILE
+		local builtImageName="$ACR_BUILD_VSO_BULLSEYE_IMAGE_NAME"
+		local tagName="vso-debian-bullseye"
+	else
+		echo "Unsupported VSO image Debian flavor."
+		exit 1
+	fi
 
-	BuildAndTagStage "$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE" intermediate
+	BuildAndTagStage "$BUILD_IMAGE" intermediate
 	echo
-	echo "-------------Creating VSO focal build image-------------------"
-	local builtImageName="$ACR_BUILD_VSO_FOCAL_IMAGE_NAME"
+	echo "-------------Creating VSO $debianFlavor build image-------------------"
+	
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
 		--label com.microsoft.oryx="$labelContent" \
-		-f "$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE" \
+		-f "$BUILD_IMAGE" \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -381,7 +394,10 @@ function buildVsoFocalImage() {
 	echo "$builtImageName image history"
 	docker history $builtImageName
 
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:vso-ubuntu-focal"
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:$tagName"
+
+	echo
+	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 }
 
 function buildCliImage() {
@@ -476,7 +492,8 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildLtsVersionsImage "buster"
 	buildLtsVersionsImage	
 	buildLatestImages
-	buildVsoFocalImage
+	buildVsoImage "focal"
+	buildVsoImage "bullseye"
 	buildCliImage "buster"
 	buildCliImage
 	buildBuildPackImage
@@ -513,7 +530,9 @@ elif [ "$imageTypeToBuild" == "full" ]; then
 	buildFullImage "bullseye"
 	buildFullImage "buster"
 elif [ "$imageTypeToBuild" == "vso-focal" ]; then
-	buildVsoFocalImage
+	buildVsoImage "focal"
+elif [ "$imageTypeToBuild" == "vso-bullseye" ]; then
+	buildVsoImage "bullseye"
 elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 	buildCliImage "buster"
