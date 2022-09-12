@@ -86,6 +86,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\BuildScriptGenerator.Common\BuildScriptGenerator.Common.csproj" />
     <ProjectReference Include="..\Detector\Detector.csproj" />
   </ItemGroup>
