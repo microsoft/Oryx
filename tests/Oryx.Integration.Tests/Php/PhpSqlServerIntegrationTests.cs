@@ -34,9 +34,9 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion80 = "8.0";
             await Task.WhenAll(
-                PhpApp_UsingPdoAsync(phpVersion80, "github-actions"),
-                PhpApp_UsingPdoAsync(phpVersion80, "github-actions-buster"),
-                PhpApp_UsingPdoAsync(phpVersion80, "latest"));
+                PhpApp_UsingPdoAsync(phpVersion80, ImageTestHelperConstants.GitHubActionsStretch),
+                PhpApp_UsingPdoAsync(phpVersion80, ImageTestHelperConstants.GitHubActionsBuster),
+                PhpApp_UsingPdoAsync(phpVersion80, ImageTestHelperConstants.LatestStretchTag));
         }
 
         [Fact, Trait("category", "php-74")]
@@ -44,18 +44,18 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             await Task.WhenAll(
-                PhpApp_UsingPdoAsync(phpVersion74, "github-actions"),
-                PhpApp_UsingPdoAsync(phpVersion74, "github-actions-buster"),
-                PhpApp_UsingPdoAsync(phpVersion74, "latest"));
+                PhpApp_UsingPdoAsync(phpVersion74, ImageTestHelperConstants.GitHubActionsStretch),
+                PhpApp_UsingPdoAsync(phpVersion74, ImageTestHelperConstants.GitHubActionsBuster),
+                PhpApp_UsingPdoAsync(phpVersion74, ImageTestHelperConstants.LatestStretchTag));
         }
 
         [Theory]
-        [InlineData("7.4", "github-actions")]
-        [InlineData("7.4", "github-actions-buster")]
-        [InlineData("7.4", "latest")]
-        [InlineData("8.0", "github-actions")]
-        [InlineData("8.0", "github-actions-buster")]
-        [InlineData("8.0", "latest")]
+        [InlineData("7.4", ImageTestHelperConstants.GitHubActionsStretch)]
+        [InlineData("7.4", ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData("7.4", ImageTestHelperConstants.LatestStretchTag)]
+        [InlineData("8.0", ImageTestHelperConstants.GitHubActionsStretch)]
+        [InlineData("8.0", ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData("8.0", ImageTestHelperConstants.LatestStretchTag)]
         public async Task PhpApp_UsingPdoAsync(string phpVersion, string imageTag)
         {
             // Arrange

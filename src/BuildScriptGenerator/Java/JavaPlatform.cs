@@ -303,7 +303,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
                     return detectedVersion;
                 }
 
-                // Fallback to default version
+                // Explicitly specified default version by user wins over detected default
+                if (!string.IsNullOrEmpty(this.javaScriptGeneratorOptions.JavaDefaultVersion))
+                {
+                    return this.javaScriptGeneratorOptions.JavaDefaultVersion;
+                }
+
+                // Fallback to default version detection
                 var versionInfo = this.javaVersionProvider.GetVersionInfo();
                 return versionInfo.DefaultVersion;
             }
@@ -322,7 +328,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
                     return detectedVersion;
                 }
 
-                // Fallback to default version
+                // Explicitly specified default version by user wins over detected default
+                if (!string.IsNullOrEmpty(this.javaScriptGeneratorOptions.MavenDefaultVersion))
+                {
+                    return this.javaScriptGeneratorOptions.MavenDefaultVersion;
+                }
+
+                // Fallback to default version detection
                 return JavaConstants.MavenVersion;
             }
         }
@@ -349,7 +361,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 
         private void InstallMaven(string mavenVersion, StringBuilder scriptBuilder)
         {
-            // Install PHP Composer
+            // Install Maven
             if (this.mavenInstaller.IsVersionAlreadyInstalled(mavenVersion))
             {
                 this.logger.LogDebug(

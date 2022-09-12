@@ -53,13 +53,13 @@ namespace Microsoft.Oryx.Tests.Common
         /// </summary>
         /// <param name="hostDir">local directory to be used in a container</param>
         /// <returns>DockerVolume instance that can be used to mount the new copy of `originalDir`.</returns>
-        public static DockerVolume CreateMirror(string hostDir)
+        /// <param name="writeToHostDir">a boolean which indicates if we want the actual directory or the copy of the actual directory</param>
+        public static DockerVolume CreateMirror(string hostDir, bool writeToHostDir = false)
         {
             if (string.IsNullOrEmpty(hostDir))
             {
                 throw new ArgumentException($"'{nameof(hostDir)}' cannot be null or empty.");
             }
-
             if (!Directory.Exists(hostDir))
             {
                 throw new ArgumentException($"'{nameof(hostDir)}' must point to an existing directory.");
@@ -90,12 +90,15 @@ namespace Microsoft.Oryx.Tests.Common
                 tempDirRoot = Path.Combine(Path.GetTempPath(), MountedHostDirRootName);
             }
 
-            var writableHostDir = Path.Combine(
-                tempDirRoot,
-                Guid.NewGuid().ToString("N"),
-                dirInfo.Name);
-            CopyDirectories(hostDir, writableHostDir, copySubDirs: true);
-
+            var writableHostDir = hostDir;
+            if (!writeToHostDir)
+            {
+                writableHostDir = Path.Combine(
+                    tempDirRoot,
+                    Guid.NewGuid().ToString("N"),
+                    dirInfo.Name);
+                CopyDirectories(hostDir, writableHostDir, copySubDirs: true);
+            }
             // Grant permissions to the folder we just copied on the host machine. The permisions here allow the
             // user(a non-root user) in the container to read/write/execute files.
             var linuxOS = OSPlatform.Create("LINUX");

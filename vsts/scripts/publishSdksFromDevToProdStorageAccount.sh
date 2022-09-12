@@ -4,12 +4,18 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -ex
+set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
 
 azCopyDir="/tmp/azcopy-tool"
+
+dryRun=$1
+if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then
+	echo "Error: Dry run must be True or False. Was: '$dryRun'"
+	exit 1
+fi
 
 function blobExistsInProd() {
 	local containerName="$1"
@@ -34,29 +40,60 @@ function copyBlob() {
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName; then
         echo
         echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
-        "$azCopyDir/azcopy" copy \
-            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true
+        if [ $dryRun == "False" ]; then
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true
+        else
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true --dry-run
+        fi
     elif blobExistsInProd $platformName $blobName; then
         echo
         echo "Blob '$blobName' already exists in Prod storage container '$platformName'. Skipping copying it..."
     else
         echo
         echo "Blob '$blobName' does not exist in Prod storage container '$platformName'. Copying it..."
-        "$azCopyDir/azcopy" copy \
-            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
+        if [ $dryRun == "False" ]; then
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
+        else
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --dry-run
+        fi
     fi
 }
 
 function copyPlatformBlobsToProd() {
     local platformName="$1"
-    local versionsFile="$REPO_DIR/platforms/$platformName/versionsToBuild.txt"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "stretch"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "buster"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "bullseye"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "focal-scm"
+}
+
+function copyPlatformBlobsToProdForDebianFlavor() {
+    local platformName="$1"
+    local debianFlavor="$2"
+    local versionsFile="$REPO_DIR/platforms/$platformName/versions/$debianFlavor/versionsToBuild.txt"
+    local defaultFile=""
+    local binaryPrefix=""
 
     if [ "$platformName" == "php-composer" ]; then
-        versionsFile="$REPO_DIR/platforms/php/composer/versionsToBuild.txt"
+        versionsFile="$REPO_DIR/platforms/php/composer/versions/$debianFlavor/versionsToBuild.txt"
     elif [ "$platformName" == "maven" ]; then
-        versionsFile="$REPO_DIR/platforms/java/maven/versionsToBuild.txt"
+        versionsFile="$REPO_DIR/platforms/java/maven/versions/$debianFlavor/versionsToBuild.txt"
+    fi
+
+    if [ "$debianFlavor" == "stretch" ]; then
+        defaultFile="defaultVersion.txt"
+        binaryPrefix="$platformName"
+    else
+        defaultFile="defaultVersion.$debianFlavor.txt"
+        binaryPrefix="$platformName-$debianFlavor"
     fi
 
     # Here '3' is a file descriptor which is specifically used to read the versions file.
@@ -71,12 +108,10 @@ function copyPlatformBlobsToProd() {
 
         IFS=',' read -ra LINE_INFO <<< "$line"
         version=$(echo -e "${LINE_INFO[0]}" | sed -e 's/^[[:space:]]*//')
-        copyBlob "$platformName" "$platformName-$version.tar.gz"
-        copyBlob "$platformName" "$platformName-focal-scm-$version.tar.gz"
-        copyBlob "$platformName" "$platformName-buster-$version.tar.gz"
+        copyBlob "$platformName" "$binaryPrefix-$version.tar.gz"
 	done 3< "$versionsFile"
 
-    copyBlob "$platformName" defaultVersion.txt
+    copyBlob "$platformName" "$defaultFile"
 }
 
 if [ ! -f "$azCopyDir/azcopy" ]; then

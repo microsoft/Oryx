@@ -15,6 +15,7 @@ ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
 FROM oryxdevmcr.azurecr.io/private/oryx/oryx-run-base-${DEBIAN_FLAVOR} as main
+ARG DEBIAN_FLAVOR
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
@@ -38,7 +39,7 @@ COPY platforms/__common.sh /tmp/
 RUN true
 COPY platforms/python/prereqs/build.sh /tmp/
 RUN true
-COPY platforms/python/versionsToBuild.txt /tmp/
+COPY platforms/python/versions/${DEBIAN_FLAVOR}/versionsToBuild.txt /tmp/
 RUN true
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN true
@@ -47,7 +48,7 @@ RUN chmod +x /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/build.sh && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        build-essential \ 
+        build-essential \
         tk-dev \
         uuid-dev \
         libgeos-dev

@@ -6,6 +6,8 @@
 
 set -ex
 
+debianFlavor=$DEBIAN_FLAVOR
+
 # libpq-dev is for PostgreSQL
 apt-get update \
     && apt-get upgrade -y \
@@ -26,27 +28,27 @@ apt-get update \
         libgdal-dev \
         python3-gdal \
     && rm -rf /var/lib/apt/lists/*
- 
+
 # Microsoft SQL Server 2017
 # https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 export ACCEPT_EULA=Y \
     && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
-if [ "${DEBIAN_FLAVOR}" != "bullseye" ]; then \
+if [ "$debianFlavor" == "bullseye" ]; then \
     curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
-elif [ "${DEBIAN_FLAVOR}" != "buster" ]; then \
+elif [ "$debianFlavor" == "buster" ]; then \
     curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
-elif [ "${DEBIAN_FLAVOR}" != "stretch" ]; then \
+elif [ "$debianFlavor" == "stretch" ]; then \
     curl https://packages.microsoft.com/config/debian/9/prod.list > /etc/apt/sources.list.d/mssql-release.list
 fi
 
-exit
 apt-get update \
     && apt-get install -y --no-install-recommends \
         locales \
         apt-transport-https \
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
     && ACCEPT_EULA=Y apt-get install -y msodbcsql18 \
     && ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
     && echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc \
@@ -57,6 +59,12 @@ apt-get update \
 
 mkdir -p /etc/unixODBC
 cat >/etc/unixODBC/odbcinst.ini <<EOL
+[ODBC Driver 18 for SQL Server]
+Description=Microsoft ODBC Driver 18 for SQL Server
+Driver=/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.1.so.1.1
+Threading=1
+UsageCount=1
+
 [ODBC Driver 17 for SQL Server]
 Description=Microsoft ODBC Driver 17 for SQL Server
 Driver=/opt/microsoft/msodbcsql17/lib64/libmsodbcsql-17.2.so.0.1

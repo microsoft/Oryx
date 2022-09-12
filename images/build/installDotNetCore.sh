@@ -9,24 +9,30 @@ set -ex
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $CURRENT_DIR/../__common.sh
 
+sdkStorageAccountUrl="$ORYX_SDK_STORAGE_BASE_URL"
+if [ -z "$sdkStorageAccountUrl" ]; then
+    sdkStorageAccountUrl=$DEV_SDK_STORAGE_BASE_URL
+fi
+
 echo
-echo "Installing .NET Core SDK $DOTNET_SDK_VER ..."
+echo "Installing .NET Core SDK $DOTNET_SDK_VER from $sdkStorageAccountUrl ..."
 echo
 
 debianFlavor="$DEBIAN_FLAVOR"
 
 fileName="dotnet.tar.gz"
+
 if [ -z "$debianFlavor" ]; then
-  # Use default sdk file name
-	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
+    # Use default sdk file name
+    fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 elif [ "$debianFlavor" == "stretch" ]; then
-	# Use default sdk file name
-	fileName="dotnet-$DOTNET_SDK_VER.tar.gz"
+    # Use default sdk file name
+    fileName="dotnet-$DOTNET_SDK_VER.tar.gz"
 else
     fileName="dotnet-$debianFlavor-$DOTNET_SDK_VER.tar.gz"
 fi
 
-downloadFileAndVerifyChecksum dotnet $DOTNET_SDK_VER $fileName
+downloadFileAndVerifyChecksum dotnet $DOTNET_SDK_VER $fileName $sdkStorageAccountUrl
 
 globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
 
@@ -68,6 +74,6 @@ if [ "$INSTALL_TOOLS" == "true" ]; then
     chmod +x "$toolsDir/dotnet-dump"
     dotnet tool install --tool-path "$toolsDir" dotnet-counters
     chmod +x "$toolsDir/dotnet-counters"
-    dotnet tool install --tool-path "$toolsDir" dotnet-monitor --version 6.1.*
+    dotnet tool install --tool-path "$toolsDir" dotnet-monitor --version 6.*
     chmod +x "$toolsDir/dotnet-monitor"
 fi

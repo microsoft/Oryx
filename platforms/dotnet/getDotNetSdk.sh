@@ -13,6 +13,7 @@ source $REPO_DIR/platforms/__common.sh
 dotNetPlatformDir="$REPO_DIR/platforms/dotnet"
 targetDir="$volumeHostDir/dotnet"
 debianFlavor="$1"
+sdkStorageAccountUrl="$2"
 mkdir -p "$targetDir"
 
 getDotNetCoreSdk() {
@@ -20,15 +21,26 @@ getDotNetCoreSdk() {
 	local sha="$2"
 	local downloadUrl="$3"
 	local downloadedFile=""
+	local metadataFile=""
+	local sdkVersionMetadataName=""
+	local runtimeVersionMetadataName=""
 
 	if [ "$debianFlavor" == "stretch" ]; then
 			# Use default sdk file name
 			downloadedFile=dotnet-$sdkVersion.tar.gz
+			metadataFile="$targetDir/dotnet-$sdkVersion-metadata.txt"
+			# Continue adding the version metadata with the name of Version
+			# which is what our legacy CLI will use
+			sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+			runtimeVersionMetadataName="$LEGACY_DOTNET_RUNTIME_VERSION_METADATA_NAME"
 	else
 			downloadedFile=dotnet-$debianFlavor-$sdkVersion.tar.gz
+			metadataFile="$targetDir/dotnet-$debianFlavor-$sdkVersion-metadata.txt"
+			sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
+			runtimeVersionMetadataName="$DOTNET_RUNTIME_VERSION_METADATA_NAME"
 	fi
 
-	if shouldBuildSdk dotnet $downloadedFile || shouldOverwriteSdk || shouldOverwritePlatformSdk dotnet; then
+	if shouldBuildSdk dotnet $downloadedFile $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk dotnet; then
 		echo "Downloading .NET Core SDK version '$sdkVersion'..."
 		echo
 
@@ -52,14 +64,15 @@ getDotNetCoreSdk() {
 		cp -f "$downloadedFile" "$targetDir"
 		rm -rf $tempDir
 
-		echo "Runtime_version=$runtimeVersion" >> "$targetDir/dotnet-$sdkVersion-metadata.txt"
-		echo "Version=$sdkVersion" >> "$targetDir/dotnet-$sdkVersion-metadata.txt"
+		echo "$runtimeVersionMetadataName=$runtimeVersion" >> $metadataFile
+		echo "$sdkVersionMetadataName=$sdkVersion" >> $metadataFile
+		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
 	fi
 }
 
 echo
 echo "Getting .NET Core Sdks..."
 echo
-buildPlatform "$dotNetPlatformDir/versionsToBuild.txt" getDotNetCoreSdk
+buildPlatform "$dotNetPlatformDir/versions/$debianFlavor/versionsToBuild.txt" getDotNetCoreSdk
 
-cp "$dotNetPlatformDir/defaultVersion.txt" $targetDir
+cp "$dotNetPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"

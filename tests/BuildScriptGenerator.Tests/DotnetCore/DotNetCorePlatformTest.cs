@@ -77,6 +77,46 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             Assert.Equal(expectedSdkVersion, result.PlatformVersion);
         }
 
+        [Theory]
+        [InlineData(null, "3.1", null, "3.1.2")]
+        [InlineData(null, "3.1", "2.2.8", "3.1.2")]
+        [InlineData(null, null, "2.2.8", "2.2.8")]
+        [InlineData("3.0.2", "3.1", "2.2.8", "3.0.2")]
+        public void Detect_ReturnsExpectedVersion_BasedOnHierarchy(
+            string detectedVersion,
+            string envVarDefaultVersion, 
+            string detectedDefaultVersion,
+            string expectedSdkVersion)
+        {
+            // Arrange
+            var detector = CreateDetector(detectedVersion: detectedVersion);
+            var context = CreateContext();
+            var platform = CreatePlatform(
+                detector,
+                defaultVersion: detectedDefaultVersion,
+                envVarDefaultVersion: envVarDefaultVersion,
+                supportedVersions: new Dictionary<string, string>
+                {
+                    { "1.5.0", "1.5.0" },
+                    { "1.0.14", "1.0.14" },
+                    { "1.1.15", "1.1.15" },
+                    { "2.0.9", "2.0.9" },
+                    { "2.1.15", "2.1.15" },
+                    { "2.2.8", "2.2.8" },
+                    { "3.0.2", "3.0.2" },
+                    { "3.1.2", "3.1.2" },
+                    { "5.0.0-rc.1.14955.1", "5.0.0-rc.1.14955.1"},
+                });
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(DotNetCoreConstants.PlatformName, result.Platform);
+            Assert.Equal(expectedSdkVersion, result.PlatformVersion);
+        }
+
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
         {
             sourceRepo = sourceRepo ?? new MemorySourceRepo();
@@ -97,7 +137,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
         private DotNetCorePlatform CreatePlatform(
             IDotNetCorePlatformDetector detector,
             Dictionary<string, string> supportedVersions = null,
-            string defaultVersion = null)
+            string defaultVersion = null,
+            string envVarDefaultVersion = null)
         {
             defaultVersion = defaultVersion ?? DotNetCoreRunTimeVersions.NetCoreApp31;
             supportedVersions = supportedVersions ?? new Dictionary<string, string>
@@ -109,6 +150,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 defaultVersion);
             var commonOptions = new BuildScriptGeneratorOptions();
             var dotNetCoreScriptGeneratorOptions = new DotNetCoreScriptGeneratorOptions();
+            dotNetCoreScriptGeneratorOptions.DefaultRuntimeVersion = envVarDefaultVersion;
             var installer = new DotNetCorePlatformInstaller(
                 Options.Create(commonOptions),
                 NullLoggerFactory.Instance);

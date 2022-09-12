@@ -10,6 +10,7 @@ import (
 	"common/consts"
 	"flag"
 	"fmt"
+	"path/filepath"
 	"strings"
 )
 
@@ -87,6 +88,9 @@ func main() {
 
 		command := entrypointGenerator.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, command)
+
+		userRunCommand := common.ParseUserRunCommand(filepath.Join(fullAppPath, consts.AppSvcFileName))
+		common.AppendScript(*outputPathPtr, userRunCommand)
 	}
 
 	if setupEnvCommand.Parsed() {
@@ -107,7 +111,7 @@ func main() {
 			fmt.Sprintf("echo %s/lib > /etc/ld.so.conf.d/python.conf\n", pythonInstallationRoot))
 		scriptBuilder.WriteString("ldconfig\n")
 
-		if strings.HasPrefix(buildManifest.PythonVersion, "3.") && !strings.HasPrefix(buildManifest.PythonVersion, "3.10") {
+		if strings.HasPrefix(buildManifest.PythonVersion, "3.") && !strings.HasPrefix(buildManifest.PythonVersion, "3.11") {
 			scriptBuilder.WriteString(
 				fmt.Sprintf("cd %s/bin\n", pythonInstallationRoot))
 			scriptBuilder.WriteString("rm -f python\n")

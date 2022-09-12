@@ -23,6 +23,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
         {
             // "config.GetValue" call will get the most closest value provided based on the order of
             // configuration sources added to the ConfigurationBuilder above.
+            options.BindPort = this.GetStringValue(SettingsKeys.BindPort);
+            options.BuildImage = this.GetStringValue(SettingsKeys.BuildImage);
             options.PlatformName = this.GetStringValue(SettingsKeys.PlatformName);
             options.PlatformVersion = this.GetStringValue(SettingsKeys.PlatformVersion);
             options.RuntimePlatformName = this.GetStringValue(SettingsKeys.RuntimePlatformName);
@@ -34,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
             options.EnableCheckers = !this.GetBooleanValue(SettingsKeys.DisableCheckers);
             options.EnableDotNetCoreBuild = !this.GetBooleanValue(SettingsKeys.DisableDotNetCoreBuild);
-            options.EnableGolangBuild = !this.GetBooleanValue(SettingsKeys.DisableGolangeBuild);
+            options.EnableGolangBuild = !this.GetBooleanValue(SettingsKeys.DisableGolangBuild);
             options.EnableNodeJSBuild = !this.GetBooleanValue(SettingsKeys.DisableNodeJSBuild);
             options.EnablePythonBuild = !this.GetBooleanValue(SettingsKeys.DisablePythonBuild);
             options.EnablePhpBuild = !this.GetBooleanValue(SettingsKeys.DisablePhpBuild);
@@ -70,6 +72,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
                 dynamicInstallRootDir = Path.GetFullPath(dynamicInstallRootDir);
                 options.DynamicInstallRootDir = dynamicInstallRootDir;
             }
+
+            options.DebianFlavor = this.GetStringValue(SettingsKeys.DebianFlavor);
         }
     }
 }

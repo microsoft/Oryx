@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Linq;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -111,12 +112,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             });
 
             // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
+            var actualOutput = string.Join("", result.StdOut.ReplaceNewLine().Where(c => !char.IsWhiteSpace(c)));
             RunAsserts(
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedOutput, actualOutput);
+                    Assert.Contains(string.Join("", expectedOutput.Where(c => !char.IsWhiteSpace(c))), actualOutput);
                 },
                 result.GetDebugInfo());
         }

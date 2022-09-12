@@ -23,6 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
         public void Configure(HugoScriptGeneratorOptions options)
         {
             options.HugoVersion = this.GetStringValue(SettingsKeys.HugoVersion);
+            options.DefaultVersion = this.GetStringValue(SettingsKeys.HugoDefaultVersion);
         }
     }
 }

@@ -1,9 +1,28 @@
 variables:
   - group: Oryx
 
+parameters:
+- name: destinationStorageAccountName
+  displayName: Destination Storage Account Name
+  type: string
+  default: oryxsdksdev
+
 stages:
 - stage: Build
   jobs:
+  - job: Python_Bullseye_SDK
+    timeoutInMinutes: 250
+    pool:
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'python'
+        debianFlavor: 'bullseye'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
+
   - job: Python_Buster_SDK
     timeoutInMinutes: 250
     pool:
@@ -15,6 +34,7 @@ stages:
       parameters:
         platformName: 'python'
         debianFlavor: 'buster'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
   - job: Python_Stretch_SDK
     timeoutInMinutes: 250
@@ -27,6 +47,7 @@ stages:
       parameters:
         platformName: 'python'
         debianFlavor: 'stretch'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
   - job: Python_Ubuntu_SDK
     timeoutInMinutes: 250
@@ -39,6 +60,7 @@ stages:
       parameters:
         platformName: 'python'
         debianFlavor: 'focal-scm'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
 - stage: Release
   dependsOn: Build
@@ -52,6 +74,8 @@ stages:
         - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
     steps:
     - template: ../templates/_platformBinariesReleaseTemplate.yml
+      parameters:
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
 trigger:
   batch: true

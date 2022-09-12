@@ -9,6 +9,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
     {
         public string GolangVersion { get; set; }
 
+        public string DefaultVersion { get; set; }
+
         public string CustomBuildCommand { get; set; }
     }
 }

@@ -47,72 +47,102 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string GenerateDockerfile(DockerfileContext ctx)
         {
-            var dockerfileBuildImageName = "build";
-            var dockerfileBuildImageTag = "azfunc-jamstack";
-
-            var dockerfileRuntimeImage = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformName) ?
-                ConvertToRuntimeName(this.commonOptions.RuntimePlatformName) : string.Empty;
-            var dockerfileRuntimeImageTag = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformVersion) ?
-                this.commonOptions.RuntimePlatformVersion : string.Empty;
-            var compatiblePlatforms = this.GetCompatiblePlatforms(ctx);
-            if (!compatiblePlatforms.Any())
+            using (var timedEvent = this.logger.LogTimedEvent("GenerateDockerfile"))
             {
-                throw new UnsupportedPlatformException(Labels.UnableToDetectPlatformMessage);
-            }
+                var createScriptArguments = new Dictionary<string, string>();
+                var dockerfileBuildImageName = "cli";
+                var dockerfileBuildImageTag = "stable";
 
-            foreach (var platformAndDetectorResult in compatiblePlatforms)
-            {
-                var platform = platformAndDetectorResult.Key;
-                var platformDetectorResult = platformAndDetectorResult.Value;
-                var detectedRuntimeName = ConvertToRuntimeName(platform.Name);
-
-                // If the runtime platform name wasn't previously provided, see if we can use the current detected platform as the runtime image.
-                if (string.IsNullOrEmpty(dockerfileRuntimeImage))
+                if (!string.IsNullOrEmpty(this.commonOptions.BuildImage))
                 {
-                    // If the detected platform isn't in our currently list of runtime versions, skip it with a notice to the user.
-                    if (!this.supportedRuntimeVersions.ContainsKey(detectedRuntimeName))
+                    var buildImageSplit = this.commonOptions.BuildImage.Split(':');
+                    dockerfileBuildImageName = buildImageSplit[0];
+                    dockerfileBuildImageTag = buildImageSplit[1];
+                }
+
+                var dockerfileRuntimeImage = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformName) ?
+                    ConvertToRuntimeName(this.commonOptions.RuntimePlatformName) : string.Empty;
+                var dockerfileRuntimeImageTag = !string.IsNullOrEmpty(this.commonOptions.RuntimePlatformVersion) ?
+                    this.commonOptions.RuntimePlatformVersion : string.Empty;
+
+                if (!string.IsNullOrEmpty(this.commonOptions.BindPort))
+                {
+                    createScriptArguments.Add("bindPort", this.commonOptions.BindPort);
+                }
+
+                var compatiblePlatforms = this.GetCompatiblePlatforms(ctx);
+                if (!compatiblePlatforms.Any())
+                {
+                    throw new UnsupportedPlatformException(Labels.UnableToDetectPlatformMessage);
+                }
+
+                foreach (var platformAndDetectorResult in compatiblePlatforms)
+                {
+                    var platform = platformAndDetectorResult.Key;
+                    var platformDetectorResult = platformAndDetectorResult.Value;
+                    var detectedRuntimeName = ConvertToRuntimeName(platform.Name);
+
+                    // If the runtime platform name wasn't previously provided, see if we can use the current detected platform as the runtime image.
+                    if (string.IsNullOrEmpty(dockerfileRuntimeImage))
                     {
-                        this.logger.LogDebug($"The detected platform {platform.Name} does not currently have a supported runtime image." +
-                                               $"If this Dockerfile command or image is outdated, please provide the runtime platform name manually.");
-                        continue;
+                        // If the detected platform isn't in our currently list of runtime versions, skip it with a notice to the user.
+                        if (!this.supportedRuntimeVersions.ContainsKey(detectedRuntimeName))
+                        {
+                            this.logger.LogDebug($"The detected platform {platform.Name} does not currently have a supported runtime image." +
+                                                   $"If this Dockerfile command or image is outdated, please provide the runtime platform name manually.");
+                            continue;
+                        }
+
+                        dockerfileRuntimeImage = detectedRuntimeName;
                     }
 
-                    dockerfileRuntimeImage = detectedRuntimeName;
+                    // If the runtime platform version wasn't previously provided, see if we can detect one from the current detected platform.
+                    // Note: we first need to ensure that the current detected platform is the same as the runtime platform name previously set or pvodied.
+                    if (!string.IsNullOrEmpty(dockerfileRuntimeImage) && dockerfileRuntimeImage.Equals(detectedRuntimeName, StringComparison.OrdinalIgnoreCase) &&
+                         string.IsNullOrEmpty(dockerfileRuntimeImageTag))
+                    {
+                        dockerfileRuntimeImageTag = this.ConvertToRuntimeVersion(dockerfileRuntimeImage, platformDetectorResult.PlatformVersion);
+                    }
+
+                    // If the runtime image has been set manually or by the platform detection result, stop searching.
+                    if (!string.IsNullOrEmpty(dockerfileRuntimeImage))
+                    {
+                        break;
+                    }
                 }
 
-                // If the runtime platform version wasn't previously provided, see if we can detect one from the current detected platform.
-                // Note: we first need to ensure that the current detected platform is the same as the runtime platform name previously set or pvodied.
-                if (!string.IsNullOrEmpty(dockerfileRuntimeImage) && dockerfileRuntimeImage.Equals(detectedRuntimeName, StringComparison.OrdinalIgnoreCase) &&
-                     string.IsNullOrEmpty(dockerfileRuntimeImageTag))
-                {
-                    dockerfileRuntimeImageTag = this.ConvertToRuntimeVersion(dockerfileRuntimeImage, platformDetectorResult.PlatformVersion);
-                }
+                var formattedCreateScriptArguments = createScriptArguments.Any() ?
+                    string.Join(' ', createScriptArguments.Select(arg => $"-{arg.Key} {arg.Value}")) : string.Empty;
 
-                // If the runtime image has been set manually or by the platform detection result, stop searching.
-                if (!string.IsNullOrEmpty(dockerfileRuntimeImage))
+                var properties = new DockerfileProperties()
                 {
-                    break;
-                }
+                    RuntimeImageName = dockerfileRuntimeImage,
+                    RuntimeImageTag = dockerfileRuntimeImageTag,
+                    BuildImageName = dockerfileBuildImageName,
+                    BuildImageTag = dockerfileBuildImageTag,
+                    CreateScriptArguments = formattedCreateScriptArguments,
+                };
+
+                var generatedDockerfile = TemplateHelper.Render(
+                    TemplateHelper.TemplateResource.Dockerfile,
+                    properties,
+                    this.logger);
+
+                // Remove the Container Registry Analysis snippet, if it exists in the template.
+                var pattern = "# DisableDockerDetector \".*?\"\n";
+                generatedDockerfile = Regex.Replace(generatedDockerfile, pattern, string.Empty);
+
+                var buildEventProps = new Dictionary<string, string>()
+                {
+                    { "runtimeImageName", properties.RuntimeImageName },
+                    { "runtimeImageTag", properties.RuntimeImageTag },
+                    { "buildImageName", properties.BuildImageName },
+                    { "buildImageTag", properties.BuildImageTag },
+                };
+                timedEvent.SetProperties(buildEventProps);
+
+                return generatedDockerfile;
             }
-
-            var properties = new DockerfileProperties()
-            {
-                RuntimeImageName = dockerfileRuntimeImage,
-                RuntimeImageTag = dockerfileRuntimeImageTag,
-                BuildImageName = dockerfileBuildImageName,
-                BuildImageTag = dockerfileBuildImageTag,
-            };
-
-            var generatedDockerfile = TemplateHelper.Render(
-                TemplateHelper.TemplateResource.Dockerfile,
-                properties,
-                this.logger);
-
-            // Remove the Container Registry Analysis snippet, if it exists in the template.
-            var pattern = "# DisableDockerDetector \".*?\"\n";
-            generatedDockerfile = Regex.Replace(generatedDockerfile, pattern, string.Empty);
-
-            return generatedDockerfile;
         }
 
         /// <summary>
@@ -133,6 +163,37 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return platformName;
+        }
+
+        /// <summary>
+        /// When looking for a satifying runtime version, format it so that tags '8' and '8.1' are treated as
+        /// '8.99999.99999' and '8.1.99999', respectively. This allows the tags to be treated as the "maximum
+        /// version within the provided major or minor version that Oryx supports" during version comparison.
+        /// </summary>
+        /// <param name="runtimeVersions">The list of runtime versions supported for a platform.</param>
+        /// <returns>A list of tuples containing the original runtime version and its formatted version.</returns>
+        private static IEnumerable<(string OriginalRuntimeVersion, string FormattedRuntimeVersion)> FormatRuntimeVersions(IEnumerable<string> runtimeVersions)
+        {
+            return runtimeVersions.Select(v => FormatRuntimeVersion(v));
+        }
+
+        /// <summary>
+        /// When looking for a satifying runtime version, format it so that tags '8' and '8.1' are treated as
+        /// '8.99999.99999' and '8.1.99999', respectively. This allows the tags to be treated as the "maximum
+        /// version within the provided major or minor version that Oryx supports" during version comparison.
+        /// </summary>
+        /// <param name="runtimeVersion">The runtime version supported for a platform.</param>
+        /// <returns>A tuple containing the original runtime version and its formatted version.</returns>
+        private static (string OriginalRuntimeVersion, string FormattedRuntimeVersion) FormatRuntimeVersion(string runtimeVersion)
+        {
+            var formattedVersion = runtimeVersion;
+            var segments = runtimeVersion.Split('.');
+            for (int i = 0; i < 3 - segments.Length; i++)
+            {
+                formattedVersion += ".99999";
+            }
+
+            return (runtimeVersion, formattedVersion);
         }
 
         /// <summary>
@@ -166,7 +227,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         platformVersion = $"~{platformVersion}";
                     }
 
-                    return SemanticVersionResolver.GetMaxSatisfyingVersion(platformVersion, runtimeVersions) ?? runtimeVersions.LastOrDefault();
+                    var formattedRuntimeVersions = FormatRuntimeVersions(runtimeVersions);
+                    var satisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(platformVersion, formattedRuntimeVersions.Select(v => v.FormattedRuntimeVersion));
+                    if (satisfyingVersion == null)
+                    {
+                        return runtimeVersions.LastOrDefault();
+                    }
+
+                    return formattedRuntimeVersions
+                        .Where(v => string.Equals(v.FormattedRuntimeVersion, satisfyingVersion))
+                        .Select(v => v.OriginalRuntimeVersion)
+                        .FirstOrDefault();
                 }
 
                 return runtimeVersions.LastOrDefault();

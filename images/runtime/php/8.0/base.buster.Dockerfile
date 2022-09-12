@@ -1,6 +1,6 @@
 FROM oryxdevmcr.azurecr.io/private/oryx/php-8.0
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.0.19
+ENV PHP_VERSION 8.0.22
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
@@ -19,6 +19,12 @@ RUN echo -e '<FilesMatch "\.(?i:ph([[p]?[0-9]*|tm[l]?))$">\n SetHandler applicat
 # Disable Apache2 server signature
 RUN echo -e 'ServerSignature Off' >> /etc/apache2/apache2.conf
 RUN echo -e 'ServerTokens Prod' >> /etc/apache2/apache2.conf
+RUN { \
+   echo '<DirectoryMatch "^/.*/\.git/">'; \
+   echo '   Order deny,allow'; \
+   echo '   Deny from all'; \
+   echo '</DirectoryMatch>'; \
+} >> /etc/apache2/apache2.conf
 
 # Install common PHP extensions
 RUN apt-get update \
@@ -28,7 +34,7 @@ RUN apt-get update \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.* ]]; then \
 		apt-get update \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends apache2-dev \
