@@ -181,10 +181,16 @@ namespace Microsoft.Oryx.Automation
                         sha = GetSha(release.Runtime.Files);
                         Console.WriteLine($"For Runtime: {runtimeVersion} {release.Runtime.VersionDisplay} {sha}");
                         platformConstant = new PlatformConstant(
-                            runtimeVersion, sha, "dotnet", "netcore");
+                            runtimeVersion, sha, "dotnet", "net-core");
                         platformConstants.Add(platformConstant);
 
                         // runtime (aspnetcore)
+                        string aspnetCoreRuntimeVersion = release.AspnetCoreRuntime.Version;
+                        sha = GetSha(release.AspnetCoreRuntime.Files);
+                        Console.WriteLine($"For AspnetCoreRuntime: {aspnetCoreRuntimeVersion} {release.AspnetCoreRuntime.VersionDisplay} {sha}");
+                        platformConstant = new PlatformConstant(
+                            runtimeVersion, sha, "dotnet", "aspnet-core");
+                        platformConstants.Add(platformConstant);
                     }
                 }
             }
@@ -196,7 +202,6 @@ namespace Microsoft.Oryx.Automation
         /// <inheritdoc/>
         public override async Task UpdateConstantsAsync(List<PlatformConstant> platformConstants)
         {
-            Console.WriteLine("Step 0");
             // read constants.yaml
             string file = "build/constants.yaml";
             string fileContents = await File.ReadAllTextAsync(file);
@@ -205,18 +210,14 @@ namespace Microsoft.Oryx.Automation
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(UnderscoredNamingConvention.Instance)
                 .Build();
-            Console.WriteLine("step0.4");
             var yamlContents = deserializer.Deserialize<List<Constant>>(fileContents);
-            Console.WriteLine("step0.5");
             Dictionary<string, Constant> dotnetYamlConstants = GetYamlDotNetConstants(yamlContents);
-            Console.WriteLine("Step 1");
             // update dotnet core sdks
             foreach (var platformConstant in platformConstants)
             {
                 string version = platformConstant.Version;
                 string sha = platformConstant.Sha;
                 string versionType = platformConstant.VersionType;
-                Console.WriteLine("Step2");
                 string dotNetConstantKey = GenerateDotNetConstantKey(version, versionType);
                 Console.WriteLine($"version: {version} versionType: {versionType} sha: {sha} dotNetConstantKey: {dotNetConstantKey}");
                 if (versionType.Equals("sdk"))
@@ -247,7 +248,6 @@ namespace Microsoft.Oryx.Automation
             Dictionary<string, Constant> dotNetConstants = new Dictionary<string, Constant>();
             foreach (var constant in yamlContents)
             {
-                Console.WriteLine($"Step inside ConstantName: {constant.Name}");
                 if (constant.Name == "dot-net-core-sdk-versions" ||
                     constant.Name == "dot-net-core-run-time-versions")
                 {
@@ -260,11 +260,11 @@ namespace Microsoft.Oryx.Automation
         private static string GenerateDotNetConstantKey(string version, string versionType)
         {
             string constant = string.Empty;
-            Console.WriteLine($"GenerateConstant version: {version}");
             string[] splitVersion = version.Split('.');
             string majorVersion = splitVersion[0];
             string minorVersion = splitVersion[1];
-            Console.WriteLine($"majorVersion: {majorVersion} minorVersion: {minorVersion}");
+            // Console.WriteLine($"GenerateConstant version: {version}");
+            // Console.WriteLine($"majorVersion: {majorVersion} minorVersion: {minorVersion}");
             string majorMinor = majorVersion + minorVersion;
             if (versionType.Equals("sdk"))
             {
@@ -273,12 +273,10 @@ namespace Microsoft.Oryx.Automation
                 string prefix = majorVersionInt < 5 ? $"dot-net-core" : "dot-net";
                 constant = $"{prefix}-{majorMinor}-sdk-version";
             }
-            else if (versionType.Equals("netcore")) {
-                constant = $"net-core-app-{majorMinor}";
+            else {
+                constant = $"{versionType}-app-{majorMinor}";
             }
-
-            // TODO: runtime (aspnetcore)
-
+            Console.WriteLine($"GenerateConstant: {constant}");
             return constant;
         }
 
@@ -299,17 +297,20 @@ namespace Microsoft.Oryx.Automation
 
         private static string GetSha(List<FileObj> files)
         {
-            string tarName = "dotnet-sdk-linux-x64.tar.gz";
+            HashSet<string> tarFileNames = new HashSet<string>() {
+                "dotnet-sdk-linux-x64.tar.gz",
+                "dotnet-runtime-linux-x64.tar.gz",
+                "aspnetcore-runtime-linux-x64.tar.gz",
+            };
             foreach (var file in files)
             {
-                if (tarName.Equals(file.Name))
+                if (tarFileNames.Contains(file.Name))
                 {
                     return file.Hash;
                 }
-                //Console.WriteLine($"No match tarName: {tarName} file.Name: {file.Name}");
             }
 
-            //Console.WriteLine($"No sha found for ${tarName}");
+            Console.WriteLine($"No sha found");
             // TODO: throw exception if not found
 
             return string.Empty;
@@ -393,6 +394,18 @@ namespace Microsoft.Oryx.Automation
             public List<FileObj> Files { get; set; } = new List<FileObj>();
         }
 
+        private class AspnetCoreRuntime
+        {
+            [JsonProperty(PropertyName = "version")]
+            public string Version { get; set; } = string.Empty;
+
+            [JsonProperty(PropertyName = "version-display")]
+            public string VersionDisplay { get; set; } = string.Empty;
+
+            [JsonProperty(PropertyName = "files")]
+            public List<FileObj> Files { get; set; } = new List<FileObj>();
+        }
+
         private class Release
         {
             [JsonProperty(PropertyName = "release-date")]
@@ -404,6 +417,8 @@ namespace Microsoft.Oryx.Automation
             [JsonProperty(PropertyName = "runtime")]
             public Runtime Runtime { get; set; } = new Runtime();
 
+            [JsonProperty(PropertyName = "aspnetcore-runtime")]
+            public AspnetCoreRuntime AspnetCoreRuntime { get; set; } = new AspnetCoreRuntime();
         }
 
         private class ReleasesJson // TODO: come up with a better name
