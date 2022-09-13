@@ -37,6 +37,7 @@ jobs:
 
       - name: Create commits
         run: |
+          git status
           git add -A
           git commit -am "Add new version"
 
