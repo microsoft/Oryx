@@ -41,4 +41,4 @@ jobs:
           git commit -am "Add new version"
 
       - name: Create Pull Request
-        uses: oryx/create-pull-request@v4
+        uses: microsoft/Oryx/create-pull-request@v4
