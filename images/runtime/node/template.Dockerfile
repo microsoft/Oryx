@@ -19,6 +19,10 @@ FROM mcr.microsoft.com/oryx/base:%RUNTIME_BASE_IMAGE_TAG%
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 
+# Oryx++ Builder variables
+ENV CNB_STACK_ID="oryx.stacks.skeleton"
+LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
+
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 
 # Node wrapper is used to debug apps when node is executed indirectly, e.g. by npm.

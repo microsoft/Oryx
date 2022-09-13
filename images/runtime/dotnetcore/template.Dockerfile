@@ -23,6 +23,10 @@ ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 ENV DOTNET_VERSION=%DOTNET_VERSION%
 ENV ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
 
+# Oryx++ Builder variables
+ENV CNB_STACK_ID="oryx.stacks.skeleton"
+LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
+
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN echo $USER_DOTNET_AI_VERSION && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
