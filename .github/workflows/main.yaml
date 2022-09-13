@@ -34,3 +34,11 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+
+      - name: Create commits
+        run: |
+          git add -A
+          git commit -am "Add new version"
+
+      - name: Create Pull Request
+        uses: oryx/create-pull-request@v4
