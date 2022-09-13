@@ -38,6 +38,8 @@ jobs:
       - name: Create commits
         run: |
           git status
+          git config user.name 'William Hernandez'
+          git config user.email 'williamhe@microsoft.com'
           git add -A
           git commit -am "Add new version"
 
