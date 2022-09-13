@@ -11,13 +11,7 @@
         public static int Main(string[] args)
         {
             AddNewSdkAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-
-            if (args.Length != 2)
-            {
-                //Console.WriteLine(
-                //    $"Usage: {AppDomain.CurrentDomain.FriendlyName} <input YAML path> <output base path>");
-                return 1;
-            }
+            Console.WriteLine($"args.Length: {args.Length}");
 
             return 0;
         }
