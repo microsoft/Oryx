@@ -49,6 +49,6 @@ jobs:
       - name: Azure Pipelines Action
         uses: Azure/pipelines@v1
         with:
-          azure-devops-project-url: https://github.com/microsoft/Oryx
+          azure-devops-project-url: https://devdiv.visualstudio.com/DevDiv/Oryx
           azure-pipeline-name: Oryx-PlatformBinary-DotNetCore
           azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
