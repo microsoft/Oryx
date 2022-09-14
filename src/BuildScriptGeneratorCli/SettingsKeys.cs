@@ -60,6 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string PruneDevDependencies = "PRUNE_DEV_DEPENDENCIES";
         public const string NpmRegistryUrl = "NPM_REGISTRY_URL";
         public const string EnableNodeMonorepoBuild = "ENABLE_NODE_MONOREPO_BUILD";
+        public const string ConfigYarnTimeOut = "CONFIG_YARN_TIMEOUT";
         public const string PythonVirtualEnvironmentName = "VIRTUALENV_NAME";
         public const string OryxSdkStorageBaseUrl = "ORYX_SDK_STORAGE_BASE_URL";
         public const string AppType = "ORYX_APP_TYPE";

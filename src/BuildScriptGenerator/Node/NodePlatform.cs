@@ -174,6 +174,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string runBuildLageCommand = null;
             string installLernaCommand = null;
             bool configureYarnCache = false;
+            string ConfigureYarnTimeout = null;
             string packageManagerCmd = null;
             string packageInstallCommand = null;
             string packageInstallerVersionCommand = null;
@@ -191,6 +192,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
                 configureYarnCache = false;
+                configureYarnTimeoutCommand = string.Format(NodeConstants.configureYarnTimeoutCommandTemplate, ConfigureYarnTimeout);
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
 
                 // In Yarn 2+ and .yarnrc.yml file replaces .yarnrc in Yarn 2+.
@@ -380,6 +382,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 CompressNodeModulesCommand = compressNodeModulesCommand,
                 CompressedNodeModulesFileName = compressedNodeModulesFileName,
                 ConfigureYarnCache = configureYarnCache,
+                ConfigureYarnTimeout = configureYarnTimeout,
                 PruneDevDependencies = pruneDevDependencies,
                 AppInsightsInjectCommand = appInsightsInjectCommand,
                 AppInsightsPackageName = NodeConstants.NodeAppInsightsPackageName,

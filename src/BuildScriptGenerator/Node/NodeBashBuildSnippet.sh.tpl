@@ -39,6 +39,13 @@ echo "registry={{ PackageRegistryUrl }}" >> ~/.npmrc
 echo
 {{ end }}
 
+{{ if YarnTimeoutConfig | IsNotBlank }}
+echo
+echo "Found yarn network timeout config."
+echo "Setting it up with command: yarn config set network-timeout {{ YarnTimeoutConfig }} -g"
+yarn config set network-timeout {{ YarnTimeoutConfig }} -g
+{{ end }}
+
 zippedModulesFileName={{ CompressedNodeModulesFileName }}
 allModulesDirName=".oryx_all_node_modules"
 prodModulesDirName=".oryx_prod_node_modules"
