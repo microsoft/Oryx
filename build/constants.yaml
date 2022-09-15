@@ -109,6 +109,10 @@
     final-stretch-dot-net-60-sdk-version: 6.0.301
     final-stretch-dot-net-core-app-60-run-time-version: 6.0.6
     final-stretch-aspnet-core-app-60-run-time-version: 6.0.6
+
+    final-stretch-dot-net-60-sdk-version: 7.0.100-preview.6.22352.1
+    final-stretch-dot-net-core-app-60-run-time-version: 7.0.0-preview.6.22324.4
+    final-stretch-aspnet-core-app-60-run-time-version: 7.0.0-preview.6.22330.3
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
