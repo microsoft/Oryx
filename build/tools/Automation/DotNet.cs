@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.Automation
             // read constants.yaml
             string file = "build/constants.yaml";
             string fileContents = await File.ReadAllTextAsync(file);
-            Console.WriteLine(fileContents);
+            // Console.WriteLine(fileContents);
             // deserialize
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(UnderscoredNamingConvention.Instance)
@@ -117,6 +117,7 @@ namespace Microsoft.Oryx.Automation
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
 
                     // add to versionsToBuild.txt
+                    UpdateVersionsToBuildTxt(platformConstant);
                 }
                 else
                 {
@@ -132,8 +133,29 @@ namespace Microsoft.Oryx.Automation
                 .Build();
 
             var stringResult = serializer.Serialize(yamlContents);
-            Console.WriteLine($"stringResult: \n{stringResult}");
+            //Console.WriteLine($"stringResult: \n{stringResult}");
             File.WriteAllText("build/constants.yaml", stringResult);
+        }
+
+        private static void UpdateVersionsToBuildTxt(PlatformConstant platformConstant)
+        {
+            Console.WriteLine("Updating versionToBuild.txt");
+            List<string> versionsToBuildTxtFiles = new List<string>() {
+                    "platforms/dotnet/versions/bullseye/versionsToBuild.txt",
+                    "platforms/dotnet/versions/buster/versionsToBuild.txt",
+                    "platforms/dotnet/versions/focal-scm/versionsToBuild.txt",
+                    "platforms/dotnet/versions/stretch/versionsToBuild.txt",
+            };
+            foreach (string versionsToBuildTxtFile in versionsToBuildTxtFiles)
+            {
+                string line = $"\n{platformConstant.Version}, {platformConstant.Sha},";
+                File.AppendAllText(versionsToBuildTxtFile, line);
+
+                // sort
+                var contents = File.ReadAllLines(versionsToBuildTxtFile);
+                Array.Sort(contents);
+                File.WriteAllLines(versionsToBuildTxtFile, contents);
+            }
         }
 
         private static Dictionary<string, Constant> GetYamlDotNetConstants(List<Constant> yamlContents)
@@ -180,9 +202,8 @@ namespace Microsoft.Oryx.Automation
             int releasedToday = DateTime.Compare(dateReleased, dateToday);
             //Console.WriteLine($"releasedToday: {releasedToday} " +
             //    $"dateReleased: {dateReleased} dateNow: {dateToday}");
-
             // return releasedToday == 0;
-            string today = "2022-08-09";
+            string today = "2022-09-13";
             bool match = date == today;
             // Console.WriteLine($"today: {today} date: {date} match: {match}");
             return match;
