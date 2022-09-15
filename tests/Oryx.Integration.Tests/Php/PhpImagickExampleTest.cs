@@ -32,8 +32,28 @@ namespace Microsoft.Oryx.Integration.Tests
                 PhpFpmImagickExampleAsync(phpVersion74));
         }
 
+        [Fact, Trait("category", "php-80")]
+        public async Task PipelineTestInvocationsPhp80Async()
+        {
+            string phpVersion80 = "8.0";
+            await Task.WhenAll(
+                ImagickExampleAsync(phpVersion80),
+                PhpFpmImagickExampleAsync(phpVersion80));
+        }
+
+        [Fact, Trait("category", "php-81")]
+        public async Task PipelineTestInvocationsPhp81Async()
+        {
+            string phpVersion81 = "8.1";
+            await Task.WhenAll(
+                ImagickExampleAsync(phpVersion81),
+                PhpFpmImagickExampleAsync(phpVersion81));
+        }
+
         [Theory]
         [InlineData("7.4")]
+        [InlineData("8.0")]
+        [InlineData("8.1")]
         public async Task ImagickExampleAsync(string phpVersion)
         {
             // Arrange
@@ -68,6 +88,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData("7.4")]
+        [InlineData("8.0")]
+        [InlineData("8.1")]
         public async Task PhpFpmImagickExampleAsync(string phpVersion)
         {
             // Arrange
