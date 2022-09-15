@@ -9,116 +9,7 @@ namespace Microsoft.Oryx.Automation
     /// </Summary>
     public class DotNet : Program
     {
-        /// <Summary>
-        /// TODO: write summary.
-        /// </Summary>
-        //public override async Task<Dictionary<string, string>> GetVersionShaAsync()
-        //{
-        //    Dictionary<string, string> versionSha = new Dictionary<string, string>();
-        //    // query https://github.com/dotnet/sdk/releases
-        //    string releasesUrl = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json";
-        //    var response = await Request.RequestAsync(releasesUrl);
-
-        //    // validate response
-        //    if (response == null) {
-        //        return versionSha;
-        //    }
-
-        //    var json = JsonConvert.DeserializeObject<ReleaseNotes>(response);
-        //    if (json == null || json.ReleasesIndex == null || json.ReleasesIndex[0] == null)
-        //    {
-        //        Console.WriteLine("empty");
-        //        return versionSha;
-        //    }
-
-        //    var versionAndShas = new Dictionary<string, string>();
-        //    var releasesIndex = json.ReleasesIndex;
-        //    foreach (var releaseIndex in releasesIndex)
-        //    {
-        //        // if released today add to dictionary
-        //        var dateReleased = releaseIndex.LatestReleaseDate;
-        //        if (ReleasedToday(dateReleased)) {
-        //            // Console.WriteLine($"Released today: {dateReleased}");
-        //            releasesUrl = releaseIndex.ReleasesJson;
-        //            // Console.WriteLine($"releasesUrl: {releasesUrl}");
-        //            response = await Request.RequestAsync(releasesUrl);
-        //            if (response == null)
-        //            {
-        //                return versionSha;
-        //            }
-
-        //            var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
-        //            if (releasesJson == null)
-        //            {
-        //                return versionSha;
-        //            }
-
-        //            var releases = releasesJson.Releases;
-        //            foreach (var release in releases)
-        //            {
-        //                if (!ReleasedToday(release.ReleaseDate)) continue;
-
-        //                string sdkVersion = release.Sdk.Version;
-        //                string runtimeVersion = release.Runtime.Version;
-        //                Console.WriteLine($"release-date: {release.ReleaseDate}");
-        //                // Console.WriteLine($"sdk version: {sdkVersion}");
-
-        //                // sdk:version:sha
-        //                string sha = GetSha(release.Sdk.Files);
-        //                //Console.WriteLine($"For SDK: {sdkVersion} {release.Sdk.VersionDisplay} {sha} Runtime: {release.Sdk.RuntimeVersion}");
-        //                versionAndShas.Add($"sdk:{sdkVersion}", sha);
-
-        //                // TODO: netcore & aspnetcore
-        //                // runtime:version:sha
-        //                // sha = GetSha(release.Runtime.Files);
-        //                // Console.WriteLine($"For Runtime: {runtimeVersion} {release.Runtime.VersionDisplay} {sha}");
-        //                // versionAndShas.Add($"runtime:{runtimeVersion}", sha);
-        //            }
-        //        }
-        //    }
-
-        //    // query https://github.com/dotnet/core/blob/main/release-notes/7.0/releases.json#L56
-        //    return versionAndShas;
-        //}
-
-        ///// <inheritdoc/>
-        //public override async Task UpdateConstantsAsync(Dictionary<string, string> versionShas)
-        //{
-        //    // read constants.yaml
-        //    string file = "build/constants.yaml";
-        //    string fileContents = await File.ReadAllTextAsync(file);
-        //    Console.WriteLine(fileContents);
-        //    // deserialize
-        //    var deserializer = new DeserializerBuilder()
-        //        .WithNamingConvention(UnderscoredNamingConvention.Instance)
-        //        .Build();
-        //    var yamlContents = deserializer.Deserialize<List<Constant>>(fileContents);
-        //    Constant dotnetConstants = GetDotNetConstant(yamlContents);
-
-        //    // update dotnet core sdks
-        //    foreach (var versionSha in versionShas)
-        //    {
-        //        string version = versionSha.Key;
-        //        string sha = versionSha.Value;
-        //        Console.WriteLine($"version: {version} sha: {sha}");
-        //        string dotNetConstant = GenerateConstant(version);
-        //        dotnetConstants.Constants[dotNetConstant] = version.Split(":")[1];
-        //    }
-
-        //    var serializer = new SerializerBuilder()
-        //        .WithNamingConvention(UnderscoredNamingConvention.Instance)
-        //        .Build();
-
-        //    var stringResult = serializer.Serialize(yamlContents);
-        //    Console.WriteLine($"stringResult: \n{stringResult}");
-        //    File.WriteAllText("build/constants.yaml", stringResult);
-        //}
-
-
-
-
-        // ******************************
-
+        /// <inheritdoc/>
         public override async Task<List<PlatformConstant>> GetVersionShaAsync()
         {
             List<PlatformConstant> platformConstants = new List<PlatformConstant>();
@@ -224,6 +115,8 @@ namespace Microsoft.Oryx.Automation
                 {
                     Constant dotNetYamlConstant = dotnetYamlConstants["dot-net-core-sdk-versions"];
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
+
+                    // add to versionsToBuild.txt
                 }
                 else
                 {
