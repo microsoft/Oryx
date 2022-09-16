@@ -10,13 +10,7 @@ dotnet_diagnostic.SA1005.severity = suggestion
 dotnet_analyzer_diagnostic.category-StyleCop.CSharp.LayoutRules.severity = suggestion
 
 # SA1402: File may only contain a single type
-dotnet_diagnostic.SA1402.severity = warning
+dotnet_diagnostic.SA1402.severity = suggestion
 
 # SA1400: Access modifier should be declared
 dotnet_diagnostic.SA1400.severity = suggestion
-
-# CS1591: Missing XML comment for publicly visible type or member
-dotnet_diagnostic.CS1591.severity = warning
-
-# SA1202: Elements should be ordered by access
-dotnet_diagnostic.SA1202.severity = warning
