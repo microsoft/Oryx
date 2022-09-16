@@ -35,13 +35,17 @@ jobs:
           echo Add other actions to build,  
           echo test, and deploy your project.
 
+      - name: Run Generate Constants
+        run: ./build/generateConstants.sh
+      
       - name: Create commits
         run: |
           git status
           git config user.name 'William Hernandez'
           git config user.email 'williamhe@microsoft.com'
-          git add -A
-          git commit -am "Add new version"
+          git add build/*
+          git add src/BuildScriptGenerator/*
+          git commit -m "Add new version"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
