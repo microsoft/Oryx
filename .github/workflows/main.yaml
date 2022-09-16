@@ -36,7 +36,7 @@ jobs:
           echo test, and deploy your project.
 
       - name: Run Generate Constants
-        run: ./build/generateConstants.sh
+        run: ./build/generateConstants.sh || true
       
       - name: Create commits
         run: |
