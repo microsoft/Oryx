@@ -10,107 +10,91 @@ namespace Microsoft.Oryx.Automation
     public class DotNet : Program
     {
         /// <inheritdoc/>
-        public override async Task<List<PlatformConstant>> GetVersionShaAsync()
+        public override async Task<List<PlatformConstant>> GetPlatformConstantsAsync()
         {
-            List<PlatformConstant> platformConstants = new List<PlatformConstant>();
 
-            // query https://github.com/dotnet/sdk/releases
+            // get dotnet releases' meta data
             string releasesUrl = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json";
             var response = await Request.RequestAsync(releasesUrl);
-
-            // validate response
-            if (response == null)
-            {
-                return platformConstants;
-            }
-
             var json = JsonConvert.DeserializeObject<ReleaseNotes>(response);
-            if (json == null || json.ReleasesIndex == null || json.ReleasesIndex[0] == null)
+            var releasesMetaData = json == null ? new List<ReleaseNote>() : json.ReleasesIndex;
+            List<PlatformConstant> platformConstants = new List<PlatformConstant>();
+            foreach (var releaseMetaData in releasesMetaData)
             {
-                Console.WriteLine("empty");
-                return platformConstants;
-            }
-
-            var versionAndShas = new Dictionary<string, string>();
-            var releasesIndex = json.ReleasesIndex;
-            foreach (var releaseIndex in releasesIndex)
-            {
-                // if released today add to dictionary
-                var dateReleased = releaseIndex.LatestReleaseDate;
-                if (ReleasedToday(dateReleased))
+                // get releases that are released today
+                var dateReleased = releaseMetaData.LatestReleaseDate;
+                if (!ReleasedToday(dateReleased)) continue;
+                string releasesJsonUrl = releaseMetaData.ReleasesJson;
+                response = await Request.RequestAsync(releasesJsonUrl);
+                var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
+                var releases = releasesJson == null ? new List<Release>() : releasesJson.Releases;
+                foreach (var release in releases)
                 {
-                    // Console.WriteLine($"Released today: {dateReleased}");
-                    releasesUrl = releaseIndex.ReleasesJson;
-                    // Console.WriteLine($"releasesUrl: {releasesUrl}");
-                    response = await Request.RequestAsync(releasesUrl);
-                    if (response == null)
+                    if (!ReleasedToday(release.ReleaseDate)) continue;
+                    Console.WriteLine($"release-date: {release.ReleaseDate}");
+
+                    // update sdk
+                    string sdkVersion = release.Sdk.Version;
+                    string sha = GetSha(release.Sdk.Files);
+                    PlatformConstant platformConstant = new PlatformConstant
                     {
-                        return platformConstants;
-                    }
+                        Version = sdkVersion,
+                        Sha = sha,
+                        PlatformName = "dotnet",
+                        VersionType = "sdk",
+                    };
+                    platformConstants.Add(platformConstant);
 
-                    var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
-                    if (releasesJson == null)
+                    // update runtime (netcore)
+                    string runtimeVersion = release.Runtime.Version;
+                    sha = GetSha(release.Runtime.Files);
+                    Console.WriteLine($"For Runtime: {runtimeVersion} {release.Runtime.VersionDisplay} {sha}");
+                    platformConstant = new PlatformConstant
                     {
-                        return platformConstants;
-                    }
+                        Version = runtimeVersion,
+                        Sha = sha,
+                        PlatformName = "dotnet",
+                        VersionType = "net-core",
+                    };
+                    platformConstants.Add(platformConstant);
 
-                    var releases = releasesJson.Releases;
-                    foreach (var release in releases)
+                    // update runtime (aspnetcore)
+                    string aspnetCoreRuntimeVersion = release.AspnetCoreRuntime.Version;
+                    sha = GetSha(release.AspnetCoreRuntime.Files);
+                    Console.WriteLine($"For AspnetCoreRuntime: {aspnetCoreRuntimeVersion} {release.AspnetCoreRuntime.VersionDisplay} {sha}");
+                    platformConstant = new PlatformConstant
                     {
-                        if (!ReleasedToday(release.ReleaseDate)) continue;
-                        Console.WriteLine($"release-date: {release.ReleaseDate}");
-
-                        // sdk
-                        string sdkVersion = release.Sdk.Version;
-                        string sha = GetSha(release.Sdk.Files);
-                        PlatformConstant platformConstant = new PlatformConstant(
-                            sdkVersion, sha, "dotnet", "sdk");
-                        platformConstants.Add(platformConstant);
-
-                        // runtime (netcore)
-                        string runtimeVersion = release.Runtime.Version;
-                        sha = GetSha(release.Runtime.Files);
-                        Console.WriteLine($"For Runtime: {runtimeVersion} {release.Runtime.VersionDisplay} {sha}");
-                        platformConstant = new PlatformConstant(
-                            runtimeVersion, sha, "dotnet", "net-core");
-                        platformConstants.Add(platformConstant);
-
-                        // runtime (aspnetcore)
-                        string aspnetCoreRuntimeVersion = release.AspnetCoreRuntime.Version;
-                        sha = GetSha(release.AspnetCoreRuntime.Files);
-                        Console.WriteLine($"For AspnetCoreRuntime: {aspnetCoreRuntimeVersion} {release.AspnetCoreRuntime.VersionDisplay} {sha}");
-                        platformConstant = new PlatformConstant(
-                            runtimeVersion, sha, "dotnet", "aspnet-core");
-                        platformConstants.Add(platformConstant);
-                    }
+                        Version = aspnetCoreRuntimeVersion,
+                        Sha = sha,
+                        PlatformName = "dotnet",
+                        VersionType = "aspnet-core",
+                    };
+                    platformConstants.Add(platformConstant);
                 }
             }
 
-            // query https://github.com/dotnet/core/blob/main/release-notes/7.0/releases.json#L56
             return platformConstants;
         }
 
         /// <inheritdoc/>
         public override async Task UpdateConstantsAsync(List<PlatformConstant> platformConstants)
         {
-            // read constants.yaml
-            string file = "build/constants.yaml";
-            string fileContents = await File.ReadAllTextAsync(file);
-            // Console.WriteLine(fileContents);
-            // deserialize
+            // deserialize constants.yaml
+            string fileContents = await File.ReadAllTextAsync(Constants.ConstantsYaml);
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(UnderscoredNamingConvention.Instance)
                 .Build();
             var yamlContents = deserializer.Deserialize<List<Constant>>(fileContents);
             Dictionary<string, Constant> dotnetYamlConstants = GetYamlDotNetConstants(yamlContents);
-            // update dotnet core sdks
+
+            // update dotnetcore sdks and runtimes
             foreach (var platformConstant in platformConstants)
             {
                 string version = platformConstant.Version;
                 string sha = platformConstant.Sha;
                 string versionType = platformConstant.VersionType;
-                string dotNetConstantKey = GenerateDotNetConstantKey(version, versionType);
-                Console.WriteLine($"version: {version} versionType: {versionType} sha: {sha} dotNetConstantKey: {dotNetConstantKey}");
+                string dotNetConstantKey = GenerateDotNetConstantKey(platformConstant);
+                // Console.WriteLine($"version: {version} versionType: {versionType} sha: {sha} dotNetConstantKey: {dotNetConstantKey}");
                 if (versionType.Equals("sdk"))
                 {
                     Constant dotNetYamlConstant = dotnetYamlConstants["dot-net-core-sdk-versions"];
@@ -134,7 +118,7 @@ namespace Microsoft.Oryx.Automation
 
             var stringResult = serializer.Serialize(yamlContents);
             //Console.WriteLine($"stringResult: \n{stringResult}");
-            File.WriteAllText("build/constants.yaml", stringResult);
+            File.WriteAllText(Constants.ConstantsYaml, stringResult);
         }
 
         private static void UpdateVersionsToBuildTxt(PlatformConstant platformConstant)
@@ -172,24 +156,25 @@ namespace Microsoft.Oryx.Automation
             return dotNetConstants;
         }
 
-        private static string GenerateDotNetConstantKey(string version, string versionType)
+        private static string GenerateDotNetConstantKey(PlatformConstant platformConstant)
         {
-            string constant = string.Empty;
-            string[] splitVersion = version.Split('.');
+            string[] splitVersion = platformConstant.Version.Split('.');
             string majorVersion = splitVersion[0];
             string minorVersion = splitVersion[1];
             // Console.WriteLine($"GenerateConstant version: {version}");
             // Console.WriteLine($"majorVersion: {majorVersion} minorVersion: {minorVersion}");
             string majorMinor = majorVersion + minorVersion;
-            if (versionType.Equals("sdk"))
+            string constant;
+            if (platformConstant.VersionType.Equals("sdk"))
             {
                 // TODO: add try catch in case the integer is un-parseable.
                 int majorVersionInt = int.Parse(majorVersion);
                 string prefix = majorVersionInt < 5 ? $"dot-net-core" : "dot-net";
                 constant = $"{prefix}-{majorMinor}-sdk-version";
             }
-            else {
-                constant = $"{versionType}-app-{majorMinor}";
+            else
+            {
+                constant = $"{platformConstant.VersionType}-app-{majorMinor}";
             }
             Console.WriteLine($"GenerateConstant: {constant}");
             return constant;
@@ -233,7 +218,7 @@ namespace Microsoft.Oryx.Automation
         private class ReleaseNotes
         {
             [JsonProperty(PropertyName = "releases-index")]
-            public List<ReleaseNote>? ReleasesIndex { get; set; }
+            public List<ReleaseNote> ReleasesIndex { get; set; } = new List<ReleaseNote>();
         }
 
         private class ReleaseNote
@@ -343,7 +328,7 @@ namespace Microsoft.Oryx.Automation
 
         private class Constant
         {
-            public string? Name { get; set; }
+            public string Name { get; set; } = string.Empty;
 
             public Dictionary<string, object> Constants { get; set; } = new Dictionary<string, object>();
 

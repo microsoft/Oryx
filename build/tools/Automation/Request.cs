@@ -21,10 +21,6 @@
                 HttpResponseMessage response = await Client.GetAsync(url);
                 response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                // var response = JsonSerializer.Deserialize
-
-                // Above three lines can be replaced with new helper method below
-                // string responseBody = await client.GetStringAsync(uri
 
                 return responseBody ?? string.Empty;
             }
