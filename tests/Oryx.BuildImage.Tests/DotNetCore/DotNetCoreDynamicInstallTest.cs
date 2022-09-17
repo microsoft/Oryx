@@ -569,7 +569,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     NetCore6PreviewWebApp,
                     imageHelper.GetGitHubActionsBuildImage());
                 data.Add(
-                    FinalStretchVersions.FinalStretchAspnetCoreApp70RunTimeVersion,
+                    FinalStretchVersions.FinalStretchDotNetCoreApp70RunTimeVersion,
                     FinalStretchVersions.FinalStretchDotNet70SdkVersion,
                     NetCore7PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage());
