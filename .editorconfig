@@ -14,3 +14,9 @@ dotnet_diagnostic.SA1402.severity = suggestion
 
 # SA1400: Access modifier should be declared
 dotnet_diagnostic.SA1400.severity = suggestion
+
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = suggestion
+
+# SA1649: File name should match first type name
+dotnet_diagnostic.SA1649.severity = suggestion

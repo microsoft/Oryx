@@ -79,13 +79,6 @@ namespace Microsoft.Oryx.Automation
         /// <inheritdoc/>
         public override void UpdateConstants(List<PlatformConstant> platformConstants, List<Constant> yamlConstants)
         {
-            // deserialize constants.yaml
-            //string fileContents = await File.ReadAllTextAsync(Constants.ConstantsYaml);
-            //var deserializer = new DeserializerBuilder()
-            //    .WithNamingConvention(UnderscoredNamingConvention.Instance)
-            //    .Build();
-            //var yamlConstants = deserializer.Deserialize<List<Constant>>(fileContents);
-            //var yamlConstants = new List<Constant>();
             Dictionary<string, Constant> dotnetYamlConstants = GetYamlDotNetConstants(yamlConstants);
 
             // update dotnetcore sdks and runtimes
@@ -101,13 +94,14 @@ namespace Microsoft.Oryx.Automation
                     Constant dotNetYamlConstant = dotnetYamlConstants["dot-net-core-sdk-versions"];
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
 
-                    // add to versionsToBuild.txt
+                    // add sdk to versionsToBuild.txt
                     UpdateVersionsToBuildTxt(platformConstant);
                 }
                 else
                 {
                     Constant dotNetYamlConstant = dotnetYamlConstants["dot-net-core-run-time-versions"];
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
+
                     // store SHAs for net-core and aspnet-core
                     dotNetYamlConstant.Constants[$"{dotNetConstantKey}-sha"] = sha;
                 }
@@ -215,125 +209,5 @@ namespace Microsoft.Oryx.Automation
 
             return string.Empty;
         }
-
-        private class ReleaseNotes
-        {
-            [JsonProperty(PropertyName = "releases-index")]
-            public List<ReleaseNote> ReleasesIndex { get; set; } = new List<ReleaseNote>();
-        }
-
-        private class ReleaseNote
-        {
-            [JsonProperty(PropertyName = "channel-version")]
-            public string ChannelVersion { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "latest-release")]
-            public string LatestRelease { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "latest-release-date")]
-            public string LatestReleaseDate { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "security")]
-            public string Security { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "latest-runtime")]
-            public string LatestRuntime { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "latest-sdk")]
-            public string LatestSdk { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "product")]
-            public string Product { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "support-phase")]
-            public string SupportPhase { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "eol-date")]
-            public string EolDate { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "releases.json")]
-            public string ReleasesJson { get; set; } = string.Empty;
-        }
-
-        private class FileObj
-        {
-            [JsonProperty(PropertyName = "name")]
-            public string Name { get; set; } = string.Empty;
-            [JsonProperty(PropertyName = "rid")]
-            public string Rid { get; set; } = string.Empty;
-            [JsonProperty(PropertyName = "url")]
-            public string Url { get; set; } = string.Empty;
-            [JsonProperty(PropertyName = "hash")]
-            public string Hash { get; set; } = string.Empty;
-        }
-
-        private class Sdk
-        {
-            [JsonProperty(PropertyName = "version")]
-            public string Version { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "version-display")]
-            public string VersionDisplay { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "runtime-version")]
-            public string RuntimeVersion { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "files")]
-            public List<FileObj> Files { get; set; } = new List<FileObj>();
-        }
-
-        private class Runtime
-        {
-            [JsonProperty(PropertyName = "version")]
-            public string Version { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "version-display")]
-            public string VersionDisplay { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "files")]
-            public List<FileObj> Files { get; set; } = new List<FileObj>();
-        }
-
-        private class AspnetCoreRuntime
-        {
-            [JsonProperty(PropertyName = "version")]
-            public string Version { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "version-display")]
-            public string VersionDisplay { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "files")]
-            public List<FileObj> Files { get; set; } = new List<FileObj>();
-        }
-
-        private class Release
-        {
-            [JsonProperty(PropertyName = "release-date")]
-            public string ReleaseDate { get; set; } = string.Empty;
-
-            [JsonProperty(PropertyName = "sdk")]
-            public Sdk Sdk { get; set; } = new Sdk();
-
-            [JsonProperty(PropertyName = "runtime")]
-            public Runtime Runtime { get; set; } = new Runtime();
-
-            [JsonProperty(PropertyName = "aspnetcore-runtime")]
-            public AspnetCoreRuntime AspnetCoreRuntime { get; set; } = new AspnetCoreRuntime();
-        }
-
-        private class ReleasesJson // TODO: come up with a better name
-        {
-            [JsonProperty(PropertyName = "releases")]
-            public List<Release> Releases { get; set; } = new List<Release>();
-        }
-
-        //private class Constant
-        //{
-        //    public string Name { get; set; } = string.Empty;
-
-        //    public Dictionary<string, object> Constants { get; set; } = new Dictionary<string, object>();
-
-        //    public List<object> Outputs { get; set; } = new List<object>();
-        //}
     }
 }
