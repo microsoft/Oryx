@@ -77,15 +77,16 @@ namespace Microsoft.Oryx.Automation
         }
 
         /// <inheritdoc/>
-        public override async Task UpdateConstantsAsync(List<PlatformConstant> platformConstants)
+        public override void UpdateConstants(List<PlatformConstant> platformConstants, List<Constant> yamlConstants)
         {
             // deserialize constants.yaml
-            string fileContents = await File.ReadAllTextAsync(Constants.ConstantsYaml);
-            var deserializer = new DeserializerBuilder()
-                .WithNamingConvention(UnderscoredNamingConvention.Instance)
-                .Build();
-            var yamlContents = deserializer.Deserialize<List<Constant>>(fileContents);
-            Dictionary<string, Constant> dotnetYamlConstants = GetYamlDotNetConstants(yamlContents);
+            //string fileContents = await File.ReadAllTextAsync(Constants.ConstantsYaml);
+            //var deserializer = new DeserializerBuilder()
+            //    .WithNamingConvention(UnderscoredNamingConvention.Instance)
+            //    .Build();
+            //var yamlConstants = deserializer.Deserialize<List<Constant>>(fileContents);
+            //var yamlConstants = new List<Constant>();
+            Dictionary<string, Constant> dotnetYamlConstants = GetYamlDotNetConstants(yamlConstants);
 
             // update dotnetcore sdks and runtimes
             foreach (var platformConstant in platformConstants)
@@ -116,7 +117,7 @@ namespace Microsoft.Oryx.Automation
                 .WithNamingConvention(UnderscoredNamingConvention.Instance)
                 .Build();
 
-            var stringResult = serializer.Serialize(yamlContents);
+            var stringResult = serializer.Serialize(yamlConstants);
             //Console.WriteLine($"stringResult: \n{stringResult}");
             File.WriteAllText(Constants.ConstantsYaml, stringResult);
         }
@@ -326,13 +327,13 @@ namespace Microsoft.Oryx.Automation
             public List<Release> Releases { get; set; } = new List<Release>();
         }
 
-        private class Constant
-        {
-            public string Name { get; set; } = string.Empty;
+        //private class Constant
+        //{
+        //    public string Name { get; set; } = string.Empty;
 
-            public Dictionary<string, object> Constants { get; set; } = new Dictionary<string, object>();
+        //    public Dictionary<string, object> Constants { get; set; } = new Dictionary<string, object>();
 
-            public List<object> Outputs { get; set; } = new List<object>();
-        }
+        //    public List<object> Outputs { get; set; } = new List<object>();
+        //}
     }
 }

@@ -1,4 +1,7 @@
-﻿namespace Microsoft.Oryx.Automation
+﻿using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
+
+namespace Microsoft.Oryx.Automation
 {
     /// <Summary>
     /// TODO: write summary.
@@ -23,9 +26,24 @@
         {
             DotNet dotNet = new DotNet();
             List<PlatformConstant> platformConstants = await dotNet.GetPlatformConstantsAsync().ConfigureAwait(true);
-            await dotNet.UpdateConstantsAsync(platformConstants);
+
+            List<Constant> yamlConstants = await DeserializeConstantsYamlAsync().ConfigureAwait(true);
+            dotNet.UpdateConstants(platformConstants, yamlConstants);
 
             // TODO: add functionality for other platforms (python, java, golang, etc).
+        }
+
+        /// <Summary>
+        /// TODO: write summary.
+        /// </Summary>
+        public static async Task<List<Constant>> DeserializeConstantsYamlAsync()
+        {
+            string fileContents = await File.ReadAllTextAsync(Constants.ConstantsYaml).ConfigureAwait(true);
+            var deserializer = new DeserializerBuilder()
+                .WithNamingConvention(UnderscoredNamingConvention.Instance)
+                .Build();
+            var yamlContents = deserializer.Deserialize<List<Constant>>(fileContents);
+            return yamlContents;
         }
 
         /// <Summary>
@@ -37,7 +55,7 @@
         /// <Summary>
         /// TODO: write summary.
         /// </Summary>
-        public abstract Task UpdateConstantsAsync(List<PlatformConstant> platformConstants);
+        public abstract void UpdateConstants(List<PlatformConstant> platformConstants, List<Constant> yamlConstants);
         //public abstract Task UpdateConstantsAsync(Dictionary<string, string> versionShas);
 
         /// <Summary>
@@ -71,6 +89,19 @@
 
             // TODO: Add fields for other feilds.
             //  For example, python has GPG keys
+        }
+
+
+        /// <Summary>
+        /// TODO: write summary.
+        /// </Summary>
+        public class Constant
+        {
+            public string Name { get; set; } = string.Empty;
+
+            public Dictionary<string, object> Constants { get; set; } = new Dictionary<string, object>();
+
+            public List<object> Outputs { get; set; } = new List<object>();
         }
     }
 }
