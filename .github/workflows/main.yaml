@@ -1,14 +1,9 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "williamhe/**" ]
-  pull_request:
-    branches: [ "williamhe/**" ]
+  # Run every day at 
+  schedule:
+    - cron: '0 * * * *'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -32,7 +27,9 @@ jobs:
         # Currently fails silently due to malformed path for Hugo.
         # Unhandled exception. System.IO.DirectoryNotFoundException: Could not find a part of the path '/home/runner/work/Oryx/Oryx/build\detector/__detectorNugetPackagesVersions.props'.
         # Need to update the \ with / and check it works locally and in github actions
-        # TODO: fix ./build/generateConstants.sh
+        # 
+        # Since this does not impede automating dotnet releases we fail silently for now
+        # TODO: fix ./build/generateConstants.sh error in github actions workflow
       - name: Run Generate Constants
         run: ./build/generateConstants.sh || true
       
