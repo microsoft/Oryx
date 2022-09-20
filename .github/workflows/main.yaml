@@ -1,8 +1,9 @@
 name: CI
 
 on:
-  # Run every day at 
+  # Run every day at 10 pm
   schedule:
+    # Temporary cron for testing.
     - cron: '0 * * * *'
 
   # Allows you to run this workflow manually from the Actions tab
