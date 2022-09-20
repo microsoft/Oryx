@@ -3,5 +3,14 @@ namespace Microsoft.Oryx.Automation
     internal static class Constants
     {
         public const string ConstantsYaml = "build/constants.yaml";
+        public const string SdkName = "sdk";
+
+        public const string DotNetName = "dotnet";
+        public const string DotNetCoreName = "net-core";
+        public const string DotNetAspCoreName = "aspnet-core";
+        public const string DotNetSdkKey = "dot-net-core-sdk-versions";
+        public const string DotNetRuntimeKey = "dot-net-core-run-time-versions";
+
+        // TODO: add constants for other platforms
     }
 }

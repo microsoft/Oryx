@@ -40,8 +40,8 @@ namespace Microsoft.Oryx.Automation
                     {
                         Version = sdkVersion,
                         Sha = sha,
-                        PlatformName = "dotnet",
-                        VersionType = "sdk",
+                        PlatformName = Constants.DotNetName,
+                        VersionType = Constants.SdkName,
                     };
                     platformConstants.Add(platformConstant);
 
@@ -53,8 +53,8 @@ namespace Microsoft.Oryx.Automation
                     {
                         Version = runtimeVersion,
                         Sha = sha,
-                        PlatformName = "dotnet",
-                        VersionType = "net-core",
+                        PlatformName = Constants.DotNetName,
+                        VersionType = Constants.DotNetCoreName,
                     };
                     platformConstants.Add(platformConstant);
 
@@ -66,8 +66,8 @@ namespace Microsoft.Oryx.Automation
                     {
                         Version = aspnetCoreRuntimeVersion,
                         Sha = sha,
-                        PlatformName = "dotnet",
-                        VersionType = "aspnet-core",
+                        PlatformName = Constants.DotNetName,
+                        VersionType = Constants.DotNetAspCoreName,
                     };
                     platformConstants.Add(platformConstant);
                 }
@@ -89,9 +89,9 @@ namespace Microsoft.Oryx.Automation
                 string versionType = platformConstant.VersionType;
                 string dotNetConstantKey = GenerateDotNetConstantKey(platformConstant);
                 // Console.WriteLine($"version: {version} versionType: {versionType} sha: {sha} dotNetConstantKey: {dotNetConstantKey}");
-                if (versionType.Equals("sdk"))
+                if (versionType.Equals(Constants.SdkName))
                 {
-                    Constant dotNetYamlConstant = dotnetYamlConstants["dot-net-core-sdk-versions"];
+                    Constant dotNetYamlConstant = dotnetYamlConstants[Constants.DotNetSdkKey];
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
 
                     // add sdk to versionsToBuild.txt
@@ -99,7 +99,7 @@ namespace Microsoft.Oryx.Automation
                 }
                 else
                 {
-                    Constant dotNetYamlConstant = dotnetYamlConstants["dot-net-core-run-time-versions"];
+                    Constant dotNetYamlConstant = dotnetYamlConstants[Constants.DotNetRuntimeKey];
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
 
                     // store SHAs for net-core and aspnet-core
@@ -142,8 +142,8 @@ namespace Microsoft.Oryx.Automation
             Dictionary<string, Constant> dotNetConstants = new Dictionary<string, Constant>();
             foreach (var constant in yamlContents)
             {
-                if (constant.Name == "dot-net-core-sdk-versions" ||
-                    constant.Name == "dot-net-core-run-time-versions")
+                if (constant.Name == Constants.DotNetSdkKey ||
+                    constant.Name == Constants.DotNetRuntimeKey)
                 {
                     dotNetConstants.Add(constant.Name, constant);
                 }
@@ -160,10 +160,12 @@ namespace Microsoft.Oryx.Automation
             // Console.WriteLine($"majorVersion: {majorVersion} minorVersion: {minorVersion}");
             string majorMinor = majorVersion + minorVersion;
             string constant;
-            if (platformConstant.VersionType.Equals("sdk"))
+            if (platformConstant.VersionType.Equals(Constants.SdkName))
             {
                 // TODO: add try catch in case the integer is un-parseable.
                 int majorVersionInt = int.Parse(majorVersion);
+
+                // dotnet
                 string prefix = majorVersionInt < 5 ? $"dot-net-core" : "dot-net";
                 constant = $"{prefix}-{majorMinor}-sdk-version";
             }
