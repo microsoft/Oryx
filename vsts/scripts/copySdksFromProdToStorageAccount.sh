@@ -29,7 +29,7 @@ function blobContainerExistsInDestination() {
 function copyBlobContainerFromProdToDestination() {
     local platformName="$1"
 
-    if [ $overwrite == "True"] ; then
+    if [ $overwrite == "True" ] ; then
         echo
         echo "Overwriting blob container '$platformName' in storage account '$destinationSdkUrl'."
         # azcopy copy [source] [destination] [flags]
