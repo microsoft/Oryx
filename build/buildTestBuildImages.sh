@@ -26,6 +26,8 @@ docker build \
 
 echo
 echo
+# check disk utilization
+du -hs /
 
 echo "Building bullseye based github action image for tests..."
 docker build \
@@ -36,6 +38,8 @@ docker build \
 
 echo
 echo
+# check disk utilization
+du -hs /
 
 echo "Building buster based lst version image for tests..."
 docker build \
@@ -46,6 +50,8 @@ docker build \
 
 echo
 echo
+# check disk utilization
+du -hs /
 
 echo "Building image that uses bullseye based github action as a base but doesn't have all required environment variables..."
 docker build \
@@ -56,6 +62,8 @@ docker build \
 
 echo
 echo
+# check disk utilization
+du -hs /
 
 echo "Building image that uses buster based github action as a base but doesn't have all required environment variables..."
 docker build \
@@ -66,6 +74,8 @@ docker build \
 
 echo
 echo
+# check disk utilization
+du -hs /
 
 echo "Building image that uses bullseye based github action as a base and has all required environment variables..."
 docker build \
@@ -77,6 +87,8 @@ docker build \
 
 echo
 echo
+# check disk utilization
+du -hs /
 
 echo "Building image that uses buster based github action as a base and has all required environment variables..."
 docker build \
@@ -88,6 +100,8 @@ docker build \
 
 echo
 echo
+# check disk utilization
+du -hs /
 
 echo
 dockerCleanupIfRequested
