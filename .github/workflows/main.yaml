@@ -1,4 +1,4 @@
-name: CI
+name: Automation
 
 on:
   # Run every day at 10 pm

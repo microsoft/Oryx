@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.Automation
             string dateTarget = args.Length > 0 ? args[0] : string.Empty;
             if (string.IsNullOrEmpty(dateTarget))
             {
+                Console.WriteLine("No dateTarget provided.");
                 dateTarget = DateTime.Today.ToString();
             }
             Console.WriteLine($"dateTarget: {dateTarget}");
@@ -65,10 +66,6 @@ namespace Microsoft.Oryx.Automation
             Console.WriteLine($"releasedDate: {releasedDate} targetDate: {targetDate} " +
                 $"datesMatch: {datesMatch} match: {match}");
             return match;
-            // string today = "2022-09-13";
-            // bool match = date == today;
-            // Console.WriteLine($"today: {today} date: {date} match: {match}");
-            // return match;
         }
 
         /// <Summary>
