@@ -24,6 +24,10 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+      - name: Setup dotnet
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
 
       # Runs a single command using the runners shell
       - name: Run SDK automation
