@@ -45,11 +45,19 @@ jobs:
           git add build/*
           git add src/BuildScriptGenerator/*
           git commit -m "Add new version"
-
+      
+      # TODO: add versions that are being added to the release
+      # TODO: paramterize branch/title platfrom name
+      #       example: automation/add-new-{PlatfornName}-sdks
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
+        with:
+          branch: automation/add-new-dotnet-release
+          title: New DotNetCore Sdks
      
-      # Trigger Oryx pipeline
+      # Trigger Oryx pipeline: add sdk to dev storage account
+      # TODO: paramterize pipeline name
+      #       example: Oryx-PlatformBinary-{PlatformName}
       - name: Azure Pipelines Action
         uses: Azure/pipelines@v1
         with:
