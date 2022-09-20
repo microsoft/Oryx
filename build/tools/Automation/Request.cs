@@ -1,4 +1,8 @@
-﻿namespace Microsoft.Oryx.Automation
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+
+namespace Microsoft.Oryx.Automation
 {
     public static class Request
     {
