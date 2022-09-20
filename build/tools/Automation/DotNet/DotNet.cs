@@ -100,7 +100,9 @@ namespace Microsoft.Oryx.Automation
                     };
                     platformConstants.Add(platformConstant);
 
-                    // TODO: add new new Major.Minor version to runtime-version list of runtimes
+                    // TODO: add new Major.Minor version string to runtime-version list of runtimes
+                    // for the constants.yaml list
+                    // Example: https://github.com/microsoft/Oryx/pull/1560/files#diff-47c28d7a6c8135707f46b624b5913e35beea6dfbe7a8be2db7efefde606eba59R47
                 }
             }
 
