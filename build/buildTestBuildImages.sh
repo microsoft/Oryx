@@ -100,9 +100,10 @@ echo
 echo
 # check disk utilization
 echo "check du"
-du -hs /
+sudo du -hs / || true
+du -hs /home/* || true
 echo "check df"
-df -h
+df -h /home || true 
 echo "Building image that uses buster based github action as a base and has all required environment variables..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-buster-base-withenv" \
