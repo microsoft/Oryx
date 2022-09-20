@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.Automation
         ///        Otherwise don't store anything
         /// </Summary>
         /// <returns>PlatformConstants used later to update constants.yaml</returns>
-        public override async Task<List<PlatformConstant>> GetPlatformConstantsAsync()
+        public override async Task<List<PlatformConstant>> GetPlatformConstantsAsync(string dateTarget)
         {
 
             // check dotnet releases' meta data
@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.Automation
             {
                 // TODO: check if SDK already exists in storage account
                 var dateReleased = releaseMetaData.LatestReleaseDate;
-                if (!ReleasedToday(dateReleased))
+                if (!DatesMatch(dateTarget, dateReleased))
                 {
                     continue;
                 }
@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.Automation
                 {
                     // check releasedToday again since there
                     // are still releases from other dates.
-                    if (!ReleasedToday(release.ReleaseDate))
+                    if (!DatesMatch(dateTarget, release.ReleaseDate))
                     {
                         continue;
                     }
@@ -206,20 +206,6 @@ namespace Microsoft.Oryx.Automation
 
             // TODO: add Logger.Debug the constant that is generated
             return constant;
-        }
-
-        private static bool ReleasedToday(string date)
-        {
-            var dateReleased = DateTime.Parse(date);
-            var dateToday = DateTime.Today;
-            int releasedToday = DateTime.Compare(dateReleased, dateToday);
-            //Console.WriteLine($"releasedToday: {releasedToday} " +
-            //    $"dateReleased: {dateReleased} dateNow: {dateToday}");
-            // return releasedToday == 0;
-            string today = "2022-09-13";
-            bool match = date == today;
-            // Console.WriteLine($"today: {today} date: {date} match: {match}");
-            return match;
         }
 
         private static string GetSha(List<FileObj> files)

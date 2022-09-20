@@ -13,9 +13,16 @@ namespace Microsoft.Oryx.Automation
     /// </Summary>
     public abstract class Program
     {
-        public static int Main()
+        public static int Main(string[] args)
         {
-            AddNewPlatformConstantsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            // TODO: use dotnet parameters instead and handle invalid date
+            string dateTarget = args.Length > 0 ? args[0] : string.Empty;
+            if (string.IsNullOrEmpty(dateTarget))
+            {
+                dateTarget = DateTime.Today.ToString();
+            }
+            Console.WriteLine($"dateTarget: {dateTarget}");
+            AddNewPlatformConstantsAsync(dateTarget).ConfigureAwait(false).GetAwaiter().GetResult();
 
             return 0;
         }
@@ -23,10 +30,10 @@ namespace Microsoft.Oryx.Automation
         /// <Summary>
         /// Adds new platform constants to Oryx repo
         /// </Summary>
-        public static async Task AddNewPlatformConstantsAsync()
+        public static async Task AddNewPlatformConstantsAsync(string dateTarget)
         {
             DotNet dotNet = new DotNet();
-            List<PlatformConstant> platformConstants = await dotNet.GetPlatformConstantsAsync().ConfigureAwait(true);
+            List<PlatformConstant> platformConstants = await dotNet.GetPlatformConstantsAsync(dateTarget).ConfigureAwait(true);
             List<Constant> yamlConstants = await DeserializeConstantsYamlAsync().ConfigureAwait(true);
             dotNet.UpdateConstants(platformConstants, yamlConstants);
 
@@ -49,13 +56,28 @@ namespace Microsoft.Oryx.Automation
             return yamlContents;
         }
 
+        public static bool DatesMatch(string dateTarget, string dateReleased)
+        {
+            var releasedDate = DateTime.Parse(dateReleased);
+            var targetDate = DateTime.Parse(dateTarget);
+            int datesMatch = DateTime.Compare(releasedDate, targetDate);
+            bool match = datesMatch == 0;
+            Console.WriteLine($"releasedDate: {releasedDate} targetDate: {targetDate} " +
+                $"datesMatch: {datesMatch} match: {match}");
+            return match;
+            // string today = "2022-09-13";
+            // bool match = date == today;
+            // Console.WriteLine($"today: {today} date: {date} match: {match}");
+            // return match;
+        }
+
         /// <Summary>
         /// Get PlatformConstants containing corresponding platform release information.
         /// Release information such as version, sha, etc.
         /// An empty list will be returned if there are no new releases.
         /// </Summary>
         /// <returns>PlatformConstants used later to update constants.yaml</returns>
-        public abstract Task<List<PlatformConstant>> GetPlatformConstantsAsync();
+        public abstract Task<List<PlatformConstant>> GetPlatformConstantsAsync(string dateTarget);
 
         /// <Summary>
         /// Updates:
