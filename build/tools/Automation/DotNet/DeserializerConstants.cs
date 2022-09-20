@@ -2,6 +2,13 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Automation
 {
+    /// <summary>
+    /// The following classes:
+    ///     - ReleaseNotes
+    ///     - ReleaseNote
+    ///  Are used to deserialize DotNet release meta data.
+    ///  Meta data URL: https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json
+    /// </summary>
     public class ReleaseNotes
     {
         [JsonProperty(PropertyName = "releases-index")]
@@ -41,6 +48,18 @@ namespace Microsoft.Oryx.Automation
         public string ReleasesJson { get; set; } = string.Empty;
     }
 
+    /// <summary>
+    /// The following classes:
+    ///     - FileObj
+    ///     - Sdk
+    ///     - RuntimeDotNet
+    ///     - AspNetCoreRuntime
+    ///     - Release
+    ///     - ReleaseJson
+    ///  Are used to deserialize correspoding dotnet version release json.
+    ///  Example:
+    ///  https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/7.0/releases.json
+    /// </summary>
     public class FileObj
     {
         [JsonProperty(PropertyName = "name")]
@@ -91,7 +110,6 @@ namespace Microsoft.Oryx.Automation
         [JsonProperty(PropertyName = "files")]
         public List<FileObj> Files { get; set; } = new List<FileObj>();
     }
-
 
     public class Release
     {

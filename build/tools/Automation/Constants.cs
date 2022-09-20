@@ -10,6 +10,7 @@ namespace Microsoft.Oryx.Automation
         public const string DotNetAspCoreName = "aspnet-core";
         public const string DotNetSdkKey = "dot-net-core-sdk-versions";
         public const string DotNetRuntimeKey = "dot-net-core-run-time-versions";
+        public const string DotNetReleasesMetaDataUrl = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json";
 
         // TODO: add constants for other platforms
     }

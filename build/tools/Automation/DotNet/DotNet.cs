@@ -5,35 +5,60 @@ using YamlDotNet.Serialization.NamingConventions;
 namespace Microsoft.Oryx.Automation
 {
     /// <Summary>
-    /// TODO: write summary.
+    /// This class is reponsible for encapsulating logic for automating SDK releases for DotNet.
+    /// This includes:
+    ///     - Getting new release version and sha
+    ///     - Updating constants.yaml with version and sha
+    ///         - This is important so build/generateConstants.sh
+    ///           can be invoked to distribute updated version
+    ///           throughout Oryx source code. Which updates
+    ///           Oryx tests.
+    ///     - Updating versionsToBuild.txt
     /// </Summary>
     public class DotNet : Program
     {
-        /// <inheritdoc/>
+        /// <Summary>
+        /// Gets DotNet's new release version and sha.
+        ///
+        /// This is accomplished by:
+        ///     - Checking release meta data url if there's a new release
+        ///     - If new release, then store release information into PlatformConstants
+        ///        Otherwise don't store anything
+        /// </Summary>
+        /// <returns>PlatformConstants used later to update constants.yaml</returns>
         public override async Task<List<PlatformConstant>> GetPlatformConstantsAsync()
         {
 
-            // get dotnet releases' meta data
-            string releasesUrl = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json";
-            var response = await Request.RequestAsync(releasesUrl);
+            // check dotnet releases' meta data
+            var response = await Request.RequestAsync(Constants.DotNetReleasesMetaDataUrl);
             var json = JsonConvert.DeserializeObject<ReleaseNotes>(response);
             var releasesMetaData = json == null ? new List<ReleaseNote>() : json.ReleasesIndex;
             List<PlatformConstant> platformConstants = new List<PlatformConstant>();
             foreach (var releaseMetaData in releasesMetaData)
             {
-                // get releases that are released today
                 var dateReleased = releaseMetaData.LatestReleaseDate;
-                if (!ReleasedToday(dateReleased)) continue;
+                if (!ReleasedToday(dateReleased))
+                {
+                    continue;
+                }
+
+                // get actual release information and store into PlatformConstants
                 string releasesJsonUrl = releaseMetaData.ReleasesJson;
                 response = await Request.RequestAsync(releasesJsonUrl);
                 var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
                 var releases = releasesJson == null ? new List<Release>() : releasesJson.Releases;
                 foreach (var release in releases)
                 {
-                    if (!ReleasedToday(release.ReleaseDate)) continue;
+                    // check releasedToday again since there
+                    // are still releases from other dates.
+                    if (!ReleasedToday(release.ReleaseDate))
+                    {
+                        continue;
+                    }
+
                     Console.WriteLine($"release-date: {release.ReleaseDate}");
 
-                    // update sdk
+                    // create sdk PlatformConstant
                     string sdkVersion = release.Sdk.Version;
                     string sha = GetSha(release.Sdk.Files);
                     PlatformConstant platformConstant = new PlatformConstant
@@ -45,7 +70,7 @@ namespace Microsoft.Oryx.Automation
                     };
                     platformConstants.Add(platformConstant);
 
-                    // update runtime (netcore)
+                    // create runtime (netcore) PlatfromConstant
                     string runtimeVersion = release.Runtime.Version;
                     sha = GetSha(release.Runtime.Files);
                     Console.WriteLine($"For Runtime: {runtimeVersion} {release.Runtime.VersionDisplay} {sha}");
@@ -58,7 +83,7 @@ namespace Microsoft.Oryx.Automation
                     };
                     platformConstants.Add(platformConstant);
 
-                    // update runtime (aspnetcore)
+                    // create runtime (aspnetcore) PlatformConstant
                     string aspnetCoreRuntimeVersion = release.AspnetCoreRuntime.Version;
                     sha = GetSha(release.AspnetCoreRuntime.Files);
                     Console.WriteLine($"For AspnetCoreRuntime: {aspnetCoreRuntimeVersion} {release.AspnetCoreRuntime.VersionDisplay} {sha}");
