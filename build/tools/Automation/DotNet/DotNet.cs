@@ -5,6 +5,11 @@ using YamlDotNet.Serialization.NamingConventions;
 namespace Microsoft.Oryx.Automation
 {
     /// <Summary>
+    ///
+    /// TODO:
+    ///     - Replace Console.WriteLine with Logging
+    ///     - Add unit tests
+    ///
     /// This class is reponsible for encapsulating logic for automating SDK releases for DotNet.
     /// This includes:
     ///     - Getting new release version and sha
@@ -36,6 +41,7 @@ namespace Microsoft.Oryx.Automation
             List<PlatformConstant> platformConstants = new List<PlatformConstant>();
             foreach (var releaseMetaData in releasesMetaData)
             {
+                // TODO: check if SDK already exists in storage account
                 var dateReleased = releaseMetaData.LatestReleaseDate;
                 if (!ReleasedToday(dateReleased))
                 {

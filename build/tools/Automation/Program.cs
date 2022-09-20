@@ -4,13 +4,15 @@ using YamlDotNet.Serialization.NamingConventions;
 namespace Microsoft.Oryx.Automation
 {
     /// <Summary>
+    ///
+    /// TODO:
+    ///     - Replace Console.WriteLine with Logging
+    ///     - Add unit tests
+    ///
     /// Helps automate detecting and releasing new SDK versions for Oryx.
     /// </Summary>
     public abstract class Program
     {
-        /// <Summary>
-        /// TODO: write summary.
-        /// </Summary>
         public static int Main()
         {
             AddNewPlatformConstantsAsync().ConfigureAwait(false).GetAwaiter().GetResult();
@@ -19,7 +21,7 @@ namespace Microsoft.Oryx.Automation
         }
 
         /// <Summary>
-        /// TODO: write summary.
+        /// Adds new platform constants to Oryx repo
         /// </Summary>
         public static async Task AddNewPlatformConstantsAsync()
         {

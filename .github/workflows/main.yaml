@@ -24,24 +24,19 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - name: Setup dotnet
-      - uses: actions/setup-dotnet@v2
-        with:
-          dotnet-version: '6.0.x'
 
-      # Runs a single command using the runners shell
       - name: Run SDK automation
         run: time dotnet run --project build/tools/Automation/Automation.csproj
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,  
-          echo test, and deploy your project.
-
+        # [Important]
+        # Currently fails silently due to malformed path for Hugo.
+        # Unhandled exception. System.IO.DirectoryNotFoundException: Could not find a part of the path '/home/runner/work/Oryx/Oryx/build\detector/__detectorNugetPackagesVersions.props'.
+        # Need to update the \ with / and check it works locally and in github actions
+        # TODO: fix ./build/generateConstants.sh
       - name: Run Generate Constants
         run: ./build/generateConstants.sh || true
       
+      # TODO: replace William with Oryx credentials
       - name: Create commits
         run: |
           git status
