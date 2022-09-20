@@ -1,10 +1,13 @@
-name: Automation
+name: CI
 
 on:
   # Run every day at 10 pm
   #schedule:
   #  # Temporary cron for testing.
   #  - cron: '*/15 * * * *'
+  
+  push:
+    branches: [ "williamhe/**" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
