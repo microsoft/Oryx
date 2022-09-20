@@ -13,11 +13,11 @@ source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__nodeVersions.sh
 
-declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE18_VERSION $NODE16_VERSION $NODE14_VERSION)
+declare -r NODE_BUSTER_VERSION_ARRAY=($NODE18_VERSION $NODE16_VERSION $NODE14_VERSION)
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
-runtimeImageDebianFlavor="bullseye"
+runtimeImageDebianFlavor="buster"
 
 if [ $# -eq 2 ] 
 then
@@ -67,24 +67,24 @@ execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$
 dockerFileName="base.$runtimeImageDebianFlavor.Dockerfile"
 dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)
 
-bullseyeNodeDockerFiles=()
+busterNodeDockerFiles=()
 
 if [ "$runtimeSubDir" == "node" ]; then
     docker build \
-        --build-arg DEBIAN_FLAVOR=bullseye \
+        --build-arg DEBIAN_FLAVOR=buster \
         -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
-        -t "oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye" \
+        -t "oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-buster" \
         $REPO_DIR
 
-    if  [ "$runtimeImageDebianFlavor" == "bullseye" ]; then
-        for NODE_BULLSEYE_VERSION in "${NODE_BULLSEYE_VERSION_ARRAY[@]}"
+    if  [ "$runtimeImageDebianFlavor" == "buster" ]; then
+        for NODE_BUSTER_VERSION  in "${NODE_BUSTER_VERSION_ARRAY[@]}"
         do
-            IFS='.' read -ra SPLIT_VERSION <<< "$NODE_BULLSEYE_VERSION"
+            IFS='.' read -ra SPLIT_VERSION <<< "$NODE_BUSTER_VERSION"
 	        VERSION_DIRECTORY="${SPLIT_VERSION[0]}"
             eachFile=$runtimeImagesSourceDir/$VERSION_DIRECTORY/$dockerFileName
-            bullseyeNodeDockerFiles+=( "$eachFile" )
+            busterNodeDockerFiles+=( "$eachFile" )
         done
-        dockerFiles="${bullseyeNodeDockerFiles[@]}"
+        dockerFiles="${busterNodeDockerFiles[@]}"
     fi
 fi
 
