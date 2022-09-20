@@ -143,7 +143,6 @@ namespace Microsoft.Oryx.Automation
                 .Build();
 
             var stringResult = serializer.Serialize(yamlConstants);
-            //Console.WriteLine($"stringResult: \n{stringResult}");
             File.WriteAllText(Constants.ConstantsYaml, stringResult);
         }
 
@@ -236,8 +235,8 @@ namespace Microsoft.Oryx.Automation
                 }
             }
 
-            Console.WriteLine($"No sha found");
-            // TODO: throw exception if not found
+            // TODO: special exception if sha not found
+            Console.WriteLine("No sha found");
 
             return string.Empty;
         }
