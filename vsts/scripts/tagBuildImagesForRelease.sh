@@ -58,6 +58,7 @@ tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-debian-bul
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-ubuntu-focal-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso-ubuntu-focal" "vso-ubuntu-focal-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-debian-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso-debian-bullseye" "vso-debian-bullseye-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:full-debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "full-debian-buster" "full-debian-buster-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:full-debian-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "full-debian-bullseye" "full-debian-bullseye-$RELEASE_TAG_NAME"
 
 echo "printing pme tags from $outPmeFileMCR"
 cat $outPmeFileMCR
