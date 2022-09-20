@@ -91,7 +91,6 @@ namespace Microsoft.Oryx.Automation
                     // create runtime (aspnetcore) PlatformConstant
                     string aspnetCoreRuntimeVersion = release.AspnetCoreRuntime.Version;
                     sha = GetSha(release.AspnetCoreRuntime.Files);
-                    Console.WriteLine($"For AspnetCoreRuntime: {aspnetCoreRuntimeVersion} {release.AspnetCoreRuntime.VersionDisplay} {sha}");
                     platformConstant = new PlatformConstant
                     {
                         Version = aspnetCoreRuntimeVersion,
@@ -188,8 +187,6 @@ namespace Microsoft.Oryx.Automation
             string[] splitVersion = platformConstant.Version.Split('.');
             string majorVersion = splitVersion[0];
             string minorVersion = splitVersion[1];
-            // Console.WriteLine($"GenerateConstant version: {version}");
-            // Console.WriteLine($"majorVersion: {majorVersion} minorVersion: {minorVersion}");
             string majorMinor = majorVersion + minorVersion;
             string constant;
             if (platformConstant.VersionType.Equals(Constants.SdkName))
@@ -197,7 +194,7 @@ namespace Microsoft.Oryx.Automation
                 // TODO: add try catch in case the integer is un-parseable.
                 int majorVersionInt = int.Parse(majorVersion);
 
-                // dotnet
+                // dotnet/dotnetcore are used based on the major version
                 string prefix = majorVersionInt < 5 ? $"dot-net-core" : "dot-net";
                 constant = $"{prefix}-{majorMinor}-sdk-version";
             }
@@ -205,7 +202,8 @@ namespace Microsoft.Oryx.Automation
             {
                 constant = $"{platformConstant.VersionType}-app-{majorMinor}";
             }
-            Console.WriteLine($"GenerateConstant: {constant}");
+
+            // TODO: add Logger.Debug the constant that is generated
             return constant;
         }
 
