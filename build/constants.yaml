@@ -82,7 +82,6 @@
     net-core-app-31-sha: b0760d463b8935a14bc247899b692038ded7d476a0cf2ed262eaac8ee6840350b29738cd1ab4961ba93b05f1802e7aba6e3c5e27e06ec9cb5e244149c52adea4
     aspnet-core-app-31: 3.1.28
     aspnet-core-app-31-sha: fd66f9c0d0e9ed57abe5f81650c2ff49c694e05927e5280dbbdee1a9eb4299f0710bdc06ae0af0737c0a0584970b24d3eb952434b45ad8984fe3e37ca95cc1b1
-    
     net-core-app-50: 5.0.17
     net-core-app-50-sha: a9c4784930a977abbc42aff1337dda06ec588c1ec4769a59f9fcab4d5df4fc9efe65f8e61e5433db078f67a94ea2dfe870c32c482a50d4c16283ffacacff4261
     aspnet-core-app-50: 5.0.17
@@ -91,7 +90,6 @@
     net-core-app-60-sha: c776813bf87c25766b31a3a514d124d0526086ceea514a10f104d70ba435c91a6bd3c8bf10c6662b4df2b13ffcdf385518f3418e51d05cccec6a2cf2c26099de
     aspnet-core-app-60: 6.0.8
     aspnet-core-app-60-sha: b74676ca0d2f47a95533739fd36977bb1552890a81820ee51b29b3d6514398f0952362417bbb31fad4bdf031803cb3e8d2aaf065dfb154a78a1b471a536d4abd
-
     net-core-app-70: 7.0.0-preview.7.22375.6
     net-core-app-70-sha: 9814a4e5a55b7137ec27b423ae4a557792af6cced035ab42876de012cb160adabbe054f043b61ed21a8385deb62075ab0a028f6599954ed3519ffe8cf824d30a
     aspnet-core-app-70: 7.0.0-preview.7.22376.6
