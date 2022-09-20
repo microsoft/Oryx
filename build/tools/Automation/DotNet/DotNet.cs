@@ -101,6 +101,8 @@ namespace Microsoft.Oryx.Automation
                         VersionType = Constants.DotNetAspCoreName,
                     };
                     platformConstants.Add(platformConstant);
+
+                    // TODO: add new new Major.Minor version to runtime-version list of runtimes
                 }
             }
 
