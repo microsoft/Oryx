@@ -51,6 +51,7 @@ tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-bull
 tagBuildImageForIntegrationTest "$imagefilter/build" "vso-ubuntu-focal"
 tagBuildImageForIntegrationTest "$imagefilter/build" "vso-debian-bullseye"
 tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-buster"
+tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-bullseye"
 tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-stretch"
 tagBuildImageForIntegrationTest "$imagefilter/cli-buster" "debian-buster"
 tagBuildImageForIntegrationTest "$imagefilter/pack" ""
