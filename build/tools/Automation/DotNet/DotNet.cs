@@ -79,7 +79,6 @@ namespace Microsoft.Oryx.Automation
                     // create runtime (netcore) PlatfromConstant
                     string runtimeVersion = release.Runtime.Version;
                     sha = GetSha(release.Runtime.Files);
-                    Console.WriteLine($"For Runtime: {runtimeVersion} {release.Runtime.VersionDisplay} {sha}");
                     platformConstant = new PlatformConstant
                     {
                         Version = runtimeVersion,
@@ -121,7 +120,7 @@ namespace Microsoft.Oryx.Automation
                 string sha = platformConstant.Sha;
                 string versionType = platformConstant.VersionType;
                 string dotNetConstantKey = GenerateDotNetConstantKey(platformConstant);
-                // Console.WriteLine($"version: {version} versionType: {versionType} sha: {sha} dotNetConstantKey: {dotNetConstantKey}");
+                Console.WriteLine($"version: {version} versionType: {versionType} sha: {sha} dotNetConstantKey: {dotNetConstantKey}");
                 if (versionType.Equals(Constants.SdkName))
                 {
                     Constant dotNetYamlConstant = dotnetYamlConstants[Constants.DotNetSdkKey];
@@ -151,7 +150,6 @@ namespace Microsoft.Oryx.Automation
 
         private static void UpdateVersionsToBuildTxt(PlatformConstant platformConstant)
         {
-            Console.WriteLine("Updating versionToBuild.txt");
             List<string> versionsToBuildTxtFiles = new List<string>() {
                     "platforms/dotnet/versions/bullseye/versionsToBuild.txt",
                     "platforms/dotnet/versions/buster/versionsToBuild.txt",
@@ -164,6 +162,7 @@ namespace Microsoft.Oryx.Automation
                 File.AppendAllText(versionsToBuildTxtFile, line);
 
                 // sort
+                Console.WriteLine($"Updating {versionsToBuildTxtFile}...");
                 var contents = File.ReadAllLines(versionsToBuildTxtFile);
                 Array.Sort(contents);
                 File.WriteAllLines(versionsToBuildTxtFile, contents);
