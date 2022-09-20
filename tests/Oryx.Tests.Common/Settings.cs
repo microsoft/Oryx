@@ -7,7 +7,7 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public class Settings
     {
-        public const string BuildImageName = "oryxtests/build:debian-stretch";
+        public const string BuildImageName = "oryxtests/build:github-actions-debian-buster";
         public const string WithRootAccessBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:debian-stretch";
         public const string LtsVersionsBuildImageName = "oryxtests/build:lts-versions-debian-stretch";
         public const string WithRootAccessLtsVersionsBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-debian-stretch";
