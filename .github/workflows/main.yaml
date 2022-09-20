@@ -2,9 +2,9 @@ name: Automation
 
 on:
   # Run every day at 10 pm
-  schedule:
-    # Temporary cron for testing.
-    - cron: '*/15 * * * *'
+  #schedule:
+  #  # Temporary cron for testing.
+  #  - cron: '*/15 * * * *'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
