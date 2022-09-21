@@ -14,6 +14,10 @@ steps:
     debugMode: false
   condition: always()
 
+- task: NuGetToolInstaller@1
+  inputs:
+    versionSpec: 5.8.x
+
 - task: NuGetCommand@2
   displayName: 'Run "nuget restore" on Oryx solution'
   inputs:
