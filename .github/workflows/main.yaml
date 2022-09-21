@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Run SDK automation
-        run: time dotnet run --project build/tools/Automation/Automation.csproj
+        run: dotnet run --project build/tools/Automation/Automation.csproj ${{ inputs.releaseDate }}
 
        # [Important]
        # Currently fails silently due to malformed path for Hugo.
