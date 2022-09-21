@@ -28,9 +28,10 @@ echo
 echo
 # check disk utilization
 echo "check du"
-du -hs /
+sudo du -hs / || true
+du -hs /home/* || true
 echo "check df"
-df -h
+df -h /home || true 
 echo "Building bullseye based github action image for tests..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-bullseye" \
@@ -42,9 +43,10 @@ echo
 echo
 # check disk utilization
 echo "check du"
-du -hs /
+sudo du -hs / || true
+du -hs /home/* || true
 echo "check df"
-df -h
+df -h /home || true 
 echo "Building buster based lst version image for tests..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions-debian-buster" \
@@ -56,9 +58,10 @@ echo
 echo
 # check disk utilization
 echo "check du"
-du -hs /
+sudo du -hs / || true
+du -hs /home/* || true
 echo "check df"
-df -h
+df -h /home || true 
 echo "Building image that uses bullseye based github action as a base but doesn't have all required environment variables..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-bullseye-base" \
@@ -70,9 +73,10 @@ echo
 echo
 # check disk utilization
 echo "check du"
-du -hs /
+sudo du -hs / || true
+du -hs /home/* || true
 echo "check df"
-df -h
+df -h /home || true 
 echo "Building image that uses buster based github action as a base but doesn't have all required environment variables..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-buster-base" \
@@ -84,9 +88,10 @@ echo
 echo
 # check disk utilization
 echo "check du"
-du -hs /
+sudo du -hs / || true
+du -hs /home/* || true
 echo "check df"
-df -h
+df -h /home || true 
 
 echo "Building image that uses bullseye based github action as a base and has all required environment variables..."
 docker build \
@@ -116,8 +121,8 @@ echo
 echo
 # check disk utilization
 echo "check du"
-du -hs /
+sudo du -hs / || true
+du -hs /home/* || true
 echo "check df"
-df -h
-echo
+df -h /home || true 
 dockerCleanupIfRequested
