@@ -39,7 +39,7 @@ function tagBuildImageForIntegrationTest() {
 
 echo "Build image filter is set"
 
-tagBuildImageForIntegrationTest "$imagefilter/build" "debian-stretch"
+# tagBuildImageForIntegrationTest "$imagefilter/build" "debian-stretch"
 tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions-debian-stretch" 
 tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions-debian-buster"
 tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-debian-stretch"
