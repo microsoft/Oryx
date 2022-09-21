@@ -9,35 +9,29 @@ on:
   push:
     branches: [ "williamhe/**" ]
 
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
     inputs:
       releaseDate:
         description: 'The date to check for new releases. Format: yyyy-mm-dd'
         required: true
         type: string
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
       - name: Run SDK automation
         run: time dotnet run --project build/tools/Automation/Automation.csproj
 
-        # [Important]
-        # Currently fails silently due to malformed path for Hugo.
-        # Unhandled exception. System.IO.DirectoryNotFoundException: Could not find a part of the path '/home/runner/work/Oryx/Oryx/build\detector/__detectorNugetPackagesVersions.props'.
-        # Need to update the \ with / and check it works locally and in github actions
-        # 
-        # Since this does not impede automating dotnet releases we fail silently for now
-        # TODO: fix ./build/generateConstants.sh error in github actions workflow
+       # [Important]
+       # Currently fails silently due to malformed path for Hugo.
+       # Unhandled exception. System.IO.DirectoryNotFoundException: Could not find a part of the path '/home/runner/work/Oryx/Oryx/build\detector/__detectorNugetPackagesVersions.props'.
+       # Need to update the \ with / and check it works locally and in github actions
+       # 
+       # Since this does not impede automating dotnet releases we fail silently for now
+       # TODO: fix ./build/generateConstants.sh error in github actions workflow
       - name: Run Generate Constants
         run: ./build/generateConstants.sh || true
       
@@ -51,16 +45,17 @@ jobs:
           git add src/BuildScriptGenerator/*
           git commit -m "Add new version"
       
-      # TODO: add versions that are being added to the release
       # TODO: paramterize branch/title platfrom name
-      #       example: automation/add-new-{PlatfornName}-sdks
+      #       and list of versions to the PR decription
+      #
+      #       branch name example: automation/add-new-{PlatfornName}-sdks
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
           branch: automation/add-new-dotnet-release
           title: New DotNetCore Sdks
      
-      # Trigger Oryx pipeline: add sdk to dev storage account
+      # Triggers Oryx pipeline: add sdk to dev storage account
       # TODO: paramterize pipeline name
       #       example: Oryx-PlatformBinary-{PlatformName}
       - name: Azure Pipelines Action
