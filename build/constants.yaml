@@ -292,6 +292,7 @@
     dev-sdk-storage-base-url: https://oryxsdksdev.blob.core.windows.net
     sandbox-sdk-storage-base-url: https://oryxsdkssandbox.blob.core.windows.net
     prod-sdk-storage-base-url: https://oryxsdksprod.blob.core.windows.net
+    prod-backup-sdk-storage-base-url: https://oryxsdksprodbackup.blob.core.windows.net
     prod-sdk-cdn-storage-base-url: https://oryx-cdn.microsoft.io
     default-version-file-name: defaultVersion.txt
     default-version-file-prefix: defaultVersion

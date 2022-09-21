@@ -5,14 +5,21 @@ parameters:
 - name: destinationStorageAccountName
   displayName: Destination Storage Account Name
   type: string
-  default: oryxsdksdev
+  default: oryxsdksprodbackup
 - name: dryRun
   displayName: Dry Run?
+  type: boolean
+  default: false
+# If overwrite is false, the only time SDKs will be copied is when the destination
+# account does not have the existing container (e.g. dotnet, nodejs, ruby)
+- name: overwrite
+  displayName: Copy new SDKs to existing containers?
   type: boolean
   default: true
 
 jobs:
-    - job: CreateReleaseTag
+    - job: CopySDKsToStorageAccount
+      timeoutInMinutes: 300 # sometimes copying a fresh storage account takes longer than the default 60 minute timeout
       pool:
         name: AzurePipelines-EO
         demands:
@@ -37,10 +44,18 @@ jobs:
           DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
           SANDBOX_STORAGE_SAS_TOKEN: $(SANDBOX-STORAGE-SAS-TOKEN)
           PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
+          PROD_BACKUP_STORAGE_SAS_TOKEN: $(PROD-BACKUP-STORAGE-SAS-TOKEN)
           PERSONAL_STORAGE_SAS_TOKEN: $(${{ upper(parameters.destinationStorageAccountName) }}-PERSONAL-STORAGE-SAS-TOKEN)
         inputs:
           scriptPath: ./vsts/scripts/copySdksFromProdToStorageAccount.sh
-          args:  ${{ parameters.destinationStorageAccountName }} ${{ parameters.dryRun }}
+          args:  ${{ parameters.destinationStorageAccountName }} ${{ parameters.dryRun }} ${{ parameters.overwrite }}
 
 trigger: none
 pr: none
+schedules:
+- cron: "0 12 * * 0"
+  displayName: Weekly Sunday Copy to Backup Prod
+  branches:
+    include:
+    - main
+  always: true # whether to always run the pipeline even if there have been source code changes since the last run
