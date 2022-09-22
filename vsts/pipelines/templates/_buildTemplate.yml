@@ -151,10 +151,6 @@ steps:
     args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
-- script: |
-    docker images && docker system prune -f && df -h && echo
-  displayName: 'clean docker unknown layers'
-
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
   displayName: 'Build a build image for tests'
   inputs:
