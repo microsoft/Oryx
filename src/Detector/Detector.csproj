@@ -26,7 +26,7 @@
     <NeutralLanguage>en-US</NeutralLanguage>
   </PropertyGroup>
   
-  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\detector\__detectorNugetPackagesVersions.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\..\build\detector/__detectorNugetPackagesVersions.props" />
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\General.targets" />
 
   <!-- Workaround: https://github.com/NuGet/Home/issues/3891#issuecomment-309792369 -->
