@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Oryx.Automation
 {
-    public static class Request
+    public static class HttpClientHelper
     {
         private static readonly HttpClient Client = new HttpClient();
 
         /// <Summary>
         /// Performs a request for a given URL.
         /// </Summary>
-        public static async Task<string> RequestAsync(string url)
+        public static async Task<string> GetRequestStringAsync(string url)
         {
             Console.WriteLine($"url: {url}");
 

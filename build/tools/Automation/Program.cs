@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.Automation
             }
 
             Console.WriteLine($"dateTarget: {dateTarget}");
-            await AddNewPlatformConstantsAsync(dateTarget); // .ConfigureAwait(false).GetAwaiter().GetResult();
+            await AddNewPlatformConstantsAsync(dateTarget);
 
             return 0;
         }
@@ -47,8 +47,8 @@ namespace Microsoft.Oryx.Automation
         public static async Task AddNewPlatformConstantsAsync(string dateTarget)
         {
             DotNet dotNet = new DotNet();
-            List<PlatformConstant> platformConstants = await dotNet.GetPlatformConstantsAsync(dateTarget).ConfigureAwait(true);
-            List<Constant> yamlConstants = await DeserializeConstantsYamlAsync().ConfigureAwait(true);
+            List<PlatformConstant> platformConstants = await dotNet.GetPlatformConstantsAsync(dateTarget);
+            List<Constant> yamlConstants = await DeserializeConstantsYamlAsync();
             dotNet.UpdateConstants(platformConstants, yamlConstants);
 
             // TODO: add functionality for other platforms (python, java, golang, etc).

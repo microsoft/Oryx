@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.Automation
         {
 
             // check dotnet releases' meta data
-            var response = await Request.RequestAsync(Constants.DotNetReleasesMetaDataUrl);
+            var response = await HttpClientHelper.GetRequestStringAsync(Constants.DotNetReleasesMetaDataUrl);
             var releaseNotes = JsonConvert.DeserializeObject<ReleaseNotes>(response);
 
             // releaseIndex contains release meta data
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.Automation
 
                 // get actual release information and store into PlatformConstants
                 string releasesJsonUrl = releaseIndex.ReleasesJsonUrl;
-                response = await Request.RequestAsync(releasesJsonUrl);
+                response = await HttpClientHelper.GetRequestStringAsync(releasesJsonUrl);
                 var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
                 var releases = releasesJson == null ? new List<Release>() : releasesJson.Releases;
                 foreach (var release in releases)
