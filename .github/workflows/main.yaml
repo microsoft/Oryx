@@ -35,7 +35,7 @@ jobs:
       - name: Run Generate Constants
         run: ./build/generateConstants.sh || true
       
-      # TODO: replace William with Oryx credentials
+      # TODO: replace William with new bot GitHub Account credentials
       - name: Create commits
         run: |
           git status
@@ -43,7 +43,7 @@ jobs:
           git config user.email 'williamhe@microsoft.com'
           git add build/*
           git add src/BuildScriptGenerator/*
-          git commit -m "Add new version"
+          git commit -m "Add new SDK version"
       
       # TODO: paramterize branch/title platfrom name
       #       and list of versions to the PR decription
