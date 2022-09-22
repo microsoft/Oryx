@@ -14,6 +14,14 @@ namespace Microsoft.Oryx.Automation
     ///     - Add unit tests
     ///
     /// Helps automate detecting and releasing new SDK versions for Oryx.
+    ///
+    /// Limitation:
+    ///     When a new major version is released we need to manually update our tests/
+    ///     with the new constant that gets generated.
+    ///     For example:
+    ///         If DotNetCore whenever dotnet 8 gets released, a 'DOT_NET_80_SDK_VERSION'
+    ///         constant will get generated. This constant will need to be updated in
+    ///         our tests/ folder.
     /// </Summary>
     public abstract class Program
     {
