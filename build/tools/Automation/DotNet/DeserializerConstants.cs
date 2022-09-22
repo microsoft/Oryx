@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.Automation
         public string EolDate { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "releases.json")]
-        public string ReleasesJson { get; set; } = string.Empty;
+        public string ReleasesJsonUrl { get; set; } = string.Empty;
     }
 
     /// <summary>

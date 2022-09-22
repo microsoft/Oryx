@@ -34,6 +34,7 @@ namespace Microsoft.Oryx.Automation
         ///     - If new release, then store release information into PlatformConstants
         ///        Otherwise don't store anything
         /// </Summary>
+        /// <param name="dateTarget">yyyy-mm-dd format string that defaults to today's date</param>
         /// <returns>PlatformConstants used later to update constants.yaml</returns>
         public override async Task<List<PlatformConstant>> GetPlatformConstantsAsync(string dateTarget)
         {
@@ -53,7 +54,7 @@ namespace Microsoft.Oryx.Automation
                 }
 
                 // get actual release information and store into PlatformConstants
-                string releasesJsonUrl = releaseMetaData.ReleasesJson;
+                string releasesJsonUrl = releaseMetaData.ReleasesJsonUrl;
                 response = await Request.RequestAsync(releasesJsonUrl);
                 var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
                 var releases = releasesJson == null ? new List<Release>() : releasesJson.Releases;
