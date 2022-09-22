@@ -92,6 +92,7 @@ docker build \
 
 echo
 docker system df
+docker system prune -f
 echo
 
 echo "Building image that uses buster based github action as a base but doesn't have all required environment variables..."
@@ -103,6 +104,7 @@ docker build \
 
 echo
 docker system df
+docker system prune -f
 echo
 
 echo "Building image that uses stretch based github action as a base but doesn't have all required environment variables..."
@@ -114,6 +116,7 @@ docker build \
 
 echo
 docker system df
+docker system prune -f
 echo
 
 echo "Building image that uses bullseye based github action as a base and has all required environment variables..."
@@ -126,6 +129,7 @@ docker build \
 
 echo
 docker system df
+docker system prune -f
 echo
 
 echo "Building image that uses buster based github action as a base and has all required environment variables..."
@@ -138,6 +142,7 @@ docker build \
 
 echo
 docker system df
+docker system prune -f
 echo
 
 echo "Building image that uses stretch based github action as a base and has all required environment variables..."
@@ -150,4 +155,6 @@ docker build \
 
 echo
 docker system df
+docker system prune -f
+
 dockerCleanupIfRequested
