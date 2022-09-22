@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
@@ -178,16 +179,9 @@ namespace Microsoft.Oryx.Automation
 
         private static Dictionary<string, Constant> GetYamlDotNetConstants(List<Constant> yamlContents)
         {
-            Dictionary<string, Constant> dotNetConstants = new Dictionary<string, Constant>();
-            foreach (var constant in yamlContents)
-            {
-                if (constant.Name == Constants.DotNetSdkKey ||
-                    constant.Name == Constants.DotNetRuntimeKey)
-                {
-                    dotNetConstants.Add(constant.Name, constant);
-                }
-            }
-            return dotNetConstants;
+            var dotnetConstants = yamlContents.Where(c => c.Name == Constants.DotNetSdkKey || c.Name == Constants.DotNetRuntimeKey)
+                                  .ToDictionary(c => c.Name, c => c);
+            return dotnetConstants;
         }
 
         private static string GenerateDotNetConstantKey(PlatformConstant platformConstant)
