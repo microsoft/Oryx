@@ -16,7 +16,6 @@ buildImageDebianFlavor="$1"
 
 echo
 echo "Building build images for tests..."
-docker system df
 
 echo "Building stretch based github action image for tests..."
 docker build \
@@ -26,7 +25,6 @@ docker build \
     .
 
 echo
-docker system df
 echo
 
 echo "Building buster based github action image for tests..."
@@ -37,7 +35,6 @@ docker build \
     .
 
 echo
-docker system df
 echo
 
 echo "Building bullseye based github action image for tests..."
@@ -48,7 +45,6 @@ docker build \
     .
 
 echo
-docker system df
 echo
 
 echo "Building stretch based full build image for tests..."
@@ -58,7 +54,6 @@ docker build \
     .
 
 echo
-docker system df
 echo
 
 echo "Building stretch based lts-version image for tests..."
@@ -69,7 +64,6 @@ docker build \
     .
 
 echo
-docker system df
 echo
 
 echo "Building buster based lst version image for tests..."
@@ -80,7 +74,6 @@ docker build \
     .
 
 echo
-docker system df
 echo
 
 echo "Building image that uses bullseye based github action as a base but doesn't have all required environment variables..."
@@ -91,7 +84,6 @@ docker build \
     .
 
 echo
-docker system df
 echo
 
 echo "Building image that uses bullseye based github action as a base and has all required environment variables..."
@@ -103,6 +95,5 @@ docker build \
     .
 
 echo
-docker system df
 
 dockerCleanupIfRequested
