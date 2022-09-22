@@ -85,6 +85,8 @@ namespace Microsoft.Oryx.Automation
         /// Release information such as version, sha, etc.
         /// An empty list will be returned if there are no new releases.
         /// </Summary>
+        /// <param name="dateTarget">yyyy-mm-dd format string that defaults to today's date.
+        /// This dateTarget can be passed through github actions through an argument</param>
         /// <returns>PlatformConstants used later to update constants.yaml</returns>
         public abstract Task<List<PlatformConstant>> GetPlatformConstantsAsync(string dateTarget);
 

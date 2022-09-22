@@ -41,20 +41,22 @@ namespace Microsoft.Oryx.Automation
 
             // check dotnet releases' meta data
             var response = await Request.RequestAsync(Constants.DotNetReleasesMetaDataUrl);
-            var json = JsonConvert.DeserializeObject<ReleaseNotes>(response);
-            var releasesMetaData = json == null ? new List<ReleaseNote>() : json.ReleasesIndex;
+            var releaseNotes = JsonConvert.DeserializeObject<ReleaseNotes>(response);
+
+            // releaseIndex contains release meta data
+            var releasesIndex = releaseNotes == null ? new List<ReleaseNote>() : releaseNotes.ReleasesIndex;
             List<PlatformConstant> platformConstants = new List<PlatformConstant>();
-            foreach (var releaseMetaData in releasesMetaData)
+            foreach (var releaseIndex in releasesIndex)
             {
                 // TODO: check if SDK already exists in storage account
-                var dateReleased = releaseMetaData.LatestReleaseDate;
+                var dateReleased = releaseIndex.LatestReleaseDate;
                 if (!DatesMatch(dateTarget, dateReleased))
                 {
                     continue;
                 }
 
                 // get actual release information and store into PlatformConstants
-                string releasesJsonUrl = releaseMetaData.ReleasesJsonUrl;
+                string releasesJsonUrl = releaseIndex.ReleasesJsonUrl;
                 response = await Request.RequestAsync(releasesJsonUrl);
                 var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
                 var releases = releasesJson == null ? new List<Release>() : releasesJson.Releases;
