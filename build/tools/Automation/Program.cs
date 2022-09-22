@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Automation
     /// </Summary>
     public abstract class Program
     {
-        public static int Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
             // TODO: use dotnet parameters instead and handle invalid date
             string dateTarget = args.Length > 0 ? args[0] : string.Empty;
@@ -34,8 +34,9 @@ namespace Microsoft.Oryx.Automation
                 Console.WriteLine("No dateTarget provided.");
                 dateTarget = DateTime.Today.ToString();
             }
+
             Console.WriteLine($"dateTarget: {dateTarget}");
-            AddNewPlatformConstantsAsync(dateTarget).ConfigureAwait(false).GetAwaiter().GetResult();
+            await AddNewPlatformConstantsAsync(dateTarget); // .ConfigureAwait(false).GetAwaiter().GetResult();
 
             return 0;
         }
