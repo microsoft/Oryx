@@ -41,8 +41,7 @@ jobs:
           git status
           git config user.name 'William Hernandez'
           git config user.email 'williamhe@microsoft.com'
-          git add build/*
-          git add src/BuildScriptGenerator/*
+          git add -A
           git commit -m "Add new SDK version"
       
       # TODO: paramterize branch/title platfrom name
