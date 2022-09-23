@@ -2,13 +2,9 @@ name: CI
 
 on:
   schedule:
-  # Run every day at 10 pm
-  #schedule:
-  #  # Temporary cron for testing.
-    - cron:  '*/15 * * * *'
-  
-  push:
-    branches: [ "williamhe/**" ]
+  # runs on 12:55 (5:55AM PST) & 23:55 UTC
+  schedule:
+    - cron:  '55 12,23 * * *'  
 
   workflow_dispatch:
     inputs:
