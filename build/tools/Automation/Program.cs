@@ -48,6 +48,7 @@ namespace Microsoft.Oryx.Automation
 
         /// <Summary>
         /// Adds new platform constants to Oryx repo
+        /// TODO: use dependency injection
         /// </Summary>
         public static async Task AddNewPlatformConstantsAsync(string dateTarget)
         {
