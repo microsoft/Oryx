@@ -86,26 +86,6 @@ docker build \
 echo
 echo
 
-echo "Building image that uses buster based github action as a base but doesn't have all required environment variables..."
-docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-buster-base" \
-    --build-arg PARENT_IMAGE_BASE=github-actions-debian-buster \
-    -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_BUILDIMAGE_DOCKERFILE" \
-    .
-
-echo
-echo
-
-echo "Building image that uses stretch based github action as a base but doesn't have all required environment variables..."
-docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-stretch-base" \
-    --build-arg PARENT_IMAGE_BASE=github-actions-debian-stretch \
-    -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_BUILDIMAGE_DOCKERFILE" \
-    .
-
-echo
-echo
-
 echo "Building image that uses bullseye based github action as a base and has all required environment variables..."
 docker build \
     -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-bullseye-base-withenv" \
@@ -115,26 +95,5 @@ docker build \
     .
 
 echo
-echo
 
-echo "Building image that uses buster based github action as a base and has all required environment variables..."
-docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-buster-base-withenv" \
-    --build-arg PARENT_IMAGE_BASE=github-actions-debian-buster \
-    --build-arg DEBIAN_FLAVOR=buster \
-    -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_WITHENV_BUILDIMAGE_DOCKERFILE" \
-    .
-
-echo
-echo
-
-echo "Building image that uses stretch based github action as a base and has all required environment variables..."
-docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-stretch-base-withenv" \
-    --build-arg PARENT_IMAGE_BASE=github-actions-debian-stretch \
-    --build-arg DEBIAN_FLAVOR=stretch \
-    -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_WITHENV_BUILDIMAGE_DOCKERFILE" \
-    .
-
-echo
 dockerCleanupIfRequested
