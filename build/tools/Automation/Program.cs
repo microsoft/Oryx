@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.Automation
             if (string.IsNullOrEmpty(dateTarget))
             {
                 Console.WriteLine("No dateTarget provided.");
-                dateTarget = DateTime.Today.ToString();
+                dateTarget = DateTime.UtcNow.Date.ToString();
             }
 
             Console.WriteLine($"dateTarget: {dateTarget}");

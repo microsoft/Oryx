@@ -163,6 +163,7 @@ namespace Microsoft.Oryx.Automation
 
         private static void UpdateVersionsToBuildTxt(PlatformConstant platformConstant)
         {
+            // TODO: use File.ReadAll*
             List<string> versionsToBuildTxtFiles = new List<string>() {
                     "platforms/dotnet/versions/bullseye/versionsToBuild.txt",
                     "platforms/dotnet/versions/buster/versionsToBuild.txt",
@@ -191,6 +192,9 @@ namespace Microsoft.Oryx.Automation
 
         private static string GenerateDotNetConstantKey(PlatformConstant platformConstant)
         {
+            // TODO: fix limitation, where 11.0 and 1.10 both will generate a 110 key.
+            // We need to generate more unique constants while having backwards
+            // compatibility with current constants.
             string[] splitVersion = platformConstant.Version.Split('.');
             string majorVersion = splitVersion[0];
             string minorVersion = splitVersion[1];
@@ -216,6 +220,7 @@ namespace Microsoft.Oryx.Automation
 
         private static string GetSha(List<FileObj> files)
         {
+            // TODO: use regex for pattern tarFileName
             HashSet<string> tarFileNames = new HashSet<string>() {
                 "dotnet-sdk-linux-x64.tar.gz",
                 "dotnet-runtime-linux-x64.tar.gz",
