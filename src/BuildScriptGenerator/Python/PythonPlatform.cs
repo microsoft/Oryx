@@ -245,14 +245,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
             var customRequirementsTxtPath = this.pythonScriptGeneratorOptions.CustomRequirementsTxtPath;
             var requirementsTxtPath = customRequirementsTxtPath == null ? PythonConstants.RequirementsFileName : customRequirementsTxtPath;
-            if (!context.SourceRepo.FileExists(requirementsTxtPath))
+            if (context.SourceRepo.FileExists(requirementsTxtPath))
             {
-                throw new InvalidUsageException(
-                    $"Unable to find file '{requirementsTxtPath}' to build provided Python application. Please check that this file exists, or that you " +
-                    $"have provided a valid path for the 'CUSTOM_REQUIREMENTSTXT_PATH' environment variable.");
+                this.TryLogDependencies(requirementsTxtPath, pythonVersion, context.SourceRepo);
             }
-
-            this.TryLogDependencies(requirementsTxtPath, pythonVersion, context.SourceRepo);
 
             var scriptProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: virtualEnvName,
