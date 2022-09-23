@@ -111,6 +111,48 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Theory]
+        [InlineData(Settings.BuildImageName)]
+        [InlineData(Settings.LtsVersionsBuildImageName)]
+        public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt(string buildImageName)
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var oryxTestFolder = $"{appDir}/oryx-test-folder";
+            var customRequirementsTxtPath = $"{oryxTestFolder}/{PythonConstants.RequirementsFileName}";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand($"mkdir -p {oryxTestFolder}")
+                .AddCommand($"echo {appDir}/{PythonConstants.RequirementsFileName} {customRequirementsTxtPath}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("CUSTOM_REQUIREMENTSTXT_PATH", customRequirementsTxtPath) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        result.StdOut);
+                    Assert.Contains($"REQUIREMENTS_TXT_FILE={customRequirementsTxtPath}", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         [Fact, Trait("category", "ltsversions")]
         public void GeneratesScript_AndLoggerFormatCheck()
         {
