@@ -87,7 +87,7 @@ if [ "$runtimeSubDir" == "node" ]; then
 
     for NODE_VERSION  in "${NODE_VERSION_ARRAY[@]}"
     do
-        IFS='.' read -ra SPLIT_VERSION <<< "$NODE__VERSION"
+        IFS='.' read -ra SPLIT_VERSION <<< "$NODE_VERSION"
         VERSION_DIRECTORY="${SPLIT_VERSION[0]}"
         eachFile=$runtimeImagesSourceDir/$VERSION_DIRECTORY/$dockerFileName
         busterNodeDockerFiles+=( "$eachFile" )

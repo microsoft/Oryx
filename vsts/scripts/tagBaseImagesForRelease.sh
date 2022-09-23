@@ -66,6 +66,7 @@ if [ "$imageName" == "node" ]
 then
   echo ""
   retagImageWithStagingRepository node-runtimeimage-bases-buster.txt $imageName buster
+  retagImageWithStagingRepository node-runtimeimage-bases-bullseye.txt $imageName bullseye
 elif [ "$imageName" == "python-build" ]
 then
   echo ""

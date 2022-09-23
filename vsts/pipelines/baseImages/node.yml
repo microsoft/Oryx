@@ -14,6 +14,15 @@ jobs:
     artifactsFileName: node-runtimeimage-bases-buster.txt
     jobName: Build_Buster_BaseImages
 
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build Node runtime bullseye base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: node
+    imageDebianFlavor: bullseye
+    artifactsFileName: node-runtimeimage-bases-bullseye.txt
+    jobName: Build_Bullseye_BaseImages
+
 - job: Release_NodeRuntimeBaseImage
   dependsOn: 
     - Build_Buster_BaseImages
