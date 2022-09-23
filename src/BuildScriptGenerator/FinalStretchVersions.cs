@@ -10,5 +10,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string FinalStretchDotNet60SdkVersion = "6.0.301";
         public const string FinalStretchDotNetCoreApp60RunTimeVersion = "6.0.6";
         public const string FinalStretchAspnetCoreApp60RunTimeVersion = "6.0.6";
+        public const string FinalStretchDotNet70SdkVersion = "7.0.100-preview.7.22377.5";
+        public const string FinalStretchDotNetCoreApp70RunTimeVersion = "7.0.0-preview.7.22375.6";
+        public const string FinalStretchAspnetCoreApp70RunTimeVersion = "7.0.0-preview.7.22376.6";
     }
 }
