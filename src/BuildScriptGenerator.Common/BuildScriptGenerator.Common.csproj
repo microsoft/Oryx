@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>Microsoft.Oryx.BuildScriptGenerator.Common</AssemblyName>
     <RootNamespace>Microsoft.Oryx.BuildScriptGenerator.Common</RootNamespace>
     <LangVersion>7.3</LangVersion>
@@ -11,6 +11,7 @@
     <AssemblyVersion>0.2</AssemblyVersion>
     <!-- Remove when proper XML documentation is added to the project. -->
     <DisableDocRequirement>true</DisableDocRequirement>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />

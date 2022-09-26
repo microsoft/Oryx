@@ -27,9 +27,9 @@ jobs:
           ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
       - task: UseDotNet@2
-        displayName: 'Use .NET Core sdk 3.1.x'
+        displayName: 'Use .NET Core sdk 6.x'
         inputs:
-          version: 3.1.x
+          version: 6.x
 
       - task: ShellScript@2
         displayName: 'Copy SDKs from the prod storage account to a destination storage account'
