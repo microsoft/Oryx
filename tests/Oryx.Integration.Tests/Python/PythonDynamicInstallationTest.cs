@@ -6,14 +6,12 @@
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     public class PythonDynamicInstallationTest : PythonEndToEndTestsBase
     {
         private readonly string DefaultSdksRootDir = "/opt/python";
@@ -23,11 +21,60 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory(Skip = "Temporarily skip, Bug#1266781")]
-        [InlineData("3.7")]
-        [InlineData("3.8")]
-        [InlineData("3.9")]
-        public async Task CanBuildAndRunPythonAppAsync(string pythonVersion)
+        [Fact]
+        [Trait("category", "python-37")]
+        public async Task RunPython37IntegrationTests()
+        {
+            // Temporarily skip - Bug #1266781
+            // await CanBuildAndRunPythonAppAsync("3.7");
+
+            // Temporarily skip - Bug #1410367
+            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python37Version");
+
+            await CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitchAsync();
+
+            // Temporarily skip - Bug #1266781
+            // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(true);
+            // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(false);
+        }
+
+        [Fact]
+        [Trait("category", "python-38")]
+        public async Task RunPython38IntegrationTests()
+        {
+            // Temporarily skip - Bug #1266781
+            // await CanBuildAndRunPythonAppAsync("3.8");
+
+            // Temporarily skip - Bug #1410367
+            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python38Version");
+        }
+
+        [Fact]
+        [Trait("category", "python-39")]
+        public async Task RunPython39IntegrationTests()
+        {
+            // Temporarily skip - Bug #1266781
+            // await CanBuildAndRunPythonAppAsync("3.9");
+
+            // Temporarily skip - Bug #1410367
+            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python39Version");
+        }
+
+        [Fact]
+        [Trait("category", "python-310")]
+        public async Task RunPython310IntegrationTests()
+        {
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync("3.10");
+        }
+
+        [Fact]
+        [Trait("category", "python-311")]
+        public async Task RunPython311IntegrationTests()
+        {
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync("3.11");
+        }
+
+        private async Task CanBuildAndRunPythonAppAsync(string pythonVersion)
         {
             // Arrange
             var appName = "flask-app";
@@ -66,12 +113,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory (Skip = "Bug 1410367")]
-        [InlineData("3")]
-        [InlineData(PythonVersions.Python37Version)]
-        [InlineData(PythonVersions.Python38Version)]
-        [InlineData(PythonVersions.Python39Version)]
-        public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
+        private async Task CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
             string pythonVersion)
         {
             // Arrange
@@ -109,10 +151,8 @@ namespace Microsoft.Oryx.Integration.Tests
                     Assert.Contains("Hello World!", data);
                 });
         }
-        [Theory]
-        [InlineData("3.10")]
-        [InlineData("3.11")]
-        public async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
+
+        private async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
             string pythonVersion)
         {
             // Arrange
@@ -160,8 +200,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact]
-        public async Task CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitchAsync()
+        private async Task CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitchAsync()
         {
             // Arrange
             var pythonVersion = "3.7";
@@ -210,10 +249,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory(Skip = "Temporarily skip, Bug#1266781")]
-        [InlineData(true)]
-        [InlineData(false)]
-        public async Task CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(bool compressDestinationDir)
+        private async Task CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(bool compressDestinationDir)
         {
             // Arrange
             var pythonVersion = "3.7";
