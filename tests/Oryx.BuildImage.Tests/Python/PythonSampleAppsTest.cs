@@ -132,12 +132,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
-            var oryxTestFolder = $"{appDir}/oryx-test-folder";
-            var customRequirementsTxtPath = $"{oryxTestFolder}/{PythonConstants.RequirementsFileName}";
+            var oryxTestFolderName = "oryx-test-folder";
+            var fullCustomRequirementsTxtPath = $"{appDir}/{oryxTestFolderName}/{PythonConstants.RequirementsFileName}";
+            var subdirCustomRequirementsTxtPath = $"{oryxTestFolderName}/{PythonConstants.RequirementsFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddCommand($"mkdir -p {oryxTestFolder}")
-                .AddCommand($"echo {appDir}/{PythonConstants.RequirementsFileName} {customRequirementsTxtPath}")
+                .AddCommand($"mkdir -p {appDir}/{oryxTestFolderName}")
+                .AddCommand($"cp {appDir}/{PythonConstants.RequirementsFileName} {fullCustomRequirementsTxtPath}")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
 
@@ -145,7 +146,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = buildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("CUSTOM_REQUIREMENTSTXT_PATH", customRequirementsTxtPath) },
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("CUSTOM_REQUIREMENTSTXT_PATH", subdirCustomRequirementsTxtPath) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -159,7 +160,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
-                    Assert.Contains($"REQUIREMENTS_TXT_FILE={customRequirementsTxtPath}", result.StdOut);
+                    Assert.Contains($"REQUIREMENTS_TXT_FILE=\"{subdirCustomRequirementsTxtPath}\"", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -186,8 +187,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
-            var oryxTestFolder = $"{appDir}/oryx-test-folder";
-            var customRequirementsTxtPath = $"{oryxTestFolder}/{PythonConstants.RequirementsFileName}";
+            var oryxTestFolderName = "oryx-test-folder";
+            var subdirCustomRequirementsTxtPath = $"{oryxTestFolderName}/{PythonConstants.RequirementsFileName}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
@@ -197,7 +198,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = buildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("CUSTOM_REQUIREMENTSTXT_PATH", customRequirementsTxtPath) },
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("CUSTOM_REQUIREMENTSTXT_PATH", subdirCustomRequirementsTxtPath) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -209,7 +210,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.False(result.IsSuccess);
                     Assert.Contains(
-                        $"Path '{customRequirementsTxtPath}' provided to CUSTOM_REQUIREMENTSTXT_PATH environment variable does not exist in the source repository.",
+                        $"Path '{subdirCustomRequirementsTxtPath}' provided to CUSTOM_REQUIREMENTSTXT_PATH environment variable does not exist in the source repository.",
                         result.StdErr);
                 },
                 result.GetDebugInfo());
