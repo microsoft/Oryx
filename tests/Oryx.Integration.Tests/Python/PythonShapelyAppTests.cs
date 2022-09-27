@@ -20,7 +20,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-37")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
         public async Task RunPython37ShapelyAppTests()
         {
             await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.7");
@@ -28,7 +29,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-38")]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "debian-stretch")]
         public async Task RunPython38ShapelyAppTests()
         {
             await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.8");
@@ -36,7 +38,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-39")]
+        [Trait("category", "python-3.9")]
+        [Trait("build-image", "debian-stretch")]
         public async Task RunPython39ShapelyAppTests()
         {
             await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.9");

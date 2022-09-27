@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python-37")]
+    [Trait("category", "python-3.7")]
     public class Python37EndToEndTests : PythonEndToEndTestsBase
     {
         public Python37EndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -24,6 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("3.7")]
         public async Task CanBuildAndRunPythonAppAsync(string pythonVersion)
         {
@@ -68,6 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunPythonApp_UsingPython37_AndVirtualEnvAsync()
         {
             // Arrange
@@ -122,6 +124,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("tar-gz", "tar.gz")]
         [InlineData("zip", "zip")]
         public async Task CanBuildAndRunPythonApp_UsingPython37_AndCompressedVirtualEnvAsync(
@@ -182,6 +185,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunPythonApp_UsingCustomManifestFileLocationAsync()
         {
             // Arrange
@@ -244,6 +248,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_DjangoApp_DoingCollectStaticByDefaultAsync()
         {
             // Arrange
@@ -296,6 +301,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_DjangoPython37App_UsingVirtualEnvAsync()
         {
             // Arrange
@@ -352,6 +358,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRunPythonApp_WhenAllOutputIsCompressedAsync()
         {
             // Arrange

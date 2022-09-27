@@ -20,10 +20,21 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory(Skip = "bug: 1505700 may be intermittent")]
-        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
-        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
-        public async Task NodeApp_MySqlDBAsync(string imageTag)
+        [Fact(Skip = "Bug #1505700 may be intermittent")]        
+        [Trait("build-image", "debian-stretch")]
+        public async Task Node14App_MySqlDB_WithLatestStretchBuildImageAsync()
+        {
+            await NodeApp_MySqlDBAsync(ImageTestHelperConstants.LatestStretchTag);
+        }
+
+        [Fact(Skip = "Bug #1505700 may be intermittent")]
+        [Trait("build-image", "github-actions-debian-stretch")]
+        public async Task Node14App_MySqlDB_WithGitHubActionsStretchBuildImageAsync()
+        {
+            await NodeApp_MySqlDBAsync(ImageTestHelperConstants.GitHubActionsStretch);
+        }
+
+        private async Task NodeApp_MySqlDBAsync(string imageTag)
         {
             await RunTestAsync(
                 "nodejs",

@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("build-image", "debian-stretch")]
         [MemberData(
            nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
            MemberType = typeof(TestValueGenerator))]

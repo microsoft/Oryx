@@ -20,10 +20,21 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory (Skip = "Bug 1410367")]
-        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
-        public async Task NodeApp_PostgreSqlDBAsync(string imageTag)
+        [Fact(Skip = "Bug #1410367")]
+        [Trait("build-image", "debian-stretch")]
+        public async Task Node14App_PostgreSqlDB_WithLatestStretchBuildImageAsync()
+        {
+            await NodeApp_PostgreSqlDBAsync(ImageTestHelperConstants.LatestStretchTag);
+        }
+
+        [Fact(Skip = "Bug #1410367")]
+        [Trait("build-image", "github-actions-debian-stretch")]
+        public async Task Node14App_PostgreSqlDB_WithGitHubActionsStretchBuildImageAsync()
+        {
+            await NodeApp_PostgreSqlDBAsync(ImageTestHelperConstants.GitHubActionsStretch);
+        }
+
+        private async Task NodeApp_PostgreSqlDBAsync(string imageTag)
         {
             await RunTestAsync(
                 "nodejs",

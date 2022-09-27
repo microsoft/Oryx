@@ -11,7 +11,6 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.Integration.Tests
 {
     [Collection("Php integration")]
-    [Trait("category", "php-74")]
     [Trait("db", "postgres")]
     public class PhpPostgreSqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgreSqlDbContainerFixture>
     {
@@ -20,9 +19,15 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory(Skip = "Bug 1410367") ]
-        [InlineData("7.4")]
-        public async Task PhpAppAsync(string phpVersion)
+        [Fact(Skip = "Bug #1410367")]
+        [Trait("category", "php-7.4")]
+        [Trait("build-image", "debian-stretch")]
+        public async Task Php74AppAsync()
+        {
+            await PhpAppAsync("7.4");
+        }
+
+        private async Task PhpAppAsync(string phpVersion)
         {
             await RunTestAsync(
                 "php",
