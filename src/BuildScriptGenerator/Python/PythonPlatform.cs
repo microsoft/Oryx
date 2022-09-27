@@ -244,6 +244,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             }
 
             var customRequirementsTxtPath = this.pythonScriptGeneratorOptions.CustomRequirementsTxtPath;
+            if (!string.IsNullOrEmpty(customRequirementsTxtPath) &&
+                !context.SourceRepo.FileExists(customRequirementsTxtPath))
+            {
+                throw new InvalidUsageException($"Path '{customRequirementsTxtPath}' provided to CUSTOM_REQUIREMENTSTXT_PATH environment variable " +
+                                                $"does not exist in the source repository. Please ensure that the path provided is relative to the " +
+                                                $"root of the source repository and exists in the current context.");
+            }
+
             var requirementsTxtPath = customRequirementsTxtPath == null ? PythonConstants.RequirementsFileName : customRequirementsTxtPath;
             if (context.SourceRepo.FileExists(requirementsTxtPath))
             {
