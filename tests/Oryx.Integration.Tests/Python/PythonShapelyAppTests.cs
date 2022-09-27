@@ -12,7 +12,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     public class PythonShapelyAppTests : PythonEndToEndTestsBase
     {
         public PythonShapelyAppTests(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -20,9 +19,31 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync(string pythonVersion)
+        [Fact]
+        [Trait("category", "python-37")]
+        public async Task RunPython37ShapelyAppTests()
+        {
+            await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.7");
+            await CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync("3.7");
+        }
+
+        [Fact]
+        [Trait("category", "python-38")]
+        public async Task RunPython38ShapelyAppTests()
+        {
+            await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.8");
+            await CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync("3.8");
+        }
+
+        [Fact]
+        [Trait("category", "python-39")]
+        public async Task RunPython39ShapelyAppTests()
+        {
+            await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.9");
+            await CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync("3.9");
+        }
+
+        private async Task CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync(string pythonVersion)
         {
             // Arrange
             var appName = "shapely-flask-app";
@@ -65,9 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
-        [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync(string pythonVersion)
+        private async Task CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync(string pythonVersion)
         {
             // Arrange
             const string packageDir = "orx_packages";

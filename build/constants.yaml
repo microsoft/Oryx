@@ -38,10 +38,10 @@
     dot-net-core-21-sdk-version: 2.1.818
     dot-net-core-22-sdk-version: 2.2.207
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.422
+    dot-net-core-31-sdk-version: 3.1.423
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.408
-    dot-net-60-sdk-version: 6.0.400
+    dot-net-60-sdk-version: 6.0.401
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
     dot-net-70-sdk-version: 7.0.100-rc.1.22431.12
     # Ensure that the below list of runtime versions are sorted in ascending order
@@ -55,7 +55,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20220915.1
+    dot-net-core-runtime-base-tag: 20220926.2
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
 
@@ -74,20 +74,20 @@
     aspnet-core-app-30: 3.0.3
     aspnet-core-app-30-sha: d88366ac20204c5acb4b80bc40396d608d6c067b25baeef54204e77dde48fb515bd463743745a0982ba8c9182fc751306a4e796f91060b2d013ffbea7d9a2dc8
 
-    net-core-app-31: 3.1.28
-    net-core-app-31-sha: b0760d463b8935a14bc247899b692038ded7d476a0cf2ed262eaac8ee6840350b29738cd1ab4961ba93b05f1802e7aba6e3c5e27e06ec9cb5e244149c52adea4
-    aspnet-core-app-31: 3.1.28
-    aspnet-core-app-31-sha: fd66f9c0d0e9ed57abe5f81650c2ff49c694e05927e5280dbbdee1a9eb4299f0710bdc06ae0af0737c0a0584970b24d3eb952434b45ad8984fe3e37ca95cc1b1
+    net-core-app-31: 3.1.29
+    net-core-app-31-sha: 5c5ef6022abb5437e148c1cb22944eca7471a20a6a61300c6737c5f6e3ab0d95ba22d1ce55857e033c826a06359b601478228e3ef62cd321707911ad9d96bf67
+    aspnet-core-app-31: 3.1.29
+    aspnet-core-app-31-sha: 991918a89c1372d8d1eef967777cc9dd55d0cef827d940f068e701ca877dd6e14045c3a309e6e9c4a7f843eef6d1b192b9ae1257141947f999f4e8dd6b0d43e3
     
     net-core-app-50: 5.0.17
     net-core-app-50-sha: a9c4784930a977abbc42aff1337dda06ec588c1ec4769a59f9fcab4d5df4fc9efe65f8e61e5433db078f67a94ea2dfe870c32c482a50d4c16283ffacacff4261
     aspnet-core-app-50: 5.0.17
     aspnet-core-app-50-sha: d8e87804e9e86273c6512785bd5a6f0e834ff3f4bbebc11c4fcdf16ab4fdfabd0d981a756955267c1aa9bbeec596de3728ce9b2e6415d2d80daef0d999a5df6d
 
-    net-core-app-60: 6.0.8
-    net-core-app-60-sha: c776813bf87c25766b31a3a514d124d0526086ceea514a10f104d70ba435c91a6bd3c8bf10c6662b4df2b13ffcdf385518f3418e51d05cccec6a2cf2c26099de
-    aspnet-core-app-60: 6.0.8
-    aspnet-core-app-60-sha: b74676ca0d2f47a95533739fd36977bb1552890a81820ee51b29b3d6514398f0952362417bbb31fad4bdf031803cb3e8d2aaf065dfb154a78a1b471a536d4abd
+    net-core-app-60: 6.0.9
+    net-core-app-60-sha: a6df2cfef73047247bd36f51eaf696f616c6aa9b428e42f219bf91dcf05c03dff817a8ec826740002c8aa83df2fce8a7ace562ad2e2956789542f0b8ab8b1173
+    aspnet-core-app-60: 6.0.9
+    aspnet-core-app-60-sha: e808036155bc324335c309aaf948b2be1940a62eaf0135752989644698653c8f3a5ce310c3ee6742e3af73dbe175c6e529298eedf6eeb31cc38bfeab628f6d7b
 
     net-core-app-70: 7.0.0-rc.1.22426.10
     net-core-app-70-sha: 62145fdaf182581cec5ba6bbafd66e3bb2df28379311f13e6849371a88cc2f428db3663f96ad006bbf4411eba609d486036d3b2aa1e3d86eee53216aec543fc1
