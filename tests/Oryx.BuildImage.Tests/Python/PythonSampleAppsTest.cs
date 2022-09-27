@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("category", "ltsversions")]
         public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt_WithLtsVersionsBuildImage()
         {
-            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(Settings.BuildImageName);
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(Settings.LtsVersionsBuildImageName);
         }
 
         private void GeneratesScript_AndBuilds_WithCustomRequirementsTxt(string buildImageName)
@@ -176,7 +176,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("category", "ltsversions")]
         public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithLtsVersionsBuildImage()
         {
-            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(Settings.BuildImageName);
+            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(Settings.LtsVersionsBuildImageName);
         }
 
         private void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(string buildImageName)
