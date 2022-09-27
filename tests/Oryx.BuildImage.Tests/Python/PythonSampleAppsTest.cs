@@ -111,10 +111,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.LtsVersionsBuildImageName)]
-        public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt(string buildImageName)
+        [Fact]
+        [Trait("category", "latest")]
+        public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt_WithLatestBuildImage()
+        {
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(Settings.BuildImageName);
+        }
+
+        [Fact]
+        [Trait("category", "ltsversions")]
+        public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt_WithLtsVersionsBuildImage()
+        {
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(Settings.BuildImageName);
+        }
+
+        private void GeneratesScript_AndBuilds_WithCustomRequirementsTxt(string buildImageName)
         {
             // Arrange
             var appName = "flask-app";
@@ -153,10 +164,22 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory]
-        [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.LtsVersionsBuildImageName)]
-        public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(string buildImageName)
+
+        [Fact]
+        [Trait("category", "latest")]
+        public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithLatestBuildImage()
+        {
+            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(Settings.BuildImageName);
+        }
+
+        [Fact]
+        [Trait("category", "ltsversions")]
+        public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithLtsVersionsBuildImage()
+        {
+            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(Settings.BuildImageName);
+        }
+
+        private void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(string buildImageName)
         {
             // Arrange
             var appName = "flask-app";
