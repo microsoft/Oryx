@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     public class PythonDebuggingTests : PythonEndToEndTestsBase
     {
         private const int DefaultDebuggerPort = 5678;
@@ -24,6 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("category", "python-37")]
         [InlineData("3.7", 5637)] // Test with a non-default port as well
         public async Task CanBuildAndDebugFlaskAppAsync(string pythonVersion, int? debugPort = null)
         {
@@ -65,6 +65,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("category", "python-37")]
         [InlineData("3.7", 5637)] // Test with a non-default port as well
         public async Task CanBuildAndDebugFlaskAppWithDebugPyAsync(string pythonVersion, int? debugPort = null)
         {

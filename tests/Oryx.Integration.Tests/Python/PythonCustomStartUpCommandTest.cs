@@ -12,7 +12,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     public class PythonCustomStartUpCommandTest : PythonEndToEndTestsBase
     {
         public PythonCustomStartUpCommandTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -21,6 +20,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("category", "python-38")]
         [InlineData("3.8")]
         public async Task CanBuildAndRunPythonApp_UsingCustomStartUpScriptAsync(string pythonVersion)
         {
@@ -71,6 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("category", "python-38")]
         [InlineData("3.8")]
         public async Task CanBuildAndRunPythonApp_UsingCustomStartUpCommandAsync(string pythonVersion)
         {
