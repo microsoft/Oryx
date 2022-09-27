@@ -38,6 +38,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var data = new TheoryData<string, string, string, string>();
                 var imageHelper = new ImageTestHelper();
 
+                // stretch
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp31,
+                    NetCoreApp31MvcApp,
+                    imageHelper.GetGitHubActionsAsBaseBuildImage(),
+                    "stretch");
+
+                //buster
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp31,
+                    NetCoreApp31MvcApp,
+                    imageHelper.GetGitHubActionsAsBaseBuildImage(ImageTestHelperConstants.GitHubActionsBusterBase),
+                    "buster");
+
+
                 //bullseye
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
