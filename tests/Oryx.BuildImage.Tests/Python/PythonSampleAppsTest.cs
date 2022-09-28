@@ -111,6 +111,111 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        [Trait("category", "latest")]
+        public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt_WithLatestBuildImage()
+        {
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(Settings.BuildImageName);
+        }
+
+        [Fact]
+        [Trait("category", "ltsversions")]
+        public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt_WithLtsVersionsBuildImage()
+        {
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(Settings.LtsVersionsBuildImageName);
+        }
+
+        private void GeneratesScript_AndBuilds_WithCustomRequirementsTxt(string buildImageName)
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var oryxTestFolderName = "oryx-test-folder";
+            var fullCustomRequirementsTxtPath = $"{appDir}/{oryxTestFolderName}/{PythonConstants.RequirementsFileName}";
+            var subdirCustomRequirementsTxtPath = $"{oryxTestFolderName}/{PythonConstants.RequirementsFileName}";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand($"mkdir -p {appDir}/{oryxTestFolderName}")
+                .AddCommand($"cp {appDir}/{PythonConstants.RequirementsFileName} {fullCustomRequirementsTxtPath}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("CUSTOM_REQUIREMENTSTXT_PATH", subdirCustomRequirementsTxtPath) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        result.StdOut);
+                    Assert.Contains($"REQUIREMENTS_TXT_FILE=\"{subdirCustomRequirementsTxtPath}\"", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+
+        [Fact]
+        [Trait("category", "latest")]
+        public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithLatestBuildImage()
+        {
+            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(Settings.BuildImageName);
+        }
+
+        [Fact]
+        [Trait("category", "ltsversions")]
+        public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithLtsVersionsBuildImage()
+        {
+            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(Settings.LtsVersionsBuildImageName);
+        }
+
+        private void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(string buildImageName)
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var oryxTestFolderName = "oryx-test-folder";
+            var subdirCustomRequirementsTxtPath = $"{oryxTestFolderName}/{PythonConstants.RequirementsFileName}";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("CUSTOM_REQUIREMENTSTXT_PATH", subdirCustomRequirementsTxtPath) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.False(result.IsSuccess);
+                    Assert.Contains(
+                        $"Path '{subdirCustomRequirementsTxtPath}' provided to CUSTOM_REQUIREMENTSTXT_PATH environment variable does not exist in the source repository.",
+                        result.StdErr);
+                },
+                result.GetDebugInfo());
+        }
+
         [Fact, Trait("category", "ltsversions")]
         public void GeneratesScript_AndLoggerFormatCheck()
         {
