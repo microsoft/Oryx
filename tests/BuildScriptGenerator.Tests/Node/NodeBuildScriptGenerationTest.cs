@@ -413,7 +413,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 CompressedNodeModulesFileName = null,
                 CompressNodeModulesCommand = null,
                 ConfigureYarnCache = false,
-                configureYarnTimeout = "600000"
+                YarnTimeOutConfig = "600000",
                 NodeBuildProperties = new Dictionary<string, string>
                 {
                     {"PlatformWithVersion", "Node.js 10.10.10" },
@@ -429,6 +429,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.Equal(
                 TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
+            Assert.Contains("yarn config set network-timeout {{ YarnTimeoutConfig }} -g", snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
         }
 
