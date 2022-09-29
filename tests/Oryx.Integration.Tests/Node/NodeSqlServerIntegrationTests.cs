@@ -26,10 +26,21 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
-        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
-        public async Task NodeApp_MicrosoftSqlServerDBAsync(string imageTag)
+        [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
+        public async Task NodeApp_MicrosoftSqlServerDBAsync_With_GitHubActionsStretchTag()
+        {
+            await Run_NodeApp_MicrosoftSqlServerDBAsync(ImageTestHelperConstants.GitHubActionsStretch);
+        }
+
+        [Fact]
+        [Trait("build-image", "debian-stretch")]
+        public async Task NodeApp_MicrosoftSqlServerDBAsync_With_LatestStretchTag()
+        {
+            await Run_NodeApp_MicrosoftSqlServerDBAsync(ImageTestHelperConstants.LatestStretchTag);
+        }
+
+        private async Task Run_NodeApp_MicrosoftSqlServerDBAsync(string imageTag)
         {
             // Arrange
             var appName = "node-mssql";

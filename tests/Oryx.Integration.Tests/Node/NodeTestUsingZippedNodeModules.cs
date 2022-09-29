@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("build-image", "debian-stretch")]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
 
         public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModulesAsync(string nodeVersion)
@@ -69,6 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("14")]
         public async Task Node_CreateReactAppSample_zippedNodeModulesAsync(string nodeVersion)
         {
@@ -107,6 +109,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "lts-versions-debian-stretch")]
         public async Task BuildsAndRunsNodeApp_WhenPruneDevDependenciesIsTrue_AndNodeModulesAreCompressedAsync()
         {
             // Arrange
@@ -131,7 +134,8 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
-                new List<DockerVolume> { appOutputDirVolume, volume }, Settings.LtsVersionsBuildImageName,
+                new List<DockerVolume> { appOutputDirVolume, volume },
+                Settings.LtsVersionsBuildImageName,
                 "/bin/bash",
                 new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
@@ -146,6 +150,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug#1071724")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("true")]
         [InlineData("false")]
         public async Task CopiesNodeModulesInSubDirectory_ToDestination_WhenNodeModulesAreCompressedAsync(string pruneDevDependency)

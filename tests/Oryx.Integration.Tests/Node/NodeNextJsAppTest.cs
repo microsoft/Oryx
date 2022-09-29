@@ -24,6 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "next blogger app is broken")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_BlogStarterNextJsApp_WithoutZippingNodeModulesAsync()
         {
             // Arrange
@@ -68,6 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "next blogger app is broken")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_BlogStarterNextJsApp_UsingZippedNodeModulesAsync()
         {
             // Arrange

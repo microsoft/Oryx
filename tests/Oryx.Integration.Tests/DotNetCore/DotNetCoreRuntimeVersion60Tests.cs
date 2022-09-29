@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "dotnetcore-60")]
+    [Trait("category", "dotnetcore-6.0")]
     public class DotNetCoreRuntimeVersion60Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion60Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -25,6 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRun_NetCore60MvcAppAsync()
         {
             // Arrange
@@ -73,6 +74,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRun_NetCore60MvcApp_WithCustomizedRunCommand()
         {
             // Arrange
@@ -138,6 +140,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRun_Adds_Oryx_AppInsights_Codeless_ConfigurationAsync()
         {
             // Arrange
@@ -196,6 +199,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRun_DoesNot_Add_Oryx_AppInsights_Codeless_ConfigurationAsync()
         {
             // Arrange
@@ -254,6 +258,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_NetCore60MvcApp_UsingExplicitStartupCommandAsync()
         {
             // Arrange
@@ -303,6 +308,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
         
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRunApp_FromNestedOutputDirectoryAsync()
         {
             // Arrange
@@ -352,6 +358,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange

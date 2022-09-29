@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRunNodeApp_UsingPreRunCommand_WithDynamicInstallAsync()
         {
             // Arrange
@@ -94,6 +95,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRunNodeApp_UsingPreRunScript_WithDynamicInstallAsync()
         {
             // Arrange
@@ -166,6 +168,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "lts-versions-debian-stretch")]
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange

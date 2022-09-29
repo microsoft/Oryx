@@ -1,0 +1,44 @@
+parameters:
+  - name: storageAccountUrl
+    type: string
+    default: https://oryxsdksdev.blob.core.windows.net
+  - name: version
+    type: string
+  - name: buildImageTags
+    type: object
+    default:
+      - 'debian-stretch'
+      - 'github-actions-debian-stretch'
+      - 'lts-versions-debian-stretch'
+  
+jobs:
+- ${{ each buildImageTag in parameters.buildImageTags }}:
+  - job:
+    displayName: 'Run .NET Core ${{ parameters.version }} Integration Tests using build image tag ${{ buildImageTag }}'
+    dependsOn:
+    - Job_BuildImage_Latest
+    - Job_BuildImage_LtsVersions
+    - Job_BuildImage_GithubActions
+    - Job_RuntimeImages
+    pool:
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    variables:
+      skipComponentGovernanceDetection: true
+    timeoutInMinutes: 300
+    steps:
+        - script: |
+            echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+            echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=TestBuildImages;]false"
+            echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=dotnetcore-${{ parameters.version }}&build-image=${{ buildImageTag }}"
+            echo "##vso[task.setvariable variable=TestIntegration;]true"
+            echo "##vso[task.setvariable variable=PushBuildImages;]false"
+            echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
+          displayName: 'Set variables'
+        - template: ../_setReleaseTag.yml
+        - template: ../_buildTemplate.yml

@@ -14,7 +14,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "golang")]
     public class GolangBuildRunTests : GolangEndToEndTestsBase
     {
         public GolangBuildRunTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -22,14 +21,55 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
-        [InlineData("1.17", ImageTestHelperConstants.FullBuster)]
-        [InlineData("1.17", ImageTestHelperConstants.FullBullseye)]
-        [InlineData("1.18", ImageTestHelperConstants.FullBuster)]
-        [InlineData("1.18", ImageTestHelperConstants.FullBullseye)]
-        [InlineData("1.19", ImageTestHelperConstants.FullBuster)]
-        [InlineData("1.19", ImageTestHelperConstants.FullBullseye)]
-        public async Task CanRunApp_WithoutBuildManifestFileAsync(string golangVersion, string imageTag)
+        [Fact]
+        [Trait("category", "golang-1.17")]
+        [Trait("build-image", "full-debian-buster")]
+        public async Task RunGolang117BuildRunTestsAsync_WithFullBuster()
+        {
+            await CanRunApp_WithoutBuildManifestFileAsync("1.17", ImageTestHelperConstants.FullBuster);
+        }
+
+        [Fact]
+        [Trait("category", "golang-1.17")]
+        [Trait("build-image", "full-debian-bullseye")]
+        public async Task RunGolang117BuildRunTestsAsync_WithFullBullseye()
+        {
+            await CanRunApp_WithoutBuildManifestFileAsync("1.17", ImageTestHelperConstants.FullBullseye);
+        }
+
+        [Fact]
+        [Trait("category", "golang-1.18")]
+        [Trait("build-image", "full-debian-buster")]
+        public async Task RunGolang118BuildRunTestsAsync_WithFullBuster()
+        {
+            await CanRunApp_WithoutBuildManifestFileAsync("1.18", ImageTestHelperConstants.FullBuster);
+        }
+
+        [Fact]
+        [Trait("category", "golang-1.18")]
+        [Trait("build-image", "full-debian-bullseye")]
+        public async Task RunGolang118BuildRunTestsAsync_WithFullBullseye()
+        {
+            await CanRunApp_WithoutBuildManifestFileAsync("1.18", ImageTestHelperConstants.FullBullseye);
+        }
+
+        [Fact]
+        [Trait("category", "golang-1.19")]
+        [Trait("build-image", "full-debian-buster")]
+        public async Task RunGolang119BuildRunTestsAsync_WithFullBuster()
+        {
+            await CanRunApp_WithoutBuildManifestFileAsync("1.19", ImageTestHelperConstants.FullBuster);
+        }
+
+        [Fact]
+        [Trait("category", "golang-1.19")]
+        [Trait("build-image", "full-debian-bullseye")]
+        public async Task RunGolang119BuildRunTestsAsync_WithFullBullseye()
+        {
+            await CanRunApp_WithoutBuildManifestFileAsync("1.19", ImageTestHelperConstants.FullBullseye);
+        }
+
+        private async Task CanRunApp_WithoutBuildManifestFileAsync(string golangVersion, string imageTag)
         {
             // Arrange
             var hostDir = Path.Combine(_hostSamplesDir, "golang", GolangHelloWorldWebApp);

@@ -22,56 +22,91 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-37")]
-        public async Task RunPython37IntegrationTests()
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "lts-versions-debian-stretch")]
+        public async Task CanBuildAndRunPython37AppAsync()
         {
             // Temporarily skip - Bug #1266781
             // await CanBuildAndRunPythonAppAsync("3.7");
-
-            // Temporarily skip - Bug #1410367
-            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python37Version");
-
-            await CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitchAsync();
-
-            // Temporarily skip - Bug #1266781
-            // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(true);
-            // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(false);
         }
 
         [Fact]
-        [Trait("category", "python-38")]
-        public async Task RunPython38IntegrationTests()
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "lts-versions-debian-stretch")]
+        public async Task CanBuildAndRunPython38AppAsync()
         {
             // Temporarily skip - Bug #1266781
             // await CanBuildAndRunPythonAppAsync("3.8");
+        }
 
+        [Fact]
+        [Trait("category", "python-3.9")]
+        [Trait("build-image", "lts-versions-debian-stretch")]
+        public async Task CanBuildAndRunPython39AppAsync()
+        {
+            // Temporarily skip - Bug #1266781
+            // await CanBuildAndRunPythonAppAsync("3.9");
+        }
+
+        [Fact]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "github-actions-debian-stretch")]
+        public async Task CanBuildAndRunPython37App_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
+            // Temporarily skip - Bug #1410367
+            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python37Version");
+        }
+
+        [Fact]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "github-actions-debian-stretch")]
+        public async Task CanBuildAndRunPython38App_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
             // Temporarily skip - Bug #1410367
             // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python38Version");
         }
 
         [Fact]
-        [Trait("category", "python-39")]
-        public async Task RunPython39IntegrationTests()
+        [Trait("category", "python-3.9")]
+        [Trait("build-image", "github-actions-debian-stretch")]
+        public async Task CanBuildAndRunPython39App_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync()
         {
-            // Temporarily skip - Bug #1266781
-            // await CanBuildAndRunPythonAppAsync("3.9");
-
             // Temporarily skip - Bug #1410367
             // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python39Version");
         }
 
         [Fact]
-        [Trait("category", "python-310")]
-        public async Task RunPython310IntegrationTests()
+        [Trait("category", "python-3.10")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython310App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
         {
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync("3.10");
         }
 
         [Fact]
-        [Trait("category", "python-311")]
-        public async Task RunPython311IntegrationTests()
+        [Trait("category", "python-3.11")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython311App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
         {
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync("3.11");
+        }
+
+        [Fact]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "lts-versions-debian-stretch")]
+        public async Task CanBuildAndRunPython37App_UsingScriptCommandAndSetEnvSwitchAsync()
+        {
+            await CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitchAsync();
+        }
+
+        [Fact]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "github-actions-debian-stretch")]
+        public async Task CanBuildAndRunPython37App_WhenUsingPackageDirSwitchAsync()
+        {
+            // Temporarily skip - Bug #1266781
+            // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(true);
+            // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(false);
         }
 
         private async Task CanBuildAndRunPythonAppAsync(string pythonVersion)

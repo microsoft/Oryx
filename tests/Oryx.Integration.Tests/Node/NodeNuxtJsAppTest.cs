@@ -25,6 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_HackerNewsNuxtJsApp_WithoutZippingNodeModulesAsync()
         {
             // Arrange
@@ -71,6 +72,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_HackerNewsNuxtJsApp_UsingZippedNodeModulesAsync()
         {
             // Arrange

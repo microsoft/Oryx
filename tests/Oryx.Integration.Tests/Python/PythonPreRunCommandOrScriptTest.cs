@@ -27,7 +27,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "Bug 1410367")]
-        [Trait("category", "python-37")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRunPythonApp_UsingPreRunCommand_WithDynamicInstallAsync()
         {
             // Arrange
@@ -86,7 +87,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "Bug 1410367") ]
-        [Trait("category", "python-37")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRunPythonApp_UsingPreRunScript_WithDynamicInstallAsync()
         {
             // Arrange
@@ -152,7 +154,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact (Skip = "Bug 1410367")]
-        [Trait("category", "python-38")]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "lts-versions-debian-stretch")]
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange

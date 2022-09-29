@@ -24,6 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         // Official Node.js version that is supported by Angular CLI 14.0+ is 16.10 or greater
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("16"), Trait("category", "node-16")]
         public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_UsingCompressedNodeModulesAsync(string nodeVersion)
         {
@@ -71,6 +72,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("16"), Trait("category", "node-16")]
         public async Task CanBuildAndRun_Angular14App_WithoutCompressedNodeModulesAsync(string nodeVersion)
         {
@@ -115,6 +117,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("16"), Trait("category", "node-16")]
         public async Task CanBuildAndRun_Angular14App_NodeModules_SymLink_Exists_InRoot_WithoutCompressionAsync(string nodeVersion)
         {
@@ -183,6 +186,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("16"), Trait("category", "node-16")]
         public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
         {
@@ -258,6 +262,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("16"), Trait("category", "node-16")]
         public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
         {
