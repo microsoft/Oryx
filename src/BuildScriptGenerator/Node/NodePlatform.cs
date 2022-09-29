@@ -174,8 +174,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string runBuildLageCommand = null;
             string installLernaCommand = null;
             bool configureYarnCache = false;
-            string yarnTimeOutConfig = null;
-            string configureYarnTimeoutCommand = null;
             string packageManagerCmd = null;
             string packageInstallCommand = null;
             string packageInstallerVersionCommand = null;
@@ -189,12 +187,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 throw new InvalidUsageException("Multiple monorepo package management tools are found, please choose to use either Lerna or Lage.");
             }
 
-            yarnTimeOutConfig = this.nodeScriptGeneratorOptions.YarnTimeOutConfig;
             if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName) || packageJson?.engines?.yarn != null)
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
                 configureYarnCache = false;
-                configureYarnTimeoutCommand = string.Format(NodeConstants.YarnTimeoutConfigCommandTemplate, yarnTimeOutConfig);
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
 
                 // In Yarn 2+ and .yarnrc.yml file replaces .yarnrc in Yarn 2+.
@@ -384,7 +380,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 CompressNodeModulesCommand = compressNodeModulesCommand,
                 CompressedNodeModulesFileName = compressedNodeModulesFileName,
                 ConfigureYarnCache = configureYarnCache,
-                YarnTimeOutConfig = yarnTimeOutConfig,
+                YarnTimeOutConfig = this.nodeScriptGeneratorOptions.YarnTimeOutConfig,
                 PruneDevDependencies = pruneDevDependencies,
                 AppInsightsInjectCommand = appInsightsInjectCommand,
                 AppInsightsPackageName = NodeConstants.NodeAppInsightsPackageName,

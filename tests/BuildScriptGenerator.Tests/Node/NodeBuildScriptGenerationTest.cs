@@ -379,46 +379,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
-        public void GeneratedScript_UsesYarnTimeoutConfigCommand_IfSettingKeyIsPresent()
+        public void GeneratedScript_RunsYarnTimeoutConfigCommand_WhenYarnTimeoutConfigExist()
         {
             // Arrange
             var scriptGenerator = GetNodePlatform(
                 defaultNodeVersion: NodeVersions.Node12Version,
                 new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
-                new NodeScriptGeneratorOptions());
+                new NodeScriptGeneratorOptions { YarnTimeOutConfig = "60000" });
             var repo = new MemorySourceRepo();
-            repo.AddFile(PackageJsonWithBuildScript, NodeConstants.PackageJsonFileName);
-            repo.AddFile("", NodeConstants.YarnLockFileName);
-            repo.AddFile("", ".yarnrc.yml");
+            repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
             var context = CreateScriptGeneratorContext(repo);
             var detectorResult = new NodePlatformDetectorResult
             {
                 Platform = NodeConstants.PlatformName,
                 PlatformVersion = "10.10.10",
-                HasYarnrcYmlFile = true,
-                IsYarnLockFileValidYamlFormat = true,
-
-            };
-            var expected = new NodeBashBuildSnippetProperties
-            {
-                PackageInstallCommand = NodeConstants.Yarn2PackageInstallCommand,
-                PackageInstallerVersionCommand = NodeConstants.YarnVersionCommand,
-                NpmRunBuildCommand = "yarn run build",
-                NpmRunBuildAzureCommand = "yarn run build:azure",
-                HasProdDependencies = true,
-                HasDevDependencies = true,
-                ProductionOnlyPackageInstallCommand = string.Format(
-                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
-                    NodeConstants.Yarn2PackageInstallCommand),
-                CompressedNodeModulesFileName = null,
-                CompressNodeModulesCommand = null,
-                ConfigureYarnCache = false,
-                YarnTimeOutConfig = "600000",
-                NodeBuildProperties = new Dictionary<string, string>
-                {
-                    {"PlatformWithVersion", "Node.js 10.10.10" },
-                },
-                NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
             };
 
             // Act
@@ -426,11 +400,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.NotNull(snippet);
-            Assert.Equal(
-                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
+            Assert.Contains($"Found yarn network timeout config.",
                 snippet.BashBuildScriptSnippet);
-            Assert.Contains("yarn config set network-timeout {{ YarnTimeoutConfig }} -g", snippet.BashBuildScriptSnippet);
-            Assert.True(scriptGenerator.IsCleanRepo(repo));
+            Assert.Contains($"Setting it up with command: yarn config set network-timeout {{ YarnTimeoutConfig }} -g",
+                snippet.BashBuildScriptSnippet);
         }
 
         [Fact]
