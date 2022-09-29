@@ -402,7 +402,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.NotNull(snippet);
             Assert.Contains($"Found yarn network timeout config.",
                 snippet.BashBuildScriptSnippet);
-            Assert.Contains($"Setting it up with command: yarn config set network-timeout {{ YarnTimeoutConfig }} -g",
+            Assert.Contains($"Setting it up with command: yarn config set network-timeout 60000 -g",
                 snippet.BashBuildScriptSnippet);
         }
 
