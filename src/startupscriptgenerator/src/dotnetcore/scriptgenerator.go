@@ -22,6 +22,7 @@ type DotnetCoreStartupScriptGenerator struct {
 	UserStartupCommand string
 	DefaultAppFilePath string
 	BindPort           string
+	BindPort2          string
 	Manifest           common.BuildManifest
 	Configuration      Configuration
 }

@@ -8,6 +8,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     public static class SettingsKeys
     {
         public const string BindPort = "BIND_PORT";
+        public const string BindPort2 = "BIND_PORT2";
         public const string BuildImage = "BUILD_IMAGE";
         public const string PlatformName = "PLATFORM_NAME";
         public const string PlatformVersion = "PLATFORM_VERSION";
