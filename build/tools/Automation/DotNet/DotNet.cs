@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
@@ -177,7 +178,7 @@ namespace Microsoft.Oryx.Automation
                 Console.WriteLine($"[UpdateVersionsToBuildTxt] Updating {versionsToBuildTxtFile}...");
                 var contents = File.ReadAllLines(versionsToBuildTxtFile);
                 Array.Sort(contents);
-                File.WriteAllLines(versionsToBuildTxtFile, contents);
+                File.WriteAllLines(versionsToBuildTxtFile, contents.Distinct());
             }
         }
 
@@ -190,21 +191,20 @@ namespace Microsoft.Oryx.Automation
 
         private static string GenerateDotNetConstantKey(PlatformConstant platformConstant)
         {
-            // TODO: fix limitation, where 11.0 and 1.10 both will generate a 110 key.
-            // We need to generate more unique constants while having backwards
-            // compatibility with current constants.
             string[] splitVersion = platformConstant.Version.Split('.');
             string majorVersion = splitVersion[0];
             string minorVersion = splitVersion[1];
-            string majorMinor = majorVersion + minorVersion;
+
+            // prevent duplicate majorMinor where 11.0 and 1.10 both will generate a 110 key.
+            int majorVersionInt = int.Parse(majorVersion);
+            string majorMinor = majorVersionInt < 10 ? $"{majorVersion}{minorVersion}" : $"{majorVersion}Dot{minorVersion}";
+
             string constant;
             if (platformConstant.VersionType.Equals(Constants.SdkName))
             {
-                // TODO: add try catch in case the integer is un-parseable.
-                int majorVersionInt = int.Parse(majorVersion);
-
-                // dotnet/dotnetcore are used based on the major version
+                // dotnet/dotnetcore are based on the major version
                 string prefix = majorVersionInt < 5 ? $"dot-net-core" : "dot-net";
+
                 constant = $"{prefix}-{majorMinor}-sdk-version";
             }
             else
@@ -212,31 +212,22 @@ namespace Microsoft.Oryx.Automation
                 constant = $"{platformConstant.VersionType}-app-{majorMinor}";
             }
 
-            // TODO: add Logger.Debug the constant that is generated
             return constant;
         }
 
         private static string GetSha(List<FileObj> files)
         {
-            // TODO: use regex for pattern tarFileName
-            HashSet<string> tarFileNames = new HashSet<string>()
-            {
-                "dotnet-sdk-linux-x64.tar.gz",
-                "dotnet-runtime-linux-x64.tar.gz",
-                "aspnetcore-runtime-linux-x64.tar.gz",
-            };
+            Regex regEx = new Regex(Constants.DotNetLinuxTarFileRegex);
             foreach (var file in files)
             {
-                if (tarFileNames.Contains(file.Name))
+                if (regEx.IsMatch(file.Name))
                 {
                     return file.Hash;
                 }
             }
 
-            // TODO: special exception if sha not found
-            Console.WriteLine("[GetSha] No sha found");
-
-            return string.Empty;
+            throw new MissingFieldException(message: $"[GetSha] Expected SHA feild is missing in {files}\n" +
+                $"Pattern matching using regex: {Constants.DotNetLinuxTarFileRegex}");
         }
     }
 }
