@@ -15,12 +15,14 @@ namespace Microsoft.Oryx.Automation
     ///  Are used to deserialize DotNet release meta data.
     ///  Meta data URL: https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1649:File name should match first type name", Justification = "This class shares part of the deserialization functionality.")]
     public class ReleaseNotes
     {
         [JsonProperty(PropertyName = "releases-index")]
         public List<ReleaseNote> ReleasesIndex { get; set; } = new List<ReleaseNote>();
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This class shares part of the deserialization functionality.")]
     public class ReleaseNote
     {
         [JsonProperty(PropertyName = "channel-version")]
@@ -66,18 +68,23 @@ namespace Microsoft.Oryx.Automation
     ///  Example:
     ///  https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/7.0/releases.json
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This class shares part of the deserialization functionality.")]
     public class FileObj
     {
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; } = string.Empty;
+
         [JsonProperty(PropertyName = "rid")]
         public string Rid { get; set; } = string.Empty;
+
         [JsonProperty(PropertyName = "url")]
         public string Url { get; set; } = string.Empty;
+
         [JsonProperty(PropertyName = "hash")]
         public string Hash { get; set; } = string.Empty;
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This class shares part of the deserialization functionality.")]
     public class Sdk
     {
         [JsonProperty(PropertyName = "version")]
@@ -93,6 +100,7 @@ namespace Microsoft.Oryx.Automation
         public List<FileObj> Files { get; set; } = new List<FileObj>();
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This class shares part of the deserialization functionality.")]
     public class RuntimeDotNet
     {
         [JsonProperty(PropertyName = "version")]
@@ -105,6 +113,7 @@ namespace Microsoft.Oryx.Automation
         public List<FileObj> Files { get; set; } = new List<FileObj>();
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This class shares part of the deserialization functionality.")]
     public class AspnetCoreRuntime
     {
         [JsonProperty(PropertyName = "version")]
@@ -117,6 +126,7 @@ namespace Microsoft.Oryx.Automation
         public List<FileObj> Files { get; set; } = new List<FileObj>();
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This class shares part of the deserialization functionality.")]
     public class Release
     {
         [JsonProperty(PropertyName = "release-date")]
@@ -132,7 +142,8 @@ namespace Microsoft.Oryx.Automation
         public AspnetCoreRuntime AspnetCoreRuntime { get; set; } = new AspnetCoreRuntime();
     }
 
-    public class ReleasesJson // TODO: come up with a better name
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:File may only contain a single type", Justification = "This class shares part of the deserialization functionality.")]
+    public class ReleasesJson
     {
         [JsonProperty(PropertyName = "releases")]
         public List<Release> Releases { get; set; } = new List<Release>();
