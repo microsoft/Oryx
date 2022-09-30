@@ -31,10 +31,12 @@ namespace Microsoft.Oryx.Automation
             }
             catch (Exception e)
             {
-                Console.WriteLine("\nException Caught!");
-                Console.WriteLine("Message :{0} ", e.Message);
-                return string.Empty;
+                Console.WriteLine($"\nUnable to process request to {url}");
+                Console.WriteLine($"Message :{e.Message} ");
+                System.Diagnostics.Debug.WriteLine(e.StackTrace);
+                System.Environment.Exit(1);
             }
+            return string.Empty;
         }
     }
 }
