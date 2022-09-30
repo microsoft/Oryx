@@ -6,6 +6,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGeneratorCli;
@@ -27,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_NetCore60MvcAppAsync()
         {
             // Arrange
-            var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
+            var dotnetcoreVersion = FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -72,10 +73,75 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        public async Task CanBuildAndRun_NetCore60MvcApp_WithCustomizedRunCommand()
+        {
+            // Arrange
+            var dotnetcoreVersion = FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion;
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
+            var tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(tmpDir);
+            try
+            {
+                var tmpVolume = DockerVolume.CreateMirror(tmpDir, true);
+                var tmpContainerDir = tmpVolume.ContainerDir;
+                var volume = DockerVolume.CreateMirror(hostDir);
+                var appDir = volume.ContainerDir;
+                var appOutputDirVolume = CreateAppOutputDirVolume();
+                var appOutputDir = appOutputDirVolume.ContainerDir;
+                var appsvcFile = appOutputDirVolume.ContainerDir + "/appsvc.yaml";
+                var runCommand = "echo 'Hello Azure! New Feature!!'";
+                var buildImageScript = new ShellScriptBuilder()
+                   .AddDefaultTestEnvironmentVariables()
+                   .AddCommand(
+                    $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
+                    $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
+                   .ToString();
+                var runtimeImageScript = new ShellScriptBuilder()
+                    .CreateFile(appsvcFile, $"\"run: {runCommand}\"")
+                    .AddCommand(
+                    $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort} -output {tmpContainerDir}/run.sh")
+                    .AddCommand($".{tmpContainerDir}/run.sh")
+                    .ToString();
+
+                await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                    NetCoreApp60MvcApp,
+                    _output,
+                    new DockerVolume[] { volume, appOutputDirVolume, tmpVolume },
+                    _imageHelper.GetGitHubActionsBuildImage(),
+                    "/bin/sh",
+                    new[]
+                    {
+                    "-c",
+                    buildImageScript
+                    },
+                    _imageHelper.GetRuntimeImage("dotnetcore", "6.0"),
+                    ContainerPort,
+                    "/bin/sh",
+                    new[]
+                    {
+                    "-c",
+                    runtimeImageScript
+                    },
+                    async (hostPort) =>
+                    {
+                        var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                        Assert.Contains("Welcome to ASP.NET Core MVC!", data);
+
+                        var runScript = File.ReadAllText(Path.Combine(tmpDir, "run.sh"));
+                        Assert.Contains(runCommand, runScript);
+                    });
+            }
+            finally
+            {
+                Directory.Delete(tmpDir, true);
+            }
+        }
+
+        [Fact]
         public async Task CanBuildAndRun_Adds_Oryx_AppInsights_Codeless_ConfigurationAsync()
         {
             // Arrange
-            var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
+            var dotnetcoreVersion = FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -133,7 +199,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_DoesNot_Add_Oryx_AppInsights_Codeless_ConfigurationAsync()
         {
             // Arrange
-            var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
+            var dotnetcoreVersion = FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -191,7 +257,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_NetCore60MvcApp_UsingExplicitStartupCommandAsync()
         {
             // Arrange
-            var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
+            var dotnetcoreVersion = FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -199,6 +265,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var startupCommand = $"./{NetCoreApp60MvcApp}";
             var buildImageScript = new ShellScriptBuilder()
+               .AddDefaultTestEnvironmentVariables()
                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                $"--platform {DotNetCoreConstants.PlatformName} " +
                $"--platform-version {dotnetcoreVersion}")
@@ -239,13 +306,14 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunApp_FromNestedOutputDirectoryAsync()
         {
             // Arrange
-            var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
+            var dotnetcoreVersion = FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
+               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion} " +
@@ -287,7 +355,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange
-            var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp60;
+            var dotnetcoreVersion = FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -295,6 +363,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
             var buildImageScript = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")

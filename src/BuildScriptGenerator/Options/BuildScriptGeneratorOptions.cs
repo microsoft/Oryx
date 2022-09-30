@@ -15,6 +15,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string DestinationDir { get; set; }
 
+        public string BindPort { get; set; }
+
+        public string BuildImage { get; set; }
+
         public string PlatformName { get; set; }
 
         public string PlatformVersion { get; set; }
@@ -76,5 +80,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool CompressDestinationDir { get; set; }
 
         public string CustomRequirementsTxtPath { get; set; }
+
+        public string DebianFlavor { get; set; }
+
+        public string CallerId { get; set; }
     }
 }

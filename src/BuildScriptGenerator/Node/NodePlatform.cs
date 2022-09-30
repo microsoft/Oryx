@@ -380,6 +380,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 CompressNodeModulesCommand = compressNodeModulesCommand,
                 CompressedNodeModulesFileName = compressedNodeModulesFileName,
                 ConfigureYarnCache = configureYarnCache,
+                YarnTimeOutConfig = this.nodeScriptGeneratorOptions.YarnTimeOutConfig,
                 PruneDevDependencies = pruneDevDependencies,
                 AppInsightsInjectCommand = appInsightsInjectCommand,
                 AppInsightsPackageName = NodeConstants.NodeAppInsightsPackageName,
@@ -700,7 +701,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 return detectedVersion;
             }
 
-            // Fallback to default version
+            // Explicitly specified default version by user wins over detected default
+            if (!string.IsNullOrEmpty(this.nodeScriptGeneratorOptions.DefaultVersion))
+            {
+                return this.nodeScriptGeneratorOptions.DefaultVersion;
+            }
+
+            // Fallback to default version detection
             var versionInfo = this.nodeVersionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
         }

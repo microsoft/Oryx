@@ -8,15 +8,20 @@ ENV PHP_ORIGIN php-fpm
 ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
-# Install NGINX 
-RUN apt-get update \
-    && apt-get install nano nginx -y
+# Install NGINX latest stable version using APT Method with Nginx Repository instead of distribution-provided one:
+# - https://www.linuxcapable.com/how-to-install-latest-nginx-mainline-or-stable-on-debian-11/
+RUN apt-get update
+RUN apt install curl nano -y
+RUN curl -sSL https://packages.sury.org/nginx/README.txt | bash -x
+RUN apt-get update
+RUN yes '' | apt-get install nginx-core nginx-common nginx nginx-full -y
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
 RUN sed -ri -e 's!worker_connections 768!worker_connections 10068!g' /etc/nginx/nginx.conf
 RUN sed -ri -e 's!# multi_accept on!multi_accept on!g' /etc/nginx/nginx.conf
 RUN ls -l /etc/nginx
+RUN nginx -t
 # Edit the default port setting
 ENV NGINX_PORT 8080
 
@@ -71,10 +76,7 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         xsl
 RUN pecl install redis && docker-php-ext-enable redis
 # https://github.com/Imagick/imagick/issues/331
-RUN set -eux; \
-    if [[ $PHP_VERSION != 8.* ]]; then \
-        pecl install imagick && docker-php-ext-enable imagick; \
-    fi
+RUN pecl install imagick && docker-php-ext-enable imagick
 
 # https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
 RUN set -eux; \
@@ -88,7 +90,7 @@ RUN set -eux; \
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \

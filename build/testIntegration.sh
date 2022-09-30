@@ -8,6 +8,13 @@ set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
+source $REPO_DIR/build/__sdkStorageConstants.sh
+
+if [ -z "$ORYX_TEST_SDK_STORAGE_URL" ]; then
+    echo
+    echo "Setting environment variable 'ORYX_TEST_SDK_STORAGE_URL' to default value '$DEV_SDK_STORAGE_BASE_URL' for integration tests."
+    export ORYX_TEST_SDK_STORAGE_URL="$DEV_SDK_STORAGE_BASE_URL"
+fi
 
 # When this script is run in CI agent these environment variables are already set
 if [ -z "$SQLSERVER_DATABASE_HOST" ]; then

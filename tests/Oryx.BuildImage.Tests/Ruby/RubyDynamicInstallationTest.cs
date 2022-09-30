@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             var imageTestHelper = new ImageTestHelper();
             GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
-                RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage("vso-focal"));
+                RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
         }
 
         [Fact, Trait("category", "githubactions")]
@@ -39,6 +39,28 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 RubyVersions.Ruby30Version, imageTestHelper.GetGitHubActionsBuildImage());
             GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
                 RubyVersions.Ruby31Version, imageTestHelper.GetGitHubActionsBuildImage());
+        }
+
+        [Theory, Trait("category", "cli")]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
+        public void PipelineTestInvocationCli(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby30Version, imageTestHelper.GetCliImage(imageTag));
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby31Version, imageTestHelper.GetCliImage(imageTag));
+        }
+
+        [Theory, Trait("category", "cli-buster")]
+        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        public void PipelineTestInvocationCliBuster(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby30Version, imageTestHelper.GetCliImage(imageTag));
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby31Version, imageTestHelper.GetCliImage(imageTag));
         }
 
         private void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string version, string buildImageName)

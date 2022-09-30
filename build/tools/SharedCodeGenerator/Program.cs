@@ -22,6 +22,10 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         private const string VarPrefix = "${";
         private const string VarSuffix = "}";
 
+        private const string VersionsToBuildFile = "versionsToBuild.txt";
+        private const string LegacyVersionsFile = "legacyVersions.txt";
+        private const string SupportedVersionsOutputFile = "supportedPlatformVersions.md";
+
         public static int Main(string[] args)
         {
             if (args.Length != 2)
@@ -97,7 +101,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         private static void GenerateSupportedPlatformsReadmeFile(string repoDir)
         {
             var platformsDir = Path.Combine(repoDir, "platforms");
-            var targetReadmeFilePath = Path.Combine(repoDir, "doc", "supportedPlatformVerions.md");
+            var targetReadmeFilePath = Path.Combine(repoDir, "doc", SupportedVersionsOutputFile);
             Console.WriteLine($"Writing file '{targetReadmeFilePath}'");
             using (var sw = new StreamWriter(File.Open(targetReadmeFilePath, FileMode.Create)))
             {
@@ -106,30 +110,100 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                 foreach (var subDirPath in Directory.GetDirectories(platformsDir))
                 {
                     var subDirInfo = new DirectoryInfo(subDirPath);
+                    var platformSubDirPaths = Directory.GetDirectories(subDirPath);
                     var platformName = subDirInfo.Name;
-                    sw.WriteLine($"## {platformName}");
-                    sw.WriteLine();
-                    var versionFile = Path.Join(subDirPath, "versionsToBuild.txt");
-                    using (var reader = new StreamReader(versionFile))
+                    foreach (var platformSubDirPath in platformSubDirPaths)
+                    {
+                        var platformSubDirPathInfo = new DirectoryInfo(platformSubDirPath);
+
+                        // maven and composer exist within the java and php directories with
+                        // their own versions, and we want to include those in the file
+                        switch (platformSubDirPathInfo.Name)
+                        {
+                            case "versions":
+                                sw.WriteLine($"## {platformName}");
+                                sw.WriteLine();
+                                AddVersions(sw, platformSubDirPath, platformName);
+                                break;
+                            case "maven":
+                                sw.WriteLine($"## {platformName} maven");
+                                sw.WriteLine();
+                                AddVersions(sw, Path.Join(platformSubDirPath, "versions"), "maven");
+                                break;
+                            case "composer":
+                                sw.WriteLine($"## {platformName} composer");
+                                sw.WriteLine();
+                                AddVersions(sw, Path.Join(platformSubDirPath, "versions"), "composer");
+                                break;
+                        }
+
+                        sw.WriteLine();
+                    }
+                }
+
+                sw.Flush();
+            }
+        }
+
+        /// <summary>
+        /// Writes all versions found in text files in a directory
+        /// to a stream, in order of version.
+        /// </summary>
+        /// <param name="sw">stream writer instance to write the versions to</param>
+        /// <param name="versionsPath">directory at which the versionsToBuild.txt and optional legacyVersions.txt file is found.</param>
+        private static void AddVersions(StreamWriter sw, string versionsPath, string platformName)
+        {
+            foreach (var osTypeDirPath in Directory.GetDirectories(versionsPath))
+            {
+                var osTypeDirInfo = new DirectoryInfo(osTypeDirPath);
+                var osType = osTypeDirInfo.Name;
+                sw.WriteLine($"### {osType}");
+                sw.WriteLine();
+                var versionFile = Path.Join(osTypeDirPath, VersionsToBuildFile);
+                var legacyVersionFile = Path.Join(osTypeDirPath, LegacyVersionsFile);
+                var supportedVersions = new List<VersionInfo>();
+                using (var reader = new StreamReader(versionFile))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#"))
+                        {
+                            continue;
+                        }
+
+                        var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
+                        var versionPart = parts[0].Trim();
+                        supportedVersions.Add(new VersionInfo(versionPart, platformName));
+                    }
+                }
+
+                if (File.Exists(legacyVersionFile))
+                {
+                    using (var reader = new StreamReader(legacyVersionFile))
                     {
                         string line;
                         while ((line = reader.ReadLine()) != null)
                         {
-                            if (string.IsNullOrWhiteSpace(line) || line.Trim().StartsWith("#"))
+                            line = line.Trim();
+
+                            if (string.IsNullOrWhiteSpace(line) || line.StartsWith("#"))
                             {
                                 continue;
                             }
 
-                            var parts = line.Split(",", StringSplitOptions.RemoveEmptyEntries);
-                            var versionPart = parts[0];
-                            sw.WriteLine($"- {versionPart}");
+                            supportedVersions.Add(new VersionInfo(line, platformName));
                         }
                     }
-
-                    sw.WriteLine();
                 }
 
-                sw.Flush();
+                supportedVersions.Sort();
+                foreach (var version in supportedVersions)
+                {
+                    sw.WriteLine($"- {version.DisplayVersion}");
+                }
+
+                sw.WriteLine();
             }
         }
 

@@ -15,7 +15,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     [Trait("db", "sqlserver")]
     public class PythonSqlServerIntegrationTests : PlatformEndToEndTestsBase
     {
@@ -27,9 +26,10 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug #1274414")]
-        [InlineData("github-actions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("latest")]
+        [Trait("category", "python-37")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public async Task Python37App_MicrosoftSqlServerDBAsync(string imageTag)
         {
             // Arrange

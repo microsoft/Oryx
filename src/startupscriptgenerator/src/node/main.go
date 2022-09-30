@@ -11,6 +11,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -101,6 +102,9 @@ func main() {
 		}
 		script := gen.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, script)
+
+		userRunCommand := common.ParseUserRunCommand(filepath.Join(fullAppPath, consts.AppSvcFileName))
+		common.AppendScript(*outputPathPtr, userRunCommand)
 	}
 
 	if setupEnvCommand.Parsed() {

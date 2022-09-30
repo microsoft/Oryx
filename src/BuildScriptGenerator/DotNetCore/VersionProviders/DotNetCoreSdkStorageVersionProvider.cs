@@ -11,11 +11,13 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public class DotNetCoreSdkStorageVersionProvider : SdkStorageVersionProviderBase, IDotNetCoreVersionProvider
     {
+        private readonly BuildScriptGeneratorOptions commonOptions;
         private Dictionary<string, string> versionMap;
         private string defaultRuntimeVersion;
 
@@ -25,6 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             ILoggerFactory loggerFactory)
             : base(commonOptions, httpClientFactory, loggerFactory)
         {
+            this.commonOptions = commonOptions.Value;
         }
 
         public Dictionary<string, string> SupportedVersionsMap { get; }
@@ -41,39 +44,65 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return this.versionMap;
         }
 
+        /// <summary>
+        /// Pulls all files in the dotnet storage container and determines the supported and default versions.
+        /// -----------
+        /// This works slightly differently than <see cref="SdkStorageVersionProviderBase.GetAvailableVersionsFromStorage"/>,
+        /// as the dotnet supported versions are a mapping of runtime version -> sdk version. This means that we need to find
+        /// both runtime version and sdk version metadata associated with each file.
+        /// </summary>
         public void GetVersionInfo()
         {
             if (this.versionMap == null)
             {
                 var httpClient = this.HttpClientFactory.CreateClient("general");
                 var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-                var blobList = httpClient
-                    .GetStringAsync($"{sdkStorageBaseUrl}/dotnet?restype=container&comp=list&include=metadata")
-                    .Result;
-
-                var xdoc = XDocument.Parse(blobList);
+                var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, DotNetCoreConstants.PlatformName, httpClient);
 
                 // keys represent runtime version, values represent sdk version
                 var supportedVersions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+                var sdkVersionMetadataName = SdkStorageConstants.SdkVersionMetadataName;
+                var runtimeVersionMetadataName = SdkStorageConstants.DotnetRuntimeVersionMetadataName;
+
+                if (this.commonOptions.DebianFlavor == OsTypes.DebianStretch)
+                {
+                    sdkVersionMetadataName = SdkStorageConstants.LegacySdkVersionMetadataName;
+                    runtimeVersionMetadataName = SdkStorageConstants.LegacyDotnetRuntimeVersionMetadataName;
+                }
+
                 foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
                 {
                     var childElements = metadataElement.Elements();
+
                     var runtimeVersionElement = childElements.Where(e => string.Equals(
-                            DotNetCoreConstants.StorageSdkMetadataRuntimeVersionElementName,
+                            runtimeVersionMetadataName,
                             e.Name.LocalName,
                             StringComparison.OrdinalIgnoreCase))
                         .FirstOrDefault();
 
+                    // do not add a supported version if the correct runtime metadata was not found
                     if (runtimeVersionElement != null)
                     {
                         var sdkVersionElement = childElements.Where(e => string.Equals(
-                                DotNetCoreConstants.StorageSdkMetadataSdkVersionElementName,
+                                sdkVersionMetadataName,
                                 e.Name.LocalName,
                                 StringComparison.OrdinalIgnoreCase))
                             .FirstOrDefault();
 
-                        supportedVersions[runtimeVersionElement.Value] = sdkVersionElement.Value;
+                        var osTypeElement = childElements.Where(e => string.Equals(
+                                SdkStorageConstants.OsTypeMetadataName,
+                                e.Name.LocalName,
+                                StringComparison.OrdinalIgnoreCase))
+                            .FirstOrDefault();
+
+                        // add supported version for stretch if runtime version and sdk version metadata is found
+                        // add supported version for other os types if runtime version, sdk version, and matching os type metadata is found
+                        if (sdkVersionElement != null
+                            && (this.commonOptions.DebianFlavor == OsTypes.DebianStretch || this.commonOptions.DebianFlavor == osTypeElement.Value))
+                        {
+                            supportedVersions[runtimeVersionElement.Value] = sdkVersionElement.Value;
+                        }
                     }
                 }
 

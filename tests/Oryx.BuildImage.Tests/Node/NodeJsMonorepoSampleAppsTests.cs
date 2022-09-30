@@ -30,9 +30,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app1-output";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(
                     SettingsKeys.EnableNodeMonorepoBuild,
                     true.ToString())
@@ -70,9 +68,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app1-output";
             var commandListFile = $"{appOutputDir}/{FilePaths.BuildCommandsFileName}";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(
                     SettingsKeys.EnableNodeMonorepoBuild,
                     isMonoRepo.ToString())
@@ -85,7 +81,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage("vso-focal"),
+                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -110,9 +106,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app2-output";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(
                     SettingsKeys.EnableNodeMonorepoBuild,
                     true.ToString())

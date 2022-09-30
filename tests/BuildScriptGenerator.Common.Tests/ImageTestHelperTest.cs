@@ -12,14 +12,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
 {
     public class ImageTestHelperTest
     {
-        private const string _imageBaseEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
-        private const string _tagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
-        private const string _defaultImageBase = "oryxdevmcr.azurecr.io/public/oryx";
+        private const string _imageBaseEnvironmentVariable = ImageTestHelperConstants.RepoPrefixEnvironmentVariable;
+        private const string _tagSuffixEnvironmentVariable = ImageTestHelperConstants.TagSuffixEnvironmentVariable;
+        private const string _defaultImageBase = ImageTestHelperConstants.DefaultRepoPrefix;
 
-        private const string _buildRepository = "build";
-        private const string _packRepository = "pack";
-        private const string _latestTag = "latest";
-        private const string _ltsVersionsTag = "lts-versions";
+        private const string _buildRepository = ImageTestHelperConstants.BuildRepository;
+        private const string _packRepository = ImageTestHelperConstants.PackRepository;
+        private const string _latestTag = ImageTestHelperConstants.LatestStretchTag;
+        private const string _ltsVersionsTag = ImageTestHelperConstants.LtsVersionsStretch;
 
         private readonly ITestOutputHelper _output;
 
@@ -247,7 +247,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:github-actions";
+            var expected = "oryxtests/build:github-actions-debian-stretch";
 
             // Act
             var actual = imageHelper.GetGitHubActionsBuildImage();
@@ -261,7 +261,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:latest";
+            var expected = "oryxtests/build:debian-stretch";
 
             // Act
             var actual = imageHelper.GetBuildImage();
@@ -275,7 +275,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         {
             // Arrange
             var imageHelper = ImageTestHelper.WithRestrictedPermissions();
-            var expected = "oryxtests/build:lts-versions";
+            var expected = "oryxtests/build:lts-versions-debian-stretch";
 
             // Act
             var actual = imageHelper.GetLtsVersionsBuildImage();

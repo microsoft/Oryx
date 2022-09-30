@@ -10,6 +10,7 @@ using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -81,8 +82,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 using (var timedEvent = logger?.LogTimedEvent(this.GetType().Name))
                 {
+                    var options = this.serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
                     var exitCode = this.Execute(this.serviceProvider, console);
                     timedEvent?.AddProperty(nameof(exitCode), exitCode.ToString());
+                    timedEvent?.AddProperty("callerId", options.CallerId);
                     return exitCode;
                 }
             }
@@ -96,10 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 logger?.LogError(exc, "Exception caught");
 
                 console.WriteErrorLine(Constants.GenericErrorMessage);
-                if (this.DebugMode)
-                {
-                    console.WriteErrorLine(exc.ToString());
-                }
+                console.WriteErrorLine(exc.ToString());
 
                 return ProcessConstants.ExitFailure;
             }

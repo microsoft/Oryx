@@ -13,6 +13,7 @@ source $REPO_DIR/platforms/__common.sh
 nodePlatformDir="$REPO_DIR/platforms/nodejs"
 hostNodeArtifactsDir="$volumeHostDir/nodejs"
 debianFlavor="$1"
+sdkStorageAccountUrl="$2"
 mkdir -p "$hostNodeArtifactsDir"
 
 builtNodeImage=false
@@ -20,15 +21,23 @@ getNode() {
 	local version="$1"
 	
 	tarFileName="nodejs-$version.tar.gz"
+	metadataFile=""
+	sdkVersionMetadataName=""
     
     if [ "$debianFlavor" == "stretch" ]; then
 			# Use default sdk file name
 			tarFileName=nodejs-$version.tar.gz
+			metadataFile="$hostNodeArtifactsDir/nodejs-$version-metadata.txt"
+			# Continue adding the version metadata with the name of Version
+			# which is what our legacy CLI will use
+			sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
 	else
 			tarFileName=nodejs-$debianFlavor-$version.tar.gz
+			metadataFile="$hostNodeArtifactsDir/nodejs-$debianFlavor-$version-metadata.txt"
+			sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 	fi
 
-	if shouldBuildSdk nodejs $tarFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk nodejs; then
+	if shouldBuildSdk nodejs $tarFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk nodejs; then
 		echo "Getting Node version '$version'..."
 		echo
 
@@ -42,17 +51,18 @@ getNode() {
 		fi
 
 		docker run \
-			-v $hostNodeArtifactsDir:$volumeContainerDir \
+			-v /$hostNodeArtifactsDir:$volumeContainerDir \
 			$imageName \
 			bash -c "/tmp/scripts/build.sh $version && cp -f /tmp/compressedSdk/* /tmp/sdk"
 		
-		echo "Version=$version" >> "$hostNodeArtifactsDir/nodejs-$version-metadata.txt"
+		echo "$sdkVersionMetadataName=$version" >> $metadataFile
+		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
 	fi
 }
 
 echo "Getting Node Sdk..."
 echo
-buildPlatform "$nodePlatformDir/versionsToBuild.txt" getNode
+buildPlatform "$nodePlatformDir/versions/$debianFlavor/versionsToBuild.txt" getNode
 
 # Write the default version
-cp "$nodePlatformDir/defaultVersion.txt" $hostNodeArtifactsDir
+cp "$nodePlatformDir/versions/$debianFlavor/defaultVersion.txt" "$hostNodeArtifactsDir/defaultVersion.$debianFlavor.txt"

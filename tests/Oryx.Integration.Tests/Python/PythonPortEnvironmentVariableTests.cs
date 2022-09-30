@@ -12,7 +12,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     public class PythonPortEnvironmentVariableTests : PythonEndToEndTestsBase
     {
         public PythonPortEnvironmentVariableTests(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -21,6 +20,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("category", "python-37")]
         public async Task PythonStartupScript_UsesPortEnvironmentVariableValueAsync()
         {
             // Arrange
@@ -74,6 +74,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("category", "python-37")]
         public async Task PythonStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresentAsync()
         {
             // Arrange

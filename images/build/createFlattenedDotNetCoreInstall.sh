@@ -9,6 +9,7 @@ set -ex
 __CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source "$__CURRENT_DIR/../../build/__dotNetCoreSdkVersions.sh"
 source "$__CURRENT_DIR/../../build/__dotNetCoreRunTimeVersions.sh"
+source "$__CURRENT_DIR/../../build/__finalStretchVersions.sh"
 
 splitSdksDir="/opt/dotnet"
 
@@ -75,7 +76,7 @@ function createLinks() {
     done
 }
 
-createLinks "$DOT_NET_CORE_31_SDK_VERSION" "$NET_CORE_APP_31"
+createLinks "$FINAL_STRETCH_DOT_NET_CORE_31_SDK_VERSION" "$FINAL_STRETCH_NET_CORE_APP_31"
 echo
 createLinks "$DOT_NET_CORE_30_SDK_VERSION" "$NET_CORE_APP_30"
 echo

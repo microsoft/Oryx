@@ -22,28 +22,35 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact]
-        public async Task CanRunApp_WithoutBuildManifestFileAsync()
+        [Theory]
+        [InlineData("1.17", ImageTestHelperConstants.FullBuster)]
+        [InlineData("1.17", ImageTestHelperConstants.FullBullseye)]
+        [InlineData("1.18", ImageTestHelperConstants.FullBuster)]
+        [InlineData("1.18", ImageTestHelperConstants.FullBullseye)]
+        [InlineData("1.19", ImageTestHelperConstants.FullBuster)]
+        [InlineData("1.19", ImageTestHelperConstants.FullBullseye)]
+        public async Task CanRunApp_WithoutBuildManifestFileAsync(string golangVersion, string imageTag)
         {
             // Arrange
-            var golangVersion = "1.17";
             var hostDir = Path.Combine(_hostSamplesDir, "golang", GolangHelloWorldWebApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
+            var imageTestHelper = new ImageTestHelper();
             var runtimeImageScript = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " + 
                 $"--platform {GolangConstants.PlatformName} --platform-version {golangVersion}")
                 .AddCommand(
-                $"oryx run-script {appOutputDir} --output {DefaultStartupFilePath} --debug")
+                $"oryx run-script --platform {GolangConstants.PlatformName} --platform-version {golangVersion} {appOutputDir}  --output {DefaultStartupFilePath} --debug")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
             // Assert
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: "oryxdevmcr.azurecr.io/public/oryx/build:full",
+                imageName: imageTestHelper.GetBuildImage(imageTag),
                 output: _output,
                 volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                 environmentVariables: null,

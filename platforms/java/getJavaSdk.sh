@@ -7,6 +7,7 @@ source $REPO_DIR/platforms/__common.sh
 javaPlatformDir="$REPO_DIR/platforms/java"
 hostJavaArtifactsDir="$volumeHostDir/java"
 debianFlavor="$1"
+sdkStorageAccountUrl="$2"
 mkdir -p "$hostJavaArtifactsDir"
 
 rm -rf /tmp/java
@@ -23,14 +24,22 @@ downloadJavaSdk()
 
     tarFileName="java-$JDK_VERSION.tar.gz"
     tarFileNameWithoutGZ="java-$JDK_VERSION.tar"
+    metadataFile=""
+    sdkVersionMetadataName=""
 
-    # set tarFile's Debian flavor
+    # set tarFile and metadata's Debian flavor
     if [ "$debianFlavor" == "stretch" ]; then
             tarFileName=java-$JDK_VERSION.tar.gz
             tarFileNameWithoutGZ=java-$JDK_VERSION.tar
+            metadataFile="$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+            # Continue adding the version metadata with the name of Version
+            # which is what our legacy CLI will use
+            sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
     else
             tarFileName=java-$debianFlavor-$JDK_VERSION.tar.gz
             tarFileNameWithoutGZ=java-$debianFlavor-$JDK_VERSION.tar
+            metadataFile="$hostJavaArtifactsDir/java-$debianFlavor-$JDK_VERSION-metadata.txt"
+            sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
     fi
 
     
@@ -52,7 +61,9 @@ downloadJavaSdk()
         fi
         cd $jdk_root
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
-        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+
+        echo "$sdkVersionMetadataName=$JDK_VERSION" >> $metadataFile
+        echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
         return
     fi
 
@@ -69,7 +80,8 @@ downloadJavaSdk()
         tar -xf $tarFileName --directory extracted
         cd "extracted/jdk${versionUpdate}-${buildNumber}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
-        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        echo "$sdkVersionMetadataName=$JDK_VERSION" >> $metadataFile
+        echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
         return
     fi
 
@@ -86,11 +98,12 @@ downloadJavaSdk()
         tar -xf $tarFileNameWithoutGZ --directory extracted
         cd "extracted/jdk-${JDK_VERSION}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
-        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        echo "$sdkVersionMetadataName=$JDK_VERSION" >> $metadataFile
+        echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
         return
     fi
 
-    if shouldBuildSdk java $tarFileName || shouldOverwriteSdk || shouldOverwritePlatformSdk java; then
+    if shouldBuildSdk java $tarFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk java; then
         local baseUrl="https://github.com/AdoptOpenJDK/openjdk${majorVersion}-binaries/releases/download"
         if [ "$majorVersion" == "10" ] && [ "$JDK_BUILD_NUMBER" == "13" ]; then
             url="$baseUrl/jdk-10.0.2%2B13.1/OpenJDK10U-jdk_x64_linux_hotspot_10.0.2_13.tar.gz"
@@ -106,16 +119,17 @@ downloadJavaSdk()
         cd "extracted/jdk-${JDK_VERSION}+${JDK_BUILD_NUMBER}"
         tar -zcf "$hostJavaArtifactsDir/$tarFileName" .
 
-        echo "Version=$JDK_VERSION" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
-        echo "JdkFullVersion=$JDK_VERSION+$JDK_BUILD_NUMBER" >> "$hostJavaArtifactsDir/java-$JDK_VERSION-metadata.txt"
+        echo "$sdkVersionMetadataName=$JDK_VERSION" >> $metadataFile
+        echo "JdkFullVersion=$JDK_VERSION+$JDK_BUILD_NUMBER" >> $metadataFile
+        echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
     fi
 }
 
 echo "Downloading Java SDK..."
 echo
-buildPlatform "$javaPlatformDir/versionsToBuild.txt" downloadJavaSdk
+buildPlatform "$javaPlatformDir/versions/$debianFlavor/versionsToBuild.txt" downloadJavaSdk
 
-cp "$javaPlatformDir/defaultVersion.txt" $hostJavaArtifactsDir
+cp "$javaPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$hostJavaArtifactsDir/defaultVersion.$debianFlavor.txt"
 
 ls -l $hostJavaArtifactsDir
 

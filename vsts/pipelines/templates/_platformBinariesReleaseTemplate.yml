@@ -1,3 +1,6 @@
+parameters:
+  destinationSdkStorageAccountName: 'oryxsdksdev'
+
 steps:
 
 - checkout: self
@@ -13,12 +16,15 @@ steps:
   inputs:
     ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
-- task: AzureCLI@1
+- task: ShellScript@2
   displayName: Upload files to Azure Storage
+  env:
+    DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
+    SANDBOX_STORAGE_SAS_TOKEN: $(SANDBOX-STORAGE-SAS-TOKEN)
+    PERSONAL_STORAGE_SAS_TOKEN: $(${{ upper(parameters.destinationSdkStorageAccountName) }}-PERSONAL-STORAGE-SAS-TOKEN)
   inputs:
-    azureSubscription: oryxSP
     scriptPath: ./vsts/scripts/publishFilesToAzureStorage.sh
-    arguments: oryxsdksdev
+    args: ${{ parameters.destinationSdkStorageAccountName }}
 
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 3.1.x'
@@ -27,6 +33,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Test Dev storage account'
+  env:
+    ORYX_TEST_SDK_STORAGE_URL: https://${{ parameters.destinationSdkStorageAccountName }}.blob.core.windows.net
   inputs:
     scriptPath: ./build/testIntegration.sh
     args: StorageAccountTests=Dev

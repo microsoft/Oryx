@@ -253,7 +253,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var platformVersion = "10.17";
             var runtimeTag = "10";
             var repositoryName = "build";
-            var tagName = "lts-versions";
+            var tagName = ImageTestHelperConstants.LtsVersionsStretch;
             var script = new ShellScriptBuilder()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
                 .AddCommand($"oryx dockerfile {appPath} --platform {platformName} --platform-version {platformVersion}")

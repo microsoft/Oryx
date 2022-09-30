@@ -1,11 +1,9 @@
-# DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
-FROM php:8.1-bullseye
+FROM oryxdevmcr.azurecr.io/private/oryx/php-8.1
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.1.6
+ENV PHP_VERSION 8.1.9
 
 RUN a2enmod rewrite expires include deflate remoteip headers
-#Bake in client certificate path into image to avoid downloading it
-ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
+
 ENV APACHE_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV APACHE_DOCUMENT_ROOT /home/site/wwwroot
@@ -85,10 +83,7 @@ RUN set -eux; \
     fi
 
 # https://github.com/Imagick/imagick/issues/331
-RUN set -eux; \
-    if [[ $PHP_VERSION != 8.* ]]; then \
-        pecl install imagick && docker-php-ext-enable imagick; \
-    fi
+RUN pecl install imagick && docker-php-ext-enable imagick
 
 # deprecated from 5.*, so should be avoided 
 RUN set -eux; \
@@ -110,7 +105,7 @@ RUN set -eux; \
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 # pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 7.3.0)
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \

@@ -20,9 +20,10 @@ ENV RUBY_VERSION 2.6.6
 RUN ${IMAGES_DIR}/installPlatform.sh ruby $RUBY_VERSION --dir /opt/ruby/$RUBY_VERSION --links false
 RUN set -ex \
  && cd /opt/ruby/ \
- && ln -s 2.6.6 2.6
+ && ln -s 2.6.6 2.6 \
+ && ln -s 2.6 2
 
-ENV PATH="/opt/ruby/2.6/bin:${PATH}"
+ENV PATH="/opt/ruby/2/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
@@ -33,5 +34,5 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/oryx
-
+    
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen

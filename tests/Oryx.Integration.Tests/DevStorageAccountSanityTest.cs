@@ -5,6 +5,7 @@
 
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,7 +18,11 @@ namespace Oryx.Integration.Tests
             ITestOutputHelper output,
             TestTempDirTestFixture testTempDirTestFixture,
             RepoRootDirTestFixture repoRootDirTestFixture)
-            : base(SdkStorageConstants.DevSdkStorageBaseUrl, output, testTempDirTestFixture, repoRootDirTestFixture)
+            : base(
+                Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName) ?? SdkStorageConstants.DevSdkStorageBaseUrl,
+                output, 
+                testTempDirTestFixture, 
+                repoRootDirTestFixture)
         {
         }
     }

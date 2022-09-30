@@ -70,14 +70,14 @@ func (gen *PhpStartupScriptGenerator) getStartupCommand() string {
 }
 
 func (gen *PhpStartupScriptGenerator) SetFpmConfiguration(scriptBuilder *strings.Builder) {
-	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMaxChildren, consts.FpmMaxChildrenSettingName)
-	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmStartServers, consts.FpmStartServersSettingName)
-	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMaxSpareServers, consts.FpmMaxSpareServersSettingName)
-	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMinSpareServers, consts.FpmMinSpareServersSettingName)
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMaxChildren, consts.PhpFpmMaxChildrenSettingName)
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmStartServers, consts.PhpFpmStartServersSettingName)
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMaxSpareServers, consts.PhpFpmMaxSpareServersSettingName)
+	AddFpmConfigurationToScript(scriptBuilder, gen.Configuration.FpmMinSpareServers, consts.PhpFpmMinSpareServersSettingName)
 }
 
 func AddFpmConfigurationToScript(scriptBuilder *strings.Builder, envVarValue string, fpmSettingName string) {
 	if envVarValue != "" {
-		scriptBuilder.WriteString("   sed -i \"s/" + fpmSettingName + " = .*/" + fpmSettingName + " = " + envVarValue + "/g\" " + consts.FpmConfigurationFile + "\n")
+		scriptBuilder.WriteString("   sed -i \"s/" + fpmSettingName + " = .*/" + fpmSettingName + " = " + envVarValue + "/g\" " + consts.PhpFpmConfigurationFile + "\n")
 	}
 }

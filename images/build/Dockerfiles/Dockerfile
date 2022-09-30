@@ -1,4 +1,4 @@
-FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions AS main
+FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-debian-stretch AS main
 
 ###
 # Build run script generators (to be used by the `oryx run-script` command)

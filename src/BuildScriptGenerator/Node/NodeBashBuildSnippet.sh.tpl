@@ -39,6 +39,13 @@ echo "registry={{ PackageRegistryUrl }}" >> ~/.npmrc
 echo
 {{ end }}
 
+{{ if YarnTimeOutConfig | IsNotBlank }}
+echo
+echo "Found yarn network timeout config."
+echo "Setting it up with command: yarn config set network-timeout {{ YarnTimeOutConfig }} -g"
+yarn config set network-timeout {{ YarnTimeOutConfig }} -g
+{{ end }}
+
 zippedModulesFileName={{ CompressedNodeModulesFileName }}
 allModulesDirName=".oryx_all_node_modules"
 prodModulesDirName=".oryx_prod_node_modules"
@@ -206,7 +213,7 @@ npm pack
 
 ReadImageType=$(cat /opt/oryx/.imagetype)
 
-if [ "$ReadImageType" = "vso-focal" ]
+if [ "$ReadImageType" = "vso-focal" ] || [ "$ReadImageType" = "vso-debian-bullseye" ]
 then
 	echo $ReadImageType
 	cat "$COMMAND_MANIFEST_FILE"

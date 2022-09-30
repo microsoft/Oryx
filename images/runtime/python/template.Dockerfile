@@ -15,6 +15,7 @@ ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
 FROM oryxdevmcr.azurecr.io/private/oryx/%BASE_TAG% as main
+ARG DEBIAN_FLAVOR
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
@@ -38,7 +39,7 @@ COPY platforms/__common.sh /tmp/
 RUN true
 COPY platforms/python/prereqs/build.sh /tmp/
 RUN true
-COPY platforms/python/versionsToBuild.txt /tmp/
+COPY platforms/python/versions/${DEBIAN_FLAVOR}/versionsToBuild.txt /tmp/
 RUN true
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN true
@@ -65,6 +66,10 @@ ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+
+# Oryx++ Builder variables
+ENV CNB_STACK_ID="oryx.stacks.skeleton"
+LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 
 RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN pip install --upgrade pip \

@@ -1,8 +1,10 @@
 variables:
 - group: Oryx
 
-jobs:
-    - job: CreateReleaseTag
+stages:
+  - stage: ComponentDetection
+    jobs:
+    - job: ComponentDetection
       pool:
         name: AzurePipelines-EO
         demands:
@@ -16,21 +18,62 @@ jobs:
         inputs:
           ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
+  - stage: DryRun
+    jobs:
+    - job: DryRun
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      steps:
+      - checkout: self
+        clean: true
+      
       - task: UseDotNet@2
         displayName: 'Use .NET Core sdk 3.1.x'
         inputs:
           version: 3.1.x
 
       - task: ShellScript@2
-        displayName: 'Publish SDKs from dev to prod storage account'
+        displayName: '(Dry run) Publish SDKs from dev to prod storage account'
         env:
           DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
           PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
         inputs:
           scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh
-    
-      - task: ShellScript@2
-        displayName: 'Test Prod storage account'
-        inputs:
-          scriptPath: ./build/testIntegration.sh
-          args: StorageAccountTests=Prod
+          args: True # dry run
+
+  - stage: PublishSDKsToProduction
+    jobs:
+    - deployment: PublishSDKsToProduction
+      environment: oryx-prod # maps to the oryx-prod ADO environment, which requires manual approval to begin this stage
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - checkout: self
+              clean: true
+            
+            - task: UseDotNet@2
+              displayName: 'Use .NET Core sdk 3.1.x'
+              inputs:
+                version: 3.1.x
+
+            - task: ShellScript@2
+              displayName: 'Publish SDKs from dev to prod storage account'
+              env:
+                DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
+                PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
+              inputs:
+                scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh
+                args: False # no dry run
+
+            - task: ShellScript@2
+              displayName: 'Test prod storage account'
+              inputs:
+                scriptPath: ./build/testIntegration.sh
+                args: StorageAccountTests=Prod

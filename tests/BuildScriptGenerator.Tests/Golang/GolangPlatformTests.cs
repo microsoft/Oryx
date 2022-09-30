@@ -6,10 +6,12 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.Detector.Golang;
 using Microsoft.Oryx.Tests.Common;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Golang
@@ -61,6 +63,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Golang
             Assert.NotNull(result);
             Assert.Equal(GolangConstants.PlatformName, result.Platform);
             Assert.Equal(supportedVersion, result.PlatformVersion);
+        }
+
+        [Theory]
+        [InlineData(null, "1.17", null, "1.17")]
+        [InlineData(null, "1.17", "1.16", "1.17")]
+        [InlineData(null, null, "1.16", "1.16")]
+        [InlineData("1.18", "1.17", "1.16", "1.18")]
+        public void Detect_ReturnsExpectedVersion_BasedOnHierarchy(
+            string detectedVersion,
+            string envVarDefaultVersion,
+            string detectedDefaultVersion,
+            string expectedSdkVersion)
+        {
+            // Arrange
+            var context = CreateContext();
+            var options = new GolangScriptGeneratorOptions();
+            options.DefaultVersion = envVarDefaultVersion;
+            var platform = CreateGolangPlatform(
+                detectedVersion: detectedVersion,
+                defaultVersion: detectedDefaultVersion,
+                golangScriptGeneratorOptions: options,
+                supportedGolangVersions: new[] { detectedVersion, detectedDefaultVersion, envVarDefaultVersion });
+
+            // Act
+            var result = platform.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(GolangConstants.PlatformName, result.Platform);
+            Assert.Equal(expectedSdkVersion, result.PlatformVersion);
         }
 
         [Fact]

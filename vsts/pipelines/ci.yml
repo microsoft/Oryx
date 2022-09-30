@@ -1,4 +1,10 @@
 parameters:
+  - name: storageAccountUrl
+    displayName: SDK storage account URL for production images and testing
+    type: string
+    default: https://oryx-cdn.microsoft.io
+    values:
+    - https://oryx-cdn.microsoft.io
   - name: buildImages
     type: object
     default:
@@ -18,11 +24,17 @@ parameters:
         key: VsoFocal
         value: vso-focal
       - 
+        key: VsoBullseye
+        value: vso-bullseye
+      - 
         key: Full
         value: full
       - 
         key: Cli
         value: cli
+      - 
+        key: CliBuster
+        value: cli-buster
       - 
         key: Buildpack
         value: buildpack
@@ -131,6 +143,7 @@ stages:
             echo "##vso[task.setvariable variable=PushBuildImages;]true"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
             echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
           displayName: 'Set variables'
 
         - template: templates/_setReleaseTag.yml
@@ -161,6 +174,7 @@ stages:
           echo "##vso[task.setvariable variable=PushRuntimeImages;]true"
           echo "##vso[task.setvariable variable=PushBuildImages;]false"
           echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+          echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
         displayName: 'Set variables'
 
       - template: templates/_setReleaseTag.yml
@@ -168,6 +182,8 @@ stages:
       - template: templates/_buildTemplate.yml
 
     - template: templates/_integrationJobTemplate.yml
+      parameters:
+          storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
   - stage: Release
     displayName: Release Stage

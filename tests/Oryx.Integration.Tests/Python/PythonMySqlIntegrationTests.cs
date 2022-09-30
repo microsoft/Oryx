@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -10,7 +11,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     [Trait("db", "mysql")]
     public class PythonMySqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.MySqlDbContainerFixture>
     {
@@ -20,12 +20,13 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug 1410367") ]
-        [InlineData("mysql-pymysql-sample", "latest")]
-        [InlineData("mysql-pymysql-sample", "github-actions")]
-        [InlineData("mysql-mysqlconnector-sample", "latest")]
-        [InlineData("mysql-mysqlconnector-sample", "github-actions")]
-        [InlineData("mysql-mysqlclient-sample", "latest")]
-        [InlineData("mysql-mysqlclient-sample", "github-actions")]
+        [Trait("category", "python-37")]
+        [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.LatestStretchTag)]
+        [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.GitHubActionsStretch)]
+        [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.LatestStretchTag)]
+        [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.GitHubActionsStretch)]
+        [InlineData("mysql-mysqlclient-sample", ImageTestHelperConstants.LatestStretchTag)]
+        [InlineData("mysql-mysqlclient-sample", ImageTestHelperConstants.GitHubActionsStretch)]
         public async Task Python37App_MySqlDB_UsingPyMySql_UsingLtsVersionsBuildImageAsync(
             string sampleAppName,
             string imageTag)
@@ -38,9 +39,10 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug 1410367") ]
-        [InlineData("mysql-pymysql-sample", "github-actions-buster")]
-        [InlineData("mysql-mysqlconnector-sample", "github-actions-buster")]
-        [InlineData("mysql-mysqlclient-sample", "github-actions-buster")]
+        [Trait("category", "python-39")]
+        [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData("mysql-mysqlclient-sample", ImageTestHelperConstants.GitHubActionsBuster)]
         public async Task Python39App_MySqlDB_UsingPyMySql_UsingBusterBuildImageAsync(
             string sampleAppName,
             string imageTag)

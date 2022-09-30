@@ -1,4 +1,15 @@
 parameters:
+  - name: storageAccountUrl
+    type: string
+    default: https://oryxsdksdev.blob.core.windows.net
+  - name: pythonVersions
+    type: object
+    default:
+      - 37
+      - 38
+      - 39
+      - 310
+      - 311
   - name: nodeVersions
     type: object
     default:
@@ -32,9 +43,11 @@ parameters:
     default:
       - full
 jobs:
-- job: Job_PythonIntegrationTests
-  displayName: Run Python Integration Tests
-  dependsOn:
+# Python integration tests
+- ${{ each pythonVersion in parameters.pythonVersions }}:
+  - job:
+    displayName: 'Run Python ${{ pythonVersion }} Integration Tests'
+    dependsOn:
     - Job_BuildImage_Latest
     - Job_BuildImage_LtsVersions
     - Job_BuildImage_Jamstack
@@ -42,29 +55,31 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
-  pool:
-    name: AzurePipelines-EO
-    demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-  timeoutInMinutes: 300
-  variables:
-    skipComponentGovernanceDetection: true
-  steps:
-  - script: |
-      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestBuildImages;]false"
-      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=python"
-      echo "##vso[task.setvariable variable=TestIntegration;]true"
-      echo "##vso[task.setvariable variable=PushBuildImages;]false"
-      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
-    displayName: 'Set variables'
-  - template: _setReleaseTag.yml
-  - template: _buildTemplate.yml
+    pool:
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    variables:
+      skipComponentGovernanceDetection: true
+    timeoutInMinutes: 300
+    steps:
+        - script: |
+            echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+            echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=TestBuildImages;]false"
+            echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=python-${{ pythonVersion }}"
+            echo "##vso[task.setvariable variable=TestIntegration;]true"
+            echo "##vso[task.setvariable variable=PushBuildImages;]false"
+            echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
+          displayName: 'Set variables'
+        - template: _setReleaseTag.yml
+        - template: _buildTemplate.yml
 
 # DotNetCore integration tests
 - ${{ each dotNetCoreVersion in parameters.dotNetCoreVersions }}:
@@ -76,8 +91,10 @@ jobs:
     - Job_BuildImage_Jamstack
     - Job_BuildImage_GithubActions
     - Job_BuildImage_VsoFocal
+    - Job_BuildImage_VsoBullseye
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
     pool:
@@ -98,6 +115,7 @@ jobs:
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
             echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
@@ -114,6 +132,7 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
     pool:
@@ -134,6 +153,7 @@ jobs:
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
             echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
@@ -150,6 +170,7 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
     pool:
@@ -170,6 +191,7 @@ jobs:
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
             echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
@@ -186,6 +208,7 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
     pool:
@@ -206,43 +229,10 @@ jobs:
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
             echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
           displayName: 'Set variables'
         - template: _setReleaseTag.yml
         - template: _buildTemplate.yml
-
-- job: Job_RubyIntegrationTests
-  displayName: Run Ruby Integration Tests
-  dependsOn:
-    - Job_BuildImage_Latest
-    - Job_BuildImage_LtsVersions
-    - Job_BuildImage_Jamstack
-    - Job_BuildImage_GithubActions
-    - Job_BuildImage_VsoFocal
-    - Job_BuildImage_Full
-    - Job_BuildImage_Cli
-    - Job_BuildImage_Buildpack
-    - Job_RuntimeImages
-  pool:
-    name: AzurePipelines-EO
-    demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-  variables:
-    skipComponentGovernanceDetection: true
-  timeoutInMinutes: 300
-  steps:
-  - script: |
-      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-      echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestBuildImages;]false"
-      echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=ruby"
-      echo "##vso[task.setvariable variable=TestIntegration;]true"
-      echo "##vso[task.setvariable variable=PushBuildImages;]false"
-      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-      echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
-    displayName: 'Set variables'
-  - template: _setReleaseTag.yml
-  - template: _buildTemplate.yml
 
 - job: Job_DbIntegrationTests
   displayName: Run Database Integration Tests
@@ -254,6 +244,7 @@ jobs:
     - Job_BuildImage_VsoFocal
     - Job_BuildImage_Full
     - Job_BuildImage_Cli
+    - Job_BuildImage_CliBuster
     - Job_BuildImage_Buildpack
     - Job_RuntimeImages
   pool:
@@ -274,6 +265,7 @@ jobs:
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
       echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+      echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
     displayName: 'Set variables'
   - template: _setReleaseTag.yml
   - template: _buildTemplate.yml
@@ -293,6 +285,8 @@ jobs:
       version: 3.1.x
   - task: ShellScript@2
     displayName: 'Test Dev storage account'
+    env:
+      ORYX_TEST_SDK_STORAGE_URL: ${{ parameters.storageAccountUrl }}
     inputs:
       scriptPath: ./build/testIntegration.sh
       args: StorageAccountTests=Dev

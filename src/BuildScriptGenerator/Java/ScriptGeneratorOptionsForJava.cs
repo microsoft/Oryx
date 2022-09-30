@@ -9,6 +9,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
     {
         public string JavaVersion { get; set; }
 
+        public string JavaDefaultVersion { get; set; }
+
         public string MavenVersion { get; set; }
+
+        public string MavenDefaultVersion { get; set; }
     }
 }
