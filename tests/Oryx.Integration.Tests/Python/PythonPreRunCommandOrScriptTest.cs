@@ -15,7 +15,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     public class PythonPreRunCommandOrScriptTest : PythonEndToEndTestsBase
     {
         private readonly string RunScriptPath = "/tmp/startup.sh";
@@ -27,7 +26,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact(Skip = "Bug 1410367") ]
+        [Fact(Skip = "Bug 1410367")]
+        [Trait("category", "python-37")]
         public async Task CanBuildAndRunPythonApp_UsingPreRunCommand_WithDynamicInstallAsync()
         {
             // Arrange
@@ -86,6 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "Bug 1410367") ]
+        [Trait("category", "python-37")]
         public async Task CanBuildAndRunPythonApp_UsingPreRunScript_WithDynamicInstallAsync()
         {
             // Arrange
@@ -151,6 +152,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact (Skip = "Bug 1410367")]
+        [Trait("category", "python-38")]
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange

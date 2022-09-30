@@ -36,6 +36,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public bool ConfigureYarnCache { get; set; }
 
+        public string YarnTimeOutConfig { get; set; }
+
         public bool PruneDevDependencies { get; set; }
 
         public string AppInsightsInjectCommand { get; set; }

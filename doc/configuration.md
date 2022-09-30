@@ -43,6 +43,8 @@ ENABLE\_NODE\_MONOREPO\_BUILD| Apply node monorepo build if repo indicates it   
 COMPRESS\_DESTINATION\_DIR   | Indicates if the entire output directory needs to be compressed.   | ""      | `false` | `true`, `false`
 PRUNE\_DEV\_DEPENDENCIES     | Only the prod dependencies are copied to the output for Node apps. | ""      | `false` | `true`, `false`
 NPM\_REGISTRY\_URL           | Specify the npm registry url.                                | ""      | "http://foobar.com/"
+YARN\_TIMEOUT\_CONFIG        | Specify the yarn timeout config with a delay in milliseconds.                                | ""      | "600000"
+
 
 Setting name for Python apps | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------

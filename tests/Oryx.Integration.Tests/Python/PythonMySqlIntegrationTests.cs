@@ -11,7 +11,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     [Trait("db", "mysql")]
     public class PythonMySqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.MySqlDbContainerFixture>
     {
@@ -21,6 +20,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug 1410367") ]
+        [Trait("category", "python-37")]
         [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.LatestStretchTag)]
         [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.LatestStretchTag)]
@@ -39,6 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug 1410367") ]
+        [Trait("category", "python-39")]
         [InlineData("mysql-pymysql-sample", ImageTestHelperConstants.GitHubActionsBuster)]
         [InlineData("mysql-mysqlconnector-sample", ImageTestHelperConstants.GitHubActionsBuster)]
         [InlineData("mysql-mysqlclient-sample", ImageTestHelperConstants.GitHubActionsBuster)]
