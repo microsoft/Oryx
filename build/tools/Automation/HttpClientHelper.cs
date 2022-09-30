@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.Automation
         /// </Summary>
         public static async Task<string> GetRequestStringAsync(string url)
         {
-            Console.WriteLine($"url: {url}");
+            Console.WriteLine($"[GetRequestStringAsync] Making GET request against provided URL: {url}");
 
             // Call asynchronous network methods in a try/catch block to handle exceptions.
             try
@@ -31,11 +31,12 @@ namespace Microsoft.Oryx.Automation
             }
             catch (Exception e)
             {
-                Console.WriteLine($"\nUnable to process request to {url}");
+                Console.WriteLine($"\n[GetRequestStringAsync] Unable to process request to {url}");
                 Console.WriteLine($"Message :{e.Message} ");
                 System.Diagnostics.Debug.WriteLine(e.StackTrace);
                 System.Environment.Exit(1);
             }
+
             return string.Empty;
         }
     }

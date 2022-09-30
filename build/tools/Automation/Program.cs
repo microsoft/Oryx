@@ -36,11 +36,11 @@ namespace Microsoft.Oryx.Automation
             string dateTarget = args.Length > 0 ? args[0] : string.Empty;
             if (string.IsNullOrEmpty(dateTarget))
             {
-                Console.WriteLine("No dateTarget provided.");
+                Console.WriteLine("[Main] No dateTarget provided as an arg. Using Today's UTC date as dateTarget.");
                 dateTarget = DateTime.UtcNow.Date.ToString();
             }
 
-            Console.WriteLine($"dateTarget: {dateTarget}");
+            Console.WriteLine($"[Main] dateTarget: {dateTarget}");
             await AddNewPlatformConstantsAsync(dateTarget);
 
             return 0;
@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.Automation
             var targetDate = DateTime.Parse(dateTarget);
             int datesMatch = DateTime.Compare(releasedDate, targetDate);
             bool match = datesMatch == 0;
-            Console.WriteLine($"releasedDate: {releasedDate} targetDate: {targetDate} " +
+            Console.WriteLine($"[DatesMatch]  releasedDate: {releasedDate} targetDate: {targetDate} " +
                 $"datesMatch: {datesMatch} match: {match}");
             return match;
         }
@@ -145,7 +145,6 @@ namespace Microsoft.Oryx.Automation
             // TODO: Add fields for other feilds.
             //  For example, python has GPG keys
         }
-
 
         /// <Summary>
         /// This is used to deserialize Constants.ConstantsYaml file

@@ -44,7 +44,6 @@ namespace Microsoft.Oryx.Automation
         /// <returns>PlatformConstants used later to update constants.yaml</returns>
         public override async Task<List<PlatformConstant>> GetPlatformConstantsAsync(string dateTarget)
         {
-
             // check dotnet releases' meta data
             var response = await HttpClientHelper.GetRequestStringAsync(Constants.DotNetReleasesMetaDataUrl);
             var releaseNotes = JsonConvert.DeserializeObject<ReleaseNotes>(response);
@@ -74,8 +73,6 @@ namespace Microsoft.Oryx.Automation
                     {
                         continue;
                     }
-
-                    Console.WriteLine($"release-date: {release.ReleaseDate}");
 
                     // create sdk PlatformConstant
                     string sdkVersion = release.Sdk.Version;
@@ -134,7 +131,7 @@ namespace Microsoft.Oryx.Automation
                 string sha = platformConstant.Sha;
                 string versionType = platformConstant.VersionType;
                 string dotNetConstantKey = GenerateDotNetConstantKey(platformConstant);
-                Console.WriteLine($"version: {version} versionType: {versionType} sha: {sha} dotNetConstantKey: {dotNetConstantKey}");
+                Console.WriteLine($"[UpdateConstants] version: {version} versionType: {versionType} sha: {sha} dotNetConstantKey: {dotNetConstantKey}");
                 if (versionType.Equals(Constants.SdkName))
                 {
                     Constant dotNetYamlConstant = dotnetYamlConstants[Constants.DotNetSdkKey];
@@ -164,7 +161,8 @@ namespace Microsoft.Oryx.Automation
         private static void UpdateVersionsToBuildTxt(PlatformConstant platformConstant)
         {
             // TODO: use File.ReadAll*
-            List<string> versionsToBuildTxtFiles = new List<string>() {
+            List<string> versionsToBuildTxtFiles = new List<string>()
+            {
                     "platforms/dotnet/versions/bullseye/versionsToBuild.txt",
                     "platforms/dotnet/versions/buster/versionsToBuild.txt",
                     "platforms/dotnet/versions/focal-scm/versionsToBuild.txt",
@@ -176,7 +174,7 @@ namespace Microsoft.Oryx.Automation
                 File.AppendAllText(versionsToBuildTxtFile, line);
 
                 // sort
-                Console.WriteLine($"Updating {versionsToBuildTxtFile}...");
+                Console.WriteLine($"[UpdateVersionsToBuildTxt] Updating {versionsToBuildTxtFile}...");
                 var contents = File.ReadAllLines(versionsToBuildTxtFile);
                 Array.Sort(contents);
                 File.WriteAllLines(versionsToBuildTxtFile, contents);
@@ -221,7 +219,8 @@ namespace Microsoft.Oryx.Automation
         private static string GetSha(List<FileObj> files)
         {
             // TODO: use regex for pattern tarFileName
-            HashSet<string> tarFileNames = new HashSet<string>() {
+            HashSet<string> tarFileNames = new HashSet<string>()
+            {
                 "dotnet-sdk-linux-x64.tar.gz",
                 "dotnet-runtime-linux-x64.tar.gz",
                 "aspnetcore-runtime-linux-x64.tar.gz",
@@ -235,7 +234,7 @@ namespace Microsoft.Oryx.Automation
             }
 
             // TODO: special exception if sha not found
-            Console.WriteLine("No sha found");
+            Console.WriteLine("[GetSha] No sha found");
 
             return string.Empty;
         }
