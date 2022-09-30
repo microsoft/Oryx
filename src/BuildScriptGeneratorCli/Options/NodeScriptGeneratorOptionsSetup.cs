@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.PruneDevDependencies = this.GetBooleanValue(SettingsKeys.PruneDevDependencies);
             options.NpmRegistryUrl = this.GetStringValue(SettingsKeys.NpmRegistryUrl);
             options.EnableNodeMonorepoBuild = this.GetBooleanValue(SettingsKeys.EnableNodeMonorepoBuild);
+            options.YarnTimeOutConfig = this.GetStringValue(SettingsKeys.YarnTimeOutConfig);
         }
     }
 }
