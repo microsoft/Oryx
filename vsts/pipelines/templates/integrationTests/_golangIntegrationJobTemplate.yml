@@ -4,16 +4,26 @@ parameters:
     default: https://oryxsdksdev.blob.core.windows.net
   - name: version
     type: string
-  - name: buildImageTags
+  - name: testMappings
     type: object
     default:
-      - 'full-debian-buster'
-      - 'full-debian-bullseye'
+      - category: '1.17'
+        buildTag: 'full-debian-buster'
+      - category: '1.17'
+        buildTag: 'full-debian-bullseye'
+      - category: '1.18'
+        buildTag: 'full-debian-buster'
+      - category: '1.18'
+        buildTag: 'full-debian-bullseye'
+      - category: '1.19'
+        buildTag: 'full-debian-buster'
+      - category: '1.19'
+        buildTag: 'full-debian-bullseye'
   
 jobs:
-- ${{ each buildImageTag in parameters.buildImageTags }}:
+- ${{ each mapping in parameters.testMappings }}:
   - job:
-    displayName: 'Run Golang ${{ parameters.version }} Integration Tests using build image tag ${{ buildImageTag }}'
+    displayName: 'Run Golang ${{ mapping.category }} Integration Tests using build image tag ${{ mapping.buildTag }}'
     dependsOn:
     - Job_BuildImage_Full
     - Job_RuntimeImages
@@ -30,7 +40,7 @@ jobs:
             echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
             echo "##vso[task.setvariable variable=TestBuildImages;]false"
             echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=golang-${{ parameters.version }}&build-image=${{ buildImageTag }}"
+            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=golang-${{ mapping.category }}&build-image=${{ mapping.buildTag }}"
             echo "##vso[task.setvariable variable=TestIntegration;]true"
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"

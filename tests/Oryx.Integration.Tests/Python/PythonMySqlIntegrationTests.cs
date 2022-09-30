@@ -32,13 +32,13 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Bug #1410367")]
         [Trait("category", "python-3.7")]
-        [Trait("build-image", "github-actions-debian-stretch")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         [InlineData("mysql-pymysql-sample")]
         [InlineData("mysql-mysqlconnector-sample")]
         [InlineData("mysql-mysqlclient-sample")]
-        public async Task Python37App_MySqlDB_UsingPyMySql_UsingGitHubActionsStretchBuildImageAsync(string sampleAppName)
+        public async Task Python37App_MySqlDB_UsingPyMySql_UsingGitHubActionsBullseyeBuildImageAsync(string sampleAppName)
         {
-            await PythonApp_MySqlDB_UsingPyMySqlAsync("3.7", sampleAppName, ImageTestHelperConstants.GitHubActionsStretch);
+            await PythonApp_MySqlDB_UsingPyMySqlAsync("3.7", sampleAppName, ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Theory(Skip = "Bug #1410367")]

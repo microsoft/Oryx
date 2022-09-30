@@ -8,18 +8,19 @@ using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Oryx.Integration.Tests
+namespace Microsoft.Oryx.BuildImage.Tests
 {
-    [Trait("category", "db")]
     public class PulledBuildImageTypeTest
     {
         private readonly DockerCli _dockerCli;
         private readonly ITestOutputHelper _output;
+        private readonly ImageTestHelper _imageHelper;
 
         public PulledBuildImageTypeTest(ITestOutputHelper output)
         {
             _output = output;
             _dockerCli = new DockerCli();
+            _imageHelper = new ImageTestHelper(output);
         }
 
         private void RunAsserts(Action action, string message)
@@ -36,52 +37,52 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("build-image", "debian-stretch")]
+        [Trait("category", "latest")]
         public void PulledLatestStretchBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(Settings.WithRootAccessBuildImageName, "full");
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.LatestStretchTag), "full");
         }
 
         [Fact]
-        [Trait("build-image", "lts-versions-debian-stretch")]
+        [Trait("category", "ltsversions")]
         public void PulledLtsVersionsStretchBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(Settings.WithRootAccessLtsVersionsBuildImageName, "ltsversions");
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.LtsVersionsStretch), "ltsversions");
         }
 
         [Fact]
-        [Trait("build-image", "github-actions-debian-stretch")]
+        [Trait("category", "githubactions")]
         public void PulledGitHubActionsStretchBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(Settings.GitHubActionsBuildImageName, "githubactions");
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsStretch), "githubactions");
         }
 
         [Fact]
-        [Trait("build-image", "cli-debian-stretch")]
+        [Trait("category", "cli")]
         public void PulledCliStretchBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(Settings.CliBuildImageName, "cli");
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliStretchTag), "cli");
         }
 
         [Fact]
-        [Trait("build-image", "cli-debian-buster")]
+        [Trait("category", "cli-buster")]
         public void PulledCliBusterBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(Settings.CliBusterBuildImageName, "cli");
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), "cli");
         }
 
         [Fact]
-        [Trait("build-image", "azfunc-jamstack-debian-stretch")]
+        [Trait("category", "jamstack")]
         public void PulledJamstackStretchBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(Settings.JamStackBuildImageName, "jamstack");
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackStretch), "jamstack");
         }
 
         [Fact]
-        [Trait("build-image", "vso-ubuntu-focal")]
+        [Trait("category", "vso-focal")]
         public void PulledVsoFocalBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(Settings.VsoUbuntuBuildImageName, "vso-focal");
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.VsoFocal), "vso-focal");
         }
 
         private void PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(string buildImageName, string expectedBuildImageType)
@@ -104,6 +105,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 },
                 result.GetDebugInfo());
         }
-        
+
     }
 }

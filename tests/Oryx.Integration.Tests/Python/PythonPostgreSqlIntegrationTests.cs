@@ -21,18 +21,10 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Fact(Skip = "Bug #1410367")]
         [Trait("category", "python-3.7")]
-        [Trait("build-image", "github-actions-debian-stretch")]
-        public async Task Python37App_PostgreSqlDB_WithGitHubActionsStretchBuildImageAsync()
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task Python37App_PostgreSqlDB_WithGitHubActionsBullseyeBuildImageAsync()
         {
-            await PythonApp_PostgreSqlDBAsync("3.7", ImageTestHelperConstants.GitHubActionsStretch);
-        }
-
-        [Fact(Skip = "Bug #1410367")]
-        [Trait("category", "python-3.7")]
-        [Trait("build-image", "github-actions-debian-buster")]
-        public async Task Python37App_PostgreSqlDB_WithGitHubActionsBusterBuildImageAsync()
-        {
-            await PythonApp_PostgreSqlDBAsync("3.7", ImageTestHelperConstants.GitHubActionsBuster);
+            await PythonApp_PostgreSqlDBAsync("3.7", ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Fact(Skip = "Bug #1410367")]

@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-14-9")]
     public class NodeTestUsingZippedNodeModules : NodeEndToEndTestsBase
     {
         public NodeTestUsingZippedNodeModules(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -22,6 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("category", "node-14-stretch-2")]
         [Trait("build-image", "debian-stretch")]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
 
@@ -70,6 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("category", "node-14-stretch-2")]
         [Trait("build-image", "debian-stretch")]
         [InlineData("14")]
         public async Task Node_CreateReactAppSample_zippedNodeModulesAsync(string nodeVersion)
@@ -109,7 +110,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("build-image", "lts-versions-debian-stretch")]
+        [Trait("category", "node-14-stretch-2")]
+        [Trait("build-image", "debian-stretch")]
         public async Task BuildsAndRunsNodeApp_WhenPruneDevDependenciesIsTrue_AndNodeModulesAreCompressedAsync()
         {
             // Arrange
@@ -150,6 +152,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug#1071724")]
+        [Trait("category", "node-14-skipped")]
         [Trait("build-image", "debian-stretch")]
         [InlineData("true")]
         [InlineData("false")]

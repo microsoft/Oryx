@@ -4,27 +4,31 @@ parameters:
     default: https://oryxsdksdev.blob.core.windows.net
   - name: version
     type: string
-  - name: buildImageTags
+  - name: testMappings
     type: object
     default:
-      - 'debian-stretch'
-      - 'github-actions-debian-stretch'
-      - 'github-actions-debian-buster'
-      - 'github-actions-debian-bullseye'
-      - 'lts-versions-debian-stretch'
-      - 'cli-debian-stretch'
-      - 'cli-debian-buster'
+      - category: '14-stretch-1'
+        buildTag: 'debian-stretch'
+      - category: '14-stretch-2'
+        buildTag: 'debian-stretch'
+      - category: '14-stretch-3'
+        buildTag: 'debian-stretch'
+      - category: '14-stretch-4'
+        buildTag: 'debian-stretch'
+      - category: '14-gh-buster'
+        buildTag: 'github-actions-debian-buster'
+      - category: '16'
+        buildTag: 'debian-stretch'
+      - category: '18'
+        buildTag: 'github-actions-debian-bullseye'
 
 jobs:
-- ${{ each buildImageTag in parameters.buildImageTags }}:
+- ${{ each mapping in parameters.testMappings }}:
   - job:
-    displayName: 'Run Node ${{ parameters.version }} Integration Tests using build image tag ${{ buildImageTag }}'
+    displayName: 'Run Node ${{ mapping.category }} Integration Tests using build image tag ${{ mapping.buildTag }}'
     dependsOn:
     - Job_BuildImage_Latest
-    - Job_BuildImage_LtsVersions
     - Job_BuildImage_GithubActions
-    - Job_BuildImage_Cli
-    - Job_BuildImage_CliBuster
     - Job_RuntimeImages
     pool:
       name: AzurePipelines-EO
@@ -39,7 +43,7 @@ jobs:
             echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
             echo "##vso[task.setvariable variable=TestBuildImages;]false"
             echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=node-${{ parameters.version }}&build-image=${{ buildImageTag }}"
+            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=node-${{ mapping.category }}&build-image=${{ mapping.buildTag }}"
             echo "##vso[task.setvariable variable=TestIntegration;]true"
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"

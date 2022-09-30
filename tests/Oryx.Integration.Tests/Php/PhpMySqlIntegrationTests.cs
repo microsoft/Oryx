@@ -29,10 +29,10 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Fact]
         [Trait("category", "php-7.4")]
-        [Trait("build-image", "github-actions-debian-stretch")]
-        public async Task Php74App_UsingMysqli_WithGitHubActionsStretchBuildImageAsync()
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task Php74App_UsingMysqli_WithGitHubActionsBusterBuildImageAsync()
         {
-            await PhpApp_UsingMysqliAsync("7.4", ImageTestHelperConstants.GitHubActionsStretch);
+            await PhpApp_UsingMysqliAsync("7.4", ImageTestHelperConstants.GitHubActionsBuster);
         }
 
         private async Task PhpApp_UsingMysqliAsync(string phpVersion, string imageTag)

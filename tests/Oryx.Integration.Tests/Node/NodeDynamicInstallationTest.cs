@@ -23,8 +23,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14")]
-        [Trait("build-image", "lts-versions-debian-stretch")]
+        [Trait("category", "node-14-gh-buster")]
+        [Trait("build-image", "github-actions-debian-buster")]
         public async Task CanBuildAndRunNode14AppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync()
         {
             await CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(NodeVersions.Node14Version);
@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Fact]
         [Trait("category", "node-16")]
-        [Trait("build-image", "lts-versions-debian-stretch")]
+        [Trait("build-image", "github-actions-debian-buster")]
         public async Task CanBuildAndRunNode16AppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync()
         {
             await CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(NodeVersions.Node16Version);
@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetLtsVersionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster),
                 "/bin/sh",
                 new[]
                 {
@@ -86,8 +86,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14")]
-        [Trait("build-image", "lts-versions-debian-stretch")]
+        [Trait("category", "node-14-gh-buster")]
+        [Trait("build-image", "github-actions-debian-buster")]
         public async Task CanBuildAndRunNode14App_UsingScriptCommandAsync()
         {
             await CanBuildAndRunApp_UsingScriptCommandAsync(NodeVersions.Node14Version);
@@ -95,7 +95,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Fact]
         [Trait("category", "node-16")]
-        [Trait("build-image", "lts-versions-debian-stretch")]
+        [Trait("build-image", "github-actions-debian-buster")]
         public async Task CanBuildAndRunNode16App_UsingScriptCommandAsync()
         {
             await CanBuildAndRunApp_UsingScriptCommandAsync(NodeVersions.Node16Version);
@@ -127,7 +127,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetLtsVersionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster),
                 "/bin/sh",
                 new[]
                 {

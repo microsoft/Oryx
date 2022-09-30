@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.Integration.Tests
         
 
         [Fact]
-        [Trait("category", "node-14-5")]
+        [Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunNodeApp_UsingCustomManifestFileLocationAsync()
         {
@@ -80,7 +80,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-5")]
+        [Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunNodeApp_UsingZippedNodeModules_WithoutExtractingAsync()
         {
@@ -133,6 +133,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug#1071724")]
+        [Trait("category", "node-14-skipped")]
         [Trait("build-image", "debian-stretch")]
         [InlineData("true")]
         [InlineData("false")]
@@ -182,7 +183,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-5")]
+        [Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunNodeApp_OnSecondBuild_AfterZippingNodeModules_InFirstBuildAsync()
         {
@@ -234,7 +235,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-5")]
+        [Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunNodeApp_OnSecondBuild_AfterNotZippingNodeModules_InFirstBuildAsync()
         {
@@ -286,7 +287,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-5")]
+        [Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task NodeStartupScript_UsesPortEnvironmentVariableValueAsync()
         {
@@ -331,9 +332,9 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("ecosystem.config.js"), Trait("category", "node-14-5")]
-        [InlineData("ecosystem.config.yaml"), Trait("category", "node-14-5")]
-        [InlineData("ecosystem.config.yml"), Trait("category", "node-14-5")]
+        [InlineData("ecosystem.config.js"), Trait("category", "node-14-stretch-4")]
+        [InlineData("ecosystem.config.yaml"), Trait("category", "node-14-stretch-4")]
+        [InlineData("ecosystem.config.yml"), Trait("category", "node-14-stretch-4")]
         public async Task CanRunNodeApp_WithoutPm2_EvenThoughPm2SpecificFilesArePresentInRepoAsync(string pm2ConfigFileName)
         {
             // Arrange
@@ -380,7 +381,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-6")]
+        [Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task NodeStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresentAsync()
         {
@@ -424,7 +425,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-6")]
+        [Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunNodeApp_UsingYarnForBuild_AndExplicitOutputFileAsync()
         {
@@ -458,7 +459,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         // Run on Linux only as TypeScript seems to create symlinks and this does not work on Windows machines.
-        [EnableOnPlatform("LINUX"), Trait("category", "node-14-6")]
+        [EnableOnPlatform("LINUX"), Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task CanBuildNodeAppUsingScriptsNodeInPackageJsonAsync()
         {
@@ -501,7 +502,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-6")]
+        [Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task Node_Lab2AppServiceAppAsync()
         {
@@ -544,7 +545,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "bug: 1505700")]
-        // [Trait("category", "node-14-6")]
+        [Trait("category", "node-14-skipped")]
         [Trait("build-image", "debian-stretch")]
         public async Task Node_SoundCloudNgrxAppAsync()
         {
@@ -589,7 +590,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-6")]
+        [Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task Node_CreateReactAppSampleAsync()
         {
@@ -632,6 +633,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "get rid of single image, #1088920")]
+        [Trait("category", "node-14-skipped")]
         [Trait("build-image", "debian-stretch")]
         public async Task Node_CreateReactAppSample_SingleImageAsync()
         {
@@ -671,6 +673,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "get rid of single image, #1088920")]
+        [Trait("category", "node-14-skipped")]
         [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomScriptAsync()
         {
@@ -716,6 +719,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "get rid of single image, #1088920")]
+        [Trait("category", "node-14-skipped")]
         [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_NodeExpressApp_UsingSingleImage_AndCustomStartupCommandOnlyAsync()
         {
@@ -759,7 +763,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-6")]
+        [Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunNodeApp_UsingNestedOutputDirectoryAsync()
         {
@@ -801,7 +805,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "node-14-6")]
+        [Trait("category", "node-14-stretch-4")]
         [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunNodeApp_UsingIntermediateDir_AndNestedOutputDirectoryAsync()
         {

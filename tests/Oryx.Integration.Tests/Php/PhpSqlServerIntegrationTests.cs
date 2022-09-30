@@ -34,14 +34,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Fact]
         [Trait("category", "7.4")]
-        [Trait("build-image", "github-actions-debian-stretch")]
-        public async Task Php74App_UsingPdo_WithGitHubActionsStretchBuildImageAsync()
-        {
-            await PhpApp_UsingPdoAsync("7.4", ImageTestHelperConstants.GitHubActionsStretch);
-        }
-
-        [Fact]
-        [Trait("category", "7.4")]
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task Php74App_UsingPdo_WithGitHubActionsBusterBuildImageAsync()
         {
@@ -54,14 +46,6 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task Php80App_UsingPdo_WithLatestStretchBuildImageAsync()
         {
             await PhpApp_UsingPdoAsync("8.0", ImageTestHelperConstants.LatestStretchTag);
-        }
-
-        [Fact]
-        [Trait("category", "8.0")]
-        [Trait("build-image", "github-actions-debian-stretch")]
-        public async Task Php80App_UsingPdo_WithGitHubActionsStretchBuildImageAsync()
-        {
-            await PhpApp_UsingPdoAsync("8.0", ImageTestHelperConstants.GitHubActionsStretch);
         }
 
         [Fact]

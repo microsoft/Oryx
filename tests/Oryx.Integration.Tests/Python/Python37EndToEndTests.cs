@@ -358,7 +358,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("build-image", "github-actions-debian-stretch")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPythonApp_WhenAllOutputIsCompressedAsync()
         {
             // Arrange
@@ -387,7 +387,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", pythonVersion),
                 ContainerPort,

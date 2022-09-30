@@ -4,20 +4,34 @@ parameters:
     default: https://oryxsdksdev.blob.core.windows.net
   - name: version
     type: string
-  - name: buildImageTags
+  - name: testMappings
     type: object
     default:
-      - 'debian-stretch'
-      - 'github-actions-debian-stretch'
-      - 'lts-versions-debian-stretch'
+      - category: '3.0'
+        buildTag: 'debian-stretch'
+      - category: '3.1'
+        buildTag: 'debian-stretch'
+      - category: '3.1'
+        buildTag: 'github-actions-debian-stretch'
+      - category: '5.0'
+        buildTag: 'debian-stretch'
+      - category: '5.0'
+        buildTag: 'github-actions-debian-stretch'
+      - category: '6.0'
+        buildTag: 'debian-stretch'
+      - category: '6.0'
+        buildTag: 'github-actions-debian-stretch'
+      - category: 'dynamic'
+        buildTag: 'debian-stretch'
+      - category: 'dynamic'
+        buildTag: 'github-actions-debian-stretch'
   
 jobs:
-- ${{ each buildImageTag in parameters.buildImageTags }}:
+- ${{ each mapping in parameters.testMappings }}:
   - job:
-    displayName: 'Run .NET Core ${{ parameters.version }} Integration Tests using build image tag ${{ buildImageTag }}'
+    displayName: 'Run .NET Core ${{ mapping.category }} Integration Tests using build image tag ${{ mapping.buildTag }}'
     dependsOn:
     - Job_BuildImage_Latest
-    - Job_BuildImage_LtsVersions
     - Job_BuildImage_GithubActions
     - Job_RuntimeImages
     pool:
@@ -33,7 +47,7 @@ jobs:
             echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
             echo "##vso[task.setvariable variable=TestBuildImages;]false"
             echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=dotnetcore-${{ parameters.version }}&build-image=${{ buildImageTag }}"
+            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=dotnetcore-${{ mapping.category }}&build-image=${{ mapping.buildTag }}"
             echo "##vso[task.setvariable variable=TestIntegration;]true"
             echo "##vso[task.setvariable variable=PushBuildImages;]false"
             echo "##vso[task.setvariable variable=PushRuntimeImages;]false"

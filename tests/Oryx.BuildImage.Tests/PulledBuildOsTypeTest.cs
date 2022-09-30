@@ -8,18 +8,19 @@ using System;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Microsoft.Oryx.Integration.Tests
+namespace Microsoft.Oryx.BuildImage.Tests
 {
-    [Trait("category", "db")]
     public class PulledBuildOsTypeTest
     {
         private readonly DockerCli _dockerCli;
         private readonly ITestOutputHelper _output;
+        private readonly ImageTestHelper _imageHelper;
 
         public PulledBuildOsTypeTest(ITestOutputHelper output)
         {
             _output = output;
             _dockerCli = new DockerCli();
+            _imageHelper = new ImageTestHelper(output);
         }
 
         private void RunAsserts(Action action, string message)
@@ -36,87 +37,87 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("build-image", "debian-stretch")]
+        [Trait("category", "latest")]
         public void PulledLatestStretchBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.WithRootAccessBuildImageName, "DEBIAN|STRETCH");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.LatestStretchTag), "DEBIAN|STRETCH");
         }
 
         [Fact]
-        [Trait("build-image", "lts-versions-debian-stretch")]
+        [Trait("category", "ltsversions")]
         public void PulledLtsVersionsStretchBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.WithRootAccessLtsVersionsBuildImageName, "DEBIAN|STRETCH");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.LtsVersionsStretch), "DEBIAN|STRETCH");
         }
 
         [Fact]
-        [Trait("build-image", "lts-versions-debian-buster")]
+        [Trait("category", "ltsversions")]
         public void PulledLtsVersionsBusterBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.LtsVerionsBusterBuildImageName, "DEBIAN|BUSTER");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.LtsVersionsBuster), "DEBIAN|BUSTER");
         }
 
         [Fact]
-        [Trait("build-image", "github-actions-debian-stretch")]
+        [Trait("category", "githubactions")]
         public void PulledGitHubActionsStretchBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.GitHubActionsBuildImageName, "DEBIAN|STRETCH");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsStretch), "DEBIAN|STRETCH");
         }
 
         [Fact]
-        [Trait("build-image", "github-actions-debian-buster")]
+        [Trait("category", "githubactions")]
         public void PulledGitHubActionsBusterBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.GitHubActionsBusterBuildImageName, "DEBIAN|BUSTER");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsBuster), "DEBIAN|BUSTER");
         }
 
         [Fact]
-        [Trait("build-image", "github-actions-debian-bullseye")]
+        [Trait("category", "githubactions")]
         public void PulledGitHubActionsBullseyeBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.GitHubActionsBullseyeBuildImageName, "DEBIAN|BULLSEYE");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), "DEBIAN|BULLSEYE");
         }
 
         [Fact]
-        [Trait("build-image", "cli-debian-stretch")]
+        [Trait("category", "cli")]
         public void PulledCliStretchBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.CliBuildImageName, "DEBIAN|STRETCH");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliStretchTag), "DEBIAN|STRETCH");
         }
 
         [Fact]
-        [Trait("build-image", "cli-debian-buster")]
+        [Trait("category", "cli-buster")]
         public void PulledCliBusterBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.CliBusterBuildImageName, "DEBIAN|BUSTER");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), "DEBIAN|BUSTER");
         }
 
         [Fact]
-        [Trait("build-image", "azfunc-jamstack-debian-stretch")]
+        [Trait("category", "jamstack")]
         public void PulledJamstackStretchBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.JamStackBuildImageName, "DEBIAN|STRETCH");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackStretch), "DEBIAN|STRETCH");
         }
 
         [Fact]
-        [Trait("build-image", "azfunc-jamstack-debian-buster")]
+        [Trait("category", "jamstack")]
         public void PulledJamstackBusterBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.JamStackBusterBuildImageName, "DEBIAN|BUSTER");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBuster), "DEBIAN|BUSTER");
         }
 
         [Fact]
-        [Trait("build-image", "azfunc-jamstack-debian-bullseye")]
+        [Trait("category", "jamstack")]
         public void PulledJamstackBullseyeBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.JamStackBullseyeBuildImageName, "DEBIAN|BULLSEYE");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye), "DEBIAN|BULLSEYE");
         }
 
         [Fact]
-        [Trait("build-image", "vso-ubuntu-focal")]
+        [Trait("category", "vso-focal")]
         public void PulledVsoFocalBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(Settings.VsoUbuntuBuildImageName, "DEBIAN|FOCAL-SCM");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.VsoFocal), "DEBIAN|FOCAL-SCM");
         }
 
         private void PulledBuildImages_Contains_BUILDOS_TYPE_Info(string buildImageName, string expectedBuildOsType)

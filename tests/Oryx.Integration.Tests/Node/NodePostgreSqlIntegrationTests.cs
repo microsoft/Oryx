@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-14")]
+    [Trait("category", "node-14-skipped")]
     [Trait("db", "postgres")]
     public class NodePostgreSqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.PostgreSqlDbContainerFixture>
     {
@@ -28,10 +28,10 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "Bug #1410367")]
-        [Trait("build-image", "github-actions-debian-stretch")]
-        public async Task Node14App_PostgreSqlDB_WithGitHubActionsStretchBuildImageAsync()
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task Node14App_PostgreSqlDB_WithGitHubActionsBusterBuildImageAsync()
         {
-            await NodeApp_PostgreSqlDBAsync(ImageTestHelperConstants.GitHubActionsStretch);
+            await NodeApp_PostgreSqlDBAsync(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
         private async Task NodeApp_PostgreSqlDBAsync(string imageTag)

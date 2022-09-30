@@ -165,7 +165,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("build-image", "lts-versions-debian-stretch")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange
