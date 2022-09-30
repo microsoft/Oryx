@@ -152,5 +152,9 @@ path, removing `/home/site/wwwroot` from it.
 
 When using App Service with a Virtual Network or an App Service Environment, you will need to allow outbound access 
 from the webapp to `oryx-cdn.microsoft.io` on port `443`. `oryx-cdn.microsoft.io` hosts the Oryx packages corresponding
-to each SDK language and version. If this network dependency is blocked, then App Servicewill not be able to build your 
+to each SDK language and version. If this network dependency is blocked, then App Service will not be able to build your 
 application using Oryx.
+
+As the Oryx CDN relies on Azure Front Door, if you want to use a [service tag](https://learn.microsoft.com/azure/firewall/service-tags) to allow the outbound access to
+`oryx-cdn.microsoft.io`, you can also add a rule to allow connections to [`AzureFrontDoor.Frontend`](https://learn.microsoft.com/azure/virtual-network/service-tags-overview).
+Please note that this service tag will also allow outbound access to other resources available on Azure Front Door's CDN.
