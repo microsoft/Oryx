@@ -137,7 +137,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new List<DockerVolume> { appOutputDirVolume, volume },
-                Settings.LtsVersionsBuildImageName,
                 "/bin/bash",
                 new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
