@@ -20,7 +20,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [Trait("category", "python-38")]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("3.8")]
         public async Task CanBuildAndRunPythonApp_UsingCustomStartUpScriptAsync(string pythonVersion)
         {
@@ -71,7 +72,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [Trait("category", "python-38")]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("3.8")]
         public async Task CanBuildAndRunPythonApp_UsingCustomStartUpCommandAsync(string pythonVersion)
         {

@@ -27,7 +27,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "Bug 1410367")]
-        [Trait("category", "python-37")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPythonApp_UsingPreRunCommand_WithDynamicInstallAsync()
         {
             // Arrange
@@ -72,7 +73,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", "dynamic"),
                 ContainerPort,
@@ -86,7 +87,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "Bug 1410367") ]
-        [Trait("category", "python-37")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPythonApp_UsingPreRunScript_WithDynamicInstallAsync()
         {
             // Arrange
@@ -138,7 +140,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", "dynamic"),
                 ContainerPort,
@@ -152,7 +154,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact (Skip = "Bug 1410367")]
-        [Trait("category", "python-38")]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange
@@ -180,7 +183,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new DockerVolume[] { volume, appOutputDirVolume },
-                _imageHelper.GetLtsVersionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 "/bin/bash",
                 new[]
                 {

@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "dotnetcore-30")]
+    [Trait("category", "dotnetcore-3.0")]
     public class DotNetCoreRuntimeVersion30Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion30Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -23,6 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_NetCore30WebAppAsync()
         {
             // Arrange
@@ -68,6 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_NetCore30MvcAppAsync()
         {
             // Arrange
@@ -113,6 +115,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanRun_NetCore30App_PublishedOnMacMachine_ButRunOnNetCore30RuntimeContainerAsync()
         {
             // This test verifies that we fallback to using 'dotnet TodoAppFromMac.dll' since the executable
@@ -149,6 +152,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_NetCore30WebApp_UsingExplicitStartupCommandAsync()
         {
             // Arrange
@@ -197,6 +201,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_NetCore30WebApp_HavingExplicitAssemblyNameAsync()
         {
             // Arrange

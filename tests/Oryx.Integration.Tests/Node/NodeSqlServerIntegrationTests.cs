@@ -15,7 +15,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-14")]
     [Trait("db", "sqlserver")]
     public class NodeSqlServerIntegrationTests : PlatformEndToEndTestsBase
     {
@@ -26,10 +25,23 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
-        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
-        public async Task NodeApp_MicrosoftSqlServerDBAsync(string imageTag)
+        [Fact]
+        [Trait("category", "node-14-gh-buster")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task NodeApp_MicrosoftSqlServerDBAsync_With_GitHubActionsBusterTag()
+        {
+            await Run_NodeApp_MicrosoftSqlServerDBAsync(ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        [Fact]
+        [Trait("category", "node-14-stretch-3")]
+        [Trait("build-image", "debian-stretch")]
+        public async Task NodeApp_MicrosoftSqlServerDBAsync_With_LatestStretchTag()
+        {
+            await Run_NodeApp_MicrosoftSqlServerDBAsync(ImageTestHelperConstants.LatestStretchTag);
+        }
+
+        private async Task Run_NodeApp_MicrosoftSqlServerDBAsync(string imageTag)
         {
             // Arrange
             var appName = "node-mssql";

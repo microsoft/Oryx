@@ -22,59 +22,94 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-37")]
-        public async Task RunPython37IntegrationTests()
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython37AppAsync()
         {
             // Temporarily skip - Bug #1266781
-            // await CanBuildAndRunPythonAppAsync("3.7");
+            // await CanBuildAndRunPythonAppAsync("3.7", ImageTestHelperConstants.GitHubActionsBullseye);
+        }
 
+        [Fact]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython38AppAsync()
+        {
+            // Temporarily skip - Bug #1266781
+            // await CanBuildAndRunPythonAppAsync("3.8", ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact]
+        [Trait("category", "python-3.9")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task CanBuildAndRunPython39AppAsync()
+        {
+            // Temporarily skip - Bug #1266781
+            // await CanBuildAndRunPythonAppAsync("3.9", ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        [Fact]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython37App_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
             // Temporarily skip - Bug #1410367
-            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python37Version");
-
-            await CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitchAsync();
-
-            // Temporarily skip - Bug #1266781
-            // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(true);
-            // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(false);
+            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python37Version", ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Fact]
-        [Trait("category", "python-38")]
-        public async Task RunPython38IntegrationTests()
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython38App_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync()
         {
-            // Temporarily skip - Bug #1266781
-            // await CanBuildAndRunPythonAppAsync("3.8");
-
             // Temporarily skip - Bug #1410367
-            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python38Version");
+            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python38Version", ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Fact]
-        [Trait("category", "python-39")]
-        public async Task RunPython39IntegrationTests()
+        [Trait("category", "python-3.9")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task CanBuildAndRunPython39App_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
+            // Temporarily skip - Bug #1410367
+            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python39Version", ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        [Fact]
+        [Trait("category", "python-3.10")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython310App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync("3.10", ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact]
+        [Trait("category", "python-3.11")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython311App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync("3.11", ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython37App_UsingScriptCommandAndSetEnvSwitchAsync()
+        {
+            await CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitchAsync(ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython37App_WhenUsingPackageDirSwitchAsync()
         {
             // Temporarily skip - Bug #1266781
-            // await CanBuildAndRunPythonAppAsync("3.9");
-
-            // Temporarily skip - Bug #1410367
-            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python39Version");
+            // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(true, ImageTestHelperConstants.GitHubActionsBullseye);
+            // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(false, ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
-        [Fact]
-        [Trait("category", "python-310")]
-        public async Task RunPython310IntegrationTests()
-        {
-            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync("3.10");
-        }
-
-        [Fact]
-        [Trait("category", "python-311")]
-        public async Task RunPython311IntegrationTests()
-        {
-            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync("3.11");
-        }
-
-        private async Task CanBuildAndRunPythonAppAsync(string pythonVersion)
+        private async Task CanBuildAndRunPythonAppAsync(string pythonVersion, string debianFlavor = null)
         {
             // Arrange
             var appName = "flask-app";
@@ -100,7 +135,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetLtsVersionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(debianFlavor),
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", pythonVersion),
                 ContainerPort,
@@ -114,7 +149,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         private async Task CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
-            string pythonVersion)
+            string pythonVersion,
+            string debianFlavor = null)
         {
             // Arrange
             var appName = "flask-app";
@@ -139,7 +175,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(debianFlavor),
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", "dynamic"),
                 ContainerPort,
@@ -153,7 +189,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         private async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
-            string pythonVersion)
+            string pythonVersion,
+            string debianFlavor = null)
         {
             // Arrange
             var appName = "django-app";
@@ -178,7 +215,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
+                _imageHelper.GetGitHubActionsBuildImage(debianFlavor),
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", pythonVersion),
                 ContainerPort,
@@ -200,7 +237,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        private async Task CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitchAsync()
+        private async Task CanBuildAndRunPythonApp_UsingScriptCommandAndSetEnvSwitchAsync(string debianFlavor = null)
         {
             // Arrange
             var pythonVersion = "3.7";
@@ -227,7 +264,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetLtsVersionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(debianFlavor),
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", "dynamic"),
                 ContainerPort,
@@ -249,7 +286,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        private async Task CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(bool compressDestinationDir)
+        private async Task CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(bool compressDestinationDir, string debianFlavor = null)
         {
             // Arrange
             var pythonVersion = "3.7";
@@ -278,7 +315,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(debianFlavor),
                 "/bin/bash", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("python", "3.7"),
                 ContainerPort,

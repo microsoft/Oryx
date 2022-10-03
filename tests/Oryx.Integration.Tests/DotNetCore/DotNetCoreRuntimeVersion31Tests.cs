@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "dotnetcore-31")]
+    [Trait("category", "dotnetcore-3.1")]
     public class DotNetCoreRuntimeVersion31Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion31Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -23,6 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_NetCore31WebAppAsync()
         {
             // Arrange
@@ -68,6 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunApp_FromNestedOutputDirectoryAsync()
         {
             // Arrange
@@ -115,6 +117,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanRunAppWhichUsesGDILibraryAsync()
         {
             // Arrange
@@ -162,6 +165,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange

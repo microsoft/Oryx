@@ -22,10 +22,23 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory]
-        [InlineData(NodeVersions.Node14Version), Trait("category", "node-14")]
-        [InlineData(NodeVersions.Node16Version), Trait("category", "node-16")]
-        public async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(string nodeVersion)
+        [Fact]
+        [Trait("category", "node-14-gh-buster")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task CanBuildAndRunNode14AppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync()
+        {
+            await CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(NodeVersions.Node14Version);
+        }
+
+        [Fact]
+        [Trait("category", "node-16")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task CanBuildAndRunNode16AppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync()
+        {
+            await CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(NodeVersions.Node16Version);
+        }
+
+        private async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(string nodeVersion)
         {
             // Arrange
             var appName = "webfrontend";
@@ -50,7 +63,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetLtsVersionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster),
                 "/bin/sh",
                 new[]
                 {
@@ -72,10 +85,23 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
-        [InlineData(NodeVersions.Node14Version), Trait("category", "node-14")]
-        [InlineData(NodeVersions.Node16Version), Trait("category", "node-16")]
-        public async Task CanBuildAndRunApp_UsingScriptCommandAsync(string nodeVersion)
+        [Fact]
+        [Trait("category", "node-14-gh-buster")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task CanBuildAndRunNode14App_UsingScriptCommandAsync()
+        {
+            await CanBuildAndRunApp_UsingScriptCommandAsync(NodeVersions.Node14Version);
+        }
+
+        [Fact]
+        [Trait("category", "node-16")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task CanBuildAndRunNode16App_UsingScriptCommandAsync()
+        {
+            await CanBuildAndRunApp_UsingScriptCommandAsync(NodeVersions.Node16Version);
+        }
+
+        private async Task CanBuildAndRunApp_UsingScriptCommandAsync(string nodeVersion)
         {
             // Arrange
             var appName = "webfrontend";
@@ -101,7 +127,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetLtsVersionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster),
                 "/bin/sh",
                 new[]
                 {
@@ -125,6 +151,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData(NodeVersions.Node18Version), Trait("category", "node-18")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunApp_UsingScriptCommand_WithBullseyeBasedImages(string nodeVersion)
         {
             // Arrange
@@ -151,7 +178,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 "/bin/sh",
                 new[]
                 {

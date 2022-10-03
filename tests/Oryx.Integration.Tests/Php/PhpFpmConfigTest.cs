@@ -26,6 +26,7 @@ namespace Microsoft.Oryx.Integration.Tests
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
         [Theory, Trait("category", "php-8.0")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("10", "10", "7", "7", "8", "8", "6", "6")]
         [InlineData("", "5", "", "2", "", "3", "", "1")] // defaults
         [InlineData("false", null, "5", null, "5", null, "5", null, "pm.max_children must be a positive value")]
@@ -49,6 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory, Trait("category", "php-7.4")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("10", "10", "7", "7", "8", "8", "6", "6")]
         [InlineData("", "5", "", "2", "", "3", "", "1")] // defaults
         [InlineData("false", null, "5", null, "5", null, "5", null, "pm.max_children must be a positive value")]

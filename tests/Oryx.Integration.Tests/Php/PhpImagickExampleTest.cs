@@ -23,7 +23,8 @@ namespace Microsoft.Oryx.Integration.Tests
         // Unique category traits are needed to run each
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
-        [Fact, Trait("category", "php-74")]
+        [Fact, Trait("category", "php-7.4")]
+        [Trait("build-image", "debian-stretch")]
         public async Task PipelineTestInvocationsPhp74Async()
         {
             string phpVersion74 = "7.4";
@@ -32,7 +33,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 PhpFpmImagickExampleAsync(phpVersion74));
         }
 
-        [Fact, Trait("category", "php-80")]
+        [Fact, Trait("category", "php-8.0")]
+        [Trait("build-image", "debian-stretch")]
         public async Task PipelineTestInvocationsPhp80Async()
         {
             string phpVersion80 = "8.0";
@@ -41,7 +43,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 PhpFpmImagickExampleAsync(phpVersion80));
         }
 
-        [Fact, Trait("category", "php-81")]
+        [Fact, Trait("category", "php-8.1")]
+        [Trait("build-image", "debian-stretch")]
         public async Task PipelineTestInvocationsPhp81Async()
         {
             string phpVersion81 = "8.1";
@@ -50,11 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 PhpFpmImagickExampleAsync(phpVersion81));
         }
 
-        [Theory]
-        [InlineData("7.4")]
-        [InlineData("8.0")]
-        [InlineData("8.1")]
-        public async Task ImagickExampleAsync(string phpVersion)
+        private async Task ImagickExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "imagick-example";
@@ -86,11 +85,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
-        [InlineData("7.4")]
-        [InlineData("8.0")]
-        [InlineData("8.1")]
-        public async Task PhpFpmImagickExampleAsync(string phpVersion)
+        private async Task PhpFpmImagickExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "imagick-example";

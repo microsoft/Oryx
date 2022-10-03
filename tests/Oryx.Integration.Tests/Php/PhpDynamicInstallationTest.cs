@@ -23,29 +23,28 @@ namespace Microsoft.Oryx.Integration.Tests
         // Unique category traits are needed to run each
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
-        [Fact, Trait("category", "php-81")]
+        [Fact, Trait("category", "php-8.1")]
+        [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp81Async()
         {   
             await CanBuildAndRunAppAsync("8.1");
         }
 
-        [Fact, Trait("category", "php-80")]
+        [Fact, Trait("category", "php-8.0")]
+        [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp80Async()
         {   
             await CanBuildAndRunAppAsync("8.0");
         }
 
-        [Fact, Trait("category", "php-74")]
+        [Fact, Trait("category", "php-7.4")]
+        [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp74Async()
         {
             await CanBuildAndRunAppAsync("7.4");
         }
 
-        [Theory]
-        [InlineData("8.1")]
-        [InlineData("8.0")]
-        [InlineData("7.4")]
-        public async Task CanBuildAndRunAppAsync(string phpVersion)
+        private async Task CanBuildAndRunAppAsync(string phpVersion)
         {
             // Arrange
             var exifImageTypePng = "3";
@@ -71,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster),
                 "/bin/sh", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("php", phpVersion),
                 ContainerPort,
