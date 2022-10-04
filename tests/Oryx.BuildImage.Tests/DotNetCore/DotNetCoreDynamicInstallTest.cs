@@ -68,13 +68,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
         [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0.0-preview.7.22375.6")]
+        [InlineData(NetCore7PreviewMvcApp, "7.0.0-rc.1.22426.10")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuster(
             string appName,
             string runtimeVersion)
         {
             BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage("cli-buster"));
+                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
         }
 
         private void BuildsApplication_ByDynamicallyInstallingSDKs(
@@ -507,7 +507,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage("vso-focal"),
+                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -569,8 +569,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     NetCore6PreviewWebApp,
                     imageHelper.GetGitHubActionsBuildImage());
                 data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp70,
-                    DotNetCoreSdkVersions.DotNet70SdkVersion,
+                    FinalStretchVersions.FinalStretchDotNetCoreApp70RunTimeVersion,
+                    FinalStretchVersions.FinalStretchDotNet70SdkVersion,
                     NetCore7PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage());
 
@@ -579,44 +579,44 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     DotNetCoreRunTimeVersions.NetCoreApp21,
                     DotNetCoreSdkVersions.DotNetCore21SdkVersion,
                     NetCoreApp21WebApp,
-                    imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     DotNetCoreSdkVersions.DotNetCore31SdkVersion,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp50,
                     DotNetCoreSdkVersions.DotNet50SdkVersion,
                     NetCoreApp50MvcApp,
-                    imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp60,
                     DotNetCoreSdkVersions.DotNet60SdkVersion,
                     NetCore6PreviewWebApp,
-                    imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp70,
                     DotNetCoreSdkVersions.DotNet70SdkVersion,
                     NetCore7PreviewMvcApp,
-                    imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
 
                 //bullseye
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     DotNetCoreSdkVersions.DotNetCore31SdkVersion,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp60,
                     DotNetCoreSdkVersions.DotNet60SdkVersion,
                     NetCore6PreviewWebApp,
-                    imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp70,
                     DotNetCoreSdkVersions.DotNet70SdkVersion,
                     NetCore7PreviewMvcApp,
-                    imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
                 
                 return data;
             }
@@ -675,15 +675,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageHelper = new ImageTestHelper();
-                data.Add(DotNetCoreRunTimeVersions.NetCoreApp11, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
-                data.Add(DotNetCoreRunTimeVersions.NetCoreApp22, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
-                data.Add(DotNetCoreRunTimeVersions.NetCoreApp30, imageHelper.GetGitHubActionsBuildImage("github-actions-buster"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp11, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp22, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp30, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
 
-                data.Add(DotNetCoreRunTimeVersions.NetCoreApp11, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
-                data.Add(DotNetCoreRunTimeVersions.NetCoreApp21, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
-                data.Add(DotNetCoreRunTimeVersions.NetCoreApp22, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
-                data.Add(DotNetCoreRunTimeVersions.NetCoreApp30, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
-                data.Add(DotNetCoreRunTimeVersions.NetCoreApp50, imageHelper.GetGitHubActionsBuildImage("github-actions-bullseye"));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp11, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp21, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp22, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp30, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
+                data.Add(DotNetCoreRunTimeVersions.NetCoreApp50, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
                 return data;
             }
         }

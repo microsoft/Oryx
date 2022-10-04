@@ -22,9 +22,10 @@ PHPIZE_DEPS="autoconf dpkg-dev file g++ gcc libc-dev make pkg-config re2c"
 # libcurl3 and libcurl4 both needs to be supported in ubuntu focal for php
 # https://github.com/xapienz/curl-debian-scripts
 add-apt-repository ppa:xapienz/curl34 -y \
-&& apt-get update \
+apt-get update \
 && apt-get upgrade -y \
 && apt-get install -y \
+        sed \
         $PHPIZE_DEPS \
         ca-certificates \
         curl \

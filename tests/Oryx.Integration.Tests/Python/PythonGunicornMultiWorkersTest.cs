@@ -11,7 +11,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     public class PythonGunicornMultiWorkersTest : PythonEndToEndTestsBase
     {
         public PythonGunicornMultiWorkersTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -20,6 +19,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "work item #1122020")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunPythonApp_UsingGunicornMultipleWorkersAsync()
         {
             // Arrange

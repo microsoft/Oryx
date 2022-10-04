@@ -54,14 +54,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliImage("cli-buster"));
-                data.Add("14.19.1", imageTestHelper.GetCliImage("cli-buster"));
-                data.Add("16.14.2", imageTestHelper.GetCliImage("cli-buster"));
+                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
                 return data;
             }
         }
 
         [Theory, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-stretch")]
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationGithubActions(string version, string buildImageName)
         {
@@ -69,6 +70,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli")]
+        [Trait("build-image", "cli-debian-stretch")]
         [MemberData(nameof(ImageNameDataCli))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCli(string version, string buildImageName)
         {
@@ -76,6 +78,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli-buster")]
+        [Trait("build-image", "cli-debian-buster")]
         [MemberData(nameof(ImageNameDataCliBuster))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBuster(string version, string buildImageName)
         {
@@ -117,6 +120,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-stretch")]
         [InlineData("14.19.1", "14.19.1")]
         [InlineData("16", NodeVersions.Node16Version)]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation_DefaultEnvVar(string defaultVersion, string expectedVersion)
@@ -153,6 +157,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "ltsversions")]
+        [Trait("build-image", "lts-versions-debian-stretch")]
         public void DynamicallyInstallsNodeRuntimeAndBuilds()
         {
             // Arrange
@@ -190,6 +195,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
@@ -234,6 +240,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "latest")]
+        [Trait("build-image", "debian-stretch")]
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange
@@ -272,6 +279,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public void BuildNodeApp_AfterInstallingStretchSpecificSdk()
         {
             // Arrange
@@ -293,7 +301,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage("stretch"),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -308,10 +316,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "githubactions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("github-actions-bullseye")]
-        public void NodeFails_ToInstallStretchSdk_OnNonStretchImage(string imageTag)
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public void NodeFails_ToInstallStretchSdk_OnBusterImage()
+        {
+            Run_NodeFails_ToInstallStretchSdk_OnNonStretchImage(ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public void NodeFails_ToInstallStretchSdk_OnBullseyeImage()
+        {
+            Run_NodeFails_ToInstallStretchSdk_OnNonStretchImage(ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        private void Run_NodeFails_ToInstallStretchSdk_OnNonStretchImage(string imageTag)
         {
             // Arrange
             var version = "9.4.0"; // version only exists for stretch images
@@ -344,6 +363,43 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.False(result.IsSuccess);
                     Assert.Contains($"Error: Platform '{NodeConstants.PlatformName}' version '{version}' is unsupported.", result.StdErr);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        [InlineData("18.0.0", ImageTestHelperConstants.GitHubActionsBullseye)]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationOnBullseyeImage(string version, string buildImageName)
+        {
+            // Arrange
+            var devPackageName = "nodemon";
+            var prodPackageName = "express";
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version} --debug")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{prodPackageName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetBuildImage(buildImageName),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
                 },
                 result.GetDebugInfo());
         }

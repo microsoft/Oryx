@@ -265,6 +265,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
+        public void GeneratedBuildSnippet_WillSetupYarnTimeOutConfig()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null, YarnTimeOutConfig = "60000" },
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("yarn config set network-timeout 60000 -g", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
         public void GeneratedBuildSnippet_WillNotBuildMonorepo_IfNodeMonorepoOptionNotEnabled()
         {
             // Arrange

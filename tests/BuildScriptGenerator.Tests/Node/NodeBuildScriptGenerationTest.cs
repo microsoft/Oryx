@@ -379,6 +379,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         }
 
         [Fact]
+        public void GeneratedScript_RunsYarnTimeoutConfigCommand_WhenYarnTimeoutConfigExist()
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions { YarnTimeOutConfig = "60000" });
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Contains($"Found yarn network timeout config.",
+                snippet.BashBuildScriptSnippet);
+            Assert.Contains($"Setting it up with command: yarn config set network-timeout 60000 -g",
+                snippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
         public void GeneratedScript_UsesYarn1InstallAndRunsNpmBuild_IfYarnRCFileIsNotPresent()
         {
             // Arrange

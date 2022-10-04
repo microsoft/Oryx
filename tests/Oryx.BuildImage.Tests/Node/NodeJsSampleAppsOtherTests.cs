@@ -53,14 +53,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationCli()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage("cli"));
+            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage());
         }
 
         [Fact, Trait("category", "cli-buster")]
         public void PipelineTestInvocationCliBuster()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage("cli-buster"));
+            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
         }
 
         private void GeneratesScript_AndBuilds(string buildImageName)

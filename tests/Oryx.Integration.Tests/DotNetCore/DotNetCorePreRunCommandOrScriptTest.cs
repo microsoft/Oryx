@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "dotnetcore-31")]
+    [Trait("category", "dotnetcore-3.1")]
     public class DotNetCorePreRunCommandOrScriptTest : DotNetCoreEndToEndTestsBase
     {
         private readonly string RunScriptPath = DefaultStartupFilePath;
@@ -26,6 +26,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRun_NetCore31MvcApp_UsingPreRunCommand_WithDynamicInstallAsync()
         {
             // Arrange
@@ -93,6 +94,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRun_NetCore31MvcApp_UsingPreRunScript_WithDynamicInstallAsync()
         {
             // Arrange

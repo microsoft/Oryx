@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -25,38 +24,39 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        // Unique category traits are needed to run each
-        // platform-version in it's own pipeline agent. This is
-        // because our agents currently a space limit of 10GB.
-
-        [Fact, Trait("category", "php-80")]
-        public async Task PipelineTestInvocationsPhp80Async()
-        {   
-            string phpVersion80 = "8.0";
-            await Task.WhenAll(
-                PhpApp_UsingPdoAsync(phpVersion80, "github-actions"),
-                PhpApp_UsingPdoAsync(phpVersion80, "github-actions-buster"),
-                PhpApp_UsingPdoAsync(phpVersion80, "latest"));
-        }
-
-        [Fact, Trait("category", "php-74")]
-        public async Task PipelineTestInvocationsPhp74Async()
+        [Fact]
+        [Trait("category", "7.4")]
+        [Trait("build-image", "debian-stretch")]
+        public async Task Php74App_UsingPdo_WithLatestStretchBuildImageAsync()
         {
-            string phpVersion74 = "7.4";
-            await Task.WhenAll(
-                PhpApp_UsingPdoAsync(phpVersion74, "github-actions"),
-                PhpApp_UsingPdoAsync(phpVersion74, "github-actions-buster"),
-                PhpApp_UsingPdoAsync(phpVersion74, "latest"));
+            await PhpApp_UsingPdoAsync("7.4", ImageTestHelperConstants.LatestStretchTag);
         }
 
-        [Theory]
-        [InlineData("7.4", "github-actions")]
-        [InlineData("7.4", "github-actions-buster")]
-        [InlineData("7.4", "latest")]
-        [InlineData("8.0", "github-actions")]
-        [InlineData("8.0", "github-actions-buster")]
-        [InlineData("8.0", "latest")]
-        public async Task PhpApp_UsingPdoAsync(string phpVersion, string imageTag)
+        [Fact]
+        [Trait("category", "7.4")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task Php74App_UsingPdo_WithGitHubActionsBusterBuildImageAsync()
+        {
+            await PhpApp_UsingPdoAsync("7.4", ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        [Fact]
+        [Trait("category", "8.0")]
+        [Trait("build-image", "debian-stretch")]
+        public async Task Php80App_UsingPdo_WithLatestStretchBuildImageAsync()
+        {
+            await PhpApp_UsingPdoAsync("8.0", ImageTestHelperConstants.LatestStretchTag);
+        }
+
+        [Fact]
+        [Trait("category", "8.0")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task Php80App_UsingPdo_WithGitHubActionsBusterBuildImageAsync()
+        {
+            await PhpApp_UsingPdoAsync("8.0", ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        private async Task PhpApp_UsingPdoAsync(string phpVersion, string imageTag)
         {
             // Arrange
             var appName = "sqlsrv-example";

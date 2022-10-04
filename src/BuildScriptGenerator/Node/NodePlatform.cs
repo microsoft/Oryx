@@ -380,6 +380,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 CompressNodeModulesCommand = compressNodeModulesCommand,
                 CompressedNodeModulesFileName = compressedNodeModulesFileName,
                 ConfigureYarnCache = configureYarnCache,
+                YarnTimeOutConfig = this.nodeScriptGeneratorOptions.YarnTimeOutConfig,
                 PruneDevDependencies = pruneDevDependencies,
                 AppInsightsInjectCommand = appInsightsInjectCommand,
                 AppInsightsPackageName = NodeConstants.NodeAppInsightsPackageName,

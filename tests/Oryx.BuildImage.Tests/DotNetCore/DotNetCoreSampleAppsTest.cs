@@ -32,41 +32,41 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLatest()
         {
             Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.BuildImageName);
-            GDIPlusLibrary_IsPresentInTheImage("latest");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.LatestStretchTag);
         }
 
         [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
             Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.LtsVersionsBuildImageName);
-            GDIPlusLibrary_IsPresentInTheImage("lts-versions");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.LtsVersionsStretch);
         }
 
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
-            GDIPlusLibrary_IsPresentInTheImage("vso-focal");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.VsoFocal);
         }
 
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocation()
         {
-            GDIPlusLibrary_IsPresentInTheImage("github-actions");
-            GDIPlusLibrary_IsPresentInTheImage("github-actions-buster");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsStretch);
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
         [Fact, Trait("category", "cli")]
         public void PipelineTestInvocationCli()
         {
-            GDIPlusLibrary_IsPresentInTheImage("cli");
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliRepository);
             Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage());
         }
 
         [Fact, Trait("category", "cli-buster")]
         public void PipelineTestInvocationCliBuster()
         {
-            GDIPlusLibrary_IsPresentInTheImage("cli-buster");
-            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage("cli-buster"));
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliBusterRepository);
+            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
         }
 
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
@@ -1029,11 +1029,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("github-actions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("lts-versions")]
-        [InlineData("vso-focal")]
-        [InlineData("latest")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
+        [InlineData(ImageTestHelperConstants.VsoFocal)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public void GDIPlusLibrary_IsPresentInTheImage(string tagName)
         {
             // Arrange

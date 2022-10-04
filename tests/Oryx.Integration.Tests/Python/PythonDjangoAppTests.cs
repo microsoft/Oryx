@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     public class PythonDjangoAppTests : PythonEndToEndTestsBase
     {
         public PythonDjangoAppTests(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -22,6 +21,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_MultiPlatformApp_HavingReactAndDjangoAsync()
         {
             // Arrange

@@ -115,6 +115,9 @@ function createImageNameWithReleaseTag() {
 
 		# Write image list to artifacts file
 		echo "$uniqueImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	else
+		# Write non-ci image to artifacts file as is, for local testing
+		echo "$imageNameToBeTaggedUniquely" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 	fi
 }
 
@@ -186,16 +189,13 @@ function buildGitHubActionsImage() {
 	local devImageTag=github-actions
 	local builtImageName="$ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME"
 
-	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+	if [ -z "$debianFlavor" ] ; then
 		debianFlavor="stretch"
-		echo "Debian Flavor is: "$debianFlavor
-	elif [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "bullseye" ]; then
-		debianFlavor=$debianFlavor
-		devImageTag=$devImageTag-$debianFlavor
-		echo "dev image tag: "$devImageTag
-		builtImageName=$builtImageName-$debianFlavor
-		echo "built image name: "$builtImageName
 	fi
+	devImageTag=$devImageTag-debian-$debianFlavor
+	echo "dev image tag: "$devImageTag
+	builtImageName=$builtImageName-debian-$debianFlavor
+	echo "built image name: "$builtImageName
 
 	buildBuildScriptGeneratorImage
 	
@@ -234,17 +234,14 @@ function buildJamStackImage() {
 
 	buildGitHubActionsImage $debianFlavor
 
-	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+	if [ -z "$debianFlavor" ]; then
 		debianFlavor="stretch"
-		parentImageTag=actions
-	elif  [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "bullseye" ]; then
-		debianFlavor=$debianFlavor
-		parentImageTag=actions-$debianFlavor
-		devImageTag=$devImageTag-$debianFlavor
-		echo "dev image tag: "$devImageTag
-		builtImageName=$builtImageName-$debianFlavor
-		echo "built image name: "$builtImageName
 	fi
+	parentImageTag=actions-debian-$debianFlavor
+	devImageTag=$devImageTag-debian-$debianFlavor
+	echo "dev image tag: "$devImageTag
+	builtImageName=$builtImageName-debian-$debianFlavor
+	echo "built image name: "$builtImageName
 
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
@@ -275,17 +272,17 @@ function buildLtsVersionsImage() {
 	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:lts-versions"
 
 	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
-		echo "dev image tag: "$devImageTag
-		echo "built image name: "$builtImageName
+		debianFlavor="stretch"
 	else
-		devImageTag=$devImageTag-$debianFlavor
-		builtImageName=$builtImageName-$debianFlavor
-		ltsBuildImageDockerFile="$BUILD_IMAGES_LTS_VERSIONS_BUSTER_DOCKERFILE"
-		testImageName=$testImageName-buster
-		echo "dev image tag: "$devImageTag
-		echo "built image name: "$builtImageName
-		echo "test image name: "$testImageName
+		testImageFile=$ORYXTESTS_LTS_VERSIONS_BUSTER_BUILDIMAGE_DOCKERFILE
+		ltsBuildImageDockerFile=$BUILD_IMAGES_LTS_VERSIONS_BUSTER_DOCKERFILE
 	fi
+	testImageName=$testImageName-debian-$debianFlavor
+	devImageTag=$devImageTag-debian-$debianFlavor
+	builtImageName=$builtImageName-debian-$debianFlavor
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
+	echo "test image name: "$testImageName
 
 	buildBuildScriptGeneratorImage
 	buildGitHubRunnersBaseImage $debianFlavor
@@ -321,11 +318,15 @@ function buildLtsVersionsImage() {
 }
 
 function buildLatestImages() {
-	buildLtsVersionsImage
+	local debianFlavor=$1
+	if [ -z "$debianFlavor" ] ; then
+		debianFlavor="stretch"
+	fi
+	buildLtsVersionsImage $debianFlavor
 
 	echo
 	echo "-------------Creating latest build images-------------------"
-	local builtImageName="$ACR_BUILD_IMAGES_REPO"
+	local builtImageName="$ACR_BUILD_IMAGES_REPO:debian-$debianFlavor"
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
@@ -335,35 +336,56 @@ function buildLatestImages() {
 
 	createImageNameWithReleaseTag $builtImageName
 
+	# retag latest image with no tag so that it by default can be pulled 4 separate ways:
+	# - build
+	# - build:latest
+	# - build:<releaseTag>
+	# - build:<osType>-<osVersion>-<releaseTag>
+	docker tag $builtImageName "$ACR_BUILD_IMAGES_REPO"
+	createImageNameWithReleaseTag $ACR_BUILD_IMAGES_REPO
+
 	echo
 	echo "$builtImageName image history"
 	docker history $builtImageName
 	echo
 
-	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:debian-$debianFlavor"
 
 	echo
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
-	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO"
+	local testImageName="$ORYXTESTS_BUILDIMAGE_REPO:debian-$debianFlavor"
 	docker build -t $testImageName \
 		-f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
 		.
 }
 
-function buildVsoFocalImage() {
+function buildVsoImage() {
 	buildBuildScriptGeneratorImage
 	buildGitHubRunnersUbuntuBaseImage
+	local debianFlavor=$1
+	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "focal" ]; then
+		BUILD_IMAGE=$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE
+		local builtImageName="$ACR_BUILD_VSO_FOCAL_IMAGE_NAME"
+		local tagName="vso-ubuntu-focal"
+	elif  [ "$debianFlavor" == "bullseye" ]; then
+		BUILD_IMAGE=$BUILD_IMAGES_VSO_BULLSEYE_DOCKERFILE
+		local builtImageName="$ACR_BUILD_VSO_BULLSEYE_IMAGE_NAME"
+		local tagName="vso-debian-bullseye"
+	else
+		echo "Unsupported VSO image Debian flavor."
+		exit 1
+	fi
 
-	BuildAndTagStage "$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE" intermediate
+	BuildAndTagStage "$BUILD_IMAGE" intermediate
 	echo
-	echo "-------------Creating VSO focal build image-------------------"
-	local builtImageName="$ACR_BUILD_VSO_FOCAL_IMAGE_NAME"
+	echo "-------------Creating VSO $debianFlavor build image-------------------"
+	
 	docker build -t $builtImageName \
 		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$PROD_SDK_CDN_STORAGE_BASE_URL \
 		--label com.microsoft.oryx="$labelContent" \
-		-f "$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE" \
+		-f "$BUILD_IMAGE" \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -372,7 +394,7 @@ function buildVsoFocalImage() {
 	echo "$builtImageName image history"
 	docker history $builtImageName
 
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:vso-focal"
+	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:$tagName"
 
 	echo
 	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
@@ -382,18 +404,19 @@ function buildCliImage() {
 	buildBuildScriptGeneratorImage
 	
 	local debianFlavor=$1
-	local devImageTag=cli
+	local devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO"
+	local devImageTag="debian-$debianFlavor"
 	local builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
 
-	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+	if [ -z "$debianFlavor" ] || [ $debianFlavor == "stretch" ] ; then
 		debianFlavor="stretch"
-	elif  [ "$debianFlavor" == "buster" ]; then
-		debianFlavor="buster"
-		devImageTag=$devImageTag-$debianFlavor
-		echo "dev image tag: "$devImageTag
-		builtImageName=$builtImageName-$debianFlavor
-		echo "built image name: "$builtImageName
+		builtImageName="$builtImageName:debian-$debianFlavor"
+	else
+		builtImageName="$builtImageName-$debianFlavor:debian-$debianFlavor"
+		devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO-$debianFlavor"
 	fi
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
 
 	echo
 	echo "-------------Creating CLI image-------------------"
@@ -411,10 +434,7 @@ function buildCliImage() {
 	echo "$builtImageName image history"
 	docker history $builtImageName
 
-	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:$devImageTag"
-
-	echo
-	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
+	docker tag $builtImageName "$devImageRepo:$devImageTag"
 }
 
 function buildFullImage() {
@@ -424,15 +444,13 @@ function buildFullImage() {
 	local devImageTag=full
 	local builtImageName="$ACR_BUILD_FULL_IMAGE_NAME"
 
-	if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+	if [ -z "$debianFlavor" ] ; then
 		debianFlavor="stretch"
-	elif  [ "$debianFlavor" == "buster" ] || [ "$debianFlavor" == "bullseye" ]; then
-		debianFlavor=$debianFlavor
-		devImageTag=$devImageTag-$debianFlavor
-		echo "dev image tag: "$devImageTag
-		builtImageName=$builtImageName-$debianFlavor
-		echo "built image name: "$builtImageName
 	fi
+	devImageTag=$devImageTag-debian-$debianFlavor
+	echo "dev image tag: "$devImageTag
+	builtImageName=$builtImageName-debian-$debianFlavor
+	echo "built image name: "$builtImageName
 
 	echo
 	echo "-------------Creating full image-------------------"
@@ -451,9 +469,6 @@ function buildFullImage() {
 	docker history $builtImageName
 
 	docker tag $builtImageName "$DEVBOX_BUILD_IMAGES_REPO:$devImageTag"
-
-	echo
-	echo "$builtImageName" >> $ACR_BUILD_IMAGES_ARTIFACTS_FILE
 }
 
 function buildBuildPackImage() {
@@ -477,7 +492,8 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildLtsVersionsImage "buster"
 	buildLtsVersionsImage	
 	buildLatestImages
-	buildVsoFocalImage
+	buildVsoImage "focal"
+	buildVsoImage "bullseye"
 	buildCliImage "buster"
 	buildCliImage
 	buildBuildPackImage
@@ -514,7 +530,9 @@ elif [ "$imageTypeToBuild" == "full" ]; then
 	buildFullImage "bullseye"
 	buildFullImage "buster"
 elif [ "$imageTypeToBuild" == "vso-focal" ]; then
-	buildVsoFocalImage
+	buildVsoImage "focal"
+elif [ "$imageTypeToBuild" == "vso-bullseye" ]; then
+	buildVsoImage "bullseye"
 elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 	buildCliImage "buster"

@@ -60,6 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string PruneDevDependencies = "PRUNE_DEV_DEPENDENCIES";
         public const string NpmRegistryUrl = "NPM_REGISTRY_URL";
         public const string EnableNodeMonorepoBuild = "ENABLE_NODE_MONOREPO_BUILD";
+        public const string YarnTimeOutConfig = "YARN_TIMEOUT_CONFIG";
         public const string PythonVirtualEnvironmentName = "VIRTUALENV_NAME";
         public const string OryxSdkStorageBaseUrl = "ORYX_SDK_STORAGE_BASE_URL";
         public const string AppType = "ORYX_APP_TYPE";
@@ -68,5 +69,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string DisableRecursiveLookUp = "DISABLE_RECURSIVE_LOOKUP";
         public const string CustomRequirementsTxtPath = "CUSTOM_REQUIREMENTSTXT_PATH";
         public const string DebianFlavor = "DEBIAN_FLAVOR";
+        public const string CallerId = "CALLER_ID";
     }
 }

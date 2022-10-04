@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-14-10")]
+    [Trait("category", "node-14-stretch-2")]
     public class NodeTestWithAppInsightsConfigured : NodeEndToEndTestsBase
     {
         public NodeTestWithAppInsightsConfigured(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("14", "~2", ExtVarNames.UserAppInsightsKeyEnv)]
         [InlineData("14", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
         //Without pre-IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~2'
@@ -82,6 +83,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("14", "~3", ExtVarNames.UserAppInsightsKeyEnv)]
         [InlineData("14", "~3", ExtVarNames.UserAppInsightsConnectionStringEnv)]
         [InlineData("14", "", ExtVarNames.UserAppInsightsKeyEnv)]

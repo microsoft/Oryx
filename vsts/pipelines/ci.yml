@@ -24,6 +24,9 @@ parameters:
         key: VsoFocal
         value: vso-focal
       - 
+        key: VsoBullseye
+        value: vso-bullseye
+      - 
         key: Full
         value: full
       - 

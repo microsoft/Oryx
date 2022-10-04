@@ -45,13 +45,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "cli")]
         public void GeneratesScript_AndBuildGolangAppWithDynamicInstall_Cli()
         {
-            GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage("cli"));
+            GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository));
         }
 
         [Fact, Trait("category", "cli-buster")]
         public void GeneratesScript_AndBuildGolangAppWithDynamicInstall_CliBuster()
         {
-            GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage("cli-buster"));
+            GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
         }
 
         private void GeneratesScript_AndBuildGolangAppWithDynamicInstall(string imageName)

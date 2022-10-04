@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationVsoFocal()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage("vso-focal"));
+            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
         }
 
         [Fact, Trait("category", "jamstack")]
@@ -47,14 +47,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationCli()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage("cli"));
+            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliRepository));
         }
 
         [Fact, Trait("category", "cli-buster")]
         public void PipelineTestInvocationCliBuster()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage("cli-buster"));
+            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
         }
 
         private void GeneratesScript_AndBuilds(string buildImageName)
