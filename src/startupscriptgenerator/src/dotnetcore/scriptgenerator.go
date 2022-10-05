@@ -98,6 +98,7 @@ func (gen *DotnetCoreStartupScriptGenerator) isDotnetRuntimeVersionMeetConstrain
 				
 	    return constraintCheckResult
 	}
+
 	return false
 }
 

@@ -41,7 +41,7 @@ func main() {
 		"[Optional] Path to the directory where build manifest file can be found. If no value is provided, then "+
 			"it is assumed to be under the directory specified by 'appPath'.")
 	bindPortPtr := scriptCommand.String("bindPort", "", "[Optional] Port where the application will bind to. Default is 8080")
-	bindPort2Ptr := scriptCommand.String("bindPort2", "", "[Optional] .NET only - HTTP/2 port where the application will bind to. By default, no binding will be made if this is not set")
+	bindPort2Ptr := scriptCommand.String("bindPort2", "", "[Optional] .NET only - HTTP/2 port where the application will bind to. By default, no HTTP/2 binding will be made")
 	userStartupCommandPtr := scriptCommand.String(
 		"userStartupCommand",
 		"",
