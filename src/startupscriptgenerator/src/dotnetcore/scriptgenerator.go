@@ -85,19 +85,18 @@ func (gen *DotnetCoreStartupScriptGenerator) isDotnetRuntimeVersionMeetConstrain
 		dotNetRuntimeVersionConstraint, err := semver.NewConstraint(">= " + versionConstraint)
 		if err != nil {
     		fmt.Printf("\nError in creating semver constraint %s", err)
+			return false
 		}
 
 		dotNetCurrentVersion, err := semver.NewVersion(dotNetRuntimeVersion)
 		if err != nil {
     		fmt.Printf("\nError in parsing current version to semver version %s", err)
+			return false
 		}
 		// Check if the version meets the constraints. The a variable will be true.
 		constraintCheckResult := dotNetRuntimeVersionConstraint.Check(dotNetCurrentVersion)
 				
-	    if constraintCheckResult  {
-			   fmt.Printf("\nBefore returning true")
-			   return true
-		}
+	    return constraintCheckResult
 	}
 	return false
 }
