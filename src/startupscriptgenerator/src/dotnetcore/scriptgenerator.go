@@ -12,7 +12,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
 	"github.com/Masterminds/semver"
 )
 
@@ -70,6 +69,39 @@ func (gen *DotnetCoreStartupScriptGenerator) shouldApplicationInsightsBeConfigur
 	return false
 }
 
+// Checks if the .NET runtime version meets the version contraint
+func (gen *DotnetCoreStartupScriptGenerator) isDotnetRuntimeVersionMeetConstraint(versionConstraint string) bool {
+	dotNetRuntimeVersion := ""
+	
+	if gen.Manifest.DotNetCoreRuntimeVersion != "" {
+		dotNetRuntimeVersion = gen.Manifest.DotNetCoreRuntimeVersion
+	} else {
+		dotNetRuntimeVersion = os.Getenv("DOTNET_VERSION")
+	}
+	
+	fmt.Printf("\nDotNet Runtime %s", dotNetRuntimeVersion)
+	
+	if dotNetRuntimeVersion != "" {
+		dotNetRuntimeVersionConstraint, err := semver.NewConstraint(">= " + versionConstraint)
+		if err != nil {
+    		fmt.Printf("\nError in creating semver constraint %s", err)
+		}
+
+		dotNetCurrentVersion, err := semver.NewVersion(dotNetRuntimeVersion)
+		if err != nil {
+    		fmt.Printf("\nError in parsing current version to semver version %s", err)
+		}
+		// Check if the version meets the constraints. The a variable will be true.
+		constraintCheckResult := dotNetRuntimeVersionConstraint.Check(dotNetCurrentVersion)
+				
+	    if constraintCheckResult  {
+			   fmt.Printf("\nBefore returning true")
+			   return true
+		}
+	}
+	return false
+}
+
 func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuilder *strings.Builder) string {
 	logger := common.GetLogger("dotnetcore.scriptgenerator.GenerateEntrypointScript")
 	defer logger.Shutdown()
@@ -81,6 +113,15 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	// Expose the port so that a custom command can use it if needed
 	common.SetEnvironmentVariableInScript(scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
 	scriptBuilder.WriteString("export ASPNETCORE_URLS=http://*:$PORT\n\n")
+
+	logger.LogInformation("Setting up Kestrel Endpoints with BindPort and BindPort2 Env variables if .NET runtime version >= 7")
+	if gen.isDotnetRuntimeVersionMeetConstraint("7.0.0-0") {
+		scriptBuilder.WriteString("if [ -z \"$" + gen.BindPort2 + "\" ]; then" + "\n")
+		scriptBuilder.WriteString("		export Kestrel__Endpoints__Http2__Url=http://*:" + gen.BindPort2 + "\n")
+		scriptBuilder.WriteString("		export Kestrel__Endpoints__Http2__Protocols=Http2\n")
+		scriptBuilder.WriteString("		export Kestrel__Endpoints__Http1__Url=http://*:$PORT\n\n")
+		scriptBuilder.WriteString("fi")
+	}
 
 	appPath := gen.AppPath
 	if gen.RunFromPath != "" {
