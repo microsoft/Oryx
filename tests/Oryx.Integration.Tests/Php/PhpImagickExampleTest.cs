@@ -39,8 +39,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion80 = "8.0";
             await Task.WhenAll(
-                ImagickExampleAsync(phpVersion80),
-                PhpFpmImagickExampleAsync(phpVersion80));
+                ImagickExampleAsync(phpVersion80));
+            //Temporarily skipping PhpFpmImagickExampleAsync(phpVersion80)
         }
 
         [Fact, Trait("category", "php-8.1")]
@@ -49,8 +49,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion81 = "8.1";
             await Task.WhenAll(
-                ImagickExampleAsync(phpVersion81),
-                PhpFpmImagickExampleAsync(phpVersion81));
+                ImagickExampleAsync(phpVersion81));
+            //Temporarily skipping PhpFpmImagickExampleAsync(phpVersion81)
         }
 
         private async Task ImagickExampleAsync(string phpVersion)
