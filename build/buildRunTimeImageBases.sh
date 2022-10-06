@@ -93,7 +93,6 @@ if [ "$runtimeSubDir" == "node" ]; then
         busterNodeDockerFiles+=( "$eachFile" )
     done
     dockerFiles="${busterNodeDockerFiles[@]}"
-    fi  
 fi
 
 # Write the list of images that were built to artifacts folder
