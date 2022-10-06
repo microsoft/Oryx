@@ -24,6 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             // "config.GetValue" call will get the most closest value provided based on the order of
             // configuration sources added to the ConfigurationBuilder above.
             options.BindPort = this.GetStringValue(SettingsKeys.BindPort);
+            options.BindPort2 = this.GetStringValue(SettingsKeys.BindPort2);
             options.BuildImage = this.GetStringValue(SettingsKeys.BuildImage);
             options.PlatformName = this.GetStringValue(SettingsKeys.PlatformName);
             options.PlatformVersion = this.GetStringValue(SettingsKeys.PlatformVersion);

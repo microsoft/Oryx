@@ -17,6 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string BindPort { get; set; }
 
+        public string BindPort2 { get; set; }
+
         public string BuildImage { get; set; }
 
         public string PlatformName { get; set; }
