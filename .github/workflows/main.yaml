@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Run SDK automation
-        run: dotnet run --project build/tools/Automation/Automation.csproj ${{ inputs.releaseDate }}
+        run: dotnet run --project build/tools/Automation/Automation.csproj ${{ inputs.releaseDate }} ${{ github.workspace }}
 
       - name: Run Generate Constants
         run: ./build/generateConstants.sh
