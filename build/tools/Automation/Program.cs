@@ -30,10 +30,13 @@ namespace Microsoft.Oryx.Automation
     /// </Summary>
     public abstract class Program
     {
+        private static string repoAbsolutePath = string.Empty;
+
         public static async Task<int> Main(string[] args)
         {
             // TODO: use dotnet parameters instead and handle invalid date
             string dateTarget = args.Length > 0 ? args[0] : string.Empty;
+            repoAbsolutePath = args.Length > 1 ? args[1] : string.Empty;
             if (string.IsNullOrEmpty(dateTarget))
             {
                 Console.WriteLine("[Main] No dateTarget provided as an arg. Using Today's UTC date as dateTarget.");
@@ -52,7 +55,7 @@ namespace Microsoft.Oryx.Automation
         /// </Summary>
         public static async Task AddNewPlatformConstantsAsync(string dateTarget)
         {
-            DotNet dotNet = new DotNet();
+            DotNet dotNet = new DotNet(repoAbsolutePath);
             List<PlatformConstant> platformConstants = await dotNet.GetPlatformConstantsAsync(dateTarget);
             List<Constant> yamlConstants = await DeserializeConstantsYamlAsync();
             dotNet.UpdateConstants(platformConstants, yamlConstants);
@@ -68,7 +71,9 @@ namespace Microsoft.Oryx.Automation
         /// </Summary>
         public static async Task<List<Constant>> DeserializeConstantsYamlAsync()
         {
-            string fileContents = await File.ReadAllTextAsync(Constants.ConstantsYaml).ConfigureAwait(true);
+            var constantsYamlAbsolutePath = Path.Combine(repoAbsolutePath, "build", Constants.ConstantsYaml);
+            string fileContents = await File.ReadAllTextAsync(constantsYamlAbsolutePath).ConfigureAwait(true);
+
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(UnderscoredNamingConvention.Instance)
                 .Build();

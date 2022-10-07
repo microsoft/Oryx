@@ -33,6 +33,13 @@ namespace Microsoft.Oryx.Automation
     /// </Summary>
     public class DotNet : Program
     {
+        private string repoAbsolutePath = string.Empty;
+
+        public DotNet(string repoAbsolutePath)
+        {
+            this.repoAbsolutePath = repoAbsolutePath;
+        }
+
         /// <Summary>
         /// Gets DotNet's new release version and sha.
         ///
@@ -155,6 +162,7 @@ namespace Microsoft.Oryx.Automation
                 .WithNamingConvention(UnderscoredNamingConvention.Instance)
                 .Build();
 
+            var constantsYamlAbsolutePath = Path.Combine(this.repoAbsolutePath, "build", Constants.ConstantsYaml);
             var stringResult = serializer.Serialize(yamlConstants);
             File.WriteAllText(Constants.ConstantsYaml, stringResult);
         }

@@ -7,7 +7,7 @@ namespace Microsoft.Oryx.Automation
 {
     internal static class Constants
     {
-        public const string ConstantsYaml = "build/constants.yaml";
+        public const string ConstantsYaml = "constants.yaml";
         public const string SdkName = "sdk";
 
         public const string DotNetName = "dotnet";
