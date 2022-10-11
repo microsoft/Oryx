@@ -104,4 +104,6 @@
 
 7.0.100-rc.1.22431.12, 7ecebf284bd1546e1575b9561f4e64bbb8d69680a7bbda6f06ff6fbf687d3a6c653b0e6a6c569241455c6f83620f0ddbe193ca5cd52384ac062c8565dd22b859,
 
+7.0.100-rc.2.22477.23, 1941cd6ea3bea31d970029c34acf0d60b63d1e7fba39086be1a79177a6f87f2b0300bf4008e96a5235d52bc74a41503b21b088143cd306058d42dd3ce8252af0, https://dotnetcli.blob.core.windows.net/dotnet-private/internal/7.0.0-RC.2/aspnetcore-runtime-7.0.0-rc.2.22476.2-linux-x64.tar.gz,
+
 # NOTE: Make sure to set the default version in 'defaultVersion.txt' file

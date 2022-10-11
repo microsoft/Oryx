@@ -47,7 +47,12 @@ getDotNetCoreSdk() {
 		if [ -z "$downloadUrl" ]; then
 			# Use default download url file
 			downloadUrl="https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$sdkVersion/dotnet-sdk-$sdkVersion-linux-x64.tar.gz"
+		elif  [ "$downloadUrl" == *"dotnet-private"* ]; then
+			# SAS-token is passed as en env-variable on the Oryx-PlatformBinary-DotNetCore pipeline
+			token=$PRIVATESTORAGESASTOKEN
+			downloadUrl+=$token
 		fi
+		
 
 		tempDir="/tmp/oryx-dotnetInstall"
 		mkdir -p $tempDir
