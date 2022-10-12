@@ -16,7 +16,6 @@ RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
 FROM mcr.microsoft.com/oryx/base:%RUNTIME_BASE_IMAGE_TAG%
 
-# Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 #Bake in client certificate path into image to avoid downloading it
