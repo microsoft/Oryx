@@ -12,9 +12,21 @@ declare imagefilter="oryxdevmcr.azurecr.io/public/oryx"
 function tagBuildImageForIntegrationTest() {
 	local devbuildImageName="$1"
 	local devbuildImageType="$2"
+	local buildImageFilter="$3"
+	local buildImageTagFilter="$4"
 	local buildDefName="$BUILD_DEFINITIONNAME"
 	local buildNumber="$RELEASE_TAG_NAME"
-	
+
+	# Check if a build image filter was provided, and return early if it's not the suffix of the provided build image
+	if [ -n "$buildImageFilter" ] && [[ "$devbuildImageName" != *"$buildImageFilter" ]];then
+		return
+	fi
+
+	# Check if a build tag filter was provided, and return early if it doesn't match the provided build tag
+	if [ -n "$buildImageTagFilter" ] && [ "$devbuildImageType" != "$buildImageTagFilter" ];then
+		return
+	fi
+
 	# Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
 	if [ -z "$devbuildImageType" ]; then
 		buildImage=$devbuildImageName:$buildDefName.$buildNumber
@@ -37,40 +49,77 @@ function tagBuildImageForIntegrationTest() {
   
 }
 
-echo "Build image filter is set"
+buildImageFilter=""
+buildImageTagFilter=""
+platformFilter=""
+platformVersionFilter=""
 
-tagBuildImageForIntegrationTest "$imagefilter/build" "debian-stretch"
-tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions-debian-stretch" 
-tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions-debian-buster"
-tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-debian-stretch"
-tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-debian-buster"
-tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-debian-bullseye" 
-tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-stretch"
-tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-buster"
-tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-bullseye"
-tagBuildImageForIntegrationTest "$imagefilter/build" "vso-ubuntu-focal"
-tagBuildImageForIntegrationTest "$imagefilter/build" "vso-debian-bullseye"
-tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-buster"
-tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-bullseye"
-tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-stretch"
-tagBuildImageForIntegrationTest "$imagefilter/cli-buster" "debian-buster"
-tagBuildImageForIntegrationTest "$imagefilter/pack" ""
+if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
+	IFS='&'
+	read -a splitArr <<< "$TESTINTEGRATIONCASEFILTER"
+	for val in "${splitArr[@]}";
+	do
+		if [[ "$val" == "category="* ]];then
+			categoryPrefix="category="
+			strippedVal=${val#"$categoryPrefix"}
+			IFS='-'
+			read -a tempSplitArr <<< "$strippedVal"
+			len=${#tempSplitArr[@]}
+			platformFilter="${tempSplitArr[0]}"
+			if [[ $len -gt 1 ]];then
+				platformVersionFilter="${tempSplitArr[1]}"
+			fi
+		fi
+
+		if [[ "$val" == "build-image="* ]];then
+			buildImagePrefix="build-image="
+			strippedVal=${val#"$buildImagePrefix"}
+			buildImageFilter="build"
+			buildImageTagFilter="$strippedVal"
+			if [[ "$strippedVal" == "cli-debian-stretch" ]];then
+				buildImageFilter="cli"
+				buildImageTagFilter="debian-stretch"
+			elif [[ "$strippedVal" == "cli-debian-buster" ]];then
+				buildImageFilter="cli-buster"
+				buildImageTagFilter="debian-buster"
+			fi
+		fi
+	done
+fi
+
+echo "Build image filter is set for '$buildImageFilter:$buildImageTagFilter'"
+
+tagBuildImageForIntegrationTest "$imagefilter/build" "debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions-debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions-debian-buster" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-debian-buster" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-buster" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "vso-ubuntu-focal" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "vso-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-buster" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/cli-buster" "debian-buster" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/pack" "" "$buildImageFilter" "$buildImageTagFilter"
 
 
-# Extract language string from string (e.g extract 'python' from 'category=python')
+# Extract language string from string (e.g extract 'python' from 'category=python', 'debian-stretch' from 'build-image=debian-stretch')
 if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 	# For DB tests we want only the build images to be present at the agent machine
-	if [[ "$TESTINTEGRATIONCASEFILTER" != *db* ]];then
-		imagefilter=$(echo $TESTINTEGRATIONCASEFILTER | cut -d'=' -f 2)
+	if [[ "$platformFilter" != "db" ]];then
 
 		# Always convert filter for runtime images to lower case
-		echo "Runtime image filter is set for "$imagefilter
+		echo "Runtime image filter is set for $platformFilter with version $platformVersionFilter"
 
 		while read sourceImage; do
   		# Always use specific build number based tag and then use the same tag 
 		# to create a version tag and push it
   			if [[ "$sourceImage" != *:latest ]]; then
-				if [[ "$sourceImage" == *"$imagefilter"* ]]; then
+				if [[ "$sourceImage" == *"$platformFilter:$platformVersionFilter"* ]]; then
 					echo "Pulling the runtime image $sourceImage ..."
 					docker pull "$sourceImage" | sed 's/^/     /'
 

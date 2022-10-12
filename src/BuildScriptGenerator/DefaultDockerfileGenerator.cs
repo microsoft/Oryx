@@ -70,6 +70,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     createScriptArguments.Add("bindPort", this.commonOptions.BindPort);
                 }
 
+                if (!string.IsNullOrEmpty(this.commonOptions.BindPort2))
+                {
+                    createScriptArguments.Add("bindPort2", this.commonOptions.BindPort2);
+                }
+
                 var compatiblePlatforms = this.GetCompatiblePlatforms(ctx);
                 if (!compatiblePlatforms.Any())
                 {

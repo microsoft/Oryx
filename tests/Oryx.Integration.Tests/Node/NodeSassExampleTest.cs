@@ -20,7 +20,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData("14"), Trait("category", "node-14")]
+        [Trait("build-image", "debian-stretch")]
+        [InlineData("14"), Trait("category", "node-14-stretch-3")]
         public async Task Test_NodeSassExampleAsync(string nodeVersion)
         {
             // Arrange

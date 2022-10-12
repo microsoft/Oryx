@@ -21,7 +21,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-37")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_Tweeter3AppAsync()
         {
             // Arrange
@@ -66,7 +67,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [Trait("category", "python-37")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("3.7")]
         public async Task BuildWithVirtualEnv_RemovesOryxPackagesDir_FromOlderBuildAsync(string pythonVersion)
         {
@@ -121,14 +123,16 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "Bug #1410367")]
-        [Trait("category", "python-37")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
         public async Task BuildWithVirtualEnv_From_File_Requirement_TxtAsync_WithPython37()
         {
             await BuildWithVirtualEnv_From_File_Requirement_TxtAsync("3.7");
         }
 
         [Fact(Skip = "Bug #1410367")]
-        [Trait("category", "python-38")]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "debian-stretch")]
         public async Task BuildWithVirtualEnv_From_File_Requirement_TxtAsync_WithPython38()
         {
             await BuildWithVirtualEnv_From_File_Requirement_TxtAsync("3.8");
@@ -174,7 +178,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "Bug #1410367") ]
-        [Trait("category", "python-38")]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunPythonApp_UsingOutputDirectory_NestedUnderSourceDirectoryAsync()
         {
             // Arrange
@@ -218,7 +223,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact (Skip = "Bug #1410367")]
-        [Trait("category", "python-38")]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunPythonApp_UsingIntermediateDir_AndNestedOutputDirectoryAsync()
         {
             // Arrange
