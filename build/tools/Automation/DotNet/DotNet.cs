@@ -146,7 +146,7 @@ namespace Microsoft.Oryx.Automation
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
 
                     // add sdk to versionsToBuild.txt
-                    UpdateVersionsToBuildTxt(platformConstant);
+                    this.UpdateVersionsToBuildTxt(platformConstant);
                 }
                 else
                 {
@@ -164,30 +164,7 @@ namespace Microsoft.Oryx.Automation
 
             var constantsYamlAbsolutePath = Path.Combine(this.repoAbsolutePath, "build", Constants.ConstantsYaml);
             var stringResult = serializer.Serialize(yamlConstants);
-            File.WriteAllText(Constants.ConstantsYaml, stringResult);
-        }
-
-        private static void UpdateVersionsToBuildTxt(PlatformConstant platformConstant)
-        {
-            // TODO: use File.ReadAll*
-            List<string> versionsToBuildTxtFiles = new List<string>()
-            {
-                    "platforms/dotnet/versions/bullseye/versionsToBuild.txt",
-                    "platforms/dotnet/versions/buster/versionsToBuild.txt",
-                    "platforms/dotnet/versions/focal-scm/versionsToBuild.txt",
-                    "platforms/dotnet/versions/stretch/versionsToBuild.txt",
-            };
-            foreach (string versionsToBuildTxtFile in versionsToBuildTxtFiles)
-            {
-                string line = $"\n{platformConstant.Version}, {platformConstant.Sha},";
-                File.AppendAllText(versionsToBuildTxtFile, line);
-
-                // sort
-                Console.WriteLine($"[UpdateVersionsToBuildTxt] Updating {versionsToBuildTxtFile}...");
-                var contents = File.ReadAllLines(versionsToBuildTxtFile);
-                Array.Sort(contents);
-                File.WriteAllLines(versionsToBuildTxtFile, contents.Distinct());
-            }
+            File.WriteAllText(constantsYamlAbsolutePath, stringResult);
         }
 
         private static Dictionary<string, Constant> GetYamlDotNetConstants(List<Constant> yamlContents)
@@ -236,6 +213,24 @@ namespace Microsoft.Oryx.Automation
 
             throw new MissingFieldException(message: $"[GetSha] Expected SHA feild is missing in {files}\n" +
                 $"Pattern matching using regex: {Constants.DotNetLinuxTarFileRegex}");
+        }
+
+        private void UpdateVersionsToBuildTxt(PlatformConstant platformConstant)
+        {
+            HashSet<string> debianFlavors = new HashSet<string>() { "bullseye", "buster", "focal-scm", "stretch" };
+            foreach (string debianFlavor in debianFlavors)
+            {
+                var versionsToBuildTxtAbsolutePath = Path.Combine(
+                    this.repoAbsolutePath, "platforms", Constants.DotNetName, "versions", debianFlavor, Constants.VersionsToBuildTxt);
+                string line = $"\n{platformConstant.Version}, {platformConstant.Sha},";
+                File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
+
+                // sort
+                Console.WriteLine($"[UpdateVersionsToBuildTxt] Updating {versionsToBuildTxtAbsolutePath}...");
+                var contents = File.ReadAllLines(versionsToBuildTxtAbsolutePath);
+                Array.Sort(contents);
+                File.WriteAllLines(versionsToBuildTxtAbsolutePath, contents.Distinct());
+            }
         }
     }
 }

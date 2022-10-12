@@ -35,13 +35,16 @@ namespace Microsoft.Oryx.Automation
         public static async Task<int> Main(string[] args)
         {
             // TODO: use dotnet parameters instead and handle invalid date
-            string dateTarget = args.Length > 0 ? args[0] : string.Empty;
-            repoAbsolutePath = args.Length > 1 ? args[1] : string.Empty;
-            if (string.IsNullOrEmpty(dateTarget))
+            if (args.Length != 2)
             {
-                Console.WriteLine("[Main] No dateTarget provided as an arg. Using Today's UTC date as dateTarget.");
-                dateTarget = DateTime.UtcNow.Date.ToString();
+                Console.WriteLine("[Main] Error: missing 2 required arguments.\n" +
+                    "1. String date target in format: yyyy-mm-dd\n" +
+                    "2. String repo absolute path to the root of Oryx repo.\n");
+                Environment.Exit(1);
             }
+
+            string dateTarget = args[0];
+            repoAbsolutePath = args[1];
 
             Console.WriteLine($"[Main] dateTarget: {dateTarget}");
             await AddNewPlatformConstantsAsync(dateTarget);
