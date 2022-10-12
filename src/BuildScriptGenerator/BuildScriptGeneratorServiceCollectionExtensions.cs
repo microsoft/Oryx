@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -17,6 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     public static class BuildScriptGeneratorServiceCollectionExtensions
     {
+        [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
         public static IServiceCollection AddBuildScriptGeneratorServices(this IServiceCollection services)
         {
             services
