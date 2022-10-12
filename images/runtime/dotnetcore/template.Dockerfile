@@ -24,7 +24,6 @@ ENV USER_DOTNET_AI_VERSION=${USER_DOTNET_AI_VERSION}
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
 ENV DOTNET_VERSION=%DOTNET_VERSION%
 ENV ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
-#Bake in client certificate path into image to avoid downloading it
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 
 # Oryx++ Builder variables
