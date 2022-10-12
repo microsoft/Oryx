@@ -15,8 +15,10 @@ steps:
   condition: always()
 
 - task: NuGetToolInstaller@1
+  displayName: 'Install NuGet >=6.3.0-0'
   inputs:
-    versionSpec: 5.8.x
+    versionSpec: '>=6.3.0-0'
+    checkLatest: true
 
 - task: NuGetCommand@2
   displayName: 'Run "nuget restore" on Oryx solution'

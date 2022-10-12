@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
@@ -143,6 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         }
 
         /// <inheritdoc/>
+        [UnconditionalSuppressMessage("Trimming", "IL2026:Using dynamic types might cause types or members to be removed by trimmer.", Justification = "<Pending>")]
         public BuildScriptSnippet GenerateBashBuildScriptSnippet(
             BuildScriptGeneratorContext ctx,
             PlatformDetectorResult detectorResult)
