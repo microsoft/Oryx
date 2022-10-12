@@ -4,9 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
+using NotNullAttribute = JetBrains.Annotations.NotNullAttribute;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -38,6 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             return result;
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2026:Using dynamic types might cause types or members to be removed by trimmer.", Justification = "<Pending>")]
         public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
             // Installing packages globally is problematic only in the App Service envelope
