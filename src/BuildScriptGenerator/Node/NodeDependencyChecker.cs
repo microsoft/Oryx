@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.Common.Extensions;
@@ -28,6 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             this.logger = logger;
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2026:Using dynamic types might cause types or members to be removed by trimmer.", Justification = "<Pending>")]
         public IEnumerable<ICheckerMessage> CheckSourceRepo(ISourceRepo repo)
         {
             dynamic packageJson = NodePlatform.GetPackageJsonObject(repo, this.logger);

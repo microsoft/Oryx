@@ -94,6 +94,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "NoPlatformNeeded")]
         public static Process StartProcess(
             string fileName,
             IEnumerable<string> arguments,
