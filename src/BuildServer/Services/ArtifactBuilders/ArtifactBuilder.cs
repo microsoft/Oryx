@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
             this.logger = logger;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "NoOsPlatformNeeded")]
         public bool Build(Build build)
         {
             // TODO: improve validation by using semantic versioning,
