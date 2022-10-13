@@ -18,8 +18,6 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 ARG NODE18_VERSION
 ENV NODE_VERSION ${NODE18_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
-#Bake in client certificate path into image to avoid downloading it
-ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 ARG IMAGES_DIR=/tmp/oryx/images
 RUN ${IMAGES_DIR}/installPlatform.sh nodejs $NODE_VERSION --dir /usr/local --links false \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
