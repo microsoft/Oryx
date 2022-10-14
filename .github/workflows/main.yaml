@@ -21,7 +21,7 @@ jobs:
       - name: Run SDK automation
         run: |
           releaseDate=${{ inputs.releaseDate }}
-          if ! [[ "$inputDate" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          if ! [[ "${releaseDate}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
           then
             echo "release date is invalid $releaseDate."
             echo "Expecting date format yyyy-mm-dd"
