@@ -44,7 +44,9 @@ jobs:
           git status
           git config user.name 'William Hernandez'
           git config user.email 'williamhe@microsoft.com'
-          git add build/* platforms/* src/*
+          git add build/
+          git add platforms/* 
+          git add src/*
           git commit -m "Add new SDK versions"
           git status
       
