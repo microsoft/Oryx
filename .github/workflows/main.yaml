@@ -40,7 +40,7 @@ jobs:
           git status
           git config user.name 'William Hernandez'
           git config user.email 'williamhe@microsoft.com'
-          git add -A
+          git add build platforms src
           git commit -m "Add new SDK version"
       
       # TODO: paramterize branch/title platfrom name
