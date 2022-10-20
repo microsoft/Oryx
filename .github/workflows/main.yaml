@@ -1,9 +1,9 @@
 name: Oryx-SDK-Automation
 
 on:
-  # runs on 12:55 (5:55AM PST) & 23:55 UTC
+  # runs on 12pm PST per .NET release team recommendation
   schedule:
-    - cron:  '55 12,23 * * *'  
+    - cron:  '0 19 * * *'  
 
   workflow_dispatch:
     inputs:
