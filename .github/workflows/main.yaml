@@ -53,7 +53,7 @@ jobs:
         with:
           branch: automation/add-new-dotnet-release
           title: New DotNetCore Sdks
-     
+
       - name: Run Azure Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
