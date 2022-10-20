@@ -3,7 +3,7 @@ name: Oryx-SDK-Automation
 on:
   # runs on 12:55 (5:55AM PST) & 23:55 UTC
   schedule:
-    - cron:  '55 12,23 * * *'  
+    - cron:  '0 19 * * *'  
 
   workflow_dispatch:
     inputs:
@@ -53,8 +53,13 @@ jobs:
         with:
           branch: automation/add-new-dotnet-release
           title: New DotNetCore Sdks
-
-      - name: Run Azure Pipeline 
-        run: |
-          echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release
+     
+      # Triggers Oryx pipeline: add sdk to dev storage account
+      # TODO: paramterize pipeline name
+      #       example: Oryx-PlatformBinary-{PlatformName}
+      - name: Azure Pipelines Action
+        uses: Azure/pipelines@v1
+        with:
+          azure-devops-project-url: https://devdiv.visualstudio.com/DevDiv
+          azure-pipeline-name: Oryx-PlatformBinary-DotNetCore
+          azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
