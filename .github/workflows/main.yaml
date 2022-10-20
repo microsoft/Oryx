@@ -54,12 +54,7 @@ jobs:
           branch: automation/add-new-dotnet-release
           title: New DotNetCore Sdks
      
-      # Triggers Oryx pipeline: add sdk to dev storage account
-      # TODO: paramterize pipeline name
-      #       example: Oryx-PlatformBinary-{PlatformName}
-      - name: Azure Pipelines Action
-        uses: Azure/pipelines@v1
-        with:
-          azure-devops-project-url: https://devdiv.visualstudio.com/DevDiv
-          azure-pipeline-name: Oryx-PlatformBinary-DotNetCore
-          azure-devops-token: ${{ secrets.AZURE_DEVOPS_TOKEN }}
+      - name: Run Azure Pipeline 
+        run: |
+          echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release
