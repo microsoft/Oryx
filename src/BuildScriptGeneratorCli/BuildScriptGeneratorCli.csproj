@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RuntimeFrameworkVersion>3.1</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>6.0</RuntimeFrameworkVersion>
     <AssemblyName>GenerateBuildScript</AssemblyName>
     <RootNamespace>Microsoft.Oryx.BuildScriptGeneratorCli</RootNamespace>
     <OutputType>Exe</OutputType>
@@ -21,19 +21,21 @@
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
 
   <ItemGroup>
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.4" />
-    <PackageReference Include="Microsoft.ApplicationInsights.NLogTarget" Version="2.10.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.5" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.5" />
-    <PackageReference Include="Microsoft.VisualStudioEng.MicroBuild.Core" Version="0.4.1" />
-    <PackageReference Include="NLog" Version="4.6.5" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.5.1" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.NLogTarget" Version="2.21.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+    <PackageReference Include="Microsoft.VisualStudioEng.MicroBuild.Core" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="NLog" Version="5.0.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +46,18 @@
     <None Update="nlog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="SmartAnalyzers.CSharpExtensions.Annotations" Version="4.2.7" />
   </ItemGroup>
 
 </Project>

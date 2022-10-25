@@ -56,10 +56,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="SemanticVersioning" Version="1.2.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="SemanticVersioning" Version="2.0.2" />
+    <PackageReference Include="xunit" Version="2.4.2" />
   </ItemGroup>
 
   <ItemGroup>
@@ -84,6 +84,18 @@
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.3.44">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Update="SmartAnalyzers.CSharpExtensions.Annotations" Version="4.2.7" />
   </ItemGroup>
 
 </Project>
