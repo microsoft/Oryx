@@ -112,6 +112,8 @@
     final-stretch-dot-net-70-sdk-version: 7.0.100-preview.7.22377.5
     final-stretch-dot-net-core-app-70-run-time-version: 7.0.0-preview.7.22375.6
     final-stretch-aspnet-core-app-70-run-time-version: 7.0.0-preview.7.22376.6
+    final-stretch-node14-version: 14.19.1
+    final-stretch-node16-version: 16.14.2
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
@@ -164,7 +166,7 @@
 - name: php-versions
   constants:
     php-runtime-base-tag: 20220914.1
-    php-fpm-runtime-base-tag: 20221004.1
+    php-fpm-runtime-base-tag: 20221021.2
     composer-version: 2.0.8
     composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
     composer1-9-version: 1.9.3

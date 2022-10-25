@@ -1,5 +1,5 @@
 variables:
-    ascName: oryxSP
+    ascName: oryx-automation-service-principal
     acrName: oryxdevmcr.azurecr.io
     skipComponentGovernanceDetection: true
     Packaging.EnableSBOMSigning: true

@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
@@ -14,17 +16,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     public class NodeVersionChecker : IChecker
     {
         private readonly ILogger<NodeVersionChecker> logger;
+        private readonly BuildScriptGeneratorOptions options;
 
-        public NodeVersionChecker(ILogger<NodeVersionChecker> logger)
+        public NodeVersionChecker(
+            IOptions<BuildScriptGeneratorOptions> options,
+            ILogger<NodeVersionChecker> logger)
         {
             this.logger = logger;
+            this.options = options.Value;
         }
 
         [NotNull]
         public IEnumerable<ICheckerMessage> CheckToolVersions(IDictionary<string, string> tools)
         {
             var used = tools[NodeConstants.NodeToolName];
-            var comparison = SemanticVersionResolver.CompareVersions(used, NodeConstants.NodeLtsVersion);
+            var comparison = SemanticVersionResolver.CompareVersions(
+                used,
+                this.options.DebianFlavor != OsTypes.DebianStretch
+                    ? NodeConstants.NodeLtsVersion
+                    : FinalStretchVersions.FinalStretchNode14Version);
             this.logger.LogDebug($"SemanticVersionResolver.CompareVersions returned {comparison}");
             if (comparison < 0)
             {
