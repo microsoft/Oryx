@@ -431,8 +431,8 @@ namespace Microsoft.Oryx.Tests.Common
                 NodeConstants.NodeToolName,
                 new Dictionary<string, string>
                 {
-                    { "14", "debian-bullseye" },
-                    { "16", "debian-bullseye" },
+                    { "14", "debian-buster" },
+                    { "16", "debian-buster" },
                     { "18", "debian-bullseye" },
                     { "dynamic", "debian-buster" },
                 }
