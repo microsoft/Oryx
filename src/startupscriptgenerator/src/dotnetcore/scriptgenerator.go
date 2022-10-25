@@ -112,15 +112,19 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 
 	// Expose the port so that a custom command can use it if needed
 	common.SetEnvironmentVariableInScript(scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
+	if gen.BindPort2 != "" {
+		scriptBuilder.WriteString("export PORT2=" + gen.BindPort2 + "\n\n")
+	}
 	scriptBuilder.WriteString("export ASPNETCORE_URLS=http://*:$PORT\n\n")
 
 	logger.LogInformation("Setting up Kestrel Endpoints with BindPort and BindPort2 Env variables if .NET runtime version >= 7")
 	if gen.isDotnetRuntimeVersionMeetConstraint("7.0.0-0") {
-		scriptBuilder.WriteString("if [ -z \"$" + gen.BindPort2 + "\" ]; then" + "\n")
-		scriptBuilder.WriteString("		export Kestrel__Endpoints__Http2__Url=http://*:" + gen.BindPort2 + "\n")
+		scriptBuilder.WriteString("if [ ! -z \"$PORT2\" ]; then" + "\n")
+		scriptBuilder.WriteString("		export Kestrel__Endpoints__Http2__Url=http://*:$PORT2\n")
 		scriptBuilder.WriteString("		export Kestrel__Endpoints__Http2__Protocols=Http2\n")
 		scriptBuilder.WriteString("		export Kestrel__Endpoints__Http1__Url=http://*:$PORT\n\n")
 		scriptBuilder.WriteString("fi")
+		scriptBuilder.WriteString("\n\n")
 	}
 
 	appPath := gen.AppPath
