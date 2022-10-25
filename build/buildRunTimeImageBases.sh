@@ -81,7 +81,7 @@ if [ "$runtimeSubDir" == "node" ]; then
     NODE_VERSION_ARRAY=()
     if  [ "$runtimeImageDebianFlavor" == "buster" ]; then
         NODE_VERSION_ARRAY=(${NODE_BUSTER_VERSION_ARRAY[@]})
-    elif [ "$ImageDebianFlavor" == "bullseye" ];then
+    elif [ "$runtimeImageDebianFlavor" == "bullseye" ];then
         NODE_VERSION_ARRAY=("${NODE_BULLSEYE_VERSION_ARRAY[@]}")
     fi
 
