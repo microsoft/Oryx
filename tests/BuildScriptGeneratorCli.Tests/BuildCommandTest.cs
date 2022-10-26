@@ -400,7 +400,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
             // Assert
-            Assert.Equal("4.0", configuration.GetValue<string>("python_version"));
+            Assert.Equal("4.0", configuration["python_version"]);
             Assert.Empty(testConsole.StdOutput);
             Assert.Empty(testConsole.StdError);
         }
@@ -425,9 +425,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.NotNull(configurationRoot.Providers);
             var providers = configurationRoot.Providers.ToArray();
             Assert.Equal(3, providers.Length);
-            Assert.IsType<IniConfigurationProvider>(providers[0]);
-            Assert.IsType<EnvironmentVariablesConfigurationProvider>(providers[1]);
-            Assert.IsType<CustomConfigurationSource>(providers[2]);
+            _ = Assert.IsType<IniConfigurationProvider>(providers[0]);
+            _ = Assert.IsType<EnvironmentVariablesConfigurationProvider>(providers[1]);
+            _ = Assert.IsType<CustomConfigurationSource>(providers[2]);
         }
 
         [Fact]
@@ -448,7 +448,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
             // Assert
-            Assert.Equal("100.100", configuration.GetValue<string>("python_version"));
+            Assert.Equal("100.100", configuration["python_version"]);
             Assert.Empty(testConsole.StdOutput);
             Assert.Empty(testConsole.StdError);
         }
@@ -472,7 +472,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
             // Assert
-            Assert.Equal("4.0", configuration.GetValue<string>("python_version"));
+            Assert.Equal("4.0", configuration["python_version"]);
             Assert.Empty(testConsole.StdOutput);
             Assert.Empty(testConsole.StdError);
         }
@@ -495,7 +495,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
             // Assert
-            Assert.Equal("4.0", configuration.GetValue<string>("node_version"));
+            Assert.Equal("4.0", configuration["node_version"]);
             Assert.Empty(testConsole.StdOutput);
             Assert.Empty(testConsole.StdError);
         }
@@ -518,7 +518,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
             // Assert
-            Assert.Equal("4.0", configuration.GetValue<string>("php_version"));
+            Assert.Equal("4.0", configuration["php_version"]);
             Assert.Empty(testConsole.StdOutput);
             Assert.Empty(testConsole.StdError);
         }
@@ -541,7 +541,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
             // Assert
-            Assert.Equal("4.0", configuration.GetValue<string>("dotnet_version"));
+            Assert.Equal("4.0", configuration["dotnet_version"]);
             Assert.Empty(testConsole.StdOutput);
             Assert.Empty(testConsole.StdError);
         }
@@ -572,7 +572,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.True(options.PruneDevDependencies);
             Assert.Equal("http://foobar.com/", options.NpmRegistryUrl);
-            Assert.Equal("4.0", configuration.GetValue<string>("node_version"));
+            Assert.Equal("4.0", configuration["node_version"]);
             Assert.Empty(testConsole.StdOutput);
             Assert.Empty(testConsole.StdError);
         }
@@ -602,7 +602,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             // Assert
             Assert.Equal("fooenv", options.VirtualEnvironmentName);
-            Assert.Equal("4.0", configuration.GetValue<string>("python_version"));
+            Assert.Equal("4.0", configuration["python_version"]);
             Assert.Empty(testConsole.StdOutput);
             Assert.Empty(testConsole.StdError);
         }
@@ -630,7 +630,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var configuration = serviceProvider.GetRequiredService<IConfiguration>();
 
             // Assert
-            Assert.Equal("4.0", configuration.GetValue<string>("dotnet_version"));
+            Assert.Equal("4.0", configuration["dotnet_version"]);
             Assert.Empty(testConsole.StdOutput);
             Assert.Empty(testConsole.StdError);
         }

@@ -362,7 +362,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 detectedVersion: detectedVersion,
                 defaultVersion: detectedDefaultVersion,
                 pythonScriptGeneratorOptions: options,
-                supportedVersions: new[] { detectedVersion, detectedDefaultVersion, envVarDefaultVersion }.Where(x => !x.IsNullOrEmpty()).ToArray());
+                supportedVersions: new[] { detectedVersion, detectedDefaultVersion, envVarDefaultVersion }.Where(x => !string.IsNullOrEmpty(x)).ToArray());
 
             // Act
             var result = platform.Detect(context);
