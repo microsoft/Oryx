@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
         protected string GetStringValue(string key)
         {
-            return this.config.GetValue<string>(key);
+            return this.config[key];
         }
 
         protected bool GetBooleanValue(string key)

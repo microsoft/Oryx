@@ -539,7 +539,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 string pythonVersion;
                 string templateName;
-                var version = new SemVer.Version(detectorResult.PlatformVersion);
+                var version = new SemanticVersioning.Version(detectorResult.PlatformVersion);
                 if (version.Major.Equals(2))
                 {
                     templateName = CondaConstants.DefaultPython2CondaEnvironmentYmlFileTemplateName;
