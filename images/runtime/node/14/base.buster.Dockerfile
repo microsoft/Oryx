@@ -16,6 +16,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   esac
 
 ARG NODE14_VERSION
+ARG DEBIAN_FLAVOR
 ENV NODE_VERSION ${NODE14_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 
