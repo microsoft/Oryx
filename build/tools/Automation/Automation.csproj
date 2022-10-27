@@ -2,14 +2,15 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
 	<DisableDocRequirement>true</DisableDocRequirement>
+  <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="YamlDotNet" Version="12.0.0" />
+    <PackageReference Include="YamlDotNet" Version="12.0.2" />
   </ItemGroup>
 
 </Project>

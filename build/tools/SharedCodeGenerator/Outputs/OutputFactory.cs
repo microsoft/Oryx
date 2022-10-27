@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -24,6 +25,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
             return outputFile;
         }
 
+        [UnconditionalSuppressMessage("Trimming", "IL2026:Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code", Justification = "<Pending>")]
         private static Dictionary<string, Type> CreateOutputsDictionary()
         {
             var outputsWithType = from type in Assembly.GetExecutingAssembly().GetTypes()
