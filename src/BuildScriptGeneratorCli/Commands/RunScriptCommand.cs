@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Command(
         Name,
         Description = "Generate startup script for an app.",
-        UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect,
+        ThrowOnUnexpectedArgument = false,
         AllowArgumentSeparator = true)]
     internal class RunScriptCommand : CommandBase
     {
