@@ -49,6 +49,18 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
                 }
             }
 
+            if (this.collection.ListConstants?.Any() ?? false)
+            {
+                foreach (var constant in this.collection.ListConstants)
+                {
+                    string name = constant.Key.Replace(ConstantCollection.NameSeparator[0], '_').ToUpper();
+                    var value = $"\"{string.Join("\" \"", constant.Value)}\"";
+
+                    // Ex: PYTHON_VERSIONS=("3.7.7" "3.8.0")
+                    body.Append($"{name}=({value}){NewLine}");
+                }
+            }
+
             return body.ToString();
         }
     }

@@ -79,6 +79,7 @@ declare -r ACR_BUILD_VSO_FOCAL_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-ubuntu-foc
 declare -r ACR_BUILD_VSO_BULLSEYE_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-debian-bullseye"
 
 declare -r BASE_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/base"
+declare -r BASE_IMAGES_STAGING_REPO="$ACR_DEV_NAME/staging/oryx/base"
 
 # Flag to add information to images through labels (example: build number, commit sha)
 declare -r EMBED_BUILDCONTEXT_IN_IMAGES="${EMBEDBUILDCONTEXTINIMAGES:-false}"
