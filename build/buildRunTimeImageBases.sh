@@ -123,8 +123,13 @@ for dockerFile in $dockerFiles; do
     platformName="${PARTS[0]}"
     platformVersion="${PARTS[1]}"
 
-    # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
-    localImageTagName="$BASE_IMAGES_REPO:$platformName-$platformVersion"
+    if shouldStageRuntimeVersion $platformName $platformVersion ; then
+        # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/staging/oryx/base:{platformName}-{platformVersion}
+        localImageTagName="$BASE_IMAGES_STAGING_REPO:$platformName-$platformVersion"
+    else
+        # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
+        localImageTagName="$BASE_IMAGES_REPO:$platformName-$platformVersion"
+    fi
 
     echo
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."

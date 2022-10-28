@@ -78,3 +78,25 @@ function showDockerImageSizes()
 {
 	docker system df -v
 }
+
+function shouldStageRuntimeVersion()
+{
+	platformName="$1"
+	platformRuntimeVersion="$2"
+
+	declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
+	source $REPO_DIR/build/__stagingRunTimeConstants.sh
+
+	case $platformName in
+	'dotnet'|'dotnetcore')
+		if [[ " ${DOTNETCORE_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
+			echo "Should stage platform '$platformName' version '$platformRuntimeVersion'."
+			return 0
+		fi
+		;;
+	*) 
+		echo "Platform '$platformName' does not support staging."
+		;;
+	esac
+	return 1
+}
