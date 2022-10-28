@@ -9,6 +9,7 @@ set -e
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && cd .. && pwd )
 
 source $REPO_DIR/build/__dotNetCoreRunTimeVersions.sh
+source $REPO_DIR/build/__stagingRunTimeConstants.sh
 
 echo "image Debian type: '$1'"
 ImageDebianFlavor="$1"
@@ -44,4 +45,23 @@ do
 	RUNTIME_BASE_IMAGE_TAG="dotnetcore-$VERSION_DIRECTORY-$DOT_NET_CORE_RUNTIME_BASE_TAG"
 	sed -i "s|$RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER|$RUNTIME_BASE_IMAGE_TAG|g" "$TARGET_DOCKERFILE"
 	sed -i "s|$DOTNET_VERSION_PLACEHOLDER|$VERSION_DIRECTORY|g" "$TARGET_DOCKERFILE"
+	
+	TARGET_BASE_DOCKERFILE="$DIR/$VERSION_DIRECTORY/base.$ImageDebianFlavor.Dockerfile"
+
+	# remove period between version
+	MAJOR_MINOR_VERSION="${SPLIT_VERSION[0]}${SPLIT_VERSION[1]}"
+	# replace current dotnet download url with the new staging ones, and replace any placeholders
+	DOTNET_DOWNLOAD_URL="https://dotnetcli.azureedge.net/dotnet/Runtime/\$NET_CORE_APP_${MAJOR_MINOR_VERSION}/dotnet-runtime-\$NET_CORE_APP_${MAJOR_MINOR_VERSION}-linux-x64.tar.gz"
+	ASPNET_DOWNLOAD_URL="https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/\$ASPNET_CORE_APP_${MAJOR_MINOR_VERSION}/aspnetcore-runtime-\$ASPNET_CORE_APP_${MAJOR_MINOR_VERSION}-linux-x64.tar.gz"
+	STAGING_DOTNET_DOWNLOAD_URL=$(echo $DOTNETCORE_PRIVATE_DOWNLOAD_URL_FORMAT | sed "s/#DOTNETVERSION#/\$NET_CORE_APP_${MAJOR_MINOR_VERSION}/g")
+	STAGING_ASPNET_DOWNLOAD_URL=$(echo $ASPNETCORE_PRIVATE_DOWNLOAD_URL_FORMAT | sed "s/#ASPNETVERSION#/\$ASPNET_CORE_APP_${MAJOR_MINOR_VERSION}/g")
+
+	if [[ " ${DOTNETCORE_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${VERSION_DIRECTORY} " ]]; then
+		echo "Preparing base Dockerfile for staging: $TARGET_BASE_DOCKERFILE..."
+		sed -i "s|$DOTNET_DOWNLOAD_URL|$STAGING_DOTNET_DOWNLOAD_URL|g" "$TARGET_BASE_DOCKERFILE"
+		sed -i "s|$ASPNET_DOWNLOAD_URL|$STAGING_ASPNET_DOWNLOAD_URL|g" "$TARGET_BASE_DOCKERFILE"
+	else
+		sed -i "s|$STAGING_DOTNET_DOWNLOAD_URL|$DOTNET_DOWNLOAD_URL|g" "$TARGET_BASE_DOCKERFILE"
+		sed -i "s|$STAGING_ASPNET_DOWNLOAD_URL|$ASPNET_DOWNLOAD_URL|g" "$TARGET_BASE_DOCKERFILE"
+	fi
 done

@@ -444,12 +444,12 @@
   - type: csharp
     directory: src/BuildScriptGenerator
     namespace: Microsoft.Oryx.BuildScriptGenerator.Go
-- name: staging-runtime-versions
+- name: staging-runtime-constants
   constants:
     dotnetcore-staging-runtime-versions:
     - 7.0
-    dotnetcore-70-staging-download-url: https://dotnetcli.blob.core.windows.net/dotnet-private/internal/7.0.0-RC.2/aspnetcore-runtime-7.0.0-rc.2.22476.2-linux-x64.tar.gz
-    dotnetcore-70-staging-download-sas-token-env-var: DOTNETCORE_70_STAGING_DOWNLOAD_SAS_TOKEN
+    dotnetcore-private-download-url-format: https://dotnetcli.blob.core.windows.net/dotnet-private/internal/#DOTNETVERSION#/dotnet-runtime-#DOTNETVERSION#-linux-x64.tar.gz$DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN
+    aspnetcore-private-download-url-format: https://dotnetcli.blob.core.windows.net/dotnet-private/internal/#ASPNETVERSION#/aspnetcore-runtime-#ASPNETVERSION#-linux-x64.tar.gz$DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator

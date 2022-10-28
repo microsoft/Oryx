@@ -54,7 +54,9 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
                 foreach (var constant in this.collection.ListConstants)
                 {
                     string name = constant.Key.Replace(ConstantCollection.NameSeparator[0], '_').ToUpper();
-                    var value = $"\"{string.Join("\" \"", constant.Value)}\"";
+                    var value = constant.Value.Count != 0
+                        ? $"\"{string.Join("\" \"", constant.Value)}\""
+                        : string.Empty;
 
                     // Ex: PYTHON_VERSIONS=("3.7.7" "3.8.0")
                     body.Append($"{name}=({value}){NewLine}");
