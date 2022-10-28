@@ -34,8 +34,6 @@ ENV ASPNETCORE_URLS=http://+:80 \
     # Enable detection of running in a container
     DOTNET_RUNNING_IN_CONTAINER=true \
     PATH="/opt/dotnetcore-tools:${PATH}"
-#Bake in client certificate path into image to avoid downloading it
-ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 

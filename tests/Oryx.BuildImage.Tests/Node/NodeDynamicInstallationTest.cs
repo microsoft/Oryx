@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-stretch")]
         [InlineData("14.19.1", "14.19.1")]
-        [InlineData("16", NodeVersions.Node16Version)]
+        [InlineData("16", FinalStretchVersions.FinalStretchNode16Version)]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation_DefaultEnvVar(string defaultVersion, string expectedVersion)
         {
             // Arrange

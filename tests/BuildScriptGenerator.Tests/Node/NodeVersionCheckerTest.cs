@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
+using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 {
@@ -17,7 +19,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Checker_Warns_WhenOutdatedVersionUsed()
         {
             // Arrange
-            var checker = new NodeVersionChecker(NullLogger<NodeVersionChecker>.Instance);
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions() { DebianFlavor = OsTypes.DebianBuster });
+            var checker = new NodeVersionChecker(commonOptions, NullLogger<NodeVersionChecker>.Instance);
 
             // Act
             var messages = checker.CheckToolVersions(
@@ -32,7 +35,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Checker_DoesNotWarn_WhenLtsVersionUsed()
         {
             // Arrange
-            var checker = new NodeVersionChecker(NullLogger<NodeVersionChecker>.Instance);
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions() { DebianFlavor = OsTypes.DebianBuster });
+            var checker = new NodeVersionChecker(commonOptions, NullLogger<NodeVersionChecker>.Instance);
 
             // Act
             var ltsVer = NodeConstants.NodeLtsVersion;
@@ -47,7 +51,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void Checker_DoesNotWarn_WhenCurrentVersionUsed()
         {
             // Arrange
-            var checker = new NodeVersionChecker(NullLogger<NodeVersionChecker>.Instance);
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions() { DebianFlavor = OsTypes.DebianBuster });
+            var checker = new NodeVersionChecker(commonOptions, NullLogger<NodeVersionChecker>.Instance);
 
             // Act
             var messages = checker.CheckToolVersions(
