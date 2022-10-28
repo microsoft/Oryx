@@ -291,6 +291,7 @@
     testing-sdk-storage-url-key-name: ORYX_TEST_SDK_STORAGE_URL
     dev-sdk-storage-base-url: https://oryxsdksdev.blob.core.windows.net
     sandbox-sdk-storage-base-url: https://oryxsdkssandbox.blob.core.windows.net
+    private-sdk-storage-base-url: https://oryxsdksprivate.blob.core.windows.net
     prod-sdk-storage-base-url: https://oryxsdksprod.blob.core.windows.net
     prod-backup-sdk-storage-base-url: https://oryxsdksprodbackup.blob.core.windows.net
     prod-sdk-cdn-storage-base-url: https://oryx-cdn.microsoft.io
