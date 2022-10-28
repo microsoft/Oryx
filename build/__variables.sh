@@ -67,6 +67,7 @@ declare -r DEVBOX_RUNTIME_IMAGES_REPO_PREFIX="oryx"
 
 declare -r ACR_DEV_NAME="oryxdevmcr.azurecr.io"
 declare -r ACR_PUBLIC_PREFIX="$ACR_DEV_NAME/public/oryx"
+declare -r ACR_STAGING_PREFIX="$ACR_DEV_NAME/staging/oryx"
 declare -r ACR_BUILD_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/build"
 declare -r ACR_CLI_BUILD_IMAGE_REPO="$ACR_DEV_NAME/public/oryx/cli"
 declare -r ACR_RUNTIME_IMAGES_REPO="$ACR_PUBLIC_PREFIX"

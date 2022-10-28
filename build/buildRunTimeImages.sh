@@ -124,11 +124,22 @@ fi
 for dockerFile in $dockerFiles; do
     dockerFileDir=$(dirname "${dockerFile}")
 
-    # Set $getTagName_result to the following format: {platformName}:{platformVersion}
+    # get tag name without os type first, so we can extract platform name and version
+    getTagName $dockerFileDir
+    IFS=':' read -ra PARTS <<< "$getTagName_result"
+    platformName="${PARTS[0]}"
+    platformVersion="${PARTS[1]}"
+
+    # Set $getTagName_result to the following format: {platformName}:{platformVersion}-{osType}
     getTagName $dockerFileDir debian-$runtimeImageDebianFlavor
 
-    # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
-    localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result"
+    if shouldStageRuntimeVersion $platformName $platformVersion ; then
+        # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/staging/oryx/{platformName}:{platformVersion}-{osType}
+        localImageTagName="$ACR_STAGING_PREFIX/$getTagName_result"
+    else
+        # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}-{osType}
+        localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result"
+    fi
 
     echo
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
@@ -164,8 +175,13 @@ for dockerFile in $dockerFiles; do
         # the name of the branch the build is against
         uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 
-        # Set $acrRuntimeImageTagNameRepo to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
-        acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
+        if shouldStageRuntimeVersion $platformName $platformVersion ; then
+            # Set $acrRuntimeImageTagNameRepo to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
+            acrRuntimeImageTagNameRepo="$ACR_STAGING_PREFIX/$getTagName_result"
+        else
+            # Set $acrRuntimeImageTagNameRepo to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
+            acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
+        fi
 
         # Tag the image to follow a similar format to .../python:3.7-Oryx-CI.20191028.1
         docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-$uniqueTag"
