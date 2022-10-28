@@ -14,6 +14,7 @@ RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
 FROM oryxdevmcr.azurecr.io/private/oryx/oryx-run-base-${DEBIAN_FLAVOR}
 ARG DEBIAN_FLAVOR
+ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
