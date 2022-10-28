@@ -44,6 +44,7 @@ func GetSetupScript(platformName string, version string, installationDir string)
 	}
 
 	tarFile := fmt.Sprintf("%s.tar.gz", version)
+	debianFlavor := os.Getenv(consts.DebianFlavor)
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n")
 	scriptBuilder.WriteString("set -e\n")
@@ -52,13 +53,24 @@ func GetSetupScript(platformName string, version string, installationDir string)
 		fmt.Sprintf("echo Downloading '%s' version '%s' to '%s'...\n", platformName, version, installationDir))
 	scriptBuilder.WriteString(fmt.Sprintf("mkdir -p %s\n", installationDir))
 	scriptBuilder.WriteString(fmt.Sprintf("cd %s\n", installationDir))
-	scriptBuilder.WriteString(
-		fmt.Sprintf("curl -D headers.txt -SL \"%s/%s/%s-%s.tar.gz\" --output %s\n",
-			sdkStorageBaseUrl,
-			platformName,
-			platformName,
-			version,
-			tarFile))
+	if debianFlavor == "" || debianFlavor == consts.DebianStretch {
+		scriptBuilder.WriteString(
+			fmt.Sprintf("curl -D headers.txt -SL \"%s/%s/%s-%s.tar.gz\" --output %s\n",
+				sdkStorageBaseUrl,
+				platformName,
+				platformName,
+				version,
+				tarFile))
+	} else {
+		scriptBuilder.WriteString(
+			fmt.Sprintf("curl -D headers.txt -SL \"%s/%s/%s-%s-%s.tar.gz\" --output %s\n",
+				sdkStorageBaseUrl,
+				platformName,
+				platformName,
+				debianFlavor,
+				version,
+				tarFile))
+	}
 	// Search for header ignoring case
 	scriptBuilder.WriteString("headerName=\"x-ms-meta-checksum\"\n")
 	scriptBuilder.WriteString(fmt.Sprintf(
