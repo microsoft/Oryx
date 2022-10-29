@@ -67,7 +67,8 @@ labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
 
 dockerFileName="base.$runtimeImageDebianFlavor.Dockerfile"
-dockerFiles=$(find $runtimeImagesSourceDir -type f -name $dockerFileName)
+stagingDockerFileName="base.$runtimeImageDebianFlavor.staging.Dockerfile"
+dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name $dockerFileName -o -name $stagingDockerFileName \))
 
 busterNodeDockerFiles=()
 
@@ -124,6 +125,9 @@ for dockerFile in $dockerFiles; do
     platformVersion="${PARTS[1]}"
 
     if shouldStageRuntimeVersion $platformName $platformVersion ; then
+        if [[ "$dockerFile" == *"staging"* ]]; then
+            continue
+        fi
         # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/staging/oryx/base:{platformName}-{platformVersion}
         localImageTagName="$BASE_IMAGES_STAGING_REPO:$platformName-$platformVersion"
     else
@@ -135,17 +139,30 @@ for dockerFile in $dockerFiles; do
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
 
     cd $REPO_DIR
-    echo
 
-    docker build -f $dockerFile \
-        -t $localImageTagName \
-        --build-arg CACHEBUST=$(date +%s) \
-        --build-arg NODE14_VERSION=$NODE14_VERSION \
-        --build-arg NODE16_VERSION=$NODE16_VERSION \
-        --build-arg NODE18_VERSION=$NODE18_VERSION \
-        --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
-        $labels \
-        .
+    echo
+    if shouldStageRuntimeVersion $platformName $platformVersion ; then
+        DOCKER_BUILDKIT=1 docker build -f $dockerFile \
+            -t $localImageTagName \
+            --build-arg CACHEBUST=$(date +%s) \
+            --build-arg NODE14_VERSION=$NODE14_VERSION \
+            --build-arg NODE16_VERSION=$NODE16_VERSION \
+            --build-arg NODE18_VERSION=$NODE18_VERSION \
+            --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
+            --secret id=DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN,env=DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN \
+            $labels \
+            .
+    else
+        docker build -f $dockerFile \
+            -t $localImageTagName \
+            --build-arg CACHEBUST=$(date +%s) \
+            --build-arg NODE14_VERSION=$NODE14_VERSION \
+            --build-arg NODE16_VERSION=$NODE16_VERSION \
+            --build-arg NODE18_VERSION=$NODE18_VERSION \
+            --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
+            $labels \
+            .
+    fi
 
     # Retag build image with build numbers as ACR tags
     if [ "$AGENT_BUILD" == "true" ]

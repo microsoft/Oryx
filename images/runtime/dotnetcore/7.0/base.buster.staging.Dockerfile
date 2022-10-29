@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.3
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS tools-install
@@ -38,14 +39,15 @@ ENV ASPNETCORE_URLS=http://+:80 \
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 
 # Install .NET Core
-RUN set -ex \
-# based on resolution on https://github.com/NuGet/Announcements/issues/49#issue-795386700
+RUN --mount=type=secret,id=DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN \
+    set -e \
+    # based on resolution on https://github.com/NuGet/Announcements/issues/49#issue-795386700
     && apt-get remove ca-certificates -y \
     && apt-get purge ca-certificates -y \
     && apt-get update \
     && apt-get install -f ca-certificates=20200601~deb10u2 -y --no-install-recommends \
     && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
-    && curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Runtime/$NET_CORE_APP_70/dotnet-runtime-$NET_CORE_APP_70-linux-x64.tar.gz \
+    && curl -SL --output dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet-private/internal/$NET_CORE_APP_70/dotnet-runtime-$NET_CORE_APP_70-linux-x64.tar.gz$(cat /run/secrets/DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN) \
     && echo "$NET_CORE_APP_70_SHA dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
@@ -53,7 +55,7 @@ RUN set -ex \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
     # Install ASP.NET Core
     && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
-    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_70/aspnetcore-runtime-$ASPNET_CORE_APP_70-linux-x64.tar.gz \
+    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet-private/internal/$ASPNET_CORE_APP_70/aspnetcore-runtime-$ASPNET_CORE_APP_70-linux-x64.tar.gz$(cat /run/secrets/DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN) \
     && echo "$ASPNET_CORE_APP_70_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \

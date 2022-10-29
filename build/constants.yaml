@@ -450,8 +450,8 @@
   constants:
     dotnetcore-staging-runtime-versions:
     - 7.0
-    dotnetcore-private-download-url-format: https://dotnetcli.blob.core.windows.net/dotnet-private/internal/#DOTNETVERSION#/dotnet-runtime-#DOTNETVERSION#-linux-x64.tar.gz$DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN
-    aspnetcore-private-download-url-format: https://dotnetcli.blob.core.windows.net/dotnet-private/internal/#ASPNETVERSION#/aspnetcore-runtime-#ASPNETVERSION#-linux-x64.tar.gz$DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN
+    dotnetcore-private-download-url-format: https://dotnetcli.blob.core.windows.net/dotnet-private/internal/#DOTNETVERSION#/dotnet-runtime-#DOTNETVERSION#-linux-x64.tar.gz
+    aspnetcore-private-download-url-format: https://dotnetcli.blob.core.windows.net/dotnet-private/internal/#ASPNETVERSION#/aspnetcore-runtime-#ASPNETVERSION#-linux-x64.tar.gz
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
