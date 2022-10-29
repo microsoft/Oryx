@@ -34,7 +34,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string NetCoreApp70Sha = "2294605e371ec575e59baa1eacf973d7dd6761d5d161f4988ed6c51d5db2795a4dc95709d6eaf38ddb2caee6f0551225b49be5cbe42233c2ffae3a0f63d4412c";
         public const string AspnetCoreApp70 = "7.0.0-rc.2.22476.2";
         public const string AspnetCoreApp70Sha = "1941cd6ea3bea31d970029c34acf0d60b63d1e7fba39086be1a79177a6f87f2b0300bf4008e96a5235d52bc74a41503b21b088143cd306058d42dd3ce8252af0";
-        public const string DotnetcorePublicDownloadUrlFormat = "https://dotnetcli.azureedge.net/dotnet/Runtime/#DOTNETVERSION#/dotnet-runtime-#DOTNETVERSION#-linux-x64.tar.gz";
-        public const string AspnetcorePublicDownloadUrlFormat = "https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/#ASPNETVERSION#/aspnetcore-runtime-#ASPNETVERSION#-linux-x64.tar.gz";
     }
 }

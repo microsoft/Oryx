@@ -6,8 +6,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class StagingRuntimeConstants
     {
-        public const string DotnetcorePrivateDownloadUrlFormat = "https://dotnetcli.blob.core.windows.net/dotnet-private/internal/#DOTNETVERSION#/dotnet-runtime-#DOTNETVERSION#-linux-x64.tar.gz";
-        public const string AspnetcorePrivateDownloadUrlFormat = "https://dotnetcli.blob.core.windows.net/dotnet-private/internal/#ASPNETVERSION#/aspnetcore-runtime-#ASPNETVERSION#-linux-x64.tar.gz";
         public static readonly List<string> DotnetcoreStagingRuntimeVersions = new List<string> { "7.0" };
     }
 }
