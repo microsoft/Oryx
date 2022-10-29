@@ -11,6 +11,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && cd .. && pwd )
 source $REPO_DIR/build/__dotNetCoreRunTimeVersions.sh
 source $REPO_DIR/build/__stagingRunTimeConstants.sh
 source $REPO_DIR/build/__functions.sh
+source $REPO_DIR/build/__variables.sh
 
 echo "image Debian type: '$1'"
 ImageDebianFlavor="$1"
@@ -49,7 +50,7 @@ do
 	sed -i "s|$DOTNET_VERSION_PLACEHOLDER|$VERSION_DIRECTORY|g" "$TARGET_DOCKERFILE"
 	
 	if shouldStageRuntimeVersion "dotnetcore" $VERSION_DIRECTORY ; then
-		sed -i "s|$BASE_IMAGE_REPO_PLACEHOLDER|oryxdevmcr.azurecr.io/staging/oryx/base|g" "$TARGET_DOCKERFILE"
+		sed -i "s|$BASE_IMAGE_REPO_PLACEHOLDER|$BASE_IMAGES_STAGING_REPO|g" "$TARGET_DOCKERFILE"
 	else
 		sed -i "s|$BASE_IMAGE_REPO_PLACEHOLDER|mcr.microsoft.com/oryx/base|g" "$TARGET_DOCKERFILE"
 	fi
