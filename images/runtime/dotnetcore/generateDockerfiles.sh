@@ -9,7 +9,7 @@ set -e
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && cd .. && pwd )
 
 source $REPO_DIR/build/__dotNetCoreRunTimeVersions.sh
-source $REPO_DIR/build/__stagingRunTimeConstants.sh
+source $REPO_DIR/build/__stagingRuntimeConstants.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__variables.sh
 
