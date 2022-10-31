@@ -12,6 +12,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__nodeVersions.sh
+source $REPO_DIR/build/__stagingRuntimeConstants.sh
 
 declare -r NODE_BUSTER_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
 declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE18_VERSION)

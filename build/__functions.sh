@@ -84,8 +84,6 @@ function shouldStageRuntimeVersion()
 	platformName="$1"
 	platformRuntimeVersion="$2"
 
-	source $REPO_DIR/build/__stagingRunTimeConstants.sh
-
 	case $platformName in
 	'dotnet'|'dotnetcore')
 		if [[ " ${DOTNETCORE_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then

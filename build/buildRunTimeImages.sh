@@ -13,6 +13,7 @@ source $REPO_DIR/build/__extVarNames.sh
 source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__sdkStorageConstants.sh
+source $REPO_DIR/build/__stagingRuntimeConstants.sh
 
 # https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
 PARAMS=""
