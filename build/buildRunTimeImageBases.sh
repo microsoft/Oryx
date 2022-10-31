@@ -125,6 +125,7 @@ for dockerFile in $dockerFiles; do
     platformVersion="${PARTS[1]}"
 
     if shouldStageRuntimeVersion $platformName $platformVersion ; then
+        # skip the normal base.{ostype}.Dockerfile if this version should be staged
         if [[ "$dockerFile" != *"staging"* ]]; then
             continue
         fi
