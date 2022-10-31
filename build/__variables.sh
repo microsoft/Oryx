@@ -67,6 +67,7 @@ declare -r DEVBOX_RUNTIME_IMAGES_REPO_PREFIX="oryx"
 
 declare -r ACR_DEV_NAME="oryxdevmcr.azurecr.io"
 declare -r ACR_PUBLIC_PREFIX="$ACR_DEV_NAME/public/oryx"
+declare -r ACR_STAGING_PREFIX="$ACR_DEV_NAME/staging/oryx"
 declare -r ACR_BUILD_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/build"
 declare -r ACR_CLI_BUILD_IMAGE_REPO="$ACR_DEV_NAME/public/oryx/cli"
 declare -r ACR_RUNTIME_IMAGES_REPO="$ACR_PUBLIC_PREFIX"
@@ -78,7 +79,8 @@ declare -r ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:github-ac
 declare -r ACR_BUILD_VSO_FOCAL_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-ubuntu-focal"
 declare -r ACR_BUILD_VSO_BULLSEYE_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-debian-bullseye"
 
-declare -r BASE_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/base"
+declare -r BASE_IMAGES_PUBLIC_REPO="$ACR_DEV_NAME/public/oryx/base"
+declare -r BASE_IMAGES_STAGING_REPO="$ACR_DEV_NAME/staging/oryx/base"
 
 # Flag to add information to images through labels (example: build number, commit sha)
 declare -r EMBED_BUILDCONTEXT_IN_IMAGES="${EMBEDBUILDCONTEXTINIMAGES:-false}"

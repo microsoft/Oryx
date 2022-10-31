@@ -7,8 +7,7 @@
 set -o pipefail
 
 declare -r artifactsDir="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images"
-declare -r outFileName="base-images-mcr.txt" 
-declare -r acrProdRepo="$2.azurecr.io/public/oryx"
+declare -r outFileName="base-images-mcr.txt"
 declare -r buildNumber=$BUILD_BUILDNUMBER
  
 function retagImageWithStagingRepository()
