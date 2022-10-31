@@ -142,6 +142,8 @@ for dockerFile in $dockerFiles; do
 
     echo
     if shouldStageRuntimeVersion $platformName $platformVersion ; then
+        # pass in env var as a secret, which is mounted during a single run command of the build
+        # https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md#secret
         DOCKER_BUILDKIT=1 docker build -f $dockerFile \
             -t $localImageTagName \
             --build-arg CACHEBUST=$(date +%s) \
