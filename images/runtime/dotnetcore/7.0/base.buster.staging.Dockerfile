@@ -42,7 +42,7 @@ COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 
 # Install .NET Core
 # mount the secret sas token to pull the binaries, and make sure we do not print to docker build logs
-RUN --mount=type=secret,id=DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN \
+RUN --mount=type=secret,id=dotnet_storage_account_token_id \
     set -e \
     # based on resolution on https://github.com/NuGet/Announcements/issues/49#issue-795386700
     && apt-get remove ca-certificates -y \
