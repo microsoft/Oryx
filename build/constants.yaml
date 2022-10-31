@@ -90,10 +90,10 @@
     net-core-app-60-sha: a6df2cfef73047247bd36f51eaf696f616c6aa9b428e42f219bf91dcf05c03dff817a8ec826740002c8aa83df2fce8a7ace562ad2e2956789542f0b8ab8b1173
     aspnet-core-app-60: 6.0.9
     aspnet-core-app-60-sha: e808036155bc324335c309aaf948b2be1940a62eaf0135752989644698653c8f3a5ce310c3ee6742e3af73dbe175c6e529298eedf6eeb31cc38bfeab628f6d7b
-    net-core-app-70: 7.0.0-rc.2.22472.3
-    net-core-app-70-sha: 2294605e371ec575e59baa1eacf973d7dd6761d5d161f4988ed6c51d5db2795a4dc95709d6eaf38ddb2caee6f0551225b49be5cbe42233c2ffae3a0f63d4412c
-    aspnet-core-app-70: 7.0.0-rc.2.22476.2
-    aspnet-core-app-70-sha: 1941cd6ea3bea31d970029c34acf0d60b63d1e7fba39086be1a79177a6f87f2b0300bf4008e96a5235d52bc74a41503b21b088143cd306058d42dd3ce8252af0
+    net-core-app-70: 7.0.0
+    net-core-app-70-sha: TODOTODOTODOTODOTODOTODO
+    aspnet-core-app-70: 7.0.0
+    aspnet-core-app-70-sha: TODOTODOTODOTODOTODOTODO
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator/DotNetCore

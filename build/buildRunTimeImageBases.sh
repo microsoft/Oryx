@@ -125,7 +125,7 @@ for dockerFile in $dockerFiles; do
     platformVersion="${PARTS[1]}"
 
     if shouldStageRuntimeVersion $platformName $platformVersion ; then
-        if [[ "$dockerFile" == *"staging"* ]]; then
+        if [[ "$dockerFile" != *"staging"* ]]; then
             continue
         fi
         # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/staging/oryx/base:{platformName}-{platformVersion}

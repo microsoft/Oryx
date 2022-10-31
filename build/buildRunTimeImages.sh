@@ -176,7 +176,7 @@ for dockerFile in $dockerFiles; do
         uniqueTag="$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 
         if shouldStageRuntimeVersion $platformName $platformVersion ; then
-            # Set $acrRuntimeImageTagNameRepo to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}
+            # Set $acrRuntimeImageTagNameRepo to the following format: oryxdevmcr.azurecr.io/staging/oryx/{platformName}:{platformVersion}
             acrRuntimeImageTagNameRepo="$ACR_STAGING_PREFIX/$getTagName_result"
         else
             # Set $acrRuntimeImageTagNameRepo to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}

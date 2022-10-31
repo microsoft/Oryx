@@ -49,6 +49,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
                 }
             }
 
+            // output the yaml list constants to shell with format CONSTANT_NAME=("val1" "val2" "val3")
             if (this.collection.ListConstants?.Any() ?? false)
             {
                 foreach (var constant in this.collection.ListConstants)
