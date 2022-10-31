@@ -5,15 +5,14 @@
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal static class ListBlobsHelper
     {
-        public static XDocument GetAllBlobs(string sdkStorageBaseUrl, string platform, System.Net.Http.HttpClient httpClient)
+        public static XDocument GetAllBlobs(string sdkStorageBaseUrl, string platform, System.Net.Http.HttpClient httpClient, string token)
         {
-            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform, string.Empty);
+            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform, string.Empty, token);
             var blobList = httpClient
                 .GetStringAsync(url)
                 .Result;
@@ -24,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // and consolidate blobs from all the pages.
             do
             {
-                url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform, marker);
+                url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform, marker, token);
                 var blobListFromNextMarker = httpClient.GetStringAsync(url).Result;
                 var xdocFromNextMarker = XDocument.Parse(blobListFromNextMarker);
                 marker = xdocFromNextMarker.Root.Element("NextMarker").Value;

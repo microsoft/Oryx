@@ -51,7 +51,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-            var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient);
+            var token = this.commonOptions.OryxSdkStorageAccountAccessToken;
+            var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient, token);
             var supportedVersions = new List<string>();
 
             var isStretch = string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase);

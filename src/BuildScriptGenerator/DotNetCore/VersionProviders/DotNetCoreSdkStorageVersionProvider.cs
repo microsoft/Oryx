@@ -57,7 +57,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 var httpClient = this.HttpClientFactory.CreateClient("general");
                 var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-                var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, DotNetCoreConstants.PlatformName, httpClient);
+                var token = this.commonOptions.OryxSdkStorageAccountAccessToken;
+                var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, DotNetCoreConstants.PlatformName, httpClient, token);
 
                 // keys represent runtime version, values represent sdk version
                 var supportedVersions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);

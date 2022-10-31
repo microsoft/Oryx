@@ -17,7 +17,7 @@ namespace Oryx.Integration.Tests
             ITestOutputHelper output,
             TestTempDirTestFixture testTempDirTestFixture,
             RepoRootDirTestFixture repoRootDirTestFixture)
-            : base(SdkStorageConstants.ProdSdkStorageBaseUrl, output, testTempDirTestFixture, repoRootDirTestFixture)
+            : base(SdkStorageConstants.ProdSdkStorageBaseUrl, output, testTempDirTestFixture, repoRootDirTestFixture, string.Empty)
         {
         }
     }
