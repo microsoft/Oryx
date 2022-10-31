@@ -25,7 +25,7 @@ namespace Oryx.Integration.Tests
     {
         private readonly string _storageUrl;
         private readonly string _repoRootDir;
-        private readonly string _token;
+        private readonly string _sdkStorageAccountAccessToken;
 
         private readonly string[] _debianFlavors = 
         {
@@ -42,7 +42,7 @@ namespace Oryx.Integration.Tests
         {
             _storageUrl = storageUrl;
             _repoRootDir = repoRootDirTestFixture.RepoRootDirPath;
-            _token = token;
+            _sdkStorageAccountAccessToken = token;
         }
 
         [Fact]
@@ -202,7 +202,7 @@ namespace Oryx.Integration.Tests
 
         private XDocument GetMetadata(string platformName)
         {
-            return ListBlobsHelper.GetAllBlobs(_storageUrl, platformName, _httpClient, _token);
+            return ListBlobsHelper.GetAllBlobs(_storageUrl, platformName, _httpClient, _sdkStorageAccountAccessToken);
         }
 
         private List<string> GetVersionsFromContainer(string debianFlavor, string platformName)

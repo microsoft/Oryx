@@ -10,9 +10,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal static class ListBlobsHelper
     {
-        public static XDocument GetAllBlobs(string sdkStorageBaseUrl, string platform, System.Net.Http.HttpClient httpClient, string token)
+        public static XDocument GetAllBlobs(string sdkStorageBaseUrl, string platform, System.Net.Http.HttpClient httpClient, string oryxSdkStorageAccountAccessToken)
         {
-            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform, string.Empty, token);
+            if (oryxSdkStorageAccountAccessToken.Length > 0 && oryxSdkStorageAccountAccessToken[0].Equals('?'))
+            {
+                oryxSdkStorageAccountAccessToken = oryxSdkStorageAccountAccessToken.Substring(1, oryxSdkStorageAccountAccessToken.Length - 1);
+            }
+
+            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform, string.Empty, oryxSdkStorageAccountAccessToken);
             var blobList = httpClient
                 .GetStringAsync(url)
                 .Result;
@@ -23,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // and consolidate blobs from all the pages.
             do
             {
-                url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform, marker, token);
+                url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform, marker, oryxSdkStorageAccountAccessToken);
                 var blobListFromNextMarker = httpClient.GetStringAsync(url).Result;
                 var xdocFromNextMarker = XDocument.Parse(blobListFromNextMarker);
                 marker = xdocFromNextMarker.Root.Element("NextMarker").Value;

@@ -118,7 +118,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("else")
                 .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz{sdkStorageAccountAccessToken}\" " +
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")
