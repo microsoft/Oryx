@@ -85,6 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string directoryToInstall = null)
         {
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
+            var sdkStorageAccountAccessToken = this.CommonOptions.OryxSdkStorageAccountAccessToken;
 
             var versionDirInTemp = directoryToInstall;
             if (string.IsNullOrEmpty(versionDirInTemp))
@@ -117,7 +118,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("else")
                 .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" " +
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz{sdkStorageAccountAccessToken}\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")
