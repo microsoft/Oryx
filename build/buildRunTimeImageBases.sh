@@ -134,7 +134,7 @@ for dockerFile in $dockerFiles; do
         localImageTagName="$BASE_IMAGES_STAGING_REPO:$platformName-$platformVersion"
     else
         # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
-        localImageTagName="$BASE_IMAGES_REPO:$platformName-$platformVersion"
+        localImageTagName="$BASE_IMAGES_PUBLIC_REPO:$platformName-$platformVersion"
     fi
 
     echo
