@@ -344,10 +344,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Theory]
-        [InlineData(null, "3.8.12", null, "3.8.12")]
-        [InlineData(null, "3.8.12", "3.7.9", "3.8.12")]
-        [InlineData(null, null, "3.7.9", "3.7.9")]
-        [InlineData("3.9.7", "3.8.12", "3.7.9", "3.9.7")]
+        [InlineData(null, "3.8.15", null, "3.8.15")]
+        [InlineData(null,"3.8.15","3.7.15","3.8.15")]
+        [InlineData(null,null,"3.7.15","3.7.15")]
+        [InlineData("3.9.15", "3.8.15", "3.7.15", "3.9.15")]
         public void Detect_ReturnsExpectedVersion_BasedOnHierarchy(
             string detectedVersion,
             string envVarDefaultVersion,
