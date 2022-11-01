@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -99,7 +98,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             // get default version
             var defaultVersionContent = httpClient
-                .GetStringAsync(defaultVersionUrl)
+                .GetStringAsync($"{defaultVersionUrl}{this.commonOptions.OryxSdkStorageAccountAccessToken}")
                 .Result;
 
             string defaultVersion = null;
