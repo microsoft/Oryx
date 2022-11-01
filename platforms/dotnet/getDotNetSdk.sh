@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -ex
+set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
@@ -49,7 +49,7 @@ getDotNetCoreSdk() {
 			downloadUrl="https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$sdkVersion/dotnet-sdk-$sdkVersion-linux-x64.tar.gz"
 		elif  [[ "$downloadUrl" == *"dotnet-private"* ]]; then
 			# SAS-token is passed as en env-variable on the Oryx-PlatformBinary-DotNetCore pipeline
-			downloadUrl+=$PRIVATESTORAGESASTOKEN
+			downloadUrl+=$DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN
 		fi
 		
 

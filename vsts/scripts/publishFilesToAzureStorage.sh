@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -ex
+set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
