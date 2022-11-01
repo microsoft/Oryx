@@ -54,6 +54,6 @@
 7.0.100-rc.1.22431.12, 7ecebf284bd1546e1575b9561f4e64bbb8d69680a7bbda6f06ff6fbf687d3a6c653b0e6a6c569241455c6f83620f0ddbe193ca5cd52384ac062c8565dd22b859,
 7.0.100-rc.2.22477.23, 22db5d1d16f6fcedfc46f87896920425b5d9b61d09c47d254d6ac731c6d853657882b21faf21f313ed20b33e6331d01b9f723b2c586f0e0cf5acc5ed570b0260,
 
-7.0.100-rc.2.22477.23, 1941cd6ea3bea31d970029c34acf0d60b63d1e7fba39086be1a79177a6f87f2b0300bf4008e96a5235d52bc74a41503b21b088143cd306058d42dd3ce8252af0, https://dotnetcli.blob.core.windows.net/dotnet-private/Internal/7.0.100-rc.2.22477.23/dotnet-sdk-7.0.100-rc.2.22477.23-linux-x64.tar.gz,
+7.0.100-rc.2.22477.23, 22db5d1d16f6fcedfc46f87896920425b5d9b61d09c47d254d6ac731c6d853657882b21faf21f313ed20b33e6331d01b9f723b2c586f0e0cf5acc5ed570b0260, https://dotnetcli.blob.core.windows.net/dotnet-private/Internal/7.0.100-rc.2.22477.23/dotnet-sdk-7.0.100-rc.2.22477.23-linux-x64.tar.gz,
 
 # NOTE: Make sure to set the default version in 'defaultVersion.txt' file
