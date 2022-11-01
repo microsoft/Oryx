@@ -11,6 +11,7 @@
     <AssemblyVersion>0.2</AssemblyVersion>
     <!-- Remove when proper XML documentation is added to the project. -->
     <DisableDocRequirement>true</DisableDocRequirement>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
