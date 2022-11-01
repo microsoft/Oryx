@@ -19,6 +19,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Building platform binaries'
+  env:
+    PRIVATESTORAGESASTOKEN: $(PrivateStorageSASToken)
   inputs:
     scriptPath: ./build/buildPlatformBinaries.sh
     args: ${{ parameters.platformName }} ${{ parameters.debianFlavor }} https://${{ parameters.destinationSdkStorageAccountName }}.blob.core.windows.net
