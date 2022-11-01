@@ -15,7 +15,7 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
-FROM mcr.microsoft.com/oryx/base:%RUNTIME_BASE_IMAGE_TAG%
+FROM %BASE_IMAGE_REPO%:%RUNTIME_BASE_IMAGE_TAG%
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY

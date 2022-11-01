@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 EnableDynamicInstall = enableDynamicInstall
             });
 
-            var onDiskProvider = new TestNodeOnDiskVersionProvider();
+            var onDiskProvider = new TestNodeOnDiskVersionProvider(commonOptions);
             var storageProvider = new TestNodeSdkStorageVersionProvider(
                 commonOptions,
                 new TestHttpClientFactory(),
@@ -101,8 +101,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
         private class TestNodeOnDiskVersionProvider : NodeOnDiskVersionProvider
         {
-            public TestNodeOnDiskVersionProvider()
-                : base(NullLogger<NodeOnDiskVersionProvider>.Instance)
+            public TestNodeOnDiskVersionProvider(IOptions<BuildScriptGeneratorOptions> commonOptions)
+                : base(commonOptions, NullLogger<NodeOnDiskVersionProvider>.Instance)
             {
             }
 

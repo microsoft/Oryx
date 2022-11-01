@@ -1,5 +1,5 @@
 parameters:
-  ascName: oryxSP
+  ascName: oryx-automation-service-principal
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
   imageType: null
