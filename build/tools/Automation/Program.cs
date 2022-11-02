@@ -33,7 +33,6 @@ namespace Microsoft.Oryx.Automation
         private static string repoAbsolutePath = string.Empty;
         private static HashSet<string> prodSdkVersions = new HashSet<string>();
 
-        // private static HashSet<string> sdkVersions = new HashSet<string>();
         public static async Task<int> Main(string[] args)
         {
             // TODO: use dotnet parameters instead and handle invalid date
