@@ -42,7 +42,7 @@ jobs:
           CHANGED=$(git diff-index --name-only HEAD --)
           if [ -n "$CHANGED" ]; then
               echo "No changes to commit. Cancelling workflow..."
-              exit 0
+              exit 1
           fi
 
           git config user.name 'William Hernandez'
