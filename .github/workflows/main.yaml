@@ -41,6 +41,7 @@ jobs:
               echo "No changes to commit. Cancelling workflow..."
               exit 1
           fi
+          echo ${changed}
 
       - name: Run Generate Constants
         run: ./build/generateConstants.sh
