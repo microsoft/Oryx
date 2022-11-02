@@ -36,7 +36,7 @@ jobs:
       - name: Check if any changes exist.
         run: |
           changed=$(git diff-index --name-only HEAD --)
-          if [ -n "${changed}" ]; then
+          if [ -z "${changed}" ]; then
               echo "changed ${changed}"
               echo "No changes to commit. Cancelling workflow..."
               exit 1
