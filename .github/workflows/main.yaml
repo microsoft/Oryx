@@ -36,12 +36,11 @@ jobs:
       - name: Check if any changes exist.
         run: |
           changed=$(git diff-index --name-only HEAD --)
+          echo ${changed}
           if [ -z "${changed}" ]; then
-              echo "changed ${changed}"
               echo "No changes to commit. Cancelling workflow..."
               exit 1
           fi
-          echo ${changed}
 
       - name: Run Generate Constants
         run: ./build/generateConstants.sh
