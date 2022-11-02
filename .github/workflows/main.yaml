@@ -33,12 +33,12 @@ jobs:
 
           dotnet run --project build/tools/Automation/Automation.csproj ${releaseDate} ${{ github.workspace }}
 
-      - name: Check if any changes exist.
+      - name: Check if any git changes exist.
         run: |
-          changed=$(git diff-index --name-only HEAD --)
-          echo ${changed}
-          if [ -z "${changed}" ]; then
-              echo "No changes to commit. Cancelling workflow..."
+          changes=$(git diff-index --name-only HEAD --)
+          echo ${changes}
+          if [ -z "${changes}" ]; then
+              echo "No git changes to commit. Cancelling workflow..."
               exit 1
           fi
 

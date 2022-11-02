@@ -131,7 +131,7 @@ namespace Microsoft.Oryx.Automation
             return platformConstants;
         }
 
-        public override async Task CacheSdkVersionsAsync(string platform)
+        public override async Task PullSdkVersionsAsync(string platform)
         {
             string url = $"https://oryxsdks.blob.core.windows.net/{platform}" +
             "?restype=container&comp=list&include=metadata";
