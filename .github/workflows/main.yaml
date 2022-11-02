@@ -29,6 +29,8 @@ jobs:
             echo "Defaulting to todays date ${releaseDate}"
           fi
 
+          echo "releaseDate=${releaseDate}" >> $GITHUB_ENV
+
           dotnet run --project build/tools/Automation/Automation.csproj ${releaseDate} ${{ github.workspace }}
 
       - name: Run Generate Constants
@@ -37,9 +39,16 @@ jobs:
       # TODO: replace William with new bot GitHub Account credentials
       - name: Create commits
         run: |
+          CHANGED=$(git diff-index --name-only HEAD --)
+          if [ -n "$CHANGED" ]; then
+              echo "No changes to commit. Cancelling workflow..."
+              exit 0
+          fi
+
           git config user.name 'William Hernandez'
           git config user.email 'williamhe@microsoft.com'
           git add -A
+          git checkout doc/supportedPlatformVersions.md
           git commit -m "Add new SDK versions"
       
       # TODO: paramterize branch/title platfrom name
@@ -51,10 +60,10 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
         with:
-          branch: automation/add-new-dotnet-release
-          title: New DotNetCore Sdks
+          branch: automation/add-new-dotnet-release-"${{ env.releaseDate }}"
+          title: New DotNetCore Sdks "${{ env.releaseDate }}"
 
       - name: Run Azure Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-"${{ env.releaseDate }}"
