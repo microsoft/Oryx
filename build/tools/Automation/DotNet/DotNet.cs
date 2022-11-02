@@ -34,10 +34,12 @@ namespace Microsoft.Oryx.Automation
     public class DotNet : Program
     {
         private string repoAbsolutePath = string.Empty;
+        private HashSet<string> prodSdkVersions = new HashSet<string>();
 
-        public DotNet(string repoAbsolutePath)
+        public DotNet(string repoAbsolutePath, HashSet<string> prodSdkVersions)
         {
             this.repoAbsolutePath = repoAbsolutePath;
+            this.prodSdkVersions = prodSdkVersions;
         }
 
         /// <Summary>
@@ -63,8 +65,9 @@ namespace Microsoft.Oryx.Automation
             {
                 // TODO: check if SDK already exists in storage account
                 var dateReleased = releaseIndex.LatestReleaseDate;
-                if (!DatesMatch(dateTarget, dateReleased))
+                if (!DatesMatch(dateTarget, dateReleased) || this.prodSdkVersions.Contains(releaseIndex.LatestSdk))
                 {
+                    Console.WriteLine($"[First] LatestSdk: {releaseIndex.LatestSdk}");
                     continue;
                 }
 
@@ -77,13 +80,13 @@ namespace Microsoft.Oryx.Automation
                 {
                     // check releasedToday again since there
                     // are still releases from other dates.
-                    if (!DatesMatch(dateTarget, release.ReleaseDate))
+                    string sdkVersion = release.Sdk.Version;
+                    if (!DatesMatch(dateTarget, release.ReleaseDate) || this.prodSdkVersions.Contains(sdkVersion))
                     {
                         continue;
                     }
 
                     // create sdk PlatformConstant
-                    string sdkVersion = release.Sdk.Version;
                     string sha = GetSha(release.Sdk.Files);
                     PlatformConstant platformConstant = new PlatformConstant
                     {

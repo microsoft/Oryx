@@ -6,7 +6,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -31,7 +34,9 @@ namespace Microsoft.Oryx.Automation
     public abstract class Program
     {
         private static string repoAbsolutePath = string.Empty;
+        private static HashSet<string> prodSdkVersions = new HashSet<string>();
 
+        // private static HashSet<string> sdkVersions = new HashSet<string>();
         public static async Task<int> Main(string[] args)
         {
             // TODO: use dotnet parameters instead and handle invalid date
@@ -47,6 +52,7 @@ namespace Microsoft.Oryx.Automation
             repoAbsolutePath = args[1];
 
             Console.WriteLine($"[Main] dateTarget: {dateTarget}");
+            await CacheSdkVersionsAsync("dotnet");
             await AddNewPlatformConstantsAsync(dateTarget);
 
             return 0;
@@ -58,7 +64,7 @@ namespace Microsoft.Oryx.Automation
         /// </Summary>
         public static async Task AddNewPlatformConstantsAsync(string dateTarget)
         {
-            DotNet dotNet = new DotNet(repoAbsolutePath);
+            DotNet dotNet = new DotNet(repoAbsolutePath, prodSdkVersions);
             List<PlatformConstant> platformConstants = await dotNet.GetPlatformConstantsAsync(dateTarget);
             List<Constant> yamlConstants = await DeserializeConstantsYamlAsync();
             dotNet.UpdateConstants(platformConstants, yamlConstants);
@@ -93,6 +99,27 @@ namespace Microsoft.Oryx.Automation
             Console.WriteLine($"[DatesMatch]  releasedDate: {releasedDate} targetDate: {targetDate} " +
                 $"datesMatch: {datesMatch} match: {match}");
             return match;
+        }
+
+        public static async Task CacheSdkVersionsAsync(string platform)
+        {
+            string url = $"https://oryxsdks.blob.core.windows.net/{platform}" +
+            "?restype=container&comp=list&include=metadata";
+            var response = await HttpClientHelper.GetRequestStringAsync(url);
+            var xdoc = XDocument.Parse(response);
+
+            foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
+            {
+                var childElements = metadataElement.Elements();
+                var versionElement = childElements
+                                    .Where(e => string.Equals("sdk_version", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                                    .FirstOrDefault();
+                if (versionElement != null)
+                {
+                    prodSdkVersions.Add(versionElement.Value);
+                    Console.WriteLine(versionElement.Value);
+                }
+            }
         }
 
         /// <Summary>
