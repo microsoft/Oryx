@@ -9,6 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -127,6 +129,27 @@ namespace Microsoft.Oryx.Automation
             }
 
             return platformConstants;
+        }
+
+        public override async Task CacheSdkVersionsAsync(string platform)
+        {
+            string url = $"https://oryxsdks.blob.core.windows.net/{platform}" +
+            "?restype=container&comp=list&include=metadata";
+            var response = await HttpClientHelper.GetRequestStringAsync(url);
+            var xdoc = XDocument.Parse(response);
+
+            foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
+            {
+                var childElements = metadataElement.Elements();
+                var versionElement = childElements
+                                    .Where(e => string.Equals("sdk_version", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                                    .FirstOrDefault();
+                if (versionElement != null)
+                {
+                    this.prodSdkVersions.Add(versionElement.Value);
+                    Console.WriteLine(versionElement.Value);
+                }
+            }
         }
 
         /// <inheritdoc/>

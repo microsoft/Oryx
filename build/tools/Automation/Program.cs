@@ -6,10 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Xml.XPath;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -52,7 +49,6 @@ namespace Microsoft.Oryx.Automation
             repoAbsolutePath = args[1];
 
             Console.WriteLine($"[Main] dateTarget: {dateTarget}");
-            await CacheSdkVersionsAsync("dotnet");
             await AddNewPlatformConstantsAsync(dateTarget);
 
             return 0;
@@ -65,9 +61,11 @@ namespace Microsoft.Oryx.Automation
         public static async Task AddNewPlatformConstantsAsync(string dateTarget)
         {
             DotNet dotNet = new DotNet(repoAbsolutePath, prodSdkVersions);
+            await dotNet.CacheSdkVersionsAsync(Constants.DotNetName);
             List<PlatformConstant> platformConstants = await dotNet.GetPlatformConstantsAsync(dateTarget);
             List<Constant> yamlConstants = await DeserializeConstantsYamlAsync();
             dotNet.UpdateConstants(platformConstants, yamlConstants);
+            prodSdkVersions.Clear();
 
             // TODO: add functionality for other platforms (python, java, golang, etc).
         }
@@ -101,26 +99,13 @@ namespace Microsoft.Oryx.Automation
             return match;
         }
 
-        public static async Task CacheSdkVersionsAsync(string platform)
-        {
-            string url = $"https://oryxsdks.blob.core.windows.net/{platform}" +
-            "?restype=container&comp=list&include=metadata";
-            var response = await HttpClientHelper.GetRequestStringAsync(url);
-            var xdoc = XDocument.Parse(response);
-
-            foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
-            {
-                var childElements = metadataElement.Elements();
-                var versionElement = childElements
-                                    .Where(e => string.Equals("sdk_version", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
-                                    .FirstOrDefault();
-                if (versionElement != null)
-                {
-                    prodSdkVersions.Add(versionElement.Value);
-                    Console.WriteLine(versionElement.Value);
-                }
-            }
-        }
+        /// <Summary>
+        /// Caches the storage account sdk versions to avoid pulling all SDKs everytime
+        /// we check if a version exists in the storage account.
+        /// </Summary>
+        /// <param name="platform">dotnet, nodejs, python, etc
+        /// This dateTarget can be passed through github actions through an argument</param>
+        public abstract Task CacheSdkVersionsAsync(string platform);
 
         /// <Summary>
         /// Get PlatformConstants containing corresponding platform release information.
