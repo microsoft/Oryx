@@ -51,8 +51,8 @@ jobs:
         run: |
           git config user.name 'William Hernandez'
           git config user.email 'williamhe@microsoft.com'
-          git add -A
           git checkout doc/supportedPlatformVersions.md
+          git add -A
           git commit -m "Add new SDK versions"
       
       # TODO: paramterize branch/title platfrom name

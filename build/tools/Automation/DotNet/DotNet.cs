@@ -67,7 +67,6 @@ namespace Microsoft.Oryx.Automation
                 var dateReleased = releaseIndex.LatestReleaseDate;
                 if (!DatesMatch(dateTarget, dateReleased) || this.prodSdkVersions.Contains(releaseIndex.LatestSdk))
                 {
-                    Console.WriteLine($"[First] LatestSdk: {releaseIndex.LatestSdk}");
                     continue;
                 }
 
