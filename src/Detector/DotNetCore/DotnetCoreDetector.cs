@@ -60,11 +60,12 @@ namespace Microsoft.Oryx.Detector.DotNetCore
 
             var version = this.GetVersion(targetFramework);
 
-            // Any Blazor WebAssembly app on .NET 6 should have the workload installed.
+            // Any Blazor WebAssembly app on .NET >= 6 should have the workload installed.
             // https://github.com/microsoft/Oryx/issues/1026
+            // TODO (#1664369): Remove the version check once .NET Core 3.1 is EOL.
             if (ProjectFileHelpers.IsBlazorWebAssemblyProject(projectFileDoc)
                 && !string.IsNullOrEmpty(version)
-                && version.StartsWith("6"))
+                && (version.StartsWith("6") || version.StartsWith("7")))
             {
                 installAOTWorkloads = true;
             }
