@@ -43,7 +43,7 @@
     dot-net-50-sdk-version: 5.0.408
     dot-net-60-sdk-version: 6.0.401
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.100-rc.2.22477.23
+    dot-net-70-sdk-version: 7.0.100
     runtime-versions:
     - 1.0
     - 1.1
