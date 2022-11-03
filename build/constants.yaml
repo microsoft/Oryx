@@ -448,7 +448,7 @@
 - name: staging-runtime-constants
   constants:
     dotnetcore-staging-runtime-versions:
-    - 7.0
+    - 
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
