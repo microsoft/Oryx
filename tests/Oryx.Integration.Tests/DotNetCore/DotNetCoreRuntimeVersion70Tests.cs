@@ -24,13 +24,15 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Fact]
+        [Theory]
         [Trait("build-image", "github-actions-debian-buster")]
-        public async Task CanBuildAndRun_NetCore70MvcAppAsync()
+        [InlineData(NetCoreApp70MvcApp, "Welcome to ASP.NET Core MVC!")]
+        [InlineData(NetCoreApp70WebApp, "Welcome to a .NET 7 Web App!")]
+        public async Task CanBuildAndRun_NetCore70AppAsync(string sampleApp, string webpageMessage)
         {
             // Arrange
             var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp70;
-            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp70MvcApp);
+            var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", sampleApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -48,7 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                NetCoreApp70MvcApp,
+                sampleApp,
                 _output,
                 new DockerVolume[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(OsTypes.DebianBuster),
@@ -69,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Welcome to ASP.NET Core MVC!", data);
+                    Assert.Contains(webpageMessage, data);
                 });
         }
     }
