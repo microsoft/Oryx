@@ -42,6 +42,10 @@
   version = "=1.8.2"
 
 [[override]]
+  name = "github.com/spf13/viper"
+  version = "=1.13.0"
+
+[[override]]
   name = "golang.org/x/sys"
   version = "=v0.0.0-20220908164124-27713097b956"
 
