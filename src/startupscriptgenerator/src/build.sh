@@ -37,7 +37,9 @@ cd "$PLATFORM_DIR"
 
 cp -r $WORKSPACE_DIR/src/common /usr/local/go/src/common
 cp -r $WORKSPACE_DIR/src/common/consts /usr/local/go/src/common/consts
-go mod init
+if [[ ! -f "go.mod" ]] ; then
+    go mod init
+fi
 go mod tidy
 
 go build \
