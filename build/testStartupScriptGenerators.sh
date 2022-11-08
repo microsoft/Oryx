@@ -28,7 +28,7 @@ echo "Running tests in golang docker image..."
 docker run -v $GEN_DIR:$GEN_DIR_CONTAINER_RO:ro --name $CONTAINER_NAME golang:1.15-stretch bash -c \
 	"cp -rf $GEN_DIR_CONTAINER_RO/* $GEN_DIR_CONTAINER && \
 	cd $GEN_DIR_CONTAINER && \
-	./restorePackages.sh && \
+	go mod tidy && \
 	echo && \
 	echo Running tests... && \
 	go test ./... -v"
