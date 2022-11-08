@@ -1,4 +1,4 @@
-module goland
+module golang
 
 go 1.15
 
