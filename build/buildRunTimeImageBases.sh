@@ -133,6 +133,10 @@ for dockerFile in $dockerFiles; do
         # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/staging/oryx/base:{platformName}-{platformVersion}
         localImageTagName="$BASE_IMAGES_STAGING_REPO:$platformName-$platformVersion"
     else
+        # skip the base.{ostype}.staging.Dockerfile if this version should not be staged
+        if [[ "$dockerFile" == *"staging"* ]]; then
+            continue
+        fi
         # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
         localImageTagName="$BASE_IMAGES_PUBLIC_REPO:$platformName-$platformVersion"
     fi
