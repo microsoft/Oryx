@@ -16,8 +16,6 @@ for pkgDir in $WORKSPACE_DIR/src/* ; do
             echo "Running 'go test' under '$pkgDir'..."
             cd $pkgDir
             go test -v
-        else
-            echo "Cound not find '$goModFileName' under '$pkgDir'. Not running 'go test'"
         fi
     fi
 done
