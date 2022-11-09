@@ -18,7 +18,9 @@ FROM oryxdevmcr.azurecr.io/private/oryx/%BASE_TAG% as main
 ARG DEBIAN_FLAVOR
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
+ARG SDK_STORAGE_BASE_URL_VALUE
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
+ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE}
 
 RUN apt-get update \
     && apt-get upgrade -y \
