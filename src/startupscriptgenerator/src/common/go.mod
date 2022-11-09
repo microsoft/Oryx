@@ -2,6 +2,9 @@ module common
 
 go 1.15
 
+replace github.com/spf13/viper => github.com/spf13/viper v1.10.1
+replace golang.org/x/sys => golang.org/x/sys v0.0.0-20220908164124-27713097b956
+
 require (
 	code.cloudfoundry.org/clock v1.0.0 // indirect
 	github.com/BurntSushi/toml v0.3.1
@@ -21,6 +24,3 @@ require (
 	github.com/tedsuo/ifrit v0.0.0-20220120221754-dd274de71113 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )
-
-replace github.com/spf13/viper => github.com/spf13/viper v1.10.1
-replace golang.org/x/sys => golang.org/x/sys v0.0.0-20220908164124-27713097b956
