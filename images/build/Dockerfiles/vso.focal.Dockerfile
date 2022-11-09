@@ -70,7 +70,8 @@ ARG SDK_STORAGE_BASE_URL_VALUE
 # add an environment variable to determine debian_flavor
 # to correctly download platform sdk during platform installation
 ENV DEBIAN_FLAVOR="focal-scm"
-
+# Set sdk storage base url
+ENV ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}"
 COPY --from=intermediate /opt /opt
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
