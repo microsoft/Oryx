@@ -6,7 +6,7 @@
 
 declare -r WORKSPACE_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
-echo "Restoring packages..."
+echo "Testing packages..."
 
 # Check if 'dep' is installed
 # EXIT_CODE=0
@@ -22,10 +22,11 @@ goModFileName="go.mod"
 for pkgDir in $WORKSPACE_DIR/src/* ; do
     if [ -d $pkgDir ]; then
         if [ -f "$pkgDir/$goModFileName" ]; then
-            echo "Running './build.sh ${pkgDir#'/go/src/'} ${pkgDir#'/go/src/'}' under '$pkgDir'..."
-            ./build.sh ${pkgDir#"/go/src/"} ${pkgDir#"/go/src/"}
+            echo "Running 'go test' under '$pkgDir'..."
+            cd $pkgDir
+            go test -v
         else
-            echo "Cound not find '$goModFileName' under '$pkgDir'. Not running 'build.sh'"
+            echo "Cound not find '$goModFileName' under '$pkgDir'. Not running 'go test'"
         fi
     fi
 done

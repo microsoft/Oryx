@@ -27,7 +27,10 @@ declare -r CONTAINER_NAME="oryxtests_$RANDOM"
 echo "Running tests in golang docker image..."
 docker run -v $GEN_DIR:$GEN_DIR_CONTAINER_RO:ro --name $CONTAINER_NAME golang:1.15-stretch bash -c \
 	"cp -rf $GEN_DIR_CONTAINER_RO/* $GEN_DIR_CONTAINER && \
+	cp -r $GEN_DIR_CONTAINER_RO/common /usr/local/go/src/common && \
+	cp -r $GEN_DIR_CONTAINER_RO/common/consts /usr/local/go/src/common/consts && \
 	cd $GEN_DIR_CONTAINER && \
+	./restorePackages.sh && \
 	echo && \
 	echo Running tests... && \
-	go test ./... -v"
+	./testPackages.sh"
