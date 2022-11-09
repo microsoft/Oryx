@@ -24,6 +24,9 @@
 #   go-tests = true
 #   unused-packages = true
 
+[[override]]
+  name = "github.com/spf13/viper"
+  version = "1.10.1"
 
 [[constraint]]
   name = "github.com/Masterminds/semver"
