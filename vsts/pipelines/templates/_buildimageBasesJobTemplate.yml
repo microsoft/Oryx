@@ -34,7 +34,7 @@ jobs:
       BuildDropPath: '$(Build.ArtifactStagingDirectory)'
       PackageName: 'Visual Studio 2022'
       PackageVersion: '17.0.2'
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList tests'
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList **/SampleApps/**'
 
   - task: CopyFiles@2
     displayName: Copy artifacts to staging directory
