@@ -31,7 +31,7 @@ ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-ENV PYTHON_VERSION 3.11.0b1
+ENV PYTHON_VERSION 3.11.0
 RUN true
 COPY build/__pythonVersions.sh ${BUILD_DIR}
 RUN true
@@ -51,7 +51,7 @@ RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR
 
 RUN set -ex \
  && cd /opt/python/ \
- && ln -s 3.11.0b1 3.11 \
+ && ln -s 3.11.0 3.11 \
  && ln -s 3.11 3 \
  && echo /opt/python/3/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
@@ -88,5 +88,9 @@ RUN pip install --upgrade pip \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/oryx
+
+ENV LANG="en_US.UTF-8" \
+    LANGUAGE="en_US.UTF-8" \
+    LC_ALL="en_US.UTF-8"
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
