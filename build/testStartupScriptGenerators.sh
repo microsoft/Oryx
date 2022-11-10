@@ -31,4 +31,5 @@ docker run -v $GEN_DIR:$GEN_DIR_CONTAINER_RO:ro --name $CONTAINER_NAME golang:1.
 	./restorePackages.sh && \
 	echo && \
 	echo Running tests... && \
-	go test ./... -v"
+	chmod u+x testPackages.sh && \
+	./testPackages.sh"
