@@ -573,6 +573,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"{appDir} --platform {PythonConstants.PlatformName} " +
                 $"--platform-version {langVersion} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
+                .AddDefaultTestEnvironmentVariables()
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
                 .ToString();
