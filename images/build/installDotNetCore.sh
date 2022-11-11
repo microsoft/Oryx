@@ -63,17 +63,3 @@ then
     rm -rf warmup
 fi
 
-if [ "$INSTALL_TOOLS" == "true" ]; then
-    toolsDir="$SDK_DIR/$DOTNET_SDK_VER/tools"
-    mkdir -p "$toolsDir"
-    dotnet tool install --tool-path "$toolsDir" dotnet-sos
-    chmod +x "$toolsDir/dotnet-sos"
-    dotnet tool install --tool-path "$toolsDir" dotnet-trace
-    chmod +x "$toolsDir/dotnet-trace"
-    dotnet tool install --tool-path "$toolsDir" dotnet-dump
-    chmod +x "$toolsDir/dotnet-dump"
-    dotnet tool install --tool-path "$toolsDir" dotnet-counters
-    chmod +x "$toolsDir/dotnet-counters"
-    dotnet tool install --tool-path "$toolsDir" dotnet-monitor --version 7.*
-    chmod +x "$toolsDir/dotnet-monitor"
-fi
