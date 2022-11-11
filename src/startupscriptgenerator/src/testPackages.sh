@@ -6,18 +6,16 @@
 
 declare -r WORKSPACE_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
-echo "Restoring packages and building..."
+echo "Testing packages..."
 
-# run build script to install dependencies and build modules
+# run 'go test -v' in every directory that a go.mod file is found
 goModFileName="go.mod"
-goSource="/go/src/"
 for pkgDir in $WORKSPACE_DIR/src/* ; do
     if [ -d $pkgDir ]; then
         if [ -f "$pkgDir/$goModFileName" ]; then
-            echo "Running './build.sh ${pkgDir#$goSource} ${pkgDir#$goSource}' under '$pkgDir'..."
-            ./build.sh ${pkgDir#$goSource} ${pkgDir#$goSource}
-        else
-            echo "Cound not find '$goModFileName' under '$pkgDir'. Not running 'build.sh'"
+            echo "Running 'go test' under '$pkgDir'..."
+            cd $pkgDir
+            go test -v
         fi
     fi
 done
