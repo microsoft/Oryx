@@ -569,6 +569,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddScriptCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} " +
                 $"--platform-version {langVersion} > {generatedScript}")
@@ -944,10 +945,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app1-output";
             var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(
-                    SdkStorageConstants.SdkStorageBaseUrlKeyName,
-                    SdkStorageConstants.DevSdkStorageBaseUrl)
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version 3.10.4")
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version 3.10.8")
                 .AddCommand($"python -V")
                 .AddCommand($"python -c \"import lzma\"")
                 .ToString();

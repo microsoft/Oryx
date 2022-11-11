@@ -9,6 +9,7 @@ using Castle.Core.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
@@ -344,10 +345,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Theory]
-        [InlineData(null, "3.8.12", null, "3.8.12")]
-        [InlineData(null, "3.8.12", "3.7.9", "3.8.12")]
-        [InlineData(null, null, "3.7.9", "3.7.9")]
-        [InlineData("3.9.7", "3.8.12", "3.7.9", "3.9.7")]
+        [InlineData(null, PythonVersions.Python38Version, null, PythonVersions.Python38Version)]
+        [InlineData(null,PythonVersions.Python38Version,PythonVersions.Python37Version,PythonVersions.Python38Version)]
+        [InlineData(null,null,PythonVersions.Python37Version,PythonVersions.Python37Version)]
+        [InlineData(PythonVersions.Python39Version, PythonVersions.Python38Version, PythonVersions.Python37Version, PythonVersions.Python39Version)]
         public void Detect_ReturnsExpectedVersion_BasedOnHierarchy(
             string detectedVersion,
             string envVarDefaultVersion,
