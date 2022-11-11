@@ -41,3 +41,7 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && rm -rf /tmp/oryx
     
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"

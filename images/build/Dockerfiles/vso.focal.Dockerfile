@@ -3,8 +3,7 @@ FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-focal AS mai
 # Install basic build tools
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
-RUN LANG="C.UTF-8" \
-    && apt-get update \
+RUN apt-get update \
     && apt-get upgrade -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         git \
@@ -281,6 +280,9 @@ ENV NUGET_XMLDOC_MODE="skip" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_PREFER_USER_INSTALLED_SDKS=true \
     ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
-    PYTHONIOENCODING="UTF-8"
+    PYTHONIOENCODING="UTF-8" \
+    LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"
 
 ENTRYPOINT [ "benv" ]

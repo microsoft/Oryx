@@ -123,3 +123,7 @@ RUN set -x \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc \
     && rm -rf /var/lib/apt/lists/*
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"

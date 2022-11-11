@@ -31,3 +31,6 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     # Temporarily making sure apache2-foreground has permission
     && chmod +x /usr/local/bin/apache2-foreground
 
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"

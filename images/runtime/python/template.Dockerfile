@@ -89,4 +89,8 @@ RUN pip install --upgrade pip \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/oryx
 
+ENV LANG="en_US.UTF-8" \
+    LANGUAGE="en_US.UTF-8" \
+    LC_ALL="en_US.UTF-8"
+
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen

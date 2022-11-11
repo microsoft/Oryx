@@ -15,6 +15,8 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     DYNAMIC_INSTALL_ROOT_DIR="/opt" \
     PYTHONIOENCODING="UTF-8" \
     LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 
 # Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
