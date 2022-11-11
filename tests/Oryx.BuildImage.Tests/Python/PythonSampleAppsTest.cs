@@ -569,11 +569,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddScriptCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} " +
                 $"--platform-version {langVersion} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
-                .AddDefaultTestEnvironmentVariables()
                 .CreateDirectory(tempDir)
                 .AddCommand($"{generatedScript} {appDir} {appOutputDir} {tempDir}")
                 .ToString();
