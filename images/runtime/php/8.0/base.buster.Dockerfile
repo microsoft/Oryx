@@ -140,3 +140,7 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/*
 
 RUN rm -rf /tmp/oryx
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"
