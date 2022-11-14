@@ -77,9 +77,9 @@ RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN pip install --upgrade pip \
     && pip install gunicorn \
     && pip install debugpy \
-    && pip install viztracer==0.15.5 \
-    && if [ "%PYTHON_MAJOR_VERSION%" = "3" ] && [ "%PYTHON_VERSION%" != "3.11" ]; then pip install vizplugins==0.1.2 \
-    && pip install orjson==3.6.6; fi \
+    && pip install viztracer==0.15.6 \
+    && pip install vizplugins==0.1.3 \
+    && pip install orjson==3.8.1 \
     && if [ "%PYTHON_VERSION%" = "3.7" ] || [ "%PYTHON_VERSION%" = "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
     && dpkg -i libffi6_3.2.1-9_amd64.deb \
     && rm libffi6_3.2.1-9_amd64.deb; fi \
