@@ -593,7 +593,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.False(result.IsSuccess);
-                    Assert.Contains("Could not find a version that satisfies the requirement", result.StdOut);
+                    Assert.Contains("Missing parentheses in call to 'print'", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
