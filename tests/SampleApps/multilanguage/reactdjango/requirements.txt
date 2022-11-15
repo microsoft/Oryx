@@ -61,7 +61,7 @@ prospector==1.1.1
 psutil==5.5.0
 psycopg2==2.7.7
 ptyprocess==0.6.0
-pycodestyle==2.3.1
+pycodestyle
 pycparser==2.19
 pydocstyle==3.0.0
 pyflakes==1.6.0
