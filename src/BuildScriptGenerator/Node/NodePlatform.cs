@@ -187,11 +187,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 throw new InvalidUsageException("Multiple monorepo package management tools are found, please choose to use either Lerna or Lage.");
             }
 
+            string yarnVersionSpec = null;
             if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName) || packageJson?.engines?.yarn != null)
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
                 configureYarnCache = false;
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
+                yarnVersionSpec = packageJson?.engines?.yarn?.Value as string;
 
                 // In Yarn 2+ and .yarnrc.yml file replaces .yarnrc in Yarn 2+.
                 // Applying yarn 2 cache folder name and package install command.
@@ -398,6 +400,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 NodeBuildProperties = nodeCommandManifestFileProperties,
                 NodeBuildCommandsFile = nodeBuildCommandsFile,
                 NpmVersionSpec = npmVersionSpec,
+                YarnVersionSpec = yarnVersionSpec,
             };
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.NodeBuildSnippet,
