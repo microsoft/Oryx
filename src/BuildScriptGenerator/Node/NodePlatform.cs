@@ -193,7 +193,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 packageManagerCmd = NodeConstants.YarnCommand;
                 configureYarnCache = false;
                 packageInstallerVersionCommand = NodeConstants.YarnVersionCommand;
-                yarnVersionSpec = packageJson?.engines?.yarn?.Value as string;
+                yarnVersionSpec = ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName) ? "latest" : packageJson?.engines?.yarn?.Value as string;
 
                 // In Yarn 2+ and .yarnrc.yml file replaces .yarnrc in Yarn 2+.
                 // Applying yarn 2 cache folder name and package install command.
