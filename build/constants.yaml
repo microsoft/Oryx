@@ -23,6 +23,8 @@
     user-netcore-hostingstartup-assemblies: Microsoft.ApplicationInsights.StartupBootstrapper
     python-enable-gunicorn-multi-workers-env-var-name: PYTHON_ENABLE_GUNICORN_MULTIWORKERS
     python-gunicorn-config-path-env-var-name: PYTHON_USE_GUNICORN_CONFIG_FROM_PATH
+    python-gunicorn-custom-worker-num: PYTHON_GUNICORN_CUSTOM_WORKER_NUM
+    python-gunicorn-custom-thread-num: PYTHON_GUNICORN_CUSTOM_THREAD_NUM
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator.Common

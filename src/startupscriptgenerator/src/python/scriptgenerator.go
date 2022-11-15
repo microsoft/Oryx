@@ -282,11 +282,22 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 	}
 	
 	pythonEnableGunicornMultiWorkers := common.GetBooleanEnvironmentVariable(consts.PythonEnableGunicornMultiWorkersEnvVarName)
+
 	if pythonEnableGunicornMultiWorkers {
 		// 2N+1 number of workers is recommended by Gunicorn docs.
 		// Where N is the number of CPU threads.
 		// One worker will be reading or writing from the socket while the other worker is processing a request.
-		workers := strconv.Itoa((2 * runtime.NumCPU()) + 1)
+		// For MWMT (Multi Worker Multi Thread), user specifies two environment variables to enable MWMT.
+		// Otherwise, this script will use the recommended setting by Gunicorn.
+		pythonCustomWorkerNum := os.Getenv(consts.PythonGunicornCustomWorkerNum)
+		pythonCustomThreadNum := os.Getenv(consts.PythonGunicornCustomThreadNum)
+		workers := ""
+		if ((pythonCustomWorkerNum != "") && (pythonCustomThreadNum != "")) {
+			workers = pythonCustomWorkerNum
+			args = appendArgs(args, "--threads="+pythonCustomThreadNum)
+		} else {
+			workers = strconv.Itoa((2 * runtime.NumCPU()) + 1)
+		}
 		args = appendArgs(args, "--workers="+workers)
 	}
 
