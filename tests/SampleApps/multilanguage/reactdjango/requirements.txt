@@ -64,7 +64,7 @@ ptyprocess==0.6.0
 pycodestyle
 pycparser==2.19
 pydocstyle==3.0.0
-pyflakes==1.6.0
+pyflakes
 Pygments==2.3.1
 pylint==2.2.2
 pylint-celery==0.3
