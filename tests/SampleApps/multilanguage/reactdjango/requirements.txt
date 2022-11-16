@@ -29,7 +29,7 @@ dodgy==0.1.9
 dparse==0.4.1
 entrypoints==0.3
 et-xmlfile==1.0.1
-flake8==3.7.4
+flake8
 flake8-polyfill==1.0.2
 gitdb2==2.0.5
 GitPython==2.1.11
@@ -57,7 +57,7 @@ pexpect==4.6.0
 pickleshare==0.7.5
 pre-commit==1.14.2
 prompt-toolkit==2.0.8
-prospector==1.1.1
+prospector
 psutil==5.5.0
 psycopg2==2.7.7
 ptyprocess==0.6.0
@@ -69,7 +69,7 @@ Pygments==2.3.1
 pylint==2.2.2
 pylint-celery==0.3
 pylint-django==2.0.5
-pylint-plugin-utils==0.3
+pylint-plugin-utils
 pyparsing==2.3.1
 python-decouple==3.1
 pytz==2018.9
