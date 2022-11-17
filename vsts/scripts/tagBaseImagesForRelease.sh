@@ -7,8 +7,7 @@
 set -o pipefail
 
 declare -r artifactsDir="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images"
-declare -r outFileName="base-images-mcr.txt" 
-declare -r acrProdRepo="$2.azurecr.io/public/oryx"
+declare -r outFileName="base-images-mcr.txt"
 declare -r buildNumber=$BUILD_BUILDNUMBER
  
 function retagImageWithStagingRepository()
@@ -65,6 +64,7 @@ mkdir -p $artifactsDir/$imageName
 if [ "$imageName" == "node" ]
 then
   echo ""
+  retagImageWithStagingRepository node-runtimeimage-bases-buster.txt $imageName buster
   retagImageWithStagingRepository node-runtimeimage-bases-bullseye.txt $imageName bullseye
 elif [ "$imageName" == "python-build" ]
 then

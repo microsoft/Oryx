@@ -19,22 +19,23 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        // Unique category traits are needed to run each
-        // platform-version in it's own pipeline agent. This is
-        // because our agents currently a space limit of 10GB.
-        [Fact, Trait("category", "php-74")]
-        public async Task PipelineTestInvocationsPhp74Async()
+        [Fact]
+        [Trait("category", "php-7.4")]
+        [Trait("build-image", "debian-stretch")]
+        public async Task Php74App_UsingMysqli_WithLatestStretchBuildImageAsync()
         {
-            string phpVersion74 = "7.4";
-            await Task.WhenAll(
-                PhpApp_UsingMysqliAsync(phpVersion74, ImageTestHelperConstants.LatestStretchTag),
-                PhpApp_UsingMysqliAsync(phpVersion74, ImageTestHelperConstants.GitHubActionsStretch));
+            await PhpApp_UsingMysqliAsync("7.4", ImageTestHelperConstants.LatestStretchTag);
         }
 
-        [Theory]
-        [InlineData("7.4", ImageTestHelperConstants.LatestStretchTag)]
-        [InlineData("7.4", ImageTestHelperConstants.GitHubActionsStretch)]
-        public async Task PhpApp_UsingMysqliAsync(string phpVersion, string imageTag)
+        [Fact]
+        [Trait("category", "php-7.4")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task Php74App_UsingMysqli_WithGitHubActionsBusterBuildImageAsync()
+        {
+            await PhpApp_UsingMysqliAsync("7.4", ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        private async Task PhpApp_UsingMysqliAsync(string phpVersion, string imageTag)
         {
             await RunTestAsync(
                 "php",

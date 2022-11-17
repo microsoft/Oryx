@@ -4,16 +4,22 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     public class NodeOnDiskVersionProvider : INodeVersionProvider
     {
         private readonly ILogger<NodeOnDiskVersionProvider> logger;
+        private readonly BuildScriptGeneratorOptions options;
 
-        public NodeOnDiskVersionProvider(ILogger<NodeOnDiskVersionProvider> logger)
+        public NodeOnDiskVersionProvider(
+            IOptions<BuildScriptGeneratorOptions> options,
+            ILogger<NodeOnDiskVersionProvider> logger)
         {
             this.logger = logger;
+            this.options = options.Value;
         }
 
         // To enable unit testing
@@ -26,7 +32,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             return PlatformVersionInfo.CreateOnDiskVersionInfo(
                 installedVersions,
-                NodeConstants.NodeLtsVersion);
+                this.options.DebianFlavor != OsTypes.DebianStretch
+                    ? NodeConstants.NodeLtsVersion
+                    : FinalStretchVersions.FinalStretchNode14Version);
         }
     }
 }

@@ -16,9 +16,9 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   esac
 
 ARG NODE18_VERSION
+ARG DEBIAN_FLAVOR
 ENV NODE_VERSION ${NODE18_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
-
 ARG IMAGES_DIR=/tmp/oryx/images
 RUN ${IMAGES_DIR}/installPlatform.sh nodejs $NODE_VERSION --dir /usr/local --links false \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs

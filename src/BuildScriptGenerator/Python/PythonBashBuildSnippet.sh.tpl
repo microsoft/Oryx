@@ -253,7 +253,7 @@ fi
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             echo "Done in $ELAPSED_TIME sec(s)."
         else
-            output="Missing Django modile in Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
+            output="Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
             recommendation="Add Django to your requirements.txt file."
             LogWarning "${output} | Exit code: 0 | ${recommendation} | ${moreInformation}"
         fi

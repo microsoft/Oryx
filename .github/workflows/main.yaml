@@ -1,0 +1,60 @@
+name: Oryx-SDK-Automation
+
+on:
+  # runs on 12:55 (5:55AM PST) & 23:55 UTC
+  schedule:
+    - cron:  '55 12,23 * * *'  
+
+  workflow_dispatch:
+    inputs:
+      releaseDate:
+        description: 'The date to check for new releases. Format: yyyy-mm-dd'
+        required: true
+        type: string
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Run SDK automation
+        run: |
+          releaseDate=${{ inputs.releaseDate }}
+          if ! [[ "${releaseDate}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          then
+            echo "release date is invalid $releaseDate."
+            echo "Expecting date format yyyy-mm-dd"
+            releaseDate=`date +%F`
+            echo "Defaulting to todays date ${releaseDate}"
+          fi
+
+          dotnet run --project build/tools/Automation/Automation.csproj ${releaseDate} ${{ github.workspace }}
+
+      - name: Run Generate Constants
+        run: ./build/generateConstants.sh
+      
+      # TODO: replace William with new bot GitHub Account credentials
+      - name: Create commits
+        run: |
+          git config user.name 'William Hernandez'
+          git config user.email 'williamhe@microsoft.com'
+          git add -A
+          git commit -m "Add new SDK versions"
+      
+      # TODO: paramterize branch/title platfrom name
+      #       and list of versions to the PR decription
+      #
+      #       branch name example: automation/add-new-{PlatfornName}-sdks
+      # TODO: remove peter-evans/create-pull-request and use github.rest
+      # Example: https://stackoverflow.com/questions/68057744/create-pull-request-with-github-action/71224444#71224444
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
+        with:
+          branch: automation/add-new-dotnet-release
+          title: New DotNetCore Sdks
+
+      - name: Run Azure Pipeline 
+        run: |
+          echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release

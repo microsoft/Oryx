@@ -52,7 +52,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     imageHelper.GetGitHubActionsAsBaseBuildImage(ImageTestHelperConstants.GitHubActionsBusterBase),
                     "buster");
 
-
                 //bullseye
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,

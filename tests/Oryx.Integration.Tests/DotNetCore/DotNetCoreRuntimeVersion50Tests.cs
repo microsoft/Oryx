@@ -14,7 +14,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "dotnetcore-50")]
+    [Trait("category", "dotnetcore-5.0")]
     public class DotNetCoreRuntimeVersion50Tests : DotNetCoreEndToEndTestsBase
     {
         public DotNetCoreRuntimeVersion50Tests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -23,6 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRun_Without_Oryx_AppInsights_Codeless_ConfigurationAsync()
         {
             // Arrange
@@ -80,6 +81,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "github-actions-debian-stretch")]
         public async Task CanBuildAndRun_NetCore50MvcAppAsync()
         {
             // Arrange

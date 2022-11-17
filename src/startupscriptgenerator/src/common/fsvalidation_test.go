@@ -14,21 +14,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Example_FSValidation_GetSubPath_SimpleSubPath() {
+func ExampleGetSubPath_simpleSubPath() {
 	result := GetSubPath("a/b", "a/b/c")
 	fmt.Println(result)
 	// Output:
 	// c
 }
 
-func Example_FSValidation_GetSubPath_EqualPath() {
+func ExampleGetSubPath_equalPath() {
 	result := GetSubPath("a/b", "a/b/")
 	fmt.Println(result)
 	// Output:
 	//
 }
 
-func Example_FSValidation_GetSubPath_TwoLevels() {
+func ExampleGetSubPath_twoLevels() {
 	result := GetSubPath("a/b/", "a/b/cde/fghi.abc")
 	fmt.Println(result)
 	// Output:

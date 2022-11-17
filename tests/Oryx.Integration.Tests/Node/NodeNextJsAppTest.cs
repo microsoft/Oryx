@@ -13,7 +13,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-14-3")]
+    [Trait("category", "node-14-skipped")]
     public class NodeNextJsAppTest : NodeEndToEndTestsBase
     {
         public const string AppName = "blog-starter-nextjs";
@@ -24,6 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "next blogger app is broken")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_BlogStarterNextJsApp_WithoutZippingNodeModulesAsync()
         {
             // Arrange
@@ -68,6 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact(Skip = "next blogger app is broken")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_BlogStarterNextJsApp_UsingZippedNodeModulesAsync()
         {
             // Arrange

@@ -10,8 +10,6 @@ ARG RELEASE_TAG_NAME=unspecified
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-#Bake in client certificate path into image to avoid downloading it
-ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
 FROM oryxdevmcr.azurecr.io/private/oryx/oryx-run-base-${DEBIAN_FLAVOR} as main
@@ -31,7 +29,7 @@ ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-ENV PYTHON_VERSION 3.11.0b1
+ENV PYTHON_VERSION 3.11.0
 RUN true
 COPY build/__pythonVersions.sh ${BUILD_DIR}
 RUN true
@@ -57,7 +55,7 @@ RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION
 
 RUN set -ex \
  && cd /opt/python/ \
- && ln -s 3.11.0b1 3.11 \
+ && ln -s 3.11.0 3.11 \
  && ln -s 3.11 3 \
  && echo /opt/python/3/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \

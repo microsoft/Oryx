@@ -29,7 +29,7 @@ function blobContainerExistsInDestination() {
 function copyBlobContainerFromProdToDestination() {
     local platformName="$1"
 
-    if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName; then
+    if [ $overwrite == "True" ] ; then
         echo
         echo "Overwriting blob container '$platformName' in storage account '$destinationSdkUrl'."
         # azcopy copy [source] [destination] [flags]
@@ -81,6 +81,8 @@ if [[ "$destinationSdkUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
 elif [[ "$destinationSdkUrl" == $DEV_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
+elif [[ "$destinationSdkUrl" == $PROD_BACKUP_SDK_STORAGE_BASE_URL ]]; then
+    sasToken=$PROD_BACKUP_STORAGE_SAS_TOKEN
 # check if the personal sas token has been found in the oryx key vault
 elif [[ "$PERSONAL_STORAGE_SAS_TOKEN" != "\$($1-PERSONAL-STORAGE-SAS-TOKEN)" ]]; then 
     sasToken=$PERSONAL_STORAGE_SAS_TOKEN
@@ -93,6 +95,12 @@ shopt -u nocasematch
 dryRun=$2
 if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then
 	echo "Error: Dry run must be True or False. Was: '$dryRun'"
+	exit 1
+fi
+
+overwrite=$3
+if [ $overwrite != "True" ] && [ $overwrite != "False" ]; then
+	echo "Error: Overwrite must be True or False. Was: '$overwrite'"
 	exit 1
 fi
 

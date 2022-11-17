@@ -240,7 +240,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
             // Arrange
-            var expectedOutput = "v" + NodeConstants.NodeLtsVersion;
+            var expectedOutput = "v" + (buildImageName.Contains("stretch") 
+                ? FinalStretchVersions.FinalStretchNode14Version 
+                : NodeConstants.NodeLtsVersion);
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -310,7 +312,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NodeVersions.Node10Version, "v" + NodeVersions.Node10Version)]
         [InlineData(NodeVersions.Node12Version, "v" + NodeVersions.Node12Version)]
         [InlineData(FinalStretchVersions.FinalStretchNode14Version, "v" + FinalStretchVersions.FinalStretchNode14Version)]
-        [InlineData("lts", "v" + NodeConstants.NodeLtsVersion)]
+        [InlineData("lts", "v" + FinalStretchVersions.FinalStretchNode14Version)]
         public void NodeAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange

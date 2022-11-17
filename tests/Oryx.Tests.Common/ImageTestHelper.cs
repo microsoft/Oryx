@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
@@ -24,6 +25,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _repoPrefixEnvironmentVariable = ImageTestHelperConstants.RepoPrefixEnvironmentVariable;
         private const string _tagSuffixEnvironmentVariable = ImageTestHelperConstants.TagSuffixEnvironmentVariable;
         private const string _defaultRepoPrefix = ImageTestHelperConstants.DefaultRepoPrefix;
+        private const string _defaultStagingRepoPrefix = ImageTestHelperConstants.DefaultStagingRepoPrefix;
         private const string _restrictedPermissionsImageRepoPrefix = ImageTestHelperConstants.RestrictedPermissionsImageRepoPrefix;
 
         private const string _azureFunctionsJamStackStretch = ImageTestHelperConstants.AzureFunctionsJamStackStretch;
@@ -150,14 +152,26 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A runtime image that can be pulled for testing.</returns>
         public string GetRuntimeImage(string platformName, string platformVersion)
         {
+            var runtimeRepoPrefix = _repoPrefix;
+
+            // if this platform and version are marked as staging, replace the public repo with the staging repo
+            switch (platformName)
+            {
+                case DotNetCoreConstants.RuntimePlatformName:
+                    if (StagingRuntimeConstants.DotnetcoreStagingRuntimeVersions.Contains(platformVersion))
+                    {
+                        runtimeRepoPrefix.Replace(_defaultRepoPrefix, _defaultStagingRepoPrefix);
+                    }
+                    break;
+            }
 
             if (PlatformVersionToOsType.TryGetValue(platformName, out var versionToOsType)
                 && versionToOsType.TryGetValue(platformVersion, out var osType))
             {
-                return $"{_repoPrefix}/{platformName}:{platformVersion}-{osType}{_tagSuffix}";
+                return $"{runtimeRepoPrefix}/{platformName}:{platformVersion}-{osType}{_tagSuffix}";
             }
 
-            return $"{_repoPrefix}/{platformName}:{platformVersion}{_tagSuffix}";
+            return $"{runtimeRepoPrefix}/{platformName}:{platformVersion}{_tagSuffix}";
         }
 
         /// <summary>
@@ -431,8 +445,8 @@ namespace Microsoft.Oryx.Tests.Common
                 NodeConstants.NodeToolName,
                 new Dictionary<string, string>
                 {
-                    { "14", "debian-bullseye" },
-                    { "16", "debian-bullseye" },
+                    { "14", "debian-buster" },
+                    { "16", "debian-buster" },
                     { "18", "debian-bullseye" },
                     { "dynamic", "debian-buster" },
                 }
@@ -479,6 +493,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string RepoPrefixEnvironmentVariable = "ORYX_TEST_IMAGE_BASE";
         public const string TagSuffixEnvironmentVariable = "ORYX_TEST_TAG_SUFFIX";
         public const string DefaultRepoPrefix = "oryxdevmcr.azurecr.io/public/oryx";
+        public const string DefaultStagingRepoPrefix = "oryxdevmcr.azurecr.io/staging/oryx";
         public const string RestrictedPermissionsImageRepoPrefix = "oryxtests";
 
         public const string AzureFunctionsJamStackStretch = "azfunc-jamstack-debian-stretch";

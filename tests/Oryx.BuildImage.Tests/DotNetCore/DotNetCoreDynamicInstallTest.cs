@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -42,7 +43,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
         [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0.0-preview.7.22375.6")]
+        [InlineData(NetCore7PreviewMvcApp, "7.0")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_GithubActions(
             string appName,
             string runtimeVersion)
@@ -55,7 +56,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
         [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0.0-preview.7.22375.6")]
+        [InlineData(NetCore7PreviewMvcApp, "7.0")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_Cli(
             string appName,
             string runtimeVersion)
@@ -68,7 +69,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
         [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0.0-preview.7.22375.6")]
+        [InlineData(NetCore7PreviewMvcApp, "7.0")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuster(
             string appName,
             string runtimeVersion)
@@ -569,8 +570,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     NetCore6PreviewWebApp,
                     imageHelper.GetGitHubActionsBuildImage());
                 data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp70,
-                    DotNetCoreSdkVersions.DotNet70SdkVersion,
+                    FinalStretchVersions.FinalStretchDotNetCoreApp70RunTimeVersion,
+                    FinalStretchVersions.FinalStretchDotNet70SdkVersion,
                     NetCore7PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage());
 

@@ -243,7 +243,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     = compressedVirtualEnvFileName;
             }
 
-            this.TryLogDependencies(pythonVersion, context.SourceRepo);
+            var customRequirementsTxtPath = this.pythonScriptGeneratorOptions.CustomRequirementsTxtPath;
+            if (!string.IsNullOrEmpty(customRequirementsTxtPath) &&
+                !context.SourceRepo.FileExists(customRequirementsTxtPath))
+            {
+                throw new InvalidUsageException($"Path '{customRequirementsTxtPath}' provided to CUSTOM_REQUIREMENTSTXT_PATH environment variable " +
+                                                $"does not exist in the source repository. Please ensure that the path provided is relative to the " +
+                                                $"root of the source repository and exists in the current context.");
+            }
+
+            var requirementsTxtPath = customRequirementsTxtPath == null ? PythonConstants.RequirementsFileName : customRequirementsTxtPath;
+            if (context.SourceRepo.FileExists(requirementsTxtPath))
+            {
+                this.TryLogDependencies(requirementsTxtPath, pythonVersion, context.SourceRepo);
+            }
 
             var scriptProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: virtualEnvName,
@@ -254,9 +267,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 compressVirtualEnvCommand: compressVirtualEnvCommand,
                 compressedVirtualEnvFileName: compressedVirtualEnvFileName,
                 runPythonPackageCommand: isPythonPackageCommandEnabled,
-                pythonBuildCommandsFileName: pythonBuildCommandsFile,
                 pythonVersion: pythonVersion,
-                pythonPackageWheelProperty: pythonPackageWheelType);
+                pythonBuildCommandsFileName: pythonBuildCommandsFile,
+                pythonPackageWheelProperty: pythonPackageWheelType,
+                customRequirementsTxtPath: customRequirementsTxtPath);
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,
@@ -598,15 +612,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return (virtualEnvModule, virtualEnvParams);
         }
 
-        private void TryLogDependencies(string pythonVersion, ISourceRepo repo)
+        private void TryLogDependencies(string requirementsTxtPath, string pythonVersion, ISourceRepo repo)
         {
-            var customRequirementsTxtPath = this.pythonScriptGeneratorOptions.CustomRequirementsTxtPath;
-            var requirementsTxtPath = customRequirementsTxtPath == null ? PythonConstants.RequirementsFileName : customRequirementsTxtPath;
-            if (!repo.FileExists(requirementsTxtPath))
-            {
-                return;
-            }
-
             try
             {
                 var deps = repo.ReadAllLines(requirementsTxtPath)

@@ -17,6 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string BindPort { get; set; }
 
+        public string BindPort2 { get; set; }
+
         public string BuildImage { get; set; }
 
         public string PlatformName { get; set; }
@@ -63,6 +65,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string OryxSdkStorageBaseUrl { get; set; }
 
+        public string OryxSdkStorageAccountAccessToken { get; set; }
+
         public bool EnableTelemetry { get; set; }
 
         public string PreBuildScriptPath { get; set; }
@@ -82,5 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string CustomRequirementsTxtPath { get; set; }
 
         public string DebianFlavor { get; set; }
+
+        public string CallerId { get; set; }
     }
 }

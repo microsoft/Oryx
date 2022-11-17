@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,7 +14,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     [Trait("db", "sqlserver")]
     public class PythonSqlServerIntegrationTests : PlatformEndToEndTestsBase
     {
@@ -26,11 +24,23 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory(Skip = "Bug #1274414")]
-        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
-        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
-        public async Task Python37App_MicrosoftSqlServerDBAsync(string imageTag)
+        [Fact(Skip = "Bug #1274414")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task Python37App_MicrosoftSqlServerDB_WithGitHubActionsBullseyeBuildImageAsync()
+        {
+            await PythonApp_MicrosoftSqlServerDBAsync("3.7", ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact(Skip = "Bug #1274414")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
+        public async Task Python37App_MicrosoftSqlServerDB_WithLatestStretchBuildImageAsync()
+        {
+            await PythonApp_MicrosoftSqlServerDBAsync("3.7", ImageTestHelperConstants.LatestStretchTag);
+        }
+
+        private async Task PythonApp_MicrosoftSqlServerDBAsync(string pythonVersion, string imageTag)
         {
             // Arrange
             var appName = "mssqlserver-sample";
@@ -48,8 +58,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { volume },
                 _imageHelper.GetBuildImage(imageTag),
                 "oryx",
-                new[] { "build", appDir, "--platform", "python", "--platform-version", "3.7" },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                new[] { "build", appDir, "--platform", "python", "--platform-version", pythonVersion },
+                _imageHelper.GetRuntimeImage("python", pythonVersion),
                 SqlServerDbTestHelper.GetEnvironmentVariables(),
                 ContainerPort,
                 "/bin/bash",
