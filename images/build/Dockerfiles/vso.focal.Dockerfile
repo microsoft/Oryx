@@ -3,8 +3,7 @@ FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-focal AS mai
 # Install basic build tools
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
-RUN LANG="C.UTF-8" \
-    && apt-get update \
+RUN apt-get update \
     && apt-get upgrade -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         git \
@@ -70,7 +69,8 @@ ARG SDK_STORAGE_BASE_URL_VALUE
 # add an environment variable to determine debian_flavor
 # to correctly download platform sdk during platform installation
 ENV DEBIAN_FLAVOR="focal-scm"
-
+# Set sdk storage base url
+ENV ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}"
 COPY --from=intermediate /opt /opt
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
@@ -281,6 +281,9 @@ ENV NUGET_XMLDOC_MODE="skip" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_PREFER_USER_INSTALLED_SDKS=true \
     ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
-    PYTHONIOENCODING="UTF-8"
+    PYTHONIOENCODING="UTF-8" \
+    LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"
 
 ENTRYPOINT [ "benv" ]

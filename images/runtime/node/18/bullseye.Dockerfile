@@ -13,7 +13,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM mcr.microsoft.com/oryx/base:node-18-20220610.1
+FROM mcr.microsoft.com/oryx/base:node-18-20221027.2
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
@@ -33,3 +33,7 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/*
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"
