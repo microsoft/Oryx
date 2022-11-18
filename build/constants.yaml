@@ -103,15 +103,35 @@
     file-name-prefix: __
 - name: final-stretch-versions
   constants:
+    # dotnet
+
+    final-stretch-dot-net-core-11-sdk-version: 1.1.14
+    final-stretch-dot-net-core-21-sdk-version: 2.1.818
+    final-stretch-dot-net-core-22-sdk-version: 2.2.207
+    final-stretch-net-core-app-10: 1.0.16
+    final-stretch-net-core-app-11: 1.1.13
+    final-stretch-net-core-app-20: 2.0.9
+    final-stretch-net-core-app-21: 2.1.30
+    final-stretch-aspnet-core-app-21: 2.1.30
+    final-stretch-net-core-app-22: 2.2.8
+    final-stretch-dot-net-core-30-sdk-version: 3.0.103
+    final-stretch-net-core-app-30: 3.0.3
+    final-stretch-aspnet-core-app-30: 3.0.3
     final-stretch-dot-net-core-31-sdk-version: 3.1.420
     final-stretch-dot-net-core-app-31-run-time-version: 3.1.26
     final-stretch-aspnet-core-app-31-run-time-version: 3.1.26
+    final-stretch-dot-net-50-sdk-version: 5.0.408
+    final-stretch-net-core-app-50: 5.0.17
+    final-stretch-dot-net-core-50-sdk-version: 5.0.302
+    final-stretch-aspnet-core-app-50: 5.0.17
     final-stretch-dot-net-60-sdk-version: 6.0.301
     final-stretch-dot-net-core-app-60-run-time-version: 6.0.6
     final-stretch-aspnet-core-app-60-run-time-version: 6.0.6
     final-stretch-dot-net-70-sdk-version: 7.0.100
     final-stretch-dot-net-core-app-70-run-time-version: 7.0.0
     final-stretch-aspnet-core-app-70-run-time-version: 7.0.0
+
+    # node
     final-stretch-node14-version: 14.19.1
     final-stretch-node16-version: 16.14.2
   outputs:

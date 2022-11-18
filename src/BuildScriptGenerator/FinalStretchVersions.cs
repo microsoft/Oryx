@@ -4,9 +4,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class FinalStretchVersions
     {
+        public const string FinalStretchDotNetCore11SdkVersion = "1.1.14";
+        public const string FinalStretchDotNetCore21SdkVersion = "2.1.818";
+        public const string FinalStretchDotNetCore22SdkVersion = "2.2.207";
+        public const string FinalStretchNetCoreApp10 = "1.0.16";
+        public const string FinalStretchNetCoreApp11 = "1.1.13";
+        public const string FinalStretchNetCoreApp20 = "2.0.9";
+        public const string FinalStretchNetCoreApp21 = "2.1.30";
+        public const string FinalStretchAspnetCoreApp21 = "2.1.30";
+        public const string FinalStretchNetCoreApp22 = "2.2.8";
+        public const string FinalStretchDotNetCore30SdkVersion = "3.0.103";
+        public const string FinalStretchNetCoreApp30 = "3.0.3";
+        public const string FinalStretchAspnetCoreApp30 = "3.0.3";
         public const string FinalStretchDotNetCore31SdkVersion = "3.1.420";
         public const string FinalStretchDotNetCoreApp31RunTimeVersion = "3.1.26";
         public const string FinalStretchAspnetCoreApp31RunTimeVersion = "3.1.26";
+        public const string FinalStretchDotNet50SdkVersion = "5.0.408";
+        public const string FinalStretchNetCoreApp50 = "5.0.17";
+        public const string FinalStretchDotNetCore50SdkVersion = "5.0.302";
+        public const string FinalStretchAspnetCoreApp50 = "5.0.17";
         public const string FinalStretchDotNet60SdkVersion = "6.0.301";
         public const string FinalStretchDotNetCoreApp60RunTimeVersion = "6.0.6";
         public const string FinalStretchAspnetCoreApp60RunTimeVersion = "6.0.6";
