@@ -236,14 +236,14 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $RUBY30_VERSION /opt/ruby/lts \
     && ln -sfn /opt/ruby/$RUBY30_VERSION /home/codespace/.ruby/current \
     && cd $imagesDir \
-    && mkdir -p /home/codespace/.java \
+    && mkdir -p /home/codespace/java \
     && . $buildDir/__javaVersions.sh \
     && ./installPlatform.sh java $JAVA_VERSION \
     && ./installPlatform.sh java $JAVA_VERSION11 \
     && ./installPlatform.sh maven $MAVEN_VERSION \
     && cd /opt/java \
     && ln -s $JAVA_VERSION lts \
-    && ln -sfn /opt/java/$JAVA_VERSION /home/codespace/.java/current \
+    && ln -sfn /opt/java/$JAVA_VERSION /home/codespace/java/current \
     && cd /opt/maven \
     && ln -s $MAVEN_VERSION lts \
     && mkdir -p /home/codespace/.maven/current \
