@@ -121,7 +121,7 @@ RUN set -ex \
     && mkdir -p /home/codespace/.hugo \
     && $imagesDir/build/installHugo.sh \
     # Install Node
-    && mkdir -p /home/codespace/.nodejs \
+    && mkdir -p /home/codespace/nvm \
     && . $buildDir/__nodeVersions.sh \
     && $imagesDir/installPlatform.sh nodejs $NODE14_VERSION \
     && $imagesDir/installPlatform.sh nodejs $NODE16_VERSION \
@@ -137,7 +137,7 @@ RUN set -ex \
     && ln -s $NODE14_VERSION 14 \
     && ln -s $NODE16_VERSION 16 \
     && ln -s $NODE16_VERSION lts \
-    && ln -sfn /opt/nodejs/$NODE16_VERSION /home/codespace/.nodejs/current \
+    && ln -sfn /opt/nodejs/$NODE16_VERSION /home/codespace/nvm/current \
     && cd /opt/yarn \
     && ln -s $YARN_VERSION stable \
     && ln -s $YARN_VERSION latest \
