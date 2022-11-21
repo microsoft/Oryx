@@ -1,6 +1,6 @@
-FROM oryxdevmcr.azurecr.io/private/oryx/%PHP_BASE_IMAGE_TAG%
+FROM oryxdevmcr.azurecr.io/private/oryx/php-8.1
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION %PHP_VERSION%
+ENV PHP_VERSION 8.2.0RC6
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
