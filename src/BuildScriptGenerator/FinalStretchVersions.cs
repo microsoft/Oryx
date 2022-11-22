@@ -31,5 +31,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string FinalStretchAspnetCoreApp70RunTimeVersion = "7.0.0";
         public const string FinalStretchNode14Version = "14.19.1";
         public const string FinalStretchNode16Version = "16.14.2";
+        public const string FinalStretchNodeRuntimeBaseTag = "20221112.1";
+        public const string FinalStretchYarnVersion = "1.22.15";
+        public const string FinalStretchYarnMinorVersion = "1.17";
+        public const string FinalStretchYarnMajorVersion = "1";
+        public const string FinalStretchNode8Version = "8.17.0";
+        public const string FinalStretchNode10Version = "10.23.0";
+        public const string FinalStretchNode12Version = "12.22.11";
+        public const string FinalStretchNode18Version = "18.12.0";
+        public const string FinalStretchNodeAppInsightsSdkVersion = "1.8.7";
+        public const string FinalStretchPm2Version = "4.5.6";
+        public const string FinalStretchNpmVersion = "6.14.15";
     }
 }

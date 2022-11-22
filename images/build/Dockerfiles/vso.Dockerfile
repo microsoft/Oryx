@@ -22,11 +22,11 @@ RUN buildDir="/opt/tmp/build" \
     && mkdir -p $nugetPacakgesDir \
     && NUGET_PACKAGES="$nugetPacakgesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
-    && DOTNET_SDK_VER=$DOT_NET_50_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
+    && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_50_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
-    && ln -s $DOT_NET_50_SDK_VERSION 5.0 \
+    && ln -s $FINAL_STRETCH_DOT_NET_50_SDK_VERSION 5.0 \
     # Install Conda and related tools
     && apt-get update \
     && apt-get install -y --no-install-recommends \

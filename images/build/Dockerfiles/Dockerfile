@@ -43,16 +43,16 @@ RUN set -ex \
     && mkdir -p $nugetPacakgesDir \
     && NUGET_PACKAGES="$nugetPacakgesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
+    && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_CORE_22_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
     && DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
     # A temporary solution for AppService to make it builds work
-    && ln -s $DOT_NET_CORE_22_SDK_VERSION 2.2 \
+    && ln -s $FINAL_STRETCH_DOT_NET_CORE_22_SDK_VERSION 2.2 \
     && cd $imagesDir \ 
     && . $buildDir/__nodeVersions.sh \
-    && $imagesDir/installPlatform.sh nodejs $NODE8_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $FINAL_STRETCH_NODE8_VERSION \
     && $imagesDir/installPlatform.sh nodejs 8.0.0 \
     && $imagesDir/installPlatform.sh nodejs 8.1.4 \
     && $imagesDir/installPlatform.sh nodejs 8.2.1 \
@@ -68,7 +68,7 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh nodejs 10.21.0 \
     && $imagesDir/installPlatform.sh nodejs 12.18.2 \
     && cd /opt/nodejs \
-    && ln -s $NODE8_VERSION 8 \
+    && ln -s $FINAL_STRETCH_NODE8_VERSION 8 \
     && ln -s 8.0.0 8.0 \
     && ln -s 8.1.4 8.1 \
     && ln -s 8.2.1 8.2 \
