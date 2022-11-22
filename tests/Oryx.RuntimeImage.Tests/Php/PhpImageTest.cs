@@ -40,7 +40,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("8.2", PhpVersions.Php82Version)]
         [InlineData("8.1", PhpVersions.Php81Version)]
         [InlineData("8.0", PhpVersions.Php80Version)]
         [InlineData("7.4", PhpVersions.Php74Version)]
