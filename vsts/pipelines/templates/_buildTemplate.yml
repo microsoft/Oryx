@@ -195,8 +195,7 @@ steps:
   displayName: Generate Software Bill of Materials (SBOM)
   inputs:
       BuildDropPath: '$(Build.ArtifactStagingDirectory)'
-      PackageName: 'Visual Studio 2022'
-      PackageVersion: '17.0.2'
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList **/SampleApps/**'
 
 - script: |
     echo "Merging bullseye, buster based runtime image tags in one single file"
