@@ -74,6 +74,7 @@ The following are supported runtime versions for the image `mcr.microsoft.com/or
 - `7.4`
 - `8.0`
 - `8.1`
+- `8.2`
 
 ## Python
 
