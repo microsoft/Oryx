@@ -20,9 +20,14 @@ mkdir -p "$PHP_INI_DIR/conf.d";
 PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2"
 PHP_CPPFLAGS="$PHP_CFLAGS"
 PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
-
-PHP_URL="https://secure.php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror"
-PHP_ASC_URL="" # "https://secure.php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror"
+#TODO: Remove this condition after testing
+if [ $PHP_VERSION == 8.2.*]; then
+   PHP_URL="https://downloads.php.net/~sergey/$PHP_VERSION.tar.xz"
+   PHP_ASC_URL="" # "https://downloads.php.net/~sergey/$PHP_VERSION.tar.xz.asc"
+else
+   PHP_URL="https://secure.php.net/get/php-$PHP_VERSION.tar.xz/from/this/mirror"
+   PHP_ASC_URL="" # "https://secure.php.net/get/php-$PHP_VERSION.tar.xz.asc/from/this/mirror"
+fi
 GPG_KEYS=($GPG_KEYS) # Cast the string to an array
 PHP_MD5=""
 
