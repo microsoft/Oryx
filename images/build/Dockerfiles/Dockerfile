@@ -105,7 +105,7 @@ RUN set -ex \
     && . $buildDir/__phpVersions.sh \
     && $imagesDir/installPlatform.sh php $PHP70_VERSION \
     && $imagesDir/installPlatform.sh php $PHP72_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP74_VERSION \
+    && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP74_VERSION \
     && $imagesDir/installPlatform.sh php $PHP56_VERSION \
     && cd /opt/php \
     && ln -s 5.6 5 \

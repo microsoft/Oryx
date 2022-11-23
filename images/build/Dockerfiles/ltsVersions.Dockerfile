@@ -166,7 +166,7 @@ RUN set -ex \
     && $imagesDir/build/php/prereqs/installPrereqs.sh \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
-    && $imagesDir/installPlatform.sh php $PHP73_VERSION \
+    && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP73_VERSION \
     && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
     && cd /opt/php \
     && ln -s 7.3 7 \
