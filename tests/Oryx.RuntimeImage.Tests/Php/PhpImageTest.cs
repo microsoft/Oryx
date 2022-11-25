@@ -64,6 +64,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("8.2")]
         [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
@@ -90,6 +91,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("7.4")]
         [InlineData("8.0")]
         [InlineData("8.1")]
+        [InlineData("8.2")]
         public async Task Check_If_Apache_Allows_Casing_In_PHP_File_ExtensionAsync(string imageTag)
         {
             // Arrange
@@ -157,6 +159,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("8.2")]
         [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
@@ -205,6 +208,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
+        [InlineData("8.2")]
         [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
@@ -243,6 +247,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [InlineData("8.2")]
         [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
@@ -268,6 +273,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
         
         [Theory]
+        [InlineData("8.2")]
         [InlineData("8.1")]
         [InlineData("8.0")]
         [InlineData("7.4")]
