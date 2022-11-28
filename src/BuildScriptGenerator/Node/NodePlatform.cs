@@ -187,7 +187,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 throw new InvalidUsageException("Multiple monorepo package management tools are found, please choose to use either Lerna or Lage.");
             }
 
-            if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName) || packageJson?.engines?.yarn != null)
+            string yarnVersionSpec = packageJson?.engines?.yarn;
+            if (ctx.SourceRepo.FileExists(NodeConstants.YarnLockFileName) || yarnVersionSpec != null)
             {
                 packageManagerCmd = NodeConstants.YarnCommand;
                 configureYarnCache = false;
@@ -398,6 +399,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 NodeBuildProperties = nodeCommandManifestFileProperties,
                 NodeBuildCommandsFile = nodeBuildCommandsFile,
                 NpmVersionSpec = npmVersionSpec,
+                YarnVersionSpec = yarnVersionSpec,
             };
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.NodeBuildSnippet,

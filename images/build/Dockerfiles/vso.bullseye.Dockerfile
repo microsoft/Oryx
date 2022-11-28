@@ -63,6 +63,8 @@ ARG SDK_STORAGE_BASE_URL_VALUE
 # add an environment variable to determine debian_flavor
 # to correctly download platform sdk during platform installation
 ENV DEBIAN_FLAVOR="bullseye"
+# Set sdk storage base url
+ENV ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}"
 
 COPY --from=intermediate /opt /opt
 
