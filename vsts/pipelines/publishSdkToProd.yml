@@ -2,9 +2,9 @@ variables:
 - group: Oryx
 
 stages:
-  - stage: ComponentDetection
+  - stage: DryRun
     jobs:
-    - job: ComponentDetection
+    - job: DryRun
       pool:
         name: AzurePipelines-EO
         demands:
@@ -17,17 +17,6 @@ stages:
         displayName: 'Component Detection - OSS Compliance'
         inputs:
           ignoreDirectories: '$(Build.SourcesDirectory)/tests'
-
-  - stage: DryRun
-    jobs:
-    - job: DryRun
-      pool:
-        name: AzurePipelines-EO
-        demands:
-          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-      steps:
-      - checkout: self
-        clean: true
       
       - task: UseDotNet@2
         displayName: 'Use .NET Core sdk 3.1.x'
@@ -57,7 +46,12 @@ stages:
             steps:
             - checkout: self
               clean: true
-            
+
+            - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+              displayName: 'Component Detection - OSS Compliance'
+              inputs:
+                ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+
             - task: UseDotNet@2
               displayName: 'Use .NET Core sdk 3.1.x'
               inputs:
