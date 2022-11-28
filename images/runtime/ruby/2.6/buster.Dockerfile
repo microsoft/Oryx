@@ -16,6 +16,7 @@ RUN ./build.sh ruby /opt/startupcmdgen/startupcmdgen
 FROM oryxdevmcr.azurecr.io/private/oryx/oryx-run-base-${DEBIAN_FLAVOR} AS main
 ARG IMAGES_DIR=/tmp/oryx/images
 ENV RUBY_VERSION 2.6.6
+ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
 
 RUN ${IMAGES_DIR}/installPlatform.sh ruby $RUBY_VERSION --dir /opt/ruby/$RUBY_VERSION --links false
 RUN set -ex \
