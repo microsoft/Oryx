@@ -90,23 +90,23 @@ RUN set -ex \
     # Install Python SDKs
     && PYTHONIOENCODING="UTF-8" \
     && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON27_VERSION \
-    && $imagesDir/installPlatform.sh python $PYTHON36_VERSION \
-    && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
-    && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && $imagesDir/installPlatform.sh python $FINAL_STRETCH_PYTHON27_VERSION \
+    && $imagesDir/installPlatform.sh python $FINAL_STRETCH_PYTHON36_VERSION \
+    && [ -d "/opt/python/$FINAL_STRETCH_PYTHON27_VERSION" ] && echo /opt/python/$FINAL_STRETCH_PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && [ -d "/opt/python/$FINAL_STRETCH_PYTHON36_VERSION" ] && echo /opt/python/$FINAL_STRETCH_PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \
-    && ln -sfn $PYTHON27_VERSION 2.7 \
+    && ln -sfn $FINAL_STRETCH_PYTHON27_VERSION 2.7 \
     && ln -sfn 2.7 2 \
-    && ln -sfn $PYTHON36_VERSION 3.6 \
+    && ln -sfn $FINAL_STRETCH_PYTHON36_VERSION 3.6 \
     && $imagesDir/build/createFlattenedDotNetCoreInstall.sh \
     && cp $imagesDir/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md \
     # Install PHP SDKs
     && . $buildDir/__phpVersions.sh \
-    && $imagesDir/installPlatform.sh php $PHP70_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP72_VERSION \
+    && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP70_VERSION \
+    && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP72_VERSION \
     && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP74_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP56_VERSION \
+    && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP56_VERSION \
     && cd /opt/php \
     && ln -s 5.6 5 \
     && echo "full" > /opt/oryx/.imagetype \

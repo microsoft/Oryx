@@ -151,16 +151,16 @@ RUN set -ex \
     # provides auth for publishing or consuming Python packages to or from Azure Artifacts feeds.
     && pip install twine keyring artifacts-keyring \
     && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON37_VERSION \
-    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
-    && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
-    && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && $imagesDir/installPlatform.sh python $FINAL_STRETCH_PYTHON37_VERSION \
+    && $imagesDir/installPlatform.sh python $FINAL_STRETCH_PYTHON38_VERSION \
+    && [ -d "/opt/python/$FINAL_STRETCH_PYTHON37_VERSION" ] && echo /opt/python/$FINAL_STRETCH_PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && [ -d "/opt/python/$FINAL_STRETCH_PYTHON38_VERSION" ] && echo /opt/python/$FINAL_STRETCH_PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \
-    && ln -s $PYTHON37_VERSION 3.7 \
-    && ln -s $PYTHON38_VERSION 3.8 \
-    && ln -s $PYTHON38_VERSION latest \
-    && ln -s $PYTHON38_VERSION stable \
+    && ln -s $FINAL_STRETCH_PYTHON37_VERSION 3.7 \
+    && ln -s $FINAL_STRETCH_PYTHON38_VERSION 3.8 \
+    && ln -s $FINAL_STRETCH_PYTHON38_VERSION latest \
+    && ln -s $FINAL_STRETCH_PYTHON38_VERSION stable \
     && ln -s 3.8 3 \
     # Install PHP pre-reqs
     && $imagesDir/build/php/prereqs/installPrereqs.sh \

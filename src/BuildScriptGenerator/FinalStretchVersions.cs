@@ -63,5 +63,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string FinalStretchPhp56Version = "5.6.40";
         public const string FinalStretchPhp56Keys = "0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3";
         public const string FinalStretchPhp56TarSha256 = "1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c";
+        public const string FinalStretchGolang16Version = "1.16.7";
+        public const string FinalStretchGolang16TarSha256 = "7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04";
+        public const string FinalStretchGolang17Version = "1.17";
+        public const string FinalStretchGolang17TarSha256 = "6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d";
+        public const string FinalStretchGolang18Version = "1.18";
+        public const string FinalStretchGolang18TarSha256 = "e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f";
+        public const string FinalStretchGolang19Version = "1.19";
+        public const string FinalStretchGolang19TarSha256 = "464b6b66591f6cf055bc5df90a9750bf5fbc9d038722bb84a9d56a2bea974be6";
+        public const string FinalStretchPythonRuntimeBaseTag = "20221031.2";
+        public const string FinalStretchPipVersion = "21.2.4";
+        public const string FinalStretchPython27Version = "2.7.18";
+        public const string FinalStretchPython36Version = "3.6.15";
+        public const string FinalStretchPython37Version = "3.7.12";
+        public const string FinalStretchPython38Version = "3.8.12";
+        public const string FinalStretchPython39Version = "3.9.7";
+        public const string FinalStretchPython310Version = "3.10.4";
+        public const string FinalStretchPython311Version = "3.11.0";
+        public const string FinalStretchGemVersion = "3.3.10";
+        public const string FinalStretchRuby31Version = "3.1.1";
+        public const string FinalStretchRuby31TarSha256 = "7aefaa6b78b076515d272ec59c4616707a54fc9f2391239737d5f10af7a16caa";
+        public const string FinalStretchRuby27Version = "2.7.2";
+        public const string FinalStretchRuby27TarSha256 = "6e5706d0d4ee4e1e2f883db9d768586b4d06567debea353c796ec45e8321c3d4";
+        public const string FinalStretchRuby26Version = "2.6.6";
+        public const string FinalStretchRuby26TarSha256 = "5db187882b7ac34016cd48d7032e197f07e4968f406b0690e20193b9b424841f";
+        public const string FinalStretchRuby25Version = "2.5.8";
+        public const string FinalStretchRuby25TarSha256 = "0391b2ffad3133e274469f9953ebfd0c9f7c186238968cbdeeb0651aa02a4d6d";
+        public const string FinalStretchRuby30Version = "3.0.3";
+        public const string FinalStretchRuby30TarSha256 = "88cc7f0f021f15c4cd62b1f922e3a401697f7943551fe45b1fdf4f2417a17a9c";
     }
 }

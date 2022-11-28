@@ -53,9 +53,9 @@ RUN buildDir="/opt/tmp/build" \
     && cd $imagesDir \
     # Install Ruby and related tools
     && . $buildDir/__rubyVersions.sh \
-    && ./installPlatform.sh ruby $RUBY27_VERSION \
+    && ./installPlatform.sh ruby $FINAL_STRETCH_RUBY27_VERSION \
     && cd /opt/ruby \
-    && ln -s $RUBY27_VERSION /opt/ruby/lts \
+    && ln -s $FINAL_STRETCH_RUBY27_VERSION /opt/ruby/lts \
     && cd $imagesDir \
     && . $buildDir/__javaVersions.sh \
     && ./installPlatform.sh java $JAVA_VERSION \
