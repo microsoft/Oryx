@@ -455,10 +455,10 @@ namespace Microsoft.Oryx.Tests.Common
                 PhpConstants.PlatformName,
                 new Dictionary<string, string>
                 {
-                    { "7.4", "debian-bullseye" },
+                    { "7.4", "debian-buster" },
                     { "8.0", "debian-buster" },
                     { "8.1", "debian-bullseye" },
-                    { "7.4-fpm", "debian-bullseye" },
+                    { "7.4-fpm", "debian-buster" },
                     { "8.0-fpm", "debian-buster" },
                     { "8.1-fpm", "debian-bullseye" },
                 }
