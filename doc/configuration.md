@@ -54,7 +54,7 @@ DISABLE\_PYTHON\_BUILD       | Do not apply Python build even if repo indicates 
 VIRTUALENV\_NAME             | Specify Python virtual environment name                        | ""      | "antenv2.7"
 DISABLE\_COLLECTSTATIC       | Disable running `collectstatic` when building Django apps.     | `false` | `true`, `false`
 CUSTOM\_REQUIREMENTSTXT\_PATH| Specify where a requirements.txt is locating. If not set, default is at root of the repo.| ""    | "subdir/requirements.txt"
-PYTHON\_ENABLE\_GUNICORN\_MULTIWORKERS| Enable Gunicorn multi worker multi thread config.     | `false` | `true`, `false
+PYTHON\_ENABLE\_GUNICORN\_MULTIWORKERS| Enable Gunicorn multi worker multi thread config.     | `false` | `true`, `false`
 PYTHON\_GUNICORN\_CUSTOM\_WORKER\_NUM| Specify Gunicorn multi worker number. If not set, default is (2 * CPU core num) + 1| ""    | "2"
 PYTHON\_GUICORN\_CUSTOM\_THREAD\_NUM| Specify Gunicorn multi thread number. If not set, default is single thread. | ""    | "4"
 
