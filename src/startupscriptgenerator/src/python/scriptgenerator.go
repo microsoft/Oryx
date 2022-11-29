@@ -292,13 +292,15 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 		pythonCustomWorkerNum := os.Getenv(consts.PythonGunicornCustomWorkerNum)
 		pythonCustomThreadNum := os.Getenv(consts.PythonGunicornCustomThreadNum)
 		workers := ""
-		if ((pythonCustomWorkerNum != "") && (pythonCustomThreadNum != "")) {
+		if (pythonCustomWorkerNum != "") {
 			workers = pythonCustomWorkerNum
-			args = appendArgs(args, "--threads="+pythonCustomThreadNum)
 		} else {
 			workers = strconv.Itoa((2 * runtime.NumCPU()) + 1)
 		}
 		args = appendArgs(args, "--workers="+workers)
+		if (pythonCustomThreadNum != "") {
+			args = appendArgs(args, "--threads="+pythonCustomThreadNum)
+		}
 	}
 
 	if gen.BindPort != "" {
