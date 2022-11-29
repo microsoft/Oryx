@@ -144,6 +144,13 @@
     final-stretch-pm2-version: 4.5.6
     final-stretch-npm-version: 6.14.15
     # php
+    final-stretch-composer-version: 2.0.8
+    final-stretch-composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
+    final-stretch-composer1-9-version: 1.9.3
+    final-stretch-composer1-10-version: 1.10.19
+    final-stretch-composer2-0-version: 2.0.8
+    final-stretch-composer2-2-version: 2.2.9
+    final-stretch-composer2-3-version: 2.3.4
     final-stretch-php81-version: 8.1.9
     final-stretch-php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
     final-stretch-php81-tar-sha256: 53477e73e6254dc942b68913a58d815ffdbf6946baf61a1f8ef854de524c27bf
@@ -196,6 +203,10 @@
     final-stretch-ruby25-tar-sha256: 0391b2ffad3133e274469f9953ebfd0c9f7c186238968cbdeeb0651aa02a4d6d
     final-stretch-ruby30-version: 3.0.3
     final-stretch-ruby30-tar-sha256: 88cc7f0f021f15c4cd62b1f922e3a401697f7943551fe45b1fdf4f2417a17a9c
+    #java
+    final-stretch-java-version: 17.0.2
+    final-stretch-java-version11: 11.0.14
+    final-stretch-maven-version: 3.8.5
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator

@@ -167,7 +167,7 @@ RUN set -ex \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
     && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP73_VERSION \
-    && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
+    && $imagesDir/installPlatform.sh php-composer $FINAL_STRETCH_COMPOSER_VERSION \
     && cd /opt/php \
     && ln -s 7.3 7 \
     && ln -s 7 lts \

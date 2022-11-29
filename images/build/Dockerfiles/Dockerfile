@@ -43,8 +43,9 @@ RUN set -ex \
     && mkdir -p $nugetPacakgesDir \
     && NUGET_PACKAGES="$nugetPacakgesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
+    && . $buildDir/__finalStretchVersions.sh \
     && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_CORE_22_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
+    && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_CORE_30_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \

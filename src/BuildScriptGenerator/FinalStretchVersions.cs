@@ -42,6 +42,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string FinalStretchNodeAppInsightsSdkVersion = "1.8.7";
         public const string FinalStretchPm2Version = "4.5.6";
         public const string FinalStretchNpmVersion = "6.14.15";
+        public const string FinalStretchComposerVersion = "2.0.8";
+        public const string FinalStretchComposerSetupSha384 = "55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae";
+        public const string FinalStretchComposer19Version = "1.9.3";
+        public const string FinalStretchComposer110Version = "1.10.19";
+        public const string FinalStretchComposer20Version = "2.0.8";
+        public const string FinalStretchComposer22Version = "2.2.9";
+        public const string FinalStretchComposer23Version = "2.3.4";
         public const string FinalStretchPhp81Version = "8.1.9";
         public const string FinalStretchPhp81Keys = "528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544";
         public const string FinalStretchPhp81TarSha256 = "53477e73e6254dc942b68913a58d815ffdbf6946baf61a1f8ef854de524c27bf";
@@ -91,5 +98,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string FinalStretchRuby25TarSha256 = "0391b2ffad3133e274469f9953ebfd0c9f7c186238968cbdeeb0651aa02a4d6d";
         public const string FinalStretchRuby30Version = "3.0.3";
         public const string FinalStretchRuby30TarSha256 = "88cc7f0f021f15c4cd62b1f922e3a401697f7943551fe45b1fdf4f2417a17a9c";
+        public const string FinalStretchJavaVersion = "17.0.2";
+        public const string FinalStretchJavaVersion11 = "11.0.14";
+        public const string FinalStretchMavenVersion = "3.8.5";
     }
 }

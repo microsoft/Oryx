@@ -22,6 +22,7 @@ RUN buildDir="/opt/tmp/build" \
     && mkdir -p $nugetPacakgesDir \
     && NUGET_PACKAGES="$nugetPacakgesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
+    && . $buildDir/__finalStretchVersions.sh \
     && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_50_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
@@ -58,12 +59,12 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $FINAL_STRETCH_RUBY27_VERSION /opt/ruby/lts \
     && cd $imagesDir \
     && . $buildDir/__javaVersions.sh \
-    && ./installPlatform.sh java $JAVA_VERSION \
-    && ./installPlatform.sh maven $MAVEN_VERSION \
+    && ./installPlatform.sh java $FINAL_STRETCH_JAVA_VERSION \
+    && ./installPlatform.sh maven $FINAL_STRETCH_MAVEN_VERSION \
     && cd /opt/java \
-    && ln -s $JAVA_VERSION lts \
+    && ln -s $FINAL_STRETCH_JAVA_VERSION lts \
     && cd /opt/maven \
-    && ln -s $MAVEN_VERSION lts \
+    && ln -s $FINAL_STRETCH_MAVEN_VERSION lts \
     && rm -rf /opt/tmp \
     && echo "vso" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
