@@ -13,7 +13,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM mcr.microsoft.com/oryx/base:node-18-20221027.2
+FROM mcr.microsoft.com/oryx/base:node-18-20221112.1
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
