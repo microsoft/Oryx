@@ -27,6 +27,17 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
             libicu63 \
             libcurl4 \
             libssl1.1 \
+            # PHP pre-reqs
+            ca-certificates \
+            libargon2-0 \
+            libcurl4-openssl-dev \
+            libedit-dev \
+            libonig-dev \
+            libncurses6 \
+            libsodium-dev \
+            libsqlite3-dev \
+            libxml2-dev \
+            xz-utils \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
         apt-get update \
@@ -40,12 +51,15 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-# .NET Core dependencies for running Oryx
+        # .NET Core dependencies for running Oryx
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
         libstdc++6 \
         zlib1g \
+        # For .NET Core 1.1 (I believe we can remove this, .NET Core 1.1 has been 'End of Support" for three years)
+        libuuid1 \
+        libunwind8 \
         rsync \
         libgdiplus \
     && rm -rf /var/lib/apt/lists/* \
@@ -54,11 +68,75 @@ RUN apt-get update \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && echo "cli" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
-    
+
+# Install Hugo and Yarn for node applications
+ARG BUILD_DIR="/opt/tmp/build"
+ARG IMAGES_DIR="/opt/tmp/images"
+RUN ${IMAGES_DIR}/build/installHugo.sh
+RUN set -ex \
+    && yarnCacheFolder="/usr/local/share/yarn-cache" \
+    && mkdir -p $yarnCacheFolder \
+    && chmod 777 $yarnCacheFolder \
+    && . ${BUILD_DIR}/__nodeVersions.sh \
+    && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
+    && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
+    && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
+    && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+    && mkdir -p /opt/yarn \
+    && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
+    && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
+    && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+RUN set -ex \
+    && . ${BUILD_DIR}/__nodeVersions.sh \
+    && ln -s $YARN_VERSION /opt/yarn/stable \
+    && ln -s $YARN_VERSION /opt/yarn/latest \
+    && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
+    && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
+RUN set -ex \
+    && mkdir -p /links \
+    && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
+
+# Install Python tooling for some .NET (e.g., Blazor) and node applications
+RUN set -ex \
+    # Upgrade system python
+    && PYTHONIOENCODING="UTF-8" \
+    && apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        git \
+        make \
+        unzip \
+        build-essential \
+        libpq-dev \
+        moreutils \
+        python3-pip \
+        rsync \
+        swig \
+        tk-dev \
+        unixodbc-dev \
+        uuid-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python 3.8 to use in some .NET and node applications
 RUN tmpDir="/opt/tmp" \
+    && imagesDir="$tmpDir/images" \
+    && buildDir="$tmpDir/build" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
     && cp -f $tmpDir/images/build/logger.sh /opt/oryx/logger \
     && chmod +x /opt/oryx/benv \
-    && chmod +x /opt/oryx/logger
+    && chmod +x /opt/oryx/logger \
+    && mkdir -p /usr/local/share/pip-cache/lib \
+    && chmod -R 777 /usr/local/share/pip-cache \
+    && pip3 install pip --upgrade \
+    && pip install --upgrade cython \
+    && pip3 install --upgrade cython \
+    && . $buildDir/__pythonVersions.sh \
+    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
+    && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && ldconfig \
+    && cd /opt/python \
+    && ln -s $PYTHON38_VERSION 3.8 \
+    && ln -s $PYTHON38_VERSION latest \
+    && ln -s $PYTHON38_VERSION stable
 
 ENTRYPOINT [ "benv" ]

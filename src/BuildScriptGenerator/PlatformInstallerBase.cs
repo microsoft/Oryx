@@ -97,10 +97,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var snippet = new StringBuilder();
             snippet
                 .AppendLine()
-                .AppendLine($"if grep -q cli \"/opt/oryx/.imagetype\"; then")
-                .AppendCommonSkeletonDepenendenciesInstallation()
-                .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
-                .AppendLine("fi")
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")
                 .AppendLine("echo")
                 .AppendLine(
