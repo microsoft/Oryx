@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string Node12Version = "12.22.11";
         public const string Node14Version = "14.20.1";
         public const string Node16Version = "16.18.0";
-        public const string Node18Version = "18.12.0";
+        public const string Node18Version = "18.12.1";
         public const string NodeAppInsightsSdkVersion = "1.8.7";
         public const string Pm2Version = "4.5.6";
         public const string NpmVersion = "6.14.15";
