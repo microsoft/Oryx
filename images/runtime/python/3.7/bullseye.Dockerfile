@@ -18,7 +18,9 @@ FROM oryxdevmcr.azurecr.io/private/oryx/oryx-run-base-bullseye as main
 ARG DEBIAN_FLAVOR
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
+ARG SDK_STORAGE_BASE_URL_VALUE
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
+ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE}
 
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -31,7 +33,7 @@ ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-ENV PYTHON_VERSION 3.7.12
+ENV PYTHON_VERSION 3.7.15
 RUN true
 COPY build/__pythonVersions.sh ${BUILD_DIR}
 RUN true
@@ -51,7 +53,7 @@ RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR
 
 RUN set -ex \
  && cd /opt/python/ \
- && ln -s 3.7.12 3.7 \
+ && ln -s 3.7.15 3.7 \
  && ln -s 3.7 3 \
  && echo /opt/python/3/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
@@ -77,9 +79,9 @@ RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN pip install --upgrade pip \
     && pip install gunicorn \
     && pip install debugpy \
-    && if [ "3" = "3" ] && [ "3.7" != "3.6" ]; then pip install viztracer==0.14.3 \
-    && pip install vizplugins==0.1.2 \
-    && pip install orjson==3.6.6; fi \
+    && pip install viztracer==0.15.6 \
+    && pip install vizplugins==0.1.3 \
+    && pip install orjson==3.8.1 \
     && if [ "3.7" = "3.7" ] || [ "3.7" = "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
     && dpkg -i libffi6_3.2.1-9_amd64.deb \
     && rm libffi6_3.2.1-9_amd64.deb; fi \
