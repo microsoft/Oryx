@@ -1,6 +1,6 @@
 FROM oryxdevmcr.azurecr.io/private/oryx/php-8.0
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.0.22
+ENV PHP_VERSION 8.0.25
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
@@ -140,3 +140,7 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/*
 
 RUN rm -rf /tmp/oryx
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"

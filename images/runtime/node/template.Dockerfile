@@ -33,3 +33,7 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/*
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"

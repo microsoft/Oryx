@@ -3,8 +3,7 @@ FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-buster AS ma
 # Install basic build tools
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
-RUN LANG="C.UTF-8" \
-    && apt-get update \
+RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         git \
@@ -62,6 +61,8 @@ COPY --from=intermediate /opt /opt
 ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts"
 
 ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8" \
     ORIGINAL_PATH="$PATH" \
     PATH="$ORYX_PATHS:$PATH" \
     NUGET_XMLDOC_MODE="skip" \

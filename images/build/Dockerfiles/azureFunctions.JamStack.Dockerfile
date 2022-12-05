@@ -9,7 +9,9 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     DYNAMIC_INSTALL_ROOT_DIR="/opt" \
     PATH="/usr/local/go/bin:/opt/python/latest/bin:$PATH" \
     PYTHONIOENCODING="UTF-8" \
-    LANG="C.UTF-8"
+    LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"
 
 ARG IMAGES_DIR="/opt/tmp/images"
 RUN oryx prep --skip-detection --platforms-and-versions nodejs=14 --debug \

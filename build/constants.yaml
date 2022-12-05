@@ -23,6 +23,8 @@
     user-netcore-hostingstartup-assemblies: Microsoft.ApplicationInsights.StartupBootstrapper
     python-enable-gunicorn-multi-workers-env-var-name: PYTHON_ENABLE_GUNICORN_MULTIWORKERS
     python-gunicorn-config-path-env-var-name: PYTHON_USE_GUNICORN_CONFIG_FROM_PATH
+    python-gunicorn-custom-worker-num: PYTHON_GUNICORN_CUSTOM_WORKER_NUM
+    python-gunicorn-custom-thread-num: PYTHON_GUNICORN_CUSTOM_THREAD_NUM
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator.Common
@@ -38,12 +40,12 @@
     dot-net-core-21-sdk-version: 2.1.818
     dot-net-core-22-sdk-version: 2.2.207
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.423
+    dot-net-core-31-sdk-version: 3.1.425
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.408
-    dot-net-60-sdk-version: 6.0.401
+    dot-net-60-sdk-version: 6.0.403
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.100-rc.2.22477.23
+    dot-net-70-sdk-version: 7.0.100
     runtime-versions:
     - 1.0
     - 1.1
@@ -64,7 +66,7 @@
     file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20221101.3
+    dot-net-core-runtime-base-tag: 20221110.1
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
@@ -78,18 +80,18 @@
     net-core-app-30-sha: 3d1f0ba2f293f43e087a8940a0f4736561f43b9f28bc5beda79a61f887e258543aea4dc71e88414a7c6e271dcda984a989afb62fc659a72223707a179cdde9c5
     aspnet-core-app-30: 3.0.3
     aspnet-core-app-30-sha: d88366ac20204c5acb4b80bc40396d608d6c067b25baeef54204e77dde48fb515bd463743745a0982ba8c9182fc751306a4e796f91060b2d013ffbea7d9a2dc8
-    net-core-app-31: 3.1.29
-    net-core-app-31-sha: 5c5ef6022abb5437e148c1cb22944eca7471a20a6a61300c6737c5f6e3ab0d95ba22d1ce55857e033c826a06359b601478228e3ef62cd321707911ad9d96bf67
-    aspnet-core-app-31: 3.1.29
-    aspnet-core-app-31-sha: 991918a89c1372d8d1eef967777cc9dd55d0cef827d940f068e701ca877dd6e14045c3a309e6e9c4a7f843eef6d1b192b9ae1257141947f999f4e8dd6b0d43e3
+    net-core-app-31: 3.1.31
+    net-core-app-31-sha: fb2ac1a1e3b9b1eceb37587535d96a5a3c0b01edd07182ed57d4725e067678988a3fcdf22f3f49d21bc35760d69398af85a6449e6c3a8ed401ad85df920be4df
+    aspnet-core-app-31: 3.1.31
+    aspnet-core-app-31-sha: 9ea1fb4c9a656de8392b8f92c608c2f927fd03ad8e8b195f3f0b69c1433cfbf2679827b1ce2fac783f8ef77307c7b1b36563d0813f914b75b025b5cca6c773f9
     net-core-app-50: 5.0.17
     net-core-app-50-sha: a9c4784930a977abbc42aff1337dda06ec588c1ec4769a59f9fcab4d5df4fc9efe65f8e61e5433db078f67a94ea2dfe870c32c482a50d4c16283ffacacff4261
     aspnet-core-app-50: 5.0.17
     aspnet-core-app-50-sha: d8e87804e9e86273c6512785bd5a6f0e834ff3f4bbebc11c4fcdf16ab4fdfabd0d981a756955267c1aa9bbeec596de3728ce9b2e6415d2d80daef0d999a5df6d
-    net-core-app-60: 6.0.9
-    net-core-app-60-sha: a6df2cfef73047247bd36f51eaf696f616c6aa9b428e42f219bf91dcf05c03dff817a8ec826740002c8aa83df2fce8a7ace562ad2e2956789542f0b8ab8b1173
-    aspnet-core-app-60: 6.0.9
-    aspnet-core-app-60-sha: e808036155bc324335c309aaf948b2be1940a62eaf0135752989644698653c8f3a5ce310c3ee6742e3af73dbe175c6e529298eedf6eeb31cc38bfeab628f6d7b
+    net-core-app-60: 6.0.11
+    net-core-app-60-sha: 9462d73fd3f72efaa2fb4aa472055f388da4915e75cfc123298b3494f1dfd8d48c44bfa6cd5c41678ab7353d9085d05dd7f1fee0eef20c11742446e3591e45df
+    aspnet-core-app-60: 6.0.11
+    aspnet-core-app-60-sha: 12a30719aacd5b3dd444d075c13966a4bb1dc149c36bcbc0e685730f08d1c75eb3929749b89a88569ddb48bd8104db84aaee2ee097ac3a5fe6fff60c9f09f741
     net-core-app-70: 7.0.0
     net-core-app-70-sha: f4a6e9d5fec7d390c791f5ddaa0fcda386a7ec36fe2dbaa6acb3bdad38393ca1f9d984dd577a081920c3cae3d511090a2f2723cc5a79815309f344b8ccce6488
     aspnet-core-app-70: 7.0.0
@@ -109,9 +111,9 @@
     final-stretch-dot-net-60-sdk-version: 6.0.301
     final-stretch-dot-net-core-app-60-run-time-version: 6.0.6
     final-stretch-aspnet-core-app-60-run-time-version: 6.0.6
-    final-stretch-dot-net-70-sdk-version: 7.0.100-preview.7.22377.5
-    final-stretch-dot-net-core-app-70-run-time-version: 7.0.0-preview.7.22375.6
-    final-stretch-aspnet-core-app-70-run-time-version: 7.0.0-preview.7.22376.6
+    final-stretch-dot-net-70-sdk-version: 7.0.100
+    final-stretch-dot-net-core-app-70-run-time-version: 7.0.0
+    final-stretch-aspnet-core-app-70-run-time-version: 7.0.0
     final-stretch-node14-version: 14.19.1
     final-stretch-node16-version: 16.14.2
   outputs:
@@ -127,10 +129,10 @@
     golang16-tar-sha256: 7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04
     golang17-version: 1.17
     golang17-tar-sha256: 6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d
-    golang18-version: 1.18
-    golang18-tar-sha256: e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f
-    golang19-version: 1.19
-    golang19-tar-sha256: 464b6b66591f6cf055bc5df90a9750bf5fbc9d038722bb84a9d56a2bea974be6
+    golang18-version: 1.18.8
+    golang18-tar-sha256: 4d854c7bad52d53470cf32f1b287a5c0c441dc6b98306dea27358e099698142a
+    golang19-version: 1.19.3
+    golang19-tar-sha256: 74b9640724fd4e6bb0ed2a1bc44ae813a03f1e72a4c76253e2d5c015494430ba
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
@@ -140,15 +142,15 @@
     file-name-prefix: __
 - name: python-versions
   constants:
-    python-runtime-base-tag: 20221031.2
+    python-runtime-base-tag: 20221116.1
     pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
-    python37-version: 3.7.12
-    python38-version: 3.8.12
-    python39-version: 3.9.7
-    python310-version: 3.10.4
-    python311-version: 3.11.0 
+    python37-version: 3.7.15
+    python38-version: 3.8.15
+    python39-version: 3.9.15
+    python310-version: 3.10.8
+    python311-version: 3.11.0
     runtime-versions:
     - 2.7
     - 3.6
@@ -165,8 +167,8 @@
     file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20220914.1
-    php-fpm-runtime-base-tag: 20221021.2
+    php-runtime-base-tag: 20221202.1
+    php-fpm-runtime-base-tag: 20221202.1
     composer-version: 2.0.8
     composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
     composer1-9-version: 1.9.3
@@ -174,15 +176,15 @@
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
-    php81-version: 8.1.9
+    php81-version: 8.1.12
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php81-tar-sha256: 53477e73e6254dc942b68913a58d815ffdbf6946baf61a1f8ef854de524c27bf
-    php80-version: 8.0.22
+    php81-tar-sha256: 08243359e2204d842082269eedc15f08d2eca726d0e65b93fb11f4bfc51bbbab
+    php80-version: 8.0.25
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: 130937c0fa3050cd33d6c415402f6ccbf0682ae83eb8d39c91164224ddfe57f1
-    php74-version: 7.4.30
+    php80-tar-sha256: a291b71d0498707fc5514eb5b9513e88f0f1d4890bcdefd67282ded8a2bfb941
+    php74-version: 7.4.33
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
-    php74-tar-sha256: ea72a34f32c67e79ac2da7dfe96177f3c451c3eefae5810ba13312ed398ba70d
+    php74-tar-sha256: 924846abf93bc613815c55dd3f5809377813ac62a9ec4eb3778675b82a27b927
     php73-version: 7.3.27
     php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
     php73-tar-sha256: 65f616e2d5b6faacedf62830fa047951b0136d5da34ae59e6744cbaf5dca148d
@@ -215,8 +217,8 @@
     gem-version: 3.3.10
     ruby31-version: 3.1.1
     ruby31-tar-sha256: 7aefaa6b78b076515d272ec59c4616707a54fc9f2391239737d5f10af7a16caa
-    ruby27-version: 2.7.2
-    ruby27-tar-sha256: 6e5706d0d4ee4e1e2f883db9d768586b4d06567debea353c796ec45e8321c3d4
+    ruby27-version: 2.7.6
+    ruby27-tar-sha256: 54dcd3044726c4ab75a9d4604720501442b229a3aed6a55fe909567da8807f24
     ruby26-version: 2.6.6
     ruby26-tar-sha256: 5db187882b7ac34016cd48d7032e197f07e4968f406b0690e20193b9b424841f
     ruby25-version: 2.5.8
@@ -268,7 +270,7 @@
     directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20221027.2
+    node-runtime-base-tag: 20221202.2
     yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
@@ -278,7 +280,7 @@
     node12-version: 12.22.11
     node14-version: 14.20.1
     node16-version: 16.18.0
-    node18-version: 18.2.0
+    node18-version: 18.12.1
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 6.14.15
@@ -324,6 +326,7 @@
     testing-sdk-storage-url-key-name: ORYX_TEST_SDK_STORAGE_URL
     dev-sdk-storage-base-url: https://oryxsdksdev.blob.core.windows.net
     sandbox-sdk-storage-base-url: https://oryxsdkssandbox.blob.core.windows.net
+    private-sdk-storage-base-url: https://oryxsdksprivate.blob.core.windows.net
     prod-sdk-storage-base-url: https://oryxsdksprod.blob.core.windows.net
     prod-backup-sdk-storage-base-url: https://oryxsdksprodbackup.blob.core.windows.net
     prod-sdk-cdn-storage-base-url: https://oryx-cdn.microsoft.io
@@ -331,7 +334,7 @@
     default-version-file-prefix: defaultVersion
     default-version-file-type: txt
     versions-to-build-file-name: versionsToBuild.txt
-    container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata&marker={2}'
+    container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata&marker={2}&{3}'
     sdk-download-sentinel-file-name: .oryx-sdkdownload-sentinel
     sdk-version-metadata-name: Sdk_version
     legacy-sdk-version-metadata-name: Version
@@ -447,7 +450,7 @@
 - name: staging-runtime-constants
   constants:
     dotnetcore-staging-runtime-versions:
-    - 7.0
+    -
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
