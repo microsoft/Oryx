@@ -33,7 +33,6 @@ namespace Microsoft.Oryx.Automation
         private static string repoAbsolutePath = string.Empty;
         private static HashSet<string> prodSdkVersions = new HashSet<string>();
 
-        // private static HashSet<string> sdkVersions = new HashSet<string>();
         public static async Task<int> Main(string[] args)
         {
             // TODO: use dotnet parameters instead and handle invalid date
@@ -61,7 +60,7 @@ namespace Microsoft.Oryx.Automation
         public static async Task AddNewPlatformConstantsAsync(string dateTarget)
         {
             DotNet dotNet = new DotNet(repoAbsolutePath, prodSdkVersions);
-            await dotNet.CacheSdkVersionsAsync(Constants.DotNetName);
+            await dotNet.PullSdkVersionsAsync(Constants.DotNetName);
             List<PlatformConstant> platformConstants = await dotNet.GetPlatformConstantsAsync(dateTarget);
             List<Constant> yamlConstants = await DeserializeConstantsYamlAsync();
             dotNet.UpdateConstants(platformConstants, yamlConstants);
@@ -100,12 +99,13 @@ namespace Microsoft.Oryx.Automation
         }
 
         /// <Summary>
-        /// Caches the storage account sdk versions to avoid pulling all SDKs everytime
-        /// we check if a version exists in the storage account.
+        /// Pulls the storage account sdk versions and stores them
+        /// to avoid pulling all SDKs everytime we check
+        /// if a version exists in the storage account.
         /// </Summary>
         /// <param name="platform">dotnet, nodejs, python, etc
         /// This dateTarget can be passed through github actions through an argument</param>
-        public abstract Task CacheSdkVersionsAsync(string platform);
+        public abstract Task PullSdkVersionsAsync(string platform);
 
         /// <Summary>
         /// Get PlatformConstants containing corresponding platform release information.
