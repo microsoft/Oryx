@@ -127,7 +127,7 @@ RUN set -ex \
     && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
     && ${imagesDir}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$FINAL_STRETCH_YARN_VERSION/yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz" \
     && ${imagesDir}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$FINAL_STRETCH_YARN_VERSION/yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz.asc" \
-    && gpg --batch --verify yarn-v$YARN_VERFINAL_STRETCH_YARN_VERSIONSION.tar.gz.asc yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz \
+    && gpg --batch --verify yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz.asc yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz \
     && mkdir -p /opt/yarn \
     && tar -xzf yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz -C /opt/yarn \
     && mv /opt/yarn/yarn-v$FINAL_STRETCH_YARN_VERSION /opt/yarn/$FINAL_STRETCH_YARN_VERSION \
