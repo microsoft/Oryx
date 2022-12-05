@@ -1,6 +1,6 @@
 FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-8.1
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.1.9
+ENV PHP_VERSION 8.1.12
 
 # An environment variable for oryx run-script to know the origin of php image so that
 # start-up command can be determined while creating run script
@@ -123,3 +123,7 @@ RUN set -x \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc \
     && rm -rf /var/lib/apt/lists/*
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"

@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("3.1")]
         [InlineData("5.0")]
+        [InlineData("7.0")]
         public void GDIPlusLibrary_IsPresentInTheImage(string version)
         {
             // Arrange
@@ -47,6 +48,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.1")]
         [InlineData("5.0")]
         [InlineData("6.0")]
+        [InlineData("7.0")]
         public void DotnetMonitorTool_IsPresentInTheImage(string version)
         {
             // Act

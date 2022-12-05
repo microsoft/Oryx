@@ -63,6 +63,7 @@ namespace Microsoft.Oryx.Detector
             try
             {
                 yamlStream.Load(new StringReader(yamlContent));
+                return yamlStream.Documents[0].RootNode;
             }
             catch (Exception ex)
             {
@@ -71,8 +72,6 @@ namespace Microsoft.Oryx.Detector
                     string.Format(Messages.FailedToParseFileExceptionFormat, filePath),
                     ex);
             }
-
-            return yamlStream.Documents[0].RootNode;
         }
 
         /// <summary>

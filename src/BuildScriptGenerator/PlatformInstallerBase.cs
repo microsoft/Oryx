@@ -85,6 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string directoryToInstall = null)
         {
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
+            var sdkStorageAccountAccessToken = this.CommonOptions.OryxSdkStorageAccountAccessToken;
 
             var versionDirInTemp = directoryToInstall;
             if (string.IsNullOrEmpty(versionDirInTemp))
@@ -117,7 +118,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("else")
                 .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" " +
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")
@@ -159,8 +160,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("fi")
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"nodejs\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is nodejs..\"")
-                .AppendLine($"mkdir -p /home/codespace/.nodejs")
-                .AppendLine($"ln -sfn /opt/nodejs/{version} /home/codespace/.nodejs/current")
+                .AppendLine($"mkdir -p /home/codespace/nvm")
+                .AppendLine($"ln -sfn /opt/nodejs/{version} /home/codespace/nvm/current")
                 .AppendLine("fi")
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"php\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is php..\"")
@@ -176,8 +177,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("fi")
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"java\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is java..\"")
-                .AppendLine($"mkdir -p /home/codespace/.java")
-                .AppendLine($"ln -sfn /opt/java/{version} /home/codespace/.java/current")
+                .AppendLine($"mkdir -p /home/codespace/java")
+                .AppendLine($"ln -sfn /opt/java/{version} /home/codespace/java/current")
                 .AppendLine("fi")
                 .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"ruby\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is ruby..\"")

@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -51,7 +50,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-            var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient);
+            var oryxSdkStorageAccountAccessToken = this.commonOptions.OryxSdkStorageAccountAccessToken;
+            var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient, oryxSdkStorageAccountAccessToken);
             var supportedVersions = new List<string>();
 
             var isStretch = string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase);
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             // get default version
             var defaultVersionContent = httpClient
-                .GetStringAsync(defaultVersionUrl)
+                .GetStringAsync($"{defaultVersionUrl}{this.commonOptions.OryxSdkStorageAccountAccessToken}")
                 .Result;
 
             string defaultVersion = null;

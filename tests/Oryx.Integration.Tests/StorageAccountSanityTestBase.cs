@@ -25,6 +25,7 @@ namespace Oryx.Integration.Tests
     {
         private readonly string _storageUrl;
         private readonly string _repoRootDir;
+        private readonly string _sdkStorageAccountAccessToken;
 
         private readonly string[] _debianFlavors = 
         {
@@ -35,11 +36,13 @@ namespace Oryx.Integration.Tests
             string storageUrl,
             ITestOutputHelper output,
             TestTempDirTestFixture testTempDirTestFixture,
-            RepoRootDirTestFixture repoRootDirTestFixture)
+            RepoRootDirTestFixture repoRootDirTestFixture,
+            string token)
             : base(output, testTempDirTestFixture)
         {
             _storageUrl = storageUrl;
             _repoRootDir = repoRootDirTestFixture.RepoRootDirPath;
+            _sdkStorageAccountAccessToken = token;
         }
 
         [Fact]
@@ -98,7 +101,7 @@ namespace Oryx.Integration.Tests
             var platformName = "nodejs";
             AssertExpectedDefaultVersion(platformName, platformName);
         }
-        
+
         [Fact]
         public void PhpComposerCoreContainer_HasExpectedListOfBlobs()
         {
@@ -199,7 +202,7 @@ namespace Oryx.Integration.Tests
 
         private XDocument GetMetadata(string platformName)
         {
-            return ListBlobsHelper.GetAllBlobs(_storageUrl, platformName, _httpClient);
+            return ListBlobsHelper.GetAllBlobs(_storageUrl, platformName, _httpClient, _sdkStorageAccountAccessToken);
         }
 
         private List<string> GetVersionsFromContainer(string debianFlavor, string platformName)

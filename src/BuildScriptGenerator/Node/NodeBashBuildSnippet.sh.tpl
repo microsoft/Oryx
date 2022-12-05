@@ -17,7 +17,15 @@ echo "Node Build Command Manifest file created."
 
 doc="https://docs.microsoft.com/en-us/azure/app-service/configure-language-nodejs?pivots=platform-linux#troubleshooting"
 
-{{ if NpmVersionSpec | IsNotBlank }}
+
+
+{{ if YarnVersionSpec | IsNotBlank }}
+echo
+echo "Found yarn version spec to follow: '{{ YarnVersionSpec }}'"
+echo "Updating version of yarn installed to meet the above version spec."
+yarn set version '{{ YarnVersionSpec }}'
+echo
+{{ else if NpmVersionSpec | IsNotBlank }}
 echo
 echo "Found npm version spec to follow in package.json: '{{ NpmVersionSpec }}'"
 echo "Updating version of npm installed to meet the above version spec."
