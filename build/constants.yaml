@@ -187,7 +187,7 @@
     final-stretch-python27-version: 2.7.18
     final-stretch-python36-version: 3.6.15
     final-stretch-python37-version: 3.7.15
-    final-stretch-python38-version: 3.8.12
+    final-stretch-python38-version: 3.8.15
     final-stretch-python39-version: 3.9.7
     final-stretch-python310-version: 3.10.4
     final-stretch-python311-version: 3.11.0
