@@ -65,7 +65,6 @@ namespace Microsoft.Oryx.Automation
             List<PlatformConstant> platformConstants = new List<PlatformConstant>();
             foreach (var releaseIndex in releasesIndex)
             {
-                // TODO: check if SDK already exists in storage account
                 var dateReleased = releaseIndex.LatestReleaseDate;
                 if (!DatesMatch(dateTarget, dateReleased) || this.prodSdkVersions.Contains(releaseIndex.LatestSdk))
                 {
@@ -133,8 +132,8 @@ namespace Microsoft.Oryx.Automation
 
         public override async Task PullSdkVersionsAsync(string platform)
         {
-            string url = $"https://oryxsdks.blob.core.windows.net/{platform}" +
-            "?restype=container&comp=list&include=metadata";
+            string url = Constants.ProdSdkCdnStorageBaseUrl +
+                $"/{platform}?restype=container&comp=list&include=metadata";
             var response = await HttpClientHelper.GetRequestStringAsync(url);
             var xdoc = XDocument.Parse(response);
 
