@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string FinalStretchPipVersion = "21.2.4";
         public const string FinalStretchPython27Version = "2.7.18";
         public const string FinalStretchPython36Version = "3.6.15";
-        public const string FinalStretchPython37Version = "3.7.12";
+        public const string FinalStretchPython37Version = "3.7.15";
         public const string FinalStretchPython38Version = "3.8.12";
         public const string FinalStretchPython39Version = "3.9.7";
         public const string FinalStretchPython310Version = "3.10.4";
