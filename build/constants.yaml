@@ -167,8 +167,8 @@
     file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20221123.3
-    php-fpm-runtime-base-tag: 20221123.3
+    php-runtime-base-tag: 20221202.1
+    php-fpm-runtime-base-tag: 20221202.1
     composer-version: 2.0.8
     composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
     composer1-9-version: 1.9.3
@@ -176,12 +176,12 @@
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
-    php81-version: 8.1.9
+    php81-version: 8.1.12
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php81-tar-sha256: 53477e73e6254dc942b68913a58d815ffdbf6946baf61a1f8ef854de524c27bf
-    php80-version: 8.0.22
+    php81-tar-sha256: 08243359e2204d842082269eedc15f08d2eca726d0e65b93fb11f4bfc51bbbab
+    php80-version: 8.0.25
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: 130937c0fa3050cd33d6c415402f6ccbf0682ae83eb8d39c91164224ddfe57f1
+    php80-tar-sha256: a291b71d0498707fc5514eb5b9513e88f0f1d4890bcdefd67282ded8a2bfb941
     php74-version: 7.4.33
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
     php74-tar-sha256: 924846abf93bc613815c55dd3f5809377813ac62a9ec4eb3778675b82a27b927
@@ -217,8 +217,8 @@
     gem-version: 3.3.10
     ruby31-version: 3.1.1
     ruby31-tar-sha256: 7aefaa6b78b076515d272ec59c4616707a54fc9f2391239737d5f10af7a16caa
-    ruby27-version: 2.7.2
-    ruby27-tar-sha256: 6e5706d0d4ee4e1e2f883db9d768586b4d06567debea353c796ec45e8321c3d4
+    ruby27-version: 2.7.6
+    ruby27-tar-sha256: 54dcd3044726c4ab75a9d4604720501442b229a3aed6a55fe909567da8807f24
     ruby26-version: 2.6.6
     ruby26-tar-sha256: 5db187882b7ac34016cd48d7032e197f07e4968f406b0690e20193b9b424841f
     ruby25-version: 2.5.8
@@ -270,7 +270,7 @@
     directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20221112.1
+    node-runtime-base-tag: 20221202.2
     yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
@@ -280,7 +280,7 @@
     node12-version: 12.22.11
     node14-version: 14.20.1
     node16-version: 16.18.0
-    node18-version: 18.12.0
+    node18-version: 18.12.1
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 6.14.15
@@ -450,7 +450,7 @@
 - name: staging-runtime-constants
   constants:
     dotnetcore-staging-runtime-versions:
-    -
+    - 
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator

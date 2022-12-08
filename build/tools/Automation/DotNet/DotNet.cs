@@ -9,6 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
@@ -34,10 +36,12 @@ namespace Microsoft.Oryx.Automation
     public class DotNet : Program
     {
         private string repoAbsolutePath = string.Empty;
+        private HashSet<string> prodSdkVersions = new HashSet<string>();
 
-        public DotNet(string repoAbsolutePath)
+        public DotNet(string repoAbsolutePath, HashSet<string> prodSdkVersions)
         {
             this.repoAbsolutePath = repoAbsolutePath;
+            this.prodSdkVersions = prodSdkVersions;
         }
 
         /// <Summary>
@@ -61,9 +65,8 @@ namespace Microsoft.Oryx.Automation
             List<PlatformConstant> platformConstants = new List<PlatformConstant>();
             foreach (var releaseIndex in releasesIndex)
             {
-                // TODO: check if SDK already exists in storage account
                 var dateReleased = releaseIndex.LatestReleaseDate;
-                if (!DatesMatch(dateTarget, dateReleased))
+                if (!DatesMatch(dateTarget, dateReleased) || this.prodSdkVersions.Contains(releaseIndex.LatestSdk))
                 {
                     continue;
                 }
@@ -77,13 +80,13 @@ namespace Microsoft.Oryx.Automation
                 {
                     // check releasedToday again since there
                     // are still releases from other dates.
-                    if (!DatesMatch(dateTarget, release.ReleaseDate))
+                    string sdkVersion = release.Sdk.Version;
+                    if (!DatesMatch(dateTarget, release.ReleaseDate) || this.prodSdkVersions.Contains(sdkVersion))
                     {
                         continue;
                     }
 
                     // create sdk PlatformConstant
-                    string sdkVersion = release.Sdk.Version;
                     string sha = GetSha(release.Sdk.Files);
                     PlatformConstant platformConstant = new PlatformConstant
                     {
@@ -125,6 +128,27 @@ namespace Microsoft.Oryx.Automation
             }
 
             return platformConstants;
+        }
+
+        public override async Task PullSdkVersionsAsync(string platform)
+        {
+            string url = Constants.ProdSdkCdnStorageBaseUrl +
+                $"/{platform}?restype=container&comp=list&include=metadata";
+            var response = await HttpClientHelper.GetRequestStringAsync(url);
+            var xdoc = XDocument.Parse(response);
+
+            foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
+            {
+                var childElements = metadataElement.Elements();
+                var versionElement = childElements
+                                    .Where(e => string.Equals("sdk_version", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
+                                    .FirstOrDefault();
+                if (versionElement != null)
+                {
+                    this.prodSdkVersions.Add(versionElement.Value);
+                    Console.WriteLine(versionElement.Value);
+                }
+            }
         }
 
         /// <inheritdoc/>
