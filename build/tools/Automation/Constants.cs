@@ -10,6 +10,7 @@ namespace Microsoft.Oryx.Automation
         public const string ConstantsYaml = "constants.yaml";
         public const string SdkName = "sdk";
         public const string VersionsToBuildTxt = "versionsToBuild.txt";
+        public const string ProdSdkCdnStorageBaseUrl = "https://oryx-cdn.microsoft.io";
 
         public const string DotNetName = "dotnet";
         public const string DotNetCoreName = "net-core";

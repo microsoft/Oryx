@@ -29,7 +29,18 @@ jobs:
             echo "Defaulting to todays date ${releaseDate}"
           fi
 
+          echo "releaseDate=${releaseDate}" >> $GITHUB_ENV
+
           dotnet run --project build/tools/Automation/Automation.csproj ${releaseDate} ${{ github.workspace }}
+
+      - name: Check if any git changes exist.
+        run: |
+          changes=$(git diff-index --name-only HEAD --)
+          echo ${changes}
+          if [ -z "${changes}" ]; then
+              echo "No git changes to commit. Cancelling workflow..."
+              exit 1
+          fi
 
       - name: Run Generate Constants
         run: ./build/generateConstants.sh
@@ -51,10 +62,11 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
         with:
-          branch: automation/add-new-dotnet-release
-          title: New DotNetCore Sdks
+          branch: automation/add-new-dotnet-release-${{ env.releaseDate }}
+          title: New DotNetCore Sdks ${{ env.releaseDate }}
 
       - name: Run Azure Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
