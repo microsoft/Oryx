@@ -145,10 +145,10 @@ The information won't show in runtime image tags, but we can always check the de
 - 3.1
 
 ### php
-- 7.4, 8.1, 8.2
+- 8.1, 8.2
 
 ### php-fpm
-- 7.4, 8.1, 8.2
+- 8.1, 8.2
 
 ### nodejs
 - 14, 16, 18
