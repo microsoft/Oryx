@@ -270,7 +270,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string buildImageName)
         {
             // Arrange
-            var expectedOutput = $"Python {PythonVersions.Python38Version}";
+            var expectedOutput = $"Python {FinalStretchVersions.FinalStretchPython38Version}";
 
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -378,7 +378,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void NpmVersion_IsNotUpgraded_To_6_9_0()
         {
             // Arrange
-            var nodeVersion = NodeVersions.Node12Version;
+            var nodeVersion = FinalStretchVersions.FinalStretchNode12Version;
             var script = new ShellScriptBuilder()
                 .Source($"benv node={nodeVersion}")
                 .AddCommand("npm --version")
@@ -407,7 +407,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "latest")]
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
-        [InlineData(PythonVersions.Python27Version, Python27VersionInfo)]
+        [InlineData(FinalStretchVersions.FinalStretchPython27Version, FinalStretchVersions.FinalStretchPython27Version)]
         public void PythonAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
@@ -440,7 +440,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "latest")]
         [InlineData("2", Python27VersionInfo)]
         [InlineData("2.7", Python27VersionInfo)]
-        [InlineData(PythonVersions.Python27Version, Python27VersionInfo)]
+        [InlineData(FinalStretchVersions.FinalStretchPython27Version, FinalStretchVersions.FinalStretchPython27Version)]
         public void Python2Alias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
@@ -478,7 +478,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("3.7", Python37VersionInfo)]
         [InlineData(PythonVersions.Python37Version, Python37VersionInfo)]
         [InlineData("3.8", Python38VersionInfo)]
-        [InlineData(PythonVersions.Python38Version, Python38VersionInfo)]
+        [InlineData(FinalStretchVersions.FinalStretchPython27Version, FinalStretchVersions.FinalStretchPython27Version)]
         public void Python3_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
@@ -610,7 +610,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "latest")]
-        [InlineData(PhpVersions.Php73Version, PhpVersions.Php73Version)]
+        [InlineData(FinalStretchVersions.FinalStretchPhp73Version, FinalStretchVersions.FinalStretchPhp73Version)]
         [InlineData("7.3", PhpVersions.Php73Version)]
         [InlineData("7", PhpVersions.Php73Version)]
         public void Php_UsesVersion_SetOnBenv(string specifiedVersion, string expectedVersion)
@@ -645,10 +645,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BenvShouldSetUpEnviroment_WhenMultiplePlatforms_AreSuppliedAsArguments()
         {
             // Arrange
-            var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore30SdkVersion;
-            var expectedPythonVersion = Python36VersionInfo;
+            var expectedDotNetVersion = FinalStretchVersions.FinalStretchDotNetCore30SdkVersion;
+            var expectedPythonVersion = FinalStretchVersions.FinalStretchPython36Version;
             var script = new ShellScriptBuilder()
-                .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore30SdkVersion} python=3.6")
+                .Source($"benv dotnet={FinalStretchVersions.FinalStretchDotNetCore30SdkVersion} python=3.6")
                 .AddCommand("dotnet --version")
                 .AddCommand("python --version")
                 .ToString();
