@@ -75,7 +75,7 @@ jobs:
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch main
           #cat ${{ github.workspace }}/sdkPipelineTriggerResponse.json
           pwd
 
