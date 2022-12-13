@@ -412,7 +412,7 @@
     file-name-prefix: __
 - name: conda-constants
   constants:
-    conda-version: 4.11.0-0
+    conda-version: 4.12.0-0
     conda-environment-yml-file-name: environment.yml
     oryx-generated-environment-yml-file-name: oryx.environment.yml
     default-conda-environment-yml-file-template-name: default.envrionment.yml.template
