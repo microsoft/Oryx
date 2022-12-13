@@ -1,10 +1,6 @@
 name: Oryx-SDK-Automation
 
-on:
-  env:
-    MAX_RETRIES: 20
-    TIMEOUT_SECONDS: 1200
-
+on
   # runs on 12:55 (5:55AM PST) & 23:55 UTC
   schedule:
     - cron:  '55 12,23 * * *'  
@@ -15,6 +11,11 @@ on:
         description: 'The date to check for new releases. Format: yyyy-mm-dd'
         required: true
         type: string
+
+env:
+  MAX_RETRIES: 20
+  TIMEOUT_SECONDS: 1200
+
 jobs:
   build:
     runs-on: ubuntu-20.04
