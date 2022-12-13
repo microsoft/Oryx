@@ -1,6 +1,10 @@
 name: Oryx-SDK-Automation
 
 on:
+  env:
+    MAX_RETRIES: 20
+    TIMEOUT_SECONDS: 1200
+
   # runs on 12:55 (5:55AM PST) & 23:55 UTC
   schedule:
     - cron:  '55 12,23 * * *'  
@@ -82,13 +86,8 @@ jobs:
 
       - name: Check Dev SDK Pipeline Ran Successfully
         run: |
-          pwd
-          ls
-          printenv
-          jq --version
           pipelineInvocationId=$( cat ${{ github.workspace }}/sdkPipelineTriggerResponse.json | jq ".id" )
-          echo $pipelineInvocationId
-          result=$( cat sdkPipelineTriggerResponse.json | jq ".result" | tr -d '"' )
+          result=$( az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq ".result" | tr -d '"' )
           ${{ github.workspace }}/images/retry.sh "[[ \"${result}\" == \"succeeded\" ]] && exit 0 || exit 1"
           
 
