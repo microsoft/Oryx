@@ -1,4 +1,4 @@
-# Oryx
+# Microsoft Oryx
 
 Oryx is a build system which automatically compiles source code repos into
 runnable artifacts. It is used to build web apps for [Azure App Service][] and
