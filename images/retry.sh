@@ -8,12 +8,12 @@
 # and sleep & retry if there's a failure
 # $1 
 #	parameter contains the full command to be executed
-maxRetries=5
+maxRetries=3
 if [[ -n "${MAX_RETRIES}" ]]; then
   maxRetries=${MAX_RETRIES}
 fi
 
-timeoutSeconds=15
+timeoutSeconds=10
 if [[ -n "${TIMEOUT_SECONDS}" ]]; then
   timeoutSeconds=${TIMEOUT_SECONDS}
 fi

@@ -82,7 +82,6 @@ jobs:
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
           # TODO: Update branch name
           az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch main > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
-          cat ${{ github.workspace }}/sdkPipelineTriggerResponse.json
 
       - name: Check Dev SDK Pipeline Ran Successfully
         run: |
