@@ -1,6 +1,6 @@
 name: Oryx-SDK-Automation
 
-on
+on:
   # runs on 12:55 (5:55AM PST) & 23:55 UTC
   schedule:
     - cron:  '55 12,23 * * *'  
@@ -79,7 +79,6 @@ jobs:
           # TODO: Update branch name
           az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch main > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
           cat ${{ github.workspace }}/sdkPipelineTriggerResponse.json
-          pwd
 
       - name: Check Dev SDK Pipeline Ran Successfully
         run: |
