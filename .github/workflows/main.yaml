@@ -89,7 +89,7 @@ jobs:
           pipelineInvocationId=$( cat ${{ github.workspace }}/sdkPipelineTriggerResponse.json | jq ".id" )
           echo $pipelineInvocationId
           result=$( cat sdkPipelineTriggerResponse.json | jq ".result" | tr -d '"' )
-          sudo ${{ github.workspace }}/images/retry.sh "[[ \"${result}\" == \"succeeded\" ]] && exit 0 || exit 1"
+          ${{ github.workspace }}/images/retry.sh "[[ \"${result}\" == \"succeeded\" ]] && exit 0 || exit 1"
           
 
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
