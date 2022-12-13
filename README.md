@@ -149,7 +149,7 @@ startup script generators. For more details, refer to our [architecture](./doc/a
 
 # Testing Locally
 ## startup script generator
-`build/testStartupScriptGenerators.sh` will perform tests on all startup script generators written in go. 
+`build/testStartupScriptGenerators.sh` will perform tests on all startup script generators written in go.
 The tests are copied into a docker image for performing `go test` on all platforms.
 
 # Contributing

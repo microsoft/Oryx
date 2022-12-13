@@ -51,7 +51,12 @@ jobs:
     inputs:
       artifactName: 'signed_binaries'
       path: $(Build.SourcesDirectory)/artifacts
-
+  
+  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+    displayName: 'Component Detection - OSS Compliance'
+    inputs:
+      ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+  
   - template: _setReleaseTag.yml
 
   - task: GitHubRelease@0
