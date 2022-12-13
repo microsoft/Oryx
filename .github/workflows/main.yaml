@@ -13,60 +13,92 @@ on:
         type: string
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: Run SDK automation
-        run: |
-          releaseDate=${{ inputs.releaseDate }}
-          if ! [[ "${releaseDate}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
-          then
-            echo "release date is invalid $releaseDate."
-            echo "Expecting date format yyyy-mm-dd"
-            releaseDate=`date +%F`
-            echo "Defaulting to todays date ${releaseDate}"
-          fi
+      #- name: Run SDK automation
+      #  run: |
+      #    releaseDate=${{ inputs.releaseDate }}
+      #    if ! [[ "${releaseDate}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+      #    then
+      #      echo "release date is empty or invalid $releaseDate."
+      #      echo "Expecting date format yyyy-mm-dd"
+      #      releaseDate=`date +%F`
+      #      echo "Defaulting to todays date ${releaseDate}"
+      #    fi
 
-          echo "releaseDate=${releaseDate}" >> $GITHUB_ENV
+      #    echo "releaseDate=${releaseDate}" >> $GITHUB_ENV
 
-          dotnet run --project build/tools/Automation/Automation.csproj ${releaseDate} ${{ github.workspace }}
+      #    dotnet run --project build/tools/Automation/Automation.csproj ${releaseDate} ${{ github.workspace }}
 
-      - name: Check if any git changes exist.
-        run: |
-          changes=$(git diff-index --name-only HEAD --)
-          echo ${changes}
-          if [ -z "${changes}" ]; then
-              echo "No git changes to commit. Cancelling workflow..."
-              exit 1
-          fi
+      #- name: Check if any git changes exist.
+      #  run: |
+      #    changes=$(git diff-index --name-only HEAD --)
+      #    echo ${changes}
+      #    if [ -z "${changes}" ]; then
+      #        echo "No git changes to commit. Cancelling workflow..."
+      #        exit 1
+      #    fi
 
-      - name: Run Generate Constants
-        run: ./build/generateConstants.sh
+      #- name: Run Generate Constants
+      #  run: ./build/generateConstants.sh
       
-      # TODO: replace William with new bot GitHub Account credentials
-      - name: Create commits
-        run: |
-          git config user.name 'William Hernandez'
-          git config user.email 'williamhe@microsoft.com'
-          git add -A
-          git commit -m "Add new SDK versions"
+      ## TODO: replace William with new bot GitHub Account credentials
+      #- name: Create commits
+      #  run: |
+      #    git config user.name 'William Hernandez'
+      #    git config user.email 'williamhe@microsoft.com'
+      #    git add -A
+      #    git commit -m "Add new SDK versions"
       
-      # TODO: paramterize branch/title platfrom name
-      #       and list of versions to the PR decription
-      #
-      #       branch name example: automation/add-new-{PlatfornName}-sdks
-      # TODO: remove peter-evans/create-pull-request and use github.rest
-      # Example: https://stackoverflow.com/questions/68057744/create-pull-request-with-github-action/71224444#71224444
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
-        with:
-          branch: automation/add-new-dotnet-release-${{ env.releaseDate }}
-          title: New DotNetCore Sdks ${{ env.releaseDate }}
+      ## TODO: paramterize branch/title platfrom name
+      ##       and list of versions to the PR decription
+      ##
+      ##       branch name example: automation/add-new-{PlatfornName}-sdks
+      ## TODO: remove peter-evans/create-pull-request and use github.rest
+      ## Example: https://stackoverflow.com/questions/68057744/create-pull-request-with-github-action/71224444#71224444
+      #- name: Create Pull Request
+      #  uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
+      #  with:
+      #    branch: automation/add-new-dotnet-release-${{ env.releaseDate }}
+      #    title: New DotNetCore Sdks ${{ env.releaseDate }}
+      - name: Install jq
+        run: |
+          apt-get update
+          apt-get install jq -y
+          jq --version
 
-      - name: Run Azure Pipeline 
+      - name: Trigger Dev SDK Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
+          az pipelines run --organization https://devdiv.visualstudio.com/ \ 
+            --project DevDiv --name Oryx-PlatformBinary-DotNetCore \
+            --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
+          pwd
+
+      - name: Check Dev SDK Pipeline Ran Successfully
+        run: |
+          pwd
+          ls
+          printenv
+          jq --version
+          pipelineInvocationId=$( cat ${{ github.workspace }}/sdkPipelineTriggerResponse.json | jq ".id" )
+          echo $pipelineInvocationId
+          result=$( cat details.json | jq ".result" | tr -d '"' )
+          ${{ github.workspace }}/images/retry.sh "[[ \"${result}\" == \"succeeded\" ]] && exit 0 || exit 1"
+          
+
+          #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
+
+      #- name: Trigger Runtime Pipeline
+      #  run: |
+      #    az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
+      #    echo "add retry using jq"
+
+      #- name: Update constants.yaml
+      #  run: |
+      #    echo "Update constants.yaml using dotnet automation"
+      #    echo "Commit changes"
+
