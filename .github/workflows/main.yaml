@@ -12,6 +12,10 @@ on:
         required: true
         type: string
 
+env:
+  MAX_RETRIES: 10
+  TIMEOUT_SECONDS: 1200
+
 jobs:
   build:
     runs-on: ubuntu-20.04
