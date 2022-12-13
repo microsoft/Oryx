@@ -75,8 +75,9 @@ jobs:
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch main
-          #cat ${{ github.workspace }}/sdkPipelineTriggerResponse.json
+          # TODO: Update branch name
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch main >  > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
+          cat ${{ github.workspace }}/sdkPipelineTriggerResponse.json
           pwd
 
       - name: Check Dev SDK Pipeline Ran Successfully
@@ -88,7 +89,7 @@ jobs:
           pipelineInvocationId=$( cat ${{ github.workspace }}/sdkPipelineTriggerResponse.json | jq ".id" )
           echo $pipelineInvocationId
           result=$( cat details.json | jq ".result" | tr -d '"' )
-          ${{ github.workspace }}/images/retry.sh "[[ \"${result}\" == \"succeeded\" ]] && exit 0 || exit 1"
+          sudo ${{ github.workspace }}/images/retry.sh "[[ \"${result}\" == \"succeeded\" ]] && exit 0 || exit 1"
           
 
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
