@@ -4,6 +4,4 @@ Oryx provides a buildpack that runs it, so that Oryx can also be used via the [p
 
 ## Related images
 
-WIP
-
 [pack]: https://github.com/buildpack/pack
