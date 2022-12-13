@@ -1,4 +1,4 @@
-# Architecture
+# Oryx Architecture
 
 The Oryx system comprises *Build* and *Run* images. **Build** images include
 compilers, libraries, headers and other tools necessary to prepare artifacts;
