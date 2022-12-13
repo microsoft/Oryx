@@ -66,8 +66,9 @@ jobs:
       #    title: New DotNetCore Sdks ${{ env.releaseDate }}
       - name: Install jq
         run: |
-          apt-get update
-          apt-get install jq -y
+          whoami
+          sudo apt-get update
+          sudo apt-get install jq -y
           jq --version
 
       - name: Trigger Dev SDK Pipeline 
