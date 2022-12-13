@@ -214,6 +214,7 @@ RUN buildDir="/opt/tmp/build" \
     && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/conda-archive-keyring.gpg] https://repo.anaconda.com/pkgs/misc/debrepo/conda stable main" > /etc/apt/sources.list.d/conda.list \
     && . $buildDir/__condaConstants.sh \
     && apt-get update \
+    && apt-cache policy conda \
     && apt-get install -y --no-install-recommends \
         conda=${CONDA_VERSION} \
     && rm -rf /var/lib/apt/lists/* \
