@@ -13,8 +13,8 @@ on:
         type: string
 
 env:
-  MAX_RETRIES: 10
-  TIMEOUT_SECONDS: 1200
+  MAX_RETRIES: 5
+  TIMEOUT_SECONDS: 600
 
 jobs:
   build:
@@ -88,7 +88,7 @@ jobs:
           pipelineInvocationId=$( cat ${{ github.workspace }}/sdkPipelineTriggerResponse.json | jq ".id" )
           result=$( az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq ".result" | tr -d '"' )
           echo $result
-          ${{ github.workspace }}/images/retry.sh $( [[ "${result}" == "succeeded" ]] )
+          ${{ github.workspace }}/images/retry.sh "eval [[ ${result} == \"succeeded\" ]]"
           
 
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
