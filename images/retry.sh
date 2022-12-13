@@ -8,13 +8,22 @@
 # and sleep & retry if there's a failure
 # $1 
 #	parameter contains the full command to be executed
+maxRetries=5
+if [[ -n "${MAX_RETRIES}" ]]; then
+  maxRetries=${MAX_RETRIES}
+fi
+
+timeoutSeconds=15
+if [[ -n "${TIMEOUT_SECONDS}" ]]; then
+  timeoutSeconds=${TIMEOUT_SECONDS}
+fi
+
 retryCount=0
-retries=5
-while [ "$retryCount" -le "$retries" ]
+while [ "$retryCount" -le "$maxRetries" ]
 do
 	echo "retry $retryCount"
 	$1 && break
-	echo "error executing: $1"
+	echo "Failed command: $1"
 	retryCount=$((retryCount+1)) 
-	sleep 15
+	sleep ${timeoutSeconds}
 done
