@@ -87,6 +87,7 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           pipelineInvocationId=$( cat sdkPipelineTriggerResponse.json | jq ".id" )
+          ./build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
           #result=$( az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq ".result" | tr -d '"' )
           #${{ github.workspace }}/images/retry.sh "eval [[ ${result} == \"succeeded\" ]]"
 
