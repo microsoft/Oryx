@@ -85,12 +85,12 @@ jobs:
 
       - name: Check Dev SDK Pipeline Ran Successfully
         run: |
-          pipelineInvocationId=$( cat ${{ github.workspace }}/sdkPipelineTriggerResponse.json | jq ".id" )
-          result=$( az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq ".result" | tr -d '"' )
-          echo $result
-          ${{ github.workspace }}/images/retry.sh "eval [[ ${result} == \"succeeded\" ]]"
-          
-
+          cd ${{ github.workspace }}
+          pipelineInvocationId=$( cat sdkPipelineTriggerResponse.json | jq ".id" )
+          #result=$( az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq ".result" | tr -d '"' )
+          #${{ github.workspace }}/images/retry.sh "eval [[ ${result} == \"succeeded\" ]]"
+          s="az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"' )"
+          ${{ github.workspace }}/images/retry.sh "eval [[ $(eval $s) == \"succeeded\" ]]"
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
 
       #- name: Trigger Runtime Pipeline
