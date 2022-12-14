@@ -94,28 +94,29 @@ jobs:
           #echo $s
           #${{ github.workspace }}/images/retry.sh "eval [[ $(eval $s) == \"succeeded\" ]]"
 
-         # maxRetries=3
-         # if [[ -n "${MAX_RETRIES}" ]]; then
-         #     maxRetries=${MAX_RETRIES}
-         # fi
+          maxRetries=3
+          if [[ -n "${MAX_RETRIES}" ]]; then
+              maxRetries=${MAX_RETRIES}
+          fi
 
-         # timeoutSeconds=10
-         # if [[ -n "${TIMEOUT_SECONDS}" ]]; then
-         #     timeoutSeconds=${TIMEOUT_SECONDS}
-         # fi
+          timeoutSeconds=10
+          if [[ -n "${TIMEOUT_SECONDS}" ]]; then
+              timeoutSeconds=${TIMEOUT_SECONDS}
+          fi
 
-         # retryCount=0
-         # while [ "$retryCount" -le "$maxRetries" ]
-         # do
-         #   date
-	        #echo "retry $retryCount"
-         #   s="az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"'"
-         #   echo $s
-         #   eval [[ $(eval $s) == \"succeeded\" ]]  && break
-	        #echo "Failed command: $1"
-	        #retryCount=$((retryCount+1)) 
-	        #sleep ${timeoutSeconds}
-         # done
+          retryCount=0
+          while [ "$retryCount" -le "$maxRetries" ]
+          do
+            date
+	        echo "retry $retryCount"
+            s="az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"'"
+            echo $s
+            eval [[ $(eval $s) == \"succeeded\" ]]  && break
+	        echo "Failed command: $s"
+            echo "hello"
+	        retryCount=$((retryCount+1)) 
+	        sleep ${timeoutSeconds}
+          done
 
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
 
