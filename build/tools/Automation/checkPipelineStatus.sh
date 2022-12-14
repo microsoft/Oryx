@@ -1,5 +1,4 @@
-﻿#!/bin/bash
-# --------------------------------------------------------------------------------------------
+﻿# --------------------------------------------------------------------------------------------
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
@@ -26,12 +25,11 @@ while [ "$retryCount" -le "$maxRetries" ]
 do
 	echo "retry $retryCount"
 	# status.json contains the buildNumber, used later in the workflow
-	az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv > status.json
-	status=$( cat status.json | jq ".result" | tr -d '"' )
-	if [[ "$status" == "succeeded" ]]; then
+	az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv > result.json
+	result=$( cat status.json | jq ".result" | tr -d '"' )
+	echo $result
+	if [[ "$result" == "succeeded" ]]; then
 		return
-	else
-		break
 	fi
 	echo "Failed command: $1"
 	retryCount=$((retryCount+1)) 
