@@ -91,7 +91,7 @@ jobs:
           #${{ github.workspace }}/images/retry.sh "eval [[ ${result} == \"succeeded\" ]]"
           ###########################
 
-          #s="date; az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"'"
+          #s="az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"'"
           #echo $s
           #${{ github.workspace }}/images/retry.sh "eval [[ $(eval $s) == \"succeeded\" ]]"
 
@@ -110,7 +110,7 @@ jobs:
           do
             date
 	        echo "retry $retryCount"
-            s="date; az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"'"
+            s="az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"'"
             echo $s
             eval [[ $(eval $s) == \"succeeded\" ]]  && break
 	        echo "Failed command: $1"
