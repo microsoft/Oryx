@@ -98,12 +98,6 @@ jobs:
           retryCount=0
           while [ "$retryCount" -le "$maxRetries" ]
           do
-            date
-	        echo "retry $retryCount"
-            s="az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"'"
-            echo $s
-            eval [[ $(eval $s) == \"succeeded\" ]]  && break
-	        echo "Failed command: $s"
             echo "hello"
 	        retryCount=$((retryCount+1)) 
 	        sleep ${timeoutSeconds}
