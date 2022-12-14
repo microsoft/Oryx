@@ -5,7 +5,6 @@
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 
