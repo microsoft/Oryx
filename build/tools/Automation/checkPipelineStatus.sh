@@ -26,7 +26,7 @@ do
 	echo "retry $retryCount"
 	# status.json contains the buildNumber, used later in the workflow
 	az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv > result.json
-	result=$( cat status.json | jq ".result" | tr -d '"' )
+	result=$( cat result.json | jq ".result" | tr -d '"' )
 	echo $result
 	if [[ "$result" == "succeeded" ]]; then
 		return
