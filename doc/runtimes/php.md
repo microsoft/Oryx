@@ -87,8 +87,7 @@ The following process is applied to determine how to start an app:
 
 # Version support
 
-The PHP project defines this [release schedule][]. Oryx supports all actively supported
-releases (7.2, 7.3, 7.4, 8.0, 8.1), in addition to 5.6 & 7.0.
+The PHP project defines this [release schedule][]. Oryx supports all [actively supported releases](https://www.php.net/supported-versions.php).
 
 We will update the `patch` version of a release at least once every 3 months,
 replacing the previous `patch` version for that release.
