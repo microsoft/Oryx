@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -97,9 +98,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger.LogDebug("Getting the default version from url {defaultVersionUrl}.", defaultVersionUrl);
 
             // get default version
-            var defaultVersionContent = httpClient
-                .GetStringAsync($"{defaultVersionUrl}{this.commonOptions.OryxSdkStorageAccountAccessToken}")
-                .Result;
+            string defaultVersionContent;
+            try
+            {
+                defaultVersionContent = httpClient
+                    .GetStringAsync($"{defaultVersionUrl}{this.commonOptions.OryxSdkStorageAccountAccessToken}")
+                    .Result;
+            }
+
+            // AggregateException is thrown by .Result
+            catch (AggregateException ae)
+            {
+                throw new AggregateException(
+                        $"Http request to '{defaultVersionUrl}' failed. {Constants.NetworkConfigurationHelpText}\n{ae}");
+            }
+
+            if (string.IsNullOrEmpty(defaultVersionContent))
+            {
+                throw new InvalidOperationException($"Http request to '{defaultVersionContent}' cannot return an empty result.");
+            }
 
             string defaultVersion = null;
             using (var stringReader = new StringReader(defaultVersionContent))

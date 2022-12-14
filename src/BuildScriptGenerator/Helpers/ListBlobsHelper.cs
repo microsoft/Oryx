@@ -2,7 +2,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+using System;
 using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 
@@ -10,14 +13,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal static class ListBlobsHelper
     {
-        public static XDocument GetAllBlobs(string sdkStorageBaseUrl, string platform, System.Net.Http.HttpClient httpClient, string oryxSdkStorageAccountAccessToken)
+        public static XDocument GetAllBlobs(string sdkStorageBaseUrl, string platform, HttpClient httpClient, string oryxSdkStorageAccountAccessToken)
         {
             var oryxSdkStorageAccountAccessArgs = oryxSdkStorageAccountAccessToken?.TrimStart(new char[] { '?' }) ?? string.Empty;
 
             var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform, string.Empty, oryxSdkStorageAccountAccessArgs);
-            var blobList = httpClient
-                .GetStringAsync(url)
-                .Result;
+            string blobList;
+            try
+            {
+                blobList = httpClient
+                    .GetStringAsync(url)
+                    .Result;
+            }
+
+            // AggregateException is thrown by .Result
+            catch (AggregateException ae)
+            {
+                throw new AggregateException(
+                        $"Http request to '{sdkStorageBaseUrl}' failed. {Constants.NetworkConfigurationHelpText}\n{ae}");
+            }
+
+            if (string.IsNullOrEmpty(blobList))
+            {
+                throw new InvalidOperationException($"Http request to '{sdkStorageBaseUrl}' cannot return an empty result.");
+            }
+
             var xdoc = XDocument.Parse(blobList);
             var marker = xdoc.Root.Element("NextMarker").Value;
 
