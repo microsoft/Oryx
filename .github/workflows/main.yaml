@@ -95,14 +95,6 @@ jobs:
           #${{ github.workspace }}/images/retry.sh "eval [[ $(eval $s) == \"succeeded\" ]]"
 
 
-          retryCount=0
-          while [ "$retryCount" -le "$maxRetries" ]
-          do
-            echo "hello"
-	        retryCount=$((retryCount+1)) 
-	        sleep ${timeoutSeconds}
-          done
-
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
 
       #- name: Trigger Runtime Pipeline
