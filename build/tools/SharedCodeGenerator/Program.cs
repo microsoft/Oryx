@@ -107,8 +107,11 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             {
                 sw.WriteLine("# Supported platforms and versions");
                 sw.WriteLine();
-                foreach (var subDirPath in Directory.GetDirectories(platformsDir))
+                string[] subDirs = Directory.GetDirectories(platformsDir);
+                string[] sortedSubDirs = subDirs.OrderBy(n => n).ToArray();
+                foreach (var subDirPath in sortedSubDirs)
                 {
+                    Console.WriteLine(subDirPath);
                     var subDirInfo = new DirectoryInfo(subDirPath);
                     var platformSubDirPaths = Directory.GetDirectories(subDirPath);
                     var platformName = subDirInfo.Name;
