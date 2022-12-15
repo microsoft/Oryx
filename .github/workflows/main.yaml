@@ -103,8 +103,11 @@ jobs:
       #    az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
       #    echo "add retry using jq"
 
-      #- name: Update constants.yaml
-      #  run: |
-      #    echo "Update constants.yaml using dotnet automation"
-      #    echo "Commit changes"
+      - name: Update constants.yaml
+        run: |
+          pwd
+          buildNumber=(cat status.json | jq ".buildNumber" | tr -d '"')
+          echo "buildNumber: $buildNumber"
+          echo "Update constants.yaml using dotnet automation"
+          echo "Commit changes"
 

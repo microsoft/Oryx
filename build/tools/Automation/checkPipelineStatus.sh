@@ -24,8 +24,8 @@ retryCount=0
 while [ "$retryCount" -le "$maxRetries" ]
 do
 	echo "retry $retryCount"
-	# status.json contains the buildNumber, used later in the workflow
-	date
+	# status.json contains the buildNumber field, which will be used later 
+	# in the workflow to update constants.yaml runtime image.
 	az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv > status.json
 	result=$( cat status.json | jq ".result" | tr -d '"' )
 	echo "result: $result"
@@ -36,3 +36,6 @@ do
 	retryCount=$((retryCount+1)) 
 	sleep ${timeoutSeconds}
 done
+
+echo "The pipeline invocation has not succeeded within the allocated retries."
+exit 1
