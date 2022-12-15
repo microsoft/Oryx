@@ -106,7 +106,7 @@ jobs:
       - name: Update constants.yaml
         run: |
           pwd
-          buildNumber=(cat status.json | jq ".buildNumber" | tr -d '"')
+          buildNumber=$(cat status.json | jq ".buildNumber" | tr -d '"')
           echo "buildNumber: $buildNumber"
           echo "Update constants.yaml using dotnet automation"
           echo "Commit changes"

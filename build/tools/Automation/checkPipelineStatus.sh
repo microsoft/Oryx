@@ -28,7 +28,7 @@ do
 	# in the workflow to update constants.yaml runtime image.
 	az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv > status.json
 	result=$( cat status.json | jq ".result" | tr -d '"' )
-	echo "result: $result"
+	echo "pipeline ${pipelineInvocationId} invocation result: $result"
 	if [[ "$result" == "succeeded" ]]; then
 		exit 0
 	fi
