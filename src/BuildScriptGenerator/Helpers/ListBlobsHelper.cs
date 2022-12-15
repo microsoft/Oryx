@@ -24,17 +24,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     .GetStringAsync(url)
                     .Result;
             }
-
-            // AggregateException is thrown by .Result
             catch (AggregateException ae)
             {
                 throw new AggregateException(
-                        $"Http request to '{sdkStorageBaseUrl}' failed. {Constants.NetworkConfigurationHelpText}\n{ae}");
+                    $"Http request to retrieve the SDKs available to download from '{sdkStorageBaseUrl}' " +
+                    $"failed. {Constants.NetworkConfigurationHelpText}{Environment.NewLine}{ae}");
             }
 
             if (string.IsNullOrEmpty(blobList))
             {
-                throw new InvalidOperationException($"Http request to '{sdkStorageBaseUrl}' cannot return an empty result.");
+                throw new InvalidOperationException(
+                    $"Http request to retrieve the SDKs available to download from'{sdkStorageBaseUrl}' cannot return an empty result.");
             }
 
             var xdoc = XDocument.Parse(blobList);

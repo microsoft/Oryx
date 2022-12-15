@@ -105,17 +105,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     .GetStringAsync($"{defaultVersionUrl}{this.commonOptions.OryxSdkStorageAccountAccessToken}")
                     .Result;
             }
-
-            // AggregateException is thrown by .Result
             catch (AggregateException ae)
             {
                 throw new AggregateException(
-                        $"Http request to '{defaultVersionUrl}' failed. {Constants.NetworkConfigurationHelpText}\n{ae}");
+                    $"Http request to retrieve the default version from '{defaultVersionUrl}' failed. " +
+                    $"{Constants.NetworkConfigurationHelpText}{Environment.NewLine}{ae}");
             }
 
             if (string.IsNullOrEmpty(defaultVersionContent))
             {
-                throw new InvalidOperationException($"Http request to '{defaultVersionContent}' cannot return an empty result.");
+                throw new InvalidOperationException(
+                    $"Http request to retrieve the default version from '{defaultVersionUrl}' cannot return an empty result.");
             }
 
             string defaultVersion = null;
