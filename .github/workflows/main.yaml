@@ -85,7 +85,6 @@ jobs:
 
       - name: Check Dev SDK Pipeline Ran Successfully
         run: |
-          cd ${{ github.workspace }}
           pipelineInvocationId=$( cat sdkPipelineTriggerResponse.json | jq ".id" )
           bash ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
           #result=$( az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq ".result" | tr -d '"' )
@@ -103,11 +102,19 @@ jobs:
       #    az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
       #    echo "add retry using jq"
 
-      - name: Update constants.yaml
+      - name: Install yq
+        run: wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
+
+      - name: Update runtime buildNumber in constants.yaml
         run: |
-          pwd
           buildNumber=$(cat status.json | jq ".buildNumber" | tr -d '"')
           echo "buildNumber: $buildNumber"
-          echo "Update constants.yaml using dotnet automation"
-          echo "Commit changes"
+          cat build/constants.yaml | grep dot-net-core-runtime-base-tag
+          yq -i '(.[] | select(.name=="dot-net-core-run-time-versions") | .constants.dot-net-core-runtime-base-tag) = ${buildNumber}' build/constants.yaml
+          cat build/constants.yaml | grep dot-net-core-runtime-base-tag
+
+      - name: Update Oryx Codebase
+        run: |
+          echo "Run generateConstants"
+          echo "Whoohoo!"
 
