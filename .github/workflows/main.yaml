@@ -76,26 +76,23 @@ jobs:
           sudo apt-get install jq -y
           jq --version
 
-      #- name: Trigger Dev SDK Pipeline 
-      #  run: |
-      #    echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-      #    #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
-      #    # TODO: Update branch name
-      #    az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch main > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
+      - name: Trigger Dev SDK Pipeline 
+        run: |
+          echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
+          #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
+          # TODO: Update branch name
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch main > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
 
-      #- name: Check Dev SDK Pipeline Ran Successfully
-      #  run: |
-      #    pipelineInvocationId=$( cat sdkPipelineTriggerResponse.json | jq ".id" )
-      #    bash ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
-      #    #result=$( az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq ".result" | tr -d '"' )
-      #    #${{ github.workspace }}/images/retry.sh "eval [[ ${result} == \"succeeded\" ]]"
+      - name: Check Dev SDK Pipeline Ran Successfully
+        run: |
+          pipelineInvocationId=$( cat sdkPipelineTriggerResponse.json | jq ".id" )
+          ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
+          #result=$( az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq ".result" | tr -d '"' )
+          #${{ github.workspace }}/images/retry.sh "eval [[ ${result} == \"succeeded\" ]]"
 
-      #    #s="az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"'"
-      #    #echo $s
-      #    #${{ github.workspace }}/images/retry.sh "eval [[ $(eval $s) == \"succeeded\" ]]"
-
-
-
+          #s="az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"'"
+          #echo $s
+          #${{ github.workspace }}/images/retry.sh "eval [[ $(eval $s) == \"succeeded\" ]]"
 
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
 
