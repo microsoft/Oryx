@@ -110,7 +110,7 @@ jobs:
           buildNumber=$(cat status.json | jq ".buildNumber" | tr -d '"')
           echo "buildNumber: $buildNumber"
           cat build/constants.yaml | grep dot-net-core-runtime-base-tag
-          yq -i "(.[] | select(.name==\"dot-net-core-run-time-versions\") | .constants.dot-net-core-runtime-base-tag) = \"$buildNumber\"" constants.yaml
+          yq -i "(.[] | select(.name==\"dot-net-core-run-time-versions\") | .constants.dot-net-core-runtime-base-tag) = \"$buildNumber\"" build/constants.yaml
           cat build/constants.yaml | grep dot-net-core-runtime-base-tag
 
       - name: Update Oryx Codebase
