@@ -142,15 +142,15 @@
     file-name-prefix: __
 - name: python-versions
   constants:
-    python-runtime-base-tag: 20221116.1
+    python-runtime-base-tag: 20221214.1
     pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
-    python37-version: 3.7.15
-    python38-version: 3.8.15
-    python39-version: 3.9.15
-    python310-version: 3.10.8
-    python311-version: 3.11.0
+    python37-version: 3.7.16
+    python38-version: 3.8.16
+    python39-version: 3.9.16
+    python310-version: 3.10.9
+    python311-version: 3.11.1
     runtime-versions:
     - 2.7
     - 3.6
@@ -167,8 +167,8 @@
     file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20221202.1
-    php-fpm-runtime-base-tag: 20221202.1
+    php-runtime-base-tag: 20221209.2
+    php-fpm-runtime-base-tag: 20221209.2
     composer-version: 2.0.8
     composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
     composer1-9-version: 1.9.3
@@ -176,6 +176,9 @@
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
+    php82-version: 8.2.0
+    php82-keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
+    php82-tar-sha256: 6ea4c2dfb532950fd712aa2a08c1412a6a81cd1334dd0b0bf88a8e44c2b3a943
     php81-version: 8.1.12
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
     php81-tar-sha256: 08243359e2204d842082269eedc15f08d2eca726d0e65b93fb11f4bfc51bbbab
