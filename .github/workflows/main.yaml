@@ -104,17 +104,19 @@ jobs:
       - name: Install yq
         run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
 
-      - name: Update runtime buildNumber in constants.yaml
+      - name: Update Oryx runtime build number
         run: |
           yq --version
           buildNumber=$(cat status.json | jq ".buildNumber" | tr -d '"')
           echo "buildNumber: $buildNumber"
           cat build/constants.yaml | grep dot-net-core-runtime-base-tag
-          yq -i "(.[] | select(.name==\"dot-net-core-run-time-versions\") | .constants.dot-net-core-runtime-base-tag) = \"$buildNumber\"" build/constants.yaml
+          yq -i "(.[] | select(.name==\"dot-net-core-run-time-versions\") | .constants.dot-net-core-runtime-base-tag) = $buildNumber" build/constants.yaml
           cat build/constants.yaml | grep dot-net-core-runtime-base-tag
 
-      - name: Update Oryx Codebase
+          ./build/generateConstants.sh
+
+      - name: Update Pull Request
         run: |
-          echo "Run generateConstants"
+          echo "Update PR"
           echo "Whoohoo!"
 
