@@ -1,5 +1,10 @@
 name: Caller
 
+on:
+  push:
+    branches:
+      - 'williamhe/**'
+
 jobs:
   ReuseableMatrixJobForDeployment:
     strategy:
