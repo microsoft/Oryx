@@ -10,7 +10,7 @@ jobs:
     strategy:
       matrix:
         platform: [dotnet]
-    uses: .github/workflows/main.yaml
+    uses: .github/workflows/main.yaml@williamhe/1684436-add-dotnet-runtime-automation
     with:
       releaseDate: 2022-12-12
       platform: ${{ matrix.platform }}
