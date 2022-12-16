@@ -13,6 +13,9 @@ on:
       platform:
         required: true
         type: string
+    secrets:
+      AZURE_DEVOPS_TOKEN
+        required: true
 
   workflow_dispatch:
     inputs:

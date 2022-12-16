@@ -10,7 +10,8 @@ jobs:
     strategy:
       matrix:
         platform: [dotnet]
-    uses: ./.github/workflows/main.yaml
+    uses: ./.github/workflows/main.yaml 
     with:
       releaseDate: 2022-12-12
       platform: ${{ matrix.platform }}
+    secrets: inherit
