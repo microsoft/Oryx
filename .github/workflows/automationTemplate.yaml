@@ -110,7 +110,10 @@ jobs:
           buildNumber=$(cat status.json | jq ".buildNumber" | tr -d '"')
           echo "buildNumber: $buildNumber"
           cat build/constants.yaml | grep dot-net-core-runtime-base-tag
-          yq -i "(.[] | select(.name==\"dot-net-core-run-time-versions\") | .constants.dot-net-core-runtime-base-tag) = $buildNumber" build/constants.yaml
+          platform=dot-net-core
+          ########################
+          yq -i "(.[] | select(.name==\"$platform-run-time-versions\") | .constants.$platform-runtime-base-tag) = $buildNumber" build/constants.yaml
+
           cat build/constants.yaml | grep dot-net-core-runtime-base-tag
 
           ./build/generateConstants.sh
