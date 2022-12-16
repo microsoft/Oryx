@@ -5,6 +5,15 @@ on:
   schedule:
     - cron:  '55 12,23 * * *'  
 
+  workflow_call:
+    inputs:
+      releaseDate:
+        required: true
+        type: string
+      platform:
+        required: true
+        type: string
+
   workflow_dispatch:
     inputs:
       releaseDate:
