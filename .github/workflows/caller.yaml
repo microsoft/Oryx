@@ -1,0 +1,11 @@
+name: Caller
+
+jobs:
+  ReuseableMatrixJobForDeployment:
+    strategy:
+      matrix:
+        platform: [dotnet]
+    uses: main.yml@williamhe/1684436-add-dotnet-runtime-automation
+    with:
+      releaseDate: 2022-12-12
+      platform: ${{ matrix.platform }}
