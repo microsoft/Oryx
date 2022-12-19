@@ -63,6 +63,16 @@ jobs:
           sudo apt-get install jq -y
           jq --version
 
+      # TODO: replace William with new bot GitHub Account credentials
+      - name: Create commits
+        run: |
+          git config user.name 'William Hernandez'
+          git config user.email 'williamhe@microsoft.com'
+          git checkout -b automation/add-new-dotnet-release-${{ env.releaseDate }}
+          git add -A
+          git commit -m "Add new SDK versions"
+          git push origin automation/add-new-dotnet-release-${{ env.releaseDate }}
+
       - name: Trigger Dev SDK Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
@@ -111,14 +121,6 @@ jobs:
 
       - name: Run Generate Constants
         run: ./build/generateConstants.sh
-      
-      # TODO: replace William with new bot GitHub Account credentials
-      - name: Create commits
-        run: |
-          git config user.name 'William Hernandez'
-          git config user.email 'williamhe@microsoft.com'
-          git add -A
-          git commit -m "Add new SDK versions"
       
       # TODO: paramterize branch/title platfrom name
       #       and list of versions to the PR decription
