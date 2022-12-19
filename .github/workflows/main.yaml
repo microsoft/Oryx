@@ -107,7 +107,7 @@ jobs:
       - name: Trigger Runtime Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/runtimePipelineTriggerResponse.json
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-DotNetCore --branch main > ${{ github.workspace }}/runtimePipelineTriggerResponse.json
 
       - name: Check Runtime Pipeline Ran Successfully
         run: |
