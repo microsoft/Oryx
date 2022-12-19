@@ -107,8 +107,7 @@ RUN ${IMAGES_DIR}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.cr
 
 # Install PHP pre-reqs	# Install PHP pre-reqs
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ] || [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
-    set -ex \
-    && apt-get update \
+    apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
         $PHPIZE_DEPS \

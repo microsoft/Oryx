@@ -158,6 +158,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 buildInfo.AddDefinition("Repository Commit", sourceRepoCommitId);
             }
 
+            if (!string.IsNullOrWhiteSpace(options.DebianFlavor))
+            {
+                buildInfo.AddDefinition("Os Type", options.DebianFlavor);
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.ImageType))
+            {
+                buildInfo.AddDefinition("Image Type", options.ImageType);
+            }
+
             console.WriteLine(buildInfo.ToString());
 
             // Generate build script
@@ -211,6 +221,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 { "scriptPath", buildScriptPath },
                 { "envVars", string.Join(",", GetEnvVarNames(environment)) },
+                { "osType", options.DebianFlavor },
+                { "imageType", options.ImageType },
             };
 
             var buildScriptOutput = new StringBuilder();

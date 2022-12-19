@@ -112,7 +112,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (parsedImageType != null)
                 {
                     options.ImageType = parsedImageType;
-                    console.WriteLine($"Parsed image type from file '{FilePaths.ImageTypeFileName}': {options.ImageType}");
+                    if (this.DebugMode)
+                    {
+                        console.WriteLine($"Parsed image type from file '{FilePaths.ImageTypeFileName}': {options.ImageType}");
+                    }
                 }
                 else
                 {

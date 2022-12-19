@@ -36,6 +36,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
         private readonly string MissingImageTypeWarning = $"Warning: '{FilePaths.ImageTypeFileName}' file not found.";
+        private readonly string ImageResolverMessage = "Parsed image type from file '{0}': {1}";
+        private readonly string ImageDetectedMessage = "Image Type[\\w\\s]*: {0}";
 
         public DotNetCoreDynamicInstallTest(ITestOutputHelper output) : base(output)
         {
@@ -782,7 +784,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
-            var expectedLogMessage = $"Parsed image type from file '{FilePaths.ImageTypeFileName}': {expectedImageType}";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand(removeImageTypeFile
@@ -811,11 +812,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     
                     if (removeImageTypeFile) {
                         Assert.Contains(MissingImageTypeWarning, result.StdOut);
-                        Assert.DoesNotContain(expectedLogMessage, result.StdOut);
+                        Assert.DoesNotContain(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
+                        Assert.DoesNotMatch(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);
                     } 
                     else 
                     {
-                        Assert.Contains(expectedLogMessage, result.StdOut);
+                        Assert.Contains(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
+                        Assert.Matches(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);
                         Assert.DoesNotContain(MissingImageTypeWarning, result.StdOut);
                     }
                 },
