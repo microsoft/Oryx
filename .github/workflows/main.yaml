@@ -119,8 +119,17 @@ jobs:
 
           ./build/generateConstants.sh
 
-      - name: Run Generate Constants
-        run: ./build/generateConstants.sh
+      - name: Create commits
+        run: |
+          git config user.name 'William Hernandez'
+          git config user.email 'williamhe@microsoft.com'
+          git add -A
+          git commit -m "Add runtime build number"
+          git push origin automation/add-new-dotnet-release-${{ env.releaseDate }}
+
+          # checking to main before creating pull request is needed
+          # since pull request cannot be made from target branch
+          git checkout main
       
       # TODO: paramterize branch/title platfrom name
       #       and list of versions to the PR decription
