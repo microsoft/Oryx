@@ -71,7 +71,7 @@ jobs:
           git switch --create automation/add-new-dotnet-release-${{ env.releaseDate }} || git switch automation/add-new-dotnet-release-${{ env.releaseDate }}
           git add -A
           git commit -m "Add new SDK versions"
-          git push origin automation/add-new-dotnet-release-${{ env.releaseDate }}
+          git push origin automation/add-new-dotnet-release-${{ env.releaseDate }} --force
 
       - name: Trigger Dev SDK Pipeline 
         run: |
