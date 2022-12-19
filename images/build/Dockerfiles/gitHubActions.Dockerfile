@@ -44,7 +44,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
             libcurl4 \
             libssl1.1 \
             libyaml-dev \
-            libxml2-dev \
+            libxml2 \
         && rm -rf /var/lib/apt/lists/* ; \
     elif [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \

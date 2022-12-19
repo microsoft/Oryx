@@ -160,7 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!string.IsNullOrWhiteSpace(options.DebianFlavor))
             {
-                buildInfo.AddDefinition("Os Type", options.DebianFlavor);
+                buildInfo.AddDefinition("OS Type", options.DebianFlavor);
             }
 
             if (!string.IsNullOrWhiteSpace(options.ImageType))
