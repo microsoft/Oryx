@@ -28,6 +28,17 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
             libcurl4 \
             libssl1.1 \
         && rm -rf /var/lib/apt/lists/* ; \
+    elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \ 
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu67 \
+            libcurl4 \
+            libssl1.1 \
+            libyaml-dev \
+        && rm -rf /var/lib/apt/lists/* \
+        && curl -LO http://security.debian.org/debian-security/pool/updates/main/libx/libxml2/libxml2_2.9.10+dfsg-6.7+deb11u3_amd64.deb \
+        && dpkg -i libxml2_2.9.10+dfsg-6.7+deb11u3_amd64.deb \
+        && rm libxml2_2.9.10+dfsg-6.7+deb11u3_amd64.deb ; \
     else \
         apt-get update \
         && apt-get install -y --no-install-recommends \
