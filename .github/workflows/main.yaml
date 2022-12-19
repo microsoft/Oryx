@@ -23,7 +23,7 @@ on:
 
 env:
   MAX_RETRIES: 10
-  TIMEOUT_SECONDS: 300
+  TIMEOUT_SECONDS: 600
 
 jobs:
   build:
@@ -32,52 +32,30 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      #- name: Run SDK automation
-      #  run: |
-      #    releaseDate=${{ inputs.releaseDate }}
-      #    if ! [[ "${releaseDate}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
-      #    then
-      #      echo "release date is empty or invalid $releaseDate."
-      #      echo "Expecting date format yyyy-mm-dd"
-      #      releaseDate=`date +%F`
-      #      echo "Defaulting to todays date ${releaseDate}"
-      #    fi
+      - name: Run SDK automation
+        run: |
+          releaseDate=${{ inputs.releaseDate }}
+          if ! [[ "${releaseDate}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          then
+            echo "release date is empty or invalid $releaseDate."
+            echo "Expecting date format yyyy-mm-dd"
+            releaseDate=`date +%F`
+            echo "Defaulting to todays date ${releaseDate}"
+          fi
 
-      #    echo "releaseDate=${releaseDate}" >> $GITHUB_ENV
+          echo "releaseDate=${releaseDate}" >> $GITHUB_ENV
 
-      #    dotnet run --project build/tools/Automation/Automation.csproj ${releaseDate} ${{ github.workspace }}
+          dotnet run --project build/tools/Automation/Automation.csproj ${releaseDate} ${{ github.workspace }}
 
-      #- name: Check if any git changes exist.
-      #  run: |
-      #    changes=$(git diff-index --name-only HEAD --)
-      #    echo ${changes}
-      #    if [ -z "${changes}" ]; then
-      #        echo "No git changes to commit. Cancelling workflow..."
-      #        exit 1
-      #    fi
+      - name: Check if any git changes exist.
+        run: |
+          changes=$(git diff-index --name-only HEAD --)
+          echo ${changes}
+          if [ -z "${changes}" ]; then
+              echo "No git changes to commit. Cancelling workflow..."
+              exit 1
+          fi
 
-      #- name: Run Generate Constants
-      #  run: ./build/generateConstants.sh
-      
-      ## TODO: replace William with new bot GitHub Account credentials
-      #- name: Create commits
-      #  run: |
-      #    git config user.name 'William Hernandez'
-      #    git config user.email 'williamhe@microsoft.com'
-      #    git add -A
-      #    git commit -m "Add new SDK versions"
-      
-      ## TODO: paramterize branch/title platfrom name
-      ##       and list of versions to the PR decription
-      ##
-      ##       branch name example: automation/add-new-{PlatfornName}-sdks
-      ## TODO: remove peter-evans/create-pull-request and use github.rest
-      ## Example: https://stackoverflow.com/questions/68057744/create-pull-request-with-github-action/71224444#71224444
-      #- name: Create Pull Request
-      #  uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
-      #  with:
-      #    branch: automation/add-new-dotnet-release-${{ env.releaseDate }}
-      #    title: New DotNetCore Sdks ${{ env.releaseDate }}
       - name: Install jq
         run: |
           whoami
@@ -85,29 +63,29 @@ jobs:
           sudo apt-get install jq -y
           jq --version
 
-      #- name: Trigger Dev SDK Pipeline 
-      #  run: |
-      #    echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-      #    #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
-      #    az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
+      - name: Trigger Dev SDK Pipeline 
+        run: |
+          echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
+          #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
 
-      #- name: Check Dev SDK Pipeline Ran Successfully
-      #  run: |
-      #    pipelineInvocationId=$( cat sdkPipelineTriggerResponse.json | jq ".id" )
-      #    ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
-      #    #result=$( az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq ".result" | tr -d '"' )
-      #    #${{ github.workspace }}/images/retry.sh "eval [[ ${result} == \"succeeded\" ]]"
+      - name: Check Dev SDK Pipeline Ran Successfully
+        run: |
+          pipelineInvocationId=$( cat sdkPipelineTriggerResponse.json | jq ".id" )
+          ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
+          #result=$( az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq ".result" | tr -d '"' )
+          #${{ github.workspace }}/images/retry.sh "eval [[ ${result} == \"succeeded\" ]]"
 
-      #    #s="az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"'"
-      #    #echo $s
-      #    #${{ github.workspace }}/images/retry.sh "eval [[ $(eval $s) == \"succeeded\" ]]"
+          #s="az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq \".result\" | tr -d '\"'"
+          #echo $s
+          #${{ github.workspace }}/images/retry.sh "eval [[ $(eval $s) == \"succeeded\" ]]"
 
-      #    #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
+          #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
 
       - name: Trigger Runtime Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-DotNetCore --branch main > ${{ github.workspace }}/runtimePipelineTriggerResponse.json
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/runtimePipelineTriggerResponse.json
 
       - name: Check Runtime Pipeline Ran Successfully
         run: |
@@ -131,7 +109,25 @@ jobs:
 
           ./build/generateConstants.sh
 
-      - name: Update Pull Request
+      - name: Run Generate Constants
+        run: ./build/generateConstants.sh
+      
+      # TODO: replace William with new bot GitHub Account credentials
+      - name: Create commits
         run: |
-          echo "Update PR"
-          echo "Whoohoo!"
+          git config user.name 'William Hernandez'
+          git config user.email 'williamhe@microsoft.com'
+          git add -A
+          git commit -m "Add new SDK versions"
+      
+      # TODO: paramterize branch/title platfrom name
+      #       and list of versions to the PR decription
+      #
+      #       branch name example: automation/add-new-{PlatfornName}-sdks
+      # TODO: remove peter-evans/create-pull-request and use github.rest
+      # Example: https://stackoverflow.com/questions/68057744/create-pull-request-with-github-action/71224444#71224444
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
+        with:
+          branch: automation/add-new-dotnet-release-${{ env.releaseDate }}
+          title: New DotNetCore Sdks ${{ env.releaseDate }}
