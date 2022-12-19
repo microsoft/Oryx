@@ -89,8 +89,7 @@ jobs:
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
-          # TODO: Update branch name
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch main > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
 
       - name: Check Dev SDK Pipeline Ran Successfully
         run: |
@@ -105,10 +104,15 @@ jobs:
 
           #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
 
-      #- name: Trigger Runtime Pipeline
-      #  run: |
-      #    az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
-      #    echo "add retry using jq"
+      - name: Trigger Runtime Pipeline 
+        run: |
+          echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/runtimePipelineTriggerResponse.json
+
+      - name: Check Runtime Pipeline Ran Successfully
+        run: |
+          pipelineInvocationId=$( cat runtimePipelineTriggerResponse.json | jq ".id" )
+          ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
 
       - name: Install yq
         run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
