@@ -129,6 +129,10 @@ then
 	fi
 fi
 
+# ensure that the current user owns the application source directory,
+# so we execute npm install with the correct permissions.
+chown -R "$(whoami)" $SOURCE_DIR
+
 cd "$SOURCE_DIR"
 
 {{ if CustomBuildCommand | IsNotBlank }}
