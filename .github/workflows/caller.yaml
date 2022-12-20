@@ -14,5 +14,6 @@ jobs:
     uses: ./.github/workflows/main.yaml 
     with:
       releaseDate: 2022-12-13
-      platform: ${{ matrix.platform }}
+      platformName: ${{ matrix.platformName }}
+      platformNameCamelCase: ${{ matrix.platformNameCamelCase }}
     secrets: inherit
