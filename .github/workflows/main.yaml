@@ -124,6 +124,7 @@ jobs:
           git config user.name 'William Hernandez'
           git config user.email 'williamhe@microsoft.com'
           git add -A
+          touch file.txt
           git commit -m "Add runtime build number"
           git push origin automation/add-new-dotnet-release-${{ env.releaseDate }}
 
