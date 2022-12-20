@@ -140,4 +140,6 @@ jobs:
       #    branch: automation/add-new-dotnet-release-${{ env.releaseDate }}
       #    title: New DotNetCore Sdks ${{ env.releaseDate }}
       - name: Submit Pull Request
-        run: git request-pull origin/main automation/add-new-dotnet-release-${{ env.releaseDate }}
+        run: |
+          git fetch
+          git request-pull origin/main automation/add-new-dotnet-release-${{ env.releaseDate }}
