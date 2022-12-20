@@ -1,0 +1,149 @@
+{
+  "appendCommitMessageToRunName": true,
+  "buildNumber": "20221220.2",
+  "buildNumberRevision": 2,
+  "controller": null,
+  "definition": {
+    "createdDate": null,
+    "drafts": [],
+    "id": 13049,
+    "name": "Oryx-PlatformBinary-DotNetCore",
+    "path": "\\Oryx\\Platform-Binaries",
+    "project": {
+      "abbreviation": null,
+      "defaultTeamImageUrl": null,
+      "description": "Visual Studio and DevDiv team project for git source code repositories.  Work items for Visual Studio and most active DevDiv products are in this account.\n\nFor Administrative requests such as; Area Path creation, Team creation, or Changes to the WITs, please email DDWIT@microsoft.com\nFor access related questions/requests, please email vsaccess@microsoft.com\n\nClick the Dashboards link to the left for key overviews of our projects.\nThe Forks team project is one way to make contributions which are not coordinated in advance with the team - https://dev.azure.com/devdiv/Forks ",
+      "id": "0bdbc590-a062-4c3f-b0f6-9383f67865ee",
+      "lastUpdateTime": "2022-11-24T16:22:58.203Z",
+      "name": "DevDiv",
+      "revision": 418104741,
+      "state": "wellFormed",
+      "url": "https://devdiv.visualstudio.com/_apis/projects/0bdbc590-a062-4c3f-b0f6-9383f67865ee",
+      "visibility": "organization"
+    },
+    "queueStatus": "enabled",
+    "revision": 12,
+    "type": "build",
+    "uri": "vstfs:///Build/Definition/13049",
+    "url": "https://devdiv.visualstudio.com/0bdbc590-a062-4c3f-b0f6-9383f67865ee/_apis/build/Definitions/13049?revision=12"
+  },
+  "deleted": null,
+  "deletedBy": null,
+  "deletedDate": null,
+  "deletedReason": null,
+  "demands": null,
+  "finishTime": null,
+  "id": 7118847,
+  "keepForever": false,
+  "lastChangedBy": {
+    "descriptor": "aad.OTNjMjZkN2YtYThjYy03MTE2LTliNzEtY2Q3N2Y3YTdiMDAw",
+    "directoryAlias": null,
+    "displayName": "William Hernandez-Limon",
+    "id": "93c26d7f-a8cc-6116-9b71-cd77f7a7b000",
+    "imageUrl": "https://devdiv.visualstudio.com/_apis/GraphProfile/MemberAvatars/aad.OTNjMjZkN2YtYThjYy03MTE2LTliNzEtY2Q3N2Y3YTdiMDAw",
+    "inactive": null,
+    "isAadIdentity": null,
+    "isContainer": null,
+    "isDeletedInOrigin": null,
+    "profileUrl": null,
+    "uniqueName": "williamhe@microsoft.com",
+    "url": "https://spsprodwus21.vssps.visualstudio.com/A0ba55e64-8cdb-444e-beea-1056cf958523/_apis/Identities/93c26d7f-a8cc-6116-9b71-cd77f7a7b000"
+  },
+  "lastChangedDate": "2022-12-20T21:51:06.283000+00:00",
+  "logs": {
+    "id": 0,
+    "type": "Container",
+    "url": "https://devdiv.visualstudio.com/0bdbc590-a062-4c3f-b0f6-9383f67865ee/_apis/build/builds/7118847/logs"
+  },
+  "orchestrationPlan": {
+    "orchestrationType": null,
+    "planId": "0b9b37cd-8158-418b-be61-43d599ea338b"
+  },
+  "parameters": null,
+  "plans": [
+    {
+      "orchestrationType": null,
+      "planId": "0b9b37cd-8158-418b-be61-43d599ea338b"
+    }
+  ],
+  "priority": "normal",
+  "project": {
+    "abbreviation": null,
+    "defaultTeamImageUrl": null,
+    "description": "Visual Studio and DevDiv team project for git source code repositories.  Work items for Visual Studio and most active DevDiv products are in this account.\n\nFor Administrative requests such as; Area Path creation, Team creation, or Changes to the WITs, please email DDWIT@microsoft.com\nFor access related questions/requests, please email vsaccess@microsoft.com\n\nClick the Dashboards link to the left for key overviews of our projects.\nThe Forks team project is one way to make contributions which are not coordinated in advance with the team - https://dev.azure.com/devdiv/Forks ",
+    "id": "0bdbc590-a062-4c3f-b0f6-9383f67865ee",
+    "lastUpdateTime": "2022-11-24T16:22:58.203Z",
+    "name": "DevDiv",
+    "revision": 418104741,
+    "state": "wellFormed",
+    "url": "https://devdiv.visualstudio.com/_apis/projects/0bdbc590-a062-4c3f-b0f6-9383f67865ee",
+    "visibility": "organization"
+  },
+  "properties": {},
+  "quality": null,
+  "queue": {
+    "id": 1899,
+    "name": "Azure Pipelines",
+    "pool": {
+      "id": 254,
+      "isHosted": true,
+      "name": "Azure Pipelines"
+    },
+    "url": null
+  },
+  "queueOptions": null,
+  "queuePosition": null,
+  "queueTime": "2022-12-20T21:51:04.164949+00:00",
+  "reason": "manual",
+  "repository": {
+    "checkoutSubmodules": false,
+    "clean": null,
+    "defaultBranch": null,
+    "id": "Microsoft/Oryx",
+    "name": null,
+    "properties": null,
+    "rootFolder": null,
+    "type": "GitHub",
+    "url": null
+  },
+  "requestedBy": {
+    "descriptor": "aad.OTNjMjZkN2YtYThjYy03MTE2LTliNzEtY2Q3N2Y3YTdiMDAw",
+    "directoryAlias": null,
+    "displayName": "William Hernandez-Limon",
+    "id": "93c26d7f-a8cc-6116-9b71-cd77f7a7b000",
+    "imageUrl": "https://devdiv.visualstudio.com/_apis/GraphProfile/MemberAvatars/aad.OTNjMjZkN2YtYThjYy03MTE2LTliNzEtY2Q3N2Y3YTdiMDAw",
+    "inactive": null,
+    "isAadIdentity": null,
+    "isContainer": null,
+    "isDeletedInOrigin": null,
+    "profileUrl": null,
+    "uniqueName": "williamhe@microsoft.com",
+    "url": "https://spsprodwus21.vssps.visualstudio.com/A0ba55e64-8cdb-444e-beea-1056cf958523/_apis/Identities/93c26d7f-a8cc-6116-9b71-cd77f7a7b000"
+  },
+  "requestedFor": {
+    "descriptor": "aad.OTNjMjZkN2YtYThjYy03MTE2LTliNzEtY2Q3N2Y3YTdiMDAw",
+    "directoryAlias": null,
+    "displayName": "William Hernandez-Limon",
+    "id": "93c26d7f-a8cc-6116-9b71-cd77f7a7b000",
+    "imageUrl": "https://devdiv.visualstudio.com/_apis/GraphProfile/MemberAvatars/aad.OTNjMjZkN2YtYThjYy03MTE2LTliNzEtY2Q3N2Y3YTdiMDAw",
+    "inactive": null,
+    "isAadIdentity": null,
+    "isContainer": null,
+    "isDeletedInOrigin": null,
+    "profileUrl": null,
+    "uniqueName": "williamhe@microsoft.com",
+    "url": "https://spsprodwus21.vssps.visualstudio.com/A0ba55e64-8cdb-444e-beea-1056cf958523/_apis/Identities/93c26d7f-a8cc-6116-9b71-cd77f7a7b000"
+  },
+  "result": null,
+  "retainedByRelease": false,
+  "sourceBranch": "refs/heads/automation/add-new-dotnet-release-2022-12-13",
+  "sourceVersion": "d730c525b13de03532b5caa0b2f7e4f92168984e",
+  "startTime": null,
+  "status": "notStarted",
+  "tags": [],
+  "triggerInfo": {},
+  "triggeredByBuild": null,
+  "uri": "vstfs:///Build/Build/7118847",
+  "url": "https://devdiv.visualstudio.com/0bdbc590-a062-4c3f-b0f6-9383f67865ee/_apis/build/Builds/7118847",
+  "validationResults": []
+}
