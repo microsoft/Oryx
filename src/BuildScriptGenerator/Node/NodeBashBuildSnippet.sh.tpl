@@ -129,9 +129,13 @@ then
 	fi
 fi
 
-# ensure that the current user owns the application source directory,
-# so we execute npm install with the correct permissions.
-chown -R "$(whoami)" $SOURCE_DIR
+# ensure that if the current user is root, that the root user also owns
+# the application directory. This ensures that when npm install runs, it 
+# does so as the root user, and therefore can access the npm cache located at
+# ~/.npm by default
+if [[ "$(whoami)" == "root" ]]; then
+	chown -R root:root $SOURCE_DIR
+fi
 
 cd "$SOURCE_DIR"
 
