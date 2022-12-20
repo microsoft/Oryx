@@ -2,14 +2,14 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
-
-# this method will execute a command
-# and sleep & retry if there's a failure
-# $1 
-#	parameter contains the full command to be executed
+# This script will check the pipeline status' result
+# for a given a pipeline invocation id.
+# A status.json file contains the meta data for a pipeline invocation id
+# of the point in time it was called, until the result has 'succeeded'.
+# The 'buildNumber' field of status.json is used later in the workflow
+# to update constants.yaml runtime image tag.
 
 pipelineInvocationId=$1
-
 maxRetries=3
 if [[ -n "${MAX_RETRIES}" ]]; then
   maxRetries=${MAX_RETRIES}
@@ -24,10 +24,9 @@ retryCount=0
 while [ "$retryCount" -le "$maxRetries" ]
 do
 	echo "retry $retryCount"
-	# status.json contains the buildNumber field, which will be used later 
-	# in the workflow to update constants.yaml runtime image.
-	az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv > status.json
-	result=$( cat status.json | jq ".result" | tr -d '"' )
+	# store response in status.json for later use
+	az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv > /tmp/status.json
+	result=$( cat /tmp/status.json | jq ".result" | tr -d '"' )
 	echo "pipeline ${pipelineInvocationId} invocation result: $result"
 	if [[ "$result" == "succeeded" ]]; then
 		exit 0
