@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_TwigExample_InLtsVersionsBuildImage()
         {
             // Arrange
-            var phpVersion = PhpVersions.Php73Version;
+            var phpVersion = FinalStretchVersions.FinalStretchPhp73Version;
             var buildImageName = _imageHelper.GetLtsVersionsBuildImage();
             var appName = "twig-example";
             var volume = CreateSampleAppVolume(appName);
@@ -60,10 +60,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "latest")]
-        [InlineData(PhpVersions.Php74Version)]
-        [InlineData(PhpVersions.Php73Version)]
-        [InlineData(PhpVersions.Php72Version)]
-        [InlineData(PhpVersions.Php70Version)]
+        [InlineData(FinalStretchVersions.FinalStretchPhp74Version)]
+        [InlineData(FinalStretchVersions.FinalStretchPhp73Version)]
+        [InlineData(FinalStretchVersions.FinalStretchPhp72Version)]
+        [InlineData(FinalStretchVersions.FinalStretchPhp70Version)]
         public void GeneratesScript_AndBuilds_TwigExample(string phpVersion)
         {
             // Arrange
@@ -142,10 +142,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "ltsversions")]
-        [InlineData(PhpVersions.Php74Version)]
-        [InlineData(PhpVersions.Php73Version)]
-        [InlineData(PhpVersions.Php72Version)]
-        [InlineData(PhpVersions.Php70Version)]
+        [InlineData(FinalStretchVersions.FinalStretchPhp74Version)]
+        [InlineData(FinalStretchVersions.FinalStretchPhp73Version)]
+        [InlineData(FinalStretchVersions.FinalStretchPhp72Version)]
+        [InlineData(FinalStretchVersions.FinalStretchPhp70Version)]
         public void GeneratesScript_AndBuilds_WithoutComposerFile(string phpVersion)
         {
             // Arrange
