@@ -10,7 +10,10 @@ on:
       releaseDate:
         required: true
         type: string
-      platform:
+      platformName:
+        required: true
+        type: string
+      platformNameCamelCase:
         required: true
         type: string
 
@@ -20,6 +23,16 @@ on:
         description: 'The date to check for new releases. Format: yyyy-mm-dd'
         required: true
         type: string
+      platformName:
+        required: true
+        type: string
+        default: 'dotnet'
+        description: 'The platform name should be all lowercase'
+      platformNameCamelCase:
+        required: true
+        type: string
+        default: 'DotNetCore'
+        description: 'The value is used to generate the SDK & BaseImage pipeline name'
 
 env:
   MAX_RETRIES: 10
@@ -66,19 +79,8 @@ jobs:
           sudo apt-get install jq -y
           jq --version
 
-      ## TODO: replace William with new bot GitHub Account credentials
-      #- name: Create commits
-      #  run: |
-      #    git status
-      #    git config user.name 'William Hernandez'
-      #    git config user.email 'williamhe@microsoft.com'
-      #    # git switch --create automation/add-new-dotnet-release-${{ env.releaseDate }} || git switch automation/add-new-dotnet-release-${{ env.releaseDate }}
-      #    git add -A
-      #    git commit -m "Add new SDK versions"
-      #    # git push origin automation/add-new-dotnet-release-${{ env.releaseDate }} --force
-
       # TODO: replace William with new bot GitHub Account credentials
-      - name: Commit new SDK versions
+      - name: Commit new ${{ inputs.platformNameCamelCase }} SDK versions
         run: |
           git config user.name 'William Hernandez'
           git config user.email 'williamhe@microsoft.com'
@@ -95,19 +97,18 @@ jobs:
         uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
         with:
           base: 
-          branch: automation/add-new-dotnet-release-${{ env.releaseDate }}
-          title: New DotNetCore Sdks ${{ env.releaseDate }}
+          branch: automation/add-new-${{ inputs.platformName }}-versions-${{ env.releaseDate }}
+          title: New ${{ inputs.platformNameCamelCase }} Sdks ${{ env.releaseDate }}
       
 
       - name: Trigger Dev SDK Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          #az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/sdkPipelineTriggerResponse.json
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-${{ inputs.platformNameCamelCase }} --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.releaseDate }} > /tmp/sdkPipelineTriggerResponse.json
 
       - name: Check Dev SDK Pipeline Ran Successfully
         run: |
-          pipelineInvocationId=$( cat sdkPipelineTriggerResponse.json | jq ".id" )
+          pipelineInvocationId=$( cat /tmp/sdkPipelineTriggerResponse.json | jq ".id" )
           ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
           #result=$( az pipelines runs show --id ${pipelineInvocationId} --organization https://devdiv.visualstudio.com/ --project DevDiv | jq ".result" | tr -d '"' )
           #${{ github.workspace }}/images/retry.sh "eval [[ ${result} == \"succeeded\" ]]"
@@ -121,11 +122,11 @@ jobs:
       - name: Trigger Runtime Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-DotNetCore --branch automation/add-new-dotnet-release-${{ env.releaseDate }} > ${{ github.workspace }}/runtimePipelineTriggerResponse.json
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-${{ inputs.platformNameCamelCase }} --branch automation/add-new-${{ inputs.platformName }}-release-${{ env.releaseDate }} > /tmp/runtimePipelineTriggerResponse.json
 
       - name: Check Runtime Pipeline Ran Successfully
         run: |
-          pipelineInvocationId=$( cat runtimePipelineTriggerResponse.json | jq ".id" )
+          pipelineInvocationId=$( cat /tmp/runtimePipelineTriggerResponse.json | jq ".id" )
           ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
 
       - name: Install yq
@@ -134,10 +135,12 @@ jobs:
       - name: Update Runtime Build Number
         run: |
           yq --version
-          buildNumber=$(cat status.json | jq ".buildNumber" | tr -d '"')
+          buildNumber=$(cat /tmp/status.json | jq ".buildNumber" | tr -d '"')
           echo "buildNumber: $buildNumber"
           cat build/constants.yaml | grep dot-net-core-runtime-base-tag
-          platform=dot-net-core
+          platform=${{ inputs.platformName }}
+          [[ "$platform" == "dotnet" ]] && platform="dot-net-core" || platform=$platform
+          echo "platform: $platform"
           ########################
           yq -i "(.[] | select(.name==\"$platform-run-time-versions\") | .constants.$platform-runtime-base-tag) = $buildNumber" build/constants.yaml
 
@@ -152,7 +155,7 @@ jobs:
           git config user.email 'williamhe@microsoft.com'
           git add -A
           git commit -m "Add runtime build number"
-          git push origin automation/add-new-dotnet-release-${{ env.releaseDate }}
+          git push origin automation/add-new-${{ inputs.platformName }}-versions-${{ env.releaseDate }}
 
       ## TODO: paramterize branch/title platfrom name
       ##       and list of versions to the PR decription
@@ -170,9 +173,9 @@ jobs:
       - name: Trigger Validation Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.releaseDate }}
 
-      - name: Trigger Validation Pipeline 
+      - name: Trigger Nightly Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Nightly --branch automation/add-new-dotnet-release-${{ env.releaseDate }}
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Nightly --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.releaseDate }}
