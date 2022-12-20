@@ -130,17 +130,19 @@ jobs:
 
           # checking to main before creating pull request is needed
           # since pull request cannot be made from target branch
-          #git fetch
-          #git checkout --force main
+          git fetch
+          git checkout --force main
       
-      # TODO: paramterize branch/title platfrom name
-      #       and list of versions to the PR decription
-      #
-      #       branch name example: automation/add-new-{PlatfornName}-sdks
-      # TODO: remove peter-evans/create-pull-request and use github.rest
-      # Example: https://stackoverflow.com/questions/68057744/create-pull-request-with-github-action/71224444#71224444
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
-        with:
-          branch: automation/add-new-dotnet-release-${{ env.releaseDate }}
-          title: New DotNetCore Sdks ${{ env.releaseDate }}
+      ## TODO: paramterize branch/title platfrom name
+      ##       and list of versions to the PR decription
+      ##
+      ##       branch name example: automation/add-new-{PlatfornName}-sdks
+      ## TODO: remove peter-evans/create-pull-request and use github.rest
+      ## Example: https://stackoverflow.com/questions/68057744/create-pull-request-with-github-action/71224444#71224444
+      #- name: Create Pull Request
+      #  uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
+      #  with:
+      #    branch: automation/add-new-dotnet-release-${{ env.releaseDate }}
+      #    title: New DotNetCore Sdks ${{ env.releaseDate }}
+      - name: Submit Pull Request
+        run: git request-pull origin/main automation/add-new-dotnet-release-${{ env.releaseDate }}
