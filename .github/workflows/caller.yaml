@@ -9,7 +9,8 @@ jobs:
   ReuseableMatrixJobForDeployment:
     strategy:
       matrix:
-        platform: [dotnet]
+        platformName: [dotnet]
+        platformNameCamelCase: [DotNetCore]
     uses: ./.github/workflows/main.yaml 
     with:
       releaseDate: 2022-12-13
