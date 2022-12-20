@@ -130,8 +130,8 @@ jobs:
 
           # checking to main before creating pull request is needed
           # since pull request cannot be made from target branch
-          git fetch
-          git checkout --force main
+          #git fetch
+          #git checkout --force main
       
       # TODO: paramterize branch/title platfrom name
       #       and list of versions to the PR decription
