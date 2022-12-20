@@ -128,6 +128,9 @@ jobs:
           git commit -m "Add runtime build number"
           git push origin automation/add-new-dotnet-release-${{ env.releaseDate }}
       
+      - name: Create commits
+        run: git fetch origin main
+
       # TODO: paramterize branch/title platfrom name
       #       and list of versions to the PR decription
       #
