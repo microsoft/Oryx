@@ -69,6 +69,7 @@ jobs:
       # TODO: replace William with new bot GitHub Account credentials
       - name: Create commits
         run: |
+          git status
           git config user.name 'William Hernandez'
           git config user.email 'williamhe@microsoft.com'
           git switch --create automation/add-new-dotnet-release-${{ env.releaseDate }} || git switch automation/add-new-dotnet-release-${{ env.releaseDate }}
@@ -124,6 +125,7 @@ jobs:
 
       - name: Create commits
         run: |
+          git status
           git config user.name 'William Hernandez'
           git config user.email 'williamhe@microsoft.com'
           touch file.txt
