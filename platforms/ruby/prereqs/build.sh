@@ -105,7 +105,7 @@ $rubyBinDir/ruby --version; \
 echo "step0"; \
 $rubyBinDir/gem --version; \
 echo "step1"
-$rubyBinDir/ruby -e 'exit(Gem::Version.create(ENV["GEM_VERSION"]) > Gem::Version.create(Gem::VERSION))'; \
+# $rubyBinDir/ruby -e 'exit(Gem::Version.create(ENV["GEM_VERSION"]) > Gem::Version.create(Gem::VERSION))'; \
 $rubyBinDir/gem update --system "$GEM_VERSION"; \
 
 # verify we have no "ruby" packages installed
