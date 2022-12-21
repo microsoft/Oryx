@@ -99,11 +99,12 @@ echo "Contents of '$rubyBinDir':"
 ls -l $rubyBinDir
 echo
 
-# make sure bundled "rubygems" is older than GEM_VERSION (https://github.com/docker-library/ruby/issues/
+# make sure bundled "rubygems" is older than GEM_VERSION (https://github.com/docker-library/ruby/issues/246
+echo "check ruby version"; \
 $rubyBinDir/ruby --version; \
+echo "step0"; \
 $rubyBinDir/gem --version; \
-Gem::Version.create(Gem::VERSION)) \
-Gem::Version.create(ENV["GEM_VERSION"]) \
+echo "step1"
 $rubyBinDir/ruby -e 'exit(Gem::Version.create(ENV["GEM_VERSION"]) > Gem::Version.create(Gem::VERSION))'; \
 $rubyBinDir/gem update --system "$GEM_VERSION"; \
 
