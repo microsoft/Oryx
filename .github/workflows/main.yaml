@@ -96,7 +96,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
         with:
-          base: main
+          #base: main
           branch: automation/add-new-${{ inputs.platformName }}-versions-${{ env.releaseDate }}
           title: New ${{ inputs.platformNameCamelCase }} Sdks ${{ env.releaseDate }}
       
