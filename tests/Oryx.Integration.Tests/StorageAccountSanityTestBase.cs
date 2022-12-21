@@ -23,6 +23,8 @@ namespace Oryx.Integration.Tests
     public abstract class StorageAccountSanityTestBase
         : PlatformEndToEndTestsBase, IClassFixture<RepoRootDirTestFixture>
     {
+        private const string _fakeStorageUrl = "https://oryx-cdn-fake.microsoft.io";
+
         private readonly string _storageUrl;
         private readonly string _repoRootDir;
         private readonly string _sdkStorageAccountAccessToken;
@@ -169,6 +171,17 @@ namespace Oryx.Integration.Tests
         public void MavenContainer_HasExpectedDefaultVersion()
         {
             AssertExpectedDefaultVersion("maven", "java", "maven");
+        }
+
+        [Fact]
+        public void Throws_CorrectHttpErrorMessage()
+        {
+            // Act
+            var error = Assert.Throws<AggregateException>(() => 
+                ListBlobsHelper.GetAllBlobs(_fakeStorageUrl, "dotnet", _httpClient, _sdkStorageAccountAccessToken));
+
+            // Assert
+            Assert.Contains(Microsoft.Oryx.BuildScriptGenerator.Constants.NetworkConfigurationHelpText, error.Message);
         }
 
         private void AssertExpectedDefaultVersion(string platformName, params string[] expectedPlatformPath)
