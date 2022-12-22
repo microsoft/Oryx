@@ -64,6 +64,7 @@ jobs:
               echo "No git changes to commit. Cancelling workflow..."
               exit 1
           fi
+          git add -A
 
       - name: Commit new ${{ inputs.platformNameCamelCase }} SDK versions
         run: |
