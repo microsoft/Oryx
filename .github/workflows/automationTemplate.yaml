@@ -1,4 +1,4 @@
-name: Oryx-SDK-Automation
+name: Oryx-SDK-Runtime-Automation-Template
 
 on:
   workflow_call:
