@@ -4,7 +4,7 @@
     application-insights-instrumentation-key-env-var-name: ORYX_AI_INSTRUMENTATION_KEY
     app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
     scm-commit-id-env-var-name: SCM_COMMIT_ID
-    php-origin: PHP_ORIGIN 
+    php-origin: PHP_ORIGIN
     php-fpm-configuration-file: /usr/local/etc/php-fpm.d/www.conf
     php-fpm-max-children-env-var-name: FPM_MAX_CHILDREN
     php-fpm-start-servers-env-var-name: FPM_START_SERVERS
