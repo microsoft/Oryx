@@ -74,13 +74,6 @@ jobs:
           git add -A
           git commit -m "Add new SDK versions"
 
-      - name: Install jq
-        run: |
-          whoami
-          sudo apt-get update
-          sudo apt-get install jq -y
-          jq --version
-
       # TODO: paramterize branch/title platfrom name
       #       and list of versions to the PR decription
       #
@@ -93,6 +86,12 @@ jobs:
           branch: automation/add-new-${{ inputs.platformName }}-versions-${{ env.releaseDate }}
           title: New ${{ inputs.platformNameCamelCase }} Sdks ${{ env.releaseDate }}
       
+      - name: Install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install jq -y
+          jq --version
+
       - name: Trigger Dev SDK Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
