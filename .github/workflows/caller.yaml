@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - 'williamhe/**'
+  # runs on 12:55 (5:55AM PST) & 23:55 UTC
+  schedule:
+    - cron:  '55 12,23 * * *'  
 
 jobs:
   ReuseableMatrixJobForDeployment:
@@ -13,7 +16,6 @@ jobs:
         platformNameCamelCase: [DotNetCore]
     uses: ./.github/workflows/main.yaml 
     with:
-      releaseDate: 2022-12-13
       platformName: ${{ matrix.platformName }}
       platformNameCamelCase: ${{ matrix.platformNameCamelCase }}
     secrets: inherit
