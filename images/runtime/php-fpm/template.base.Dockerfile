@@ -78,6 +78,13 @@ RUN pecl install redis && docker-php-ext-enable redis
 # https://github.com/Imagick/imagick/issues/331
 RUN pecl install imagick && docker-php-ext-enable imagick
 
+# deprecated from 5.*, so should be avoided 	
+RUN set -eux; \	
+    if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \	
+        echo "pecl/mongodb requires PHP (version >= 7.1.0, version <= 7.99.99)"; \	
+        pecl install mongodb && docker-php-ext-enable mongodb; \	
+    fi	
+
 # https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
 RUN set -eux; \
     if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
