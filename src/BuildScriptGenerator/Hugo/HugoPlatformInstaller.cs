@@ -52,6 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 
                 // Write out a sentinel file to indicate downlaod and extraction was successful
                 .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
+            InstallGolangToolingAndLanguage(snippet);
             return snippet.ToString();
         }
 

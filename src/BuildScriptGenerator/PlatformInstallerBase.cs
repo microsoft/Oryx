@@ -74,6 +74,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendLine("ln -s $PYTHON38_VERSION stable");
         }
 
+        public static void InstallGolangToolingAndLanguage(StringBuilder stringBuilder)
+        {
+            stringBuilder.AppendLine("BUILD_DIR=\"/opt/tmp/build\"");
+            stringBuilder.AppendLine("IMAGES_DIR=\"/opt/tmp/images\"");
+            stringBuilder.AppendLine("oryx prep --skip-detection --platforms-and-versions nodejs=14 --debug");
+            stringBuilder.AppendLine(". ${BUILD_DIR}/__goVersions.sh");
+            stringBuilder.AppendLine("downloadedFileName=\"go${GO_VERSION}.linux-amd64.tar.gz\"");
+            stringBuilder.AppendLine("${IMAGES_DIR}/retry.sh \"curl -SLsO https://golang.org/dl/$downloadedFileName\"");
+            stringBuilder.AppendLine("mkdir -p /usr/local");
+            stringBuilder.AppendLine("gzip -d $downloadedFileName");
+            stringBuilder.AppendLine("tar -xf \"go${GO_VERSION}.linux-amd64.tar\" -C /usr/local");
+            stringBuilder.AppendLine("rm -rf $downloadedFileName");
+        }
+
         public virtual void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
         {
             stringBuilder.AppendLine("echo 'No platform specific dependencies to install.'");
