@@ -219,7 +219,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 Assert.True(result.IsSuccess);
                 Assert.Contains("mongodb", output);
             },
-                result.GetDebugInfo());
+            result.GetDebugInfo());
         }
     }
 }
