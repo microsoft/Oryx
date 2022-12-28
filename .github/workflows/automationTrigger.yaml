@@ -22,9 +22,7 @@ jobs:
     strategy:
       matrix:
         platformName: [dotnet]
-        platformNameCamelCase: [DotNetCore]
     uses: ./.github/workflows/automationTemplate.yaml 
     with:
       platformName: ${{ matrix.platformName }}
-      platformNameCamelCase: ${{ matrix.platformNameCamelCase }}
     secrets: inherit
