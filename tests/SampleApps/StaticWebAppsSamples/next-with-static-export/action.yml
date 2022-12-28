@@ -1,0 +1,12 @@
+name: 'Oryx Build'
+description: 'Oryx Build'
+inputs:
+  app-location:  # id of input
+    description: 'Directory location of the application source code'
+    required: true
+    default: './'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.app-location }}

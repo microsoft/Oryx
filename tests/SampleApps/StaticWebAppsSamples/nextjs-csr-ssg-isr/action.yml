@@ -1,0 +1,16 @@
+name: 'Oryx Build'
+description: 'Oryx Build'
+inputs:
+  app-location:  # id of input
+    description: 'Directory location of the application source code'
+    required: false
+    default: '/'
+  base-image: 
+    description: 'Base image name'
+    required: false
+    default: 'mcr.microsoft.com/oryx/build:azfunc-jamstack-debian-bullseye-20221214.1'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.base-image }}
