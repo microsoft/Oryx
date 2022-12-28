@@ -47,7 +47,7 @@ jobs:
 
           declare -A platformsCamelCase
           platformNamesCamelCase=( ["dotnet"]="DotNetCore" )
-          echo "PLATFORM_NAME_CAMEL_CASE=${platformsCamelCase[platformName]}" >> $GITHUB_ENV
+          echo "PLATFORM_NAME_CAMEL_CASE=${platformsCamelCase[${{ inputs.platformName }}]}" >> $GITHUB_ENV
 
       - name: Run SDK Automation
         run: dotnet run --project build/tools/Automation/Automation.csproj ${RELEASE_DATE} ${{ github.workspace }}

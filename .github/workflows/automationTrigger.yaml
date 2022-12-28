@@ -13,6 +13,7 @@ on:
       releaseDate:
         required: false
         type: string
+        default: 2022-12-12
       platformName:
         required: true
         type: string
