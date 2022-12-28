@@ -6,7 +6,7 @@ on:
       releaseDate:
         required: false
         type: string
-        default: 2022-12-13
+        default: 2022-12-133
       platformName:
         required: true
         type: string
@@ -47,6 +47,8 @@ jobs:
           echo "RELEASE_DATE=${releaseDate}" >> $GITHUB_ENV
 
           declare -A platformsCamelCase
+          echo "platformName: ${{ inputs.platformName }}"
+          echo "platformNameCamelCase: ${platformsCamelCase[${{ inputs.platformName }}]}"
           platformNamesCamelCase=( ["dotnet"]="DotNetCore" )
           echo "PLATFORM_NAME_CAMEL_CASE=${platformsCamelCase[${{ inputs.platformName }}]}" >> $GITHUB_ENV
 
@@ -63,7 +65,7 @@ jobs:
           fi
           git status
 
-      - name: Commit new ${PLATFORM_NAME_CAMEL_CASE} SDK versions
+      - name: Commit new ${{ env.PLATFORM_NAME_CAMEL_CASE }} SDK versions
         run: |
           git status
           git config user.name 'Oryx Team'
@@ -81,7 +83,7 @@ jobs:
         uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
         with:
           branch: automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
-          title: New ${PLATFORM_NAME_CAMEL_CASE} Sdks ${{ env.RELEASE_DATE }}
+          title: New ${{ env.PLATFORM_NAME_CAMEL_CASE }} Sdks ${{ env.RELEASE_DATE }}
       
       - name: Install jq
         run: |
@@ -92,7 +94,7 @@ jobs:
       - name: Trigger Dev SDK Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-${PLATFORM_NAME_CAMEL_CASE} --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }} > /tmp/sdkPipelineTriggerResponse.json
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-${{ env.PLATFORM_NAME_CAMEL_CASE }} --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }} > /tmp/sdkPipelineTriggerResponse.json
 
       - name: Check Dev SDK Pipeline Ran Successfully
         run: |
@@ -102,7 +104,7 @@ jobs:
       - name: Trigger Runtime Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-${PLATFORM_NAME_CAMEL_CASE} --branch automation/add-new-${{ inputs.platformName }}-release-${{ env.RELEASE_DATE }} > /tmp/runtimePipelineTriggerResponse.json
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-${{ env.PLATFORM_NAME_CAMEL_CASE }} --branch automation/add-new-${{ inputs.platformName }}-release-${{ env.RELEASE_DATE }} > /tmp/runtimePipelineTriggerResponse.json
 
       - name: Check Runtime Pipeline Ran Successfully
         run: |
