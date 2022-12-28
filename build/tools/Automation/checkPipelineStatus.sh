@@ -15,9 +15,9 @@ if [[ -n "${MAX_RETRIES}" ]]; then
   maxRetries=${MAX_RETRIES}
 fi
 
-timeoutSeconds=900
+retryDelaySeconds=900
 if [[ -n "${TIMEOUT_SECONDS}" ]]; then
-  timeoutSeconds=${TIMEOUT_SECONDS}
+  retryDelaySeconds=${TIMEOUT_SECONDS}
 fi
 
 retryCount=0
@@ -30,10 +30,12 @@ do
 	echo "pipeline ${pipelineInvocationId} invocation result: $result"
 	if [[ "$result" == "succeeded" ]]; then
 		exit 0
+	elif [[ "$result" != "null" ]]; then
+		exit 1
 	fi
-	echo "retrying in $timeoutSeconds seconds..."
+	echo "retrying in $retryDelaySeconds seconds..."
 	retryCount=$((retryCount+1)) 
-	sleep ${timeoutSeconds}
+	sleep ${retryDelaySeconds}
 done
 
 echo "The pipeline invocation has not succeeded within the allocated retries."
