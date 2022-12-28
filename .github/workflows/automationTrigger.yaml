@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         platformName: [dotnet]
-    uses: ./.github/workflows/automationTemplate.yaml 
+    uses: ./.github/workflows/automationTemplate.yaml
     with:
       platformName: ${{ matrix.platformName }}
     secrets: inherit
