@@ -65,8 +65,8 @@ jobs:
       - name: Commit new ${{ env.PLATFORM_NAME_CAMEL_CASE }} SDK versions
         run: |
           git status
-          git config user.name 'William Hernandez'
-          git config user.email 'williamhe@microsoft.com'
+          #git config user.name 'William Hernandez'
+          #git config user.email 'williamhe@microsoft.com'
           git add -A
           git commit -m "Add new SDK versions"
 
