@@ -6,7 +6,7 @@ on:
       releaseDate:
         required: false
         type: string
-        default: 2022-12-133
+        default: 2022-12-13
       platformName:
         required: true
         type: string
@@ -48,7 +48,7 @@ jobs:
 
           declare -A platformsCamelCase
           echo "platformName: ${{ inputs.platformName }}"
-          echo "platformNameCamelCase: ${platformsCamelCase[${{ inputs.platformName }}]}"
+          echo "platformNameCamelCase: ${platformNamesCamelCase[${{ inputs.platformName }}]}"
           platformNamesCamelCase=( ["dotnet"]="DotNetCore" )
           echo "PLATFORM_NAME_CAMEL_CASE=${platformNamesCamelCase[${{ inputs.platformName }}]}" >> $GITHUB_ENV
 
