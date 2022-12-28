@@ -1,5 +1,6 @@
 name: Oryx-SDK-Runtime-Automation-Trigger
 
+on:
   # runs on 12:55 (5:55AM PST) & 23:55 UTC
   schedule:
     - cron:  '55 12,23 * * *'  
@@ -9,9 +10,6 @@ name: Oryx-SDK-Runtime-Automation-Trigger
         required: false
         type: string
       platformName:
-        required: true
-        type: string
-      platformNameCamelCase:
         required: true
         type: string
 
