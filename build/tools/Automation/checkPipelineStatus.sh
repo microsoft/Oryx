@@ -3,7 +3,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 # This script will check the pipeline status' result
-# for a given a pipeline invocation id.
+# for a given pipeline invocation id.
 # A status.json file contains the meta data for a pipeline invocation id
 # of the point in time it was called, until the result has 'succeeded'.
 # The 'buildNumber' field of status.json is used later in the workflow
