@@ -1,0 +1,36 @@
+name: Playwright Tests
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request and nightly
+  push:
+  pull_request:
+  schedule: 
+    # nightly
+    - cron: '0 0 * * *'
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  playwright_tests:
+    # Runs on an ubuntu runner
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright
+      run: npx playwright install --with-deps
+    - name: Build production build
+      run: npm run build
+    - name: Run playwright tests
+      run: npm run playwright_test

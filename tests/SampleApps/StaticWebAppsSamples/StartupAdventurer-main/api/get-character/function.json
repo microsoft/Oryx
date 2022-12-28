@@ -1,0 +1,27 @@
+{
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": ["get"],
+      "route": "get-character/{id:guid}"
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "type": "cosmosDB",
+      "name": "character",
+      "databaseName": "StartupAdventurer",
+      "collectionName": "Characters",
+      "connectionStringSetting": "StartupAdventurer_COSMOSDB",
+      "direction": "in",
+      "Id": "{id}"
+    }
+  ],
+  "scriptFile": "../dist/get-character/index.js"
+}

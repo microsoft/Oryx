@@ -1,0 +1,14 @@
+{
+    "azureFunctions.deploySubpath": "api",
+    "azureFunctions.postDeployTask": "npm install",
+    "azureFunctions.projectLanguage": "JavaScript",
+    "azureFunctions.projectRuntime": "~3",
+    "debug.internalConsoleOptions": "neverOpen",
+    "azureFunctions.preDeployTask": "npm prune",
+    "markdownlint.config": {
+        "MD028": false,
+        "MD025": {
+            "front_matter_title": ""
+        }
+    }
+}

@@ -1,0 +1,53 @@
+{
+  "name": "angular-basic",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --configuration production",
+    "test": "ng test",
+    "playwright_test": "playwright test",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "swa:start": "swa start app",
+    "swa:login": "swa deploy app",
+    "swa:deploy": "swa login"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "~13.2.5",
+    "@angular/common": "~13.2.5",
+    "@angular/compiler": "~13.2.5",
+    "@angular/core": "~13.2.5",
+    "@angular/forms": "~13.2.5",
+    "@angular/platform-browser": "~13.2.5",
+    "@angular/platform-browser-dynamic": "~13.2.5",
+    "@angular/router": "~13.2.5",
+    "rxjs": "~6.6.6",
+    "tslib": "^2.0.0",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "~13.2.5",
+    "@angular/cli": "~13.2.5",
+    "@angular/compiler-cli": "~13.2.5",
+    "@angular/language-service": "~13.2.5",
+    "@azure/static-web-apps-cli": "*",
+    "@playwright/test": "^1.22.2",
+    "@types/jasmine": "~3.6.0",
+    "@types/jasminewd2": "~2.0.3",
+    "@types/node": "^12.11.1",
+    "codelyzer": "^6.0.0",
+    "jasmine-core": "~3.6.0",
+    "jasmine-spec-reporter": "~5.0.0",
+    "karma": "~6.3.17",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage-istanbul-reporter": "~3.0.2",
+    "karma-jasmine": "~4.0.0",
+    "karma-jasmine-html-reporter": "^1.5.0",
+    "protractor": "~7.0.0",
+    "ts-node": "~8.3.0",
+    "tslint": "~6.1.0",
+    "typescript": "~4.5.5"
+  }
+}

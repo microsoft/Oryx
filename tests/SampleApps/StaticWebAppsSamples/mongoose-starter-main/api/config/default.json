@@ -1,0 +1,6 @@
+{
+    "database": {
+        "connectionString": "mongodb://localhost",
+        "databaseName": "todo"
+    }
+}

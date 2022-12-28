@@ -1,0 +1,47 @@
+@font-face {
+	font-family: "Silkscreen";
+	src: url("./fonts/Silkscreen/Silkscreen.eot");
+	src: local("Silkscreen"), url("./fonts/Silkscreen/Silkscreen.eot#iefix") format("embedded-opentype"),
+		url("./fonts/Silkscreen/Silkscreen.woff2") format("woff2"),
+		url("./fonts/Silkscreen/Silkscreen.woff") format("woff");
+	font-display: swap;
+	font-style: normal;
+	font-weight: normal;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	font-family: "Silkscreen";
+	user-select: none;
+}
+
+body {
+	background: #121212;
+	font-family: "Silkscreen";
+	-moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+	height: 100%;
+	margin: 0;
+	overscroll-behavior: none;
+	position: fixed;
+	width: 100%;
+}
+
+#root {
+	height: 100%;
+	overscroll-behavior: none;
+	position: fixed;
+	touch-action: none;
+	width: 100%;
+}
+
+.hoverable,
+button {
+	cursor: pointer;
+}
+
+span.flash {
+	pointer-events: none;
+}

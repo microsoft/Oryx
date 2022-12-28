@@ -1,0 +1,7 @@
+{
+  "trailingComma": "es5",
+  "printWidth": 120,
+  "singleQuotes": false,
+  "stylelintIntegration": true,
+  "bracketSpacing": true
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Startup Adventurer",
+  "dockerFile": "Dockerfile",
+  "forwardPorts": [7071, 5500],
+
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+
+  "extensions": [
+    "ms-azuretools.vscode-azurefunctions",
+    "ms-azuretools.vscode-azurestaticwebapps",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "github.vscode-pull-request-github",
+    "visualstudioexptteam.vscodeintellicode"
+  ],
+
+  "postCreateCommand": ". ${NVM_DIR}/nvm.sh && nvm install --lts",
+
+  "remoteUser": "vscode"
+}

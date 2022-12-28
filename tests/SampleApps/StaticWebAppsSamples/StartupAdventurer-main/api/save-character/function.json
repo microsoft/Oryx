@@ -1,0 +1,26 @@
+{
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": ["post"]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "name": "character",
+      "type": "cosmosDB",
+      "databaseName": "StartupAdventurer",
+      "collectionName": "Characters",
+      "createIfNotExists": true,
+      "connectionStringSetting": "StartupAdventurer_COSMOSDB",
+      "direction": "out"
+    }
+  ],
+  "scriptFile": "../dist/save-character/index.js"
+}

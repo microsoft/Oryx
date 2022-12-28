@@ -1,0 +1,37 @@
+# Runs on push and pull requests
+name: Playwright tests for push and pull requests
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request and nightly
+  push:
+  pull_request:
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  playwright_tests:
+    # Runs on an ubuntu runner
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright
+      run: npx playwright install --with-deps
+    - name: Install Azure static web apps
+      run: npm install -g @azure/static-web-apps-cli
+    - name: Install Azure function apps
+      run: npm i -g azure-functions-core-tools@3 --unsafe-perm true
+    - name: Build production build
+      run: npm run build
+    - name: Run your tests
+      run: npm run playwright_test
