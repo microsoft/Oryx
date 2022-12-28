@@ -24,7 +24,7 @@ on:
 
 env:
   MAX_RETRIES: 10
-  TIMEOUT_SECONDS: 600
+  TIMEOUT_SECONDS: 900
 
 jobs:
   build:

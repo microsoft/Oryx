@@ -10,12 +10,12 @@
 # to update constants.yaml runtime image tag.
 
 pipelineInvocationId=$1
-maxRetries=3
+maxRetries=10
 if [[ -n "${MAX_RETRIES}" ]]; then
   maxRetries=${MAX_RETRIES}
 fi
 
-timeoutSeconds=10
+timeoutSeconds=900
 if [[ -n "${TIMEOUT_SECONDS}" ]]; then
   timeoutSeconds=${TIMEOUT_SECONDS}
 fi
