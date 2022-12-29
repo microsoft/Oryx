@@ -103,11 +103,11 @@ echo "check ruby version"; \
 $rubyBinDir/ruby --version; \
 echo "step0"; \
 $rubyBinDir/gem --version; \
-echo "step1"
-echo $GEM_VERSION
-printenv
+echo "step1" \
+echo $GEM_VERSION \
+printenv \
 # make sure bundled "rubygems" is older than GEM_VERSION (https://github.com/docker-library/ruby/issues/246
-# $rubyBinDir/ruby -e 'exit(Gem::Version.create(ENV["GEM_VERSION"]) > Gem::Version.create(Gem::VERSION))'; \
+$rubyBinDir/ruby -e 'exit(Gem::Version.create(ENV["GEM_VERSION"]) > Gem::Version.create(Gem::VERSION))'; \
 $rubyBinDir/gem update --system "$GEM_VERSION"; \
 
 # verify we have no "ruby" packages installed
