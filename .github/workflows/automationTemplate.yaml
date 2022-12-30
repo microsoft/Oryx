@@ -35,6 +35,7 @@ jobs:
 
       - name: Set Required Environment Variables
         run: |
+          set -x
           releaseDate=${{ inputs.releaseDate }}
           if ! [[ "${releaseDate}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
           then
@@ -46,8 +47,6 @@ jobs:
           echo "RELEASE_DATE=${releaseDate}" >> $GITHUB_ENV
 
           declare -A platformNamesAsInBasePipeline
-          echo "platformName: ${{ inputs.platformName }}"
-          echo "platformNamesAsInBasePipeline: ${platformNamesAsInBasePipeline[${{ inputs.platformName }}]}"
           platformNamesAsInBasePipeline=( ["dotnet"]="DotNetCore" )
           echo "PLATFORM_NAME_CAMEL_CASE=${platformNamesAsInBasePipeline[${{ inputs.platformName }}]}" >> $GITHUB_ENV
 
