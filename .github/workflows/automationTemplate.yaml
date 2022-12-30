@@ -1,0 +1,143 @@
+name: Oryx-SDK-Runtime-Automation-Template
+
+on:
+  workflow_call:
+    inputs:
+      releaseDate:
+        required: false
+        type: string
+      platformName:
+        required: true
+        type: string
+
+  workflow_dispatch:
+    inputs:
+      releaseDate:
+        description: 'The date to check for new releases. Format: yyyy-mm-dd'
+        required: false
+        type: string
+      platformName:
+        required: true
+        type: string
+        default: 'dotnet'
+        description: 'The platform name should be all lowercase'
+
+env:
+  MAX_RETRIES: 10
+  TIMEOUT_SECONDS: 900
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set Required Environment Variables
+        run: |
+          set -x
+          releaseDate=${{ inputs.releaseDate }}
+          if ! [[ "${releaseDate}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
+          then
+            echo "release date is empty or invalid $releaseDate."
+            echo "Expecting date format yyyy-mm-dd"
+            releaseDate=`date +%F`
+            echo "Defaulting to todays date ${releaseDate}"
+          fi
+          echo "RELEASE_DATE=${releaseDate}" >> $GITHUB_ENV
+
+          declare -A platformNamesAsInBasePipeline
+          platformNamesAsInBasePipeline=( ["dotnet"]="DotNetCore" )
+          echo "PLATFORM_NAME_CAMEL_CASE=${platformNamesAsInBasePipeline[${{ inputs.platformName }}]}" >> $GITHUB_ENV
+
+      - name: Run SDK Automation
+        run: dotnet run --project build/tools/Automation/Automation.csproj ${RELEASE_DATE} ${{ github.workspace }}
+
+      - name: Check if any git changes exist.
+        run: |
+          changes=$(git diff-index --name-only HEAD --)
+          echo ${changes}
+          if [ -z "${changes}" ]; then
+              echo "No git changes to commit. Cancelling workflow..."
+              exit 1
+          fi
+          git status
+
+      - name: Commit new ${{ env.PLATFORM_NAME_CAMEL_CASE }} SDK versions
+        run: |
+          git status
+          git config user.name 'Oryx Team'
+          git config user.email 'oryx@microsoft.com'
+          git add -A
+          git commit -m "Add new SDK versions"
+
+      # TODO: paramterize branch/title platfrom name
+      #       and list of versions to the PR decription
+      #
+      #       branch name example: automation/add-new-{PlatfornName}-sdks
+      # TODO: remove peter-evans/create-pull-request and use github.rest
+      # Example: https://stackoverflow.com/questions/68057744/create-pull-request-with-github-action/71224444#71224444
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
+        with:
+          branch: automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
+          title: New ${{ env.PLATFORM_NAME_CAMEL_CASE }} Sdks ${{ env.RELEASE_DATE }}
+      
+      - name: Install jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install jq -y
+          jq --version
+
+      - name: Trigger Dev SDK Pipeline 
+        run: |
+          echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-${{ env.PLATFORM_NAME_CAMEL_CASE }} --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }} > /tmp/sdkPipelineTriggerResponse.json
+
+      - name: Check Dev SDK Pipeline Ran Successfully
+        run: |
+          pipelineInvocationId=$( cat /tmp/sdkPipelineTriggerResponse.json | jq ".id" )
+          ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
+
+      - name: Trigger Runtime Pipeline 
+        run: |
+          echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-${{ env.PLATFORM_NAME_CAMEL_CASE }} --branch automation/add-new-${{ inputs.platformName }}-release-${{ env.RELEASE_DATE }} > /tmp/runtimePipelineTriggerResponse.json
+
+      - name: Check Runtime Pipeline Ran Successfully
+        run: |
+          pipelineInvocationId=$( cat /tmp/runtimePipelineTriggerResponse.json | jq ".id" )
+          ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
+
+      - name: Install yq
+        run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
+
+      - name: Update Runtime Build Number
+        run: |
+          yq --version
+          buildNumber=$(cat /tmp/status.json | jq ".buildNumber" | tr -d '"')
+          echo "buildNumber: $buildNumber"
+          platform=${{ inputs.platformName }}
+          [[ "$platform" == "dotnet" ]] && platform="dot-net-core" || platform=$platform
+          echo "platform: $platform"
+          yq -i "(.[] | select(.name==\"$platform-run-time-versions\") | .constants.$platform-runtime-base-tag) = $buildNumber" build/constants.yaml
+          ./build/generateConstants.sh
+
+      - name: Commit and Push
+        run: |
+          git status
+          git config user.name 'William Hernandez'
+          git config user.email 'williamhe@microsoft.com'
+          git add -A
+          git commit -m "Add runtime build number"
+          git push origin automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
+
+      - name: Trigger Validation Pipeline 
+        run: |
+          echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
+
+      - name: Trigger Nightly Pipeline 
+        run: |
+          echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Nightly --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
