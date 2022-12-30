@@ -45,11 +45,11 @@ jobs:
           fi
           echo "RELEASE_DATE=${releaseDate}" >> $GITHUB_ENV
 
-          declare -A platformsCamelCase
+          declare -A platformNamesAsInBasePipeline
           echo "platformName: ${{ inputs.platformName }}"
-          echo "platformNameCamelCase: ${platformNamesCamelCase[${{ inputs.platformName }}]}"
-          platformNamesCamelCase=( ["dotnet"]="DotNetCore" )
-          echo "PLATFORM_NAME_CAMEL_CASE=${platformNamesCamelCase[${{ inputs.platformName }}]}" >> $GITHUB_ENV
+          echo "platformNamesAsInBasePipeline: ${platformNamesAsInBasePipeline[${{ inputs.platformName }}]}"
+          platformNamesAsInBasePipeline=( ["dotnet"]="DotNetCore" )
+          echo "PLATFORM_NAME_CAMEL_CASE=${platformNamesAsInBasePipeline[${{ inputs.platformName }}]}" >> $GITHUB_ENV
 
       - name: Run SDK Automation
         run: dotnet run --project build/tools/Automation/Automation.csproj ${RELEASE_DATE} ${{ github.workspace }}
