@@ -197,7 +197,29 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 Assert.Contains("pdo_sqlsrv", output);
             },
                 result.GetDebugInfo());
+        }
 
+        [Theory]
+        [InlineData("8.2-fpm")]
+        [InlineData("8.1-fpm")]
+        public void Mongodb_IsInstalled(string imageTag)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("php", imageTag),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-m", " | grep mongodb);" }
+            });
+
+            // Assert
+            var output = result.StdOut.ToString();
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("mongodb", output);
+            },
+            result.GetDebugInfo());
         }
     }
 }
