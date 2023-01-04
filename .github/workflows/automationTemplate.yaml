@@ -69,7 +69,6 @@ jobs:
             cancelWorkflow=true
           fi
 
-
           echo "CANCEL_WORKFLOW=${cancelWorkflow}" >> $GITHUB_ENV
 
       # TODO: remove peter-evans/create-pull-request and use github.rest
