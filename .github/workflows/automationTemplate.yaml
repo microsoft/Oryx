@@ -89,8 +89,7 @@ jobs:
           sudo apt-get install jq -y
           jq --version
 
-      - if: ${{ ${{ env.CANCEL_WORKFLOW }} != 1234 }}
-        name: Trigger Dev SDK Pipeline 
+      - name: Trigger Dev SDK Pipeline 
         run: |
           if [ ${{ env.CANCEL_WORKFLOW }} = true ]; then
             exit 0
