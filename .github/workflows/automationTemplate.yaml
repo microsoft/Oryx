@@ -73,14 +73,14 @@ jobs:
 
       # TODO: remove peter-evans/create-pull-request and use github.rest
       # Example: https://stackoverflow.com/questions/68057744/create-pull-request-with-github-action/71224444#71224444
-      - if: ${{ env.CANCEL_WORKFLOW != true }}
+      - if: ${{ ${{ env.CANCEL_WORKFLOW }} != true }}
         name: Create Pull Request
         uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
         with:
           branch: automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
           title: New ${{ env.PLATFORM_NAME_CAMEL_CASE }} Sdks ${{ env.RELEASE_DATE }}
       
-      - if: ${{ env.CANCEL_WORKFLOW != true }}
+      - if: ${{ ${{ env.CANCEL_WORKFLOW }} != true }}
         name: Install jq
         run: |
           if [ ${{ env.CANCEL_WORKFLOW }} = true ]; then
@@ -91,7 +91,7 @@ jobs:
           sudo apt-get install jq -y
           jq --version
 
-      - if: ${{ env.CANCEL_WORKFLOW != 1234 }}
+      - if: ${{ ${{ env.CANCEL_WORKFLOW }} != 1234 }}
         name: Trigger Dev SDK Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
