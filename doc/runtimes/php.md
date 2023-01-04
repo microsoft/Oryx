@@ -68,9 +68,9 @@ The PHP toolset will run when the following conditions are met:
 
 The following process is applied for each build:
 
-1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
+1. Run custom command or script if specified by `PRE_BUILD_COMMAND` or `PRE_BUILD_SCRIPT_PATH`.
 1. Run `php composer.phar install --ignore-platform-reqs --no-interaction` if composer file found.
-1. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
+1. Run custom command or script if specified by `POST_BUILD_COMMAND` or `POST_BUILD_SCRIPT_PATH`.
 
 ## Package manager
 
