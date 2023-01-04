@@ -53,38 +53,39 @@ jobs:
       - name: Run SDK Automation
         run: dotnet run --project build/tools/Automation/Automation.csproj ${RELEASE_DATE} ${{ github.workspace }}
 
-      - name: Check if any git changes exist.
-        run: |
-          changes=$(git diff-index --name-only HEAD --)
-          echo ${changes}
-          if [ -z "${changes}" ]; then
-              echo "No git changes to commit. Cancelling workflow..."
-              exit 1
-          fi
-          git status
-
       - name: Commit new ${{ env.PLATFORM_NAME_CAMEL_CASE }} SDK versions
         run: |
-          git status
+          set -x
           git config user.name 'Oryx Team'
           git config user.email 'oryx@microsoft.com'
+          
           git add -A
-          git commit -m "Add new SDK versions"
+          git commit -m "Add new SDK versions" | true
+          gitCommitExitCode=${PIPESTATUS[0]}
+          [[ $gitCommitExitCode = 0 ]] && cancelWorkflow=false || cancelWorkflow=true
+          echo "CANCEL_WORKFLOW=${cancelWorkflow}" >> $GITHUB_ENV
+          
+          if [ ${{ env.CANCEL_WORKFLOW }} = true ]; then
+            exit 0
+          fi
 
-      # TODO: paramterize branch/title platfrom name
-      #       and list of versions to the PR decription
-      #
-      #       branch name example: automation/add-new-{PlatfornName}-sdks
+
       # TODO: remove peter-evans/create-pull-request and use github.rest
       # Example: https://stackoverflow.com/questions/68057744/create-pull-request-with-github-action/71224444#71224444
-      - name: Create Pull Request
+      - if: ${{ env.CANCEL_WORKFLOW == false }}
+        name: Create Pull Request
         uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
         with:
           branch: automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
           title: New ${{ env.PLATFORM_NAME_CAMEL_CASE }} Sdks ${{ env.RELEASE_DATE }}
       
-      - name: Install jq
+      - if: ${{ env.CANCEL_WORKFLOW == false }}
+        name: Install jq
         run: |
+          if [ ${{ env.CANCEL_WORKFLOW }} = true ]; then
+            exit 0
+          fi
+
           sudo apt-get update
           sudo apt-get install jq -y
           jq --version
