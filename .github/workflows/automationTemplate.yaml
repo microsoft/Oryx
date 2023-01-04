@@ -65,6 +65,7 @@ jobs:
           if [[ $gitCommitExitCode = 0 ]]; then
             cancelWorkflow=false
           else
+            echo "No new ${{ inputs.platformName }} SDK versions detected. Canceling workflow..."
             cancelWorkflow=true
           fi
 
@@ -82,7 +83,7 @@ jobs:
       - name: Install jq
         run: |
           if [ ${{ env.CANCEL_WORKFLOW }} = true ]; then
-            echo "No new ${{ inputs.platformName }} SDK versions detected. Canceling workflow..."
+            echo "Canceling workflow..."
             exit 0
           fi
 
