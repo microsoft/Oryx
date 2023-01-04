@@ -177,8 +177,7 @@ jobs:
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
           az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
 
-      - if: ${{ env.CANCEL_WORKFLOW != true }}
-        name: Trigger Nightly Pipeline 
+      - name: Trigger Nightly Pipeline 
         run: |
           if [ ${{ env.CANCEL_WORKFLOW }} = true ]; then
             echo "Canceling workflow..."
