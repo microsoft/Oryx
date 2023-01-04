@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
         {
             if (!string.IsNullOrEmpty(DbServerContainerName))
             {
-                _dockerCli.StopContainer(DbServerContainerName);
+                _ = _dockerCli.StopContainer(DbServerContainerName);
             }
         }
 
@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
                 $"USE {Constants.DatabaseName}; CREATE TABLE Products (Name varchar(50) NOT NULL);");
             foreach (var record in SampleData)
             {
-                sb.Append($" INSERT INTO Products VALUES('{record.Name}');");
+                _ = sb.Append($" INSERT INTO Products VALUES('{record.Name}');");
             }
             return sb.ToString();
         }

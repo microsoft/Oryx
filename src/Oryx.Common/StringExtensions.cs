@@ -48,12 +48,12 @@ namespace Microsoft.Oryx.Common.Extensions
                 foreach (Match m in matches)
                 {
                     var uig = m.Groups["userinfo"];
-                    result.Append(str.Substring(positionInStr, uig.Index - positionInStr));
-                    result.Append(UrlUserInfoReplacement);
+                    _ = result.Append(str.Substring(positionInStr, uig.Index - positionInStr));
+                    _ = result.Append(UrlUserInfoReplacement);
                     positionInStr = uig.Index + uig.Length; // Skip past password
                 }
 
-                result.Append(str.Substring(positionInStr));
+                _ = result.Append(str.Substring(positionInStr));
                 return result.ToString();
             }
             catch
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.Common.Extensions
                 var result = new StringBuilder();
                 foreach (var x in bytes)
                 {
-                    result.AppendFormat("{0:x2}", x);
+                    _ = result.AppendFormat("{0:x2}", x);
                 }
 
                 return result.ToString();

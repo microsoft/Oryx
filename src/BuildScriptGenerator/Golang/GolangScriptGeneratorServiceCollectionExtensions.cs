@@ -14,10 +14,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static IServiceCollection AddScriptGeneratorServicesGolang(this IServiceCollection services)
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, GolangPlatform>());
-            services.AddSingleton<IGolangVersionProvider, GolangVersionProvider>();
-            services.AddSingleton<GolangPlatformInstaller>();
-            services.AddSingleton<GolangOnDiskVersionProvider>();
-            services.AddSingleton<GolangSdkStorageVersionProvider>();
+            _ = services.AddSingleton<IGolangVersionProvider, GolangVersionProvider>();
+            _ = services.AddSingleton<GolangPlatformInstaller>();
+            _ = services.AddSingleton<GolangOnDiskVersionProvider>();
+            _ = services.AddSingleton<GolangSdkStorageVersionProvider>();
             return services;
         }
     }

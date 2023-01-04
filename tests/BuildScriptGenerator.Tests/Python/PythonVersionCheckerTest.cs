@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 new Dictionary<string, string> { { PythonConstants.PlatformName, PythonVersions.Python27Version } });
 
             // Assert
-            Assert.Single(messages);
+            _ = Assert.Single(messages);
             Assert.Contains("outdated version of python was detected", messages.First().Content);
         }
 

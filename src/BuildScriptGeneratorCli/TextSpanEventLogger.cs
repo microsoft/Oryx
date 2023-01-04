@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 // Stop a running measurement
                 var span = this.endings[marker];
                 this.events.GetValueOrDefault(span)?.Dispose(); // Records the measurement
-                this.events.Remove(span); // No need to check if the removal succeeded, because the event might not exist
+                _ = this.events.Remove(span); // No need to check if the removal succeeded, because the event might not exist
             }
         }
     }

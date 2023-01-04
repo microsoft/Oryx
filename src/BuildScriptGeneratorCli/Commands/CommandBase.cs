@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (this.DebugMode)
                 {
-                    console.WriteLine("Debug mode enabled");
+                    _ = console.WriteLine("Debug mode enabled");
                 }
 
                 using (var timedEvent = logger?.LogTimedEvent(this.GetType().Name))
@@ -132,7 +132,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     // Add an empty and default configuration to prevent some commands from breaking since options
                     // setup expect this from DI.
                     var configuration = new ConfigurationBuilder().Build();
-                    services.AddSingleton<IConfiguration>(configuration);
+                    _ = services.AddSingleton<IConfiguration>(configuration);
                 })
                 .ConfigureScriptGenerationOptions(opts => this.ConfigureBuildScriptGeneratorOptions(opts));
             return serviceProviderBuilder.Build();
@@ -141,19 +141,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         protected static string GetBeginningCommandOutputLog()
         {
             var output = new StringBuilder();
-            output.AppendLine("Operation performed by Microsoft Oryx, https://github.com/Microsoft/Oryx");
-            output.AppendLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
+            _ = output.AppendLine("Operation performed by Microsoft Oryx, https://github.com/Microsoft/Oryx");
+            _ = output.AppendLine("You can report issues at https://github.com/Microsoft/Oryx/issues");
             var buildInfo = new DefinitionListFormatter();
             var oryxVersion = Program.GetVersion();
             var oryxCommitId = Program.GetMetadataValue(Program.GitCommit);
             var oryxReleaseTagName = Program.GetMetadataValue(Program.ReleaseTagName);
-            buildInfo.AddDefinition(
+            _ = buildInfo.AddDefinition(
                 "Oryx Version",
                 $"{oryxVersion}, " +
                 $"Commit: {oryxCommitId}, " +
                 $"ReleaseTagName: {oryxReleaseTagName}");
-            output.AppendLine();
-            output.Append(buildInfo.ToString());
+            _ = output.AppendLine();
+            _ = output.Append(buildInfo.ToString());
             return output.ToString();
         }
 

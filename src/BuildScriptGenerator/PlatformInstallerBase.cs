@@ -33,17 +33,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         public static void InstallCommonSkeletonDependencies(StringBuilder stringBuilder)
         {
-            stringBuilder.AppendLine("echo 'Installing common platform dependencies...'");
-            stringBuilder.AppendAptGetInstallPackages("git");
+            _ = stringBuilder.AppendLine("echo 'Installing common platform dependencies...'");
+            _ = stringBuilder.AppendAptGetInstallPackages("git");
         }
 
         public static void InstallPythonToolingAndLanguage(StringBuilder stringBuilder)
         {
-            stringBuilder.AppendLine("echo 'Installing python tooling and language...'");
+            _ = stringBuilder.AppendLine("echo 'Installing python tooling and language...'");
 
             // Install Python tooling
-            stringBuilder.AppendLine("PYTHONIOENCODING=\"UTF-8\"");
-            stringBuilder.AppendAptGetInstallPackages(
+            _ = stringBuilder.AppendLine("PYTHONIOENCODING=\"UTF-8\"");
+            _ = stringBuilder.AppendAptGetInstallPackages(
                 "make",
                 "unzip",
                 "build-essential",
@@ -56,27 +56,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 "uuid-dev");
 
             // Install Python 3.8
-            stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
-            stringBuilder.AppendLine("imagesDir=\"$tmpDir/images\"");
-            stringBuilder.AppendLine("buildDir=\"$tmpDir/build\"");
-            stringBuilder.AppendLine("mkdir -p /usr/local/share/pip-cache/lib");
-            stringBuilder.AppendLine("chmod -R 777 /usr/local/share/pip-cache");
-            stringBuilder.AppendLine("pip3 install pip --upgrade");
-            stringBuilder.AppendLine("python3 -m pip install --upgrade cython");
-            stringBuilder.AppendLine("pip3 install --upgrade cython");
-            stringBuilder.AppendLine(". $buildDir/__pythonVersions.sh");
-            stringBuilder.AppendLine("$imagesDir/installPlatform.sh python $PYTHON38_VERSION");
-            stringBuilder.AppendLine("[ -d \"/opt/python/$PYTHON38_VERSION\" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf");
-            stringBuilder.AppendLine("ldconfig");
-            stringBuilder.AppendLine("cd /opt/python");
-            stringBuilder.AppendLine("ln -s $PYTHON38_VERSION 3.8");
-            stringBuilder.AppendLine("ln -s $PYTHON38_VERSION latest");
-            stringBuilder.AppendLine("ln -s $PYTHON38_VERSION stable");
+            _ = stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
+            _ = stringBuilder.AppendLine("imagesDir=\"$tmpDir/images\"");
+            _ = stringBuilder.AppendLine("buildDir=\"$tmpDir/build\"");
+            _ = stringBuilder.AppendLine("mkdir -p /usr/local/share/pip-cache/lib");
+            _ = stringBuilder.AppendLine("chmod -R 777 /usr/local/share/pip-cache");
+            _ = stringBuilder.AppendLine("pip3 install pip --upgrade");
+            _ = stringBuilder.AppendLine("python3 -m pip install --upgrade cython");
+            _ = stringBuilder.AppendLine("pip3 install --upgrade cython");
+            _ = stringBuilder.AppendLine(". $buildDir/__pythonVersions.sh");
+            _ = stringBuilder.AppendLine("$imagesDir/installPlatform.sh python $PYTHON38_VERSION");
+            _ = stringBuilder.AppendLine("[ -d \"/opt/python/$PYTHON38_VERSION\" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf");
+            _ = stringBuilder.AppendLine("ldconfig");
+            _ = stringBuilder.AppendLine("cd /opt/python");
+            _ = stringBuilder.AppendLine("ln -s $PYTHON38_VERSION 3.8");
+            _ = stringBuilder.AppendLine("ln -s $PYTHON38_VERSION latest");
+            _ = stringBuilder.AppendLine("ln -s $PYTHON38_VERSION stable");
         }
 
         public virtual void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
         {
-            stringBuilder.AppendLine("echo 'No platform specific dependencies to install.'");
+            _ = stringBuilder.AppendLine("echo 'No platform specific dependencies to install.'");
         }
 
         protected string GetInstallerScriptSnippet(
@@ -95,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             var tarFile = $"{version}.tar.gz";
             var snippet = new StringBuilder();
-            snippet
+            _ = snippet
                 .AppendLine()
                 .AppendLine($"if grep -q cli \"/opt/oryx/.imagetype\"; then")
                 .AppendCommonSkeletonDepenendenciesInstallation()

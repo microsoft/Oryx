@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public static IServiceCollection AddBuildScriptGeneratorServices(this IServiceCollection services)
         {
-            services
+            _ = services
                 .AddPlatformDetectorServices()
                 .AddNodeScriptGeneratorServices()
                 .AddHugoScriptGeneratorServices()
@@ -30,17 +30,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AddScriptGeneratorServicesGolang()
                 .AddScriptGeneratorServicesForJava();
 
-            services.AddSingleton<IBuildScriptGenerator, DefaultBuildScriptGenerator>();
-            services.AddSingleton<ICompatiblePlatformDetector, DefaultCompatiblePlatformDetector>();
-            services.AddSingleton<IDockerfileGenerator, DefaultDockerfileGenerator>();
-            services.AddSingleton<IEnvironment, DefaultEnvironment>();
-            services.AddSingleton<ISourceRepoProvider, DefaultSourceRepoProvider>();
-            services.AddSingleton<ITempDirectoryProvider, DefaulTempDirectoryProvider>();
-            services.AddSingleton<IScriptExecutor, DefaultScriptExecutor>();
-            services.AddSingleton<IRunScriptGenerator, DefaultRunScriptGenerator>();
-            services.AddSingleton<DefaultPlatformsInformationProvider>();
-            services.AddSingleton<PlatformsInstallationScriptProvider>();
-            services.AddHttpClient("general", httpClient =>
+            _ = services.AddSingleton<IBuildScriptGenerator, DefaultBuildScriptGenerator>();
+            _ = services.AddSingleton<ICompatiblePlatformDetector, DefaultCompatiblePlatformDetector>();
+            _ = services.AddSingleton<IDockerfileGenerator, DefaultDockerfileGenerator>();
+            _ = services.AddSingleton<IEnvironment, DefaultEnvironment>();
+            _ = services.AddSingleton<ISourceRepoProvider, DefaultSourceRepoProvider>();
+            _ = services.AddSingleton<ITempDirectoryProvider, DefaulTempDirectoryProvider>();
+            _ = services.AddSingleton<IScriptExecutor, DefaultScriptExecutor>();
+            _ = services.AddSingleton<IRunScriptGenerator, DefaultRunScriptGenerator>();
+            _ = services.AddSingleton<DefaultPlatformsInformationProvider>();
+            _ = services.AddSingleton<PlatformsInstallationScriptProvider>();
+            _ = services.AddHttpClient("general", httpClient =>
             {
                 // NOTE: Setting user agent is required to avoid receiving 403 Forbidden response.
                 httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("oryx", "1.0"));

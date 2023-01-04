@@ -425,9 +425,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.NotNull(configurationRoot.Providers);
             var providers = configurationRoot.Providers.ToArray();
             Assert.Equal(3, providers.Length);
-            Assert.IsType<IniConfigurationProvider>(providers[0]);
-            Assert.IsType<EnvironmentVariablesConfigurationProvider>(providers[1]);
-            Assert.IsType<CustomConfigurationSource>(providers[2]);
+            _ = Assert.IsType<IniConfigurationProvider>(providers[0]);
+            _ = Assert.IsType<EnvironmentVariablesConfigurationProvider>(providers[1]);
+            _ = Assert.IsType<CustomConfigurationSource>(providers[2]);
         }
 
         [Fact]
@@ -687,11 +687,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 DestinationDir = _testDir.GenerateRandomChildDirPath(),
             };
             var settings = new StringBuilder();
-            settings.AppendLine($"{SettingsKeys.DisableDotNetCoreBuild}=true");
-            settings.AppendLine($"{SettingsKeys.DisableHugoBuild}=true");
-            settings.AppendLine($"{SettingsKeys.DisableNodeJSBuild}=true");
-            settings.AppendLine($"{SettingsKeys.DisablePhpBuild}=true");
-            settings.AppendLine($"{SettingsKeys.DisablePythonBuild}=true");
+            _ = settings.AppendLine($"{SettingsKeys.DisableDotNetCoreBuild}=true");
+            _ = settings.AppendLine($"{SettingsKeys.DisableHugoBuild}=true");
+            _ = settings.AppendLine($"{SettingsKeys.DisableNodeJSBuild}=true");
+            _ = settings.AppendLine($"{SettingsKeys.DisablePhpBuild}=true");
+            _ = settings.AppendLine($"{SettingsKeys.DisablePythonBuild}=true");
             File.WriteAllText(
                 Path.Combine(buildCommand.SourceDir, Constants.BuildEnvironmentFileName),
                 settings.ToString());
@@ -711,12 +711,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         private IServiceProvider CreateServiceProvider(TestProgrammingPlatform generator, bool scriptOnly, bool createOsTypeFile)
         {
             var sourceCodeFolder = Path.Combine(_testDirPath, "src");
-            Directory.CreateDirectory(sourceCodeFolder);
+            _ = Directory.CreateDirectory(sourceCodeFolder);
             var outputFolder = Path.Combine(_testDirPath, "output");
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
             if (createOsTypeFile)
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(OS_TYPE_FILE_PATH));
+                _ = Directory.CreateDirectory(Path.GetDirectoryName(OS_TYPE_FILE_PATH));
                 File.Create(OS_TYPE_FILE_PATH).Dispose();
             }
             var servicesBuilder = new ServiceProviderBuilder()
@@ -725,19 +725,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     // Add 'test' script generator here as we can control what the script output is rather
                     // than depending on in-built script generators whose script could change overtime causing
                     // this test to be difficult to manage.
-                    services.RemoveAll<IPlatformDetector>();
+                    _ = services.RemoveAll<IPlatformDetector>();
                     services.TryAddEnumerable(
                         ServiceDescriptor.Singleton<IPlatformDetector>(
                             new TestPlatformDetectorUsingPlatformName(
                                 detectedPlatformName: "test",
                                 detectedPlatformVersion: "1.0.0")));
-                    services.RemoveAll<IProgrammingPlatform>();
+                    _ = services.RemoveAll<IProgrammingPlatform>();
                     services.TryAddEnumerable(
                         ServiceDescriptor.Singleton<IProgrammingPlatform>(generator));
-                    services.AddSingleton<ITempDirectoryProvider>(
+                    _ = services.AddSingleton<ITempDirectoryProvider>(
                         new TestTempDirectoryProvider(Path.Combine(_testDirPath, "temp")));
                     var configuration = new ConfigurationBuilder().Build();
-                    services.AddSingleton<IConfiguration>(configuration);
+                    _ = services.AddSingleton<IConfiguration>(configuration);
                 })
                 .ConfigureScriptGenerationOptions(o =>
                 {
@@ -768,7 +768,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             public string GetTempDirectory()
             {
-                Directory.CreateDirectory(_tempDir);
+                _ = Directory.CreateDirectory(_tempDir);
                 return _tempDir;
             }
         }

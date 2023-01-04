@@ -183,10 +183,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             // NOTE: do not use AppendLine as this script must be in one line
             if (this.contentPresent)
             {
-                this.scriptBuilder.Append(this.commandSeparator);
+                _ = this.scriptBuilder.Append(this.commandSeparator);
             }
 
-            this.scriptBuilder.Append(content);
+            _ = this.scriptBuilder.Append(content);
             this.contentPresent = true;
             return this;
         }

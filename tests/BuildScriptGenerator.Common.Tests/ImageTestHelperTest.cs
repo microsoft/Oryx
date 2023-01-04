@@ -239,7 +239,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Assert
-            Assert.Throws<NotSupportedException>(() => { imageHelper.GetBuildImage("invalidTag"); });
+            _ = Assert.Throws<NotSupportedException>(() => { _ = imageHelper.GetBuildImage("invalidTag"); });
         }
 
         [Fact]

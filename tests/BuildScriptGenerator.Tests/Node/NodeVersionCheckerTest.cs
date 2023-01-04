@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new Dictionary<string, string> { { NodeConstants.NodeToolName, "1.0.0" } });
 
             // Assert
-            Assert.Single(messages);
+            _ = Assert.Single(messages);
             Assert.Contains("outdated version of node was detected", messages.First().Content);
         }
 

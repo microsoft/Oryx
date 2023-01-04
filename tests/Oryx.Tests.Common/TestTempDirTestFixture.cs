@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.Tests.Common
             // on the CI agent.)
             RootDirPath = Path.Combine(Path.GetTempPath(), "oryxtests", Guid.NewGuid().ToString());
 
-            Directory.CreateDirectory(RootDirPath);
+            _ = Directory.CreateDirectory(RootDirPath);
 
             // set DEBIAN_FLAVOR environment variable to any flavor
             // this is for when we are not running the CLI in an image, since all

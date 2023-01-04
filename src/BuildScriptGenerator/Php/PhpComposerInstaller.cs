@@ -37,11 +37,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
         {
-            stringBuilder.AppendLine($"echo 'Installing php-composer specific dependencies...'");
+            _ = stringBuilder.AppendLine($"echo 'Installing php-composer specific dependencies...'");
 
             // Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
-            stringBuilder.AppendLine("if [ \"${DEBIAN_FLAVOR}\" = \"buster\" ]; then");
-            stringBuilder.AppendAptGetInstallPackages(
+            _ = stringBuilder.AppendLine("if [ \"${DEBIAN_FLAVOR}\" = \"buster\" ]; then");
+            _ = stringBuilder.AppendAptGetInstallPackages(
                 "ca-certificates",
                 "libargon2-0",
                 "libcurl4-openssl-dev",
@@ -52,11 +52,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 "libsqlite3-dev",
                 "libxml2-dev",
                 "xz-utils");
-            stringBuilder.AppendLine("else");
-            stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
-            stringBuilder.AppendLine("imagesDir=\"$tmpDir/images\"");
-            stringBuilder.AppendLine("$imagesDir/build/php/prereqs/installPrereqs.sh");
-            stringBuilder.AppendAptGetInstallPackages(
+            _ = stringBuilder.AppendLine("else");
+            _ = stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
+            _ = stringBuilder.AppendLine("imagesDir=\"$tmpDir/images\"");
+            _ = stringBuilder.AppendLine("$imagesDir/build/php/prereqs/installPrereqs.sh");
+            _ = stringBuilder.AppendAptGetInstallPackages(
                 "libcurl3",
                 "libicu57",
                 "liblttng-ust0",
@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 "libncurses5-dev",
                 "libxml2-dev",
                 "libedit-dev");
-            stringBuilder.AppendLine("fi");
+            _ = stringBuilder.AppendLine("fi");
         }
     }
 }

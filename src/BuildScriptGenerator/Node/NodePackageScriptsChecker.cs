@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         private static void CheckScript(IDictionary<string, string> scripts, string scriptKey, List<ICheckerMessage> result)
         {
-            scripts.TryGetValue(scriptKey, out var script);
+            _ = scripts.TryGetValue(scriptKey, out var script);
             if (script != null && NpmGlobalPattern.IsMatch(script))
             {
                 result.Add(new CheckerMessage(string.Format(

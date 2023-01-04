@@ -104,15 +104,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             {
                 RootDirPath = Path.Combine(Path.GetTempPath(), "oryxtests", Guid.NewGuid().ToString());
 
-                Directory.CreateDirectory(RootDirPath);
+                _ = Directory.CreateDirectory(RootDirPath);
                 File.WriteAllText(Path.Combine(RootDirPath, "file1.txt"), "file content");
 
                 var subDir1 = Path.Combine(RootDirPath, "subDir1");
-                Directory.CreateDirectory(subDir1);
+                _ = Directory.CreateDirectory(subDir1);
                 File.WriteAllText(Path.Combine(subDir1, "file1.txt"), $"file in {subDir1}");
 
                 var subDir2 = Path.Combine(subDir1, "subDir2");
-                Directory.CreateDirectory(subDir2);
+                _ = Directory.CreateDirectory(subDir2);
                 File.WriteAllText(Path.Combine(subDir2, "file1.txt"), $"file in {subDir2}");
             }
 

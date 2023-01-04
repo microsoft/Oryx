@@ -547,7 +547,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             generator.GenerateBashScript(context, out var generatedScript, messages);
 
             // Assert
-            Assert.Single(messages);
+            _ = Assert.Single(messages);
             Assert.Equal(repoWarning, messages.First());
         }
 

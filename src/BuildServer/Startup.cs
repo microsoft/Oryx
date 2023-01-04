@@ -34,21 +34,21 @@ namespace Microsoft.Oryx.BuildServer
             string folderName = "/store";
             if (!Directory.Exists(folderName))
             {
-                Directory.CreateDirectory(folderName);
+                _ = Directory.CreateDirectory(folderName);
             }
 
             var store = new DataStore("/store/builds.json", keyProperty: "id");
-            services.AddHttpContextAccessor();
-            services.AddMvc();
-            services.AddSingleton<IRepository>(x => new BuildRepository(store));
-            services.AddScoped<IArtifactBuilder, ArtifactBuilder>();
-            services.AddScoped<IArtifactBuilderFactory, ArtifactBuilderFactory>();
-            services.AddScoped<IBuildRunner, BuildRunner>();
-            services.AddScoped<IBuildService, BuildService>();
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<ILoggerFactory, LoggerFactory>();
-            services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
-            services.AddControllers();
+            _ = services.AddHttpContextAccessor();
+            _ = services.AddMvc();
+            _ = services.AddSingleton<IRepository>(x => new BuildRepository(store));
+            _ = services.AddScoped<IArtifactBuilder, ArtifactBuilder>();
+            _ = services.AddScoped<IArtifactBuilderFactory, ArtifactBuilderFactory>();
+            _ = services.AddScoped<IBuildRunner, BuildRunner>();
+            _ = services.AddScoped<IBuildService, BuildService>();
+            _ = services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            _ = services.AddSingleton<ILoggerFactory, LoggerFactory>();
+            _ = services.AddSingleton(typeof(ILogger<>), typeof(Logger<>));
+            _ = services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,16 +56,16 @@ namespace Microsoft.Oryx.BuildServer
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                _ = app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting();
+            _ = app.UseRouting();
 
-            app.UseAuthorization();
+            _ = app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
+            _ = app.UseEndpoints(endpoints =>
             {
-                endpoints.MapDefaultControllerRoute();
+                _ = endpoints.MapDefaultControllerRoute();
             });
         }
     }

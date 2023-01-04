@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
             var outputPath = this.ValidateParameter($"{build.OutputPath}/{build.Id}");
             var platform = this.ValidateParameter(build.Platform);
             var version = this.ValidateParameter(build.Version);
-            Directory.CreateDirectory(outputPath);
+            _ = Directory.CreateDirectory(outputPath);
             var cmd = $"oryx build {sourcePath} --log-file {logFilePath} " +
                 $"--output {outputPath} --platform {platform} " +
                 $"--platform-version {version}";
@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
             };
             try
             {
-                process.Start();
+                _ = process.Start();
                 this.logger.LogInformation($"Process has started for command: {cmd}");
                 var outputHandler = new FileOutputHandler(new StreamWriter(logFilePath), this.logger);
                 process.OutputDataReceived += outputHandler.Handle;

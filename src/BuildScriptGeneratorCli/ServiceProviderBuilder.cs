@@ -30,13 +30,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             LogManager.ReconfigExistingLoggers();
 
             this.serviceCollection = new ServiceCollection();
-            this.serviceCollection
+            _ = this.serviceCollection
                 .AddBuildScriptGeneratorServices()
                 .AddCliServices(console)
                 .AddLogging(builder =>
                 {
-                    builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
-                    builder.AddNLog(new NLogProviderOptions
+                    _ = builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
+                    _ = builder.AddNLog(new NLogProviderOptions
                     {
                         CaptureMessageTemplates = true,
                         CaptureMessageProperties = true,
@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public ServiceProviderBuilder ConfigureScriptGenerationOptions(Action<BuildScriptGeneratorOptions> configure)
         {
-            this.serviceCollection.Configure<BuildScriptGeneratorOptions>(opts => configure(opts));
+            _ = this.serviceCollection.Configure<BuildScriptGeneratorOptions>(opts => configure(opts));
             return this;
         }
 

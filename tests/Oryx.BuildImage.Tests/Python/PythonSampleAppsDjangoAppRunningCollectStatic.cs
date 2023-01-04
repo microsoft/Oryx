@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var scriptBuilder = new ShellScriptBuilder();
             if (string.IsNullOrEmpty(disableCollectStatic))
             {
-                scriptBuilder.AddCommand(
+                _ = scriptBuilder.AddCommand(
                     $"export {EnvironmentSettingsKeys.DisableCollectStatic}={disableCollectStatic}");
             }
             var script = scriptBuilder

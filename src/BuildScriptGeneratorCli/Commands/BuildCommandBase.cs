@@ -83,7 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     if (this.DebugMode)
                     {
-                        console.WriteLine(
+                        _ = console.WriteLine(
                             $"Warning: DEBIAN_FLAVOR environment variable not found. " +
                             $"Falling back to debian flavor in the {FilePaths.OsTypeFileName} file.");
                     }
@@ -114,14 +114,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     options.ImageType = parsedImageType;
                     if (this.DebugMode)
                     {
-                        console.WriteLine($"Parsed image type from file '{FilePaths.ImageTypeFileName}': {options.ImageType}");
+                        _ = console.WriteLine($"Parsed image type from file '{FilePaths.ImageTypeFileName}': {options.ImageType}");
                     }
                 }
                 else
                 {
                     if (this.DebugMode)
                     {
-                        console.WriteLine($"Warning: '{FilePaths.ImageTypeFileName}' file not found.");
+                        _ = console.WriteLine($"Warning: '{FilePaths.ImageTypeFileName}' file not found.");
                     }
                 }
             }

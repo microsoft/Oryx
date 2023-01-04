@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             var versionDirInTemp = Path.Combine(this.CommonOptions.DynamicInstallRootDir, platformName, version);
 
             var snippet = new StringBuilder();
-            snippet
+            _ = snippet
                 .AppendLine()
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")
                 .AppendLine("echo")

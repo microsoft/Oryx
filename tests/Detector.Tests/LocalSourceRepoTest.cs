@@ -169,27 +169,27 @@ namespace Microsoft.Oryx.Detector.Tests
                 //          bb/
                 //              bb1.txt
                 //              bb1.xml
-                Directory.CreateDirectory(RootDirPath);
+                _ = Directory.CreateDirectory(RootDirPath);
                 File.WriteAllText(Path.Combine(RootDirPath, "root1.txt"), "file content");
                 File.WriteAllText(Path.Combine(RootDirPath, "root1.xml"), "file content");
 
                 var aDir = Path.Combine(RootDirPath, "a");
-                Directory.CreateDirectory(aDir);
+                _ = Directory.CreateDirectory(aDir);
                 File.WriteAllText(Path.Combine(aDir, "a1.txt"), $"file in {aDir}");
                 File.WriteAllText(Path.Combine(aDir, "a1.xml"), $"file in {aDir}");
 
                 var aaDir = Path.Combine(aDir, "aa");
-                Directory.CreateDirectory(aaDir);
+                _ = Directory.CreateDirectory(aaDir);
                 File.WriteAllText(Path.Combine(aaDir, "aa1.txt"), $"file in {aaDir}");
                 File.WriteAllText(Path.Combine(aaDir, "aa1.xml"), $"file in {aaDir}");
 
                 var bDir = Path.Combine(RootDirPath, "b");
-                Directory.CreateDirectory(bDir);
+                _ = Directory.CreateDirectory(bDir);
                 File.WriteAllText(Path.Combine(bDir, "b1.txt"), $"file in {bDir}");
                 File.WriteAllText(Path.Combine(bDir, "b1.xml"), $"file in {bDir}");
 
                 var bbDir = Path.Combine(bDir, "bb");
-                Directory.CreateDirectory(bbDir);
+                _ = Directory.CreateDirectory(bbDir);
                 File.WriteAllText(Path.Combine(bbDir, "bb1.txt"), $"file in {bbDir}");
                 File.WriteAllText(Path.Combine(bbDir, "bb1.xml"), $"file in {bbDir}");
             }

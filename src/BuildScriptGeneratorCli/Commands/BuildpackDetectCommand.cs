@@ -97,8 +97,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (compatPlats != null && compatPlats.Any())
             {
-                console.WriteLine("Detected platforms:");
-                console.WriteLine(string.Join(' ', compatPlats.Select(pair => $"{pair.Key.Name}=\"{pair.Value}\"")));
+                _ = console.WriteLine("Detected platforms:");
+                _ = console.WriteLine(string.Join(' ', compatPlats.Select(pair => $"{pair.Key.Name}=\"{pair.Value}\"")));
 
                 // Write the detected platforms into the build plan as TOML
                 File.WriteAllLines(this.PlanPath, compatPlats.Select(pair => $"{pair.Key.Name} = {{ version = \"{pair.Value}\" }}"));

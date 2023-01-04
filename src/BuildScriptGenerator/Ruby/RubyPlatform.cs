@@ -256,7 +256,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
                     rubyVersion);
 
                 var script = this.rubyInstaller.GetInstallerScriptSnippet(rubyVersion);
-                scriptBuilder.AppendLine(script);
+                _ = scriptBuilder.AppendLine(script);
             }
         }
 

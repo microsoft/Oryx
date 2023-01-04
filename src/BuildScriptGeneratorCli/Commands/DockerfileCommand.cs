@@ -110,13 +110,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     exitCode = ProcessConstants.ExitSuccess;
                     if (string.IsNullOrEmpty(this.OutputPath))
                     {
-                        console.WriteLine(dockerfile);
+                        _ = console.WriteLine(dockerfile);
                     }
                     else
                     {
                         this.OutputPath.SafeWriteAllText(dockerfile);
                         this.OutputPath = Path.GetFullPath(this.OutputPath).TrimEnd('/').TrimEnd('\\');
-                        console.WriteLine($"Dockerfile written to '{this.OutputPath}'.");
+                        _ = console.WriteLine($"Dockerfile written to '{this.OutputPath}'.");
                     }
                 }
 
@@ -165,7 +165,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 if (!this.supportedRuntimePlatforms.Contains(this.RuntimePlatformName))
                 {
-                    console.WriteLine($"WARNING: Unable to find provided runtime platform name '{this.RuntimePlatformName}' in " +
+                    _ = console.WriteLine($"WARNING: Unable to find provided runtime platform name '{this.RuntimePlatformName}' in " +
                                       $"supported list of runtime platform names: {string.Join(", ", this.supportedRuntimePlatforms)}. " +
                                       $"The provided runtime platform name will be used in case this Dockerfile command or image is outdated.");
                 }
@@ -207,7 +207,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     // We first add IConfiguration to DI so that option services like
                     // `DotNetCoreScriptGeneratorOptionsSetup` services can get it through DI and read from the config
                     // and set the options.
-                    services
+                    _ = services
                         .AddSingleton<IConfiguration>(config)
                         .AddOptionsServices()
                         .Configure<BuildScriptGeneratorOptions>(options =>

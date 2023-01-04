@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [Fact]
         public void Render_Throws_WhenNonExistentVariableIsUsed()
         {
-            Assert.Throws<ScriptRuntimeException>(
+            _ = Assert.Throws<ScriptRuntimeException>(
                 () => TemplateHelper.RenderString("Hello {{ World }}!", new { Foo = "Bar" }));
         }
 

@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public static StringBuilder AppendSourceDirectoryInfo(this StringBuilder stringBuilder, string sourceDir)
         {
-            stringBuilder
+            _ = stringBuilder
                 .AppendFormatWithLine("echo Source directory     : {0}", sourceDir)
                 .AppendLine();
             return stringBuilder;
@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this StringBuilder stringBuilder,
             string destinationDir)
         {
-            stringBuilder
+            _ = stringBuilder
                 .AppendFormatWithLine("echo Destination directory : {0}", destinationDir)
                 .AppendLine();
             return stringBuilder;
@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var benvPath = FilePaths.Benv;
             if (File.Exists(benvPath))
             {
-                stringBuilder
+                _ = stringBuilder
                     .AppendFormatWithLine("source {0} {1}", benvPath, benvArgs)
                     .AppendLine();
             }
@@ -58,11 +58,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public static StringBuilder AppendAptGetInstallPackages(this StringBuilder stringBuilder, params string[] packagesToInstall)
         {
-            stringBuilder.AppendLine("apt-get update");
-            stringBuilder.AppendLine("apt-get upgrade -y");
-            stringBuilder.AppendLine("apt-get install -y --no-install-recommends \\");
-            stringBuilder.AppendLine($"  {string.Join(" ", packagesToInstall)}");
-            stringBuilder.AppendLine("rm -rf /var/lib/apt/lists/*");
+            _ = stringBuilder.AppendLine("apt-get update");
+            _ = stringBuilder.AppendLine("apt-get upgrade -y");
+            _ = stringBuilder.AppendLine("apt-get install -y --no-install-recommends \\");
+            _ = stringBuilder.AppendLine($"  {string.Join(" ", packagesToInstall)}");
+            _ = stringBuilder.AppendLine("rm -rf /var/lib/apt/lists/*");
 
             return stringBuilder;
         }
@@ -99,8 +99,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string format,
             params object[] args)
         {
-            stringBuilder.AppendFormat(format, args);
-            stringBuilder.AppendLine();
+            _ = stringBuilder.AppendFormat(format, args);
+            _ = stringBuilder.AppendLine();
             return stringBuilder;
         }
     }

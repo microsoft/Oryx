@@ -311,7 +311,7 @@ namespace Microsoft.Oryx.Tests.Common
                 if (runResult != null)
                 {
                     // Stop the container so that shared resources (like ports) are disposed.
-                    dockerCli.StopContainer(runResult.ContainerName);
+                    _ = dockerCli.StopContainer(runResult.ContainerName);
 
                     // Access the output and error streams after the process has exited
                     if (showDebugInfo)
@@ -358,7 +358,7 @@ namespace Microsoft.Oryx.Tests.Common
                 if (runResult != null)
                 {
                     // Stop the container so that shared resources (like ports) are disposed.
-                    dockerCli.StopContainer(runResult.ContainerName);
+                    _ = dockerCli.StopContainer(runResult.ContainerName);
                 }
             }
             return runResult?.GetDebugInfo();

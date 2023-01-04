@@ -14,12 +14,12 @@ namespace Microsoft.Oryx.Detector
     {
         public static IServiceCollection AddNodeServices(this IServiceCollection services)
         {
-            services.AddSingleton<NodeDetector>();
+            _ = services.AddSingleton<NodeDetector>();
 
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
             Func<IServiceProvider, NodeDetector> factory = (sp) => sp.GetRequiredService<NodeDetector>();
-            services.AddSingleton<INodePlatformDetector, NodeDetector>(factory);
+            _ = services.AddSingleton<INodePlatformDetector, NodeDetector>(factory);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IPlatformDetector, NodeDetector>(factory));
             return services;
         }

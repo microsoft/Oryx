@@ -35,8 +35,8 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
         public string GetContent()
         {
             StringBuilder body = new StringBuilder();
-            body.Append("# " + Program.BuildAutogenDisclaimer(this.collection.SourcePath) + NewLine); // Can't use AppendLine becuase it appends \r\n
-            body.Append(NewLine);
+            _ = body.Append("# " + Program.BuildAutogenDisclaimer(this.collection.SourcePath) + NewLine); // Can't use AppendLine becuase it appends \r\n
+            _ = body.Append(NewLine);
             if (this.collection.StringConstants?.Any() ?? false)
             {
                 foreach (var constant in this.collection.StringConstants)
@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
                     var value = constant.Value.WrapValueInQuotes();
 
                     // Ex: PYTHON_VERSION='3.7.7'
-                    body.Append($"{name}={value}{NewLine}");
+                    _ = body.Append($"{name}={value}{NewLine}");
                 }
             }
 
@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
                         : string.Empty;
 
                     // Ex: PYTHON_VERSIONS=("3.7.7" "3.8.0")
-                    body.Append($"{name}=({value}){NewLine}");
+                    _ = body.Append($"{name}=({value}){NewLine}");
                 }
             }
 

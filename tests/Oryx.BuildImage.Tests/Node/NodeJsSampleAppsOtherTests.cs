@@ -558,7 +558,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
             if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
             {
-                ProcessHelper.RunProcess(
+                _ = ProcessHelper.RunProcess(
                     "chmod",
                     new[] { "-R", "777", scriptsDir.FullName },
                     workingDirectory: null,
@@ -1095,7 +1095,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Create an app folder with a package.json having the 'appdynamics' package
             var packageJsonContent = "{\"dependencies\": { \"appdynamics\": \"20.10.1\" }}";
             var sampleAppPath = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(sampleAppPath);
+            _ = Directory.CreateDirectory(sampleAppPath);
             File.WriteAllText(Path.Combine(sampleAppPath, NodeConstants.PackageJsonFileName), packageJsonContent);
             var volume = DockerVolume.CreateMirror(sampleAppPath);
             var appDir = volume.ContainerDir;
@@ -1135,7 +1135,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
               }
             }";
             var sampleAppPath = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(sampleAppPath);
+            _ = Directory.CreateDirectory(sampleAppPath);
             File.WriteAllText(Path.Combine(sampleAppPath, NodeConstants.PackageJsonFileName), packageJsonContent);
             var volume = DockerVolume.CreateMirror(sampleAppPath);
             var appDir = volume.ContainerDir;

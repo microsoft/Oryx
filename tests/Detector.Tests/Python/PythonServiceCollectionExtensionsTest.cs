@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         {
             // Arrange
             var services = new ServiceCollection();
-            services
+            _ = services
                 .AddLogging()
                 .AddPythonServices();
             var serviceProvider = services.BuildServiceProvider();
@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         {
             // Arrange
             var services = new ServiceCollection();
-            services
+            _ = services
                 .AddLogging()
                 .AddPythonServices();
             var serviceProvider = services.BuildServiceProvider();
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Detector.Tests.Python
         {
             // Arrange
             var services = new ServiceCollection();
-            services
+            _ = services
                 .AddLogging()
                 .AddPythonServices();
             var serviceProvider = services.BuildServiceProvider();

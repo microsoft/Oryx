@@ -19,9 +19,9 @@ namespace Microsoft.Oryx.Detector
         /// <returns>An instance of <see cref="IServiceCollection"/>.</returns>
         public static IServiceCollection AddPlatformDetectorServices(this IServiceCollection services)
         {
-            services.AddSingleton<IDetector, DefaultPlatformDetector>();
+            _ = services.AddSingleton<IDetector, DefaultPlatformDetector>();
 
-            services
+            _ = services
                 .AddLogging()
                 .AddOptions()
                 .AddDotNetCoreServices()

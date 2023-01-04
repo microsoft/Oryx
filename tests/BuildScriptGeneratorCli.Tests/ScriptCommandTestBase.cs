@@ -29,9 +29,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         internal IServiceProvider CreateServiceProvider(TestProgrammingPlatform generator, bool scriptOnly)
         {
             var sourceCodeFolder = Path.Combine(_testDirPath, "src");
-            Directory.CreateDirectory(sourceCodeFolder);
+            _ = Directory.CreateDirectory(sourceCodeFolder);
             var outputFolder = Path.Combine(_testDirPath, "output");
-            Directory.CreateDirectory(outputFolder);
+            _ = Directory.CreateDirectory(outputFolder);
             var servicesBuilder = new ServiceProviderBuilder()
                 .ConfigureServices(services =>
                 {
@@ -39,22 +39,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                     // than depending on in-built script generators whose script could change overtime causing
                     // this test to be difficult to manage.
 
-                    services.RemoveAll<IPlatformDetector>();
+                    _ = services.RemoveAll<IPlatformDetector>();
                     services.TryAddEnumerable(
                         ServiceDescriptor.Singleton<IPlatformDetector>(
                             new TestPlatformDetectorUsingPlatformName(
                                 detectedPlatformName: "test",
                                 detectedPlatformVersion: "1.0.0")));
 
-                    services.RemoveAll<IProgrammingPlatform>();
+                    _ = services.RemoveAll<IProgrammingPlatform>();
                     services.TryAddEnumerable(
                         ServiceDescriptor.Singleton<IProgrammingPlatform>(generator));
 
-                    services.AddSingleton<ITempDirectoryProvider>(
+                    _ = services.AddSingleton<ITempDirectoryProvider>(
                         new TestTempDirectoryProvider(Path.Combine(_testDirPath, "temp")));
 
                     var configuration = new ConfigurationBuilder().Build();
-                    services.AddSingleton<IConfiguration>(configuration);
+                    _ = services.AddSingleton<IConfiguration>(configuration);
                 })
                 .ConfigureScriptGenerationOptions(o =>
                 {
@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
             public string GetTempDirectory()
             {
-                Directory.CreateDirectory(_tempDir);
+                _ = Directory.CreateDirectory(_tempDir);
                 return _tempDir;
             }
         }

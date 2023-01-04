@@ -465,7 +465,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
             if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
             {
-                ProcessHelper.RunProcess(
+                _ = ProcessHelper.RunProcess(
                     "chmod",
                     new[] { "-R", "777", scriptsDir.FullName },
                     workingDirectory: null,
@@ -534,7 +534,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
             if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
             {
-                ProcessHelper.RunProcess(
+                _ = ProcessHelper.RunProcess(
                     "chmod",
                     new[] { "-R", "777", scriptsDir.FullName },
                     workingDirectory: null,

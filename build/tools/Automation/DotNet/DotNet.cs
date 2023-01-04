@@ -145,7 +145,7 @@ namespace Microsoft.Oryx.Automation
                                     .FirstOrDefault();
                 if (versionElement != null)
                 {
-                    this.prodSdkVersions.Add(versionElement.Value);
+                    _ = this.prodSdkVersions.Add(versionElement.Value);
                     Console.WriteLine(versionElement.Value);
                 }
             }

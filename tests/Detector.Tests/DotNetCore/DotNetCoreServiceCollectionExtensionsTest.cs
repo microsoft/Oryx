@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             var services = new ServiceCollection();
 
             // Act
-            services.AddDotNetCoreServices();
+            _ = services.AddDotNetCoreServices();
 
             // Assert
             var projectFileProviders = services.Where(sd => sd.ServiceType == typeof(IProjectFileProvider));
@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         {
             // Arrange
             var services = new ServiceCollection();
-            services
+            _ = services
                 .AddLogging()
                 .AddDotNetCoreServices();
             var serviceProvider = services.BuildServiceProvider();
@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         {
             // Arrange
             var services = new ServiceCollection();
-            services
+            _ = services
                 .AddLogging()
                 .AddDotNetCoreServices();
             var serviceProvider = services.BuildServiceProvider();
@@ -80,7 +80,7 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
         {
             // Arrange
             var services = new ServiceCollection();
-            services
+            _ = services
                 .AddLogging()
                 .AddDotNetCoreServices();
             var serviceProvider = services.BuildServiceProvider();

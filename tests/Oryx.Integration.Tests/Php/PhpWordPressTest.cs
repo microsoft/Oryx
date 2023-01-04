@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             if (!Directory.Exists(hostDir))
             {
-                Directory.CreateDirectory(hostDir);
+                _ = Directory.CreateDirectory(hostDir);
                 using (var webClient = new WebClient())
                 {
                     var wpZipPath = Path.Combine(hostDir, "wp.zip");

@@ -98,8 +98,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             string result = LoggingConstants.DefaultOperationName;
 
-            LoggingConstants.EnvTypeOperationNamePrefix.TryGetValue(env.Type, out string prefix);
-            LoggingConstants.OperationNameSourceEnvVars.TryGetValue(env.Type, out string opNameSrcVarName);
+            _ = LoggingConstants.EnvTypeOperationNamePrefix.TryGetValue(env.Type, out string prefix);
+            _ = LoggingConstants.OperationNameSourceEnvVars.TryGetValue(env.Type, out string opNameSrcVarName);
             if (string.IsNullOrEmpty(prefix) || string.IsNullOrEmpty(opNameSrcVarName))
             {
                 return result;
@@ -150,25 +150,25 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
             var beginningOutputLog = GetBeginningCommandOutputLog();
-            console.WriteLine(beginningOutputLog);
+            _ = console.WriteLine(beginningOutputLog);
             var buildInfo = new DefinitionListFormatter();
-            buildInfo.AddDefinition("Build Operation ID", buildOperationId);
+            _ = buildInfo.AddDefinition("Build Operation ID", buildOperationId);
             if (!string.IsNullOrWhiteSpace(sourceRepoCommitId))
             {
-                buildInfo.AddDefinition("Repository Commit", sourceRepoCommitId);
+                _ = buildInfo.AddDefinition("Repository Commit", sourceRepoCommitId);
             }
 
             if (!string.IsNullOrWhiteSpace(options.DebianFlavor))
             {
-                buildInfo.AddDefinition("OS Type", options.DebianFlavor);
+                _ = buildInfo.AddDefinition("OS Type", options.DebianFlavor);
             }
 
             if (!string.IsNullOrWhiteSpace(options.ImageType))
             {
-                buildInfo.AddDefinition("Image Type", options.ImageType);
+                _ = buildInfo.AddDefinition("Image Type", options.ImageType);
             }
 
-            console.WriteLine(buildInfo.ToString());
+            _ = console.WriteLine(buildInfo.ToString());
 
             // Generate build script
             string scriptContent;
@@ -186,7 +186,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     var messageFormatter = new DefinitionListFormatter();
                     checkerMessages.ForEach(msg => messageFormatter.AddDefinition(msg.Level.ToString(), msg.Content));
-                    console.WriteLine(messageFormatter.ToString());
+                    _ = console.WriteLine(messageFormatter.ToString());
                 }
                 else
                 {
@@ -213,7 +213,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             logger.LogTrace("Build script written to file");
             if (this.DebugMode)
             {
-                console.WriteLine($"Build script content:\n{scriptContent}");
+                _ = console.WriteLine($"Build script content:\n{scriptContent}");
             }
 
             // Merge the earlier build event properties
@@ -240,8 +240,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return;
                 }
 
-                console.WriteLine(line);
-                buildScriptOutput.AppendLine(line);
+                _ = console.WriteLine(line);
+                _ = buildScriptOutput.AppendLine(line);
 
                 foreach (var processor in stdOutEventLoggers)
                 {
@@ -271,14 +271,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 // Not using IConsole.WriteErrorLine intentionally, to keep the child's error stream intact
                 console.Error.WriteLine(line);
-                buildScriptOutput.AppendLine(line);
+                _ = buildScriptOutput.AppendLine(line);
             };
 
             // Run the generated script
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("RunBuildScript", buildEventProps))
             {
-                console.WriteLine();
+                _ = console.WriteLine();
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     buildScriptPath,
                     new[]
@@ -320,13 +320,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (this.languageWasSet)
             {
                 logger.LogWarning("Deprecated option '--language' used");
-                console.WriteLine("Warning: the deprecated option '--language' was used.");
+                _ = console.WriteLine("Warning: the deprecated option '--language' was used.");
             }
 
             if (this.languageVersionWasSet)
             {
                 logger.LogWarning("Deprecated option '--language-version' used");
-                console.WriteLine("Warning: the deprecated option '--language-version' was used.");
+                _ = console.WriteLine("Warning: the deprecated option '--language-version' was used.");
             }
 
             // Invalid to specify platform version without platform name
@@ -409,7 +409,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     // We first add IConfiguration to DI so that option services like
                     // `DotNetCoreScriptGeneratorOptionsSetup` services can get it through DI and read from the config
                     // and set the options.
-                    services
+                    _ = services
                         .AddSingleton<IConfiguration>(config)
                         .AddOptionsServices()
                         .Configure<BuildScriptGeneratorOptions>(options =>

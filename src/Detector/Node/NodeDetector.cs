@@ -255,7 +255,7 @@ namespace Microsoft.Oryx.Detector.Node
                         FrameworkVersion = dependency.Value.Value,
                     };
                     detectedFrameworkResult.Add(frameworkInfo);
-                    frameworksSet.Add(frameworkName);
+                    _ = frameworksSet.Add(frameworkName);
                 }
             }
 
@@ -284,7 +284,7 @@ namespace Microsoft.Oryx.Detector.Node
                         FrameworkVersion = dependency.Value.Value,
                     };
                     detectedFrameworkResult.Add(frameworkInfo);
-                    frameworksSet.Add(frameworkName);
+                    _ = frameworksSet.Add(frameworkName);
                 }
             }
 
@@ -301,13 +301,13 @@ namespace Microsoft.Oryx.Detector.Node
             // remove base frameworks if derived framework exists
             if (frameworksSet.Contains("Gatsby") || frameworksSet.Contains("Next.js"))
             {
-                detectedFrameworkResult.RemoveAll(x => x.Framework == "Angular");
-                detectedFrameworkResult.RemoveAll(x => x.Framework == "React");
+                _ = detectedFrameworkResult.RemoveAll(x => x.Framework == "Angular");
+                _ = detectedFrameworkResult.RemoveAll(x => x.Framework == "React");
             }
 
             if (frameworksSet.Contains("VuePress") || frameworksSet.Contains("Nuxt.js"))
             {
-                detectedFrameworkResult.RemoveAll(x => x.Framework == "Vue.js");
+                _ = detectedFrameworkResult.RemoveAll(x => x.Framework == "Vue.js");
             }
 
             return detectedFrameworkResult;

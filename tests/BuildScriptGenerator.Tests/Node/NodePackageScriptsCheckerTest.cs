@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             };
 
             // Act & Assert
-            Assert.Single(NodePackageScriptsChecker.CheckScriptsForGlobalInstallationAttempts(scripts));
+            _ = Assert.Single(NodePackageScriptsChecker.CheckScriptsForGlobalInstallationAttempts(scripts));
         }
 
         [Theory]
