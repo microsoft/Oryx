@@ -65,21 +65,22 @@ jobs:
           [[ $gitCommitExitCode = 0 ]] && cancelWorkflow=false || cancelWorkflow=true
           echo "CANCEL_WORKFLOW=${cancelWorkflow}" >> $GITHUB_ENV
           
-          if [ ${{ env.CANCEL_WORKFLOW }} = true ]; then
+          if [ $cancelWorkflow != false ]; then
+            echo "Canceling workflow because there are no new ${{ inputs.platformName }} SDK versions"
             exit 0
           fi
 
 
       # TODO: remove peter-evans/create-pull-request and use github.rest
       # Example: https://stackoverflow.com/questions/68057744/create-pull-request-with-github-action/71224444#71224444
-      - if: ${{ env.CANCEL_WORKFLOW == false }}
+      - if: ${{ env.CANCEL_WORKFLOW != true }}
         name: Create Pull Request
         uses: peter-evans/create-pull-request@171dd555b9ab6b18fa02519fdfacbb8bf671e1b4  # locking to a commit version for now
         with:
           branch: automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
           title: New ${{ env.PLATFORM_NAME_CAMEL_CASE }} Sdks ${{ env.RELEASE_DATE }}
       
-      - if: ${{ env.CANCEL_WORKFLOW == false }}
+      - if: ${{ env.CANCEL_WORKFLOW != true }}
         name: Install jq
         run: |
           if [ ${{ env.CANCEL_WORKFLOW }} = true ]; then
@@ -90,30 +91,36 @@ jobs:
           sudo apt-get install jq -y
           jq --version
 
-      - name: Trigger Dev SDK Pipeline 
+      - if: ${{ env.CANCEL_WORKFLOW != true }}
+        name: Trigger Dev SDK Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
           az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-PlatformBinary-${{ env.PLATFORM_NAME_CAMEL_CASE }} --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }} > /tmp/sdkPipelineTriggerResponse.json
 
-      - name: Check Dev SDK Pipeline Ran Successfully
+      - if: ${{ env.CANCEL_WORKFLOW != true }}
+        name: Check Dev SDK Pipeline Ran Successfully
         run: |
           pipelineInvocationId=$( cat /tmp/sdkPipelineTriggerResponse.json | jq ".id" )
           ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
 
-      - name: Trigger Runtime Pipeline 
+      - if: ${{ env.CANCEL_WORKFLOW != true }}
+        name: Trigger Runtime Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
           az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-${{ env.PLATFORM_NAME_CAMEL_CASE }} --branch automation/add-new-${{ inputs.platformName }}-release-${{ env.RELEASE_DATE }} > /tmp/runtimePipelineTriggerResponse.json
 
-      - name: Check Runtime Pipeline Ran Successfully
+      - if: ${{ env.CANCEL_WORKFLOW != true }}
+        name: Check Runtime Pipeline Ran Successfully
         run: |
           pipelineInvocationId=$( cat /tmp/runtimePipelineTriggerResponse.json | jq ".id" )
           ${{ github.workspace }}/build/tools/Automation/checkPipelineStatus.sh $pipelineInvocationId
 
-      - name: Install yq
+      - if: ${{ env.CANCEL_WORKFLOW != true }}
+        name: Install yq
         run: sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq
 
-      - name: Update Runtime Build Number
+      - if: ${{ env.CANCEL_WORKFLOW != true }}
+        name: Update Runtime Build Number
         run: |
           yq --version
           buildNumber=$(cat /tmp/status.json | jq ".buildNumber" | tr -d '"')
@@ -124,7 +131,8 @@ jobs:
           yq -i "(.[] | select(.name==\"$platform-run-time-versions\") | .constants.$platform-runtime-base-tag) = $buildNumber" build/constants.yaml
           ./build/generateConstants.sh
 
-      - name: Commit and Push
+      - if: ${{ env.CANCEL_WORKFLOW != true }}
+        name: Commit and Push
         run: |
           git status
           git config user.name 'William Hernandez'
@@ -133,12 +141,14 @@ jobs:
           git commit -m "Add runtime build number"
           git push origin automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
 
-      - name: Trigger Validation Pipeline 
+      - if: ${{ env.CANCEL_WORKFLOW != true }}
+        name: Trigger Validation Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
           az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Validation --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
 
-      - name: Trigger Nightly Pipeline 
+      - if: ${{ env.CANCEL_WORKFLOW != true }}
+        name: Trigger Nightly Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
           az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-Nightly --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
