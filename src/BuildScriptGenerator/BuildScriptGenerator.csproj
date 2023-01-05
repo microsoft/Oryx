@@ -89,13 +89,5 @@
     <ProjectReference Include="..\BuildScriptGenerator.Common\BuildScriptGenerator.Common.csproj" />
     <ProjectReference Include="..\Detector\Detector.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="Microsoft.VisualStudio.Threading.Analyzers" Version="17.4.33">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-    <PackageReference Update="SmartAnalyzers.CSharpExtensions.Annotations" Version="4.2.7" />
-  </ItemGroup>
   
 </Project>

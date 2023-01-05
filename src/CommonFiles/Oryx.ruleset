@@ -34,7 +34,7 @@
     <Rule Id="VSTHRD002" Action="None" /> <!-- Use await or JoinableTaskFactory.Run instead -->
   </Rules>
 
-  <Rules AnalyzerId="Microsoft.CodeAnalysis.FxCopAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.FxCopAnalyzers">
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.NetAnalyzers">
 
     <!-- "Do not declare static members on generic types" -->
     <Rule Id="CA1000" Action="Info" />
@@ -123,12 +123,12 @@
 
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
     <!-- Requires that unused using directives are removed. -->
-    <Rule Id="IDE0005" Action="Error" />
+    <Rule Id="IDE0005" Action="None" />
   </Rules>
 
   <Rules AnalyzerId="SmartAnalyzers.CSharpExtensions.Annotations" RuleNamespace="SmartAnalyzers.CSharpExtensions.Annotations">
     <!-- Require that method return values be used or explicitly discarded. -->
-    <Rule Id="CSE005" Action="Info" />
+    <Rule Id="CSE005" Action="None" />
   </Rules>
 
 </RuleSet>

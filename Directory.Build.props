@@ -13,7 +13,7 @@ See https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?v
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.4.45">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.4.33">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
@@ -21,11 +21,11 @@ See https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?v
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.1">
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SmartAnalyzers.CSharpExtensions.Annotations" Version="3.3.0" />
+    <PackageReference Include="SmartAnalyzers.CSharpExtensions.Annotations" Version="4.2.7" />
     <!-- Add the same stylecop.json to all projects -->
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)src\CommonFiles\stylecop.json" Link="Properties\stylecop.json" />
   </ItemGroup>
