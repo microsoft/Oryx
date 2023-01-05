@@ -123,12 +123,12 @@
 
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
     <!-- Requires that unused using directives are removed. -->
-    <Rule Id="IDE0005" Action="None" />
+    <Rule Id="IDE0005" Action="Info" />
   </Rules>
 
   <Rules AnalyzerId="SmartAnalyzers.CSharpExtensions.Annotations" RuleNamespace="SmartAnalyzers.CSharpExtensions.Annotations">
     <!-- Require that method return values be used or explicitly discarded. -->
-    <Rule Id="CSE005" Action="None" />
+    <Rule Id="CSE005" Action="Info" />
   </Rules>
 
 </RuleSet>

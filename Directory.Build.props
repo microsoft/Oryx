@@ -25,7 +25,10 @@ See https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?v
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SmartAnalyzers.CSharpExtensions.Annotations" Version="4.2.7" />
+    <PackageReference Include="SmartAnalyzers.CSharpExtensions.Annotations" Version="4.2.7">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <!-- Add the same stylecop.json to all projects -->
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)src\CommonFiles\stylecop.json" Link="Properties\stylecop.json" />
   </ItemGroup>
