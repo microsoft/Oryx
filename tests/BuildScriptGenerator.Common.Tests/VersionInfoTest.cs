@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
         public void VersionInfo_InvalidDisplayVersion_ThrowsArgumentException(string displayVersion)
         {
             // Assert
-            _ = Assert.Throws<ArgumentException>(() => { _ = new VersionInfo(displayVersion); });
+            Assert.Throws<ArgumentException>(() => { new VersionInfo(displayVersion); });
         }
 
         [Theory]

@@ -101,9 +101,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var defs = new DefinitionListFormatter();
             if (detectedPlatformResults == null || !detectedPlatformResults.Any())
             {
-                _ = defs.AddDefinition("Platform", "Not Detected");
-                _ = defs.AddDefinition("PlatformVersion", "Not Detected");
-                _ = console.WriteLine(defs.ToString());
+                defs.AddDefinition("Platform", "Not Detected");
+                defs.AddDefinition("PlatformVersion", "Not Detected");
+                console.WriteLine(defs.ToString());
                 return;
             }
 
@@ -129,18 +129,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         propertyString = propertyValue == null ? "Not Detected" : propertyValue.ToString();
                     }
 
-                    _ = defs.AddDefinition(propertyInfo.Name, propertyString);
+                    defs.AddDefinition(propertyInfo.Name, propertyString);
                 }
             }
 
-            _ = console.WriteLine(defs.ToString());
+            console.WriteLine(defs.ToString());
         }
 
         private static void PrintJsonResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)
         {
             if (detectedPlatformResults == null || !detectedPlatformResults.Any())
             {
-                _ = console.WriteLine("{}");
+                console.WriteLine("{}");
                 return;
             }
 
@@ -149,7 +149,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 detectedPlatformResult.PlatformVersion = detectedPlatformResult.PlatformVersion ?? string.Empty;
             }
 
-            _ = console.WriteLine(JsonConvert.SerializeObject(detectedPlatformResults, Formatting.Indented));
+            console.WriteLine(JsonConvert.SerializeObject(detectedPlatformResults, Formatting.Indented));
         }
     }
 }

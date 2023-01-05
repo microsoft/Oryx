@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
         private void CreateSubDirectory(string name)
         {
-            _ = Directory.CreateDirectory(Path.Combine(_tempDirRoot, name));
+            Directory.CreateDirectory(Path.Combine(_tempDirRoot, name));
         }
     }
 }

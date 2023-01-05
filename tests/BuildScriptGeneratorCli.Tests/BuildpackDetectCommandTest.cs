@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var srcDir = Path.Combine(_testDirPath, "emptydir");
-            _ = Directory.CreateDirectory(srcDir);
+            Directory.CreateDirectory(srcDir);
 
             var cmd = new BuildpackDetectCommand { SourceDir = srcDir };
 
@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var srcDir = Path.Combine(_testDirPath, "nodeappdir");
-            _ = Directory.CreateDirectory(srcDir);
+            Directory.CreateDirectory(srcDir);
             File.WriteAllText(Path.Combine(srcDir, NodeConstants.PackageJsonFileName), "\n");
 
             var cmd = new BuildpackDetectCommand
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var srcDir = Path.Combine(_testDirPath, "phpappdir");
-            _ = Directory.CreateDirectory(srcDir);
+            Directory.CreateDirectory(srcDir);
             File.WriteAllText(Path.Combine(srcDir, PhpConstants.ComposerFileName), "\n");
 
             var cmd = new BuildpackDetectCommand
@@ -97,9 +97,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 .ConfigureServices(svcs =>
                 {
                     var configuration = new ConfigurationBuilder().Build();
-                    _ = svcs.AddSingleton<IConfiguration>(configuration);
-                    _ = svcs.AddSingleton<INodeVersionProvider, TestNodeVersionProvider>();
-                    _ = svcs.AddSingleton<IPhpVersionProvider, TestPhpVersionProvider>();
+                    svcs.AddSingleton<IConfiguration>(configuration);
+                    svcs.AddSingleton<INodeVersionProvider, TestNodeVersionProvider>();
+                    svcs.AddSingleton<IPhpVersionProvider, TestPhpVersionProvider>();
                 })
                 .ConfigureScriptGenerationOptions(opts => cmd.ConfigureBuildScriptGeneratorOptions(opts))
                 .Build();

@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var opts = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
             var beginningOutputLog = GetBeginningCommandOutputLog();
-            _ = console.WriteLine(beginningOutputLog);
+            console.WriteLine(beginningOutputLog);
 
             if (string.IsNullOrWhiteSpace(this.Command))
             {
@@ -69,14 +69,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     detectedPlatforms);
                 if (!string.IsNullOrEmpty(installationScript))
                 {
-                    _ = scriptBuilder.AddCommand(installationScript);
+                    scriptBuilder.AddCommand(installationScript);
                 }
 
-                _ = scriptBuilder.Source(
+                scriptBuilder.Source(
                     $"{FilePaths.Benv} " +
                     $"{string.Join(" ", detectedPlatforms.Select(p => $"{p.Platform}={p.PlatformVersion}"))}");
 
-                _ = scriptBuilder
+                scriptBuilder
                     .AddCommand("echo Executing supplied command...")
                     .AddCommand(this.Command);
 
@@ -86,21 +86,21 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var tempScriptPath = Path.Combine(tempDirectoryProvider.GetTempDirectory(), "execCommand.sh");
                 var script = scriptBuilder.ToString();
                 File.WriteAllText(tempScriptPath, script);
-                _ = console.WriteLine("Finished generating script.");
+                console.WriteLine("Finished generating script.");
 
                 timedEvent.AddProperty(nameof(tempScriptPath), tempScriptPath);
 
                 if (this.DebugMode)
                 {
-                    _ = console.WriteLine($"Temporary script @ {tempScriptPath}:");
-                    _ = console.WriteLine("---");
-                    _ = console.WriteLine(script);
-                    _ = console.WriteLine("---");
+                    console.WriteLine($"Temporary script @ {tempScriptPath}:");
+                    console.WriteLine("---");
+                    console.WriteLine(script);
+                    console.WriteLine("---");
                 }
 
-                _ = console.WriteLine();
-                _ = console.WriteLine("Executing generated script...");
-                _ = console.WriteLine();
+                console.WriteLine();
+                console.WriteLine("Executing generated script...");
+                console.WriteLine();
 
                 exitCode = ProcessHelper.RunProcess(
                     shellPath,
@@ -110,7 +110,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     {
                         if (args.Data != null)
                         {
-                            _ = console.WriteLine(args.Data);
+                            console.WriteLine(args.Data);
                         }
                     },
                     (sender, args) =>
@@ -154,7 +154,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     // We first add IConfiguration to DI so that option services like
                     // `DotNetCoreScriptGeneratorOptionsSetup` services can get it through DI and read from the config
                     // and set the options.
-                    _ = services
+                    services
                         .AddSingleton<IConfiguration>(config)
                         .AddOptionsServices()
                         .Configure<BuildScriptGeneratorOptions>(options =>

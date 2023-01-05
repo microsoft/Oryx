@@ -49,15 +49,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (string.IsNullOrEmpty(this.OutputPath))
             {
-                _ = console.WriteLine(generatedScript);
+                console.WriteLine(generatedScript);
             }
             else
             {
                 this.OutputPath.SafeWriteAllText(generatedScript);
-                _ = console.WriteLine($"Script written to '{this.OutputPath}'");
+                console.WriteLine($"Script written to '{this.OutputPath}'");
 
                 // Try making the script executable
-                _ = ProcessHelper.TrySetExecutableMode(this.OutputPath);
+                ProcessHelper.TrySetExecutableMode(this.OutputPath);
             }
 
             return ProcessConstants.ExitSuccess;
@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         .AddEnvironmentVariables()
                         .Build();
 
-                    _ = services.AddSingleton<IConfiguration>(configuration);
+                    services.AddSingleton<IConfiguration>(configuration);
                 })
                 .ConfigureScriptGenerationOptions(opts =>
                 {

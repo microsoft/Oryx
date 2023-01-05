@@ -104,7 +104,7 @@ namespace Microsoft.Oryx.Tests.Common
             var linuxOS = OSPlatform.Create("LINUX");
             if (RuntimeInformation.IsOSPlatform(linuxOS))
             {
-                _ = ProcessHelper.RunProcess(
+                ProcessHelper.RunProcess(
                     "chmod",
                     new[] { "-R", "777", writableHostDir },
                     workingDirectory: null,
@@ -134,7 +134,7 @@ namespace Microsoft.Oryx.Tests.Common
             // If the destination directory doesn't exist, create it.
             if (!Directory.Exists(destDirName))
             {
-                _ = Directory.CreateDirectory(destDirName);
+                Directory.CreateDirectory(destDirName);
             }
 
             // Get the files in the directory and copy them to the new location.
@@ -142,7 +142,7 @@ namespace Microsoft.Oryx.Tests.Common
             foreach (var file in files)
             {
                 var temppath = Path.Combine(destDirName, file.Name);
-                _ = file.CopyTo(temppath, false);
+                file.CopyTo(temppath, false);
             }
 
             // If copying subdirectories, copy them and their contents to new location.

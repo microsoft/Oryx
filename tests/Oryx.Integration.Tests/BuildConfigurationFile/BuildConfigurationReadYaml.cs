@@ -206,11 +206,11 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                     //
                     if (buildConfigurationFileFlags.HasFlag(BuildConfigurationFileFlags.CRLF))
                     {
-                        _ = text.Append("version: 1\r\n");
+                        text.Append("version: 1\r\n");
                     }
                     else
                     {
-                        _ = text.Append("version: 1\n");
+                        text.Append("version: 1\n");
                     }
 
                     //
@@ -220,27 +220,27 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                     {
                         if (buildConfigurationFileFlags.HasFlag(BuildConfigurationFileFlags.Invalid))
                         {
-                            _ = text.Append("pre-biuld: ");
+                            text.Append("pre-biuld: ");
                         }
                         else
                         {
-                            _ = text.Append("pre-build: ");
+                            text.Append("pre-build: ");
                         }
                         if (buildConfigurationFileFlags.HasFlag(BuildConfigurationFileFlags.MultiLine))
                         {
                             if (buildConfigurationFileFlags.HasFlag(BuildConfigurationFileFlags.CRLF))
                             {
-                                _ = text.Append("|\r\n  apt-get install xyz\r\n  apt-get install abc");
+                                text.Append("|\r\n  apt-get install xyz\r\n  apt-get install abc");
                             }
                             else
                             {
-                                _ = text.Append("|\n  apt-get install xyz\n  apt-get install abc");
+                                text.Append("|\n  apt-get install xyz\n  apt-get install abc");
                             }
                           
                         }
                         else
                         {
-                            _ = text.Append("apt-get install xyz");
+                            text.Append("apt-get install xyz");
                         }
                         
                     }
@@ -252,26 +252,26 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                     {
                         if (buildConfigurationFileFlags.HasFlag(BuildConfigurationFileFlags.Invalid))
                         {
-                            _ = text.Append("post-build ");
+                            text.Append("post-build ");
                         }
                         else
                         {
-                            _ = text.Append("post-build: ");
+                            text.Append("post-build: ");
                         }
                         if (buildConfigurationFileFlags.HasFlag(BuildConfigurationFileFlags.MultiLine))
                         {
                             if (buildConfigurationFileFlags.HasFlag(BuildConfigurationFileFlags.CRLF))
                             {
-                                _ = text.Append("|\r\n  python manage.py makemigrations\r\n    python manage.py migrate");
+                                text.Append("|\r\n  python manage.py makemigrations\r\n    python manage.py migrate");
                             }
                             else
                             {
-                                _ = text.Append("|\n  python manage.py makemigrations\n    python manage.py migrate");
+                                text.Append("|\n  python manage.py makemigrations\n    python manage.py migrate");
                             }
                         }
                         else
                         {
-                            _ = text.Append("python manage.py makemigrations");
+                            text.Append("python manage.py makemigrations");
                         }
                     }
                     return text.ToString();

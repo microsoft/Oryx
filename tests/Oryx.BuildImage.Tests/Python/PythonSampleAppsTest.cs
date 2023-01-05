@@ -128,7 +128,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private void GeneratesScript_AndBuilds_WithCustomRequirementsTxt(string buildImageName)
         {
             // Arrange
-            var appName = "django-app";
+            var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
@@ -139,7 +139,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"mkdir -p {appDir}/{oryxTestFolderName}")
                 .AddCommand($"cp {appDir}/{PythonConstants.RequirementsFileName} {fullCustomRequirementsTxtPath}")
-                .AddCommand($"rm {appDir}/{PythonConstants.RequirementsFileName}")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
 
@@ -224,7 +223,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Create an app folder with a package.json having the yarn engine
             var requirementsContent = "invalidModule==0.0.0";
             var sampleAppPath = Path.Combine(_tempDirRootPath, Guid.NewGuid().ToString("N"));
-            _ = Directory.CreateDirectory(sampleAppPath);
+            Directory.CreateDirectory(sampleAppPath);
             File.WriteAllText(Path.Combine(sampleAppPath, PythonConstants.RequirementsFileName), requirementsContent);
             var volume = DockerVolume.CreateMirror(sampleAppPath);
             var appDir = volume.ContainerDir;
@@ -1196,7 +1195,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
             if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
             {
-                _ = ProcessHelper.RunProcess(
+                ProcessHelper.RunProcess(
                     "chmod",
                     new[] { "-R", "777", scriptsDir.FullName },
                     workingDirectory: null,
@@ -1254,7 +1253,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
             if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
             {
-                _ = ProcessHelper.RunProcess(
+                ProcessHelper.RunProcess(
                     "chmod",
                     new[] { "-R", "777", scriptsDir.FullName },
                     workingDirectory: null,
@@ -1317,7 +1316,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
             if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
             {
-                _ = ProcessHelper.RunProcess(
+                ProcessHelper.RunProcess(
                     "chmod",
                     new[] { "-R", "777", scriptsDir.FullName },
                     workingDirectory: null,
@@ -1472,7 +1471,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
             if (RuntimeInformation.IsOSPlatform(Settings.LinuxOS))
             {
-                _ = ProcessHelper.RunProcess(
+                ProcessHelper.RunProcess(
                     "chmod",
                     new[] { "-R", "777", scriptsDir.FullName },
                     workingDirectory: null,
@@ -1504,7 +1503,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    var semVer = new SemanticVersioning.Version(version);
+                    var semVer = new SemVer.Version(version);
                     var virtualEnvSuffix = $"{semVer.Major}.{semVer.Minor}";
                     Assert.Matches($"Pre-build script: /opt/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
                     Assert.Matches($"Pre-build script: /opt/python/{version}/bin/pip", result.StdOut);
@@ -1633,7 +1632,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         private string GetDefaultVirtualEnvName(string version)
         {
-            var ver = new SemanticVersioning.Version(version);
+            var ver = new SemVer.Version(version);
             return $"pythonenv{ver.Major}.{ver.Minor}";
         }
     }

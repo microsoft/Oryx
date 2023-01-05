@@ -14,12 +14,12 @@ namespace Microsoft.Oryx.Detector
     {
         public static IServiceCollection AddPythonServices(this IServiceCollection services)
         {
-            _ = services.AddSingleton<PythonDetector>();
+            services.AddSingleton<PythonDetector>();
 
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
             Func<IServiceProvider, PythonDetector> factory = (sp) => sp.GetRequiredService<PythonDetector>();
-            _ = services.AddSingleton<IPythonPlatformDetector, PythonDetector>(factory);
+            services.AddSingleton<IPythonPlatformDetector, PythonDetector>(factory);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IPlatformDetector, PythonDetector>(factory));
             return services;
         }

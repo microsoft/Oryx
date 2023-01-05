@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.Oryx.SharedCodeGenerator
 {
@@ -18,11 +19,11 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             this.Platform = platform;
             if (this.nonSemverPlatforms.Contains(platform))
             {
-                this.Version = new SemanticVersioning.Version(this.DisplayVersion);
+                this.Version = new Version(this.DisplayVersion);
             }
             else
             {
-                this.SemanticVersion = new SemanticVersioning.Version(this.DisplayVersion, loose: true);
+                this.SemanticVersion = new SemVer.Version(this.DisplayVersion, loose: true);
             }
         }
 
@@ -30,9 +31,9 @@ namespace Microsoft.Oryx.SharedCodeGenerator
 
         public string Platform { get; }
 
-        public SemanticVersioning.Version SemanticVersion { get; }
+        public SemVer.Version SemanticVersion { get; }
 
-        public SemanticVersioning.Version Version { get; }
+        public Version Version { get; }
 
         public int CompareTo(VersionInfo other) =>
             this.nonSemverPlatforms.Contains(this.Platform)

@@ -16,7 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     [Command(
         Name,
         Description = "Generate startup script for an app.",
-        UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect,
+        ThrowOnUnexpectedArgument = false,
         AllowArgumentSeparator = true)]
     internal class RunScriptCommand : CommandBase
     {
@@ -69,15 +69,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (string.IsNullOrWhiteSpace(this.OutputPath))
             {
-                _ = console.WriteLine(script);
+                console.WriteLine(script);
             }
             else
             {
                 File.WriteAllText(this.OutputPath, script);
-                _ = console.WriteLine($"Script written to '{this.OutputPath}'");
+                console.WriteLine($"Script written to '{this.OutputPath}'");
 
                 // Try making the script executable
-                _ = ProcessHelper.TrySetExecutableMode(this.OutputPath);
+                ProcessHelper.TrySetExecutableMode(this.OutputPath);
             }
 
             return ProcessConstants.ExitSuccess;

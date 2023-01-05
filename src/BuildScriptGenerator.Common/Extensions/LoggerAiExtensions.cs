@@ -6,7 +6,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.NLogTarget;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Common.Extensions;
@@ -93,8 +92,7 @@ namespace Microsoft.Extensions.Logging
 
         private static TelemetryClient GetTelemetryClient()
         {
-            var config = TelemetryConfiguration.CreateDefault();
-            var client = new TelemetryClient(config);
+            var client = new TelemetryClient();
 
             ApplicationInsightsTarget aiTarget = (ApplicationInsightsTarget)NLog.LogManager.Configuration?.FindTargetByName("ai");
             if (aiTarget != null)

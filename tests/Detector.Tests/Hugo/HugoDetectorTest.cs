@@ -211,7 +211,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             var finalPath = Path.Combine(subPaths);
             finalPath = Path.Combine(appDir, finalPath);
             var dir = new FileInfo(finalPath).Directory.FullName;
-            _ = Directory.CreateDirectory(dir);
+            Directory.CreateDirectory(dir);
             File.WriteAllText(finalPath, fileContent);
         }
 

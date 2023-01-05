@@ -14,14 +14,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static IServiceCollection AddPhpScriptGeneratorServices(this IServiceCollection services)
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, PhpPlatform>());
-            _ = services.AddSingleton<IPhpVersionProvider, PhpVersionProvider>();
-            _ = services.AddSingleton<IPhpComposerVersionProvider, PhpComposerVersionProvider>();
-            _ = services.AddSingleton<PhpPlatformInstaller>();
-            _ = services.AddSingleton<PhpComposerInstaller>();
-            _ = services.AddSingleton<PhpOnDiskVersionProvider>();
-            _ = services.AddSingleton<PhpComposerOnDiskVersionProvider>();
-            _ = services.AddSingleton<PhpSdkStorageVersionProvider>();
-            _ = services.AddSingleton<PhpComposerSdkStorageVersionProvider>();
+            services.AddSingleton<IPhpVersionProvider, PhpVersionProvider>();
+            services.AddSingleton<IPhpComposerVersionProvider, PhpComposerVersionProvider>();
+            services.AddSingleton<PhpPlatformInstaller>();
+            services.AddSingleton<PhpComposerInstaller>();
+            services.AddSingleton<PhpOnDiskVersionProvider>();
+            services.AddSingleton<PhpComposerOnDiskVersionProvider>();
+            services.AddSingleton<PhpSdkStorageVersionProvider>();
+            services.AddSingleton<PhpComposerSdkStorageVersionProvider>();
             return services;
         }
     }

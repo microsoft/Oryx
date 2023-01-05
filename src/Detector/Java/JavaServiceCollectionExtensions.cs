@@ -14,12 +14,12 @@ namespace Microsoft.Oryx.Detector
     {
         public static IServiceCollection AddJavaServices(this IServiceCollection services)
         {
-            _ = services.AddSingleton<JavaDetector>();
+            services.AddSingleton<JavaDetector>();
 
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
             Func<IServiceProvider, JavaDetector> factory = (sp) => sp.GetRequiredService<JavaDetector>();
-            _ = services.AddSingleton<IJavaPlatformDetector, JavaDetector>(factory);
+            services.AddSingleton<IJavaPlatformDetector, JavaDetector>(factory);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IPlatformDetector, JavaDetector>(factory));
             return services;
         }

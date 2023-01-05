@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.BuildServer.Services
         public async Task<Build> StartBuildAsync(Build build)
         {
             build.Status = "IN_PROGRESS";
-            _ = await this.buildRepository.InsertAsync(build);
+            await this.buildRepository.InsertAsync(build);
             var artifactBuilder = this.artifactBuilderFactory.CreateArtifactBuilder(build);
             this.buildRunner.RunInBackground(artifactBuilder, build, this.MarkCompletedAsync, this.MarkFailedAsync);
             return build;
@@ -43,21 +43,21 @@ namespace Microsoft.Oryx.BuildServer.Services
         public async Task<Build> MarkCancelledAsync(Build build)
         {
             build.Status = "CANCELLED";
-            _ = await this.buildRepository.UpdateAsync(build);
+            await this.buildRepository.UpdateAsync(build);
             return build;
         }
 
         public async Task<Build> MarkCompletedAsync(Build build)
         {
             build.Status = "COMPLETED";
-            _ = await this.buildRepository.UpdateAsync(build);
+            await this.buildRepository.UpdateAsync(build);
             return build;
         }
 
         public async Task<Build> MarkFailedAsync(Build build)
         {
             build.Status = "FAILED";
-            _ = await this.buildRepository.UpdateAsync(build);
+            await this.buildRepository.UpdateAsync(build);
             return build;
         }
     }

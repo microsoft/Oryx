@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
         {
-            _ = stringBuilder.AppendLine($"echo 'Installing {PythonConstants.PlatformName} specific dependencies...'");
+            stringBuilder.AppendLine($"echo 'Installing {PythonConstants.PlatformName} specific dependencies...'");
 
             InstallPythonToolingAndLanguage(stringBuilder);
         }

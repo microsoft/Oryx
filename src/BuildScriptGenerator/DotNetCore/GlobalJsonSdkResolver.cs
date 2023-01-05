@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // We choose only the 'major' and 'minor' part of the runtime version.
                 // For example, 2.1.14 of runtime will result in a latest minor sdk in '1', for example
                 // 2.1.202 or 2.1.400
-                var version = new SemanticVersioning.Version(runtimeVersion);
+                var version = new SemVer.Version(runtimeVersion);
                 var globalJsonModel = new GlobalJsonModel
                 {
                     Sdk = new SdkModel

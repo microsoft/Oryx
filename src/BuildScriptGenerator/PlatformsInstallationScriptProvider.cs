@@ -55,8 +55,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var snippets = this.GetInstallationScriptSnippets(detectionResults, context);
             foreach (var snippet in snippets)
             {
-                _ = scriptBuilder.AppendLine(snippet);
-                _ = scriptBuilder.AppendLine();
+                scriptBuilder.AppendLine(snippet);
+                scriptBuilder.AppendLine();
             }
 
             return scriptBuilder.ToString();

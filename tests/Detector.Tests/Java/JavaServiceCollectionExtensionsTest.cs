@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.Detector.Tests.Java
         {
             // Arrange
             var services = new ServiceCollection();
-            _ = services
+            services
                 .AddLogging()
                 .AddJavaServices();
             var serviceProvider = services.BuildServiceProvider();
@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.Detector.Tests.Java
         {
             // Arrange
             var services = new ServiceCollection();
-            _ = services
+            services
                 .AddLogging()
                 .AddJavaServices();
             var serviceProvider = services.BuildServiceProvider();
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Detector.Tests.Java
         {
             // Arrange
             var services = new ServiceCollection();
-            _ = services
+            services
                 .AddLogging()
                 .AddJavaServices();
             var serviceProvider = services.BuildServiceProvider();

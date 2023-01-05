@@ -463,7 +463,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 detectedVersion: detectedVersion,
                 defaultVersion: detectedDefaultVersion,
                 phpScriptGeneratorOptions: options,
-                supportedPhpVersions: new[] { detectedVersion, detectedDefaultVersion, envVarDefaultVersion }.Where(x => !string.IsNullOrEmpty(x)).ToArray());
+                supportedPhpVersions: new[] { detectedVersion, detectedDefaultVersion, envVarDefaultVersion }.Where(x => !x.IsNullOrEmpty()).ToArray());
 
             // Act
             var result = platform.Detect(context);

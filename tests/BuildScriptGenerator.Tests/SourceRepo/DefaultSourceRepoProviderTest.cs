@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var guid = Guid.NewGuid();
             var appDir = Path.Combine(_tempDirRootPath, $"app-{guid}");
-            _ = Directory.CreateDirectory(appDir);
+            Directory.CreateDirectory(appDir);
             var options = new BuildScriptGeneratorOptions
             {
                 SourceDir = appDir,
@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             var guid = Guid.NewGuid();
             var appDir = Path.Combine(_tempDirRootPath, $"app-{guid}");
-            _ = Directory.CreateDirectory(appDir);
+            Directory.CreateDirectory(appDir);
             var options = new BuildScriptGeneratorOptions
             {
                 SourceDir = appDir,
@@ -84,7 +84,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
 
             public string GetTempDirectory()
             {
-                _ = Directory.CreateDirectory(_tempDir);
+                Directory.CreateDirectory(_tempDir);
                 return _tempDir;
             }
         }

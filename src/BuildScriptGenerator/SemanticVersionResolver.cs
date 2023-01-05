@@ -7,7 +7,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     using System.Collections.Generic;
     using System.Linq;
-    using SemanticVersioning;
+    using SemVer;
     using Version = System.Version;
 
     internal static class SemanticVersionResolver

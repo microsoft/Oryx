@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "appdir");
-            _ = Directory.CreateDirectory(sourceDir);
+            Directory.CreateDirectory(sourceDir);
 
             var detectCommand = new DetectCommand
             {
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "appdir");
-            _ = Directory.CreateDirectory(sourceDir);
+            Directory.CreateDirectory(sourceDir);
 
             var detectCommand = new DetectCommand
             {
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "nodeappdir");
-            _ = Directory.CreateDirectory(sourceDir);
+            Directory.CreateDirectory(sourceDir);
             File.WriteAllText(Path.Combine(sourceDir, NodeConstants.PackageJsonFileName), "\n");
 
             var detectCommand = new DetectCommand
@@ -149,7 +149,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var srcDir = Path.Combine(_testDirPath, "phpappdir");
-            _ = Directory.CreateDirectory(srcDir);
+            Directory.CreateDirectory(srcDir);
             File.WriteAllText(Path.Combine(srcDir, PhpConstants.ComposerFileName), "{\"require\":{\"php\":\"5.6.0\"}}");
 
             var cmd = new DetectCommand
@@ -189,7 +189,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             }";
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "nodeappdir");
-            _ = Directory.CreateDirectory(sourceDir);
+            Directory.CreateDirectory(sourceDir);
             File.WriteAllText(Path.Combine(sourceDir, NodeConstants.PackageJsonFileName), PackageJsonWithNodeVersion);
 
             var detectCommand = new DetectCommand
@@ -217,7 +217,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "multiappdir");
-            _ = Directory.CreateDirectory(sourceDir);
+            Directory.CreateDirectory(sourceDir);
             File.WriteAllText(Path.Combine(sourceDir, NodeConstants.PackageJsonFileName), "\n");
             File.WriteAllText(Path.Combine(sourceDir, PhpConstants.ComposerFileName), "{\"require\":{\"php\":\"5.6.0\"}}");
 
@@ -263,7 +263,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "dotnetcoreappdir");
             var projectFile = "webapp.csproj";
-            _ = Directory.CreateDirectory(sourceDir);
+            Directory.CreateDirectory(sourceDir);
             File.WriteAllText(Path.Combine(sourceDir, projectFile), ProjectFileWithMultipleProperties);
 
             var detectCommand = new DetectCommand
@@ -309,7 +309,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             }";
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "nodeappdir");
-            _ = Directory.CreateDirectory(sourceDir);
+            Directory.CreateDirectory(sourceDir);
             File.WriteAllText(Path.Combine(sourceDir, NodeConstants.PackageJsonFileName), PackageJsonWithNodeVersion);
 
             var detectCommand = new DetectCommand
@@ -343,7 +343,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
         {
             // Arrange
             var sourceDir = Path.Combine(_testDirPath, "multiappdir");
-            _ = Directory.CreateDirectory(sourceDir);
+            Directory.CreateDirectory(sourceDir);
             File.WriteAllText(Path.Combine(sourceDir, NodeConstants.PackageJsonFileName), "\n");
             File.WriteAllText(Path.Combine(sourceDir, PhpConstants.ComposerFileName), "\n");
 
@@ -377,7 +377,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
                 {
                     var configuration = new ConfigurationBuilder().Build();
 
-                    _ = services.AddSingleton<IConfiguration>(configuration);
+                    services.AddSingleton<IConfiguration>(configuration);
                 });
             return servicesBuilder.Build();
         }

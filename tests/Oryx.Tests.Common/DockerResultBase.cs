@@ -34,21 +34,21 @@ namespace Microsoft.Oryx.Tests.Common
         {
             var sb = new StringBuilder();
 
-            _ = sb.AppendLine();
-            _ = sb.AppendLine("Debugging Information:");
-            _ = sb.AppendLine("----------------------");
+            sb.AppendLine();
+            sb.AppendLine("Debugging Information:");
+            sb.AppendLine("----------------------");
 
             var infoFormatter = new DefinitionListFormatter();
 
             // NOTE: do not log the executed command as it might contain secrets
             //infoFormatter.AddDefinition("Executed command", ExecutedCommand);
-            if (HasExited) _ = infoFormatter.AddDefinition("Exit code", ExitCode.ToString());
-            _ = infoFormatter.AddDefinition("StdOut", StdOut);
-            _ = infoFormatter.AddDefinition("StdErr", StdErr);
-            _ = infoFormatter.AddDefinition("Exception.Message:", Exception?.Message);
-            _ = infoFormatter.AddDefinitions(extraDefs);
+            if (HasExited) infoFormatter.AddDefinition("Exit code", ExitCode.ToString());
+            infoFormatter.AddDefinition("StdOut", StdOut);
+            infoFormatter.AddDefinition("StdErr", StdErr);
+            infoFormatter.AddDefinition("Exception.Message:", Exception?.Message);
+            infoFormatter.AddDefinitions(extraDefs);
 
-            _ = sb.AppendLine(infoFormatter.ToString());
+            sb.AppendLine(infoFormatter.ToString());
 
             return sb.ToString();
         }

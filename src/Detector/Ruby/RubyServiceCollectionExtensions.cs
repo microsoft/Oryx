@@ -14,12 +14,12 @@ namespace Microsoft.Oryx.Detector
     {
         public static IServiceCollection AddRubyServices(this IServiceCollection services)
         {
-            _ = services.AddSingleton<RubyDetector>();
+            services.AddSingleton<RubyDetector>();
 
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
             Func<IServiceProvider, RubyDetector> factory = (sp) => sp.GetRequiredService<RubyDetector>();
-            _ = services.AddSingleton<IRubyPlatformDetector, RubyDetector>(factory);
+            services.AddSingleton<IRubyPlatformDetector, RubyDetector>(factory);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IPlatformDetector, RubyDetector>(factory));
             return services;
         }

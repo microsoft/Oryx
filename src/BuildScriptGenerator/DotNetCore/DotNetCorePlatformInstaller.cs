@@ -36,10 +36,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
         {
-            _ = stringBuilder.AppendLine($"echo 'Installing {DotNetCoreConstants.PlatformName} specific dependencies...'");
+            stringBuilder.AppendLine($"echo 'Installing {DotNetCoreConstants.PlatformName} specific dependencies...'");
 
             // .NET Core dependencies (this is universal for all versions of .NET Core)
-            _ = stringBuilder.AppendAptGetInstallPackages(
+            stringBuilder.AppendAptGetInstallPackages(
                 "libc6",
                 "libgcc1",
                 "libgssapi-krb5-2",

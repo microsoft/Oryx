@@ -14,12 +14,12 @@ namespace Microsoft.Oryx.Detector
     {
         public static IServiceCollection AddHugoServices(this IServiceCollection services)
         {
-            _ = services.AddSingleton<HugoDetector>();
+            services.AddSingleton<HugoDetector>();
 
             // Factory to make sure same detector instance is returned when same implementation type is resolved via
             // multiple inteface types.
             Func<IServiceProvider, HugoDetector> factory = (sp) => sp.GetRequiredService<HugoDetector>();
-            _ = services.AddSingleton<IHugoPlatformDetector, HugoDetector>(factory);
+            services.AddSingleton<IHugoPlatformDetector, HugoDetector>(factory);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IPlatformDetector, HugoDetector>(factory));
             return services;
         }

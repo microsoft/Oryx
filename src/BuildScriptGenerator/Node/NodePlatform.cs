@@ -334,7 +334,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
             string compressNodeModulesCommand = null;
             string compressedNodeModulesFileName = null;
-            _ = GetNodeModulesPackOptions(ctx, out compressNodeModulesCommand, out compressedNodeModulesFileName);
+            GetNodeModulesPackOptions(ctx, out compressNodeModulesCommand, out compressedNodeModulesFileName);
 
             if (!string.IsNullOrWhiteSpace(compressedNodeModulesFileName))
             {
@@ -349,7 +349,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string customRegistryUrl = null;
             if (ctx.Properties != null)
             {
-                _ = ctx.Properties.TryGetValue(RegistryUrlPropertyKey, out customRegistryUrl);
+                ctx.Properties.TryGetValue(RegistryUrlPropertyKey, out customRegistryUrl);
                 if (!string.IsNullOrWhiteSpace(customRegistryUrl))
                 {
                     // Write the custom registry to the build manifest
@@ -360,7 +360,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string packageDir = null;
             if (ctx.Properties != null)
             {
-                _ = ctx.Properties.TryGetValue(PackageDirectoryPropertyKey, out packageDir);
+                ctx.Properties.TryGetValue(PackageDirectoryPropertyKey, out packageDir);
                 if (!string.IsNullOrWhiteSpace(packageDir))
                 {
                     // Write the package directory to the build manifest

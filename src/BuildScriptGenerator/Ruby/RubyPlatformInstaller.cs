@@ -34,9 +34,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
 
         public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
         {
-            _ = stringBuilder.AppendLine($"echo 'Installing {RubyConstants.PlatformName} specific dependencies...'");
+            stringBuilder.AppendLine($"echo 'Installing {RubyConstants.PlatformName} specific dependencies...'");
 
-            _ = stringBuilder.AppendAptGetInstallPackages(
+            stringBuilder.AppendAptGetInstallPackages(
                 "libreadline-dev",
                 "bzip2",
                 "build-essential",

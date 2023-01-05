@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
         public static IOutputFile CreateByType(Dictionary<string, string> typeInfo, ConstantCollection constantCollection)
         {
             string typeName = typeInfo["type"];
-            _ = typeInfo.Remove("type");
+            typeInfo.Remove("type");
 
             IOutputFile outputFile = Activator.CreateInstance(OutputsByType[typeName]) as IOutputFile;
             outputFile.Initialize(constantCollection, typeInfo);

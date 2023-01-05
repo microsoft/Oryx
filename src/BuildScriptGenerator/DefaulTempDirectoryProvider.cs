@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string GetTempDirectory()
         {
             // Ensure the temp directory is created
-            _ = Directory.CreateDirectory(this.path);
+            Directory.CreateDirectory(this.path);
             return this.path;
         }
     }

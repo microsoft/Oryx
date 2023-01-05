@@ -36,14 +36,14 @@ namespace Microsoft.Oryx.Tests.Common
         {
             var sb = new StringBuilder();
 
-            _ = sb.AppendLine(base.GetDebugInfo(extraDefs));
-            _ = sb.AppendLine();
+            sb.AppendLine(base.GetDebugInfo(extraDefs));
+            sb.AppendLine();
 
-            _ = sb.AppendLine("Use the following commands to investigate the failed container:");
-            _ = sb.AppendLine($"docker logs {ContainerName}");
-            _ = sb.AppendLine();
-            _ = sb.AppendLine($"docker commit {ContainerName} investigate_{ContainerName}");
-            _ = sb.AppendLine();
+            sb.AppendLine("Use the following commands to investigate the failed container:");
+            sb.AppendLine($"docker logs {ContainerName}");
+            sb.AppendLine();
+            sb.AppendLine($"docker commit {ContainerName} investigate_{ContainerName}");
+            sb.AppendLine();
 
             var volumeList = string.Empty;
             if (_volumes?.Count() > 0)
@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.Tests.Common
                     " ",
                     _volumes.Select(kvp => $"-v {kvp.MountedHostDir}:/{kvp.ContainerDir.TrimStart('/')}"));
             }
-            _ = sb.AppendLine($"docker run -it {volumeList} investigate_{ContainerName} /bin/bash");
+            sb.AppendLine($"docker run -it {volumeList} investigate_{ContainerName} /bin/bash");
 
             return sb.ToString();
         }

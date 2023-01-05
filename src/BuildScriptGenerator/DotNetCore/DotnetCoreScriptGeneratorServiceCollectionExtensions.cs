@@ -15,11 +15,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProgrammingPlatform, DotNetCorePlatform>());
-            _ = services.AddSingleton<IDotNetCoreVersionProvider, DotNetCoreVersionProvider>();
-            _ = services.AddSingleton<DotNetCoreOnDiskVersionProvider>();
-            _ = services.AddSingleton<DotNetCoreSdkStorageVersionProvider>();
-            _ = services.AddSingleton<DotNetCorePlatformInstaller>();
-            _ = services.AddSingleton<GlobalJsonSdkResolver>();
+            services.AddSingleton<IDotNetCoreVersionProvider, DotNetCoreVersionProvider>();
+            services.AddSingleton<DotNetCoreOnDiskVersionProvider>();
+            services.AddSingleton<DotNetCoreSdkStorageVersionProvider>();
+            services.AddSingleton<DotNetCorePlatformInstaller>();
+            services.AddSingleton<GlobalJsonSdkResolver>();
             return services;
         }
     }

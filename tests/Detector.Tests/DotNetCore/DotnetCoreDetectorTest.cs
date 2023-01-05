@@ -33,10 +33,10 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             // Arrange
             var projectFile = "test.csproj";
             var sourceRepo = new Mock<ISourceRepo>();
-            _ = sourceRepo
+            sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(new[] { projectFile });
-            _ = sourceRepo
+            sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(SampleProjectFileContents.ProjectFileWithNoTargetFramework);
             var context = CreateContext(sourceRepo.Object);
@@ -59,10 +59,10 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             // Arrange
             var projectFile = "test.csproj";
             var sourceRepo = new Mock<ISourceRepo>();
-            _ = sourceRepo
+            sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(new[] { projectFile });
-            _ = sourceRepo
+            sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(SampleProjectFileContents.ProjectFileAzureBlazorWasmClientWithTargetFrameworkPlaceHolder
                 .Replace(
@@ -90,10 +90,10 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             // Arrange
             var projectFile = "test.csproj";
             var sourceRepo = new Mock<ISourceRepo>();
-            _ = sourceRepo
+            sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(new[] { projectFile });
-            _ = sourceRepo
+            sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(SampleProjectFileContents.ProjectFileWithTargetFrameworkPlaceHolder.Replace(
                     "#TargetFramework#",
@@ -122,12 +122,12 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             // create .csproj
             var projectFile = "test.csproj";
             var sourceRepo = new Mock<ISourceRepo>();
-            _ = sourceRepo
+            sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(new[] { projectFile });
-
+            
             // set target to ouputtype to find & replace
-            _ = sourceRepo
+            sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(SampleProjectFileContents.ProjectFileWithOutputTypePlaceHolder.Replace(
                     "#OutputType#",
@@ -160,12 +160,12 @@ namespace Microsoft.Oryx.Detector.Tests.DotNetCore
             // create .csproj
             var projectFile = "test.csproj";
             var sourceRepo = new Mock<ISourceRepo>();
-            _ = sourceRepo
+            sourceRepo
                 .Setup(repo => repo.EnumerateFiles(It.IsAny<string>(), It.IsAny<bool>()))
                 .Returns(new[] { projectFile });
 
             // no outputtype test
-            _ = sourceRepo
+            sourceRepo
                 .Setup(repo => repo.ReadFile(It.IsAny<string>()))
                 .Returns(SampleProjectFileContents.ProjectFileWithOutOutputTypePlaceHolder.Replace(
                     "#OutputType#",

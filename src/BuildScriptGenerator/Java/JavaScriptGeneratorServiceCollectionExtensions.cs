@@ -15,14 +15,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProgrammingPlatform, JavaPlatform>());
-            _ = services.AddSingleton<MavenInstaller>();
-            _ = services.AddSingleton<JavaPlatformInstaller>();
-            _ = services.AddSingleton<IJavaVersionProvider, JavaVersionProvider>();
-            _ = services.AddSingleton<JavaOnDiskVersionProvider>();
-            _ = services.AddSingleton<JavaSdkStorageVersionProvider>();
-            _ = services.AddSingleton<IMavenVersionProvider, MavenVersionProvider>();
-            _ = services.AddSingleton<MavenOnDiskVersionProvider>();
-            _ = services.AddSingleton<MavenSdkStorageVersionProvider>();
+            services.AddSingleton<MavenInstaller>();
+            services.AddSingleton<JavaPlatformInstaller>();
+            services.AddSingleton<IJavaVersionProvider, JavaVersionProvider>();
+            services.AddSingleton<JavaOnDiskVersionProvider>();
+            services.AddSingleton<JavaSdkStorageVersionProvider>();
+            services.AddSingleton<IMavenVersionProvider, MavenVersionProvider>();
+            services.AddSingleton<MavenOnDiskVersionProvider>();
+            services.AddSingleton<MavenSdkStorageVersionProvider>();
             return services;
         }
     }

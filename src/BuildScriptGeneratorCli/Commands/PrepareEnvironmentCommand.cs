@@ -151,7 +151,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
             var beginningOutputLog = GetBeginningCommandOutputLog();
-            _ = console.WriteLine(beginningOutputLog);
+            console.WriteLine(beginningOutputLog);
 
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("EnvSetupCommand"))
@@ -161,7 +161,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 IEnumerable<PlatformDetectorResult> detectedPlatforms = null;
                 if (this.SkipDetection)
                 {
-                    _ = console.WriteLine(
+                    console.WriteLine(
                         $"Skipping platform detection since '{SkipDetectionTemplate}' switch was used...");
 
                     var platforms = serviceProvider.GetRequiredService<IEnumerable<IProgrammingPlatform>>();
@@ -204,7 +204,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (!string.IsNullOrEmpty(snippet))
                 {
-                    _ = scriptBuilder
+                    scriptBuilder
                         .AppendLine("echo")
                         .AppendLine("echo Setting up environment...")
                         .AppendLine("echo")
@@ -224,10 +224,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (this.DebugMode)
                 {
-                    _ = console.WriteLine($"Temporary script @ {tempScriptPath}:");
-                    _ = console.WriteLine("---");
-                    _ = console.WriteLine(scriptBuilder);
-                    _ = console.WriteLine("---");
+                    console.WriteLine($"Temporary script @ {tempScriptPath}:");
+                    console.WriteLine("---");
+                    console.WriteLine(scriptBuilder);
+                    console.WriteLine("---");
                 }
 
                 var environment = serviceProvider.GetRequiredService<IEnvironment>();
@@ -241,7 +241,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     {
                         if (args.Data != null)
                         {
-                            _ = console.WriteLine(args.Data);
+                            console.WriteLine(args.Data);
                         }
                     },
                     (sender, args) =>
@@ -279,7 +279,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 // Gather all the values supplied by the user in command line
                 this.SourceDir = string.IsNullOrEmpty(this.SourceDir) ?
                     Directory.GetCurrentDirectory() : Path.GetFullPath(this.SourceDir);
-                _ = configBuilder.AddIniFile(Path.Combine(this.SourceDir, Constants.BuildEnvironmentFileName), optional: true);
+                configBuilder.AddIniFile(Path.Combine(this.SourceDir, Constants.BuildEnvironmentFileName), optional: true);
             }
             else
             {
@@ -302,10 +302,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         versionsFilePath);
                 }
 
-                _ = configBuilder.AddIniFile(versionsFilePath, optional: false);
+                configBuilder.AddIniFile(versionsFilePath, optional: false);
             }
 
-            _ = configBuilder
+            configBuilder
                 .AddEnvironmentVariables()
                 .Add(GetCommandLineConfigSource());
 
@@ -320,7 +320,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     // We first add IConfiguration to DI so that option services like
                     // `DotNetCoreScriptGeneratorOptionsSetup` services can get it through DI and read from the config
                     // and set the options.
-                    _ = services
+                    services
                         .AddSingleton<IConfiguration>(config)
                         .AddOptionsServices()
                         .Configure<BuildScriptGeneratorOptions>(options =>

@@ -15,10 +15,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProgrammingPlatform, PythonPlatform>());
-            _ = services.AddSingleton<IPythonVersionProvider, PythonVersionProvider>();
-            _ = services.AddSingleton<PythonPlatformInstaller>();
-            _ = services.AddSingleton<PythonOnDiskVersionProvider>();
-            _ = services.AddSingleton<PythonSdkStorageVersionProvider>();
+            services.AddSingleton<IPythonVersionProvider, PythonVersionProvider>();
+            services.AddSingleton<PythonPlatformInstaller>();
+            services.AddSingleton<PythonOnDiskVersionProvider>();
+            services.AddSingleton<PythonSdkStorageVersionProvider>();
             return services;
         }
     }

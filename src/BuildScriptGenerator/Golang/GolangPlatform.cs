@@ -272,7 +272,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
                     golangVersion);
 
                 var script = this.golangInstaller.GetInstallerScriptSnippet(golangVersion);
-                _ = scriptBuilder.AppendLine(script);
+                scriptBuilder.AppendLine(script);
             }
         }
     }

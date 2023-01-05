@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
             this.className = this.collection.Name.Camelize();
             this.directory = typeInfo["directory"];
             this.namespaceProperty = typeInfo["namespace"];
-            _ = typeInfo.TryGetValue("scope", out this.scope);
+            typeInfo.TryGetValue("scope", out this.scope);
         }
 
         public string GetPath()

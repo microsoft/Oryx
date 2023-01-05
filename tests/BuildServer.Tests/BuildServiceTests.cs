@@ -24,9 +24,9 @@ namespace Microsoft.Oryx.BuildServer.Tests
             var mockedArtifactBuilderFactory = new Mock<IArtifactBuilderFactory>();
             var mockedArtifactBuilder = new Mock<IArtifactBuilder>();
             var mockedBuildRunner = new Mock<IBuildRunner>();
-            _ = mockedArtifactBuilder.Setup(x => x.Build(build)).Returns(true);
-            _ = mockedArtifactBuilderFactory.Setup(x => x.CreateArtifactBuilder(build)).Returns(mockedArtifactBuilder.Object);
-            _ = mockedBuildRunner.Setup(x => x.RunInBackground(mockedArtifactBuilder.Object, build, null, null));
+            mockedArtifactBuilder.Setup(x => x.Build(build)).Returns(true);
+            mockedArtifactBuilderFactory.Setup(x => x.CreateArtifactBuilder(build)).Returns(mockedArtifactBuilder.Object);
+            mockedBuildRunner.Setup(x => x.RunInBackground(mockedArtifactBuilder.Object, build, null, null));
             var testBuildService = TestBuildService(
                 mockedBuildRepository.Object, mockedArtifactBuilderFactory.Object, mockedBuildRunner.Object);
 
@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildServer.Tests
             // Arrange
             var build = TestBuild();
             var mockedBuildRepository = new Mock<IRepository>();
-            _ = mockedBuildRepository.Setup(x => x.GetById(build.Id)).Returns(build);
+            mockedBuildRepository.Setup(x => x.GetById(build.Id)).Returns(build);
             var mockedArtifactBuilderFactory = new Mock<IArtifactBuilderFactory>();
             var mockedBuildRunner = new Mock<IBuildRunner>();
             var testBuildService = TestBuildService(

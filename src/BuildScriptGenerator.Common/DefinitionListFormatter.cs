@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             int headingWidth = this.rows.Max(t => t.Item1.Length);
             foreach (var row in this.rows)
             {
-                _ = result.Append(row.Item1.PadRight(headingWidth) + HeadingSuffix);
+                result.Append(row.Item1.PadRight(headingWidth) + HeadingSuffix);
 
                 if (string.IsNullOrWhiteSpace(row.Item2))
                 {
@@ -64,10 +64,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 
                 string[] lines = row.Item2.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
-                _ = result.AppendLine(lines[0]);
+                result.AppendLine(lines[0]);
                 foreach (string line in lines.Skip(1))
                 {
-                    _ = result.Append(new string(' ', headingWidth + HeadingSuffix.Length)).AppendLine(line);
+                    result.Append(new string(' ', headingWidth + HeadingSuffix.Length)).AppendLine(line);
                 }
             }
 

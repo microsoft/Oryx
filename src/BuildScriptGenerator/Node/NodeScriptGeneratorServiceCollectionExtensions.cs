@@ -15,10 +15,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             services.TryAddEnumerable(
                 ServiceDescriptor.Singleton<IProgrammingPlatform, NodePlatform>());
-            _ = services.AddSingleton<INodeVersionProvider, NodeVersionProvider>();
-            _ = services.AddSingleton<NodePlatformInstaller>();
-            _ = services.AddSingleton<NodeOnDiskVersionProvider>();
-            _ = services.AddSingleton<NodeSdkStorageVersionProvider>();
+            services.AddSingleton<INodeVersionProvider, NodeVersionProvider>();
+            services.AddSingleton<NodePlatformInstaller>();
+            services.AddSingleton<NodeOnDiskVersionProvider>();
+            services.AddSingleton<NodeSdkStorageVersionProvider>();
             return services;
         }
     }

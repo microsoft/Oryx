@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildServer.Services
     {
         public void RunInBackground(IArtifactBuilder builder, Build build, Callback successCallback, Callback failureCallback)
         {
-            _ = Task.Run(() =>
+            var t = Task.Run(() =>
                 {
                     try
                     {

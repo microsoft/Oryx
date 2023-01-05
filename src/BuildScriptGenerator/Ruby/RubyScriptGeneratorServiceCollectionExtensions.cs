@@ -14,10 +14,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public static IServiceCollection AddScriptGeneratorServicesRuby(this IServiceCollection services)
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IProgrammingPlatform, RubyPlatform>());
-            _ = services.AddSingleton<IRubyVersionProvider, RubyVersionProvider>();
-            _ = services.AddSingleton<RubyPlatformInstaller>();
-            _ = services.AddSingleton<RubyOnDiskVersionProvider>();
-            _ = services.AddSingleton<RubySdkStorageVersionProvider>();
+            services.AddSingleton<IRubyVersionProvider, RubyVersionProvider>();
+            services.AddSingleton<RubyPlatformInstaller>();
+            services.AddSingleton<RubyOnDiskVersionProvider>();
+            services.AddSingleton<RubySdkStorageVersionProvider>();
             return services;
         }
     }

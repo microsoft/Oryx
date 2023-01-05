@@ -26,14 +26,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             if (!Directory.Exists(intermediateDir))
             {
-                _ = scriptBuilder
+                scriptBuilder
                     .AppendLine()
                     .AppendLine("echo Intermediate directory does not exist, creating it...")
                     .AppendFormatWithLine("mkdir -p \"{0}\"", intermediateDir);
             }
 
             var excludeDirsSwitch = string.Join(" ", excludeDirs.Select(dir => $"--exclude \"{dir}\""));
-            _ = scriptBuilder
+            scriptBuilder
                 .AppendLine()
                 .AppendFormatWithLine("cd \"{0}\"", sourceDir)
                 .AppendLine("echo")
@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return scriptBuilder;
             }
 
-            _ = scriptBuilder
+            scriptBuilder
                 .AppendLine()
                 .AppendFormatWithLine("cd \"{0}\"", sourceDir)
                 .AppendLine(preBuildCommand)
@@ -78,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return scriptBuilder;
             }
 
-            _ = scriptBuilder
+            scriptBuilder
                 .AppendLine()
                 .AppendFormatWithLine("cd \"{0}\"", sourceDir)
                 .AppendLine(postBuildCommand)
@@ -92,27 +92,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             string destinationDir,
             bool hasUserSuppliedDestinationDir)
         {
-            _ = scriptBuilder
+            scriptBuilder
                 .AppendFormatWithLine("SOURCE_DIR=\"{0}\"", sourceDir)
                 .AppendLine("export SOURCE_DIR")
                 .AppendLine();
 
             if (hasUserSuppliedDestinationDir)
             {
-                _ = scriptBuilder
+                scriptBuilder
                     .AppendLine("echo")
                     .AppendSourceDirectoryInfo(sourceDir)
                     .AppendDestinationDirectoryInfo(destinationDir)
                     .AppendLine("echo")
                     .AppendFormatWithLine("mkdir -p \"{0}\"", destinationDir);
 
-                _ = scriptBuilder
+                scriptBuilder
                     .AppendFormatWithLine("DESTINATION_DIR=\"{0}\"", destinationDir)
                     .AppendLine("export DESTINATION_DIR");
             }
             else
             {
-                _ = scriptBuilder
+                scriptBuilder
                     .AppendLine("echo")
                     .AppendSourceDirectoryInfo(sourceDir)
                     .AppendLine("echo");
@@ -143,7 +143,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 return scriptBuilder;
             }
 
-            _ = scriptBuilder
+            scriptBuilder
                 .AppendLine()
                 .AppendFormatWithLine("mkdir -p \"{0}\"", manifestFileDir)
                 .AppendLine("echo")
@@ -156,7 +156,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
             foreach (var property in buildProperties)
             {
-                _ = scriptBuilder.AppendFormatWithLine(
+                scriptBuilder.AppendFormatWithLine(
                     "echo '{0}=\"{1}\"' >> \"{2}/{3}\"",
                     property.Key,
                     property.Value,
@@ -164,13 +164,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     FilePaths.BuildManifestFileName);
             }
 
-            _ = scriptBuilder.AppendLine("echo Manifest file created.");
+            scriptBuilder.AppendLine("echo Manifest file created.");
             return scriptBuilder;
         }
 
         public static StringBuilder AddScriptToRestorePackages(this StringBuilder scriptBuilder, string projectFile)
         {
-            _ = scriptBuilder
+            scriptBuilder
                 .AppendLine("echo")
                 .AppendLine("echo Restoring packages...")
                 .AppendFormatWithLine("dotnet restore \"{0}\"", projectFile);
@@ -179,7 +179,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public static StringBuilder AddScriptToBuildProject(this StringBuilder scriptBuilder, string projectFile)
         {
-            _ = scriptBuilder
+            scriptBuilder
                 .AppendLine()
                 .AppendLine("echo")
                 .AppendFormatWithLine("echo \"Building project '{0}'\"", projectFile)
@@ -196,7 +196,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             string buildConfiguration,
             string finalDestinationDir)
         {
-            _ = scriptBuilder
+            scriptBuilder
                 .AppendLine()
                 .AppendFormatWithLine(
                     "echo \"Publishing output to '{0}'\"",

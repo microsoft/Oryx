@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Automation
             try
             {
                 HttpResponseMessage response = await Client.GetAsync(url);
-                _ = response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
                 string responseBody = await response.Content.ReadAsStringAsync();
 
                 return responseBody ?? string.Empty;

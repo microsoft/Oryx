@@ -129,11 +129,11 @@ namespace Microsoft.Oryx.Tests.Common
                     // are called for each line that is written to the output.
                     standardOutputHandler: (sender, args) =>
                     {
-                        _ = outputBuilder.AppendLine(args.Data);
+                        outputBuilder.AppendLine(args.Data);
                     },
                     standardErrorHandler: (sender, args) =>
                     {
-                        _ = errorBuilder.AppendLine(args.Data);
+                        errorBuilder.AppendLine(args.Data);
                     });
             }
             catch (InvalidOperationException invalidOperationException)

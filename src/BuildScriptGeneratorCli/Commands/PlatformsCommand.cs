@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
             }
 
-            _ = console.WriteLine(this.OutputJson ? JsonConvert.SerializeObject(platformInfo) : FormatResult(platformInfo));
+            console.WriteLine(this.OutputJson ? JsonConvert.SerializeObject(platformInfo) : FormatResult(platformInfo));
             return ProcessConstants.ExitSuccess;
         }
 
@@ -83,7 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     // We first add IConfiguration to DI so that option services like
                     // `DotNetCoreScriptGeneratorOptionsSetup` services can get it through DI and read from the config
                     // and set the options.
-                    _ = services
+                    services
                         .AddSingleton<IConfiguration>(config)
                         .AddOptionsServices();
                 });
@@ -98,23 +98,23 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             foreach (PlatformResult platform in platforms)
             {
                 var defs = new DefinitionListFormatter();
-                _ = defs.AddDefinition("Platform", platform.Name);
+                defs.AddDefinition("Platform", platform.Name);
 
-                _ = defs.AddDefinition(
+                defs.AddDefinition(
                     "Versions",
                     (platform.Versions != null && platform.Versions.Any()) ?
                         string.Join(Environment.NewLine, platform.Versions) : "N/A");
 
                 if (platform.Properties != null && platform.Properties.Any())
                 {
-                    _ = defs.AddDefinition(
+                    defs.AddDefinition(
                         "Properties",
                         string.Join(
                             Environment.NewLine,
                             platform.Properties.Select(prop => $"{prop.Key} - {prop.Value}")));
                 }
 
-                _ = result.AppendLine(defs.ToString());
+                result.AppendLine(defs.ToString());
             }
 
             return result.ToString();

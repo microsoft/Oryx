@@ -231,7 +231,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     virtualEnvModule);
             }
 
-            _ = GetVirtualEnvPackOptions(
+            GetVirtualEnvPackOptions(
                 context,
                 virtualEnvName,
                 out var compressVirtualEnvCommand,
@@ -430,7 +430,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string packageDir = null;
             if (context.Properties != null)
             {
-                _ = context.Properties.TryGetValue(TargetPackageDirectoryPropertyKey, out packageDir);
+                context.Properties.TryGetValue(TargetPackageDirectoryPropertyKey, out packageDir);
             }
 
             return packageDir;
@@ -553,7 +553,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 string pythonVersion;
                 string templateName;
-                var version = new SemanticVersioning.Version(detectorResult.PlatformVersion);
+                var version = new SemVer.Version(detectorResult.PlatformVersion);
                 if (version.Major.Equals(2))
                 {
                     templateName = CondaConstants.DefaultPython2CondaEnvironmentYmlFileTemplateName;

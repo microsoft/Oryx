@@ -34,7 +34,7 @@
     <Rule Id="VSTHRD002" Action="None" /> <!-- Use await or JoinableTaskFactory.Run instead -->
   </Rules>
 
-  <Rules AnalyzerId="Microsoft.CodeAnalysis.NetAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.NetAnalyzers">
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.FxCopAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.FxCopAnalyzers">
 
     <!-- "Do not declare static members on generic types" -->
     <Rule Id="CA1000" Action="Info" />

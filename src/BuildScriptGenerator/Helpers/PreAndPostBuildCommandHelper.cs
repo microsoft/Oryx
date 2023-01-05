@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var fullPath = Path.GetFullPath(fullyQualifiedPath);
                 if (File.Exists(Path.GetFullPath(fullPath)))
                 {
-                    _ = ProcessHelper.TrySetExecutableMode(fullPath);
+                    ProcessHelper.TrySetExecutableMode(fullPath);
 
                     return $"\"{fullPath}\"";
                 }

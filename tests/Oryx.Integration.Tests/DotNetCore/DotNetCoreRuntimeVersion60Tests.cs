@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var dotnetcoreVersion = FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp60MvcApp);
             var tmpDir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            _ = Directory.CreateDirectory(tmpDir);
+            Directory.CreateDirectory(tmpDir);
             try
             {
                 var tmpVolume = DockerVolume.CreateMirror(tmpDir, true);

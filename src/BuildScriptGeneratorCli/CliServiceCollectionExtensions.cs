@@ -14,14 +14,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         public static IServiceCollection AddCliServices(this IServiceCollection services, IConsole console = null)
         {
-            _ = services.AddOptionsServices();
-            _ = services.AddSingleton<IConsole, PhysicalConsole>();
-            _ = services.AddSingleton<CliEnvironmentSettings>();
+            services.AddOptionsServices();
+            services.AddSingleton<IConsole, PhysicalConsole>();
+            services.AddSingleton<CliEnvironmentSettings>();
             return console == null ?
                 services.AddSingleton<IStandardOutputWriter, DefaultStandardOutputWriter>() :
                 services.AddSingleton<IStandardOutputWriter>(new DefaultStandardOutputWriter(
-                                                (message) => { _ = console.Write(message); },
-                                                (message) => { _ = console.WriteLine(message); }));
+                                                (message) => { console.Write(message); },
+                                                (message) => { console.WriteLine(message); }));
         }
     }
 }

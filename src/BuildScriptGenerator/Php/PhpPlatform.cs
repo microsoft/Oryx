@@ -296,7 +296,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     phpVersion);
 
                 var script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
-                _ = scriptBuilder.AppendLine(script);
+                scriptBuilder.AppendLine(script);
             }
         }
 
@@ -322,7 +322,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     phpComposerVersion);
 
                 var script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
-                _ = scriptBuilder.AppendLine(script);
+                scriptBuilder.AppendLine(script);
             }
         }
 

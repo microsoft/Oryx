@@ -30,11 +30,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
                 {
                     // Preserve the output structure and use AppendLine as these handlers
                     // are called for each line that is written to the output.
-                    _ = outputBuilder.AppendLine(args.Data);
+                    outputBuilder.AppendLine(args.Data);
                 },
                 standardErrorHandler: (sender, args) =>
                 {
-                    _ = errorBuilder.AppendLine(args.Data);
+                    errorBuilder.AppendLine(args.Data);
                 },
                 waitTimeForExit);
 
