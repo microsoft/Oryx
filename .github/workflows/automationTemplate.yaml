@@ -123,6 +123,11 @@ jobs:
           platform=${{ inputs.platformName }}
           [[ "$platform" == "dotnet" ]] && platform="dot-net-core" || platform=$platform
           yq -i "(.[] | select(.name==\"$platform-run-time-versions\") | .constants.$platform-runtime-base-tag) = $buildNumber" build/constants.yaml
+          
+          # run automation again to preserve constants.yaml indentation
+          # since yq and YamlDoNet do not share indentation spacing
+          dotnet run --project build/tools/Automation/Automation.csproj ${RELEASE_DATE} ${{ github.workspace }}
+          
           ./build/generateConstants.sh
 
       - if: ${{ env.CANCEL_WORKFLOW == false }}
