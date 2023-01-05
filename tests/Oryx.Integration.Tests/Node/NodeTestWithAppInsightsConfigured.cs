@@ -23,14 +23,15 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("14", "~2", ExtVarNames.UserAppInsightsKeyEnv)]
-        [InlineData("14", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
+        [InlineData("14", "~2", ExtVarNames.UserAppInsightsKeyEnv, "asdas")]
+        [InlineData("14", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
         //Without pre-IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~2'
         // and that will enable oryx's appInsight attach logic
         public async Task CanBuildAndRun_App_With_AgentExtension_And_InstrumentKey_Or_ConnectionStringAsync(
             string nodeVersion,
             string agentExtensionVersionEnvValue,
-            string appInsightKeyOrConnectionString)
+            string appInsightKeyOrConnectionString,
+            string envVarValue)
         {
             // Arrange
             var appName = "linxnodeexpress-appinsights";
@@ -67,7 +68,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdas"), new EnvironmentVariable(aIEnabled, "~2") },
+                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, envVarValue), new EnvironmentVariable(aIEnabled, "~2") },
                 ContainerPort,
                 "/bin/sh",
                 new[]
