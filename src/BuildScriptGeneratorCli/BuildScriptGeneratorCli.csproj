@@ -23,14 +23,14 @@
   <ItemGroup>
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.NLogTarget" Version="2.21.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="3.1.32" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="3.1.32" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.32" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="3.1.32" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.32" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.32" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.32" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.32" />
     <PackageReference Include="Microsoft.VisualStudioEng.MicroBuild.Core" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
