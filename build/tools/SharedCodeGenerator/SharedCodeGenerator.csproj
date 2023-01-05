@@ -6,7 +6,6 @@
     <HighEntropyVA>true</HighEntropyVA>
     <!-- Remove when proper XML documentation is added to the project. -->
     <DisableDocRequirement>true</DisableDocRequirement>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
   <ItemGroup>
