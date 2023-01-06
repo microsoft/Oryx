@@ -62,7 +62,7 @@ jobs:
           git add -A
           git commit -m "Add new SDK versions" | true
           gitCommitExitCode=${PIPESTATUS[0]}
-          if [[ $gitCommitExitCode != 0 ]]; then
+          if [[ $gitCommitExitCode = 0 ]]; then
             cancelWorkflow=false
           else
             echo "No new ${{ inputs.platformName }} SDK versions detected. Canceling workflow..."
