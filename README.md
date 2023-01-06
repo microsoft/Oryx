@@ -68,16 +68,14 @@ directory of your project.
 
 ### Format
 
-There are ordered keys for `pre-build`, `build`, `post-build`, and `run`. The commands/scripts referenced by these keys
-are executed in-order. If a key is missing, it will be skipped and the next key will be processed. An optional `version`
-key specifies the version of the `appsvc.yaml` file, if new versions are introduced in the future.
+There are ordered keys for `pre-build`, `post-build`, and `run`. The commands/scripts referenced by these keys are
+executed in-order. If a key is missing, it will be skipped and the next key will be processed. An optional `version` key
+specifies the version of the `appsvc.yaml` file, if new versions are introduced in the future.
 
 ```yaml
 version: 1
 
 pre-build: apt-get install jq
-
-build: pip install requirements.txt
 
 post-build: |
     python manage.py makemigrations
