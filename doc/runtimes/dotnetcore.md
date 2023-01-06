@@ -34,10 +34,10 @@ We currently support detecting both `.csproj` ("C# Project") and `.fsproj` ("F# 
 
 The following process is applied for each build.
 
-1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
+1. Run custom command or script if specified by `PRE_BUILD_COMMAND` or `PRE_BUILD_SCRIPT_PATH`.
 1. Run `dotnet restore` to restore Nuget dependencies.
 1. Run `dotnet publish` to build a binary for production.
-1. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
+1. Run custom command or script if specified by `POST_BUILD_COMMAND` or `POST_BUILD_SCRIPT_PATH`.
 
 # Run
 
