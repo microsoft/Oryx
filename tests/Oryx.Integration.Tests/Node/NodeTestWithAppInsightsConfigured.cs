@@ -85,18 +85,19 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("14", "~3", ExtVarNames.UserAppInsightsKeyEnv)]
-        [InlineData("14", "~3", ExtVarNames.UserAppInsightsConnectionStringEnv)]
-        [InlineData("14", "", ExtVarNames.UserAppInsightsKeyEnv)]
-        [InlineData("14", "", ExtVarNames.UserAppInsightsConnectionStringEnv)]
-        [InlineData("14", "disabled", ExtVarNames.UserAppInsightsKeyEnv)]
-        [InlineData("14", "disabled", ExtVarNames.UserAppInsightsConnectionStringEnv)]
+        [InlineData("14", "~3", ExtVarNames.UserAppInsightsKeyEnv, "asdas")]
+        [InlineData("14", "~3", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
+        [InlineData("14", "", ExtVarNames.UserAppInsightsKeyEnv, "asdas")]
+        [InlineData("14", "", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
+        [InlineData("14", "disabled", ExtVarNames.UserAppInsightsKeyEnv, "asdas")]
+        [InlineData("14", "disabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
         //With New IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~3'
         // and that will disable oryx's appInsight attach logic
         public async Task CanBuildAndRun_NodeApp_AppInsights_With_NewIPA_ConfigurationAsync(
             string nodeVersion, 
             string agentExtensionVersionEnvValue,
-            string appInsightKeyOrConnectionString)
+            string appInsightKeyOrConnectionString,
+            string envVarValue)
         {
             // Arrange
             var appName = "linxnodeexpress-appinsights";
@@ -114,7 +115,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules").ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIEnabled}={agentExtensionVersionEnvValue}")
-                .AddCommand($"export {aIKey}=asdas")
+                .AddCommand($"export {aIKey}={envVarValue}")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
@@ -133,7 +134,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, "asdas"), new EnvironmentVariable(aIEnabled, "~2") },
+                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, envVarValue), new EnvironmentVariable(aIEnabled, "~2") },
                 ContainerPort,
                 "/bin/sh",
                 new[]
