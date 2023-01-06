@@ -921,8 +921,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "latest")]
         [InlineData(FinalStretchVersions.FinalStretchDotNetCore21SdkVersion)]
-        [InlineData((FinalStretchVersions.FinalStretchDotNetCore22SdkVersion)]
-        [InlineData((FinalStretchVersions.FinalStretchDotNetCore30SdkVersion)]
+        [InlineData(FinalStretchVersions.FinalStretchDotNetCore22SdkVersion)]
+        [InlineData(FinalStretchVersions.FinalStretchDotNetCore30SdkVersion)]
         public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
         {
             // Arrange
