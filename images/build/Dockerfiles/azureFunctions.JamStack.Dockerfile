@@ -12,7 +12,33 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8"
-
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
+        git \
+        make \
+        unzip \
+        # The tools in this package are used when installing packages for Python
+        build-essential \
+        moreutils \
+        python3-pip \
+        swig \
+        tk-dev \
+        unixodbc-dev \
+        uuid-dev \
+        # Required for PostgreSQL
+        libpq-dev \
+        # Required for mysqlclient
+        default-libmysqlclient-dev \
+        # Required for ts
+        moreutils \
+        rsync \
+        zip \
+        tk-dev \
+        uuid-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    # This is the folder containing 'links' to benv and build script generator
+    && mkdir -p /opt/oryx
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG BUILD_DIR="/opt/tmp/build"
 RUN ${IMAGES_DIR}/build/installHugo.sh
