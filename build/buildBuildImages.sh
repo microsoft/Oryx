@@ -237,7 +237,7 @@ function buildJamStackImage() {
 	if [ -z "$debianFlavor" ]; then
 		debianFlavor="stretch"
 	fi
-	parentImageTag=actions-debian-$debianFlavor
+	parentImageTag=debian-$debianFlavor
 	devImageTag=$devImageTag-debian-$debianFlavor
 	echo "dev image tag: "$devImageTag
 	builtImageName=$builtImageName-debian-$debianFlavor

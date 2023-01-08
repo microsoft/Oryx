@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var snippet = new StringBuilder();
             snippet
                 .AppendLine()
-                .AppendLine($"if grep -q cli \"/opt/oryx/.imagetype\"; then")
+                .AppendLine($"if [[ grep -q cli \"/opt/oryx/.imagetype\" || grep -q jamstack \"/opt/oryx/.imagetype\" ]] ; then")
                 .AppendCommonSkeletonDepenendenciesInstallation()
                 .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
                 .AppendLine("fi")
