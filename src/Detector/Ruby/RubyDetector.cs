@@ -5,6 +5,7 @@
 
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
@@ -200,7 +201,12 @@ namespace Microsoft.Oryx.Detector.Ruby
                     // Make sure it's in valid format.
                     if (rubyVersionLine.Length == 2)
                     {
-                        return rubyVersionLine[1];
+                        var fullVersion = rubyVersionLine[1];
+                        var parsedVersionMatches = Regex.Match(fullVersion, @"^(.*?)(?:p[0-9]+)*$");
+                        if (parsedVersionMatches.Success)
+                        {
+                            return parsedVersionMatches.Groups[1].Value;
+                        }
                     }
                 }
             }
