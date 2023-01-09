@@ -202,6 +202,11 @@ namespace Microsoft.Oryx.Detector.Ruby
                     if (rubyVersionLine.Length == 2)
                     {
                         var fullVersion = rubyVersionLine[1];
+
+                        // Parse the ruby version to remove patch versioning from it.
+                        // At times, ruby will add a patch version such as p112 to the end of the semver version,
+                        // which causes Oryx to not find the correct version. This should take a version like
+                        // 2.3.1p112 and convert it to 2.3.1
                         var parsedVersionMatches = Regex.Match(fullVersion, @"^(.*?)(?:p[0-9]+)*$");
                         if (parsedVersionMatches.Success)
                         {
