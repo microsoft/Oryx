@@ -39,6 +39,7 @@ RUN apt-get update \
         #TODO : Add these to fix php failures. Check if these can be removed.
         libargon2-0 \
         libonig-dev \
+        libedit-dev \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
