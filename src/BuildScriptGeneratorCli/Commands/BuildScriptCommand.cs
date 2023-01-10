@@ -117,28 +117,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     this.ConfigureBuildScriptGeneratorOptions(opts);
 
-                    // For debian flavor, we first check for existance of an environment variable
-                    // which contains the os type. If this does not exist, parse the
-                    // FilePaths.OsTypeFileName file for the correct flavor
-                    if (string.IsNullOrWhiteSpace(opts.DebianFlavor))
-                    {
-                        var ostypeFilePath = Path.Join("/opt", "oryx", FilePaths.OsTypeFileName);
-                        if (File.Exists(ostypeFilePath))
-                        {
-                            // these file contents are in the format <OS_type>|<Os_version>, e.g. DEBIAN|BULLSEYE
-                            // we want the Os_version part only, as all lowercase
-                            var fullOsTypeFileContents = File.ReadAllText(ostypeFilePath);
-                            opts.DebianFlavor = fullOsTypeFileContents.Split("|").TakeLast(1).SingleOrDefault().Trim().ToLowerInvariant();
-                        }
-                        else
-                        {
-                            // If we cannot resolve the debian flavor, error out as we will not be able to determine
-                            // the correct SDKs to pull
-                            var errorMessage = $"Error: Image debian flavor not found in DEBIAN_FLAVOR environment variable or the " +
-                                $"{Path.Join("/opt", "oryx", FilePaths.OsTypeFileName)} file. Exiting...";
-                            throw new InvalidUsageException(errorMessage);
-                        }
-                    }
+                    opts.DebianFlavor = this.ResolveOsType(opts, console);
+                    opts.ImageType = this.ResolveImageType(opts, console);
                 });
             return serviceProviderBuilder.Build();
         }

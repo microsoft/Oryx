@@ -1093,7 +1093,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             // Create an app folder with a package.json having the 'appdynamics' package
-            var packageJsonContent = "{\"dependencies\": { \"appdynamics\": \"20.10.1\" }}";
+            var packageJsonContent = "{\"dependencies\": { \"appdynamics\": \"22.11.0\" }}";
             var sampleAppPath = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(sampleAppPath);
             File.WriteAllText(Path.Combine(sampleAppPath, NodeConstants.PackageJsonFileName), packageJsonContent);
