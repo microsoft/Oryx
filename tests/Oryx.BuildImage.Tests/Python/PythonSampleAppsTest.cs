@@ -287,7 +287,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        $"Python Version: /opt/python/{ FinalStretchVersions.FinalStretchPython38Version}/bin/python3",
                         result.StdOut);
                     Assert.Contains("Running pip install", result.StdOut);
                     Assert.Contains("Collecting Flask", result.StdOut);
@@ -1044,7 +1044,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        $"Python Version: /opt/python/{FinalStretchVersions.FinalStretchPython38Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1084,7 +1084,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        $"Python Version: /opt/python/{FinalStretchVersions.FinalStretchPython38Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1123,7 +1123,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{FinalStretchVersions.FinalStretchPython37Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1160,7 +1160,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /opt/python/{FinalStretchVersions.FinalStretchPython37Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1546,7 +1546,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        $"Python Version: /opt/python/{FinalStretchVersions.FinalStretchPython38Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());

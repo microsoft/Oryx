@@ -204,8 +204,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "latest")]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData(FinalStretchVersions.FinalStretchDotNetCore22SdkVersion)]
+        [InlineData(FinalStretchVersions.FinalStretchDotNetCore30SdkVersion)]
         [InlineData(FinalStretchVersions.FinalStretchDotNetCore31SdkVersion)]
         public void DotNetAlias_UsesVersion_SetOnBenv(string expectedSdkVersion)
         {
@@ -305,12 +305,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData("10.1.0", "v10.1.0")]
         [InlineData("10.10.0", "v10.10.0")]
         [InlineData("10.14.2", "v10.14.2")]
-        [InlineData("8", "v" + NodeVersions.Node8Version)]
-        [InlineData("10", "v" + NodeVersions.Node10Version)]
-        [InlineData("12", "v" + NodeVersions.Node12Version)]
-        [InlineData(NodeVersions.Node8Version, "v" + NodeVersions.Node8Version)]
-        [InlineData(NodeVersions.Node10Version, "v" + NodeVersions.Node10Version)]
-        [InlineData(NodeVersions.Node12Version, "v" + NodeVersions.Node12Version)]
+        [InlineData("8", "v" + FinalStretchVersions.FinalStretchNode8Version)]
+        [InlineData("10", "v" + FinalStretchVersions.FinalStretchNode10Version)]
+        [InlineData("12", "v" + FinalStretchVersions.FinalStretchNode12Version)]
+        [InlineData(FinalStretchVersions.FinalStretchNode8Version, "v" + FinalStretchVersions.FinalStretchNode8Version)]
+        [InlineData(FinalStretchVersions.FinalStretchNode10Version, "v" + FinalStretchVersions.FinalStretchNode10Version)]
+        [InlineData(FinalStretchVersions.FinalStretchNode12Version, "v" + FinalStretchVersions.FinalStretchNode12Version)]
         [InlineData(FinalStretchVersions.FinalStretchNode14Version, "v" + FinalStretchVersions.FinalStretchNode14Version)]
         [InlineData("lts", "v" + FinalStretchVersions.FinalStretchNode14Version)]
         public void NodeAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
@@ -405,8 +405,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Trait("platform", "python")]
         [Theory, Trait("category", "latest")]
-        [InlineData("2", Python27VersionInfo)]
-        [InlineData("2.7", Python27VersionInfo)]
+        [InlineData("2", FinalStretchVersions.FinalStretchPython27Version)]
+        [InlineData("2.7", FinalStretchVersions.FinalStretchPython27Version)]
         [InlineData(FinalStretchVersions.FinalStretchPython27Version, FinalStretchVersions.FinalStretchPython27Version)]
         public void PythonAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
@@ -438,8 +438,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Trait("platform", "python")]
         [Theory, Trait("category", "latest")]
-        [InlineData("2", Python27VersionInfo)]
-        [InlineData("2.7", Python27VersionInfo)]
+        [InlineData("2", FinalStretchVersions.FinalStretchPython27Version)]
+        [InlineData("2.7", FinalStretchVersions.FinalStretchPython27Version)]
         [InlineData(FinalStretchVersions.FinalStretchPython27Version, FinalStretchVersions.FinalStretchPython27Version)]
         public void Python2Alias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
@@ -470,14 +470,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Trait("platform", "python")]
         [Theory, Trait("category", "latest")]
-        [InlineData("latest", Python38VersionInfo)]
-        [InlineData("stable", Python38VersionInfo)]
-        [InlineData("3", Python38VersionInfo)]
-        [InlineData("3.6", Python36VersionInfo)]
-        [InlineData(PythonVersions.Python36Version, Python36VersionInfo)]
-        [InlineData("3.7", Python37VersionInfo)]
-        [InlineData(PythonVersions.Python37Version, Python37VersionInfo)]
-        [InlineData("3.8", Python38VersionInfo)]
+        [InlineData("latest", FinalStretchVersions.FinalStretchPython38Version)]
+        [InlineData("stable", FinalStretchVersions.FinalStretchPython38Version)]
+        [InlineData("3", FinalStretchVersions.FinalStretchPython38Version)]
+        [InlineData("3.6", FinalStretchVersions.FinalStretchPython36Version)]
+        [InlineData(FinalStretchVersions.FinalStretchPython36Version, FinalStretchVersions.FinalStretchPython36Version)]
+        [InlineData("3.7", FinalStretchVersions.FinalStretchPython37Version)]
+        [InlineData(PythonVersions.Python37Version, FinalStretchVersions.FinalStretchPython37Version)]
+        [InlineData("3.8", FinalStretchVersions.FinalStretchPython38Version)]
         [InlineData(FinalStretchVersions.FinalStretchPython27Version, FinalStretchVersions.FinalStretchPython27Version)]
         public void Python3_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
