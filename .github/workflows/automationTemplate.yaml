@@ -62,7 +62,7 @@ jobs:
           git status
           git add -A
           git commit -m "Add new SDK versions" && true
-          gitCommitExitCode=${PIPESTATUS[0]} 
+          gitCommitExitCode=${PIPESTATUS[0]}
           if [[ $gitCommitExitCode = 0 ]]; then
             cancelWorkflow=0
           else
