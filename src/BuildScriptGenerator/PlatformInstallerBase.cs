@@ -76,6 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public static void InstallGolangToolingAndLanguage(StringBuilder stringBuilder)
         {
+            stringBuilder.AppendLine("echo 'Installing golang tooling and language...'");
             stringBuilder.AppendLine("BUILD_DIR=\"/opt/tmp/build\"");
             stringBuilder.AppendLine("IMAGES_DIR=\"/opt/tmp/images\"");
             stringBuilder.AppendLine("oryx prep --skip-detection --platforms-and-versions nodejs=14 --debug");
