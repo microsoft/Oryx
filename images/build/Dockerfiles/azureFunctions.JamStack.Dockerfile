@@ -45,7 +45,6 @@ RUN apt-get update \
     && mkdir -p /opt/oryx
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG BUILD_DIR="/opt/tmp/build"
-RUN ${IMAGES_DIR}/build/installHugo.sh
 RUN set -ex \
  && yarnCacheFolder="/usr/local/share/yarn-cache" \
  && mkdir -p $yarnCacheFolder \
