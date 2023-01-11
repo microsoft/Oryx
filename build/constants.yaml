@@ -184,15 +184,15 @@
     final-stretch-golang19-version: 1.19
     final-stretch-golang19-tar-sha256: 464b6b66591f6cf055bc5df90a9750bf5fbc9d038722bb84a9d56a2bea974be6
     #python
-    final-stretch-python-runtime-base-tag: 20221031.2
+    final-stretch-python-runtime-base-tag: 20221214.1
     final-stretch-pip-version: 21.2.4
     final-stretch-python27-version: 2.7.18
     final-stretch-python36-version: 3.6.15
-    final-stretch-python37-version: 3.7.15
-    final-stretch-python38-version: 3.8.15
-    final-stretch-python39-version: 3.9.7
-    final-stretch-python310-version: 3.10.4
-    final-stretch-python311-version: 3.11.0
+    final-stretch-python37-version: 3.7.16
+    final-stretch-python38-version: 3.8.16
+    final-stretch-python39-version: 3.9.16
+    final-stretch-python310-version: 3.10.9
+    final-stretch-python311-version: 3.11.1
     #ruby
     final-stretch-gem-version: 3.3.10
     final-stretch-ruby31-version: 3.1.1
