@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             });
 
             // Assert
-            RunAsserts(() => Assert.Equal(result.ExitCode, exitCodeSentinel), result.GetDebugInfo());
+            RunAsserts(() => Assert.Equal(exitCodeSentinel, result.ExitCode), result.GetDebugInfo());
         }
 
         [Theory(Skip = "Investigating debugging using pm2")]
