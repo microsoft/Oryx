@@ -59,6 +59,7 @@ jobs:
           git config user.name 'Oryx Team'
           git config user.email 'oryx@microsoft.com'
           
+          git status
           git add -A
           git commit -m "Add new SDK versions" | true
           gitCommitExitCode=${PIPESTATUS[0]}
