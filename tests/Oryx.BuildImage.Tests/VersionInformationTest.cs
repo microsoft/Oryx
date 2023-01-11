@@ -405,9 +405,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Trait("platform", "python")]
         [Theory, Trait("category", "latest")]
-        [InlineData("2", FinalStretchVersions.FinalStretchPython27Version)]
-        [InlineData("2.7", FinalStretchVersions.FinalStretchPython27Version)]
-        [InlineData(FinalStretchVersions.FinalStretchPython27Version, FinalStretchVersions.FinalStretchPython27Version)]
+        [InlineData("2", Python27VersionInfo)]
+        [InlineData("2.7", Python27VersionInfo)]
+        [InlineData(FinalStretchVersions.FinalStretchPython27Version, Python27VersionInfo)]
         public void PythonAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
