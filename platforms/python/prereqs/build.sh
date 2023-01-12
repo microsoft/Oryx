@@ -39,6 +39,8 @@ then
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         build-essential \
         libgeos-dev \
+        python3.${PYTHON_VERSION[1]}-dev \
+
     PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 fi
 
