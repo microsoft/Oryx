@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             stringBuilder.AppendLine($"echo 'Installing {NodeConstants.PlatformName} specific dependencies...'");
 
             // Install Hugo and Yarn for node applications
-            stringBuilder.AppendLine("if grep -q cli \"/opt/oryx/.imagetype\" ; then");
+            stringBuilder.AppendLine("if [ grep -q cli \"/opt/oryx/.imagetype\" ] ; then");
             stringBuilder.AppendLine("BUILD_DIR=\"/opt/tmp/build\"");
             stringBuilder.AppendLine("IMAGES_DIR=\"/opt/tmp/images\"");
             stringBuilder.AppendLine("${IMAGES_DIR}/build/installHugo.sh");
