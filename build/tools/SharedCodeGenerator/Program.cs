@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Oryx.SharedCodeGenerator.Outputs;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Microsoft.Oryx.SharedCodeGenerator
 {
@@ -225,7 +226,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         private static T LoadFromString<T>(string content)
         {
             var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
-                .WithNamingConvention(new YamlDotNet.Serialization.NamingConventions.CamelCaseNamingConvention())
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
             var obj = deserializer.Deserialize<T>(content);
             return obj;
