@@ -79,9 +79,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendLine("echo 'Installing golang tooling and language...'");
             stringBuilder.AppendLine("BUILD_DIR=\"/opt/tmp/build\"");
             stringBuilder.AppendLine("IMAGES_DIR=\"/opt/tmp/images\"");
-            stringBuilder.AppendLine("oryx prep --skip-detection --platforms-and-versions nodejs=14 --debug");
             stringBuilder.AppendLine(". ${BUILD_DIR}/__goVersions.sh");
-            stringBuilder.AppendLine("downloadedFileName=\"go1.15.8.linux-amd64.tar.gz\"");
+            stringBuilder.AppendLine("downloadedFileName=\"go${GO_VERSION}.linux-amd64.tar.gz\"");
             stringBuilder.AppendLine("${IMAGES_DIR}/retry.sh \"curl -SLsO https://golang.org/dl/$downloadedFileName\"");
             stringBuilder.AppendLine("mkdir -p /usr/local");
             stringBuilder.AppendLine("gzip -d $downloadedFileName");

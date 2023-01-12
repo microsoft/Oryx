@@ -41,7 +41,6 @@ RUN apt-get update \
         libonig-dev \
         libedit-dev \
     && rm -rf /var/lib/apt/lists/* \
-    && oryx prep --skip-detection --platforms-and-versions nodejs=16 --debug \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
 ARG IMAGES_DIR="/opt/tmp/images"
@@ -67,7 +66,7 @@ RUN set -ex \
  && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
 RUN set -ex \
  && mkdir -p /links \
- && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
+ && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links 
 
 
 RUN set -ex \
@@ -102,6 +101,5 @@ RUN set -ex \
     && ln -s $PYTHON38_VERSION stable \
     && echo "jamstack" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
-
 
 
