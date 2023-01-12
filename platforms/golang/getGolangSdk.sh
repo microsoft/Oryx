@@ -32,6 +32,7 @@ getGolangSdk() {
 		# Continue adding the version metadata with the name of Version
 		# which is what our legacy CLI will use
 		sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+		cp "$golangPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.txt"
 	else
 		downloadedFile=golang-$debianFlavor-$sdkVersion.tar.gz
 		metadataFile="$targetDir/golang-$debianFlavor-$sdkVersion-metadata.txt"

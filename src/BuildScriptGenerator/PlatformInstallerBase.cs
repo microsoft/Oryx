@@ -81,7 +81,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendLine("IMAGES_DIR=\"/opt/tmp/images\"");
             stringBuilder.AppendLine("oryx prep --skip-detection --platforms-and-versions nodejs=14 --debug");
             stringBuilder.AppendLine(". ${BUILD_DIR}/__goVersions.sh");
-            stringBuilder.AppendLine("downloadedFileName=\"go${GO_VERSION}.linux-amd64.tar.gz\"");
+            stringBuilder.AppendLine("downloadedFileName=\"go1.15.8.linux-amd64.tar.gz\"");
             stringBuilder.AppendLine("${IMAGES_DIR}/retry.sh \"curl -SLsO https://golang.org/dl/$downloadedFileName\"");
             stringBuilder.AppendLine("mkdir -p /usr/local");
             stringBuilder.AppendLine("gzip -d $downloadedFileName");
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var snippet = new StringBuilder();
             snippet
                 .AppendLine()
-                .AppendLine($"if [[ grep -q cli \"/opt/oryx/.imagetype\" || grep -q jamstack \"/opt/oryx/.imagetype\" ]] ; then")
+                .AppendLine($"if grep -q -e cli \"/opt/oryx/.imagetype\" -e jamstack \"/opt/oryx/.imagetype\"; then")
                 .AppendCommonSkeletonDepenendenciesInstallation()
                 .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
                 .AppendLine("fi")

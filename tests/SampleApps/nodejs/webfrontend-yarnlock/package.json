@@ -5,7 +5,7 @@
     "nodemon": "^1.14.7"
   },
   "dependencies": {
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "request": "2.83.0"
   },
   "main": "server.js",

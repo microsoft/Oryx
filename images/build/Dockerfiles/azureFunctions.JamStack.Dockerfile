@@ -11,7 +11,7 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     PYTHONIOENCODING="UTF-8" \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
-    LC_ALL="C.UTF-8"
+    LC_ALL="C.UTF-8" 
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -41,6 +41,7 @@ RUN apt-get update \
         libonig-dev \
         libedit-dev \
     && rm -rf /var/lib/apt/lists/* \
+    && oryx prep --skip-detection --platforms-and-versions nodejs=16 --debug \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
 ARG IMAGES_DIR="/opt/tmp/images"
