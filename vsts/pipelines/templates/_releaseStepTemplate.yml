@@ -108,9 +108,9 @@ steps:
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.x'
+  displayName: 'Use .NET Core sdk 6.x'
   inputs:
-    version: 3.1.x
+    version: 6.x
 
 - task: ShellScript@2
   displayName: 'Test runtime images for pme staging registry'

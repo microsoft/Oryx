@@ -6,9 +6,9 @@ steps:
   clean: true
 
 - task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.x'
+  displayName: 'Use .NET Core sdk 6.x'
   inputs:
-    version: 3.1.x
+    version: 6.x
 
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'

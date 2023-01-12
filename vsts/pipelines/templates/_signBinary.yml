@@ -32,9 +32,9 @@ steps:
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
 
 - task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.x'
+  displayName: 'Use .NET Core sdk 6.x'
   inputs:
-    version: 3.1.x
+    version: 6.x
 
 - powershell: |
     Write-Host "Setting up git_commit and build_number as env variable"
