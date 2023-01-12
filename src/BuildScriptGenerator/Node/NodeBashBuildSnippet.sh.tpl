@@ -110,6 +110,10 @@ then
 		cp -f "$SOURCE_DIR/.yarnrc.yml" .
 	fi
 
+	if [ YarnVersionSpec | IsNotBlank ] && [ -f "$SOURCE_DIR/.yarn/releases/yarn-${YarnVersionSpec}"* ]; then
+		cp -f "$SOURCE_DIR/.yarn/releases/yarn-${YarnVersionSpec}"* .
+	fi
+	
 	echo
 	echo "Installing production dependencies in '$SOURCE_DIR/$prodModulesDirName'..."
 	echo
