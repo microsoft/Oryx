@@ -26,11 +26,32 @@ namespace Microsoft.Oryx.Detector.Tests.Ruby
             ruby '2.7.1'
         ";
 
-        private const string GemFileLockWithVersion = @"
+        private const string GemFileLockWithPatchVersion = @"
             PLATFORMS
               ruby
             RUBY VERSION
               ruby 2.3.1p112
+        ";
+
+        private const string GemFileLockWithVersion = @"
+            PLATFORMS
+              ruby
+            RUBY VERSION
+              ruby 2.3.1
+        ";
+
+        private const string GemFileLockWithPreviewVersion = @"
+            PLATFORMS
+              ruby
+            RUBY VERSION
+              ruby 2.3.1-preview1
+        ";
+
+        private const string GemFileLockWithRcVersion = @"
+            PLATFORMS
+              ruby
+            RUBY VERSION
+              ruby 2.3.1.rc1
         ";
 
         private const string MalformedGemfile = @"
@@ -151,13 +172,17 @@ namespace Microsoft.Oryx.Detector.Tests.Ruby
             Assert.Equal(string.Empty, result.AppDirectory);
         }
 
-        [Fact]
-        public void Detect_ReturnsVersionFromGemfileLock()
+        [Theory]
+        [InlineData(GemFileLockWithVersion, "2.3.1")]
+        [InlineData(GemFileLockWithPatchVersion, "2.3.1")]
+        [InlineData(GemFileLockWithRcVersion, "2.3.1.rc1")]
+        [InlineData(GemFileLockWithPreviewVersion, "2.3.1-preview1")]
+        public void Detect_ReturnsVersionFromGemfileLock(string fileContents, string expectedVersion)
         {
             // Arrange
             var detector = CreateRubyPlatformDetector();
             var repo = new MemorySourceRepo();
-            repo.AddFile(GemFileLockWithVersion, RubyConstants.GemFileLockName);
+            repo.AddFile(fileContents, RubyConstants.GemFileLockName);
             var context = CreateContext(repo);
 
             // Act
@@ -166,7 +191,7 @@ namespace Microsoft.Oryx.Detector.Tests.Ruby
             // Assert
             Assert.NotNull(result);
             Assert.Equal(RubyConstants.PlatformName, result.Platform);
-            Assert.Equal("2.3.1p112", result.PlatformVersion);
+            Assert.Equal(expectedVersion, result.PlatformVersion);
             Assert.Equal(string.Empty, result.AppDirectory);
         }
 
