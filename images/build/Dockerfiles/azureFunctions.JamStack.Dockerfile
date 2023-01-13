@@ -45,60 +45,8 @@ RUN apt-get update \
     && mkdir -p /opt/oryx
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG BUILD_DIR="/opt/tmp/build"
-RUN ${IMAGES_DIR}/build/installHugo.sh
-RUN set -ex \
- && yarnCacheFolder="/usr/local/share/yarn-cache" \
- && mkdir -p $yarnCacheFolder \
- && chmod 777 $yarnCacheFolder \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
- && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
- && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
- && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
- && mkdir -p /opt/yarn \
- && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
- && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
- && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
-RUN set -ex \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ln -s $YARN_VERSION /opt/yarn/stable \
- && ln -s $YARN_VERSION /opt/yarn/latest \
- && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
- && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
-RUN set -ex \
- && mkdir -p /links \
- && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
-
-
-RUN set -ex \
-    # Install Python SDKs
-    # Upgrade system python
-    && PYTHONIOENCODING="UTF-8" \
-    # It's not clear whether these are needed at runtime...
-    && apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        build-essential \
-        python3-pip \
-        swig \
-        tk-dev \
-        uuid-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN set -ex \
-    && tmpDir="/opt/tmp" \
-    && imagesDir="$tmpDir/images" \
-    && buildDir="$tmpDir/build" \
-    && pip3 install pip --upgrade \
-    && pip install --upgrade cython \
-    && pip3 install --upgrade cython \
-    && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
-    && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
-    && ldconfig \
-    && cd /opt/python \
-    && ln -s $PYTHON38_VERSION 3.8 \
-    && ln -s $PYTHON38_VERSION latest \
-    && ln -s $PYTHON38_VERSION stable \
+ARG HUGO_DIR="/opt/hugo"
+RUN oryx prep --skip-detection --platforms-and-versions nodejs \
     && echo "jamstack" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
+    && rm -rf ${HUGO_DIR}

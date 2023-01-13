@@ -34,6 +34,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
                 .AppendLine()
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")
                 .AppendLine("echo")
+                .AppendLine("IMAGES_DIR=\"/opt/tmp/images\"")
+                .AppendLine("${IMAGES_DIR}/build/installHugo.sh")
                 .AppendLine(
                 $"echo Downloading and extracting {platformName} version '{version}' to {versionDirInTemp}...")
                 .AppendLine($"rm -rf {versionDirInTemp}")
@@ -52,6 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
 
                 // Write out a sentinel file to indicate downlaod and extraction was successful
                 .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
+            InstallGolangToolingAndLanguage(snippet);
             return snippet.ToString();
         }
 
