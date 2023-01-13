@@ -39,7 +39,11 @@ then
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         build-essential \
         libgeos-dev \
-        python3.${PYTHON_VERSION[1]}-dev \
+
+    # required for python 3.10/3.11 regex library 
+    if  [ "${PYTHON_VERSION[1]}" == "10" ] || [ "${PYTHON_VERSION[1]}" == "11" ]; then
+        noninteractive apt-get install -y --no-install-recommends python3.${PYTHON_VERSION[1]}-dev
+    fi
 
     PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 fi
