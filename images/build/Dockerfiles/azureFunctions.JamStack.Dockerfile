@@ -12,6 +12,7 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8"
+    
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
