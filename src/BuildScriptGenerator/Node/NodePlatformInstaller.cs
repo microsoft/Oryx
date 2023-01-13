@@ -36,6 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
         {
             stringBuilder.AppendLine($"echo 'Installing {NodeConstants.PlatformName} specific dependencies...'");
+            stringBuilder.AppendLine("if grep -q -e cli \"/opt/oryx/.imagetype\"; then");
 
             // Install Hugo and Yarn for node applications
             stringBuilder.AppendLine("BUILD_DIR=\"/opt/tmp/build\"");

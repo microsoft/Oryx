@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
         {
             stringBuilder.AppendLine($"echo 'Installing {PythonConstants.PlatformName} specific dependencies...'");
-
+            stringBuilder.AppendLine("if grep -q -e cli \"/opt/oryx/.imagetype\" ; then");
             InstallPythonToolingAndLanguage(stringBuilder);
         }
     }
