@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+﻿/// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             stringBuilder.AppendLine($"echo 'Installing php-composer specific dependencies...'");
 
             // Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
-            stringBuilder.AppendLine("if [ \"${DEBIAN_FLAVOR}\" = \"buster\" ]; then");
+            stringBuilder.AppendLine("if [[ \"${DEBIAN_FLAVOR}\" = \"buster\" || \"${DEBIAN_FLAVOR}\" = \"bullseye\" ]]; then");
             stringBuilder.AppendAptGetInstallPackages(
                 "ca-certificates",
                 "libargon2-0",

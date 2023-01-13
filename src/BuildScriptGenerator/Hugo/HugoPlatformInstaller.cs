@@ -64,3 +64,4 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         }
     }
 }
+

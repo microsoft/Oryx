@@ -237,7 +237,7 @@ function buildJamStackImage() {
 	if [ -z "$debianFlavor" ]; then
 		debianFlavor="stretch"
 	fi
-	parentImageTag=actions-debian-$debianFlavor
+	parentImageTag=debian-$debianFlavor
 	devImageTag=$devImageTag-debian-$debianFlavor
 	echo "dev image tag: "$devImageTag
 	builtImageName=$builtImageName-debian-$debianFlavor
@@ -536,8 +536,11 @@ elif [ "$imageTypeToBuild" == "vso-bullseye" ]; then
 elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 	buildCliImage "buster"
+	buildCliImage "bullseye"
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
+elif [ "$imageTypeToBuild" == "cli-bullseye" ]; then
+    buildCliImage "bullseye"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
