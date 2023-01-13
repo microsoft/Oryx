@@ -7,12 +7,12 @@ DESTINATION_DIR="$2"
 INTERMEDIATE_DIR="$3"
 
 if [ -f {{ LoggerPath }} ]; then
-	source {{ LoggerPath }}
+    source {{ LoggerPath }}
 fi
 
 if [ ! -d "$SOURCE_DIR" ]; then
-	echo "Source directory '$SOURCE_DIR' does not exist." 1>&2
-	exit 1
+    echo "Source directory '$SOURCE_DIR' does not exist." 1>&2
+    exit 1
 fi
 
 {{ # Get full file paths to source and destination directories }}
@@ -21,13 +21,13 @@ SOURCE_DIR=$(pwd -P)
 
 if [ -z "$DESTINATION_DIR" ]
 then
-	DESTINATION_DIR="$SOURCE_DIR"
+    DESTINATION_DIR="$SOURCE_DIR"
 fi
 
 if [ -d "$DESTINATION_DIR" ]
 then
-	cd "$DESTINATION_DIR"
-	DESTINATION_DIR=$(pwd -P)
+    cd "$DESTINATION_DIR"
+    DESTINATION_DIR=$(pwd -P)
 fi
 
 {{ if OutputDirectoryIsNested }}
@@ -38,34 +38,34 @@ rm -rf "$DESTINATION_DIR"
 
 if [ ! -z "$INTERMEDIATE_DIR" ]
 then
-	echo "Using intermediate directory '$INTERMEDIATE_DIR'."
-	if [ ! -d "$INTERMEDIATE_DIR" ]
-	then
-		echo
-		echo "Intermediate directory doesn't exist, creating it...'"
-		mkdir -p "$INTERMEDIATE_DIR"		
-	fi
+    echo "Using intermediate directory '$INTERMEDIATE_DIR'."
+    if [ ! -d "$INTERMEDIATE_DIR" ]
+    then
+        echo
+        echo "Intermediate directory doesn't exist, creating it...'"
+        mkdir -p "$INTERMEDIATE_DIR"		
+    fi
 
-	cd "$INTERMEDIATE_DIR"
-	INTERMEDIATE_DIR=$(pwd -P)
-	cd "$SOURCE_DIR"
-	echo
-	echo "Copying files to the intermediate directory..."
-	START_TIME=$SECONDS
-	excludedDirectories=""
-	{{ for excludedDir in DirectoriesToExcludeFromCopyToIntermediateDir }}
-	excludedDirectories+=" --exclude {{ excludedDir }}"
-	{{ end }}
+    cd "$INTERMEDIATE_DIR"
+    INTERMEDIATE_DIR=$(pwd -P)
+    cd "$SOURCE_DIR"
+    echo
+    echo "Copying files to the intermediate directory..."
+    START_TIME=$SECONDS
+    excludedDirectories=""
+    {{ for excludedDir in DirectoriesToExcludeFromCopyToIntermediateDir }}
+    excludedDirectories+=" --exclude {{ excludedDir }}"
+    {{ end }}
 
-	{{ ## We use checksum and not the '--times' because the destination directory could be from
-	 a different file system (ex: NFS) where setting modification times results in errors.
-	 Even though checksum is slower compared to the '--times' option, it is more reliable
-	 which is important for us. ## }}
-	rsync -rcE --delete $excludedDirectories . "$INTERMEDIATE_DIR"
+    {{ ## We use checksum and not the '--times' because the destination directory could be from
+     a different file system (ex: NFS) where setting modification times results in errors.
+     Even though checksum is slower compared to the '--times' option, it is more reliable
+     which is important for us. ## }}
+    rsync -rcE --delete $excludedDirectories . "$INTERMEDIATE_DIR"
 
-	ELAPSED_TIME=$(($SECONDS - $START_TIME))
-	echo "Done in $ELAPSED_TIME sec(s)."
-	SOURCE_DIR="$INTERMEDIATE_DIR"
+    ELAPSED_TIME=$(($SECONDS - $START_TIME))
+    echo "Done in $ELAPSED_TIME sec(s)."
+    SOURCE_DIR="$INTERMEDIATE_DIR"
 fi
 
 echo
@@ -81,7 +81,7 @@ cd "$SOURCE_DIR"
 
 {{ if BenvArgs | IsNotBlank }}
 if [ -f {{ BenvPath }} ]; then
-	source {{ BenvPath }} {{ BenvArgs }}
+    source {{ BenvPath }} {{ BenvArgs }}
 fi
 {{ end }}
 
@@ -122,77 +122,77 @@ echo "{{ PostBuildCommandEpilogue }}"
 
 if [ "$SOURCE_DIR" != "$DESTINATION_DIR" ]
 then
-	echo "Preparing output..."
+    echo "Preparing output..."
 
-	{{ ## When compressing destination directory is chosen, we want to copy the source content to a temporary 
-	destination directory first, compress the content there and then copy that content to the final destination 
-	directory ## }}
-	{{ if CompressDestinationDir }}
-	preCompressedDestinationDir="/tmp/_preCompressedDestinationDir"
-	rm -rf $preCompressedDestinationDir
-	OLD_DESTINATION_DIR="$DESTINATION_DIR"
-	DESTINATION_DIR="$preCompressedDestinationDir"
-	{{ end }}
+    {{ ## When compressing destination directory is chosen, we want to copy the source content to a temporary 
+    destination directory first, compress the content there and then copy that content to the final destination 
+    directory ## }}
+    {{ if CompressDestinationDir }}
+    preCompressedDestinationDir="/tmp/_preCompressedDestinationDir"
+    rm -rf $preCompressedDestinationDir
+    OLD_DESTINATION_DIR="$DESTINATION_DIR"
+    DESTINATION_DIR="$preCompressedDestinationDir"
+    {{ end }}
 
-	{{ if CopySourceDirectoryContentToDestinationDirectory }}
-		cd "$SOURCE_DIR"
+    {{ if CopySourceDirectoryContentToDestinationDirectory }}
+        cd "$SOURCE_DIR"
 
-		echo
-		echo "Copying files to destination directory '$DESTINATION_DIR'..."
-		START_TIME=$SECONDS
-		excludedDirectories=""
-		{{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
-		excludedDirectories+=" --exclude {{ excludedDir }}"
-		{{ end }}
+        echo
+        echo "Copying files to destination directory '$DESTINATION_DIR'..."
+        START_TIME=$SECONDS
+        excludedDirectories=""
+        {{ for excludedDir in DirectoriesToExcludeFromCopyToBuildOutputDir }}
+        excludedDirectories+=" --exclude {{ excludedDir }}"
+        {{ end }}
 
-		{{ if OutputDirectoryIsNested }}
-		{{ ## We create destination directory upfront for scenarios where pre or post build commands need access
-		to it. This espceially hanldes the scenario where output directory is a sub-directory of a source directory ## }}
-		tmpDestinationDir="/tmp/__oryxDestinationDir"
-		if [ -d "$DESTINATION_DIR" ]; then
-			mkdir -p "$tmpDestinationDir"
-			rsync -rcE --links "$DESTINATION_DIR/" "$tmpDestinationDir"
-			rm -rf "$DESTINATION_DIR"
-		fi
-		{{ end }}
+        {{ if OutputDirectoryIsNested }}
+        {{ ## We create destination directory upfront for scenarios where pre or post build commands need access
+        to it. This espceially hanldes the scenario where output directory is a sub-directory of a source directory ## }}
+        tmpDestinationDir="/tmp/__oryxDestinationDir"
+        if [ -d "$DESTINATION_DIR" ]; then
+            mkdir -p "$tmpDestinationDir"
+            rsync -rcE --links "$DESTINATION_DIR/" "$tmpDestinationDir"
+            rm -rf "$DESTINATION_DIR"
+        fi
+        {{ end }}
 
-		{{ ## We use checksum and not the '--times' because the destination directory could be from
-		 a different file system (ex: NFS) where setting modification times results in errors.
-		 Even though checksum is slower compared to the '--times' option, it is more reliable
-		 which is important for us. ## }}
-		rsync -rcE --links $excludedDirectories . "$DESTINATION_DIR"
+        {{ ## We use checksum and not the '--times' because the destination directory could be from
+         a different file system (ex: NFS) where setting modification times results in errors.
+         Even though checksum is slower compared to the '--times' option, it is more reliable
+         which is important for us. ## }}
+        rsync -rcE --links $excludedDirectories . "$DESTINATION_DIR"
 
-		{{ if OutputDirectoryIsNested }}
-		if [ -d "$tmpDestinationDir" ]; then
-			{{ # Do not overwrite files in destination directory }}
-			rsync -rcE --links "$tmpDestinationDir/" "$DESTINATION_DIR"
-			rm -rf "$tmpDestinationDir"
-		fi
-		{{ end }}
+        {{ if OutputDirectoryIsNested }}
+        if [ -d "$tmpDestinationDir" ]; then
+            {{ # Do not overwrite files in destination directory }}
+            rsync -rcE --links "$tmpDestinationDir/" "$DESTINATION_DIR"
+            rm -rf "$tmpDestinationDir"
+        fi
+        {{ end }}
 
-		ELAPSED_TIME=$(($SECONDS - $START_TIME))
-		echo "Done in $ELAPSED_TIME sec(s)."
-	{{ else }}
-		{{ if CompressDestinationDir }}
-			{{ ## In case of .NET apps, 'dotnet publish' writes to original destination directory. So here we are 
-			trying to move the files to the temporary destination directory so that they get compressed and these 
-			compressed files are copied to final destination directory ## }}
-			origDestDir="$OLD_DESTINATION_DIR"
-			tempDestDir="$DESTINATION_DIR"
-			cd $origDestDir
-			shopt -s dotglob
-			mkdir -p $tempDestDir
-			mv * "$tempDestDir/"
-		{{ end }}
-	{{ end }}
+        ELAPSED_TIME=$(($SECONDS - $START_TIME))
+        echo "Done in $ELAPSED_TIME sec(s)."
+    {{ else }}
+        {{ if CompressDestinationDir }}
+            {{ ## In case of .NET apps, 'dotnet publish' writes to original destination directory. So here we are 
+            trying to move the files to the temporary destination directory so that they get compressed and these 
+            compressed files are copied to final destination directory ## }}
+            origDestDir="$OLD_DESTINATION_DIR"
+            tempDestDir="$DESTINATION_DIR"
+            cd $origDestDir
+            shopt -s dotglob
+            mkdir -p $tempDestDir
+            mv * "$tempDestDir/"
+        {{ end }}
+    {{ end }}
 
-	{{ if CompressDestinationDir }}
-	DESTINATION_DIR="$OLD_DESTINATION_DIR"
-	echo "Compressing content of directory '$preCompressedDestinationDir'..."
-	cd "$preCompressedDestinationDir"
-	tar -zcf "$DESTINATION_DIR/output.tar.gz" .
-	echo "Copied the compressed output to '$DESTINATION_DIR'"
-	{{ end }}
+    {{ if CompressDestinationDir }}
+    DESTINATION_DIR="$OLD_DESTINATION_DIR"
+    echo "Compressing content of directory '$preCompressedDestinationDir'..."
+    cd "$preCompressedDestinationDir"
+    tar -zcf "$DESTINATION_DIR/output.tar.gz" .
+    echo "Copied the compressed output to '$DESTINATION_DIR'"
+    {{ end }}
 fi
 
 {{ if ManifestFileName | IsNotBlank }}
@@ -200,7 +200,7 @@ MANIFEST_FILE={{ ManifestFileName }}
 
 MANIFEST_DIR={{ ManifestDir }}
 if [ -z "$MANIFEST_DIR" ];then
-	MANIFEST_DIR="$DESTINATION_DIR"
+    MANIFEST_DIR="$DESTINATION_DIR"
 fi
 mkdir -p "$MANIFEST_DIR"
 
@@ -219,11 +219,11 @@ echo "Manifest file created."
 OS_TYPE_SOURCE_DIR="/opt/oryx/.ostype"
 if [ -f "$OS_TYPE_SOURCE_DIR" ]
 then
-	echo "Copying .ostype to manifest output directory."
-	cp "$OS_TYPE_SOURCE_DIR" "$MANIFEST_DIR/.ostype"
+    echo "Copying .ostype to manifest output directory."
+    cp "$OS_TYPE_SOURCE_DIR" "$MANIFEST_DIR/.ostype"
 else
-	echo "File $OS_TYPE_SOURCE_DIR does not exist. Cannot copy to manifest directory." 1>&2
-	exit 1
+    echo "File $OS_TYPE_SOURCE_DIR does not exist. Cannot copy to manifest directory." 1>&2
+    exit 1
 fi
 
 TOTAL_EXECUTION_ELAPSED_TIME=$(($SECONDS - $TOTAL_EXECUTION_START_TIME))
