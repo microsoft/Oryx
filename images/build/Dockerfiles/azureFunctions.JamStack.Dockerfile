@@ -1,4 +1,4 @@
-RG PARENT_DEBIAN_FLAVOR
+ARG PARENT_DEBIAN_FLAVOR
 FROM oryxdevmcr.azurecr.io/public/oryx/cli-bullseye:${PARENT_DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
 
