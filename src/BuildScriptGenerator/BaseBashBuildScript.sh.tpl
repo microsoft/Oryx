@@ -11,8 +11,8 @@ if [ -f {{ LoggerPath }} ]; then
 fi
 
 if [ ! -d "$SOURCE_DIR" ]; then
-    echo "Source directory '$SOURCE_DIR' does not exist." 1>&2
-    exit 1
+	echo "Source directory '$SOURCE_DIR' does not exist." 1>&2
+	exit 1
 fi
 
 {{ # Get full file paths to source and destination directories }}
@@ -21,13 +21,13 @@ SOURCE_DIR=$(pwd -P)
 
 if [ -z "$DESTINATION_DIR" ]
 then
-    DESTINATION_DIR="$SOURCE_DIR"
+	DESTINATION_DIR="$SOURCE_DIR"
 fi
 
 if [ -d "$DESTINATION_DIR" ]
 then
-    cd "$DESTINATION_DIR"
-    DESTINATION_DIR=$(pwd -P)
+	cd "$DESTINATION_DIR"
+	DESTINATION_DIR=$(pwd -P)
 fi
 
 {{ if OutputDirectoryIsNested }}
