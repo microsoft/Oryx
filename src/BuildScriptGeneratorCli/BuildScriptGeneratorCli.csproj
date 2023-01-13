@@ -16,6 +16,8 @@
     <DisableCheckingDuplicateNuGetItems>true</DisableCheckingDuplicateNuGetItems>
     <!-- Remove when proper XML documentation is added to the project. -->
     <DisableDocRequirement>true</DisableDocRequirement>
+    <!-- Added for dotnet sdk 5+ -->
+    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
   </PropertyGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
