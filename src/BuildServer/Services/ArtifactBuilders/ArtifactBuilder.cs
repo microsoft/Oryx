@@ -48,9 +48,7 @@ namespace Microsoft.Oryx.BuildServer.Services.ArtifactBuilders
             };
             try
             {
-#pragma warning disable CA1416 // Validate platform compatibility
                 process.Start();
-#pragma warning restore CA1416 // Validate platform compatibility
                 this.logger.LogInformation($"Process has started for command: {cmd}");
                 var outputHandler = new FileOutputHandler(new StreamWriter(logFilePath), this.logger);
                 process.OutputDataReceived += outputHandler.Handle;
