@@ -47,8 +47,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 "zlib1g",
                 "libuuid1",
                 "libunwind8");
-            stringBuilder.AppendLine($"if grep -q cli \"/opt/oryx/.imagetype\" ; then");
+            stringBuilder.AppendLine("if grep -q cli \"/opt/oryx/.imagetype\"; then");
             InstallPythonToolingAndLanguage(stringBuilder);
+            stringBuilder.AppendLine("fi");
         }
     }
 }
