@@ -57,7 +57,7 @@ RUN apt-get update \
         zlib1g \
         rsync \
         libgdiplus \
-        # Required for mysqlclient
+         # Required for mysqlclient
         default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \

@@ -1,5 +1,5 @@
 ARG PARENT_DEBIAN_FLAVOR
-FROM oryxdevmcr.azurecr.io/public/oryx/cli-bullseye:${PARENT_DEBIAN_FLAVOR} AS main
+FROM oryxdevmcr.azurecr.io/public/oryx/cli-bullseye:debian-bullseye AS main
 ARG DEBIAN_FLAVOR
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /tmp
@@ -12,6 +12,7 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8"
+    
 RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
@@ -45,7 +46,7 @@ RUN apt-get update \
     && mkdir -p /opt/oryx
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG BUILD_DIR="/opt/tmp/build"
-RUN ${IMAGES_DIR}/build/installHugo.sh
+
 RUN set -ex \
  && yarnCacheFolder="/usr/local/share/yarn-cache" \
  && mkdir -p $yarnCacheFolder \
@@ -68,7 +69,6 @@ RUN set -ex \
 RUN set -ex \
  && mkdir -p /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
-
 
 RUN set -ex \
     # Install Python SDKs
