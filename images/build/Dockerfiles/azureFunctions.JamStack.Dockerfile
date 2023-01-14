@@ -52,6 +52,7 @@ RUN set -ex \
  && mkdir -p $yarnCacheFolder \
  && chmod 777 $yarnCacheFolder \
  && . ${BUILD_DIR}/__nodeVersions.sh \
+ && ${IMAGES_DIR}/installPlatform.sh nodejs $NODE16_VERSION \
  && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
  && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
  && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
@@ -106,12 +107,22 @@ RUN set -ex \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
-ARG IMAGES_DIR="/opt/tmp/images"
-ARG BUILD_DIR="/opt/tmp/build"
-ARG HUGO_DIR="/opt/hugo"
-RUN oryx prep --skip-detection --platforms-and-versions nodejs \
+RUN set -ex \
+    && tmpDir="/opt/tmp" \
+    && imagesDir="$tmpDir/images" \
+    && buildDir="$tmpDir/build" \
+    && pip3 install pip --upgrade \
+    && pip install --upgrade cython \
+    && pip3 install --upgrade cython \
+    && . $buildDir/__pythonVersions.sh \
+    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
+    && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && ldconfig \
+    && cd /opt/python \
+    && ln -s $PYTHON38_VERSION 3.8 \
+    && ln -s $PYTHON38_VERSION latest \
+    && ln -s $PYTHON38_VERSION stable \
     && echo "jamstack" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
-    && rm -rf ${HUGO_DIR}
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 
