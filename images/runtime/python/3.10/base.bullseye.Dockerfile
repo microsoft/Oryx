@@ -51,7 +51,8 @@ RUN chmod +x /tmp/build.sh && \
         build-essential \
         tk-dev \
         uuid-dev \
-        libgeos-dev
+        libgeos-dev \
+        python3.10-dev
 
 RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION
 

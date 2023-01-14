@@ -40,6 +40,7 @@ then
         build-essential \
         libgeos-dev \
 
+    echo "BEFORE python3.10-dev"
     # required for python 3.10/3.11 regex library 
     if  [ "${PYTHON_VERSION[1]}" == "10" ] || [ "${PYTHON_VERSION[1]}" == "11" ]; then
         noninteractive apt-get install -y --no-install-recommends python3.${PYTHON_VERSION[1]}-dev
