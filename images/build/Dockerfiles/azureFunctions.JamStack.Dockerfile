@@ -1,5 +1,5 @@
 ARG PARENT_DEBIAN_FLAVOR
-FROM oryxdevmcr.azurecr.io/public/oryx/cli-{DEBIAN_FLAVOR}:{PARENT_DEBIAN_FLAVOR} AS main
+FROM oryxdevmcr.azurecr.io/public/oryx/cli-${DEBIAN_FLAVOR}:${PARENT_DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /tmp
