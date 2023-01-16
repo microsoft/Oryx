@@ -17,8 +17,9 @@ namespace Microsoft.Oryx.Tests.Common
         public const string JamStackBullseyeBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-debian-bullseye";
         public const string JamStackBusterBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-debian-buster";
         public const string JamStackBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-debian-stretch";
-        public const string CliBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/cli:debian-stretch";
+        public const string CliBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/cli-stretch:debian-stretch";
         public const string CliBusterBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/cli-buster:debian-buster";
+        public const string CliBullseyeBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/cli-bullseye:debian-buster";
         public const string LtsVerionsBusterBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-debian-buster";
         public const string VsoUbuntuBuildImageName = "oryxdevmcr.azurecr.io/public/oryx/build:vso-ubuntu-focal";
 
