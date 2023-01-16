@@ -1,5 +1,5 @@
 ARG PARENT_DEBIAN_FLAVOR
-FROM oryxdevmcr.azurecr.io/public/oryx/cli-bullseye:debian-bullseye AS main
+FROM oryxdevmcr.azurecr.io/public/oryx/cli-{DEBIAN_FLAVOR}:{PARENT_DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /tmp
@@ -70,44 +70,11 @@ RUN set -ex \
 RUN set -ex \
  && mkdir -p /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
-
+  
 RUN set -ex \
     # Install Python SDKs
     # Upgrade system python
     && PYTHONIOENCODING="UTF-8" \
-    # It's not clear whether these are needed at runtime...
-    && apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
-        git \
-        make \
-        unzip \
-        # The tools in this package are used when installing packages for Python
-        build-essential \
-        moreutils \
-        python3-pip \
-        swig \
-        tk-dev \
-        unixodbc-dev \
-        uuid-dev \
-        # Required for PostgreSQL
-        libpq-dev \
-        # Required for mysqlclient
-        default-libmysqlclient-dev \
-        # Required for ts
-        moreutils \
-        rsync \
-        zip \
-        tk-dev \
-        uuid-dev \
-        #TODO : Add these to fix php failures. Check if these can be removed.
-        libargon2-0 \
-        libonig-dev \
-        libedit-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    # This is the folder containing 'links' to benv and build script generator
-    && mkdir -p /opt/oryx
-RUN set -ex \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
