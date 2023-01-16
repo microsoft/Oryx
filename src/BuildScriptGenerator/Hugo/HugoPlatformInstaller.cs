@@ -33,7 +33,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             snippet
                 .AppendLine()
                 .AppendLine("IMAGES_DIR=\"/opt/tmp/images\"")
+                .AppendLine("if grep -q jamstack \"/opt/oryx/.imagetype\"; then")
                 .AppendLine("${IMAGES_DIR}/build/installHugo.sh")
+                .AppendLine("fi")
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")
                 .AppendLine("echo")
                 .AppendLine(
