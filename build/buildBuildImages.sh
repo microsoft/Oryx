@@ -486,6 +486,9 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildGitHubActionsImage "bullseye"
 	buildGitHubActionsImage "buster"
 	buildGitHubActionsImage
+	buildCliImage "buster"
+	buildCliImage "bullseye"
+	buildCliImage
 	buildJamStackImage "bullseye"
 	buildJamStackImage "buster"
 	buildJamStackImage
@@ -494,8 +497,6 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildLatestImages
 	buildVsoImage "focal"
 	buildVsoImage "bullseye"
-	buildCliImage "buster"
-	buildCliImage
 	buildBuildPackImage
 	buildFullImage "buster"
 	buildFullImage "bullseye"
