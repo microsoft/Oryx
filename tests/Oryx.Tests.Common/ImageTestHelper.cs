@@ -517,6 +517,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string PackRepository = "pack";
         public const string CliRepository = "cli";
         public const string CliBusterRepository = "cli-buster";
+        public const string CliBullseyeRepository = "cli-bullseye";
         public const string CliStretchTag = "debian-stretch";
         public const string CliBusterTag = "debian-buster";
         public const string LatestStretchTag = "debian-stretch";
