@@ -229,10 +229,10 @@ function buildGitHubActionsImage() {
 function buildJamStackImage() {
 	local debianFlavor=$1
 	local devImageTag=azfunc-jamstack
-	local parentImageTag=github
+	local parentImageTag=cli
 	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
 
-	buildGitHubActionsImage $debianFlavor
+	buildCliImage $debianFlavor
 
 	if [ -z "$debianFlavor" ]; then
 		debianFlavor="stretch"
@@ -486,9 +486,6 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildGitHubActionsImage "bullseye"
 	buildGitHubActionsImage "buster"
 	buildGitHubActionsImage
-	buildCliImage "buster"
-	buildCliImage "bullseye"
-	buildCliImage
 	buildJamStackImage "bullseye"
 	buildJamStackImage "buster"
 	buildJamStackImage
@@ -497,6 +494,9 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildLatestImages
 	buildVsoImage "focal"
 	buildVsoImage "bullseye"
+	buildCliImage "buster"
+	buildCliImage "bullseye"
+	buildCliImage
 	buildBuildPackImage
 	buildFullImage "buster"
 	buildFullImage "bullseye"
