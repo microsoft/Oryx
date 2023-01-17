@@ -1,0 +1,56 @@
+<!--
+  This file is used to render a list of all posts that belong to a specific
+  category.
+-->
+
+
+{{ partial "header.html" . }}
+
+<body class="theme-base-08">
+  {{ partial "sidebar.html" . }}
+
+  <!--
+    Taken from Lanyon example site.
+
+    Putting everything in the wrap div makes the whole page slide over when the
+    navigation button is pressed.
+
+    The masthead is a special Lanyon class that is above the horizontal line at
+    the top of each page. To me it seemed like a place to put the page title.
+
+    We want the title to be Blog Posts and we want it to be a link to the
+    root of the /posts section of the site.
+
+  -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/posts" title="Blog">Blog Posts</a>
+        </h3>
+      </div>
+    </div>
+
+  <!-- Show summary of all posts in a category -->
+    <div class="container content">
+      <h1 class="post-title">Recent Posts</h1>
+        <section id="main">
+          <div>
+            <h5><a href="/categories">Full Category Index</a></h5>
+            <h2>Posts in &ldquo;{{ .Title }}&rdquo;</h2>
+            {{ range .Data.Pages }}
+            {{ .Render "summary"}}
+            {{ end }}
+          </div>
+        </section>
+
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <!-- Include footer (ends <body> and <html>) -->
+  {{ partial "footer.html" }}
+
+
+

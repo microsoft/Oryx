@@ -1,0 +1,96 @@
+
+# This is a basic workflow to help you get started with Actions
+
+name: Playwright tests
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule: 
+    # nightly
+    - cron: '0 0 * * *'
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  test:
+    # Runs on an ubuntu runner
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+    - name: Install dependencies
+      run: npm ci
+    - name: Install Playwright
+      run: npx playwright install --with-deps
+    - name: Install serve
+      run: npm install serve
+    - name: Build production build
+      run: npm run build
+    - name: Run playwright tests
+      run: npm run test
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+    - name: Upload HTML report as Artifact
+      uses: actions/upload-artifact@v2
+      env:
+          TAG_NAME: test-report-${{ steps.date.outputs.date }}
+      if: always()
+      with: 
+        name: onDemand
+        path: pw-report/
+
+  storeReports:
+    name: Store reports
+    if: ${{ always() }}
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v3
+      id: download
+    - name: Publish to external repo
+      if: always()
+      uses: peaceiris/actions-gh-pages@v3.7.3
+      with:
+        external_repository: mspnp/intern-js-pipeline
+        publish_branch: gh-pages
+        personal_token: ${{ secrets.PAT_TOKEN }}
+        publish_dir: ${{steps.download.outputs.download-path}}
+        destination_dir: test-reports/${{ github.repository }}
+        keep_files: true
+        user_name: "github-actions[bot]"
+        user_email: "github-actions[bot]@users.noreply.github.com"
+
+  notify-dashboard:
+    name: Notify Dashboard
+    if: ${{ always() }}
+    needs: [test, storeReports]
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a single command using the runners shell
+      - name: Notify docusaurus repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          gh api repos/mspnp/intern-js-pipeline/dispatches \
+              --raw-field event_type=rebuild-site

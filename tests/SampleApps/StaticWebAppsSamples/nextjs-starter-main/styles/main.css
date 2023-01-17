@@ -1,0 +1,188 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #fbfbfb;
+  font-family: 'PT Sans', sans-serif;
+}
+
+h1 {
+  font-size: 36px;
+  margin-bottom: 45px;
+  margin-top: 100px;
+}
+
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card-small {
+  width: 346px;
+  height: 256px;
+  border-radius: 6px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 28px;
+  padding-bottom: 28px;
+  color: #393939;
+  text-decoration: none;
+  background-color: #ffffff;
+  transition: ease-in-out background-color 0.15s;
+}
+
+.card-small:hover {
+  background-color: #f1f9ff;
+  cursor: pointer;
+}
+
+.card-small h3 {
+  margin-top: 40px;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 1.1px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 346px);
+  grid-template-rows: repeat(2, 256);
+  grid-gap: 50px;
+}
+
+.project {
+  display: flex;
+}
+
+.project > aside {
+  background-color: #ffffff;
+  height: 100vh;
+  flex-basis: 400px;
+  padding-top: 50px;
+  border-right: 1px solid #e1e1e1;
+}
+
+.project > main {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding-top: 50px;
+}
+
+.project h3 {
+  text-transform: uppercase;
+  font-size: 18px;
+  text-align: center;
+  padding-bottom: 30px;
+  border-bottom: 2px dashed #e1e1e1;
+}
+
+.project ul {
+  margin-top: 30px;
+}
+
+.project ul > li {
+  border-bottom: 1px solid #cdebff;
+}
+
+.project ul > li > a {
+  transition: ease-in-out background-color 0.15s;
+  text-decoration: none;
+  color: #393939;
+  display: block;
+  padding: 20px 15px;
+  text-transform: capitalize;
+}
+
+.project ul > li > a:hover {
+  background-color: #f1f9ff;
+  cursor: pointer;
+}
+
+.card-big {
+  width: 826px;
+  height: 840px;
+  background: #ffffff;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+}
+
+.stats {
+  display: flex;
+  width: 388px;
+  justify-content: space-between;
+}
+
+.stats > div {
+  text-align: right;
+  width: 70px;
+}
+
+.stats-details > div {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.stats-details > div > p {
+  color: #393939;
+  margin-left: 4px;
+}
+
+.stats-details > p {
+  color: #858585;
+}
+
+.description {
+  color: #555555;
+  margin: 80px 0;
+  width: 400px;
+  line-height: 21px;
+}
+
+.cta {
+  display: flex;
+  justify-content: space-around;
+  width: 400px;
+  align-items: center;
+}
+
+.cta a {
+  display: block;
+  width: 177px;
+  height: 46px;
+  line-height: 46px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 0;
+  color: #ffffff;
+  transition: ease-in-out opacity 0.15s;
+}
+
+.cta a:hover {
+  opacity: 0.9;
+  cursor: pointer;
+}
+
+.cta a svg {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+
+.button-azure {
+  background: #2980B9;
+}
+
+.button-github {
+  background: #393939;
+}

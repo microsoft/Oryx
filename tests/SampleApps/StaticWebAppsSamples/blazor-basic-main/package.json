@@ -1,0 +1,11 @@
+{
+  "name": "blazor-basic",
+  "version": "1.0.0",
+  "scripts": {
+    "start" : "dotnet run --project Client",
+    "playwright_test" : "playwright test"
+  },
+ "devDependencies": {
+    "@playwright/test": "^1.22.2"
+  }
+}

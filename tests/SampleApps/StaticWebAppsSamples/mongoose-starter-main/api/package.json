@@ -1,0 +1,14 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests yet...\""
+  },
+  "dependencies": {
+    "config": "^3.3.7",
+    "dotenv": "^16.0.1",
+    "mongoose": "^5.10.11"
+  }
+}

@@ -1,0 +1,121 @@
+[[social_icons]]
+id = "email"
+url = "mailto:%s"
+title = "Email me"
+icon = "fas fa-envelope"
+
+[[social_icons]]
+id = "facebook"
+url = "https://www.facebook.com/%s"
+title = "Facebook"
+icon = "fab fa-facebook"
+
+[[social_icons]]
+id = "googleplus"
+url = "https://www.plus.google.com/%s"
+title = "Google+"
+icon = "fab fa-google-plus"
+
+[[social_icons]]
+id = "gitlab"
+url = "https://gitlab.com/%s"
+title = "GitLab"
+icon = "fab fa-gitlab"
+
+[[social_icons]]
+id = "github"
+url = "https://github.com/%s"
+title = "GitHub"
+icon = "fab fa-github"
+
+[[social_icons]]
+id = "twitter"
+url = "https://twitter.com/%s"
+title = "Twitter"
+icon = "fab fa-twitter"
+
+[[social_icons]]
+id = "reddit"
+url = "https://reddit.com/u/%s"
+title = "Reddit"
+icon = "fab fa-reddit-alien"
+
+[[social_icons]]
+id = "linkedin"
+url = "https://linkedin.com/in/%s"
+title = "LinkedIn"
+icon = "fab fa-linkedin"
+
+[[social_icons]]
+id = "xing"
+url = "https://www.xing.com/profile/%s"
+title = "Xing"
+icon = "fab fa-xing"
+
+[[social_icons]]
+id = "stackoverflow"
+url = "https://stackoverflow.com/%s"
+title = "StackOverflow"
+icon = "fab fa-stack-overflow"
+
+[[social_icons]]
+id = "snapchat"
+url = "https://www.snapchat.com/add/%s"
+title = "Snapchat"
+icon = "fab fa-snapchat-ghost"
+
+[[social_icons]]
+id = "instagram"
+url = "https://www.instagram.com/%s"
+title = "Instagram"
+icon = "fab fa-instagram"
+
+[[social_icons]]
+id = "youtube"
+url = "https://www.youtube.com/%s"
+title = "Youtube"
+icon = "fab fa-youtube"
+
+[[social_icons]]
+id = "soundcloud"
+url = "https://soundcloud.com/%s"
+title = "SoundCloud"
+icon = "fab fa-soundcloud"
+
+[[social_icons]]
+id = "spotify"
+url = "https://open.spotify.com/user/%s"
+title = "Spotify"
+icon = "fab fa-spotify"
+
+[[social_icons]]
+id = "bandcamp"
+url = "https://%s.bandcamp.com/"
+title = "Bandcamp"
+icon = "fab fa-bandcamp"
+
+[[social_icons]]
+id = "itchio"
+url = "https://itch.io/profile/%s"
+title = "itch.io"
+icon = "fas fa-gamepad"
+
+[[social_icons]]
+id = "steam"
+url = "https://steamcommunity.com/id/%s"
+title = "Steam"
+icon = "fab fa-steam"
+
+[[social_icons]]
+id = "keybase"
+url = "https://keybase.io/%s"
+title = "Keybase"
+icon = "fab fa-keybase"
+
+[[social_icons]]
+id = "Goodreads"
+url = "https://www.goodreads.com/%s"
+title = "Goodreads"
+icon = "fab fa-goodreads"
+
+

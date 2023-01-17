@@ -1,0 +1,9 @@
+spec:
+  name: sample-hugo
+  static_sites:
+  - build_command: rm -r ./public; hugo --destination ./public
+    environment_slug: hugo
+    git:
+      branch: main
+      repo_clone_url: https://github.com/digitalocean/sample-hugo.git
+    name: sample-hugo

@@ -1,0 +1,42 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Static Web Apps custom roles</title>
+    <style>
+        body {
+            background-color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Azure Static Web Apps custom roles demo</h1>
+    <div>
+        <a href="/.auth/login/aad">Login</a> | <a href="/.auth/logout">Logout</a>
+    </div>
+    <hr>
+    <div>
+        <ul>
+            <li><a href="/anonymous/">All users can access this page</a></li>
+            <li><a href="/authenticated/">All authenticated users can access this page</a></li>
+            <li><a href="/admin/">Only users in the admin custom role can access this page</a></li>
+        </ul>
+    </div>
+    <hr>
+    <pre></pre>
+    <script>
+        async function getUserInfo() {
+            const response = await fetch('/.auth/me');
+            const user = await response.json();
+            const pre = document.querySelector('pre');
+            pre.textContent = JSON.stringify(user, null, 2);
+        }
+
+        getUserInfo();
+    </script>
+</body>
+
+</html>

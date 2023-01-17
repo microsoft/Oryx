@@ -1,0 +1,29 @@
+<!--
+  This is a helper file that adds previous and next links to the bottom of each
+  blog post. (below next and previous refer to chronological next and previous)
+
+  It will check to see if there is a previous blog post. If is, it will print
+  an arrow as well as the title of the previous post as a link as
+  left-justified text.
+
+  It will then check for a next blog post. If there is one it prints the title
+  of the next post with a right arrow as right justified text on the same line.
+
+  If there is ever not a next or previous post, it does nothing.
+-->
+
+<div class="container">
+  <hr />
+  <hr />
+  {{if .Prev}}
+    <span class="left">
+    &nbsp; <em>&laquo; Previous:</em> <a class="next" href="{{.Prev.Permalink}}">{{.Prev.Title}}</a>
+    </span>
+  {{end}}
+
+  {{if .Next}}
+    <span class="right">
+    <em>Next: </em><a class="next" href="{{.Next.Permalink}}"> &nbsp; {{ .Next.Title }}</a> &raquo;
+    </span>
+  {{end}}
+</div>

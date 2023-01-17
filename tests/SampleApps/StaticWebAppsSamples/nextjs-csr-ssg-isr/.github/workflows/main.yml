@@ -1,0 +1,82 @@
+on: 
+ workflow_dispatch:
+  inputs:
+   base-image:
+     description: 'Base image'
+     default: 'mcr.microsoft.com/oryx/build:azfunc-jamstack-debian-bullseye-20221214.1'
+   application-location:
+      description: 'Application location'
+      default: '/'   
+
+jobs:
+  oryx_build_job:
+    runs-on: ubuntu-latest
+    name: Oryx build
+    steps:
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install Azure-cli
+        uses: elstudio/action-install-azure-cli@v1
+      - name: Log into registry
+        uses: azure/login@v1
+        with:
+         creds: '${{ secrets.AZURE_CREDENTIALS }}'
+      - name: Log in to Azure Container Registry
+        uses: docker/login-action@v2.0.0
+        with: 
+         registry: jamstacktest.azurecr.io
+         username: ${{ secrets.AZURE_CLIENT_ID }}
+         password: ${{ secrets.AZURE_CLIENT_SECRET }}         
+      - name: Oryx build step
+        uses: ./ # Uses an action in the root directory
+        id: oryx-build
+        with:
+          app-location: "/"
+  Deploy-preview-Vercel:
+    runs-on: ubuntu-latest
+    name: Deploy to Vercel
+    steps:   
+      - name: Install vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run:  vercel pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }} 
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --token=${{ secrets.VERCEL_TOKEN }}  
+  # netlify-build:
+  #   name: Netlify build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Curl request
+  #       run: curl -X POST -d {} https://api.netlify.com/build_hooks/63a18125241d2b63140db12e   
+
+  # Deploy-Netlify:
+  #   runs-on: ubuntu-latest
+  #   name : Deploy to Netlify
+  #   env:
+  #         NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+  #         NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+  #         publish-dir: '.next'
+
+  #   steps:
+  #     - name: Install netlify cli
+  #       run: npm install netlify-cli -g
+  #     - name: Log in to netlify
+  #       run: netlify login 
+  #     - name: Run build
+  #       run: netlify build
+  #     - name: Deploy to netlify
+  #       run: netlify deploy 
+      # - name: Deploy to Netlify
+      #   uses: nwtgck/actions-netlify@v1.2
+      #   with:
+      #     publish-dir: './'
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     deploy-message: "Deploy from GitHub Actions"
+      #   env:
+      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        

@@ -1,0 +1,24 @@
+<!--
+  This file defines how a summary of a specifc post should be presented. This
+  is similar to the file /layouts/posts/li.html, but is meant have a bit longer
+  of a representation than the one in that file.
+
+  This template does the following:
+  (1) Shows the name of the post
+  (2) Shows the date the post was created (from metadata in post markdown
+      source)
+  (3) Displays a Hugo-generated summary of the post
+  (4) Provides a link with text Read More that points to the post
+-->
+
+<article class="post">
+    <header>
+      <h2><a href='{{ .Permalink }}'> {{ .Title }}</a> </h2>
+      <div class="meta">{{ .Date.Format "Mon, Jan 2, 2006" }}</div>
+    </header>
+
+    {{ .Summary }}
+    <footer>
+        <a href='{{ .Permalink }}'><nobr>Read more →</nobr></a>
+    </footer>
+</article>

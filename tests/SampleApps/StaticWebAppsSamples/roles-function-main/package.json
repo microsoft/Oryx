@@ -1,0 +1,11 @@
+{
+  "name": "roles-function",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "swa start frontend --api-location api",
+    "playwright_test": "playwright test"
+  },
+"devDependencies": {
+    "@playwright/test": "^1.22.2"
+  }
+}

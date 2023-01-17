@@ -1,0 +1,37 @@
+{
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.8.1",
+    "ajv": "^8.11.0",
+    "axios": "^0.27.2",
+    "ci": "^2.2.0",
+    "playwright": "^1.23.0",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "react-redux": "^8.0.1",
+    "react-scripts": "^5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "swa start http://localhost:3000 --api-location ./api --run 'react-scripts start'",
+    "dev": "swa start http://localhost:3000 --api-location ./api --run 'react-scripts start'",
+    "dev:install": "npm install && cd api && npm install && func init --language javascript --worker-runtime node",
+    "build": "react-scripts build",
+    "playwright_test": "playwright test"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@azure/static-web-apps-cli": "^1.0.1",
+    "@playwright/test": "^1.23.0"
+  }
+}

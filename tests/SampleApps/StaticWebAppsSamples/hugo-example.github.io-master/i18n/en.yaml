@@ -1,0 +1,8 @@
+# Content
+- id: dateFormat
+  translation: "January 2, 2006"
+- id: postedOnDate
+  translation: "Posted on"
+# Footer
+- id: poweredBy # Accepts HTML
+  translation: "{{ .Site.LastChange }}"

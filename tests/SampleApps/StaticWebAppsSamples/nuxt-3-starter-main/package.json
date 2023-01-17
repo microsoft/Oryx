@@ -1,0 +1,16 @@
+{
+  "name": "nuxt-3-starter",
+  "version": "1.0.0",
+  "description": "My Nuxt 3 Test",
+  "author": "Nuzhat Minhaz",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview"
+  },
+  "devDependencies": {
+    "nuxt": "3.0.0-rc.6"
+  }
+}

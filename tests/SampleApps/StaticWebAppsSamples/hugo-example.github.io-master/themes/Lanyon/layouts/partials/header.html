@@ -1,0 +1,16 @@
+<!--
+  This is the actual header for each page of the site except the homepage.
+
+  It simply shows the title of the page and includes the css/fonts found in
+  /layouts/chrome/header.html
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <base href="{{ .Site.BaseURL }}">
+    <title> {{ .Title }} </title>
+    <link rel="canonical" href="{{ .Permalink }}">
+    {{ partial "head_includes.html" . }}
+</head>

@@ -1,0 +1,9 @@
+name: sample-hugo
+static_sites:
+- build_command: rm -r ./public; hugo --destination ./public
+  environment_slug: hugo
+  github:
+    branch: main
+    deploy_on_push: true
+    repo: digitalocean/sample-hugo
+  name: sample-hugo

@@ -1,0 +1,51 @@
+<!--
+  This file is responsible for rendering a single blog post.
+-->
+
+{{ partial "header.html" . }}
+
+<body class="theme-base-08">
+  {{ partial "sidebar.html" . }}
+
+  <!-- See /layouts/indexes/category.html for explanation of this section -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/posts" title="Blog">Blog Posts</a>
+        </h3>
+      </div>
+    </div>
+
+    <!--
+      This is where the actual post is displayed.
+
+      We first access the title metadata field from the markdown source and
+      display it as a heading.
+
+      We then access the date the post was written (also in the markdown
+      metadata) and display a formated version of it
+
+      Finally we include the actual content of the post.
+    -->
+    <div class="container content">
+      <h1 class="post-title">{{ .Title }}</h1>
+        <section id="main">
+          <h5 id="date"> {{ .Date.Format "Mon Jan 2, 2006" }} </h5>
+          {{ .Content }}
+        </section>
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  {{ partial "prev_next.html" . }}
+  <br />
+  {{ partial "categories.html" . }}
+
+
+  <!-- Include footer (ends <body class="theme-base-08"> and <html>) -->
+  {{ partial "footer.html" }}
+
+
+

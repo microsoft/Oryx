@@ -1,0 +1,52 @@
+<!--
+  This file is used to generate the root file of a Hugo index.
+  In our case this is only the index for categories, so it will render the
+  page baseurl/categories
+-->
+
+{{ partial "header.html" . }}
+
+<body class="theme-base-08">
+  {{ partial "sidebar.html" . }}
+
+  <!-- See /layouts/indexes/category.html for explanation of this section -->
+  <div class="wrap">
+    <div class="masthead">
+      <div class="container">
+        <h3 class="masthead-title">
+          <a href="/posts" title="Blog">Blog Posts</a>
+        </h3>
+      </div>
+    </div>
+
+    <!--
+      In this section we instruct Hugo to list all the different items in the
+      index. Because we only have an index for categories, each item will be
+      a category name. The name is a link to a page that displays all posts in
+      that category.
+
+      We also list the number of entries in each category in parenthesis next
+      to the category name.
+    -->
+    <div class="container content">
+        <section id="main">
+          <div>
+            <h1>Archive of Posts, by {{ .Data.Singular }}</h1>
+            <ul class="category">
+              {{ $data := .Data }}
+              {{ range $key,$value := .Data.Index.ByCount }}
+              <li><a href="/{{ $data.Plural }}/{{ $value.Name | urlize }}"> {{ $value.Name }} </a> ({{ $value.Count }} entries) </li>
+              {{ end }}
+            </ul>
+          </div>
+        </section>
+    </div>
+  </div>
+
+  <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+
+  <!-- Include footer (ends <body> and <html>) -->
+  {{ partial "footer.html" }}
+
+
+
