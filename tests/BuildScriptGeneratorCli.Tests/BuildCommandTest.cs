@@ -425,7 +425,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             Assert.NotNull(configurationRoot.Providers);
             var providers = configurationRoot.Providers.ToArray();
             Assert.Equal(3, providers.Length);
-            Assert.IsType<IniConfigurationProvider>(providers[0]);
+            _ = Assert.IsType<IniConfigurationProvider>(providers[0]);
             Assert.IsType<EnvironmentVariablesConfigurationProvider>(providers[1]);
             Assert.IsType<CustomConfigurationSource>(providers[2]);
         }

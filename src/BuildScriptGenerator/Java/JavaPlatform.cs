@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
                 // Since the --quiet option is too quiet, we are trying to use a new switch below to just mute the
                 // messages related to transfer progress of these downloads.
                 // https://maven.apache.org/docs/3.6.1/release-notes.html#user-visible-changes
-                var currentMavenVersion = new SemVer.Version(javaPlatformDetectorResult.MavenVersion);
+                var currentMavenVersion = new SemanticVersioning.Version(javaPlatformDetectorResult.MavenVersion);
                 if (currentMavenVersion.CompareTo(JavaConstants.MinMavenVersionWithNoTransferProgressSupport) >= 0)
                 {
                     command = $"{command} --no-transfer-progress";

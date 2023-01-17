@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Microsoft.Oryx.SharedCodeGenerator
 {
@@ -23,7 +22,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             }
             else
             {
-                this.SemanticVersion = new SemVer.Version(this.DisplayVersion, loose: true);
+                this.SemanticVersion = new SemanticVersioning.Version(this.DisplayVersion, loose: true);
             }
         }
 
@@ -31,7 +30,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
 
         public string Platform { get; }
 
-        public SemVer.Version SemanticVersion { get; }
+        public SemanticVersioning.Version SemanticVersion { get; }
 
         public Version Version { get; }
 

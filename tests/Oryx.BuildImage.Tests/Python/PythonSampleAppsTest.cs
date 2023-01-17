@@ -946,7 +946,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app1-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version 3.10.8")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python310Version}")
                 .AddCommand($"python -V")
                 .AddCommand($"python -c \"import lzma\"")
                 .ToString();
@@ -1503,7 +1503,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    var semVer = new SemVer.Version(version);
+                    var semVer = new SemanticVersioning.Version(version);
                     var virtualEnvSuffix = $"{semVer.Major}.{semVer.Minor}";
                     Assert.Matches($"Pre-build script: /opt/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
                     Assert.Matches($"Pre-build script: /opt/python/{version}/bin/pip", result.StdOut);
@@ -1632,7 +1632,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         private string GetDefaultVirtualEnvName(string version)
         {
-            var ver = new SemVer.Version(version);
+            var ver = new SemanticVersioning.Version(version);
             return $"pythonenv{ver.Major}.{ver.Minor}";
         }
     }

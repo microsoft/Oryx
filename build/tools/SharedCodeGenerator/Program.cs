@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.Oryx.SharedCodeGenerator.Outputs;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace Microsoft.Oryx.SharedCodeGenerator
 {
@@ -107,10 +108,11 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             {
                 sw.WriteLine("# Supported platforms and versions");
                 sw.WriteLine();
-                foreach (var subDirPath in Directory.GetDirectories(platformsDir))
+                foreach (var subDirPath in Directory.GetDirectories(platformsDir).OrderBy(n => n))
                 {
                     var subDirInfo = new DirectoryInfo(subDirPath);
-                    var platformSubDirPaths = Directory.GetDirectories(subDirPath);
+                    var unsortedPlatformSubDirPaths = Directory.GetDirectories(subDirPath);
+                    var platformSubDirPaths = unsortedPlatformSubDirPaths.OrderBy(n => n).ToArray();
                     var platformName = subDirInfo.Name;
                     foreach (var platformSubDirPath in platformSubDirPaths)
                     {
@@ -153,7 +155,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         /// <param name="versionsPath">directory at which the versionsToBuild.txt and optional legacyVersions.txt file is found.</param>
         private static void AddVersions(StreamWriter sw, string versionsPath, string platformName)
         {
-            foreach (var osTypeDirPath in Directory.GetDirectories(versionsPath))
+            foreach (var osTypeDirPath in Directory.GetDirectories(versionsPath).OrderBy(n => n))
             {
                 var osTypeDirInfo = new DirectoryInfo(osTypeDirPath);
                 var osType = osTypeDirInfo.Name;
@@ -224,7 +226,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator
         private static T LoadFromString<T>(string content)
         {
             var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
-                .WithNamingConvention(new YamlDotNet.Serialization.NamingConventions.CamelCaseNamingConvention())
+                .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .Build();
             var obj = deserializer.Deserialize<T>(content);
             return obj;

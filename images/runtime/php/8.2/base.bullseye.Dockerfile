@@ -1,6 +1,6 @@
 FROM oryxdevmcr.azurecr.io/private/oryx/php-8.2
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.2.0
+ENV PHP_VERSION 8.2.1
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
@@ -22,7 +22,7 @@ RUN echo -e 'ServerTokens Prod' >> /etc/apache2/apache2.conf
 RUN { \
    echo '<DirectoryMatch "^/.*/\.git/">'; \
    echo '   Order deny,allow'; \
-   echo '   Deny from all'; \
+   echo '   Deny from all'; \ 
    echo '</DirectoryMatch>'; \
 } >> /etc/apache2/apache2.conf
 

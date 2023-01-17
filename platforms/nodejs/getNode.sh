@@ -31,6 +31,7 @@ getNode() {
 			# Continue adding the version metadata with the name of Version
 			# which is what our legacy CLI will use
 			sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+			cp "$nodePlatformDir/versions/$debianFlavor/defaultVersion.txt" "$hostNodeArtifactsDir/defaultVersion.txt"
 	else
 			tarFileName=nodejs-$debianFlavor-$version.tar.gz
 			metadataFile="$hostNodeArtifactsDir/nodejs-$debianFlavor-$version-metadata.txt"
