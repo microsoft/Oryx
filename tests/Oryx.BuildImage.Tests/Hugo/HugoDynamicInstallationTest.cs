@@ -231,8 +231,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var expectedText = GoVersions.GoVersion;
+            var appName = SampleAppName;
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddCommand("go version")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
 
             // Act
