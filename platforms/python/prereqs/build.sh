@@ -6,6 +6,8 @@
 
 set -ex
 
+echo "inside build.sh"
+
 pythonVersion=$PYTHON_VERSION 
 
 wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /python.tar.xz
@@ -39,6 +41,9 @@ then
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         build-essential \
         libgeos-dev \
+        zlib1g-dev \
+        libnss3-dev \
+        libffi-dev \
 
     echo "BEFORE python3.10-dev"
     # required for python 3.10/3.11 regex library 
