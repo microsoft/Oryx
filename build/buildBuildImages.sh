@@ -535,7 +535,7 @@ elif [ "$imageTypeToBuild" == "vso-focal" ]; then
 	buildVsoImage "focal"
 elif [ "$imageTypeToBuild" == "vso-bullseye" ]; then
 	buildVsoImage "bullseye"
-elif [ "$imageTypeToBuild" == "cli" ]; then
+elif [ "$imageTypeToBuild" == "cli-stretch" ]; then
 	buildCliImage
 	buildCliImage "buster"
 	buildCliImage "bullseye"

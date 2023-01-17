@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 appName, runtimeVersion, _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage());
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
         [InlineData(NetCoreApp50MvcApp, "5.0")]

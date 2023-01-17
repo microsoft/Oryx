@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [InlineData(PhpVersions.Php74Version, ImageTestHelperConstants.CliRepository)]
         [InlineData(PhpVersions.Php73Version, ImageTestHelperConstants.CliRepository)]
         public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_Cli(string phpVersion, string imageTag) {
@@ -106,6 +106,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "cli-buster")]
         [InlineData(PhpVersions.Php80Version, ImageTestHelperConstants.CliBusterRepository)]
         public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_CliBuster(string phpVersion, string imageTag) {
+            GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(phpVersion, imageTag);
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(PhpVersions.Php80Version, ImageTestHelperConstants.CliBullseyeRepository)]
+        public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_CliBullseye(string phpVersion, string imageTag)
+        {
             GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(phpVersion, imageTag);
         }
 

@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetLtsVersionsBuildImage());
         }
 
-        [Fact, Trait("category", "cli")]
+        [Fact, Trait("category", "cli-stretch")]
         public void GeneratesScript_AndBuildGolangAppWithDynamicInstall_Cli()
         {
             GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository));

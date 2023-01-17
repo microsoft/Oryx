@@ -79,6 +79,8 @@ RUN set -ex \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
+    && mkdir -p /usr/local/share/pip-cache/lib \
+    && chmod -R 777 /usr/local/share/pip-cache \
     && pip3 install pip --upgrade \
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \
