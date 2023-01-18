@@ -47,13 +47,19 @@ RUN apt-get update \
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG BUILD_DIR="/opt/tmp/build"
 
+RUN set -eux; \
+    if [[ ${DEBIAN_FLAVOR} == "bullseye" || ${DEBIAN_FLAVOR} == "buster" ]]; then \ 
+      ${IMAGES_DIR}/installPlatform.sh nodejs ${NODE16_VERSION} \
+    else \
+      ${IMAGES_DIR}/installPlatform.sh nodejs 16.14.2 \
+    fi
+
 RUN set -ex \
  && yarnCacheFolder="/usr/local/share/yarn-cache" \
  && mkdir -p $yarnCacheFolder \
  && chmod 777 $yarnCacheFolder \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  #Pin node version for testing
- && ${IMAGES_DIR}/installPlatform.sh nodejs ${NODE16_VERSION} \
  && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
  && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
  && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
