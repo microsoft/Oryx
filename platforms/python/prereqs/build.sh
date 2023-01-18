@@ -32,7 +32,8 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
         libgdm-dev \
         libbluetooth-dev \
         tk-dev \
-        uuid-dev
+        uuid-dev \
+        python3-dev \
 
 if  [ "${PYTHON_VERSION[0]}" == "3" ] && [ "${PYTHON_VERSION[1]}" -ge "10" ]
 then

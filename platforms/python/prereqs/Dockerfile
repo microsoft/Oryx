@@ -19,4 +19,5 @@ RUN chmod +x /tmp/build.sh && \
 		build-essential \ 
 		tk-dev \
 		uuid-dev \
-		libgeos-dev
+		libgeos-dev \
+		python3-dev \

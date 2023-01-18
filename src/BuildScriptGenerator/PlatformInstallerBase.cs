@@ -53,7 +53,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 "swig",
                 "tk-dev",
                 "unixodbc-dev",
-                "uuid-dev");
+                "uuid-dev",
+                "python3-dev");
 
             // Install Python 3.8
             stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
