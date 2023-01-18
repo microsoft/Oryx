@@ -231,13 +231,26 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var expectedText = GoVersions.GoVersion;
+            var appName = SampleAppName;
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddCommand("go version")
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir}")
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetAzureFunctionsJamStackBuildImage();
-            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
+            var imageName = _imageHelper.GetAzureFunctionsJamStackBuildImage();
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = imageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(

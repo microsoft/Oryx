@@ -80,7 +80,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendLine("BUILD_DIR=\"/opt/tmp/build\"");
             stringBuilder.AppendLine("IMAGES_DIR=\"/opt/tmp/images\"");
             stringBuilder.AppendLine(". ${BUILD_DIR}/__goVersions.sh");
+            stringBuilder.AppendLine("echo \"${GO_VERSION}\"");
             stringBuilder.AppendLine("downloadedFileName=\"go${GO_VERSION}.linux-amd64.tar.gz\"");
+            stringBuilder.AppendLine("echo \"${downloadedFileName}\"");
             stringBuilder.AppendLine("${IMAGES_DIR}/retry.sh \"curl -SLsO https://golang.org/dl/$downloadedFileName\"");
             stringBuilder.AppendLine("mkdir -p /usr/local");
             stringBuilder.AppendLine("gzip -d $downloadedFileName");
