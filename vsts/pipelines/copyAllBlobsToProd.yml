@@ -8,7 +8,7 @@ parameters:
   default: https://oryxsdkssandbox.blob.core.windows.net
   values:
   - https://oryxsdkssandbox.blob.core.windows.net
-  - https://oryxsdksdev.blob.core.windows.net
+  - https://oryxsdksstaging.blob.core.windows.net
 - name: dryRun
   displayName: Dry Run?
   type: boolean

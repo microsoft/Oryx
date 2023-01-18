@@ -11,7 +11,7 @@ source $CURRENT_DIR/../__common.sh
 
 sdkStorageAccountUrl="$ORYX_SDK_STORAGE_BASE_URL"
 if [ -z "$sdkStorageAccountUrl" ]; then
-    sdkStorageAccountUrl=$DEV_SDK_STORAGE_BASE_URL
+    sdkStorageAccountUrl=$PRIVATE_STAGING_SDK_STORAGE_BASE_URL
 fi
 
 echo
