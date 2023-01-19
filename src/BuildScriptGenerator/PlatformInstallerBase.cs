@@ -195,6 +195,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"  fi")
                 .AppendLine("fi")
 
+                // Required for Python 3.10 and Python 3.11
+                .AppendLine($"pythonMajorMinorVersion={version.Substring(0, version.LastIndexOf('.'))}")
+                .AppendLine($"DYNAMIC_INSTALLATION_PYTHON_INCLUDE_DIRECTORY={versionDirInTemp}/include/python$pythonMajorMinorVersion")
+
                 // Write out a sentinel file to indicate download and extraction was successful
                 .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
 
