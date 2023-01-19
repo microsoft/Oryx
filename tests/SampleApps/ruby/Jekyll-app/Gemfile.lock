@@ -2,8 +2,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     RedCloth (4.3.2)
-    addressable (2.7.0)
-      public_suffix (>= 2.0.2, < 5.0)
+    addressable (2.8.1)
+      public_suffix (>= 2.0.2, < 6.0)
     colorator (1.1.0)
     concurrent-ruby (1.1.7)
     daemons (1.3.1)
