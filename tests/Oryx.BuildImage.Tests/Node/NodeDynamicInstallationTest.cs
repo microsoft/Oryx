@@ -100,7 +100,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "cli-bullseye")]
         [Trait("build-image", "cli-debian-bullseye")]
-        [MemberData(nameof(ImageNameDataCliBuster))]
+        [MemberData(nameof(ImageNameDataCliBullseye))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBullseye(string version, string buildImageName)
         {
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
