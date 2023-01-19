@@ -48,7 +48,7 @@ GEM
       ruby2_keywords (~> 0.0.1)
     pathutil (0.16.2)
       forwardable-extended (~> 2.6)
-    public_suffix (4.0.6)
+    public_suffix (5.0.1)
     rack (2.2.4)
     rack-protection (2.2.3)
       rack
