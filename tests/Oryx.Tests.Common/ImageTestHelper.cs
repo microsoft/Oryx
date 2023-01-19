@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _packRepository = ImageTestHelperConstants.PackRepository;
         private const string _cliRepository = ImageTestHelperConstants.CliRepository;
         private const string _cliBusterRepository = ImageTestHelperConstants.CliBusterRepository;
-        private const string _cliBullseyeRepository = ImageTestHelperConstants.CliBusterRepository;
+        private const string _cliBullseyeRepository = ImageTestHelperConstants.CliBullseyeRepository;
         private const string _cliStretchTag = ImageTestHelperConstants.CliStretchTag;
         private const string _cliBusterTag = ImageTestHelperConstants.CliBusterTag;
         private const string _cliBullseyeTag = ImageTestHelperConstants.CliBullseyeTag;
