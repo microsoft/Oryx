@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            Assert.Contains("python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE", text);
+            Assert.Contains("python -m pip install --global-option=build_ext --global-option=\"-I${DYNAMIC_INSTALLATION_PYTHON_INCLUDE_DIRECTORY}\" --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE", text);
 
         }
 
