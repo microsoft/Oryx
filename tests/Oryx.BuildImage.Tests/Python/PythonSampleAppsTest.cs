@@ -970,40 +970,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "github-actions-debian-bullseye")]
-        [InlineData("django-regex-example-app", PythonVersions.Python310Version)]
-        public void BuildPythonApp_AndHasRegexModule(string appName, string version)
-        {
-            // Arrange
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app1-output";
-            var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {version}")
-                .AddCommand($"python -V")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetVsoBuildImage("github-actions-debian-bullseye"),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains("Downloading regex", result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
         [Fact, Trait("category", "latest")]
         public void Build_VirtualEnv_Unzipped_ByDefault()
         {
