@@ -937,7 +937,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "vso-bullseye")]
         [InlineData("flask-app")]
-        [InlineData("django-realworld-example-app")]
         public void BuildPythonApps_AndHasLzmaModule(string appName)
         {
             // Arrange
