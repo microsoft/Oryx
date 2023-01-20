@@ -65,9 +65,10 @@ fi
     then
         set +e
         echo "Running pip install..."
-        InstallCommand="python -m pip install --global-option=build_ext --global-option=\"-I${DYNAMIC_INSTALLATION_PYTHON_INCLUDE_DIRECTORY}\" --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
+        echo "PIP_GCC_FLAGS: $PIP_GCC_FLAGS"
+        InstallCommand="python -m pip install $PIP_GCC_FLAGS --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( python -m pip install --global-option=build_ext --global-option="-I${DYNAMIC_INSTALLATION_PYTHON_INCLUDE_DIRECTORY}" --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+        output=$( ( python -m pip install $PIP_GCC_FLAGS --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
         set -e
         echo "${output}"
@@ -124,9 +125,10 @@ fi
         echo
         echo Running pip install...
         START_TIME=$SECONDS
-        InstallCommand="$python -m pip install  --global-option=build_ext --global-option=\"-I${DYNAMIC_INSTALLATION_PYTHON_INCLUDE_DIRECTORY}\" --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT"
+        echo "PIP_GCC_FLAGS: $PIP_GCC_FLAGS"
+        InstallCommand="$python -m pip install $PIP_GCC_FLAGS --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( $python -m pip install --global-option=build_ext --global-option="-I${DYNAMIC_INSTALLATION_PYTHON_INCLUDE_DIRECTORY}" --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
+        output=$( ( $python -m pip install $PIP_GCC_FLAGS --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."

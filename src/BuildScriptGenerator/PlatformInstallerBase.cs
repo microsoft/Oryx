@@ -195,9 +195,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"  fi")
                 .AppendLine("fi")
 
-                // Required for Python 3.10 and Python 3.11
-                .AppendLine($"pythonMajorMinorVersion={version.Substring(0, version.LastIndexOf('.'))}")
-                .AppendLine($"DYNAMIC_INSTALLATION_PYTHON_INCLUDE_DIRECTORY={versionDirInTemp}/include/python$pythonMajorMinorVersion")
+                // Required for python 3.10 and 3.11
+                .AppendLine($"PIP_GCC_FLAGS=\"\"")
+                .AppendLine($"echo $platformName")
+                .AppendLine($"echo {version}")
+                .AppendLine($"if [ \"$platformName\" = \"python\" ]; then")
+                .AppendLine($"  if [[ '{version}' == 3.10* ]] || [[ '{version}' == 3.11* ]]; then")
+                .AppendLine($"    echo \"Enabling --global-option to pip for gcc modules...\"")
+                .AppendLine($"    pythonMajorMinorVersion={version.Substring(0, version.LastIndexOf('.'))}")
+                .AppendLine($"    DYNAMIC_INSTALLATION_PYTHON_INCLUDE_DIRECTORY={versionDirInTemp}/include/python$pythonMajorMinorVersion")
+                .AppendLine($"    PIP_GCC_FLAGS=\"--global-option=build_ext --global-option=-I$DYNAMIC_INSTALLATION_PYTHON_INCLUDE_DIRECTORY\"")
+                .AppendLine($"  fi")
+                .AppendLine("fi")
 
                 // Write out a sentinel file to indicate download and extraction was successful
                 .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
