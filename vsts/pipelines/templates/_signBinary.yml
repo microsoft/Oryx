@@ -8,12 +8,12 @@ steps:
    Write-Host "##vso[task.setvariable variable=SignType;isOutput=true]real"
   name: setSignTypeVariable
   displayName: 'Set sign binary variable'
-  #condition: >
-  # and(in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'), 
-  # or(
-  #   startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
-  #   startsWith(variables['Build.SourceBranch'], 'refs/heads/patch/'), 
-  #   startsWith(variables['Build.SourceBranch'],'refs/heads/exp/' )))
+  condition: >
+   and(in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'), 
+   or(
+     startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
+     startsWith(variables['Build.SourceBranch'], 'refs/heads/patch/'), 
+     startsWith(variables['Build.SourceBranch'],'refs/heads/exp/' )))
 
 - script: |
     echo $(setSignTypeVariable.SignType)
