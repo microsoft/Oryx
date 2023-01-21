@@ -198,8 +198,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 // Resolves Python.h: No such file or directory error
                 .AppendLine($"if [ \"$platformName\" = \"python\" ]; then")
                 .AppendLine($"  if [[ '{version}' == 3.10* ]] || [[ '{version}' == 3.11* ]]; then")
-                .AppendLine($"    ln -s /tmp/oryx/platforms/python /opt")
                 .AppendLine($"    pythonMajorMinorVersion={version.Substring(0, version.LastIndexOf('.'))}")
+                .AppendLine($"    ln -s /tmp/oryx/platforms/python/{version}/include/$pythonMajorMinorVersion /opt/python/{version}/include")
                 .AppendLine($"    ln -s /tmp/oryx/platforms/python/{version}/include/$pythonMajorMinorVersion /usr/include")
                 .AppendLine($"  fi")
                 .AppendLine("fi")
