@@ -195,6 +195,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"  fi")
                 .AppendLine("fi")
 
+                // Resolves Python.h: No such file or directory error
+                .AppendLine($"if [ \"$platformName\" = \"python\" ]; then")
+                .AppendLine($"  if [[ '{version}' == 3.10* ]] || [[ '{version}' == 3.11* ]]; then")
+                .AppendLine($"    ln -s /tmp/oryx/platforms/python /opt")
+                .AppendLine($"    pythonMajorMinorVersion={version.Substring(0, version.LastIndexOf('.'))}")
+                .AppendLine($"    ln -s /tmp/oryx/platforms/python/{version}/include/$pythonMajorMinorVersion /usr/include")
+                .AppendLine($"  fi")
+                .AppendLine("fi")
+
                 // Write out a sentinel file to indicate download and extraction was successful
                 .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
 
