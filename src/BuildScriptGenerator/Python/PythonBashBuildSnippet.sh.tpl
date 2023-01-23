@@ -71,7 +71,7 @@ fi
         pipInstallExitCode=${PIPESTATUS[0]}
 
         if [[ $pipInstallExitCode != 0 ]]; then
-            echo "Retrying pip install with additional flags \"$PIP_GCC_FLAGS\"..."
+            echo "Retrying pip install with additional flags: \"$PIP_GCC_FLAGS\"..."
             InstallCommand="python -m pip install $PIP_GCC_FLAGS --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
             printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( python -m pip install $PIP_GCC_FLAGS --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
@@ -139,7 +139,7 @@ fi
         pipInstallExitCode=${PIPESTATUS[0]}
 
         if [[ $pipInstallExitCode != 0 ]]; then
-            echo "Retrying pip install with additional flags \"$PIP_GCC_FLAGS\"..."
+            echo "Retrying pip install with additional flags: \"$PIP_GCC_FLAGS\"..."
             InstallCommand="$python -m pip install $PIP_GCC_FLAGS --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT"
             printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $python -m pip install $PIP_GCC_FLAGS --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
