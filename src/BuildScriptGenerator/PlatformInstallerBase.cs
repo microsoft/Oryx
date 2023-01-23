@@ -201,9 +201,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"  if [[ '{version}' == 3.10* ]] || [[ '{version}' == 3.11* ]]; then")
                 .AppendLine($"    echo \"Enabling --global-option to pip for gcc modules...\"")
                 .AppendLine($"    pythonMajorMinorVersion={version.Substring(0, version.LastIndexOf('.'))}")
-                .AppendLine($"    dynamicInstallationOptPythonIncludeDirectory={versionDirInTemp}/include/python$pythonMajorMinorVersion")
-                .AppendLine($"    dynamicInstallationUsrPythonIncludeDirectory=/usr/include/python$pythonMajorMinorVersion")
-                .AppendLine($"    PIP_GCC_FLAGS=\"--global-option=build_ext --global-option=-I$dynamicInstallationOptPythonIncludeDirectory --global-option=-I$dynamicInstallationUsrPythonIncludeDirectory\"")
+                .AppendLine($"    dynamicInstallationPythonIncludeDirectory={versionDirInTemp}/include/python$pythonMajorMinorVersion")
+                .AppendLine($"    PIP_GCC_FLAGS=\"--global-option=build_ext --global-option=-I$dynamicInstallationPythonIncludeDirectory\"")
                 .AppendLine($"  fi")
                 .AppendLine("fi")
 
