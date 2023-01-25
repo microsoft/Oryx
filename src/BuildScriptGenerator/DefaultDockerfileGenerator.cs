@@ -102,11 +102,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     }
 
                     // If the runtime platform version wasn't previously provided, see if we can detect one from the current detected platform.
-                    // Note: we first need to ensure that the current detected platform is the same as the runtime platform name previously set or pvodied.
+                    // Note: we first need to ensure that the current detected platform is the same as the runtime platform name previously set or provided.
                     if (!string.IsNullOrEmpty(dockerfileRuntimeImage) && dockerfileRuntimeImage.Equals(detectedRuntimeName, StringComparison.OrdinalIgnoreCase) &&
                          string.IsNullOrEmpty(dockerfileRuntimeImageTag))
                     {
-                        dockerfileRuntimeImageTag = this.ConvertToRuntimeVersion(dockerfileRuntimeImage, platformDetectorResult.PlatformVersion);
+                        // Only try to get the runtime tag if the provided/detected platform has supported runtime images.
+                        if (this.supportedRuntimeVersions.ContainsKey(dockerfileRuntimeImage))
+                        {
+                            dockerfileRuntimeImageTag = this.ConvertToRuntimeVersion(dockerfileRuntimeImage, platformDetectorResult.PlatformVersion);
+                        }
                     }
 
                     // If the runtime image has been set manually or by the platform detection result, stop searching.
@@ -127,6 +131,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     BuildImageTag = dockerfileBuildImageTag,
                     CreateScriptArguments = formattedCreateScriptArguments,
                 };
+
+                this.ValidateDockerfileImages(properties);
 
                 var generatedDockerfile = TemplateHelper.Render(
                     TemplateHelper.TemplateResource.Dockerfile,
@@ -171,7 +177,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
-        /// When looking for a satifying runtime version, format it so that tags '8' and '8.1' are treated as
+        /// When looking for a satisfying runtime version, format it so that tags '8' and '8.1' are treated as
         /// '8.99999.99999' and '8.1.99999', respectively. This allows the tags to be treated as the "maximum
         /// version within the provided major or minor version that Oryx supports" during version comparison.
         /// </summary>
@@ -183,7 +189,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
-        /// When looking for a satifying runtime version, format it so that tags '8' and '8.1' are treated as
+        /// When looking for a satisfying runtime version, format it so that tags '8' and '8.1' are treated as
         /// '8.99999.99999' and '8.1.99999', respectively. This allows the tags to be treated as the "maximum
         /// version within the provided major or minor version that Oryx supports" during version comparison.
         /// </summary>
@@ -254,6 +260,51 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(DockerfileContext ctx)
         {
             return this.platformDetector.GetCompatiblePlatforms(ctx);
+        }
+
+        private void ValidateDockerfileImages(DockerfileProperties dockerfileProperties)
+        {
+            if (string.IsNullOrEmpty(dockerfileProperties.BuildImageName))
+            {
+                var message = "Provided build image name parsed from the provided --build-image argument is empty. " +
+                    "Please provide a valid value for --build-image, or remove the argument and use the default " +
+                    "'cli:stable' build image from mcr.microsoft.com/oryx.";
+                var exc = new InvalidDockerfileImageException(message);
+                this.logger.LogError(exc, message);
+                throw exc;
+            }
+
+            if (string.IsNullOrEmpty(dockerfileProperties.BuildImageTag))
+            {
+                var message = "Provided build image tag parsed from the provided --build-image argument is empty. " +
+                    "Please provide a valid value for --build-image, or remove the argument and use the default " +
+                    "'cli:stable' build image from mcr.microsoft.com/oryx.";
+                var exc = new InvalidDockerfileImageException(message);
+                this.logger.LogError(exc, message);
+                throw exc;
+            }
+
+            if (string.IsNullOrEmpty(dockerfileProperties.RuntimeImageName))
+            {
+                var message = "Either the value provided to the --runtime-platform argument is empty, or the platform " +
+                    "discovered by Oryx does not have any available or supported runtime images. Please view the following " +
+                    "document for more information on runtimes supported by Oryx: " +
+                    "https://github.com/microsoft/Oryx/blob/main/doc/supportedRuntimeVersions.md";
+                var exc = new InvalidDockerfileImageException(message);
+                this.logger.LogError(exc, message);
+                throw exc;
+            }
+
+            if (string.IsNullOrEmpty(dockerfileProperties.RuntimeImageTag))
+            {
+                var message = "Either the value provided to the --runtime-platform-version argument is empty, or the version " +
+                    "discovered by Oryx is not available or supported for the given platform. Please view the following " +
+                    "document for more information on runtime versions supported by Oryx: " +
+                    "https://github.com/microsoft/Oryx/blob/main/doc/supportedRuntimeVersions.md";
+                var exc = new InvalidDockerfileImageException(message);
+                this.logger.LogError(exc, message);
+                throw exc;
+            }
         }
     }
 }
