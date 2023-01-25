@@ -266,45 +266,44 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             if (string.IsNullOrEmpty(dockerfileProperties.BuildImageName))
             {
-                var message = "Provided build image name parsed from the provided --build-image argument is empty. " +
-                    "Please provide a valid value for --build-image, or remove the argument and use the default " +
-                    "'cli:stable' build image from mcr.microsoft.com/oryx.";
-                var exc = new InvalidDockerfileImageException(message);
-                this.logger.LogError(exc, message);
-                throw exc;
+                this.LogInvalidDockerfileImageException(
+                    "Provided build image name parsed from the provided --build-image argument is empty. " +
+                    "Please provide a valid value for --build-image, or remove the argument to use the default " +
+                    "'cli:stable' build image from mcr.microsoft.com/oryx.");
             }
 
             if (string.IsNullOrEmpty(dockerfileProperties.BuildImageTag))
             {
-                var message = "Provided build image tag parsed from the provided --build-image argument is empty. " +
-                    "Please provide a valid value for --build-image, or remove the argument and use the default " +
-                    "'cli:stable' build image from mcr.microsoft.com/oryx.";
-                var exc = new InvalidDockerfileImageException(message);
-                this.logger.LogError(exc, message);
-                throw exc;
+                this.LogInvalidDockerfileImageException(
+                    "Provided build image tag parsed from the provided --build-image argument is empty. " +
+                    "Please provide a valid value for --build-image, or remove the argument to use the default " +
+                    "'cli:stable' build image from mcr.microsoft.com/oryx.");
             }
 
             if (string.IsNullOrEmpty(dockerfileProperties.RuntimeImageName))
             {
-                var message = "Either the value provided to the --runtime-platform argument is empty, or the platform " +
+                this.LogInvalidDockerfileImageException(
+                    "Either the value provided to the --runtime-platform argument is empty, or the platform " +
                     "discovered by Oryx does not have any available or supported runtime images. Please view the following " +
                     "document for more information on runtimes supported by Oryx: " +
-                    "https://github.com/microsoft/Oryx/blob/main/doc/supportedRuntimeVersions.md";
-                var exc = new InvalidDockerfileImageException(message);
-                this.logger.LogError(exc, message);
-                throw exc;
+                    "https://github.com/microsoft/Oryx/blob/main/doc/supportedRuntimeVersions.md");
             }
 
             if (string.IsNullOrEmpty(dockerfileProperties.RuntimeImageTag))
             {
-                var message = "Either the value provided to the --runtime-platform-version argument is empty, or the version " +
+                this.LogInvalidDockerfileImageException(
+                    "Either the value provided to the --runtime-platform-version argument is empty, or the version " +
                     "discovered by Oryx is not available or supported for the given platform. Please view the following " +
                     "document for more information on runtime versions supported by Oryx: " +
-                    "https://github.com/microsoft/Oryx/blob/main/doc/supportedRuntimeVersions.md";
-                var exc = new InvalidDockerfileImageException(message);
-                this.logger.LogError(exc, message);
-                throw exc;
+                    "https://github.com/microsoft/Oryx/blob/main/doc/supportedRuntimeVersions.md");
             }
+        }
+
+        private void LogInvalidDockerfileImageException(string message)
+        {
+            var exc = new InvalidDockerfileImageException(message);
+            this.logger.LogError(exc, message);
+            throw exc;
         }
     }
 }
