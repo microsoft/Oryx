@@ -266,7 +266,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             if (string.IsNullOrEmpty(dockerfileProperties.BuildImageName))
             {
-                this.LogInvalidDockerfileImageException(
+                this.LogAndThrowInvalidDockerfileImageException(
                     "Provided build image name parsed from the provided --build-image argument is empty. " +
                     "Please provide a valid value for --build-image, or remove the argument to use the default " +
                     "'cli:stable' build image from mcr.microsoft.com/oryx.");
@@ -274,7 +274,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (string.IsNullOrEmpty(dockerfileProperties.BuildImageTag))
             {
-                this.LogInvalidDockerfileImageException(
+                this.LogAndThrowInvalidDockerfileImageException(
                     "Provided build image tag parsed from the provided --build-image argument is empty. " +
                     "Please provide a valid value for --build-image, or remove the argument to use the default " +
                     "'cli:stable' build image from mcr.microsoft.com/oryx.");
@@ -282,24 +282,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (string.IsNullOrEmpty(dockerfileProperties.RuntimeImageName))
             {
-                this.LogInvalidDockerfileImageException(
+                this.LogAndThrowInvalidDockerfileImageException(
                     "Either the value provided to the --runtime-platform argument is empty, or the platform " +
                     "discovered by Oryx does not have any available or supported runtime images. Please view the following " +
-                    "document for more information on runtimes supported by Oryx: " +
-                    "https://github.com/microsoft/Oryx/blob/main/doc/supportedRuntimeVersions.md");
+                    "document for more information on runtimes supported by Oryx: https://aka.ms/oryx-runtime-images");
             }
 
             if (string.IsNullOrEmpty(dockerfileProperties.RuntimeImageTag))
             {
-                this.LogInvalidDockerfileImageException(
+                this.LogAndThrowInvalidDockerfileImageException(
                     "Either the value provided to the --runtime-platform-version argument is empty, or the version " +
                     "discovered by Oryx is not available or supported for the given platform. Please view the following " +
-                    "document for more information on runtime versions supported by Oryx: " +
-                    "https://github.com/microsoft/Oryx/blob/main/doc/supportedRuntimeVersions.md");
+                    "document for more information on runtime versions supported by Oryx: https://aka.ms/oryx-runtime-images");
             }
         }
 
-        private void LogInvalidDockerfileImageException(string message)
+        private void LogAndThrowInvalidDockerfileImageException(string message)
         {
             var exc = new InvalidDockerfileImageException(message);
             this.logger.LogError(exc, message);
