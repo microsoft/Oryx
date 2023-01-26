@@ -211,6 +211,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"  fi")
                 .AppendLine("fi")
 
+                // Required for python 3.10 and 3.11
+                .AppendLine($"PIP_GCC_FLAGS=\"\"")
+                .AppendLine($"if [ \"$platformName\" = \"python\" ]; then")
+                .AppendLine($"  if [[ '{version}' == 3.10* ]] || [[ '{version}' == 3.11* ]]; then")
+                .AppendLine($"    echo \"Enabling --global-option to pip for gcc modules...\"")
+                .AppendLine($"    pythonMajorMinorVersion={version.Substring(0, version.LastIndexOf('.'))}")
+                .AppendLine($"    dynamicInstallationPythonIncludeDirectory={versionDirInTemp}/include/python$pythonMajorMinorVersion")
+                .AppendLine($"    PIP_GCC_FLAGS=\"--global-option=build_ext --global-option=-I$dynamicInstallationPythonIncludeDirectory\"")
+                .AppendLine($"  fi")
+                .AppendLine("fi")
+
                 // Write out a sentinel file to indicate download and extraction was successful
                 .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");
 

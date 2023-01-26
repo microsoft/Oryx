@@ -444,7 +444,7 @@ namespace Microsoft.Oryx.Tests.Common
                 new Dictionary<string, string>
                 {
                     { "3.0", "debian-buster" },
-                    { "3.1", "debian-bullseye" },
+                    { "3.1", "debian-buster" },
                     { "5.0", "debian-buster" },
                     { "6.0", "debian-buster" },
                     { "7.0", "debian-buster" },
