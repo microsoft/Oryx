@@ -33,6 +33,7 @@ getDotNetCoreSdk() {
 			# which is what our legacy CLI will use
 			sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
 			runtimeVersionMetadataName="$LEGACY_DOTNET_RUNTIME_VERSION_METADATA_NAME"
+			cp "$dotNetPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.txt"
 	else
 			downloadedFile=dotnet-$debianFlavor-$sdkVersion.tar.gz
 			metadataFile="$targetDir/dotnet-$debianFlavor-$sdkVersion-metadata.txt"

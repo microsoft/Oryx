@@ -122,6 +122,15 @@ shouldOverwritePlatformSdk() {
 	esac
 }
 
+isDefaultVersionFile() {
+	$blobName="$1"
+	if [[ "$blobName" == "defaultVersion"* ]]; then
+		return 0
+	else
+		return 1
+	fi
+}
+
 getSdkFromImage() {
 	local imageName="$1"
 	local hostVolumeDir="$2"

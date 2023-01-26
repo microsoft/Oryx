@@ -566,7 +566,7 @@ namespace Microsoft.Oryx.Detector.Tests.Node
             // Assert
             Assert.NotNull(result);
             Assert.True(result.HasLernaJsonFile);
-            Assert.Equal(result.LernaNpmClient, NodeConstants.YarnToolName);
+            Assert.Equal(NodeConstants.YarnToolName, result.LernaNpmClient);
         }
 
         private DetectorContext CreateContext(ISourceRepo sourceRepo)
