@@ -396,11 +396,11 @@ namespace Microsoft.Oryx.Tests.Common
             if (!string.IsNullOrEmpty(debianFlavor)
                 && string.Equals(debianFlavor.ToLower(), _cliBusterRepository))
             {
-                return $"{_repoPrefix}/{_cliBusterRepository}:{_cliBusterTag}{_tagSuffix}";
+                return $"{_repoPrefix}/{_cliRepository}:{_cliBusterTag}{_tagSuffix}";
             }
             else if(!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _cliBullseyeRepository))
             {
-                return $"{_repoPrefix}/{_cliBullseyeRepository}:{_cliBullseyeTag}{_tagSuffix}";
+                return $"{_repoPrefix}/{_cliRepository}:{_cliBullseyeTag}{_tagSuffix}";
             }
 
             return $"{_repoPrefix}/{_cliRepository}:{_cliStretchTag}{_tagSuffix}";
@@ -525,7 +525,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string VsoBullseye = "vso-debian-bullseye";
         public const string BuildRepository = "build";
         public const string PackRepository = "pack";
-        public const string CliRepository = "cli-stretch";
+        public const string CliRepository = "cli";
         public const string CliBusterRepository = "cli-buster";
         public const string CliBullseyeRepository = "cli-bullseye";
         public const string CliStretchTag = "debian-stretch";

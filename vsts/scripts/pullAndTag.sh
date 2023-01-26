@@ -77,13 +77,13 @@ if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 			buildImageFilter="build"
 			buildImageTagFilter="$strippedVal"
 			if [[ "$strippedVal" == "cli-debian-stretch" ]];then
-				buildImageFilter="cli-stretch"
+				buildImageFilter="cli"
 				buildImageTagFilter="debian-stretch"
 			elif [[ "$strippedVal" == "cli-debian-buster" ]];then
-				buildImageFilter="cli-buster"
+				buildImageFilter="cli"
 				buildImageTagFilter="debian-buster"
 			elif [[ "$strippedVal" == "cli-debian-bullseye" ]];then
-				buildImageFilter="cli-bullseye"
+				buildImageFilter="cli"
 				buildImageTagFilter="debian-bullseye"
 			fi
 		fi
@@ -105,9 +105,9 @@ tagBuildImageForIntegrationTest "$imagefilter/build" "vso-ubuntu-focal" "$buildI
 tagBuildImageForIntegrationTest "$imagefilter/build" "vso-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-buster" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
-tagBuildImageForIntegrationTest "$imagefilter/cli-stretch" "debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
-tagBuildImageForIntegrationTest "$imagefilter/cli-buster" "debian-buster" "$buildImageFilter" "$buildImageTagFilter"
-tagBuildImageForIntegrationTest "$imagefilter/cli-bullseye" "debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-buster" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/pack" "" "$buildImageFilter" "$buildImageTagFilter"
 
 

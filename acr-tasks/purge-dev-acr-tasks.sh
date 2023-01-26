@@ -11,11 +11,8 @@ set -e
 PURGE_CMD="acr purge  --filter 'public/oryx/build:.*'  --ago 30d --untagged"
 az acr task create --name weeklyBuildImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null
 
-PURGE_CMD="acr purge  --filter 'public/oryx/cli-stretch:.*'  --ago 30d --untagged"
+PURGE_CMD="acr purge  --filter 'public/oryx/cli:.*'  --ago 30d --untagged"
 az acr task create --name weeklyCliImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null
-
-PURGE_CMD="acr purge  --filter 'public/oryx/cli-buster:.*'  --ago 30d --untagged"
-az acr task create --name weeklyCliBusterImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null
 
 PURGE_CMD="acr purge  --filter 'public/oryx/cli-bullseye:.*'  --ago 30d --untagged"
 az acr task create --name weeklyCliBullseyeImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null
