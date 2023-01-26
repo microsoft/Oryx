@@ -49,7 +49,6 @@ RUN set -ex \
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG BUILD_DIR="/opt/tmp/build"
 
-
 RUN set -ex \
  && yarnCacheFolder="/usr/local/share/yarn-cache" \
  && mkdir -p $yarnCacheFolder \
@@ -96,5 +95,3 @@ RUN set -ex \
     && ln -s $PYTHON38_VERSION stable \
     && echo "jamstack" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
-
-
