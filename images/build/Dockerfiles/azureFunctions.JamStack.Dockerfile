@@ -14,7 +14,8 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     LC_ALL="C.UTF-8" \
     ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/python/latest/bin:/opt/yarn/stable/bin"
     
-RUN apt-get update \
+RUN set -ex \
+    && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         git \
