@@ -14,9 +14,6 @@ az acr task create --name weeklyBuildImagePurgeTask -r oryxdevmcr --cmd "$PURGE_
 PURGE_CMD="acr purge  --filter 'public/oryx/cli:.*'  --ago 30d --untagged"
 az acr task create --name weeklyCliImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null
 
-PURGE_CMD="acr purge  --filter 'public/oryx/cli-bullseye:.*'  --ago 30d --untagged"
-az acr task create --name weeklyCliBullseyeImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null
-
 PURGE_CMD="acr purge  --filter 'public/oryx/base:.*'  --ago 30d --untagged"
 az acr task create --name weeklyBaseImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null
 

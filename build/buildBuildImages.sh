@@ -411,9 +411,9 @@ function buildCliImage() {
 	if [ -z "$debianFlavor" ] || [ $debianFlavor == "stretch" ] ; then
 		debianFlavor="stretch"
 		#Change buildImage name to fix validation pipeline
-		builtImageName="$builtImageName-$debianFlavor:debian-$debianFlavor"
+		builtImageName="$builtImageName:debian-$debianFlavor"
 	else
-		builtImageName="$builtImageName-$debianFlavor:debian-$debianFlavor"
+		builtImageName="$builtImageName:debian-$debianFlavor"
 		devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO-$debianFlavor"
 	fi
 	echo "dev image tag: "$devImageTag
