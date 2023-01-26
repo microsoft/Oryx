@@ -35,6 +35,7 @@ downloadJavaSdk()
             # Continue adding the version metadata with the name of Version
             # which is what our legacy CLI will use
             sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+            cp "$javaPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$hostJavaArtifactsDir/defaultVersion.txt"
     else
             tarFileName=java-$debianFlavor-$JDK_VERSION.tar.gz
             tarFileNameWithoutGZ=java-$debianFlavor-$JDK_VERSION.tar

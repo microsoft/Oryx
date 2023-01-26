@@ -3,8 +3,7 @@ FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-focal AS mai
 # Install basic build tools
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
-RUN LANG="C.UTF-8" \
-    && apt-get update \
+RUN apt-get update \
     && apt-get upgrade -y \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         git \
@@ -70,7 +69,8 @@ ARG SDK_STORAGE_BASE_URL_VALUE
 # add an environment variable to determine debian_flavor
 # to correctly download platform sdk during platform installation
 ENV DEBIAN_FLAVOR="focal-scm"
-
+# Set sdk storage base url
+ENV ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}"
 COPY --from=intermediate /opt /opt
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
@@ -123,7 +123,7 @@ RUN set -ex \
     && mkdir -p /home/codespace/.hugo \
     && $imagesDir/build/installHugo.sh \
     # Install Node
-    && mkdir -p /home/codespace/.nodejs \
+    && mkdir -p /home/codespace/nvm \
     && . $buildDir/__nodeVersions.sh \
     && $imagesDir/installPlatform.sh nodejs $NODE14_VERSION \
     && $imagesDir/installPlatform.sh nodejs $NODE16_VERSION \
@@ -139,7 +139,7 @@ RUN set -ex \
     && ln -s $NODE14_VERSION 14 \
     && ln -s $NODE16_VERSION 16 \
     && ln -s $NODE16_VERSION lts \
-    && ln -sfn /opt/nodejs/$NODE16_VERSION /home/codespace/.nodejs/current \
+    && ln -sfn /opt/nodejs/$NODE16_VERSION /home/codespace/nvm/current \
     && cd /opt/yarn \
     && ln -s $YARN_VERSION stable \
     && ln -s $YARN_VERSION latest \
@@ -236,14 +236,14 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $RUBY30_VERSION /opt/ruby/lts \
     && ln -sfn /opt/ruby/$RUBY30_VERSION /home/codespace/.ruby/current \
     && cd $imagesDir \
-    && mkdir -p /home/codespace/.java \
+    && mkdir -p /home/codespace/java \
     && . $buildDir/__javaVersions.sh \
     && ./installPlatform.sh java $JAVA_VERSION \
     && ./installPlatform.sh java $JAVA_VERSION11 \
     && ./installPlatform.sh maven $MAVEN_VERSION \
     && cd /opt/java \
     && ln -s $JAVA_VERSION lts \
-    && ln -sfn /opt/java/$JAVA_VERSION /home/codespace/.java/current \
+    && ln -sfn /opt/java/$JAVA_VERSION /home/codespace/java/current \
     && cd /opt/maven \
     && ln -s $MAVEN_VERSION lts \
     && mkdir -p /home/codespace/.maven/current \
@@ -281,6 +281,9 @@ ENV NUGET_XMLDOC_MODE="skip" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_PREFER_USER_INSTALLED_SDKS=true \
     ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
-    PYTHONIOENCODING="UTF-8"
+    PYTHONIOENCODING="UTF-8" \
+    LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"
 
 ENTRYPOINT [ "benv" ]

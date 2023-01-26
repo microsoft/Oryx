@@ -15,7 +15,9 @@ RUN ./build.sh ruby /opt/startupcmdgen/startupcmdgen
 
 FROM oryxdevmcr.azurecr.io/private/oryx/oryx-run-base-${DEBIAN_FLAVOR} AS main
 ARG IMAGES_DIR=/tmp/oryx/images
+ARG DEBIAN_FLAVOR
 ENV RUBY_VERSION 2.5.8
+ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
 
 RUN ${IMAGES_DIR}/installPlatform.sh ruby $RUBY_VERSION --dir /opt/ruby/$RUBY_VERSION --links false
 RUN set -ex \
@@ -28,6 +30,11 @@ ENV PATH="/opt/ruby/2/bin:${PATH}"
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_KEY
 ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+
+# Oryx++ Builder variables
+ENV CNB_STACK_ID="oryx.stacks.skeleton"
+LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
+
 RUN ${IMAGES_DIR}/runtime/ruby/install-dependencies.sh
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
@@ -36,3 +43,7 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && rm -rf /tmp/oryx
     
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"

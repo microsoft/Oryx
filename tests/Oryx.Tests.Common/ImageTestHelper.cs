@@ -434,7 +434,7 @@ namespace Microsoft.Oryx.Tests.Common
                 new Dictionary<string, string>
                 {
                     { "3.0", "debian-buster" },
-                    { "3.1", "debian-bullseye" },
+                    { "3.1", "debian-buster" },
                     { "5.0", "debian-buster" },
                     { "6.0", "debian-buster" },
                     { "7.0", "debian-buster" },
@@ -455,12 +455,14 @@ namespace Microsoft.Oryx.Tests.Common
                 PhpConstants.PlatformName,
                 new Dictionary<string, string>
                 {
-                    { "7.4", "debian-bullseye" },
+                    { "7.4", "debian-buster" },
                     { "8.0", "debian-buster" },
                     { "8.1", "debian-bullseye" },
-                    { "7.4-fpm", "debian-bullseye" },
+                    { "8.2", "debian-bullseye" },
+                    { "7.4-fpm", "debian-buster" },
                     { "8.0-fpm", "debian-buster" },
                     { "8.1-fpm", "debian-bullseye" },
+                    { "8.2-fpm", "debian-bullseye" },
                 }
             },
             {

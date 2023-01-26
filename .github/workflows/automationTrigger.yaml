@@ -1,0 +1,24 @@
+name: Oryx-SDK-Runtime-Automation-Trigger
+
+on:
+  # runs on 12:55 (5:55AM PST) & 23:55 UTC
+  schedule:
+    - cron:  '55 12,23 * * *'  
+  workflow_call:
+    inputs:
+      releaseDate:
+        required: false
+        type: string
+      platformName:
+        required: true
+        type: string
+
+jobs:
+  SdkRuntimeAutomation:
+    strategy:
+      matrix:
+        platformName: [dotnet]
+    uses: ./.github/workflows/automationTemplate.yaml
+    with:
+      platformName: ${{ matrix.platformName }}
+    secrets: inherit

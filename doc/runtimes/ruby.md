@@ -20,10 +20,10 @@ The Ruby toolset is run when one of following conditions met:
 
 The following process is applied for each build:
 
-1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
+1. Run custom command or script if specified by `PRE_BUILD_COMMAND` or `PRE_BUILD_SCRIPT_PATH`.
 2. Run `gem install bundler` comamnd to install bundler tool.
 3. Run `bundle install` command.
-4. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
+4. Run custom command or script if specified by `POST_BUILD_COMMAND` or `POST_BUILD_SCRIPT_PATH`.
 
 ## Package manager
 

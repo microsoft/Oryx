@@ -11,3 +11,5 @@ require (
 )
 
 replace github.com/spf13/viper => github.com/spf13/viper v1.10.1
+
+replace github.com/gogo/protobuf => github.com/gogo/protobuf v1.3.2

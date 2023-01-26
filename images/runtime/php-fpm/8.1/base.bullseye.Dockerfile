@@ -1,6 +1,6 @@
 FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-8.1
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.1.9
+ENV PHP_VERSION 8.1.14
 
 # An environment variable for oryx run-script to know the origin of php image so that
 # start-up command can be determined while creating run script
@@ -78,6 +78,12 @@ RUN pecl install redis && docker-php-ext-enable redis
 # https://github.com/Imagick/imagick/issues/331
 RUN pecl install imagick && docker-php-ext-enable imagick
 
+# deprecated from 5.*, so should be avoided 	
+RUN set -eux; \	
+    if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \	
+        pecl install mongodb && docker-php-ext-enable mongodb; \	
+    fi	
+
 # https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
 RUN set -eux; \
     if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
@@ -123,3 +129,7 @@ RUN set -x \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc \
     && rm -rf /var/lib/apt/lists/*
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"

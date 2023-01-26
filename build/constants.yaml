@@ -23,6 +23,8 @@
     user-netcore-hostingstartup-assemblies: Microsoft.ApplicationInsights.StartupBootstrapper
     python-enable-gunicorn-multi-workers-env-var-name: PYTHON_ENABLE_GUNICORN_MULTIWORKERS
     python-gunicorn-config-path-env-var-name: PYTHON_USE_GUNICORN_CONFIG_FROM_PATH
+    python-gunicorn-custom-worker-num: PYTHON_GUNICORN_CUSTOM_WORKER_NUM
+    python-gunicorn-custom-thread-num: PYTHON_GUNICORN_CUSTOM_THREAD_NUM
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator.Common
@@ -38,12 +40,12 @@
     dot-net-core-21-sdk-version: 2.1.818
     dot-net-core-22-sdk-version: 2.2.207
     dot-net-core-30-sdk-version: 3.0.103
-    dot-net-core-31-sdk-version: 3.1.425
+    dot-net-core-31-sdk-version: 3.1.426
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.408
-    dot-net-60-sdk-version: 6.0.403
+    dot-net-60-sdk-version: 6.0.405
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.100
+    dot-net-70-sdk-version: 7.0.102
     runtime-versions:
     - 1.0
     - 1.1
@@ -64,7 +66,7 @@
     file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20221111.1
+    dot-net-core-runtime-base-tag: 20230123.2
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
@@ -78,22 +80,22 @@
     net-core-app-30-sha: 3d1f0ba2f293f43e087a8940a0f4736561f43b9f28bc5beda79a61f887e258543aea4dc71e88414a7c6e271dcda984a989afb62fc659a72223707a179cdde9c5
     aspnet-core-app-30: 3.0.3
     aspnet-core-app-30-sha: d88366ac20204c5acb4b80bc40396d608d6c067b25baeef54204e77dde48fb515bd463743745a0982ba8c9182fc751306a4e796f91060b2d013ffbea7d9a2dc8
-    net-core-app-31: 3.1.31
-    net-core-app-31-sha: fb2ac1a1e3b9b1eceb37587535d96a5a3c0b01edd07182ed57d4725e067678988a3fcdf22f3f49d21bc35760d69398af85a6449e6c3a8ed401ad85df920be4df
-    aspnet-core-app-31: 3.1.31
-    aspnet-core-app-31-sha: 9ea1fb4c9a656de8392b8f92c608c2f927fd03ad8e8b195f3f0b69c1433cfbf2679827b1ce2fac783f8ef77307c7b1b36563d0813f914b75b025b5cca6c773f9
+    net-core-app-31: 3.1.32
+    net-core-app-31-sha: a1de9bbc3d2e3a4f5f52b7742c678b182a58a724d36232997511e390027044d60144a7e010a29d6ee016ec91f2911daef28ac5712a827fff8bdde73314b7e002
+    aspnet-core-app-31: 3.1.32
+    aspnet-core-app-31-sha: 0aa2aceda3d0b9f6bf02456d4e4b917c221c4f18eff30c8b6418e7514681baa9bb9ccc6b8c78949a92664922db4fb2b2a0dac9da11f775aaef618d9c491bb319
     net-core-app-50: 5.0.17
     net-core-app-50-sha: a9c4784930a977abbc42aff1337dda06ec588c1ec4769a59f9fcab4d5df4fc9efe65f8e61e5433db078f67a94ea2dfe870c32c482a50d4c16283ffacacff4261
     aspnet-core-app-50: 5.0.17
     aspnet-core-app-50-sha: d8e87804e9e86273c6512785bd5a6f0e834ff3f4bbebc11c4fcdf16ab4fdfabd0d981a756955267c1aa9bbeec596de3728ce9b2e6415d2d80daef0d999a5df6d
-    net-core-app-60: 6.0.11
-    net-core-app-60-sha: 9462d73fd3f72efaa2fb4aa472055f388da4915e75cfc123298b3494f1dfd8d48c44bfa6cd5c41678ab7353d9085d05dd7f1fee0eef20c11742446e3591e45df
-    aspnet-core-app-60: 6.0.11
-    aspnet-core-app-60-sha: 12a30719aacd5b3dd444d075c13966a4bb1dc149c36bcbc0e685730f08d1c75eb3929749b89a88569ddb48bd8104db84aaee2ee097ac3a5fe6fff60c9f09f741
-    net-core-app-70: 7.0.0
-    net-core-app-70-sha: f4a6e9d5fec7d390c791f5ddaa0fcda386a7ec36fe2dbaa6acb3bdad38393ca1f9d984dd577a081920c3cae3d511090a2f2723cc5a79815309f344b8ccce6488
-    aspnet-core-app-70: 7.0.0
-    aspnet-core-app-70-sha: 02ce2e0b3c4b1d0eb0d9bdb9517a3293404b2a1aaf23311e305b856bb15723414f6328887788b875f0f80361f3e195c872ea3984971e5f0ab1ad5de43950d707
+    net-core-app-60: 6.0.13
+    net-core-app-60-sha: af52e1df5e48a1b7465f8137048e9ec292104526c65e415055e5f4630a13f1d4974ae831a143dd4f17e2a813502d90e2c0aef37c6b1eb7a23d01af7ffca5400a
+    aspnet-core-app-60: 6.0.13
+    aspnet-core-app-60-sha: 96239951972a04021b1953581c88a3e1e64553d05278fb92729c62827f38eeecd533845d6b0d3e9ba97e9d19701b9ee8e5c02d1ee54b8c14efe54c08c45c15a0
+    net-core-app-70: 7.0.2
+    net-core-app-70-sha: 56f7f471052b955968b9a4caa27299ac003e0347ae80e8ef23de87d28a2707bdf7ceb70467cc3e9f0c80928a779841dd7e1392ed6b06e66a7a9cda696d5c0a1e
+    aspnet-core-app-70: 7.0.2
+    aspnet-core-app-70-sha: d3b6c845030069581b3bfd739e3918ce77ae76c8e2e57b8e6c33c9134c46bc8c09fa9b74abdbc917c614c7d09ecbac149b0db1be2e045d26d82c61d976279b49
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator/DotNetCore
@@ -127,10 +129,10 @@
     golang16-tar-sha256: 7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04
     golang17-version: 1.17
     golang17-tar-sha256: 6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d
-    golang18-version: 1.18
-    golang18-tar-sha256: e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f
-    golang19-version: 1.19
-    golang19-tar-sha256: 464b6b66591f6cf055bc5df90a9750bf5fbc9d038722bb84a9d56a2bea974be6
+    golang18-version: 1.18.8
+    golang18-tar-sha256: 4d854c7bad52d53470cf32f1b287a5c0c441dc6b98306dea27358e099698142a
+    golang19-version: 1.19.3
+    golang19-tar-sha256: 74b9640724fd4e6bb0ed2a1bc44ae813a03f1e72a4c76253e2d5c015494430ba
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
@@ -140,15 +142,15 @@
     file-name-prefix: __
 - name: python-versions
   constants:
-    python-runtime-base-tag: 20221031.2
+    python-runtime-base-tag: 20221214.1
     pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
-    python37-version: 3.7.12
-    python38-version: 3.8.12
-    python39-version: 3.9.7
-    python310-version: 3.10.4
-    python311-version: 3.11.0 
+    python37-version: 3.7.16
+    python38-version: 3.8.16
+    python39-version: 3.9.16
+    python310-version: 3.10.9
+    python311-version: 3.11.1
     runtime-versions:
     - 2.7
     - 3.6
@@ -165,8 +167,8 @@
     file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20220914.1
-    php-fpm-runtime-base-tag: 20221021.2
+    php-runtime-base-tag: 20230115.1
+    php-fpm-runtime-base-tag: 20230115.2
     composer-version: 2.0.8
     composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
     composer1-9-version: 1.9.3
@@ -174,15 +176,18 @@
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
-    php81-version: 8.1.9
+    php82-version: 8.2.1
+    php82-keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
+    php82-tar-sha256: 650d3bd7a056cabf07f6a0f6f1dd8ba45cd369574bbeaa36de7d1ece212c17af
+    php81-version: 8.1.14
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php81-tar-sha256: 53477e73e6254dc942b68913a58d815ffdbf6946baf61a1f8ef854de524c27bf
-    php80-version: 8.0.22
+    php81-tar-sha256: e16e47a872d58685913ac848ce92ec49f42c1828110c98c65fb6265a08724a1a
+    php80-version: 8.0.27
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: 130937c0fa3050cd33d6c415402f6ccbf0682ae83eb8d39c91164224ddfe57f1
-    php74-version: 7.4.30
+    php80-tar-sha256: f942cbfe2f7bacbb8039fb79bbec41c76ea779ac5c8157f21e1e0c1b28a5fc3a
+    php74-version: 7.4.33
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
-    php74-tar-sha256: ea72a34f32c67e79ac2da7dfe96177f3c451c3eefae5810ba13312ed398ba70d
+    php74-tar-sha256: 924846abf93bc613815c55dd3f5809377813ac62a9ec4eb3778675b82a27b927
     php73-version: 7.3.27
     php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
     php73-tar-sha256: 65f616e2d5b6faacedf62830fa047951b0136d5da34ae59e6744cbaf5dca148d
@@ -203,6 +208,7 @@
     - 7.4
     - 8.0
     - 8.1
+    - 8.2
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
@@ -212,17 +218,17 @@
     file-name-prefix: __
 - name: ruby-versions
   constants:
-    gem-version: 3.3.10
-    ruby31-version: 3.1.1
-    ruby31-tar-sha256: 7aefaa6b78b076515d272ec59c4616707a54fc9f2391239737d5f10af7a16caa
-    ruby27-version: 2.7.2
-    ruby27-tar-sha256: 6e5706d0d4ee4e1e2f883db9d768586b4d06567debea353c796ec45e8321c3d4
+    gem-version: 3.3.21
+    ruby31-version: 3.1.3
+    ruby31-tar-sha256: 4ee161939826bcdfdafa757cf8e293a7f14e357f62be7144f040335cc8c7371a
+    ruby27-version: 2.7.7
+    ruby27-tar-sha256: b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04e3e4c
     ruby26-version: 2.6.6
     ruby26-tar-sha256: 5db187882b7ac34016cd48d7032e197f07e4968f406b0690e20193b9b424841f
     ruby25-version: 2.5.8
     ruby25-tar-sha256: 0391b2ffad3133e274469f9953ebfd0c9f7c186238968cbdeeb0651aa02a4d6d
-    ruby30-version: 3.0.3
-    ruby30-tar-sha256: 88cc7f0f021f15c4cd62b1f922e3a401697f7943551fe45b1fdf4f2417a17a9c
+    ruby30-version: 3.0.5
+    ruby30-tar-sha256: cf7cb5ba2030fe36596a40980cdecfd79a0337d35860876dc2b10a38675bddde
     runtime-versions:
     - 2.5
     - 2.6
@@ -239,6 +245,7 @@
     compressed-output-file-name: oryx_output.tar.gz
     build-manifest-file-name: oryx-manifest.toml
     os-type-file-name: .ostype
+    image-type-file-name: .imagetype
     build-commands-file-name: oryx-build-commands.txt
     run-script-generator-dir: /opt/startupcmdgen
     node-app-insights-loader-file-name: applicationinsights/out/Bootstrap/Oryx.js
@@ -268,7 +275,7 @@
     directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20221027.2
+    node-runtime-base-tag: 20221202.2
     yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
@@ -278,7 +285,7 @@
     node12-version: 12.22.11
     node14-version: 14.20.1
     node16-version: 16.18.0
-    node18-version: 18.2.0
+    node18-version: 18.12.1
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 6.14.15
@@ -410,7 +417,7 @@
     file-name-prefix: __
 - name: conda-constants
   constants:
-    conda-version: 4.11.0-0
+    conda-version: 4.12.0-0
     conda-environment-yml-file-name: environment.yml
     oryx-generated-environment-yml-file-name: oryx.environment.yml
     default-conda-environment-yml-file-template-name: default.envrionment.yml.template
