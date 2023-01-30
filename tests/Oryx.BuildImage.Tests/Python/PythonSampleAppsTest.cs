@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli")]
-        [InlineData(ImageTestHelperConstants.CliRepository)]
+        [InlineData(ImageTestHelperConstants.CliStretchTag)]
         public void PipelineTestInvocationCli(string imageTag)
         {
             GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli-buster")]
-        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterTag)]
         public void PipelineTestInvocationCliBuster(string imageTag)
         {
             GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));

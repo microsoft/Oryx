@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string runtimeVersion)
         {
             BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
         }
 
         private void BuildsApplication_ByDynamicallyInstallingSDKs(
@@ -753,7 +753,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             
             var imageHelper = new ImageTestHelper();
             TestImageTypeResolution(
-                imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository),
+                imageHelper.GetCliImage(ImageTestHelperConstants.CliStretchTag),
                 removeImageTypeFile,
                 "cli");
         }

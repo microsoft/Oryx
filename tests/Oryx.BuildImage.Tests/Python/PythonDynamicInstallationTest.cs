@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationCliBuster()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), "3.9.0", "/opt");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), "3.9.0", "/opt");
         }
 
         private void GeneratesScript_AndBuildsPython_FlaskApp(

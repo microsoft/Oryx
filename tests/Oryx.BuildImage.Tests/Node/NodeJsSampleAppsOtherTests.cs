@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationCliBuster()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
         }
 
         private void GeneratesScript_AndBuilds(string buildImageName)
