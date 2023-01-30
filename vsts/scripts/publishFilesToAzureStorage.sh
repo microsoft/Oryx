@@ -81,6 +81,8 @@ if [[ "$storageAccountUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
 elif [[ "$storageAccountUrl" == $DEV_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
+elif [[ "$storageAccountUrl" == $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ]]; then
+    sasToken=$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN
 elif [[ "$storageAccountUrl" == $PRIVATE_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$PRIVATE_STORAGE_SAS_TOKEN
 # check if the personal sas token has been found in the oryx key vault
