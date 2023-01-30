@@ -3,8 +3,7 @@ FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-${DEBIAN_FLA
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 # Install basic build tools
-RUN LANG="C.UTF-8" \
-    && apt-get update \
+RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         git \
@@ -45,10 +44,8 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
             libcurl4 \
             libssl1.1 \
             libyaml-dev \
-        && rm -rf /var/lib/apt/lists/* \
-        && curl -LO http://security.debian.org/debian-security/pool/updates/main/libx/libxml2/libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb \
-        && dpkg -i libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb \
-        && rm libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb ; \
+            libxml2 \
+        && rm -rf /var/lib/apt/lists/* ; \
     elif [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
@@ -160,6 +157,8 @@ RUN tmpDir="/opt/tmp" \
 ENV ORYX_PATHS="/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
 
 ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8" \
     ORIGINAL_PATH="$PATH" \
     PATH="$ORYX_PATHS:$PATH" \
     NUGET_XMLDOC_MODE="skip" \

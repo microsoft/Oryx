@@ -29,6 +29,7 @@ downloadMavenBinary()
             # Continue adding the version metadata with the name of Version
             # which is what our legacy CLI will use
             sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+            cp "$mavenPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$hostMavenArtifactsDir/defaultVersion.txt"
     else
             tarFileName=maven-$debianFlavor-$version.tar.gz
             metadataFile="$hostMavenArtifactsDir/maven-$debianFlavor-$version-metadata.txt"

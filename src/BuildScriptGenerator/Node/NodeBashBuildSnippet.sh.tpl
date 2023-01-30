@@ -17,7 +17,15 @@ echo "Node Build Command Manifest file created."
 
 doc="https://docs.microsoft.com/en-us/azure/app-service/configure-language-nodejs?pivots=platform-linux#troubleshooting"
 
-{{ if NpmVersionSpec | IsNotBlank }}
+
+
+{{ if YarnVersionSpec | IsNotBlank }}
+echo
+echo "Found yarn version spec to follow: '{{ YarnVersionSpec }}'"
+echo "Updating version of yarn installed to meet the above version spec."
+yarn set version '{{ YarnVersionSpec }}'
+echo
+{{ else if NpmVersionSpec | IsNotBlank }}
 echo
 echo "Found npm version spec to follow in package.json: '{{ NpmVersionSpec }}'"
 echo "Updating version of npm installed to meet the above version spec."
@@ -102,6 +110,10 @@ then
 		cp -f "$SOURCE_DIR/.yarnrc.yml" .
 	fi
 
+	if [ YarnVersionSpec | IsNotBlank ] && [ -f "$SOURCE_DIR/.yarn/releases/yarn-${YarnVersionSpec}"* ]; then
+		cp -f "$SOURCE_DIR/.yarn/releases/yarn-${YarnVersionSpec}"* .
+	fi
+	
 	echo
 	echo "Installing production dependencies in '$SOURCE_DIR/$prodModulesDirName'..."
 	echo
@@ -119,6 +131,14 @@ then
 		ELAPSED_TIME=$(($SECONDS - $START_TIME))
 		echo "Done in $ELAPSED_TIME sec(s)."
 	fi
+fi
+
+# ensure that if the current user is root, that the root user also owns
+# the application directory. This ensures that when npm install runs, it 
+# does so as the root user, and therefore can access the npm cache located at
+# ~/.npm by default
+if [[ "$(whoami)" == "root" ]]; then
+	chown -R root:root $SOURCE_DIR
 fi
 
 cd "$SOURCE_DIR"

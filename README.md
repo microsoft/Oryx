@@ -1,6 +1,6 @@
 # Oryx
 
-[![Build Status](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Oryx/Oryx-Nightly?branchName=master)](https://devdiv.visualstudio.com/DevDiv/_build/latest?definitionId=10393?branchName=master)
+[![Build Status](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Oryx/Oryx-Nightly?branchName=main)](https://devdiv.visualstudio.com/DevDiv/_build/latest?definitionId=10393&branchName=main)
 
 Oryx is a build system which automatically compiles source code repos into
 runnable artifacts. It is used to build web apps for [Azure App Service][] and
@@ -149,7 +149,7 @@ startup script generators. For more details, refer to our [architecture](./doc/a
 
 # Testing Locally
 ## startup script generator
-`build/testStartupScriptGenerators.sh` will perform tests on all startup script generators written in go. 
+`build/testStartupScriptGenerators.sh` will perform tests on all startup script generators written in go.
 The tests are copied into a docker image for performing `go test` on all platforms.
 
 # Contributing

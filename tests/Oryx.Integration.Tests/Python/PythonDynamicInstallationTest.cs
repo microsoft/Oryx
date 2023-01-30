@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Temporarily skip - Bug #1266781
             // await CanBuildAndRunPythonAppAsync("3.7", ImageTestHelperConstants.GitHubActionsBullseye);
+            await Task.FromResult(true);
         }
 
         [Fact]
@@ -37,6 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Temporarily skip - Bug #1266781
             // await CanBuildAndRunPythonAppAsync("3.8", ImageTestHelperConstants.GitHubActionsBullseye);
+            await Task.FromResult(true);
         }
 
         [Fact]
@@ -46,6 +48,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Temporarily skip - Bug #1266781
             // await CanBuildAndRunPythonAppAsync("3.9", ImageTestHelperConstants.GitHubActionsBuster);
+            await Task.FromResult(true);
         }
 
         [Fact]
@@ -53,8 +56,9 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython37App_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync()
         {
-            // Temporarily skip - Bug #1410367
-            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python37Version", ImageTestHelperConstants.GitHubActionsBullseye);
+            // Temporarily skip - Bug #1266781
+            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(PythonVersions.Python37Version, ImageTestHelperConstants.GitHubActionsBullseye);
+            await Task.FromResult(true);
         }
 
         [Fact]
@@ -62,8 +66,9 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython38App_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync()
         {
-            // Temporarily skip - Bug #1410367
-            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python38Version", ImageTestHelperConstants.GitHubActionsBullseye);
+            // Temporarily skip - Bug #1266781
+            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(PythonVersions.Python38Version, ImageTestHelperConstants.GitHubActionsBullseye);
+            await Task.FromResult(true);
         }
 
         [Fact]
@@ -71,8 +76,9 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task CanBuildAndRunPython39App_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync()
         {
-            // Temporarily skip - Bug #1410367
-            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync("PythonVersions.Python39Version", ImageTestHelperConstants.GitHubActionsBuster);
+            // Temporarily skip - Bug #1266781
+            // await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(PythonVersions.Python39Version, ImageTestHelperConstants.GitHubActionsBuster);
+            await Task.FromResult(true);
         }
 
         [Fact]
@@ -107,6 +113,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Temporarily skip - Bug #1266781
             // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(true, ImageTestHelperConstants.GitHubActionsBullseye);
             // await CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(false, ImageTestHelperConstants.GitHubActionsBullseye);
+            await Task.FromResult(true);
         }
 
         private async Task CanBuildAndRunPythonAppAsync(string pythonVersion, string debianFlavor = null)

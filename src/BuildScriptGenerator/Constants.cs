@@ -33,5 +33,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string BenvDynamicInstallRootDirKey = "dynamic_install_root_dir";
 
         public const string BuildConfigurationFileHelp = "https://aka.ms/troubleshoot-buildconfig";
+
+        public const string NetworkConfigurationHelpText = "Please ensure that your " +
+            "network configuration allows traffic to required Oryx dependencies, as documented in " +
+            "'https://github.com/microsoft/Oryx/blob/main/doc/hosts/appservice.md#network-dependencies'";
     }
 }

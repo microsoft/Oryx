@@ -374,6 +374,57 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             Assert.True(detector.DetectInvoked);
         }
 
+        [Theory]
+        [InlineData("golang", "1.17")]
+        [InlineData("java", "11.0.14")]
+        public void GenerateDockerfile_FailsForUnsupportedPlatform(
+            string platformName,
+            string detectedPlatformVersion)
+        {
+            // Arrange
+            var detector = new TestPlatformDetectorUsingPlatformName(
+                detectedPlatformName: platformName,
+                detectedPlatformVersion: detectedPlatformVersion);
+            var platform = new TestProgrammingPlatform(
+                platformName,
+                new string[] { },
+                detector: detector);
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var generator = CreateDefaultDockerfileGenerator(platform, commonOptions);
+            var ctx = CreateDockerfileContext();
+
+            // Act & Assert
+            var exception = Assert.Throws<InvalidDockerfileImageException>(() => generator.GenerateDockerfile(ctx));
+            Assert.Contains("--runtime-platform argument is empty", exception.Message);
+        }
+
+        [Theory]
+        [InlineData("golang", "1.17")]
+        [InlineData("java", "11.0.14")]
+        public void GenerateDockerfile_FailsForUnsupportedPlatformVersion(
+            string platformName,
+            string detectedPlatformVersion)
+        {
+            // Arrange
+            var detector = new TestPlatformDetectorUsingPlatformName(
+                detectedPlatformName: platformName,
+                detectedPlatformVersion: detectedPlatformVersion);
+            var platform = new TestProgrammingPlatform(
+                platformName,
+                new string[] { },
+                detector: detector);
+            var commonOptions = new BuildScriptGeneratorOptions
+            {
+                RuntimePlatformName = platformName,
+            };
+            var generator = CreateDefaultDockerfileGenerator(platform, commonOptions);
+            var ctx = CreateDockerfileContext();
+
+            // Act & Assert
+            var exception = Assert.Throws<InvalidDockerfileImageException>(() => generator.GenerateDockerfile(ctx));
+            Assert.Contains("--runtime-platform-version argument is empty", exception.Message);
+        }
+
         private DockerfileContext CreateDockerfileContext()
         {
             return new DockerfileContext();

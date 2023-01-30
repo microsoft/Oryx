@@ -78,6 +78,8 @@ else
         --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
         --enable-loadable-sqlite-extensions \
         --enable-shared \
+	--enable-optimizations \
+	--with-lto \
         --with-system-expat \
         --with-system-ffi \
         --without-ensurepip
