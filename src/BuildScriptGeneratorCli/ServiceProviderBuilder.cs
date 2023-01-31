@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.Data.SqlTypes;
 using System.IO;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
@@ -22,13 +23,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     /// </summary>
     internal class ServiceProviderBuilder
     {
+        private readonly Extensions.Logging.ILogger logger;
         private IServiceCollection serviceCollection;
 
-        public ServiceProviderBuilder(string logFilePath = null, IConsole console = null)
+        public ServiceProviderBuilder(Extensions.Logging.ILogger logger, string logFilePath = null, IConsole console = null)
         {
             LogManager.Configuration = BuildNLogConfiguration(logFilePath);
             LogManager.ReconfigExistingLoggers();
-
+            this.logger = logger;
             this.serviceCollection = new ServiceCollection();
             this.serviceCollection
                 .AddBuildScriptGeneratorServices()
