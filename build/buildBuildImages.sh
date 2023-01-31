@@ -542,7 +542,7 @@ elif [ "$imageTypeToBuild" == "cli-stretch" ]; then
     buildCliImage
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
-elif ["$imageTypeToBuild" == "cli-bullseye"]; then
+elif ["$imageTypeToBuild" == "cli-bullseye" ]; then
     buildCliImage "bullseye"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
