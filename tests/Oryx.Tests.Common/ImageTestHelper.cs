@@ -401,7 +401,7 @@ namespace Microsoft.Oryx.Tests.Common
                 return $"{_repoPrefix}/{_cliRepository}:{_cliBullseyeTag}{_tagSuffix}";
             }
 
-            return $"{_repoPrefix}/{_cliStretchTag}:{_cliStretchTag}{_tagSuffix}";
+            return $"{_repoPrefix}/{_cliRepository}:{_cliStretchTag}{_tagSuffix}";
         }
 
         private string GetTestTag()
