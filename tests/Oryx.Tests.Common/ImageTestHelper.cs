@@ -45,6 +45,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _vsoBullseye = ImageTestHelperConstants.VsoBullseye;
         private const string _buildRepository = ImageTestHelperConstants.BuildRepository;
         private const string _packRepository = ImageTestHelperConstants.PackRepository;
+        private const string _cliRepository = ImageTestHelperConstants.CliRepository;
         private const string _cliStretchTag = ImageTestHelperConstants.CliStretchTag;
         private const string _cliBusterTag = ImageTestHelperConstants.CliBusterTag;
         private const string _cliBullseyeTag = ImageTestHelperConstants.CliBullseyeTag;
@@ -248,6 +249,10 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetCliImage(_cliBusterTag);
             }
+            else if(string.Equals(tag, _cliBullseyeTag))
+            {
+                return GetCliImage(_cliBullseyeTag);
+            }
             else if (string.Equals(tag, _fullStretch))
             {
                 return GetFullBuildImage(_fullStretch);
@@ -389,7 +394,11 @@ namespace Microsoft.Oryx.Tests.Common
             if (!string.IsNullOrEmpty(debianFlavor)
                 && string.Equals(debianFlavor.ToLower(), _cliBusterTag))
             {
-                return $"{_repoPrefix}/{_cliBusterTag}:{_cliBusterTag}{_tagSuffix}";
+                return $"{_repoPrefix}/{_cliRepository}:{_cliBusterTag}{_tagSuffix}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _cliBullseyeTag))
+            {
+                return $"{_repoPrefix}/{_cliRepository}:{_cliBullseyeTag}{_tagSuffix}";
             }
 
             return $"{_repoPrefix}/{_cliStretchTag}:{_cliStretchTag}{_tagSuffix}";
@@ -514,6 +523,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string VsoBullseye = "vso-debian-bullseye";
         public const string BuildRepository = "build";
         public const string PackRepository = "pack";
+        public const string CliRepository = "cli";
         public const string CliStretchTag = "debian-stretch";
         public const string CliBusterTag = "debian-buster";
         public const string CliBullseyeTag = "debian-bullseye";

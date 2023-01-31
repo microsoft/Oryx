@@ -412,7 +412,7 @@ function buildCliImage() {
 		debianFlavor="stretch"
 		builtImageName="$builtImageName:debian-$debianFlavor"
 	else
-		builtImageName="$builtImageName-$debianFlavor:debian-$debianFlavor"
+		builtImageName="$builtImageName:debian-$debianFlavor"
 		devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO-$debianFlavor"
 	fi
 	echo "dev image tag: "$devImageTag
@@ -495,6 +495,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildVsoImage "focal"
 	buildVsoImage "bullseye"
 	buildCliImage "buster"
+	buildCliImage "bullseye"
 	buildCliImage
 	buildBuildPackImage
 	buildFullImage "buster"
@@ -536,8 +537,13 @@ elif [ "$imageTypeToBuild" == "vso-bullseye" ]; then
 elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 	buildCliImage "buster"
+	buildCliImage "bullseye"
+elif [ "$imageTypeToBuild" == "cli-stretch" ]; then
+    buildCliImage
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
+elif ["$imageTypeToBuild" == "cli-bullseye"]; then
+    buildCliImage "bullseye"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
