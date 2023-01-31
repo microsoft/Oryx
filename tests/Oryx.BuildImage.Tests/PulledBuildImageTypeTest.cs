@@ -72,6 +72,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
+        [Trait("category", "cli-bullseye")]
+        public void PulledCliBullseyeBuildImages_Contains_BUILDIMAGE_TYPE_Info()
+        {
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository), "cli");
+        }
+
+        [Fact]
         [Trait("category", "jamstack")]
         public void PulledJamstackStretchBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {

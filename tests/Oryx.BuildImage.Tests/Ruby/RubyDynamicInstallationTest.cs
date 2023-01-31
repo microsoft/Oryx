@@ -63,6 +63,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 RubyVersions.Ruby31Version, imageTestHelper.GetCliImage(imageTag));
         }
 
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
+        public void PipelineTestInvocationCliBullseye(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby30Version, imageTestHelper.GetCliImage(imageTag));
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby31Version, imageTestHelper.GetCliImage(imageTag));
+        }
+
         private void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string version, string buildImageName)
         {
             // Please note:

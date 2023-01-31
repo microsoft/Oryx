@@ -69,6 +69,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
         }
 
+        [Fact, Trait("category", "cli-bullseye")]
+        public void PipelineTestInvocationCliBullseye()
+        {
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliBullseyeTag);
+            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+        }
+
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
         [Fact (Skip="NetCore11 is no longer officially supported"), Trait("category", "latest")]

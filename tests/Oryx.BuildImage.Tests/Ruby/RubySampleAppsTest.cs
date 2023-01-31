@@ -60,6 +60,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildRailsApp(imageTestHelper.GetCliImage(imageTag));
         }
 
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
+        public void PipelineTestInvocationCliBullseye(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
+                imageTestHelper.GetCliImage(imageTag));
+            GeneratesScript_AndBuildRailsApp(imageTestHelper.GetCliImage(imageTag));
+        }
+
         [Fact, Trait("category", "vso-focal")]
         public void GeneratesScript_AndBuildSinatraApp()
         {

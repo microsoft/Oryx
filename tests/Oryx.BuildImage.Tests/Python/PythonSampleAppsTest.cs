@@ -74,6 +74,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
         }
 
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
+        public void PipelineTestInvocationCliBullseye(string imageTag)
+        {
+            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
+            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
+        }
+
         [Theory]
         [InlineData(Settings.BuildImageName)]
         [InlineData(Settings.LtsVersionsBuildImageName)]

@@ -50,6 +50,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
         }
 
+        [Fact, Trait("category", "cli-bullseye")]
+        public void PipelineTestInvocationCliBullseye()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+        }
+
         private void InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(string imageName)
         {
             // Please note:

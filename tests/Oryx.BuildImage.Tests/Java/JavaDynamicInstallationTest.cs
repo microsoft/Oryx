@@ -57,6 +57,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
         }
 
+        [Theory, Trait("category", "cli-bullseye")]
+        [MemberData(nameof(VersionsData))]
+        public void BuildsMavenArcheTypeSampleWithDynamicInstallationCliBullseye(string version)
+        {
+            BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+        }
+
         private void BuildsMavenArcheTypeSampleWithDynamicInstallation(string version, string imageName)
         {
             // Arrange

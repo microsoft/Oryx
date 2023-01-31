@@ -109,6 +109,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(phpVersion, imageTag);
         }
 
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(PhpVersions.Php80Version, ImageTestHelperConstants.CliBullseyeTag)]
+        public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_CliBullseye(string phpVersion, string imageTag)
+        {
+            GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(phpVersion, imageTag);
+        }
+
         private void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(string phpVersion, string imageTag)
         {
             // Arrange
