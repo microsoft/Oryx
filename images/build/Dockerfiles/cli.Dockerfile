@@ -31,7 +31,6 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
     elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \ 
         apt-get update \
         && apt-get install -y --no-install-recommends \
-            libssl1.0.2 \
             libicu67 \
             libcurl4 \
             libssl1.1 \
@@ -47,6 +46,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
             libssl1.0.2 \
         && rm -rf /var/lib/apt/lists/* ; \
     fi
+
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
