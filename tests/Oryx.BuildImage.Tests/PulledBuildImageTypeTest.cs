@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("category", "cli")]
         public void PulledCliStretchBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliStretchTag), "cli");
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository), "cli");
         }
 
         [Fact]

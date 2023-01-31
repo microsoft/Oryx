@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "cli")]
         public void PipelineTestInvocationCli()
         {
-            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliStretchTag);
+            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliRepository);
             Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage());
         }
 

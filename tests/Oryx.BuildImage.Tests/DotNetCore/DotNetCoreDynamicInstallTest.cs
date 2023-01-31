@@ -763,7 +763,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             
             var imageHelper = new ImageTestHelper();
             TestImageTypeResolution(
-                imageHelper.GetCliImage(ImageTestHelperConstants.CliStretchTag),
+                imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository),
                 removeImageTypeFile,
                 "cli");
         }

@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
 
         [Theory, Trait("category", "cli")]
-        [InlineData(ImageTestHelperConstants.CliStretchTag)]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
         public void JavaSampleAppsTestsCli(string imageTag)
         {
             BuildsMavenArcheTypeSample(imageTag);

@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationCli()
         {
             var imageTestHelper = new ImageTestHelper();
-            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliStretchTag));
+            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliRepository));
         }
 
         [Fact, Trait("category", "cli-buster")]

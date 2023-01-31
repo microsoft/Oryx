@@ -241,9 +241,9 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStackBullseye);
             }
-            else if (string.Equals(tag, _cliStretchTag))
+            else if (string.Equals(tag, _cliRepository))
             {
-                return GetCliImage(_cliStretchTag);
+                return GetCliImage(_cliRepository);
             }
             else if (string.Equals(tag, _cliBusterTag))
             {

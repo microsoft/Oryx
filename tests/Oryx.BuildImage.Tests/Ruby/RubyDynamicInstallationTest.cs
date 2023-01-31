@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli")]
-        [InlineData(ImageTestHelperConstants.CliStretchTag)]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
         public void PipelineTestInvocationCli(string imageTag)
         {
             var imageTestHelper = new ImageTestHelper();

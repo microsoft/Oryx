@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("category", "cli")]
         public void PulledCliStretchBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliStretchTag), "DEBIAN|STRETCH");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository), "DEBIAN|STRETCH");
         }
 
         [Fact]
