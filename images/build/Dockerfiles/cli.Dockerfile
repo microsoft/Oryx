@@ -47,7 +47,6 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         && rm -rf /var/lib/apt/lists/* ; \
     fi
 
-
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
 # .NET Core dependencies for running Oryx
