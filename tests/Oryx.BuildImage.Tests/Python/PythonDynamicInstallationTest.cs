@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationCliBullseye()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository), "3.9.0", "/opt");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), "3.9.0", "/opt");
         }
 
         private void GeneratesScript_AndBuildsPython_FlaskApp(

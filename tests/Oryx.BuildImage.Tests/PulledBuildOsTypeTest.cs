@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("category", "cli-bullseye")]
         public void PulledCliBullseyeBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository), "DEBIAN|BULLSEYE");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), "DEBIAN|BULLSEYE");
         }
 
         [Fact]
