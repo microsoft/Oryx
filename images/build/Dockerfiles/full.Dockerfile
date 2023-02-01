@@ -51,7 +51,6 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
             liblttng-ust0 \
             libssl1.0.2 \
         && rm -rf /var/lib/apt/lists/* ; \
-  
     fi
 
 RUN apt-get update \
@@ -85,5 +84,6 @@ RUN set -ex \
     # enables custom logging
     && cp -f $imagesDir/build/logger.sh /opt/oryx/logger
 
-ENV ENABLE_DYNAMIC_INSTALL="true"
-ENV PATH="$PATH:/opt/oryx"
+ENV ENABLE_DYNAMIC_INSTALL="true" \
+    PATH="$PATH:/opt/oryx" \
+    ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
