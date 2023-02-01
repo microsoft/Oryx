@@ -93,8 +93,8 @@ namespace Microsoft.Extensions.Logging
 
         private static TelemetryClient GetTelemetryClient()
         {
-            var config = TelemetryConfiguration.CreateDefault();
-            var client = new TelemetryClient(config);
+            // Temporarily use obsolete empty client as mentioned in work item 1735437
+            var client = new TelemetryClient();
 
             ApplicationInsightsTarget aiTarget = (ApplicationInsightsTarget)NLog.LogManager.Configuration?.FindTargetByName("ai");
             if (aiTarget != null)
