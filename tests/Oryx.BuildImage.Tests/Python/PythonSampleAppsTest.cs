@@ -946,7 +946,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app1-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python310Version}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version 3.10.8")
                 .AddCommand($"python -V")
                 .AddCommand($"python -c \"import lzma\"")
                 .ToString();

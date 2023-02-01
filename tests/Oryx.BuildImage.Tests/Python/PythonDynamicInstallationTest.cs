@@ -197,8 +197,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "jamstack")]
-        [InlineData(PythonVersions.Python310Version)]
-        [InlineData(PythonVersions.Python311Version)]
+        [InlineData("3.10.8")]
+        [InlineData("3.11.0")]
         public void GeneratesScript_AndBuildsPython_JamstackBuildImage(string version)
         {
             // Arrange
