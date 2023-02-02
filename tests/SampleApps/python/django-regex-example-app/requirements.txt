@@ -1,4 +1,3 @@
-Try it nowAsk again laterDon't show again
 amqp==5.1.1
 asgiref==3.4.1
 async-generator==1.10
