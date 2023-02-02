@@ -29,6 +29,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="3.1.32" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.32" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.32" />
+    <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.21.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.1.32" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.32" />
     <PackageReference Include="Microsoft.VisualStudioEng.MicroBuild.Core" Version="1.0.0">
