@@ -51,8 +51,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli-buster")]
-        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterTag)]
         public void PipelineTestInvocationCliBuster(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
+                imageTestHelper.GetCliImage(imageTag));
+            GeneratesScript_AndBuildRailsApp(imageTestHelper.GetCliImage(imageTag));
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
+        public void PipelineTestInvocationCliBullseye(string imageTag)
         {
             var imageTestHelper = new ImageTestHelper();
             Builds_JekyllStaticWebApp_UsingCustomBuildCommand(

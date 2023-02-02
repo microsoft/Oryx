@@ -68,7 +68,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("category", "cli-buster")]
         public void PulledCliBusterBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), "cli");
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), "cli");
+        }
+
+        [Fact]
+        [Trait("category", "cli-bullseye")]
+        public void PulledCliBullseyeBuildImages_Contains_BUILDIMAGE_TYPE_Info()
+        {
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), "cli");
         }
 
         [Fact]
