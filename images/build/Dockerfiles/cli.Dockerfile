@@ -29,6 +29,15 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
             libcurl4 \
             libssl1.1 \
         && rm -rf /var/lib/apt/lists/* ; \
+    elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \ 
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu67 \
+            libcurl4 \
+            libssl1.1 \
+            libyaml-dev \
+            libxml2 \
+        && rm -rf /var/lib/apt/lists/* ; \
     else \
         apt-get update \
         && apt-get install -y --no-install-recommends \
@@ -49,6 +58,8 @@ RUN apt-get update \
         zlib1g \
         rsync \
         libgdiplus \
+        # Required for mysqlclient
+        default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
