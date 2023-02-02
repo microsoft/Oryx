@@ -6,9 +6,8 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights.NLogTarget;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Extensions.Logging
@@ -25,12 +24,12 @@ namespace Microsoft.Extensions.Logging
         /// </summary>
         public static void LogDependencies(
             this ILogger logger,
+            ITelemetryClientExtension telemetryClientExtension,
             string platform,
             string platformVersion,
             IEnumerable<string> depSpecs,
             bool devDeps = false)
         {
-            var client = GetTelemetryClient();
             var props = new Dictionary<string, string>
             {
                 { nameof(platform),        platform },
@@ -40,21 +39,21 @@ namespace Microsoft.Extensions.Logging
             string devPrefix = devDeps ? "Dev " : string.Empty;
             foreach (string dep in depSpecs)
             {
-                client.TrackTrace(
+                telemetryClientExtension.GetTelemetryClient().TrackTrace(
                     $"{devPrefix}Dependency: {dep.ReplaceUrlUserInfo()}",
                     ApplicationInsights.DataContracts.SeverityLevel.Information,
                     props);
             }
         }
 
-        public static void LogEvent(this ILogger logger, string eventName, IDictionary<string, string> props = null)
+        public static void LogEvent(this ILogger logger,ITelemetryClientExtension telemetryClientExtension, string eventName, IDictionary<string, string> props = null)
         {
-            GetTelemetryClient().TrackEvent(eventName, props);
+            telemetryClientExtension.GetTelemetryClient().TrackEvent(eventName, props);
         }
 
-        public static void LogTrace(this ILogger logger, string message, IDictionary<string, string> props = null)
+        public static void LogTrace(this ILogger logger, ITelemetryClientExtension telemetryClientExtension, string message, IDictionary<string, string> props = null)
         {
-            GetTelemetryClient().TrackTrace(message, props);
+            telemetryClientExtension.GetTelemetryClient().TrackTrace(message, props);
         }
 
         /// <summary>
@@ -80,29 +79,15 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
-        public static string StartOperation(this ILogger logger, string name)
+        public static string StartOperation(this ILogger logger, ITelemetryClientExtension telemetryClientExtension, string name)
         {
-            var op = GetTelemetryClient().StartOperation<ApplicationInsights.DataContracts.RequestTelemetry>(name);
+            var op = telemetryClientExtension.GetTelemetryClient().StartOperation<ApplicationInsights.DataContracts.RequestTelemetry>(name);
             return op.Telemetry.Id;
         }
 
-        public static EventStopwatch LogTimedEvent(this ILogger logger, string eventName, IDictionary<string, string> props = null)
+        public static EventStopwatch LogTimedEvent(this ILogger logger, ITelemetryClientExtension telemetryClientExtension, string eventName, IDictionary<string, string> props = null)
         {
-            return new EventStopwatch(GetTelemetryClient(), eventName, props);
-        }
-
-        private static TelemetryClient GetTelemetryClient()
-        {
-            // Temporarily use obsolete empty client as mentioned in work item 1735437
-            var client = new TelemetryClient();
-
-            ApplicationInsightsTarget aiTarget = (ApplicationInsightsTarget)NLog.LogManager.Configuration?.FindTargetByName("ai");
-            if (aiTarget != null)
-            {
-                client.Context.InstrumentationKey = aiTarget.InstrumentationKey;
-            }
-
-            return client;
+            return new EventStopwatch(telemetryClientExtension.GetTelemetryClient(), eventName, props);
         }
     }
 }
