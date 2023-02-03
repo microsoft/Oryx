@@ -217,6 +217,8 @@ benv-resolve() {
     # successfully compiled and linked.
     export LIBRARY_PATH="$platformDir/lib:$LIBRARY_PATH"
     export LD_LIBRARY_PATH="$platformDir/lib:$LD_LIBRARY_PATH"
+    export C_INCLUDE_PATH="$platformDir/include/python$majorAndMinorParts"
+    export CPLUS_INCLUDE_PATH="$platformDir/include/python$majorAndMinorParts"
 
     local binDir="$platformDir/bin"
     updatePath "$binDir"
