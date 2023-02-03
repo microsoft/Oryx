@@ -53,7 +53,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 "swig",
                 "tk-dev",
                 "unixodbc-dev",
-                "uuid-dev");
+                "uuid-dev",
+                "libffi-dev",
+                "python3-dev");
 
             // Install Python 3.8
             stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
@@ -97,7 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var snippet = new StringBuilder();
             snippet
                 .AppendLine()
-                .AppendLine($"if grep -q cli \"/opt/oryx/.imagetype\"; then")
+                .AppendLine($"if grep -q -e cli \"/opt/oryx/.imagetype\" -e githubactions \"/opt/oryx/.imagetype\"; then")
                 .AppendCommonSkeletonDepenendenciesInstallation()
                 .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
                 .AppendLine("fi")
