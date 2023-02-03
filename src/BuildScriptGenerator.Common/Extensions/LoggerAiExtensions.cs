@@ -3,9 +3,11 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.ApplicationInsights;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.Common.Extensions;
@@ -18,13 +20,13 @@ namespace Microsoft.Extensions.Logging
     public static class LoggerAiExtensions
     {
         private const int AiMessageLengthLimit = 32768;
+        private static readonly IServiceProvider ServiceProvider;
 
         /// <summary>
         /// Logs dependency specifications for a processed repository.
         /// </summary>
         public static void LogDependencies(
             this ILogger logger,
-            ITelemetryClientExtension telemetryClientExtension,
             string platform,
             string platformVersion,
             IEnumerable<string> depSpecs,
@@ -35,7 +37,7 @@ namespace Microsoft.Extensions.Logging
                 { nameof(platform),        platform },
                 { nameof(platformVersion), platformVersion },
             };
-
+            var telemetryClientExtension = ServiceProvider.GetService<ITelemetryClientExtension>();
             string devPrefix = devDeps ? "Dev " : string.Empty;
             foreach (string dep in depSpecs)
             {
@@ -46,7 +48,7 @@ namespace Microsoft.Extensions.Logging
             }
         }
 
-        public static void LogEvent(this ILogger logger,ITelemetryClientExtension telemetryClientExtension, string eventName, IDictionary<string, string> props = null)
+        public static void LogEvent(this ILogger logger, ITelemetryClientExtension telemetryClientExtension, string eventName, IDictionary<string, string> props = null)
         {
             telemetryClientExtension.GetTelemetryClient().TrackEvent(eventName, props);
         }
@@ -85,8 +87,9 @@ namespace Microsoft.Extensions.Logging
             return op.Telemetry.Id;
         }
 
-        public static EventStopwatch LogTimedEvent(this ILogger logger, ITelemetryClientExtension telemetryClientExtension, string eventName, IDictionary<string, string> props = null)
+        public static EventStopwatch LogTimedEvent(this ILogger logger, string eventName, IDictionary<string, string> props = null)
         {
+            var telemetryClientExtension = ServiceProvider.GetService<ITelemetryClientExtension>();
             return new EventStopwatch(telemetryClientExtension.GetTelemetryClient(), eventName, props);
         }
     }

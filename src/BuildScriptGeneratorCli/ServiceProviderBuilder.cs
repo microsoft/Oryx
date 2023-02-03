@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
-using System.Data.SqlTypes;
 using System.IO;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
@@ -12,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using NLog;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using NLog.Config;
 using NLog.Extensions.Logging;
 
@@ -23,27 +22,27 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     /// </summary>
     internal class ServiceProviderBuilder
     {
-        private readonly Extensions.Logging.ILogger logger;
-        private IServiceCollection serviceCollection;
+        private readonly IServiceCollection serviceCollection;
 
-        public ServiceProviderBuilder(Extensions.Logging.ILogger logger, string logFilePath = null, IConsole console = null)
+        public ServiceProviderBuilder(string logFilePath = null, IConsole console = null)
         {
-            LogManager.Configuration = BuildNLogConfiguration(logFilePath);
-            LogManager.ReconfigExistingLoggers();
-            this.logger = logger;
             this.serviceCollection = new ServiceCollection();
             this.serviceCollection
                 .AddBuildScriptGeneratorServices()
                 .AddCliServices(console)
                 .AddLogging(builder =>
                 {
+                    builder.AddApplicationInsights(
+                         configureTelemetryConfiguration: (config) => config.ConnectionString = " ",
+                         configureApplicationInsightsLoggerOptions: (options) => { });
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
                     builder.AddNLog(new NLogProviderOptions
                     {
                         CaptureMessageTemplates = true,
                         CaptureMessageProperties = true,
                     });
-                });
+                })
+                .AddSingleton<ITelemetryClientExtension>(new TelemetryClientExtension(" "));
         }
 
         public ServiceProviderBuilder ConfigureServices(Action<IServiceCollection> configure)

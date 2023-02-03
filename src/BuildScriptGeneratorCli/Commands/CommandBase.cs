@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -36,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public int OnExecute(CommandLineApplication app, IConsole console)
         {
             console.CancelKeyPress += this.Console_CancelKeyPress;
-
+            var telemetryClientExtension = this.serviceProvider.GetService<ITelemetryClientExtension>();
             ILogger<CommandBase> logger = null;
 
             try
@@ -68,7 +69,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                             { "gitHubActionBuildImagePullDurationSeconds", gitHubActionBuildImagePullDurationSeconds },
                         };
 
-                        logger.LogEvent("GitHubActionsBuildImagePullDurationLog", buildEventProps);
+                        logger.LogEvent(telemetryClientExtension, "GitHubActionsBuildImagePullDurationLog", buildEventProps);
                     }
                 }
 

@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
@@ -18,10 +17,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
-using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -123,7 +120,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var environment = serviceProvider.GetRequiredService<IEnvironment>();
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            var buildOperationId = logger.StartOperation(BuildOperationName(environment));
+            var telemetryClientExtension = serviceProvider.GetService<ITelemetryClientExtension>();
+            var buildOperationId = logger.StartOperation(telemetryClientExtension, BuildOperationName(environment));
 
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
             var sourceRepoCommitId = GetSourceRepoCommitId(environment, sourceRepo, logger);
@@ -145,7 +143,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 { "platformName", this.PlatformName },
             };
 
-            logger.LogEvent("BuildRequested", buildEventProps);
+            logger.LogEvent(telemetryClientExtension, "BuildRequested", buildEventProps);
 
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
