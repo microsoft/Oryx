@@ -12,27 +12,18 @@ using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Logs an event in Oryx telemetry.")]
+    [Command(Name, Description = "[INTERNAL ONLY COMMAND]", ShowInHelpText = false)]
     internal class TelemetryCommand : CommandBase
     {
         public const string Name = "telemetry";
 
-        [Option(
-            OptionTemplates.EventName,
-            CommandOptionType.SingleValue,
-            Description = "The name of the event to log for telemetry.")]
+        [Option(OptionTemplates.EventName, CommandOptionType.SingleValue, ShowInHelpText = false)]
         public string EventName { get; set; }
 
-        [Option(
-            OptionTemplates.ProcessingTime,
-            CommandOptionType.SingleValue,
-            Description = "The processing time of the event, in milliseconds")]
+        [Option(OptionTemplates.ProcessingTime, CommandOptionType.SingleValue, ShowInHelpText = false)]
         public double ProcessingTime { get; set; }
 
-        [Option(
-            OptionTemplates.Property,
-            CommandOptionType.MultipleValue,
-            Description = "Additional information that should be logged with the event, in the form --property KEY=VALUE.")]
+        [Option(OptionTemplates.Property, CommandOptionType.MultipleValue, ShowInHelpText = false)]
         public string[] Properties { get; set; }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
