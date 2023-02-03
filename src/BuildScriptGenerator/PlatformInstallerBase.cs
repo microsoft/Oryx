@@ -55,7 +55,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 "unixodbc-dev",
                 "uuid-dev",
                 "libffi-dev",
-                "python3-dev");
+                "python3-dev",
+                "python3-cffi");
 
             // Install Python 3.8
             stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
