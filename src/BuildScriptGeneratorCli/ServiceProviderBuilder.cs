@@ -7,11 +7,11 @@ using System;
 using System.IO;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using NLog.Config;
 using NLog.Extensions.Logging;
 
@@ -27,13 +27,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public ServiceProviderBuilder(string logFilePath = null, IConsole console = null)
         {
             this.serviceCollection = new ServiceCollection();
+            var connectionString = string.Empty;
             this.serviceCollection
                 .AddBuildScriptGeneratorServices()
                 .AddCliServices(console)
                 .AddLogging(builder =>
                 {
                     builder.AddApplicationInsights(
-                         configureTelemetryConfiguration: (config) => config.ConnectionString = " ",
+                         configureTelemetryConfiguration: (config) => config.ConnectionString = connectionString,
                          configureApplicationInsightsLoggerOptions: (options) => { });
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
                     builder.AddNLog(new NLogProviderOptions
@@ -42,7 +43,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         CaptureMessageProperties = true,
                     });
                 })
-                .AddSingleton<ITelemetryClientExtension>(new TelemetryClientExtension(" "));
+                .AddSingleton<TelemetryClient>(new TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration
+                {
+                    ConnectionString = connectionString,
+                }));
         }
 
         public ServiceProviderBuilder ConfigureServices(Action<IServiceCollection> configure)
