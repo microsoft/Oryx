@@ -38,14 +38,25 @@ buildPythonfromSource()
         apt-get upgrade -y && \
         DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             build-essential \
+            lcov \
+            pkg-config \
             tk-dev \
+            libffi-dev \
+            gdb \
+            libgdbm-dev \
+            libgdbm-compat-dev \
+            libgdm-dev \
+            libreadline-dev \
+            libreadline6-dev \
             libgeos-dev \
             libssl-dev \
+            lzma \
+            lzma-dev \
+            liblzma-dev \
+            zlib1g-dev \
             libncurses5-dev \
             libsqlite3-dev \
-            libreadline-dev \
             libbz2-dev \
-            libgdm-dev \
             libbluetooth-dev \
             uuid-dev
 

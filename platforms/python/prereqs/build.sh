@@ -20,24 +20,35 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
 
 # for buster and ubuntu we would need following libraries
     apt-get update && \
-	apt-get upgrade -y && \
+    apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential \
+        lcov \
+        pkg-config \
+        tk-dev \
+        libffi-dev \
+        gdb \
+        libgdbm-dev \
+        libgdbm-compat-dev \
+        libgdm-dev \
+        libreadline-dev \
+        libreadline6-dev \
+        libgeos-dev \
         libssl-dev \
+        lzma \
+        lzma-dev \
+        liblzma-dev \
+        zlib1g-dev \
         libncurses5-dev \
         libsqlite3-dev \
-        libreadline-dev \
         libbz2-dev \
-        libgdm-dev \
         libbluetooth-dev \
-        tk-dev \
-        uuid-dev \
-        libffi-dev \
-        python3-dev
+        uuid-dev
 
 if  [ "${PYTHON_VERSION[0]}" == "3" ] && [ "${PYTHON_VERSION[1]}" -ge "10" ]
 then
     apt-get update && \
-	apt-get upgrade -y && \
+    apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         build-essential \
         libgeos-dev \
@@ -45,7 +56,7 @@ then
 fi
 
 if [ "$debianFlavor" == "stretch" ]; then
-	# Use default python sdk file name
+    # Use default python sdk file name
     echo "Hack flavor is: "$debianHackFlavor
 
     pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
@@ -57,7 +68,7 @@ if [ "$debianFlavor" == "stretch" ]; then
 
     PIP_VERSION="20.2.3"
 else
-	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
+    pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
 fi
 
 # Try getting the keys 5 times at most
@@ -80,8 +91,8 @@ else
         --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
         --enable-loadable-sqlite-extensions \
         --enable-shared \
-	--enable-optimizations \
-	--with-lto \
+    --enable-optimizations \
+    --with-lto \
         --with-system-expat \
         --with-system-ffi \
         --without-ensurepip
