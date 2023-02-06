@@ -27,7 +27,7 @@ jobs:
 - job: Release_DotNetCoreRuntimeBaseImage
   dependsOn: 
     - Build_DotNetCore_BaseImage_Buster
-    - Build_DotNetCore_BaseImage_Bullseye
+    #- Build_DotNetCore_BaseImage_Bullseye
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:
