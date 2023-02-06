@@ -14,14 +14,15 @@ jobs:
     artifactsFileName: dotnetcore-runtimeimage-bases-buster.txt
     jobName: Build_DotNetCore_BaseImage_Buster
 
-- template: ../templates/_buildimageBasesJobTemplate.yml
-  parameters:
-    displayName: Build DotNetCore runtime bullseye base images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: dotnetcore
-    imageDebianFlavor: bullseye
-    artifactsFileName: dotnetcore-runtimeimage-bases-bullseye.txt
-    jobName: Build_DotNetCore_BaseImage_Bullseye
+# Temporarily commenting this out to skip building bases for bullseye images.
+#- template: ../templates/_buildimageBasesJobTemplate.yml
+#  parameters:
+#    displayName: Build DotNetCore runtime bullseye base images
+#    scriptPath: ./build/buildRunTimeImageBases.sh
+#    imageDir: dotnetcore
+#    imageDebianFlavor: bullseye
+#    artifactsFileName: dotnetcore-runtimeimage-bases-bullseye.txt
+#    jobName: Build_DotNetCore_BaseImage_Bullseye
 
 - job: Release_DotNetCoreRuntimeBaseImage
   dependsOn: 
