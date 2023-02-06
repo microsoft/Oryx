@@ -22,6 +22,8 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
     apt-get update && \
 	apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential \
+        libgeos-dev \
         libssl-dev \
         libncurses5-dev \
         libsqlite3-dev \
@@ -32,24 +34,25 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
         tk-dev \
         uuid-dev \
         libffi-dev \
-        python3-dev
+        python3-dev \
+        gdb \
+        lcov \
+        pkg-config \
+        libgdbm-dev \
+        libgdbm-compat-dev \
+        liblzma-dev \
+        libreadline6-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev \
 
-if  [ "${PYTHON_VERSION[0]}" == "3" ] && [ "${PYTHON_VERSION[1]}" -ge "10" ]
-then
-    apt-get update && \
-	apt-get upgrade -y && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        build-essential \
-        libgeos-dev \
-    PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
-fi
+PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 
 if [ "$debianFlavor" == "stretch" ]; then
 	# Use default python sdk file name
     echo "Hack flavor is: "$debianHackFlavor
 
     pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
-    PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
     
     if [[ $PYTHON_VERSION == 3.6* ]]; then
         PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/pip/3.6/get-pip.py"

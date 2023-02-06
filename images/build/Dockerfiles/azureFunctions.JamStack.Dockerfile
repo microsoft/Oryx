@@ -37,6 +37,18 @@ RUN set -ex \
         swig \
         tk-dev \
         uuid-dev \
+        python3-dev \
+        libffi-dev \
+        gdb \
+        lcov \
+        pkg-config \
+        libgdbm-dev \
+        libgdbm-compat-dev \
+        liblzma-dev \
+        libreadline6-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -ex \
