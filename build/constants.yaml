@@ -150,7 +150,7 @@
     python38-version: 3.8.15
     python39-version: 3.9.15
     python310-version: 3.10.8
-    python311-version: 3.11.0
+    python311-version: 3.11.1
     runtime-versions:
     - 2.7
     - 3.6
