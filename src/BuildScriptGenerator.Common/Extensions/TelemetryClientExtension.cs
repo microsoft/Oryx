@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Extensions
             string devPrefix = devDeps ? "Dev " : string.Empty;
             foreach (string dep in depSpecs)
             {
-                telemetryClient.Value.TrackTrace(
+                telemetryClient.TrackTrace(
                     $"{devPrefix}Dependency: {dep.ReplaceUrlUserInfo()}",
                     ApplicationInsights.DataContracts.SeverityLevel.Information,
                     props);
