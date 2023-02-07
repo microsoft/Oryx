@@ -66,6 +66,53 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
+        [Fact]
+        [Trait("category", "python-3.10")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRun_DjangoRegex()
+        {
+            // Arrange
+            var appName = "django-regex-example-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand("export ORYX_SDK_STORAGE_BASE_URL=https://oryxsdkssandbox.blob.core.windows.net")
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python310Version}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new[] { volume, appOutputDirVolume },
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetRuntimeImage("python", "3.10"),
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello world from Django!", data);
+                });
+        }
+
         [Theory]
         [Trait("category", "python-3.7")]
         [Trait("build-image", "debian-stretch")]
