@@ -1,0 +1,51 @@
+﻿using System.Collections.Generic;
+using Microsoft.ApplicationInsights;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.Common.Extensions;
+
+public static class TelemetryClientExtension
+{
+    public static void LogDependencies(
+           this TelemetryClient telemetryClient,
+           string platform,
+           string platformVersion,
+           IEnumerable<string> depSpecs,
+           bool devDeps = false)
+    {
+        var props = new Dictionary<string, string>
+            {
+                { nameof(platform),        platform },
+                { nameof(platformVersion), platformVersion },
+            };
+
+        string devPrefix = devDeps ? "Dev " : string.Empty;
+        foreach (string dep in depSpecs)
+        {
+            telemetryClient.TrackTrace(
+                $"{devPrefix}Dependency: {dep.ReplaceUrlUserInfo()}",
+                Microsoft.ApplicationInsights.DataContracts.SeverityLevel.Information,
+                props);
+        }
+    }
+
+    public static void LogEvent(this TelemetryClient telemetryClient, string eventName, IDictionary<string, string> props = null)
+    {
+        telemetryClient.TrackEvent(eventName, props);
+    }
+
+    public static void LogTrace(this TelemetryClient telemetryClient, string message, IDictionary<string, string> props = null)
+    {
+        telemetryClient.TrackTrace(message, props);
+    }
+
+    public static string StartOperation(this TelemetryClient telemetryClient, string name)
+    {
+        var op = telemetryClient.StartOperation<Microsoft.ApplicationInsights.DataContracts.RequestTelemetry>(name);
+        return op.Telemetry.Id;
+    }
+
+    public static EventStopwatch LogTimedEvent(this TelemetryClient telemetryClient, string eventName, IDictionary<string, string> props = null)
+    {
+        return new EventStopwatch(telemetryClient, eventName, props);
+    }
+}
