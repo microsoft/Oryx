@@ -91,6 +91,14 @@ namespace Microsoft.Extensions.Logging
             return new EventStopwatch(GetTelemetryClient(), eventName, props);
         }
 
+        public static void LogTimedEvent(this ILogger logger, string eventName, double processingTime, IDictionary<string, string> props = null)
+        {
+            GetTelemetryClient().TrackEvent(
+                eventName,
+                props,
+                new Dictionary<string, double> { { "processingTime", processingTime } });
+        }
+
         private static TelemetryClient GetTelemetryClient()
         {
             // Temporarily use obsolete empty client as mentioned in work item 1735437

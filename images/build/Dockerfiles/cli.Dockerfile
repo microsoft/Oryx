@@ -4,6 +4,7 @@ ARG DEBIAN_FLAVOR
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl as main
 ARG DEBIAN_FLAVOR
 ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
+ARG AI_KEY
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
@@ -17,6 +18,7 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8" \
+    ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 
 # Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
@@ -65,7 +67,7 @@ RUN apt-get update \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && echo "cli" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
-    
+
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
     && cp -f $tmpDir/images/build/logger.sh /opt/oryx/logger \
