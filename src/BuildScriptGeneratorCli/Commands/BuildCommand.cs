@@ -50,6 +50,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public BuildCommand(BuildCommandProperty input)
         {
+            this.languageVersionWasSet = input.LanguageVersionWasSet;
+            this.languageWasSet = input.LanguageWasSet;
             this.LanguageName = input.LanguageName;
             this.LanguageVersion = input.LanguageVersion;
             this.IntermediateDir = input.IntermediateDir;

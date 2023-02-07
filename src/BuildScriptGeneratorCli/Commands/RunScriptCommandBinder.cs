@@ -1,10 +1,5 @@
-﻿using System;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.CommandLine.Binding;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {

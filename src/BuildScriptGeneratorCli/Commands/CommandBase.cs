@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             try
             {
-                this.serviceProvider = this.TryGetServiceProvider();
+                this.serviceProvider = this.TryGetServiceProvider(console);
                 if (this.serviceProvider == null)
                 {
                     return ProcessConstants.ExitFailure;
@@ -120,7 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        internal virtual IServiceProvider TryGetServiceProvider()
+        internal virtual IServiceProvider TryGetServiceProvider(IConsole console)
         {
             // Don't use the IConsole instance in this method -- override this method in the command
             // and pass IConsole through to ServiceProviderBuilder to write to the output.

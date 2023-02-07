@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.CommandLine.Binding;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
@@ -14,8 +9,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
         private Option<bool> skipDetectionOption;
         private Option<string> platformsAndVersionsOption;
         private Option<string> platformsAndVersionsFileOption;
-        private Option<string> logFileOption;
-        private Option<bool> debugOption;
 
         public PrepareEnvironmentCommandBinder(
             Option<string> sourceDirOption,
@@ -39,8 +32,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
                 SkipDetection = bindingContext.ParseResult.GetValueForOption(this.skipDetectionOption),
                 PlatformsAndVersions = bindingContext.ParseResult.GetValueForOption(this.platformsAndVersionsOption),
                 PlatformsAndVersionsFile = bindingContext.ParseResult.GetValueForOption(this.platformsAndVersionsFileOption),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.logFileOption),
-                DebugMode = bindingContext.ParseResult.GetValueForOption(this.debugOption),
+                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.logPath),
+                DebugMode = bindingContext.ParseResult.GetValueForOption(this.debugMode),
             };
     }
 }

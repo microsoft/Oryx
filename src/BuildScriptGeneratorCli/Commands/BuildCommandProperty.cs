@@ -8,8 +8,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class BuildCommandProperty : BuildCommandBaseProperty
     {
-        private bool languageVersionWasSet;
-        private bool languageWasSet;
+        public bool LanguageVersionWasSet { get; set; }
+
+        public bool LanguageWasSet { get; set; }
 
         public string IntermediateDir { get; set; }
 
@@ -19,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             set
             {
                 this.PlatformName = value;
-                this.languageWasSet = true;
+                this.LanguageWasSet = true;
             }
         }
 
@@ -29,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             set
             {
                 this.PlatformVersion = value;
-                this.languageVersionWasSet = true;
+                this.LanguageVersionWasSet = true;
             }
         }
 
