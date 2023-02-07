@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.10")]
+        [Trait("category", "python-3.11")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRun_DjangoRegex()
         {
@@ -80,7 +80,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                 .AddCommand("export ORYX_SDK_STORAGE_BASE_URL=https://oryxsdkssandbox.blob.core.windows.net")
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python310Version}")
+                $"--platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python311Version}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.10"),
+                _imageHelper.GetRuntimeImage("python", "3.11"),
                 ContainerPort,
                 "/bin/bash",
                 new[]
