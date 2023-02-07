@@ -17,6 +17,7 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8" \
+    ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 
 # Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
@@ -27,6 +28,15 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
             libicu63 \
             libcurl4 \
             libssl1.1 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \ 
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu67 \
+            libcurl4 \
+            libssl1.1 \
+            libyaml-dev \
+            libxml2 \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
         apt-get update \
@@ -48,13 +58,15 @@ RUN apt-get update \
         zlib1g \
         rsync \
         libgdiplus \
+        # Required for mysqlclient
+        default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && echo "cli" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
-    
+
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
     && cp -f $tmpDir/images/build/logger.sh /opt/oryx/logger \
