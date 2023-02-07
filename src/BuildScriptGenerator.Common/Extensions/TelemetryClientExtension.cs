@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
-using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Common.Extensions
@@ -8,7 +7,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Extensions
     public static class TelemetryClientExtension
     {
         public static void LogDependencies(
-               this IOptions<TelemetryClient> telemetryClient,
+               this TelemetryClient telemetryClient,
                string platform,
                string platformVersion,
                IEnumerable<string> depSpecs,
@@ -30,25 +29,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Extensions
             }
         }
 
-        public static void LogEvent(this IOptions<TelemetryClient> telemetryClient, string eventName, IDictionary<string, string> props = null)
+        public static void LogEvent(this TelemetryClient telemetryClient, string eventName, IDictionary<string, string> props = null)
         {
-            telemetryClient.Value.TrackEvent(eventName, props);
+            telemetryClient.TrackEvent(eventName, props);
         }
 
-        public static void LogTrace(this IOptions<TelemetryClient> telemetryClient, string message, IDictionary<string, string> props = null)
+        public static void LogTrace(this TelemetryClient telemetryClient, string message, IDictionary<string, string> props = null)
         {
-            telemetryClient.Value.TrackTrace(message, props);
+            telemetryClient.TrackTrace(message, props);
         }
 
-        public static string StartOperation(this IOptions<TelemetryClient> telemetryClient, string name)
+        public static string StartOperation(this TelemetryClient telemetryClient, string name)
         {
-            var op = telemetryClient.Value.StartOperation<ApplicationInsights.DataContracts.RequestTelemetry>(name);
+            var op = telemetryClient.StartOperation<ApplicationInsights.DataContracts.RequestTelemetry>(name);
             return op.Telemetry.Id;
         }
 
-        public static EventStopwatch LogTimedEvent(this IOptions<TelemetryClient> telemetryClient, string eventName, IDictionary<string, string> props = null)
+        public static EventStopwatch LogTimedEvent(this TelemetryClient telemetryClient, string eventName, IDictionary<string, string> props = null)
         {
-            return new EventStopwatch(telemetryClient.Value, eventName, props);
+            return new EventStopwatch(telemetryClient, eventName, props);
         }
     }
 }
