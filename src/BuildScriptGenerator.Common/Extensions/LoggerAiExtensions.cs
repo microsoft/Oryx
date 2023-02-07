@@ -6,7 +6,6 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.ApplicationInsights.NLogTarget;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Common.Extensions;
