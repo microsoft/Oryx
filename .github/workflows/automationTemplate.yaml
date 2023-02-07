@@ -51,7 +51,9 @@ jobs:
           echo "PLATFORM_NAME_CAMEL_CASE=${platformNamesAsInBasePipeline[${{ inputs.platformName }}]}" >> $GITHUB_ENV
 
       - name: Run SDK Automation
-        run: dotnet run --project build/tools/Automation/Automation.csproj ${RELEASE_DATE} ${{ github.workspace }}
+        run: |
+          dotnet run --project build/tools/Automation/Automation.csproj ${RELEASE_DATE} ${{ github.workspace }}
+          ./build/generateConstants.sh
 
       - name: Commit new ${{ env.PLATFORM_NAME_CAMEL_CASE }} SDK versions
         run: |
@@ -104,7 +106,7 @@ jobs:
         name: Trigger Runtime Pipeline 
         run: |
           echo  "${{ secrets.AZURE_DEVOPS_TOKEN }}" | az devops login --organization https://devdiv.visualstudio.com/
-          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-${{ env.PLATFORM_NAME_CAMEL_CASE }} --branch automation/add-new-${{ inputs.platformName }}-release-${{ env.RELEASE_DATE }} > /tmp/runtimePipelineTriggerResponse.json
+          az pipelines run --organization https://devdiv.visualstudio.com/ --project DevDiv --name Oryx-BaseImages-${{ env.PLATFORM_NAME_CAMEL_CASE }} --branch automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }} > /tmp/runtimePipelineTriggerResponse.json
 
       - if: ${{ env.CANCEL_WORKFLOW == 0 }}
         name: Check Runtime Pipeline Ran Successfully

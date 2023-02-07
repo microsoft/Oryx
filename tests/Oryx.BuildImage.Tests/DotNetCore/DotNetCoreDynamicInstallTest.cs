@@ -79,7 +79,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string runtimeVersion)
         {
             BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(NetCore7PreviewMvcApp, "7.0")]
+        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBullseye(
+           string appName,
+           string runtimeVersion)
+        {
+            BuildsApplication_ByDynamicallyInstallingSDKs(
+                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
         }
 
         private void BuildsApplication_ByDynamicallyInstallingSDKs(
