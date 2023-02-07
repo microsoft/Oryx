@@ -4,31 +4,73 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.CommandLine;
 using System.IO;
 using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Execute an arbitrary command in the default shell, in an environment " +
-        "with the best-matching platform tool versions.")]
     internal class ExecCommand : CommandBase
     {
         public const string Name = "exec";
 
-        [Option("-s|--src <dir>", CommandOptionType.SingleValue, Description = "Source directory.")]
-        [DirectoryExists]
+        public ExecCommand()
+        {
+        }
+
+        public ExecCommand(ExecCommandProperty input)
+        {
+            this.SourceDir = input.SourceDir;
+            this.Command = input.Command;
+            this.DebugMode = input.DebugMode;
+            this.LogFilePath = input.LogFilePath;
+        }
+
         public string SourceDir { get; set; }
 
-        [Argument(1, Description = "The command to execute in an app-specific environment.")]
         public string Command { get; set; }
+
+        public static Command Export()
+        {
+            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var execSourceDirOption = new Option<string>(
+                aliases: new[] { "-s", "--src" },
+                description: "The command to execute in an app-specific environment.");
+            var commandArgument = new Argument<string>("command", "The command to execute in an app-specific environment.");
+
+            var command = new Command(
+                name: "exec",
+                description: "Execute an arbitrary command in the default shell, in an environment " +
+                             "with the best-matching platform tool versions.")
+            {
+                logOption,
+                debugOption,
+                execSourceDirOption,
+                commandArgument,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var execCommand = new ExecCommand(prop);
+                    execCommand.OnExecute();
+                },
+                new ExecCommandBinder(
+                    execSourceDirOption,
+                    commandArgument,
+                    logOption,
+                    debugOption));
+            return command;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
@@ -98,9 +140,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.WriteLine("---");
                 }
 
-                console.WriteLine();
+                console.WriteLine(string.Empty);
                 console.WriteLine("Executing generated script...");
-                console.WriteLine();
+                console.WriteLine(string.Empty);
 
                 exitCode = ProcessHelper.RunProcess(
                     shellPath,
@@ -117,7 +159,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     {
                         if (args.Data != null)
                         {
-                            console.Error.WriteLine(args.Data);
+                            console.Error.Write(args.Data);
                         }
                     },
                     waitTimeForExit: null);

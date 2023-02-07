@@ -4,30 +4,104 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.CommandLine;
+using System.Data;
 using System.IO;
 using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Generate build script to standard output.")]
     internal class BuildScriptCommand : BuildCommandBase
     {
-        public const string Name = "build-script";
+        public BuildScriptCommand()
+        {
+        }
 
-        [Option(
-            "--output",
-            CommandOptionType.SingleValue,
-            Description = "The path that the build script will be written to. " +
-                          "If not specified, the result will be written to STDOUT.")]
+        public BuildScriptCommand(BuildScriptCommandProperty input)
+        {
+            this.OutputPath = input.OutputPath;
+            this.SourceDir = input.SourceDir;
+            this.PlatformName = input.PlatformName;
+            this.PlatformVersion = input.PlatformVersion;
+            this.ShouldPackage = input.ShouldPackage;
+            this.OsRequirements = input.OsRequirements;
+            this.AppType = input.AppType;
+            this.BuildCommandsFileName = input.BuildCommandsFileName;
+            this.CompressDestinationDir = input.CompressDestinationDir;
+            this.Properties = input.Properties;
+            this.DynamicInstallRootDir = input.DynamicInstallRootDir;
+            this.LogFilePath = input.LogFilePath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string OutputPath { get; set; }
+
+        public static Command Export()
+        {
+            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var sourceDirArgument = new Argument<string>("sourceDir", "The source directory.");
+            var platformOption = new Option<string>(OptionTemplates.Platform, OptionTemplates.PlatformDescription);
+            var platformVersionOption = new Option<string>(OptionTemplates.PlatformVersion, OptionTemplates.PlatformVersionDescription);
+            var packageOption = new Option<bool>(OptionTemplates.Package, OptionTemplates.PackageDescription);
+            var osReqOption = new Option<string>(OptionTemplates.OsRequirements, OptionTemplates.OsRequirementsDescription);
+            var appTypeOption = new Option<string>(OptionTemplates.AppType, OptionTemplates.AppTypeDescription);
+            var buildCommandFileNameOption = new Option<string>(OptionTemplates.BuildCommandsFileName, OptionTemplates.BuildCommandsFileNameDescription);
+            var compressDestDirOption = new Option<bool>(OptionTemplates.CompressDestinationDir, OptionTemplates.CompressDestinationDirDescription);
+            var propertyOption = new Option<string[]>(aliases: new[] { "-p", OptionTemplates.Property }, OptionTemplates.PropertyDescription);
+            var dynamicInstallRootDirOption = new Option<string>(OptionTemplates.DynamicInstallRootDir, OptionTemplates.DynamicInstallRootDirDescription);
+            var buildScriptOutputOption = new Option<string>(
+                name: "--output",
+                description: "The path that the build script will be written to. " +
+                          "If not specified, the result will be written to STDOUT.");
+
+            var command = new Command("build-script", "Generate build script to standard output.")
+            {
+                logOption,
+                debugOption,
+                sourceDirArgument,
+                platformOption,
+                platformVersionOption,
+                packageOption,
+                osReqOption,
+                appTypeOption,
+                buildCommandFileNameOption,
+                compressDestDirOption,
+                propertyOption,
+                dynamicInstallRootDirOption,
+                buildScriptOutputOption,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var buildScriptCommand = new BuildScriptCommand(prop);
+                    buildScriptCommand.OnExecute();
+                },
+                new BuildScriptCommandBinder(
+                    buildScriptOutputOption,
+                    sourceDirArgument,
+                    platformOption,
+                    platformVersionOption,
+                    packageOption,
+                    osReqOption,
+                    appTypeOption,
+                    buildCommandFileNameOption,
+                    compressDestDirOption,
+                    propertyOption,
+                    dynamicInstallRootDirOption,
+                    logOption,
+                    debugOption));
+            return command;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
@@ -69,14 +143,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!Directory.Exists(options.SourceDir))
             {
-                console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
+                console.WriteLine($"Could not find the source directory '{options.SourceDir}'.");
                 return false;
             }
 
             // Invalid to specify platform version without platform name
             if (string.IsNullOrEmpty(options.PlatformName) && !string.IsNullOrEmpty(options.PlatformVersion))
             {
-                console.WriteErrorLine("Cannot use platform version without platform name also.");
+                console.WriteLine("Cannot use platform version without platform name also.");
                 return false;
             }
 

@@ -4,9 +4,10 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using JetBrains.Annotations;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -42,6 +43,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         CaptureMessageProperties = true,
                     });
                 });
+            this.serviceCollection
+                .AddSingleton<IConsole, SystemConsole>();
         }
 
         public ServiceProviderBuilder ConfigureServices(Action<IServiceCollection> configure)

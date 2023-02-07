@@ -4,34 +4,75 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.CommandLine;
 using System.IO;
 using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Determine whether Oryx can be applied as a buildpack to an app in the current " +
-        "working directory.")]
     internal class BuildpackDetectCommand : CommandBase
     {
-        public const string Name = "buildpack-detect";
-
         // CodeDetectFail @ https://github.com/buildpack/lifecycle/blob/master/detector.go
         public const int DetectorFailCode = 100;
 
-        [Argument(0, Description = "The source directory.")]
+        public BuildpackDetectCommand()
+        {
+        }
+
+        public BuildpackDetectCommand(BuildpackDetectCommandProperty input)
+        {
+            this.PlatformDir = input.PlatformDir;
+            this.SourceDir = input.SourceDir;
+            this.PlanPath = input.PlanPath;
+            this.LogFilePath = input.LogFilePath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string SourceDir { get; set; }
 
-        [Option("--platform-dir <dir>", CommandOptionType.SingleValue, Description = "Platform directory path.")]
         public string PlatformDir { get; set; }
 
-        [Option("--plan-path <path>", CommandOptionType.SingleValue, Description = "Build plan TOML path.")]
         public string PlanPath { get; set; }
+
+        public static Command Export()
+        {
+            var sourceDirArgument = new Argument<string>("sourceDir", "The source directory.");
+            var platformDirOption = new Option<string>("--platform-dir", "Platform directory path.");
+            var planPathOption = new Option<string>("--plan-path", "Build plan TOML path.");
+            var logFilePathOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
+            var debugMode = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+
+            var command = new Command("buildpack-detect", "Determine whether Oryx can be applied as a buildpack to an app in the current " +
+        "working directory.")
+            {
+                sourceDirArgument,
+                platformDirOption,
+                planPathOption,
+                logFilePathOption,
+                debugMode,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var buildpackDetectCommand = new BuildpackDetectCommand(prop);
+                    buildpackDetectCommand.OnExecute();
+                },
+                new BuildpackDetectCommandBinder(
+                    sourceDirArgument,
+                    platformDirOption,
+                    planPathOption,
+                    logFilePathOption,
+                    debugMode));
+
+            return command;
+        }
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
@@ -43,7 +84,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!Directory.Exists(options.SourceDir))
             {
                 logger.LogError("Could not find the source directory.");
-                console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
+                console.Error.Write($"Could not find the source directory '{options.SourceDir}'.");
                 result = false;
             }
 
@@ -53,7 +94,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!File.Exists(this.PlanPath))
                 {
                     logger?.LogError("Could not find build plan file {planPath}", this.PlanPath);
-                    console.WriteErrorLine($"Could not find build plan file '{this.PlanPath}'.");
+                    console.Error.Write($"Could not find build plan file '{this.PlanPath}'.");
                     result = false;
                 }
             }
@@ -64,7 +105,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(this.PlatformDir))
                 {
                     logger?.LogError("Could not find platform directory {platformDir}", this.PlatformDir);
-                    console.WriteErrorLine($"Could not find platform directory '{this.PlatformDir}'.");
+                    console.Error.Write($"Could not find platform directory '{this.PlatformDir}'.");
                     result = false;
                 }
             }

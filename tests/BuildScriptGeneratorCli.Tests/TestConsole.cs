@@ -4,9 +4,10 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using System.Text;
-using McMaster.Extensions.CommandLineUtils;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
@@ -87,6 +88,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();
         }
+
+        IStandardStreamWriter IStandardOut.Out => throw new NotImplementedException();
+
+        IStandardStreamWriter IStandardError.Error => throw new NotImplementedException();
 
 #pragma warning disable 0067
         public event ConsoleCancelEventHandler CancelKeyPress;

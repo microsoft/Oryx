@@ -15,7 +15,6 @@
 
   <ItemGroup>
     <PackageReference Include="JsonFlatFileDataStore" Version="2.4.0" />
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="RunProcessAsTask" Version="1.2.4" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />

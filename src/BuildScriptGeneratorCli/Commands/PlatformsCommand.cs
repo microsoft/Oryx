@@ -5,26 +5,56 @@
 
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.Linq;
 using System.Text;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Show a list of supported platforms along with their versions and build properties.")]
     internal class PlatformsCommand : CommandBase
     {
-        public const string Name = "platforms";
+        public PlatformsCommand()
+        {
+        }
 
-        [Option("--json", Description = "Output the supported platform data in JSON format.")]
+        public PlatformsCommand(PlatformsCommandProperty input)
+        {
+            this.OutputJson = input.OutputJson;
+            this.LogFilePath = input.LogFilePath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public bool OutputJson { get; set; }
+
+        public static Command Export()
+        {
+            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var jsonOption = new Option<bool>("--json", "Output the supported platform data in JSON format.");
+
+            var command = new Command("platforms", "Show a list of supported platforms along with their versions and build properties.");
+            command.AddOption(jsonOption);
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var platformsCommand = new PlatformsCommand(prop);
+                    platformsCommand.OnExecute();
+                },
+                new PlatformsCommandBinder(
+                    jsonOption,
+                    logOption,
+                    jsonOption));
+            return command;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {

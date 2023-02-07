@@ -5,10 +5,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Text;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -21,6 +21,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.BuildScriptGenerator.Ruby;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.DotNetCore;
@@ -32,43 +33,77 @@ using Microsoft.Oryx.Detector.Ruby;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Sets up environment by detecting and installing platforms.")]
     internal class PrepareEnvironmentCommand : CommandBase
     {
-        public const string Name = "prep";
         private const string SourceDirectoryTemplate = "-s|--src";
         private const string SkipDetectionTemplate = "--skip-detection";
         private const string PlatformsAndVersionsTemplate = "--platforms-and-versions";
         private const string PlatformsAndVersionsFileTemplate = "--platforms-and-versions-file";
 
-        [Option(
-            SourceDirectoryTemplate,
-            CommandOptionType.SingleValue,
-            Description = "The source directory.")]
-        [DirectoryExists]
+        public PrepareEnvironmentCommand()
+        {
+        }
+
+        public PrepareEnvironmentCommand(PrepareEnvironmentCommandProperty input)
+        {
+            this.SourceDir = input.SourceDir;
+            this.SkipDetection = input.SkipDetection;
+            this.PlatformsAndVersions = input.PlatformsAndVersions;
+            this.PlatformsAndVersionsFile = input.PlatformsAndVersionsFile;
+            this.LogFilePath = input.LogFilePath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string SourceDir { get; set; }
 
-        [Option(
-            SkipDetectionTemplate,
-            CommandOptionType.NoValue,
-            Description = "Skip detection of platforms and install the requested platforms.")]
         public bool SkipDetection { get; set; }
 
-        [Option(
-            PlatformsAndVersionsTemplate,
-            CommandOptionType.SingleValue,
-            Description =
-            "Comma separated values of platforms and versions to be installed. " +
-            "Example: dotnet=3.1.200,php=7.4.5,node=2.3")]
         public string PlatformsAndVersions { get; set; }
 
-        [Option(
-            PlatformsAndVersionsFileTemplate,
-            CommandOptionType.SingleValue,
-            Description =
-            "A .env file which contains list of platforms and the versions that need to be installed. " +
-            "Example: \ndotnet=3.1.200\nphp=7.4.5\nnode=2.3")]
         public string PlatformsAndVersionsFile { get; set; }
+
+        public static Command Export()
+        {
+            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var sourceDirOption = new Option<string>(
+                aliases: new[] { "-s", "--src" },
+                description: "The source directory.");
+            var skipDetectionOption = new Option<bool>(SkipDetectionTemplate, "Skip detection of platforms and install the requested platforms.");
+            var platformsAndVersions = new Option<string>(
+                name: PlatformsAndVersionsTemplate,
+                description: "Comma separated values of platforms and versions to be installed. " +
+                             "Example: dotnet=3.1.200,php=7.4.5,node=2.3");
+            var platformsAndVersionsFile = new Option<string>(
+                name: PlatformsAndVersionsFileTemplate,
+                description: "A .env file which contains list of platforms and the versions that need to be installed. " +
+                             "Example: \ndotnet=3.1.200\nphp=7.4.5\nnode=2.3");
+
+            var command = new Command("prep", "Sets up environment by detecting and installing platforms.")
+            {
+                logOption,
+                debugOption,
+                sourceDirOption,
+                skipDetectionOption,
+                platformsAndVersions,
+                platformsAndVersionsFile,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var prepareEnvironmentCommand = new PrepareEnvironmentCommand(prop);
+                    prepareEnvironmentCommand.OnExecute();
+                },
+                new PrepareEnvironmentCommandBinder(
+                    sourceDirOption,
+                    skipDetectionOption,
+                    platformsAndVersions,
+                    platformsAndVersionsFile,
+                    logOption,
+                    debugOption));
+            return command;
+        }
 
         // To enable unit testing
         internal static bool TryValidateSuppliedPlatformsAndVersions(
@@ -90,7 +125,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!string.IsNullOrEmpty(suppliedPlatformsAndVersionsFile)
                 && !File.Exists(suppliedPlatformsAndVersionsFile))
             {
-                console.WriteErrorLine($"Supplied file '{suppliedPlatformsAndVersionsFile}' does not exist.");
+                console.Error.Write($"Supplied file '{suppliedPlatformsAndVersionsFile}' does not exist.");
                 return false;
             }
 
@@ -128,7 +163,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (!platformNames.ContainsKey(platformName))
                 {
-                    console.WriteErrorLine(
+                    console.Error.Write(
                         $"Platform name '{platformName}' is not valid. Make sure platform name matches one of the " +
                         $"following names: {string.Join(", ", platformNames.Keys)}");
                     return false;
@@ -177,7 +212,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     }
                     else
                     {
-                        console.WriteErrorLine(
+                        console.Error.Write(
                             $"Invalid value for switch '{PlatformsAndVersionsTemplate}'.");
                         return ProcessConstants.ExitFailure;
                     }
@@ -226,7 +261,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     console.WriteLine($"Temporary script @ {tempScriptPath}:");
                     console.WriteLine("---");
-                    console.WriteLine(scriptBuilder);
+                    console.WriteLine(script);
                     console.WriteLine("---");
                 }
 
@@ -248,7 +283,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     {
                         if (args.Data != null)
                         {
-                            console.Error.WriteLine(args.Data);
+                            console.Error.Write(args.Data);
                         }
                     },
                     waitTimeForExit: null);
@@ -378,7 +413,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (!this.SkipDetection && string.IsNullOrEmpty(this.SourceDir))
             {
-                console.WriteErrorLine("Source directory is required.");
+                console.Error.Write("Source directory is required.");
                 return false;
             }
 
@@ -386,7 +421,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 && string.IsNullOrEmpty(this.PlatformsAndVersions)
                 && string.IsNullOrEmpty(this.PlatformsAndVersionsFile))
             {
-                console.WriteErrorLine("Platform names and versions are required.");
+                console.Error.Write("Platform names and versions are required.");
                 return false;
             }
 

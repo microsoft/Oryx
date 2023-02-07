@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <RuntimeFrameworkVersion>6.0</RuntimeFrameworkVersion>
+    <RuntimeFrameworkVersion>6.0.13</RuntimeFrameworkVersion>
     <AssemblyName>GenerateBuildScript</AssemblyName>
     <RootNamespace>Microsoft.Oryx.BuildScriptGeneratorCli</RootNamespace>
     <OutputType>Exe</OutputType>
@@ -20,10 +20,18 @@
     <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+
   <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
 
   <ItemGroup>
-    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="4.0.2" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.NLogTarget" Version="2.21.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />

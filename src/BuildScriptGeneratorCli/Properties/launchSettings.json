@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BuildScriptGeneratorCli": {
+      "commandName": "Project",
+      "commandLineArgs": "prep"
+    }
+  }
+}

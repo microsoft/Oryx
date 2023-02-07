@@ -1,0 +1,32 @@
+﻿using System;
+using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Binding;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
+{
+    public class PlatformsCommandBinder : CommandBaseBinder<PlatformsCommandProperty>
+    {
+        private Option<bool> jsonOption;
+
+        public PlatformsCommandBinder(
+            Option<bool> jsonOption,
+            Option<string> logPath,
+            Option<bool> debugMod)
+            : base(logPath, debugMod)
+        {
+            this.jsonOption = jsonOption;
+        }
+
+        protected override PlatformsCommandProperty GetBoundValue(BindingContext bindingContext) =>
+            new PlatformsCommandProperty
+            {
+                OutputJson = bindingContext.ParseResult.GetValueForOption(this.jsonOption),
+                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.logPath),
+                DebugMode = bindingContext.ParseResult.GetValueForOption(this.debugMode),
+            };
+    }
+}

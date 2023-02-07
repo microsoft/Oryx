@@ -5,12 +5,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,17 +19,15 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Build an app.")]
     internal class BuildCommand : BuildCommandBase
     {
-        public const string Name = "build";
-
         // Beginning and ending markers for build script output spans that should be time measured
         private readonly TextSpan[] measurableStdOutSpans =
         {
@@ -46,17 +44,33 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private bool languageVersionWasSet;
         private bool languageWasSet;
 
-        [Option(
-            "-i|--intermediate-dir <dir>",
-            CommandOptionType.SingleValue,
-            Description = "The path to a temporary directory to be used by this tool.")]
+        public BuildCommand()
+        {
+        }
+
+        public BuildCommand(BuildCommandProperty input)
+        {
+            this.LanguageName = input.LanguageName;
+            this.LanguageVersion = input.LanguageVersion;
+            this.IntermediateDir = input.IntermediateDir;
+            this.DestinationDir = input.DestinationDir;
+            this.ManifestDir = input.ManifestDir;
+            this.SourceDir = input.SourceDir;
+            this.PlatformName = input.PlatformName;
+            this.PlatformVersion = input.PlatformVersion;
+            this.ShouldPackage = input.ShouldPackage;
+            this.OsRequirements = input.OsRequirements;
+            this.AppType = input.AppType;
+            this.BuildCommandsFileName = input.BuildCommandsFileName;
+            this.CompressDestinationDir = input.CompressDestinationDir;
+            this.Properties = input.Properties;
+            this.DynamicInstallRootDir = input.DynamicInstallRootDir;
+            this.LogFilePath = input.LogFilePath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string IntermediateDir { get; set; }
 
-        [Option(
-            OptionTemplates.Language,
-            CommandOptionType.SingleValue,
-            Description = "The name of the programming platform used in the provided source directory.",
-            ShowInHelpText = false)]
         public string LanguageName
         {
             get => this.PlatformName;
@@ -67,11 +81,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
         }
 
-        [Option(
-            OptionTemplates.LanguageVersion,
-            CommandOptionType.SingleValue,
-            Description = "The version of the programming platform used in the provided source directory.",
-            ShowInHelpText = false)]
         public string LanguageVersion
         {
             get => this.PlatformVersion;
@@ -82,17 +91,78 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
         }
 
-        [Option(
-            "-o|--output <dir>",
-            CommandOptionType.SingleValue,
-            Description = "The destination directory.")]
         public string DestinationDir { get; set; }
 
-        [Option(
-            OptionTemplates.ManifestDir,
-            CommandOptionType.SingleValue,
-            Description = "The path to a directory into which the build manifest file should be written.")]
         public string ManifestDir { get; set; }
+
+        public static Command Export()
+        {
+            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var sourceDirArgument = new Argument<string>("sourceDir", "The source directory.");
+            var platformOption = new Option<string>(OptionTemplates.Platform, OptionTemplates.PlatformDescription);
+            var platformVersionOption = new Option<string>(OptionTemplates.PlatformVersion, OptionTemplates.PlatformVersionDescription);
+            var packageOption = new Option<bool>(OptionTemplates.Package, OptionTemplates.PackageDescription);
+            var osReqOption = new Option<string>(OptionTemplates.OsRequirements, OptionTemplates.OsRequirementsDescription);
+            var appTypeOption = new Option<string>(OptionTemplates.AppType, OptionTemplates.AppTypeDescription);
+            var buildCommandFileNameOption = new Option<string>(OptionTemplates.BuildCommandsFileName, OptionTemplates.BuildCommandsFileNameDescription);
+            var compressDestDirOption = new Option<bool>(OptionTemplates.CompressDestinationDir, OptionTemplates.CompressDestinationDirDescription);
+            var propertyOption = new Option<string[]>(aliases: new[] { "-p", OptionTemplates.Property }, OptionTemplates.PropertyDescription);
+            var dynamicInstallRootDirOption = new Option<string>(OptionTemplates.DynamicInstallRootDir, OptionTemplates.DynamicInstallRootDirDescription);
+            var languageOption = new Option<string>(aliases: new[] { "-l", OptionTemplates.Language }, OptionTemplates.LanguageDescription);
+            var languageVerOption = new Option<string>(OptionTemplates.LanguageVersion, OptionTemplates.LanguageVersionDescription);
+            var intermediateDirOption = new Option<string>(aliases: new[] { "-i", OptionTemplates.IntermediateDir }, OptionTemplates.IntermediateDirDescription);
+            var outputOption = new Option<string>(aliases: new[] { "-o", OptionTemplates.Output }, OptionTemplates.OutputDescription);
+            var manifestDirOption = new Option<string>(OptionTemplates.ManifestDir, OptionTemplates.ManifestDirDescription);
+
+            var command = new Command("build", "Build an app.")
+            {
+                logOption,
+                debugOption,
+                sourceDirArgument,
+                platformOption,
+                platformVersionOption,
+                packageOption,
+                osReqOption,
+                appTypeOption,
+                buildCommandFileNameOption,
+                compressDestDirOption,
+                propertyOption,
+                dynamicInstallRootDirOption,
+                languageOption,
+                languageVerOption,
+                intermediateDirOption,
+                outputOption,
+                manifestDirOption,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    // InvocationContext provided in SetHandler
+                    var buildCommand = new BuildCommand(prop);
+                    buildCommand.OnExecute();
+                },
+                new BuildCommandBinder(
+                    languageOption,
+                    languageVerOption,
+                    intermediateDirOption,
+                    outputOption,
+                    manifestDirOption,
+                    sourceDirArgument,
+                    platformOption,
+                    platformVersionOption,
+                    packageOption,
+                    osReqOption,
+                    appTypeOption,
+                    buildCommandFileNameOption,
+                    compressDestDirOption,
+                    propertyOption,
+                    dynamicInstallRootDirOption,
+                    logOption,
+                    debugOption));
+            return command;
+        }
 
         public static string BuildOperationName(IEnvironment env)
         {
@@ -270,7 +340,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
 
                 // Not using IConsole.WriteErrorLine intentionally, to keep the child's error stream intact
-                console.Error.WriteLine(line);
+                console.WriteLine(line);
                 buildScriptOutput.AppendLine(line);
             };
 
@@ -278,7 +348,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             int exitCode;
             using (var timedEvent = logger.LogTimedEvent("RunBuildScript", buildEventProps))
             {
-                console.WriteLine();
+                console.WriteLine(string.Empty);
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     buildScriptPath,
                     new[]
@@ -333,7 +403,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (string.IsNullOrEmpty(options.PlatformName) && !string.IsNullOrEmpty(options.PlatformVersion))
             {
                 logger.LogError("Cannot use lang version without lang name");
-                console.WriteErrorLine("Cannot use platform version without specifying platform name also.");
+                console.WriteLine("Cannot use platform version without specifying platform name also.");
                 return false;
             }
 
@@ -345,7 +415,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     && !string.Equals(appType, Constants.WebApplications))
                 {
                     logger.LogError($"Invalid value for AppType: '{options.AppType}'.");
-                    console.WriteErrorLine(
+                    console.WriteLine(
                         $"Invalid value '{options.AppType}' for switch '--apptype'. " +
                         $"Valid values are '{Constants.StaticSiteApplications}' or " +
                         $"'{Constants.FunctionApplications}' or '{Constants.WebApplications}'");
@@ -359,7 +429,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     logger.LogError(
                         "Intermediate directory cannot be same as the source directory.");
-                    console.WriteErrorLine(
+                    console.WriteLine(
                         $"Intermediate directory '{options.IntermediateDir}' cannot be " +
                         $"same as the source directory '{options.SourceDir}'.");
                     return false;
@@ -370,7 +440,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     logger.LogError(
                         "Intermediate directory cannot be a child of the source directory.");
-                    console.WriteErrorLine(
+                    console.WriteLine(
                         $"Intermediate directory '{options.IntermediateDir}' cannot be a " +
                         $"sub-directory of source directory '{options.SourceDir}'.");
                     return false;

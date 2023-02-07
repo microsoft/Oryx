@@ -5,10 +5,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Text;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,29 +23,27 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         private IServiceProvider serviceProvider;
 
-        [Option(
-            "--log-file <file>",
-            CommandOptionType.SingleValue,
-            Description = "The file to which the log will be written.")]
         public string LogFilePath { get; set; }
 
-        [Option("--debug", Description = "Print stack traces for exceptions.")]
         public bool DebugMode { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "All arguments are necessary for OnExecute call, even if not used.")]
-        public int OnExecute(CommandLineApplication app, IConsole console)
+        public int OnExecute()
         {
-            console.CancelKeyPress += this.Console_CancelKeyPress;
-
             ILogger<CommandBase> logger = null;
+            var console = this.serviceProvider.GetService<IConsole>();
+            Console.CancelKeyPress += this.Console_CancelKeyPress;
 
             try
             {
-                this.serviceProvider = this.TryGetServiceProvider(console);
+                this.serviceProvider = this.TryGetServiceProvider();
                 if (this.serviceProvider == null)
                 {
                     return ProcessConstants.ExitFailure;
                 }
+
+                /*var console = this.serviceProvider.GetService<IConsole>();
+                Console.CancelKeyPress += this.Console_CancelKeyPress;*/
 
                 logger = this.serviceProvider?.GetRequiredService<ILogger<CommandBase>>();
                 logger?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
@@ -79,7 +77,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (this.DebugMode)
                 {
-                    console.WriteLine("Debug mode enabled");
+                    Console.Error.WriteLine("Debug mode enabled");
                 }
 
                 using (var timedEvent = logger?.LogTimedEvent(this.GetType().Name))
@@ -93,15 +91,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             catch (InvalidUsageException e)
             {
-                console.WriteErrorLine(e.Message);
+                console.WriteLine(e.Message);
                 return ProcessConstants.ExitFailure;
             }
             catch (Exception exc)
             {
                 logger?.LogError(exc, "Exception caught");
 
-                console.WriteErrorLine(Constants.GenericErrorMessage);
-                console.WriteErrorLine(exc.ToString());
+                console.WriteLine(Constants.GenericErrorMessage);
+                console.WriteLine(exc.ToString());
 
                 return ProcessConstants.ExitFailure;
             }
@@ -122,7 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return true;
         }
 
-        internal virtual IServiceProvider TryGetServiceProvider(IConsole console)
+        internal virtual IServiceProvider TryGetServiceProvider()
         {
             // Don't use the IConsole instance in this method -- override this method in the command
             // and pass IConsole through to ServiceProviderBuilder to write to the output.

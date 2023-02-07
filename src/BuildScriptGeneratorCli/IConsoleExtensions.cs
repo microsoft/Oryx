@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using McMaster.Extensions.CommandLineUtils;
+using System.CommandLine;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (!string.IsNullOrWhiteSpace(message))
             {
-                console.Error.WriteLine("Error: " + message);
+                console.Error.Write("Error: " + message);
             }
         }
     }

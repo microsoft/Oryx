@@ -4,47 +4,79 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.CommandLine;
 using System.IO;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(
-        Name,
-        Description = "Generate startup script for an app.",
-        UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect,
-        AllowArgumentSeparator = true)]
     internal class RunScriptCommand : CommandBase
     {
         public const string Name = "run-script";
 
-        [Argument(0, Description = "The application directory.")]
-        [DirectoryExists]
+        public RunScriptCommand()
+        {
+        }
+
+        public RunScriptCommand(RunScriptCommandProperty input)
+        {
+            this.AppDir = input.AppDir;
+            this.PlatformName = input.PlatformName;
+            this.PlatformVersion = input.PlatformVersion;
+            this.OutputPath = input.OutputPath;
+            this.RemainingArgs = input.RemainingArgs;
+            this.LogFilePath = input.LogFilePath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string AppDir { get; set; } = ".";
 
-        [Option(
-            OptionTemplates.Platform,
-            CommandOptionType.SingleValue,
-            Description = "The name of the programming platform, e.g. 'nodejs'.")]
         public string PlatformName { get; set; }
 
-        [Option(
-            OptionTemplates.PlatformVersion,
-            CommandOptionType.SingleValue,
-            Description = "The version of the platform to run the application on, e.g. '10' for nodejs.")]
         public string PlatformVersion { get; set; }
 
-        [Option(
-            "--output",
-            CommandOptionType.SingleValue,
-            Description = "[Optional] Path to which the script will be written. If not specified, will default to STDOUT.")]
         public string OutputPath { get; set; }
 
         public string[] RemainingArgs { get; }
+
+        public static Command Export()
+        {
+            var appDirArgument = new Argument<string>("appDir", "The application directory");
+            var platformNameOption = new Option<string>(OptionTemplates.Platform, "The name of the programming platform, e.g. 'nodejs'.");
+            var platformVersionOption = new Option<string>(OptionTemplates.PlatformVersion, "The version of the platform to run the application on, e.g. '10' for node js.");
+            var outputOption = new Option<string>("--output", "[Optional] Path to which the script will be written. If not specified, will default to STDOUT.");
+            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+
+            var command = new Command("run-script", "Generate startup script for an app.")
+            {
+                appDirArgument,
+                platformNameOption,
+                platformVersionOption,
+                outputOption,
+                logOption,
+                debugOption,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var runScriptCommand = new RunScriptCommand(prop);
+                    runScriptCommand.OnExecute();
+                },
+                new RunScriptCommandBinder(
+                    appDirArgument,
+                    platformNameOption,
+                    platformVersionOption,
+                    outputOption,
+                    logOption,
+                    debugOption));
+            return command;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
@@ -63,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var script = runScriptGenerator.GenerateBashScript(ctx);
             if (string.IsNullOrEmpty(script))
             {
-                console.WriteErrorLine("Couldn't generate startup script.");
+                console.Error.Write("Couldn't generate startup script.");
                 return ProcessConstants.ExitFailure;
             }
 
@@ -88,7 +120,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.AppDir = string.IsNullOrEmpty(this.AppDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(this.AppDir);
             if (!Directory.Exists(this.AppDir))
             {
-                console.WriteErrorLine($"Could not find the source directory '{this.AppDir}'.");
+                console.Error.Write($"Could not find the source directory '{this.AppDir}'.");
                 return false;
             }
 
