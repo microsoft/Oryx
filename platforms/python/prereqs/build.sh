@@ -22,30 +22,28 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
     apt-get update && \
 	apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        libssl-dev \
+        libncurses5-dev \
+        libsqlite3-dev \
+        libreadline-dev \
+        libbz2-dev \
+        libgdm-dev \
+        libbluetooth-dev \
+        tk-dev \
+        uuid-dev \
         # Adding additional python packages to support all optional python modules:
         # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
         build-essential \
         gdb \
         lcov \
-        libbluetooth-dev \
-        libbz2-dev \
+        pkg-config \
         libffi-dev \
         libgdbm-dev \
-        libgdm-dev \
-        libgeos-dev \
         liblzma-dev \
-        libncurses5-dev \
-        libreadline-dev \
-        libreadline6-dev \
         libsqlite3-dev \
-        libssl-dev \
         lzma \
         lzma-dev \
-        pkg-config \
-        python3-dev \
-        tk-dev \
-        uuid-dev \
-        zlib1g-dev \
+        zlib1g-dev
 
 PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 
