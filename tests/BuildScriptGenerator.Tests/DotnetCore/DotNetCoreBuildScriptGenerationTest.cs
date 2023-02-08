@@ -10,6 +10,8 @@ using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Xunit;
 using System.Collections.Generic;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
@@ -94,7 +96,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 NullLogger<TestDotNetCorePlatform>.Instance,
                 detector,
                 DotNetCoreInstaller,
-                globalJsonSdkResolver);
+                globalJsonSdkResolver,null);
         }
 
         private class TestDotNetCorePlatform : DotNetCorePlatform
@@ -106,7 +108,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 ILogger<DotNetCorePlatform> logger,
                 IDotNetCorePlatformDetector detector,
                 DotNetCorePlatformInstaller DotNetCoreInstaller,
-                GlobalJsonSdkResolver globalJsonSdkResolver)
+                GlobalJsonSdkResolver globalJsonSdkResolver,
+                TelemetryClient telemetryClient)
                 : base(
                       DotNetCoreVersionProvider,
                       logger,
@@ -114,7 +117,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                       commonOptions,
                       DotNetCoreScriptGeneratorOptions,
                       DotNetCoreInstaller,
-                      globalJsonSdkResolver)
+                      globalJsonSdkResolver,
+                      telemetryClient)
             {
             }
         }

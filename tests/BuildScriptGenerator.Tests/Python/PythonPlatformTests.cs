@@ -388,7 +388,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 pythonVersionProvider,
                 NullLogger<PythonPlatform>.Instance,
                 detector: null,
-                platformInstaller);
+                platformInstaller,
+                null);
         }
 
         private PythonPlatform CreatePlatform(
@@ -412,7 +413,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 versionProvider,
                 NullLogger<PythonPlatform>.Instance,
                 detector,
-                new PythonPlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance));
+                new PythonPlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
+                null);
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using Castle.Core.Internal;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -539,7 +540,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 ILogger<PhpPlatform> logger,
                 IPhpPlatformDetector detector,
                 PhpPlatformInstaller phpInstaller,
-                PhpComposerInstaller phpComposerInstaller)
+                PhpComposerInstaller phpComposerInstaller,
+                TelemetryClient telemetryClient)
                 : base(
                       phpScriptGeneratorOptions,
                       commonOptions,
@@ -548,7 +550,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                       logger,
                       detector,
                       phpInstaller,
-                      phpComposerInstaller)
+                      phpComposerInstaller,
+                      telemetryClient)
             {
             }
         }

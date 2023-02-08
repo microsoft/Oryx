@@ -146,7 +146,8 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                     Options.Create(commonOptions)),
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
-                new DefaultStandardOutputWriter());
+                new DefaultStandardOutputWriter(),
+                null);
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()

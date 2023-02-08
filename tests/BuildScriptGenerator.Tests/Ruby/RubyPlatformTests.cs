@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -372,7 +373,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Ruby
                 versionProvider,
                 NullLogger<TestRubyPlatform>.Instance,
                 detector,
-                rubyInstaller);
+                rubyInstaller,
+                null);
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
@@ -393,14 +395,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Ruby
                 IRubyVersionProvider rubyVersionProvider,
                 ILogger<RubyPlatform> logger,
                 IRubyPlatformDetector detector,
-                RubyPlatformInstaller rubyInstaller)
+                RubyPlatformInstaller rubyInstaller,
+                TelemetryClient telemetryClient)
                 : base(
                       rubyScriptGeneratorOptions,
                       commonOptions,
                       rubyVersionProvider,
                       logger,
                       detector,
-                      rubyInstaller)
+                      rubyInstaller,
+                      telemetryClient)
             {
             }
         }

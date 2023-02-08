@@ -9,12 +9,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Hugo;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
@@ -149,12 +151,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var logger = serviceProvider.GetRequiredService<ILogger<PrepareEnvironmentCommand>>();
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
+            var telemetryClient = serviceProvider.GetRequiredService<TelemetryClient>();
 
             var beginningOutputLog = GetBeginningCommandOutputLog();
             console.WriteLine(beginningOutputLog);
 
             int exitCode;
-            using (var timedEvent = logger.LogTimedEvent("EnvSetupCommand"))
+            using (var timedEvent = telemetryClient.LogTimedEvent("EnvSetupCommand"))
             {
                 var context = BuildScriptGenerator.CreateContext(serviceProvider, operationId: null);
 

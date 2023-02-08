@@ -9,12 +9,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -48,6 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
 
                 logger = this.serviceProvider?.GetRequiredService<ILogger<CommandBase>>();
+                var telemetryClient = this.serviceProvider?.GetRequiredService<TelemetryClient>();
                 logger?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
 
                 var envSettings = this.serviceProvider?.GetRequiredService<CliEnvironmentSettings>();
@@ -68,7 +71,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                             { "gitHubActionBuildImagePullDurationSeconds", gitHubActionBuildImagePullDurationSeconds },
                         };
 
-                        logger.LogEvent("GitHubActionsBuildImagePullDurationLog", buildEventProps);
+                        telemetryClient.LogEvent("GitHubActionsBuildImagePullDurationLog", buildEventProps);
                     }
                 }
 
@@ -82,7 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.WriteLine("Debug mode enabled");
                 }
 
-                using (var timedEvent = logger?.LogTimedEvent(this.GetType().Name))
+                using (var timedEvent = telemetryClient?.LogTimedEvent(this.GetType().Name))
                 {
                     var options = this.serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
                     var exitCode = this.Execute(this.serviceProvider, console);

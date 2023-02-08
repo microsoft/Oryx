@@ -7,9 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
@@ -83,6 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly INodePlatformDetector detector;
         private readonly IEnvironment environment;
         private readonly NodePlatformInstaller platformInstaller;
+        private readonly TelemetryClient telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="NodePlatform"/> class.
@@ -101,7 +104,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             ILogger<NodePlatform> logger,
             INodePlatformDetector detector,
             IEnvironment environment,
-            NodePlatformInstaller nodePlatformInstaller)
+            NodePlatformInstaller nodePlatformInstaller,
+            TelemetryClient telemetryClient)
         {
             this.commonOptions = commonOptions.Value;
             this.nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
@@ -110,6 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             this.detector = detector;
             this.environment = environment;
             this.platformInstaller = nodePlatformInstaller;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <inheritdoc/>
@@ -306,7 +311,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (packageJson?.dependencies != null)
             {
                 var depSpecs = ((JObject)packageJson.dependencies).ToObject<IDictionary<string, string>>();
-                this.logger.LogDependencies(
+                this.telemetryClient.LogDependencies(
                     this.commonOptions.PlatformName,
                     nodePlatformDetectorResult.PlatformVersion,
                     depSpecs.Select(d => d.Key + d.Value));
@@ -315,7 +320,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             if (packageJson?.devDependencies != null)
             {
                 var depSpecs = ((JObject)packageJson.devDependencies).ToObject<IDictionary<string, string>>();
-                this.logger.LogDependencies(
+                this.telemetryClient.LogDependencies(
                     this.commonOptions.PlatformName,
                     nodePlatformDetectorResult.PlatformVersion,
                     depSpecs.Select(d => d.Key + d.Value),
@@ -404,7 +409,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.NodeBuildSnippet,
                 scriptProps,
-                this.logger);
+                this.logger,
+                this.telemetryClient);
 
             return new BuildScriptSnippet
             {

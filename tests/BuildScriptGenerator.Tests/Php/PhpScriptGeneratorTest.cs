@@ -143,7 +143,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 NullLogger<PhpPlatform>.Instance,
                 detector: null,
                 phpInstaller: null,
-                phpComposerInstaller: null);
+                phpComposerInstaller: null,
+                null);
         }
 
         private static BuildScriptGeneratorContext CreateBuildScriptGeneratorContext(ISourceRepo sourceRepo)
