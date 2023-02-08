@@ -43,12 +43,12 @@ RUN set -ex \
         lcov \
         pkg-config \
         libgdbm-dev \
-        libgdbm-compat-dev \
         liblzma-dev \
         libreadline6-dev \
         lzma \
         lzma-dev \
         zlib1g-dev \
+
     && rm -rf /var/lib/apt/lists/*
 
 RUN set -ex \
