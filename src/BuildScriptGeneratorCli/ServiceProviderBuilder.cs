@@ -5,6 +5,7 @@
 
 using System;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -31,7 +32,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                          configureTelemetryConfiguration: (config) => config.ConnectionString = connectionString,
                          configureApplicationInsightsLoggerOptions: (options) => { });
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
-                });
+                })
+                .AddSingleton<TelemetryClient>(new TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration
+                {
+                    ConnectionString = connectionString,
+                }));
         }
 
         public ServiceProviderBuilder ConfigureServices(Action<IServiceCollection> configure)
