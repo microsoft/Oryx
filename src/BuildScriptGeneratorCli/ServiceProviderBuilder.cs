@@ -43,8 +43,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         CaptureMessageProperties = true,
                     });
                 });
-            this.serviceCollection
-                .AddSingleton<IConsole, SystemConsole>();
         }
 
         public ServiceProviderBuilder ConfigureServices(Action<IServiceCollection> configure)

@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public int OnExecute()
         {
             ILogger<CommandBase> logger = null;
-            var console = this.serviceProvider.GetService<IConsole>();
+            var console = new SystemConsole();
             Console.CancelKeyPress += this.Console_CancelKeyPress;
 
             try
@@ -41,9 +42,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     return ProcessConstants.ExitFailure;
                 }
-
-                /*var console = this.serviceProvider.GetService<IConsole>();
-                Console.CancelKeyPress += this.Console_CancelKeyPress;*/
 
                 logger = this.serviceProvider?.GetRequiredService<ILogger<CommandBase>>();
                 logger?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
