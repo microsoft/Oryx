@@ -517,7 +517,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 NullLogger<TestPhpPlatform>.Instance,
                 detector,
                 phpInstaller,
-                phpComposerInstaller);
+                phpComposerInstaller,
+                null);
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
