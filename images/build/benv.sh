@@ -217,6 +217,13 @@ benv-resolve() {
     # successfully compiled and linked.
     export LIBRARY_PATH="$platformDir/lib:$LIBRARY_PATH"
     export LD_LIBRARY_PATH="$platformDir/lib:$LD_LIBRARY_PATH"
+
+    # C_INCLUDE_PATH tells gcc where to find C header files
+    # CPLUS_INCLUDE_PATH tells gcc where to find C++ header files
+    # This is a workaround solution for Python.h error which arises 
+    # when python can't find specific header files:
+    # https://stackoverflow.com/questions/24391964/how-can-i-get-python-h-into-my-python-virtualenv-on-mac-osx/47956013#47956013
+    # Since Oryx dynamically installs SDKs in /tmp
     export C_INCLUDE_PATH="$platformDir/include/python$majorAndMinorParts"
     export CPLUS_INCLUDE_PATH="$platformDir/include/python$majorAndMinorParts"
 

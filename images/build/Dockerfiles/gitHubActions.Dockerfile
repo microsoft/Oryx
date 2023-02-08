@@ -33,14 +33,14 @@ RUN apt-get update \
         # For .NET Core 1.1
         libuuid1 \
         libunwind8 \
-        # For python 3
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
         python3-dev \
         libffi-dev \
         gdb \
         lcov \
         pkg-config \
         libgdbm-dev \
-        libgdbm-compat-dev \
         liblzma-dev \
         libreadline6-dev \
         lzma \

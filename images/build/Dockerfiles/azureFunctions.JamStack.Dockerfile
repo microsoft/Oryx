@@ -28,10 +28,11 @@ RUN set -ex \
     # Install Python SDKs
     # Upgrade system python
     && PYTHONIOENCODING="UTF-8" \
-    # It's not clear whether these are needed at runtime...
     && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
         build-essential \
         python3-pip \
         swig \

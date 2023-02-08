@@ -37,14 +37,14 @@ RUN LANG="C.UTF-8" \
         libproj-dev \
         gdal-bin \
         libgdal-dev \
-        # For Python 3
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
         python3-dev \
         libffi-dev \
         gdb \
         lcov \
         pkg-config \
         libgdbm-dev \
-        libgdbm-compat-dev \
         liblzma-dev \
         libreadline6-dev \
         lzma \

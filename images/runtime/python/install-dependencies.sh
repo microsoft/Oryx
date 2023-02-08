@@ -27,13 +27,14 @@ apt-get update \
         gdal-bin \
         libgdal-dev \
         python3-gdal \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
         python3-dev \
         libffi-dev \
         gdb \
         lcov \
         pkg-config \
         libgdbm-dev \
-        libgdbm-compat-dev \
         liblzma-dev \
         libreadline6-dev \
         lzma \
