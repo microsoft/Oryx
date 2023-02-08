@@ -22,23 +22,11 @@ apt-get update \
         apt-transport-https \
         swig \
         # GIS libraries for GeoDjango (https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/)
+        binutils \
         libproj-dev \
         gdal-bin \
         libgdal-dev \
         python3-gdal \
-        # Adding additional python packages to support all optional python modules:
-        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
-        python3-dev \
-        libffi-dev \
-        gdb \
-        lcov \
-        pkg-config \
-        libgdbm-dev \
-        liblzma-dev \
-        libreadline6-dev \
-        lzma \
-        lzma-dev \
-        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Microsoft SQL Server 2017
