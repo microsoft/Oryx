@@ -37,6 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             this.commonOptions = commonOptions.Value;
             this.hugoScriptGeneratorOptions = hugoScriptGeneratorOptions.Value;
             this.detector = detector;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <inheritdoc/>
