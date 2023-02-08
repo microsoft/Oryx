@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -90,7 +91,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             int exitCode;
             var logger = serviceProvider.GetRequiredService<ILogger<DockerfileCommand>>();
-            using (var timedEvent = logger.LogTimedEvent("DockerFileCommand", buildEventProps))
+            var telemetryClient = serviceProvider.GetRequiredService<ApplicationInsights.TelemetryClient>();
+            using (var timedEvent = telemetryClient.LogTimedEvent("DockerFileCommand", buildEventProps))
             {
                 ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
                 var sourceRepo = new LocalSourceRepo(this.SourceDir, loggerFactory);

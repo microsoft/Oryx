@@ -5,8 +5,6 @@
 
 using System.Collections.Generic;
 using JetBrains.Annotations;
-using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.NLogTarget;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -18,43 +16,6 @@ namespace Microsoft.Extensions.Logging
     public static class LoggerAiExtensions
     {
         private const int AiMessageLengthLimit = 32768;
-
-        /// <summary>
-        /// Logs dependency specifications for a processed repository.
-        /// </summary>
-        public static void LogDependencies(
-            this ILogger logger,
-            string platform,
-            string platformVersion,
-            IEnumerable<string> depSpecs,
-            bool devDeps = false)
-        {
-            var client = GetTelemetryClient();
-            var props = new Dictionary<string, string>
-            {
-                { nameof(platform),        platform },
-                { nameof(platformVersion), platformVersion },
-            };
-
-            string devPrefix = devDeps ? "Dev " : string.Empty;
-            foreach (string dep in depSpecs)
-            {
-                client.TrackTrace(
-                    $"{devPrefix}Dependency: {dep.ReplaceUrlUserInfo()}",
-                    ApplicationInsights.DataContracts.SeverityLevel.Information,
-                    props);
-            }
-        }
-
-        public static void LogEvent(this ILogger logger, string eventName, IDictionary<string, string> props = null)
-        {
-            GetTelemetryClient().TrackEvent(eventName, props);
-        }
-
-        public static void LogTrace(this ILogger logger, string message, IDictionary<string, string> props = null)
-        {
-            GetTelemetryClient().TrackTrace(message, props);
-        }
 
         /// <summary>
         /// Logs a long message in chunks, with each chunk limited in length to 2^15.
@@ -77,39 +38,6 @@ namespace Microsoft.Extensions.Logging
             {
                 logger.Log(level, $"{header} ({++i}/{chunks.Count}):\n{chunk}", properties: properties);
             }
-        }
-
-        public static string StartOperation(this ILogger logger, string name)
-        {
-            var op = GetTelemetryClient().StartOperation<ApplicationInsights.DataContracts.RequestTelemetry>(name);
-            return op.Telemetry.Id;
-        }
-
-        public static EventStopwatch LogTimedEvent(this ILogger logger, string eventName, IDictionary<string, string> props = null)
-        {
-            return new EventStopwatch(GetTelemetryClient(), eventName, props);
-        }
-
-        public static void LogTimedEvent(this ILogger logger, string eventName, double processingTime, IDictionary<string, string> props = null)
-        {
-            GetTelemetryClient().TrackEvent(
-                eventName,
-                props,
-                new Dictionary<string, double> { { "processingTime", processingTime } });
-        }
-
-        private static TelemetryClient GetTelemetryClient()
-        {
-            // Temporarily use obsolete empty client as mentioned in work item 1735437
-            var client = new TelemetryClient();
-
-            ApplicationInsightsTarget aiTarget = (ApplicationInsightsTarget)NLog.LogManager.Configuration?.FindTargetByName("ai");
-            if (aiTarget != null)
-            {
-                client.Context.InstrumentationKey = aiTarget.InstrumentationKey;
-            }
-
-            return client;
         }
     }
 }

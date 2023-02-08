@@ -4,8 +4,14 @@ using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Common.Extensions
 {
-    public static class TelemetryClientExtension
+    /// <summary>
+    /// Defines extension methods for direct interaction with Application Insights via TelemetryClient.
+    /// </summary>
+    public static class TelemetryClientExtensions
     {
+        /// <summary>
+        /// Logs dependency specifications for a processed repository.
+        /// </summary>
         public static void LogDependencies(
                this TelemetryClient telemetryClient,
                string platform,
