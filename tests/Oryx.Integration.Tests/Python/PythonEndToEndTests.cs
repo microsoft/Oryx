@@ -78,7 +78,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-                .AddCommand("export ORYX_SDK_STORAGE_BASE_URL=https://oryxsdkssandbox.blob.core.windows.net")
                 .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python311Version}")
                 .ToString();
