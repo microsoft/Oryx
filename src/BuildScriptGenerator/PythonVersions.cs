@@ -11,7 +11,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Python27Version = "2.7.18";
         public const string Python36Version = "3.6.15";
         public const string Python37Version = "3.7.15";
-        public const string Python38Version = "3.8.15";
+        public const string Python38Version = "3.8.16";
         public const string Python39Version = "3.9.15";
         public const string Python310Version = "3.10.8";
         public const string Python311Version = "3.11.1";
