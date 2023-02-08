@@ -46,6 +46,7 @@ buildPhp() {
 		# Continue adding the version metadata with the name of Version
 		# which is what our legacy CLI will use
 		sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+		cp "$phpPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.txt"
 	else
 		phpSdkFileName=php-$debianFlavor-$version.tar.gz
 		metadataFile="$targetDir/php-$debianFlavor-$version-metadata.txt"
@@ -96,6 +97,7 @@ buildPhpComposer() {
 		# Continue adding the version metadata with the name of Version
 		# which is what our legacy CLI will use
 		sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+		cp "$phpPlatformDir/composer/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.txt"
 	else
 		composerSdkFileName=php-composer-$debianFlavor-$version.tar.gz
 		metadataFile="$targetDir/php-composer-$debianFlavor-$version-metadata.txt"

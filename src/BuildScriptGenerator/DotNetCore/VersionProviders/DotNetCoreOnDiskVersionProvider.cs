@@ -48,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                 try
                 {
-                    var version = new SemVer.Version(sdkVersionDir.Name);
+                    var version = new SemanticVersioning.Version(sdkVersionDir.Name);
                 }
                 catch
                 {

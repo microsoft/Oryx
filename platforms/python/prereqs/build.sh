@@ -30,24 +30,28 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
         libgdm-dev \
         libbluetooth-dev \
         tk-dev \
-        uuid-dev
-
-if  [ "${PYTHON_VERSION[0]}" == "3" ] && [ "${PYTHON_VERSION[1]}" -ge "10" ]
-then
-    apt-get update && \
-	apt-get upgrade -y && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        uuid-dev \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
         build-essential \
-        libgeos-dev \
-    PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
-fi
+        gdb \
+        lcov \
+        pkg-config \
+        libffi-dev \
+        libgdbm-dev \
+        liblzma-dev \
+        libsqlite3-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev
+
+PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 
 if [ "$debianFlavor" == "stretch" ]; then
 	# Use default python sdk file name
     echo "Hack flavor is: "$debianHackFlavor
 
     pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
-    PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
     
     if [[ $PYTHON_VERSION == 3.6* ]]; then
         PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/pip/3.6/get-pip.py"
@@ -78,6 +82,8 @@ else
         --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
         --enable-loadable-sqlite-extensions \
         --enable-shared \
+	--enable-optimizations \
+	--with-lto \
         --with-system-expat \
         --with-system-ffi \
         --without-ensurepip

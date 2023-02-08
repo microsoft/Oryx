@@ -4,6 +4,7 @@ ARG DEBIAN_FLAVOR
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl as main
 ARG DEBIAN_FLAVOR
 ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
+ARG AI_KEY
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
@@ -17,6 +18,7 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8" \
+    ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 
 # Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
@@ -38,6 +40,15 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
             libsqlite3-dev \
             libxml2-dev \
             xz-utils \
+        && rm -rf /var/lib/apt/lists/* ; \
+    elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \ 
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu67 \
+            libcurl4 \
+            libssl1.1 \
+            libyaml-dev \
+            libxml2 \
         && rm -rf /var/lib/apt/lists/* ; \
     else \
         apt-get update \
@@ -62,6 +73,8 @@ RUN apt-get update \
         libunwind8 \
         rsync \
         libgdiplus \
+        # Required for mysqlclient
+        default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \

@@ -54,9 +54,22 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
-                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
-                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
+                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
+                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
+                return data;
+            }
+        }
+
+        public static TheoryData<string, string> ImageNameDataCliBullseye
+        {
+            get
+            {
+                var data = new TheoryData<string, string>();
+                var imageTestHelper = new ImageTestHelper();
+                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
                 return data;
             }
         }
@@ -81,6 +94,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("build-image", "cli-debian-buster")]
         [MemberData(nameof(ImageNameDataCliBuster))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBuster(string version, string buildImageName)
+        {
+            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [Trait("build-image", "cli-debian-bullseye")]
+        [MemberData(nameof(ImageNameDataCliBullseye))]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBullseye(string version, string buildImageName)
         {
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }

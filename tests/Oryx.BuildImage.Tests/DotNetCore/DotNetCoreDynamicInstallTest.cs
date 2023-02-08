@@ -28,12 +28,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
         protected const string NetCoreApp50MvcApp = "NetCoreApp50MvcApp";
         protected const string NetCore6PreviewWebApp = "NetCore6PreviewWebApp";
         protected const string NetCore7PreviewMvcApp = "NetCore7PreviewMvcApp";
+        protected const string NetCoreApp70WebApp = "NetCore7WebApp";
         protected const string DefaultWebApp = "DefaultWebApp";
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", sampleAppName));
 
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
+        private readonly string MissingImageTypeWarning = $"Warning: '{FilePaths.ImageTypeFileName}' file not found.";
+        private readonly string ImageResolverMessage = "Parsed image type from file '{0}': {1}";
+        private readonly string ImageDetectedMessage = "Image Type[\\w\\s]*: {0}";
 
         public DotNetCoreDynamicInstallTest(ITestOutputHelper output) : base(output)
         {
@@ -75,7 +79,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string runtimeVersion)
         {
             BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(NetCore7PreviewMvcApp, "7.0")]
+        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBullseye(
+           string appName,
+           string runtimeVersion)
+        {
+            BuildsApplication_ByDynamicallyInstallingSDKs(
+                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
         }
 
         private void BuildsApplication_ByDynamicallyInstallingSDKs(
@@ -724,6 +738,99 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.False(result.IsSuccess);
                     Assert.Contains($"Error: Platform '{DotNetCoreConstants.PlatformName}' version '{runtimeVersion}' is unsupported.", result.StdErr);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory, Trait("category", "jamstack")]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ParsesImageTypeFromFile_Jamstack(bool removeImageTypeFile)
+        {
+            
+            var imageHelper = new ImageTestHelper();
+            TestImageTypeResolution(
+                imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye),
+                removeImageTypeFile,
+                "jamstack");
+        }
+
+        [Theory, Trait("category", "cli")]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ParsesImageTypeFromFile_Cli(bool removeImageTypeFile)
+        {
+            
+            var imageHelper = new ImageTestHelper();
+            TestImageTypeResolution(
+                imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository),
+                removeImageTypeFile,
+                "cli");
+        }
+
+        [Theory, Trait("category", "githubactions")]
+        [InlineData(true)]
+        [InlineData(false)]
+        public void ParsesImageTypeFromFile_GithubActions(bool removeImageTypeFile)
+        {
+            
+            var imageHelper = new ImageTestHelper();
+            TestImageTypeResolution(
+                imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
+                removeImageTypeFile,
+                "githubactions");
+        }
+
+
+        private void TestImageTypeResolution(
+            string imageName,
+            bool removeImageTypeFile,
+            string expectedImageType)
+        {
+            var platform = DotNetCoreConstants.PlatformName;
+            var runtimeVersion = DotNetCoreRunTimeVersions.NetCoreApp70;
+            var appName = NetCoreApp70WebApp;
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand(removeImageTypeFile
+                    ? $"rm /opt/oryx/{FilePaths.ImageTypeFileName}"
+                    : "echo 'do not remove image type file'")
+                .AddBuildCommand(
+                    $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                    $"--platform {platform} --platform-version {runtimeVersion} --debug")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = imageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    
+                    if (removeImageTypeFile) {
+                        Assert.Contains(MissingImageTypeWarning, result.StdOut);
+                        Assert.DoesNotContain(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
+                        Assert.DoesNotMatch(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);
+                    } 
+                    else 
+                    {
+                        Assert.Contains(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
+                        Assert.Matches(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);
+                        Assert.DoesNotContain(MissingImageTypeWarning, result.StdOut);
+                    }
                 },
                 result.GetDebugInfo());
         }

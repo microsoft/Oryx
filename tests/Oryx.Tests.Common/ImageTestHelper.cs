@@ -46,9 +46,9 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _buildRepository = ImageTestHelperConstants.BuildRepository;
         private const string _packRepository = ImageTestHelperConstants.PackRepository;
         private const string _cliRepository = ImageTestHelperConstants.CliRepository;
-        private const string _cliBusterRepository = ImageTestHelperConstants.CliBusterRepository;
         private const string _cliStretchTag = ImageTestHelperConstants.CliStretchTag;
         private const string _cliBusterTag = ImageTestHelperConstants.CliBusterTag;
+        private const string _cliBullseyeTag = ImageTestHelperConstants.CliBullseyeTag;
         private const string _latestTag = ImageTestHelperConstants.LatestStretchTag;
         private const string _ltsVersionsStretch = ImageTestHelperConstants.LtsVersionsStretch;
         private const string _ltsVersionsBuster = ImageTestHelperConstants.LtsVersionsBuster;
@@ -245,9 +245,13 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetCliImage(_cliRepository);
             }
-            else if (string.Equals(tag, _cliBusterRepository))
+            else if (string.Equals(tag, _cliBusterTag))
             {
-                return GetCliImage(_cliBusterRepository);
+                return GetCliImage(_cliBusterTag);
+            }
+            else if(string.Equals(tag, _cliBullseyeTag))
+            {
+                return GetCliImage(_cliBullseyeTag);
             }
             else if (string.Equals(tag, _fullStretch))
             {
@@ -388,9 +392,13 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetCliImage(string debianFlavor = null)
         {
             if (!string.IsNullOrEmpty(debianFlavor)
-                && string.Equals(debianFlavor.ToLower(), _cliBusterRepository))
+                && string.Equals(debianFlavor.ToLower(), _cliBusterTag))
             {
-                return $"{_repoPrefix}/{_cliBusterRepository}:{_cliBusterTag}{_tagSuffix}";
+                return $"{_repoPrefix}/{_cliRepository}:{_cliBusterTag}{_tagSuffix}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _cliBullseyeTag))
+            {
+                return $"{_repoPrefix}/{_cliRepository}:{_cliBullseyeTag}{_tagSuffix}";
             }
 
             return $"{_repoPrefix}/{_cliRepository}:{_cliStretchTag}{_tagSuffix}";
@@ -434,7 +442,7 @@ namespace Microsoft.Oryx.Tests.Common
                 new Dictionary<string, string>
                 {
                     { "3.0", "debian-buster" },
-                    { "3.1", "debian-bullseye" },
+                    { "3.1", "debian-buster" },
                     { "5.0", "debian-buster" },
                     { "6.0", "debian-buster" },
                     { "7.0", "debian-buster" },
@@ -458,9 +466,11 @@ namespace Microsoft.Oryx.Tests.Common
                     { "7.4", "debian-buster" },
                     { "8.0", "debian-buster" },
                     { "8.1", "debian-bullseye" },
+                    { "8.2", "debian-bullseye" },
                     { "7.4-fpm", "debian-buster" },
                     { "8.0-fpm", "debian-buster" },
                     { "8.1-fpm", "debian-bullseye" },
+                    { "8.2-fpm", "debian-bullseye" },
                 }
             },
             {
@@ -514,9 +524,9 @@ namespace Microsoft.Oryx.Tests.Common
         public const string BuildRepository = "build";
         public const string PackRepository = "pack";
         public const string CliRepository = "cli";
-        public const string CliBusterRepository = "cli-buster";
         public const string CliStretchTag = "debian-stretch";
         public const string CliBusterTag = "debian-buster";
+        public const string CliBullseyeTag = "debian-bullseye";
         public const string LatestStretchTag = "debian-stretch";
         public const string LtsVersionsStretch = "lts-versions-debian-stretch";
         public const string LtsVersionsBuster = "lts-versions-debian-buster";

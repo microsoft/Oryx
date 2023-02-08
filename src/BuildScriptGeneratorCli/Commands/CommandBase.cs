@@ -5,6 +5,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
@@ -153,6 +155,32 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             output.AppendLine();
             output.Append(buildInfo.ToString());
             return output.ToString();
+        }
+
+        protected static string ParseOsTypeFile()
+        {
+            var ostypeFilePath = Path.Join("/opt", "oryx", FilePaths.OsTypeFileName);
+            if (File.Exists(ostypeFilePath))
+            {
+                // these file contents are in the format <OS_type>|<Os_version>, e.g. DEBIAN|BULLSEYE
+                // we want the Os_version part only, as all lowercase
+                var fullOsTypeFileContents = File.ReadAllText(ostypeFilePath);
+                return fullOsTypeFileContents.Split("|").TakeLast(1).SingleOrDefault().Trim().ToLowerInvariant();
+            }
+
+            return null;
+        }
+
+        protected static string ParseImageTypeFile()
+        {
+            var imagetypeFilePath = Path.Join("/opt", "oryx", FilePaths.ImageTypeFileName);
+            if (File.Exists(imagetypeFilePath))
+            {
+                // these file contents are a single line that contains the image type
+                return File.ReadAllText(imagetypeFilePath).Trim().ToLowerInvariant();
+            }
+
+            return null;
         }
 
         private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)

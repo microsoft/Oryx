@@ -27,5 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string UserNetcoreHostingstartupAssemblies = "Microsoft.ApplicationInsights.StartupBootstrapper";
         public const string PythonEnableGunicornMultiWorkersEnvVarName = "PYTHON_ENABLE_GUNICORN_MULTIWORKERS";
         public const string PythonGunicornConfigPathEnvVarName = "PYTHON_USE_GUNICORN_CONFIG_FROM_PATH";
+        public const string PythonGunicornCustomWorkerNum = "PYTHON_GUNICORN_CUSTOM_WORKER_NUM";
+        public const string PythonGunicornCustomThreadNum = "PYTHON_GUNICORN_CUSTOM_THREAD_NUM";
     }
 }

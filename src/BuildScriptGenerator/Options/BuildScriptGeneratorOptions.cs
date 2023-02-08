@@ -88,5 +88,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string DebianFlavor { get; set; }
 
         public string CallerId { get; set; }
+
+        public string ImageType { get; set; }
     }
 }

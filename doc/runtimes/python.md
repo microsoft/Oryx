@@ -41,43 +41,44 @@ gunicorn (a Python package) is also included.
 
 # Detect
 
-The Python toolset is run when the following conditions are met:
+The Python toolset is run when any of the following conditions are met:
 
-1. `requirements.txt` in root of repo
-2. `runtime.txt` in root of repo
-3. Files with `.py` extension in root of repo or in sub-directories if set `DISABLE_RECURSIVE_LOOKUP=false`.
-4. `requirements.txt` at specific path within the repo if set `CUSTOM_REQUIREMENTSTXT_PATH`.
+* `requirements.txt` in root of repo
+* `runtime.txt` in root of repo
+* Files with `.py` extension in root of repo or in sub-directories if set `DISABLE_RECURSIVE_LOOKUP=false`.
+* `requirements.txt` at specific path within the repo if set `CUSTOM_REQUIREMENTSTXT_PATH`.
 
 ## Detect Conda environment and Python JupyterNotebook
 
-The Python conda is run when the following conditions are met:
+The Python conda is run when any of the following conditions are met:
 
-1. Conda environment file `environment.yml` or `environment.yaml` is found in root of repo
-1. Files with `.ipynb` extension in root of repo
+* Conda environment file `environment.yml` or `environment.yaml` is found in root of repo
+* Files with `.ipynb` extension in root of repo
 
 # Build
 
 The following process is applied for each build.
 
-1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
+1. Run custom command or script if specified by `PRE_BUILD_COMMAND` or `PRE_BUILD_SCRIPT_PATH`.
 2. Create python virtual environment if specified by `VIRTUALENV_NAME`.
 3. Run `python -m pip install --cache-dir /usr/local/share/pip-cache --prefer-binary -r requirements.txt` 
    if `requirements.txt` exists in the root of repo or specified by `CUSTOM_REQUIREMENTSTXT_PATH`.
 4. Run `python setup.py install` if `setup.py` exists.
-5. Run python package commands and Determine python package wheel.
+5. Run python package commands and determine python package wheel.
 6. If `manage.py` is found in the root of the repo `manage.py collectstatic` is run. However,
    if `DISABLE_COLLECTSTATIC` is set to `true` this step is skipped.
 7. Compress virtual environment folder if specified by `compress_virtualenv` property key.
-8. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
+8. Run custom command or script if specified by `POST_BUILD_COMMAND` or `POST_BUILD_SCRIPT_PATH`.
 
 ## Build Conda environment and Python JupyterNotebook
 
 The following process is applied for each build.
-1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
+
+1. Run custom command or script if specified by `PRE_BUILD_COMMAND` or `PRE_BUILD_SCRIPT_PATH`.
 2. Set up Conda virtual environemnt `conda env create --file $envFile`.
 3. If `requirment.txt` exists in the root of repo or specified by `CUSTOM_REQUIREMENTSTXT_PATH`, activate environemnt 
   `conda activate $environmentPrefix` and run `pip install --no-cache-dir -r requirements.txt`.
-4. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
+4. Run custom command or script if specified by `POST_BUILD_COMMAND` or `POST_BUILD_SCRIPT_PATH`.
 
 
 ## Package manager

@@ -46,14 +46,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendAptGetInstallPackages(
                 "make",
                 "unzip",
-                "build-essential",
                 "libpq-dev",
                 "moreutils",
                 "python3-pip",
                 "swig",
-                "tk-dev",
                 "unixodbc-dev",
-                "uuid-dev");
+                "build-essential", // Adding additional python 3 packages to support all optional python modules: https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+                "gdb",
+                "lcov",
+                "pkg-config",
+                "libbz2-dev",
+                "libffi-dev",
+                "libgdbm-dev",
+                "liblzma-dev",
+                "libncurses5-dev",
+                "libreadline6-dev",
+                "libsqlite3-dev",
+                "libssl-dev",
+                "lzma",
+                "lzma-dev",
+                "tk-dev",
+                "uuid-dev",
+                "zlib1g-dev");
 
             // Install Python 3.8
             stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");

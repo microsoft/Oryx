@@ -66,8 +66,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli-buster")]
-        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterTag)]
         public void PipelineTestInvocationCliBuster(string imageTag)
+        {
+            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
+            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
+        public void PipelineTestInvocationCliBullseye(string imageTag)
         {
             GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
             JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
@@ -946,7 +955,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app1-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version 3.10.8")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python310Version}")
                 .AddCommand($"python -V")
                 .AddCommand($"python -c \"import lzma\"")
                 .ToString();
@@ -1503,7 +1512,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    var semVer = new SemVer.Version(version);
+                    var semVer = new SemanticVersioning.Version(version);
                     var virtualEnvSuffix = $"{semVer.Major}.{semVer.Minor}";
                     Assert.Matches($"Pre-build script: /opt/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
                     Assert.Matches($"Pre-build script: /opt/python/{version}/bin/pip", result.StdOut);
@@ -1632,7 +1641,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         private string GetDefaultVirtualEnvName(string version)
         {
-            var ver = new SemVer.Version(version);
+            var ver = new SemanticVersioning.Version(version);
             return $"pythonenv{ver.Major}.{ver.Minor}";
         }
     }

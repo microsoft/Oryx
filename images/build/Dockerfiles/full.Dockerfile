@@ -21,6 +21,7 @@ RUN ./build.sh golang     /opt/startupcmdgen/golang
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
 ARG DEBIAN_FLAVOR
 ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
+ARG AI_KEY
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE}
 
@@ -51,7 +52,6 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
             liblttng-ust0 \
             libssl1.0.2 \
         && rm -rf /var/lib/apt/lists/* ; \
-  
     fi
 
 RUN apt-get update \
@@ -85,5 +85,6 @@ RUN set -ex \
     # enables custom logging
     && cp -f $imagesDir/build/logger.sh /opt/oryx/logger
 
-ENV ENABLE_DYNAMIC_INSTALL="true"
-ENV PATH="$PATH:/opt/oryx"
+ENV ENABLE_DYNAMIC_INSTALL="true" \
+    PATH="$PATH:/opt/oryx" \
+    ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
