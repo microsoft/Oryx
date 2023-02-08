@@ -13,9 +13,9 @@ steps:
     signType: 'Real'
 
 - task: UseDotNet@2
-  displayName: 'Use .NET Core SDK 6.x'
+  displayName: 'Use .NET Core SDK 7.x'
   inputs:
-    version: 6.x
+    version: 7.x
 
 - powershell: |
     Write-Host "Setting up git_commit and build_number as env variable"

@@ -13,9 +13,9 @@ steps:
     ignoreDirectories: '$(Build.SourcesDirectory)/tests'
     
 - task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 6.x'
+  displayName: 'Use .NET Core sdk 7.x'
   inputs:
-    version: 6.x
+    version: 7.x
 
 - task: ShellScript@2
   displayName: 'Building platform binaries'
