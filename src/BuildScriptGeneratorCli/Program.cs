@@ -38,6 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             rootCommand.AddCommand(BuildpackBuildCommand.Export());
             rootCommand.AddCommand(DockerfileCommand.Export());
             rootCommand.AddCommand(PrepareEnvironmentCommand.Export());
+            rootCommand.AddCommand(TelemetryCommand.Export());
             rootCommand.AddGlobalOption(versionOption);
 
             rootCommand.SetHandler(

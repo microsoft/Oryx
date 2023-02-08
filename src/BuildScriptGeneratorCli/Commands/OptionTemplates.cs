@@ -53,5 +53,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string Output = "--output";
         public const string OutputDescription = "The destination directory.";
 
+        public const string EventName = "--event-name";
+        public const string ProcessingTime = "--processing-time";
+        public const string CallerId = "--caller-id";
+
     }
 }

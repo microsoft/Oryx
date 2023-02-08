@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using Microsoft.ApplicationInsights;
@@ -18,11 +17,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
-using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {

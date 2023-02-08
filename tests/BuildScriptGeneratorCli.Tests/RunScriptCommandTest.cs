@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using McMaster.Extensions.CommandLineUtils;
+using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Tests.Common;
@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var testConsole = new TestConsole();
 
             // Act
-            var exitCode = scriptCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            var exitCode = scriptCommand.OnExecute();
 
             // Assert
             Assert.NotEqual(0, exitCode);
@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var testConsole = new TestConsole();
 
             // Act
-            var exitCode = cmd.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            var exitCode = cmd.OnExecute();
 
             // Assert
             Assert.NotEqual(0, exitCode);

@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using McMaster.Extensions.CommandLineUtils;
+using System.CommandLine;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var testConsole = new TestConsole();
 
             // Act
-            var exitCode = program.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            var exitCode = program.OnExecute();
 
             // Assert
             Assert.Equal(0, exitCode);
@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var testConsole = new TestConsole();
 
             // Act
-            var exitCode = program.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            var exitCode = program.OnExecute();
 
             // Assert
             Assert.Equal(0, exitCode);

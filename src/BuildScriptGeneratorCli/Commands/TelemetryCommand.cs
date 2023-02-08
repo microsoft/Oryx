@@ -5,26 +5,68 @@
 
 using System;
 using System.Collections.Generic;
-using McMaster.Extensions.CommandLineUtils;
+using System.CommandLine;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "[INTERNAL ONLY COMMAND]", ShowInHelpText = false)]
     internal class TelemetryCommand : CommandBase
     {
         public const string Name = "telemetry";
 
-        [Option(OptionTemplates.EventName, CommandOptionType.SingleValue, ShowInHelpText = false)]
+        public TelemetryCommand()
+        {
+        }
+
+        public TelemetryCommand(TelemetryCommandProperty input)
+        {
+            this.EventName = input.EventName;
+            this.ProcessingTime = input.ProcessingTime;
+            this.Properties = input.Properties;
+            this.LogFilePath = input.LogFilePath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string EventName { get; set; }
 
-        [Option(OptionTemplates.ProcessingTime, CommandOptionType.SingleValue, ShowInHelpText = false)]
         public double ProcessingTime { get; set; }
 
-        [Option(OptionTemplates.Property, CommandOptionType.MultipleValue, ShowInHelpText = false)]
         public string[] Properties { get; set; }
+
+        public static Command Export()
+        {
+            var eventNameOption = new Option<string>(name: OptionTemplates.EventName);
+            var processingTimeOption = new Option<double>(name: OptionTemplates.ProcessingTime);
+            var propertyOption = new Option<string[]>(name: OptionTemplates.Property);
+            var logFile = new Option<string>(name: OptionTemplates.Log);
+            var debugOption = new Option<bool>(name: OptionTemplates.Debug);
+
+            var command = new Command("telemetry", "[INTERNAL ONLY COMMAND]")
+            {
+                eventNameOption,
+                processingTimeOption,
+                propertyOption,
+                logFile,
+                debugOption,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var telemetryCommand = new TelemetryCommand(prop);
+                    telemetryCommand.OnExecute();
+                },
+                new TelemetryCommandBinder(
+                    eventNameOption,
+                    processingTimeOption,
+                    propertyOption,
+                    logFile,
+                    debugOption));
+            return command;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
