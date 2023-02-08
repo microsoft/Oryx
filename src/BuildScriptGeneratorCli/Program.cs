@@ -9,8 +9,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.VisualBasic;
 
+// using Microsoft.VisualBasic;
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class Program
@@ -26,8 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             rootCommand.Name = "oryx";
             rootCommand.Description = "Generates and runs build scripts for multiple platforms.";
 
-            var versionOption = new Option<bool>(aliases: new[] { "-v", "--version" }, "Print version information.");
-
+            // var versionOption = new Option<bool>(aliases: new[] { "-v", "--version" }, "Print version information.");
             rootCommand.AddCommand(BuildCommand.Export());
             rootCommand.AddCommand(PlatformsCommand.Export());
             rootCommand.AddCommand(BuildScriptCommand.Export());
@@ -39,17 +38,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             rootCommand.AddCommand(DockerfileCommand.Export());
             rootCommand.AddCommand(PrepareEnvironmentCommand.Export());
             rootCommand.AddCommand(TelemetryCommand.Export());
-            rootCommand.AddGlobalOption(versionOption);
 
-            rootCommand.SetHandler(
-                (version) =>
-            {
-                var mainCommand = new Program();
-                mainCommand.Version = version;
-                mainCommand.OnExecute();
-            },
-                versionOption);
-
+            // rootCommand.AddGlobalOption(versionOption);
             return await rootCommand.InvokeAsync(args);
         }
 
