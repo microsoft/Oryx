@@ -64,12 +64,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
         }
 
-        [Fact, Trait("category", "cli-bullseye")]
-        public void PipelineTestInvocationCliBullseye()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository));
-        }
 
         private void GeneratesScript_AndBuilds(string buildImageName)
         {

@@ -74,18 +74,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        public static TheoryData<string, string> ImageNameDataCliBullseye
-        {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository));
-                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository));
-                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository));
-                return data;
-            }
-        }
 
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-stretch")]

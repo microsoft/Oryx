@@ -109,25 +109,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        public static TheoryData<string, string, string> VersionAndImageNameDataCliBullseye
-        {
-            get
-            {
-                var data = new TheoryData<string, string, string>();
-                var imageHelper = new ImageTestHelper();
-                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository), PhpVersions.ComposerVersion);
-                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository), PhpVersions.ComposerVersion);
-                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository), PhpVersions.ComposerVersion);
-                data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository), PhpVersions.ComposerVersion);
-
-                // test latest php-composer version
-                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository), PhpVersions.Composer23Version);
-                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository), PhpVersions.Composer23Version);
-                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository), PhpVersions.Composer23Version);
-                data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository), PhpVersions.Composer23Version);
-                return data;
-            }
-        }
 
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(VersionAndImageNameData))]

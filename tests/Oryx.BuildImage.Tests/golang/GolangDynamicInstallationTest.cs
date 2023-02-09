@@ -60,12 +60,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
         }
 
-        [Fact, Trait("category", "cli-bullseye")]
-        public void GeneratesScript_AndBuildGolangAppWithDynamicInstall_CliBullseye()
-        {
-            GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeRepository));
-        }
-
         private void GeneratesScript_AndBuildGolangAppWithDynamicInstall(string imageName)
         {
             var imageTestHelper = new ImageTestHelper();
