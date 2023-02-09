@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "Story #1735613 we want to wait on releasing latest 3.11 to production but also want to have an Oryx-CI release.")]
+        [Fact]
         [Trait("category", "python-3.11")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRun_DjangoRegex()
