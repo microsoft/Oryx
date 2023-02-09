@@ -22,11 +22,12 @@ RUN buildDir="/opt/tmp/build" \
     && mkdir -p $nugetPacakgesDir \
     && NUGET_PACKAGES="$nugetPacakgesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
-    && DOTNET_SDK_VER=$DOT_NET_50_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
+    && . $buildDir/__finalStretchVersions.sh \
+    && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_50_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
-    && ln -s $DOT_NET_50_SDK_VERSION 5.0 \
+    && ln -s $FINAL_STRETCH_DOT_NET_50_SDK_VERSION 5.0 \
     # Install Conda and related tools
     && apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -53,17 +54,17 @@ RUN buildDir="/opt/tmp/build" \
     && cd $imagesDir \
     # Install Ruby and related tools
     && . $buildDir/__rubyVersions.sh \
-    && ./installPlatform.sh ruby $RUBY27_VERSION \
+    && ./installPlatform.sh ruby $FINAL_STRETCH_RUBY27_VERSION \
     && cd /opt/ruby \
-    && ln -s $RUBY27_VERSION /opt/ruby/lts \
+    && ln -s $FINAL_STRETCH_RUBY27_VERSION /opt/ruby/lts \
     && cd $imagesDir \
     && . $buildDir/__javaVersions.sh \
-    && ./installPlatform.sh java $JAVA_VERSION \
-    && ./installPlatform.sh maven $MAVEN_VERSION \
+    && ./installPlatform.sh java $FINAL_STRETCH_JAVA_VERSION \
+    && ./installPlatform.sh maven $FINAL_STRETCH_MAVEN_VERSION \
     && cd /opt/java \
-    && ln -s $JAVA_VERSION lts \
+    && ln -s $FINAL_STRETCH_JAVA_VERSION lts \
     && cd /opt/maven \
-    && ln -s $MAVEN_VERSION lts \
+    && ln -s $FINAL_STRETCH_MAVEN_VERSION lts \
     && rm -rf /opt/tmp \
     && echo "vso" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype

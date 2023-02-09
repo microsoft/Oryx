@@ -116,7 +116,7 @@ RUN set -ex \
 	&& NUGET_PACKAGES="$nugetPackagesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
     && . $buildDir/__finalStretchVersions.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_21_SDK_VERSION \
+    && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_CORE_21_SDK_VERSION \
        INSTALL_PACKAGES="true" \
        $imagesDir/build/installDotNetCore.sh \
     && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_CORE_31_SDK_VERSION \
@@ -127,34 +127,34 @@ RUN set -ex \
     && cd /opt/dotnet \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
     && . $buildDir/__finalStretchVersions.sh \
-    && ln -s $DOT_NET_CORE_21_SDK_VERSION 2-lts \
+    && ln -s $FINAL_STRETCH_DOT_NET_CORE_21_SDK_VERSION 2-lts \
     && ln -s $FINAL_STRETCH_DOT_NET_CORE_31_SDK_VERSION 3-lts \
     && ln -s 3-lts lts \
     # Install Hugo
     && $imagesDir/build/installHugo.sh \
     # Install Node
     && . $buildDir/__nodeVersions.sh \
-    && $imagesDir/installPlatform.sh nodejs $NODE10_VERSION \
-    && $imagesDir/installPlatform.sh nodejs $NODE12_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $FINAL_STRETCH_NODE10_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $FINAL_STRETCH_NODE12_VERSION \
     && $imagesDir/installPlatform.sh nodejs $FINAL_STRETCH_NODE14_VERSION \
     && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
-    && ${imagesDir}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
-    && ${imagesDir}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
-    && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+    && ${imagesDir}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$FINAL_STRETCH_YARN_VERSION/yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz" \
+    && ${imagesDir}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$FINAL_STRETCH_YARN_VERSION/yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz.asc" \
+    && gpg --batch --verify yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz.asc yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz \
     && mkdir -p /opt/yarn \
-    && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
-    && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
-    && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+    && tar -xzf yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz -C /opt/yarn \
+    && mv /opt/yarn/yarn-v$FINAL_STRETCH_YARN_VERSION /opt/yarn/$FINAL_STRETCH_YARN_VERSION \
+    && rm yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz.asc yarn-v$FINAL_STRETCH_YARN_VERSION.tar.gz \
     && cd /opt/nodejs \
-    && ln -s $NODE10_VERSION 10 \
-    && ln -s $NODE12_VERSION 12 \
+    && ln -s $FINAL_STRETCH_NODE10_VERSION 10 \
+    && ln -s $FINAL_STRETCH_NODE12_VERSION 12 \
     && ln -s $FINAL_STRETCH_NODE14_VERSION 14 \
     && ln -s 14 lts \
     && npm install -g lerna@4.0.0 \
     && cd /opt/yarn \
-    && ln -s $YARN_VERSION stable \
-    && ln -s $YARN_VERSION latest \
-    && ln -s $YARN_VERSION $YARN_MINOR_VERSION \
+    && ln -s $FINAL_STRETCH_YARN_VERSION stable \
+    && ln -s $FINAL_STRETCH_YARN_VERSION latest \
+    && ln -s $FINAL_STRETCH_YARN_VERSION $YARN_MINOR_VERSION \
     && ln -s $YARN_MINOR_VERSION $YARN_MAJOR_VERSION \
     # Install Python SDKs
     # Upgrade system python
@@ -164,23 +164,23 @@ RUN set -ex \
     # provides auth for publishing or consuming Python packages to or from Azure Artifacts feeds.
     && pip install twine keyring artifacts-keyring \
     && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON37_VERSION \
-    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
-    && [ -d "/opt/python/$PYTHON37_VERSION" ] && echo /opt/python/$PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
-    && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && $imagesDir/installPlatform.sh python $FINAL_STRETCH_PYTHON37_VERSION \
+    && $imagesDir/installPlatform.sh python $FINAL_STRETCH_PYTHON38_VERSION \
+    && [ -d "/opt/python/$FINAL_STRETCH_PYTHON37_VERSION" ] && echo /opt/python/$FINAL_STRETCH_PYTHON37_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && [ -d "/opt/python/$FINAL_STRETCH_PYTHON38_VERSION" ] && echo /opt/python/$FINAL_STRETCH_PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \
-    && ln -s $PYTHON37_VERSION 3.7 \
-    && ln -s $PYTHON38_VERSION 3.8 \
-    && ln -s $PYTHON38_VERSION latest \
-    && ln -s $PYTHON38_VERSION stable \
+    && ln -s $FINAL_STRETCH_PYTHON37_VERSION 3.7 \
+    && ln -s $FINAL_STRETCH_PYTHON38_VERSION 3.8 \
+    && ln -s $FINAL_STRETCH_PYTHON38_VERSION latest \
+    && ln -s $FINAL_STRETCH_PYTHON38_VERSION stable \
     && ln -s 3.8 3 \
     # Install PHP pre-reqs
     && $imagesDir/build/php/prereqs/installPrereqs.sh \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
-    && $imagesDir/installPlatform.sh php $PHP73_VERSION \
-    && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
+    && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP73_VERSION \
+    && $imagesDir/installPlatform.sh php-composer $FINAL_STRETCH_COMPOSER_VERSION \
     && cd /opt/php \
     && ln -s 7.3 7 \
     && ln -s 7 lts \

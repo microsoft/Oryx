@@ -105,17 +105,110 @@
     file-name-prefix: __
 - name: final-stretch-versions
   constants:
+    # dotnet
+    final-stretch-dot-net-core-11-sdk-version: 1.1.14
+    final-stretch-dot-net-core-21-sdk-version: 2.1.818
+    final-stretch-dot-net-core-22-sdk-version: 2.2.207
+    final-stretch-net-core-app-10: 1.0.16
+    final-stretch-net-core-app-11: 1.1.13
+    final-stretch-net-core-app-20: 2.0.9
+    final-stretch-net-core-app-21: 2.1.30
+    final-stretch-aspnet-core-app-21: 2.1.30
+    final-stretch-net-core-app-22: 2.2.8
+    final-stretch-dot-net-core-30-sdk-version: 3.0.103
+    final-stretch-net-core-app-30: 3.0.3
+    final-stretch-aspnet-core-app-30: 3.0.3
     final-stretch-dot-net-core-31-sdk-version: 3.1.420
     final-stretch-dot-net-core-app-31-run-time-version: 3.1.26
     final-stretch-aspnet-core-app-31-run-time-version: 3.1.26
+    final-stretch-dot-net-50-sdk-version: 5.0.408
+    final-stretch-net-core-app-50: 5.0.17
+    final-stretch-dot-net-core-50-sdk-version: 5.0.302
+    final-stretch-aspnet-core-app-50: 5.0.17
     final-stretch-dot-net-60-sdk-version: 6.0.301
     final-stretch-dot-net-core-app-60-run-time-version: 6.0.6
     final-stretch-aspnet-core-app-60-run-time-version: 6.0.6
     final-stretch-dot-net-70-sdk-version: 7.0.100
     final-stretch-dot-net-core-app-70-run-time-version: 7.0.0
     final-stretch-aspnet-core-app-70-run-time-version: 7.0.0
+    # node
     final-stretch-node14-version: 14.19.1
     final-stretch-node16-version: 16.14.2
+    final-stretch-node-runtime-base-tag: 20221112.1
+    final-stretch-yarn-version: 1.22.15
+    final-stretch-yarn-minor-version: 1.17
+    final-stretch-yarn-major-version: 1
+    final-stretch-node8-version: 8.17.0
+    final-stretch-node10-version: 10.23.0
+    final-stretch-node12-version: 12.22.11
+    final-stretch-node18-version: 18.12.0
+    final-stretch-node-app-insights-sdk-version: 1.8.7
+    final-stretch-pm2-version: 4.5.6
+    final-stretch-npm-version: 6.14.15
+    # php
+    final-stretch-composer-version: 2.0.8
+    final-stretch-composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
+    final-stretch-composer1-9-version: 1.9.3
+    final-stretch-composer1-10-version: 1.10.19
+    final-stretch-composer2-0-version: 2.0.8
+    final-stretch-composer2-2-version: 2.2.9
+    final-stretch-composer2-3-version: 2.3.4
+    final-stretch-php81-version: 8.1.9
+    final-stretch-php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
+    final-stretch-php81-tar-sha256: 53477e73e6254dc942b68913a58d815ffdbf6946baf61a1f8ef854de524c27bf
+    final-stretch-php80-version: 8.0.22
+    final-stretch-php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
+    final-stretch-php80-tar-sha256: 130937c0fa3050cd33d6c415402f6ccbf0682ae83eb8d39c91164224ddfe57f1
+    final-stretch-php74-version: 7.4.30
+    final-stretch-php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
+    final-stretch-php74-tar-sha256: ea72a34f32c67e79ac2da7dfe96177f3c451c3eefae5810ba13312ed398ba70d
+    final-stretch-php73-version: 7.3.27
+    final-stretch-php73-keys: CBAF69F173A0FEA4B537F470D66C9593118BCCB6 F38252826ACD957EF380D39F2F7956BC5DA04B5D
+    final-stretch-php73-tar-sha256: 65f616e2d5b6faacedf62830fa047951b0136d5da34ae59e6744cbaf5dca148d
+    final-stretch-php72-version: 7.2.34
+    final-stretch-php72-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 B1B44D8F021E4E2D6021E995DC9FF8D3EE5AF27F
+    final-stretch-php72-tar-sha256: 409e11bc6a2c18707dfc44bc61c820ddfd81e17481470f3405ee7822d8379903
+    final-stretch-php70-version: 7.0.33
+    final-stretch-php70-keys: 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
+    final-stretch-php70-tar-sha256: ab8c5be6e32b1f8d032909dedaaaa4bbb1a209e519abb01a52ce3914f9a13d96
+    final-stretch-php56-version: 5.6.40
+    final-stretch-php56-keys: 0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
+    final-stretch-php56-tar-sha256: 1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c
+    #golang
+    final-stretch-golang16-version: 1.16.7
+    final-stretch-golang16-tar-sha256: 7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04
+    final-stretch-golang17-version: 1.17
+    final-stretch-golang17-tar-sha256: 6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d
+    final-stretch-golang18-version: 1.18
+    final-stretch-golang18-tar-sha256: e85278e98f57cdb150fe8409e6e5df5343ecb13cebf03a5d5ff12bd55a80264f
+    final-stretch-golang19-version: 1.19
+    final-stretch-golang19-tar-sha256: 464b6b66591f6cf055bc5df90a9750bf5fbc9d038722bb84a9d56a2bea974be6
+    #python
+    final-stretch-python-runtime-base-tag: 20221214.1
+    final-stretch-pip-version: 21.2.4
+    final-stretch-python27-version: 2.7.18
+    final-stretch-python36-version: 3.6.15
+    final-stretch-python37-version: 3.7.16
+    final-stretch-python38-version: 3.8.16
+    final-stretch-python39-version: 3.9.16
+    final-stretch-python310-version: 3.10.9
+    final-stretch-python311-version: 3.11.1
+    #ruby
+    final-stretch-gem-version: 3.3.10
+    final-stretch-ruby31-version: 3.1.1
+    final-stretch-ruby31-tar-sha256: 7aefaa6b78b076515d272ec59c4616707a54fc9f2391239737d5f10af7a16caa
+    final-stretch-ruby27-version: 2.7.2
+    final-stretch-ruby27-tar-sha256: 6e5706d0d4ee4e1e2f883db9d768586b4d06567debea353c796ec45e8321c3d4
+    final-stretch-ruby26-version: 2.6.6
+    final-stretch-ruby26-tar-sha256: 5db187882b7ac34016cd48d7032e197f07e4968f406b0690e20193b9b424841f
+    final-stretch-ruby25-version: 2.5.8
+    final-stretch-ruby25-tar-sha256: 0391b2ffad3133e274469f9953ebfd0c9f7c186238968cbdeeb0651aa02a4d6d
+    final-stretch-ruby30-version: 3.0.3
+    final-stretch-ruby30-tar-sha256: 88cc7f0f021f15c4cd62b1f922e3a401697f7943551fe45b1fdf4f2417a17a9c
+    #java
+    final-stretch-java-version: 17.0.2
+    final-stretch-java-version11: 11.0.14
+    final-stretch-maven-version: 3.8.5
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator

@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNetCore11SdkVersion),
+                        string.Format(SdkVersionMessageFormat, FinalStretchVersions.FinalStretchDotNetCore11SdkVersion),
                         result.StdOut);
                     Assert.Contains(
                         $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"1.1.13\"",
@@ -927,9 +927,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "latest")]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore22SdkVersion)]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore30SdkVersion)]
+        [InlineData(FinalStretchVersions.FinalStretchDotNetCore21SdkVersion)]
+        [InlineData(FinalStretchVersions.FinalStretchDotNetCore22SdkVersion)]
+        [InlineData(FinalStretchVersions.FinalStretchDotNetCore30SdkVersion)]
         public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
         {
             // Arrange

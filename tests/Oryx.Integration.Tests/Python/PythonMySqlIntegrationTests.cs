@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await PythonApp_MySqlDB_UsingPyMySqlAsync("3.9", sampleAppName, ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        private async Task PythonApp_MySqlDB_UsingPyMySqlAsync(
+        private async Task  PythonApp_MySqlDB_UsingPyMySqlAsync(
             string pythonVersion,
             string sampleAppName,
             string imageTag)

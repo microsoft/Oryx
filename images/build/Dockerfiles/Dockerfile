@@ -43,16 +43,17 @@ RUN set -ex \
     && mkdir -p $nugetPacakgesDir \
     && NUGET_PACKAGES="$nugetPacakgesDir" \
     && . $buildDir/__dotNetCoreSdkVersions.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_22_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
-    && DOTNET_SDK_VER=$DOT_NET_CORE_30_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
+    && . $buildDir/__finalStretchVersions.sh \
+    && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_CORE_22_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
+    && DOTNET_SDK_VER=$FINAL_STRETCH_DOT_NET_CORE_30_SDK_VERSION $imagesDir/build/installDotNetCore.sh \
     && rm -rf /tmp/NuGetScratch \
     && find $nugetPacakgesDir -type d -exec chmod 777 {} \; \
     && cd /opt/dotnet \
     # A temporary solution for AppService to make it builds work
-    && ln -s $DOT_NET_CORE_22_SDK_VERSION 2.2 \
+    && ln -s $FINAL_STRETCH_DOT_NET_CORE_22_SDK_VERSION 2.2 \
     && cd $imagesDir \ 
     && . $buildDir/__nodeVersions.sh \
-    && $imagesDir/installPlatform.sh nodejs $NODE8_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $FINAL_STRETCH_NODE8_VERSION \
     && $imagesDir/installPlatform.sh nodejs 8.0.0 \
     && $imagesDir/installPlatform.sh nodejs 8.1.4 \
     && $imagesDir/installPlatform.sh nodejs 8.2.1 \
@@ -68,7 +69,7 @@ RUN set -ex \
     && $imagesDir/installPlatform.sh nodejs 10.21.0 \
     && $imagesDir/installPlatform.sh nodejs 12.18.2 \
     && cd /opt/nodejs \
-    && ln -s $NODE8_VERSION 8 \
+    && ln -s $FINAL_STRETCH_NODE8_VERSION 8 \
     && ln -s 8.0.0 8.0 \
     && ln -s 8.1.4 8.1 \
     && ln -s 8.2.1 8.2 \
@@ -90,23 +91,23 @@ RUN set -ex \
     # Install Python SDKs
     && PYTHONIOENCODING="UTF-8" \
     && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON27_VERSION \
-    && $imagesDir/installPlatform.sh python $PYTHON36_VERSION \
-    && [ -d "/opt/python/$PYTHON27_VERSION" ] && echo /opt/python/$PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
-    && [ -d "/opt/python/$PYTHON36_VERSION" ] && echo /opt/python/$PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && $imagesDir/installPlatform.sh python $FINAL_STRETCH_PYTHON27_VERSION \
+    && $imagesDir/installPlatform.sh python $FINAL_STRETCH_PYTHON36_VERSION \
+    && [ -d "/opt/python/$FINAL_STRETCH_PYTHON27_VERSION" ] && echo /opt/python/$FINAL_STRETCH_PYTHON27_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
+    && [ -d "/opt/python/$FINAL_STRETCH_PYTHON36_VERSION" ] && echo /opt/python/$FINAL_STRETCH_PYTHON36_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \
-    && ln -sfn $PYTHON27_VERSION 2.7 \
+    && ln -sfn $FINAL_STRETCH_PYTHON27_VERSION 2.7 \
     && ln -sfn 2.7 2 \
-    && ln -sfn $PYTHON36_VERSION 3.6 \
+    && ln -sfn $FINAL_STRETCH_PYTHON36_VERSION 3.6 \
     && $imagesDir/build/createFlattenedDotNetCoreInstall.sh \
     && cp $imagesDir/build/dotNetCoreAll.Readme.md /opt/dotnet/Readme.md \
     # Install PHP SDKs
     && . $buildDir/__phpVersions.sh \
-    && $imagesDir/installPlatform.sh php $PHP70_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP72_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP74_VERSION \
-    && $imagesDir/installPlatform.sh php $PHP56_VERSION \
+    && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP70_VERSION \
+    && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP72_VERSION \
+    && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP74_VERSION \
+    && $imagesDir/installPlatform.sh php $FINAL_STRETCH_PHP56_VERSION \
     && cd /opt/php \
     && ln -s 5.6 5 \
     && echo "full" > /opt/oryx/.imagetype \
