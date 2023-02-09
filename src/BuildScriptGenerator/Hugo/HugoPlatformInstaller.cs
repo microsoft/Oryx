@@ -33,6 +33,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             snippet
                 .AppendLine()
                 .AppendLine("IMAGES_DIR=\"/opt/tmp/images\"")
+
+                // Runs installHugo.sh only if the image type is jamstack. If the image type is cli, this script is run in NodePlatformInstaller.cs.
                 .AppendLine("if grep -q jamstack \"/opt/oryx/.imagetype\"; then")
                 .AppendLine("${IMAGES_DIR}/build/installHugo.sh")
                 .AppendLine("fi")
