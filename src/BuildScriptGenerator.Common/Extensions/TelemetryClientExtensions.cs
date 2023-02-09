@@ -40,6 +40,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Extensions
             telemetryClient.TrackEvent(eventName, props);
         }
 
+        public static void LogTimedEvent(this TelemetryClient telemetryClient, string eventName, double processingTime, IDictionary<string, string> props = null)
+        {
+            telemetryClient.TrackEvent(
+                eventName,
+                props,
+                new Dictionary<string, double> { { "processingTime", processingTime } });
+        }
+
         public static void LogTrace(this TelemetryClient telemetryClient, string message, IDictionary<string, string> props = null)
         {
             telemetryClient.TrackTrace(message, props);
