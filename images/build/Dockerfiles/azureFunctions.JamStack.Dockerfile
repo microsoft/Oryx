@@ -15,9 +15,15 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/python/latest/bin:/opt/yarn/stable/bin"
     
 RUN set -ex \
+    # Install Python SDKs
+    # Upgrade system python
+    && PYTHONIOENCODING="UTF-8" \
+    # It's not clear whether these are needed at runtime...
     && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
         git \
         make \
         unzip \
@@ -29,6 +35,20 @@ RUN set -ex \
         tk-dev \
         unixodbc-dev \
         uuid-dev \
+        python3-dev \
+        libffi-dev \
+        gdb \
+        lcov \
+        pkg-config \
+        libgdbm-dev \
+        liblzma-dev \
+        libreadline6-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev \
+
+    && rm -rf /var/lib/apt/lists/*
+
         # Required for PostgreSQL
         libpq-dev \
         # Required for mysqlclient

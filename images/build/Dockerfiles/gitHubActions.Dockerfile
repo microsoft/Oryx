@@ -33,6 +33,19 @@ RUN apt-get update \
         # For .NET Core 1.1
         libuuid1 \
         libunwind8 \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+        python3-dev \
+        libffi-dev \
+        gdb \
+        lcov \
+        pkg-config \
+        libgdbm-dev \
+        liblzma-dev \
+        libreadline6-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx

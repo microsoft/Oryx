@@ -46,8 +46,6 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _buildRepository = ImageTestHelperConstants.BuildRepository;
         private const string _packRepository = ImageTestHelperConstants.PackRepository;
         private const string _cliRepository = ImageTestHelperConstants.CliRepository;
-        private const string _cliBusterRepository = ImageTestHelperConstants.CliBusterRepository;
-        private const string _cliBullseyeRepository = ImageTestHelperConstants.CliBullseyeRepository;
         private const string _cliStretchTag = ImageTestHelperConstants.CliStretchTag;
         private const string _cliBusterTag = ImageTestHelperConstants.CliBusterTag;
         private const string _cliBullseyeTag = ImageTestHelperConstants.CliBullseyeTag;
@@ -247,13 +245,13 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetCliImage(_cliRepository);
             }
-            else if (string.Equals(tag, _cliBusterRepository))
+            else if (string.Equals(tag, _cliBusterTag))
             {
-                return GetCliImage(_cliBusterRepository);
+                return GetCliImage(_cliBusterTag);
             }
-            else if(string.Equals(tag, _cliBullseyeRepository))
+            else if(string.Equals(tag, _cliBullseyeTag))
             {
-                return GetCliImage(_cliBullseyeRepository);
+                return GetCliImage(_cliBullseyeTag);
             }
             else if (string.Equals(tag, _fullStretch))
             {
@@ -394,11 +392,11 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetCliImage(string debianFlavor = null)
         {
             if (!string.IsNullOrEmpty(debianFlavor)
-                && string.Equals(debianFlavor.ToLower(), _cliBusterRepository))
+                && string.Equals(debianFlavor.ToLower(), _cliBusterTag))
             {
                 return $"{_repoPrefix}/{_cliRepository}:{_cliBusterTag}{_tagSuffix}";
             }
-            else if(!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _cliBullseyeRepository))
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _cliBullseyeTag))
             {
                 return $"{_repoPrefix}/{_cliRepository}:{_cliBullseyeTag}{_tagSuffix}";
             }
@@ -526,8 +524,6 @@ namespace Microsoft.Oryx.Tests.Common
         public const string BuildRepository = "build";
         public const string PackRepository = "pack";
         public const string CliRepository = "cli";
-        public const string CliBusterRepository = "cli-buster";
-        public const string CliBullseyeRepository = "cli-bullseye";
         public const string CliStretchTag = "debian-stretch";
         public const string CliBusterTag = "debian-buster";
         public const string CliBullseyeTag = "debian-bullseye";
