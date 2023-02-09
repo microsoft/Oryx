@@ -65,7 +65,7 @@ msal==1.13.0
 msal-extensions==0.3.0
 msrest==0.6.21
 natural-keys==1.6.0
-oauthlib==3.2.1
+oauthlib==3.2.2
 odfpy==1.4.1
 openpyxl==3.0.10
 outcome==1.1.0
