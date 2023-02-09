@@ -29,6 +29,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         string.Join("|", assembly.GetManifestResourceNames()));
                 }
 
+                // for debug purpose
+                System.Console.WriteLine($"Could not get resource {templateResource.Name}. Available resources: {string.Join("|", assembly.GetManifestResourceNames())}");
+
                 using (TextReader tplReader = new StreamReader(stream))
                 using (logger?.LogTimedEvent(
                     "RenderTemplate",
