@@ -35,9 +35,6 @@ parameters:
       - 
         key: CliBuster
         value: cli-buster
-      -
-        key: CliBullseye
-        value: cli-bullseye
       - 
         key: CliBullseye
         value: cli-bullseye
