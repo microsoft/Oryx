@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
@@ -47,8 +48,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public BuildCommand(BuildCommandProperty input)
         {
             this.languageVersionWasSet = input.LanguageVersionWasSet;
-            this.languageWasSet = input.LanguageWasSet;
-            this.LanguageName = input.LanguageName;
             this.LanguageVersion = input.LanguageVersion;
             this.IntermediateDir = input.IntermediateDir;
             this.DestinationDir = input.DestinationDir;
@@ -97,7 +96,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
             var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
-            var sourceDirArgument = new Argument<string>("sourceDir", "The source directory.");
+            var sourceDirArgument = new Argument<string>("SourceDir", "The source directory.");
             var platformOption = new Option<string>(OptionTemplates.Platform, OptionTemplates.PlatformDescription);
             var platformVersionOption = new Option<string>(OptionTemplates.PlatformVersion, OptionTemplates.PlatformVersionDescription);
             var packageOption = new Option<bool>(OptionTemplates.Package, OptionTemplates.PackageDescription);
@@ -107,17 +106,24 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var compressDestDirOption = new Option<bool>(OptionTemplates.CompressDestinationDir, OptionTemplates.CompressDestinationDirDescription);
             var propertyOption = new Option<string[]>(aliases: new[] { "-p", OptionTemplates.Property }, OptionTemplates.PropertyDescription);
             var dynamicInstallRootDirOption = new Option<string>(OptionTemplates.DynamicInstallRootDir, OptionTemplates.DynamicInstallRootDirDescription);
+
+            // Hiding Language Option because it is obselete
             var languageOption = new Option<string>(aliases: new[] { "-l", OptionTemplates.Language }, OptionTemplates.LanguageDescription);
+            languageOption.IsHidden = true;
+
+            // LanguageVer Option is obselete
             var languageVerOption = new Option<string>(OptionTemplates.LanguageVersion, OptionTemplates.LanguageVersionDescription);
+            languageVerOption.IsHidden = true;
             var intermediateDirOption = new Option<string>(aliases: new[] { "-i", OptionTemplates.IntermediateDir }, OptionTemplates.IntermediateDirDescription);
             var outputOption = new Option<string>(aliases: new[] { "-o", OptionTemplates.Output }, OptionTemplates.OutputDescription);
             var manifestDirOption = new Option<string>(OptionTemplates.ManifestDir, OptionTemplates.ManifestDirDescription);
 
             var command = new Command("build", "Build an app.")
             {
-                logOption,
-                debugOption,
                 sourceDirArgument,
+                intermediateDirOption,
+                outputOption,
+                manifestDirOption,
                 platformOption,
                 platformVersionOption,
                 packageOption,
@@ -129,9 +135,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 dynamicInstallRootDirOption,
                 languageOption,
                 languageVerOption,
-                intermediateDirOption,
-                outputOption,
-                manifestDirOption,
+                logOption,
+                debugOption,
             };
 
             command.SetHandler(
@@ -337,8 +342,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return;
                 }
 
-                // Not using IConsole.WriteErrorLine intentionally, to keep the child's error stream intact
-                console.WriteLine(line);
+                // Not using IConsole.WriteLine intentionally, to keep the child's error stream intact
+                console.Error.WriteLine(line);
                 buildScriptOutput.AppendLine(line);
             };
 
@@ -401,7 +406,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (string.IsNullOrEmpty(options.PlatformName) && !string.IsNullOrEmpty(options.PlatformVersion))
             {
                 logger.LogError("Cannot use lang version without lang name");
-                console.WriteLine("Cannot use platform version without specifying platform name also.");
+                console.Error.WriteLine("Cannot use platform version without specifying platform name also.");
                 return false;
             }
 
@@ -413,7 +418,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     && !string.Equals(appType, Constants.WebApplications))
                 {
                     logger.LogError($"Invalid value for AppType: '{options.AppType}'.");
-                    console.WriteLine(
+                    console.Error.WriteLine(
                         $"Invalid value '{options.AppType}' for switch '--apptype'. " +
                         $"Valid values are '{Constants.StaticSiteApplications}' or " +
                         $"'{Constants.FunctionApplications}' or '{Constants.WebApplications}'");
@@ -427,7 +432,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     logger.LogError(
                         "Intermediate directory cannot be same as the source directory.");
-                    console.WriteLine(
+                    console.Error.WriteLine(
                         $"Intermediate directory '{options.IntermediateDir}' cannot be " +
                         $"same as the source directory '{options.SourceDir}'.");
                     return false;
@@ -438,7 +443,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     logger.LogError(
                         "Intermediate directory cannot be a child of the source directory.");
-                    console.WriteLine(
+                    console.Error.WriteLine(
                         $"Intermediate directory '{options.IntermediateDir}' cannot be a " +
                         $"sub-directory of source directory '{options.SourceDir}'.");
                     return false;

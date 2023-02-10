@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -88,7 +89,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (detectedPlatformResults == null || !detectedPlatformResults.Any())
                 {
                     logger?.LogError($"No platforms and versions detected from source directory: '{this.SourceDir}'");
-                    console.Error.Write($"No platforms and versions detected from source directory: '{this.SourceDir}'");
+                    console.Error.WriteLine($"No platforms and versions detected from source directory: '{this.SourceDir}'");
                 }
 
                 if (!string.IsNullOrEmpty(this.OutputFormat)
@@ -113,7 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!Directory.Exists(this.SourceDir))
             {
                 logger?.LogError("Could not find the source directory.");
-                console.Error.Write($"Could not find the source directory: '{this.SourceDir}'");
+                console.Error.WriteLine($"Could not find the source directory: '{this.SourceDir}'");
 
                 return false;
             }
@@ -123,7 +124,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 && !string.Equals(this.OutputFormat, "table", StringComparison.OrdinalIgnoreCase))
             {
                 logger?.LogError("Unsupported output format. Supported output formats are: json, table.");
-                console.Error.Write($"Unsupported output format: '{this.OutputFormat}'. " +
+                console.Error.WriteLine($"Unsupported output format: '{this.OutputFormat}'. " +
                     "Supported output formats are: json, table.");
 
                 return false;

@@ -5,6 +5,7 @@
 
 using System;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,7 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static Command Export()
         {
-            var sourceDirArgument = new Argument<string>("sourceDir", "The source directory.");
+            var sourceDirArgument = new Argument<string>("SourceDir", "The source directory.");
             var platformDirOption = new Option<string>("--platform-dir", "Platform directory path.");
             var planPathOption = new Option<string>("--plan-path", "Build plan TOML path.");
             var logFilePathOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
@@ -84,7 +85,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!Directory.Exists(options.SourceDir))
             {
                 logger.LogError("Could not find the source directory.");
-                console.Error.Write($"Could not find the source directory '{options.SourceDir}'.");
+                console.Error.WriteLine($"Could not find the source directory '{options.SourceDir}'.");
                 result = false;
             }
 
@@ -94,7 +95,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!File.Exists(this.PlanPath))
                 {
                     logger?.LogError("Could not find build plan file {planPath}", this.PlanPath);
-                    console.Error.Write($"Could not find build plan file '{this.PlanPath}'.");
+                    console.Error.WriteLine($"Could not find build plan file '{this.PlanPath}'.");
                     result = false;
                 }
             }
@@ -105,7 +106,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(this.PlatformDir))
                 {
                     logger?.LogError("Could not find platform directory {platformDir}", this.PlatformDir);
-                    console.Error.Write($"Could not find platform directory '{this.PlatformDir}'.");
+                    console.Error.WriteLine($"Could not find platform directory '{this.PlatformDir}'.");
                     result = false;
                 }
             }

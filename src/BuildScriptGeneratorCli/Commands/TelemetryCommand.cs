@@ -52,6 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 logFile,
                 debugOption,
             };
+            command.IsHidden = true;
 
             command.SetHandler(
                 (prop) =>

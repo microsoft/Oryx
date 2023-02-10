@@ -5,6 +5,7 @@
 
 using System;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
             var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
-            var sourceDirArgument = new Argument<string>("sourceDir", "The source directory.");
+            var sourceDirArgument = new Argument<string>("SourceDir", "The source directory.");
             var platformOption = new Option<string>(OptionTemplates.Platform, OptionTemplates.PlatformDescription);
             var platformVersionOption = new Option<string>(OptionTemplates.PlatformVersion, OptionTemplates.PlatformVersionDescription);
             var packageOption = new Option<bool>(OptionTemplates.Package, OptionTemplates.PackageDescription);
@@ -143,14 +144,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!Directory.Exists(options.SourceDir))
             {
-                console.WriteLine($"Could not find the source directory '{options.SourceDir}'.");
+                console.Error.WriteLine($"Could not find the source directory '{options.SourceDir}'.");
                 return false;
             }
 
             // Invalid to specify platform version without platform name
             if (string.IsNullOrEmpty(options.PlatformName) && !string.IsNullOrEmpty(options.PlatformVersion))
             {
-                console.WriteLine("Cannot use platform version without platform name also.");
+                console.Error.WriteLine("Cannot use platform version without platform name also.");
                 return false;
             }
 

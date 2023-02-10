@@ -5,6 +5,7 @@
 
 using System;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -68,8 +69,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var compressDestDirOption = new Option<bool>(OptionTemplates.CompressDestinationDir, OptionTemplates.CompressDestinationDirDescription);
             var propertyOption = new Option<string[]>(aliases: new[] { "-p", OptionTemplates.Property }, OptionTemplates.PropertyDescription);
             var dynamicInstallRootDirOption = new Option<string>(OptionTemplates.DynamicInstallRootDir, OptionTemplates.DynamicInstallRootDirDescription);
+
+            // Hiding Language Option because it is obselete
             var languageOption = new Option<string>(aliases: new[] { "-l", OptionTemplates.Language }, OptionTemplates.LanguageDescription);
+            languageOption.IsHidden = true;
+
+            // Hiding LanguageVer Option because it is obselete
             var languageVerOption = new Option<string>(OptionTemplates.LanguageVersion, OptionTemplates.LanguageVersionDescription);
+            languageVerOption.IsHidden = true;
+
             var intermediateDirOption = new Option<string>(aliases: new[] { "-i", OptionTemplates.IntermediateDir }, OptionTemplates.IntermediateDirDescription);
             var outputOption = new Option<string>(aliases: new[] { "-o", OptionTemplates.Output }, OptionTemplates.OutputDescription);
             var manifestDirOption = new Option<string>(OptionTemplates.ManifestDir, OptionTemplates.ManifestDirDescription);
@@ -140,7 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(this.LayersDir))
                 {
                     logger.LogError("Could not find provided layers directory.");
-                    console.Error.Write($"Could not find layers directory '{this.LayersDir}'.");
+                    console.Error.WriteLine($"Could not find layers directory '{this.LayersDir}'.");
                     result = false;
                 }
             }
@@ -151,7 +159,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!File.Exists(this.PlanPath))
                 {
                     logger?.LogError("Could not find build plan file {planPath}", this.PlanPath);
-                    console.Error.Write($"Could not find build plan file '{this.PlanPath}'.");
+                    console.Error.WriteLine($"Could not find build plan file '{this.PlanPath}'.");
                     result = false;
                 }
             }
@@ -162,7 +170,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(this.PlatformDir))
                 {
                     logger?.LogError("Could not find platform directory {platformDir}", this.PlatformDir);
-                    console.Error.Write($"Could not find platform directory '{this.PlatformDir}'.");
+                    console.Error.WriteLine($"Could not find platform directory '{this.PlatformDir}'.");
                     result = false;
                 }
             }

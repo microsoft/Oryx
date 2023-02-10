@@ -5,6 +5,7 @@
 
 using System;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -95,7 +96,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var script = runScriptGenerator.GenerateBashScript(ctx);
             if (string.IsNullOrEmpty(script))
             {
-                console.Error.Write("Couldn't generate startup script.");
+                console.Error.WriteLine("Couldn't generate startup script.");
                 return ProcessConstants.ExitFailure;
             }
 
@@ -120,7 +121,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.AppDir = string.IsNullOrEmpty(this.AppDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(this.AppDir);
             if (!Directory.Exists(this.AppDir))
             {
-                console.Error.Write($"Could not find the source directory '{this.AppDir}'.");
+                console.Error.WriteLine($"Could not find the source directory '{this.AppDir}'.");
                 return false;
             }
 

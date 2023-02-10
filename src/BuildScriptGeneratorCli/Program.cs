@@ -28,15 +28,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // var versionOption = new Option<bool>(aliases: new[] { "-v", "--version" }, "Print version information.");
             rootCommand.AddCommand(BuildCommand.Export());
-            rootCommand.AddCommand(PlatformsCommand.Export());
             rootCommand.AddCommand(BuildScriptCommand.Export());
-            rootCommand.AddCommand(RunScriptCommand.Export());
-            rootCommand.AddCommand(ExecCommand.Export());
-            rootCommand.AddCommand(DetectCommand.Export());
-            rootCommand.AddCommand(BuildpackDetectCommand.Export());
             rootCommand.AddCommand(BuildpackBuildCommand.Export());
+            rootCommand.AddCommand(BuildpackDetectCommand.Export());
+            rootCommand.AddCommand(DetectCommand.Export());
             rootCommand.AddCommand(DockerfileCommand.Export());
+            rootCommand.AddCommand(ExecCommand.Export());
+            rootCommand.AddCommand(PlatformsCommand.Export());
             rootCommand.AddCommand(PrepareEnvironmentCommand.Export());
+            rootCommand.AddCommand(RunScriptCommand.Export());
             rootCommand.AddCommand(TelemetryCommand.Export());
 
             // rootCommand.AddGlobalOption(versionOption);

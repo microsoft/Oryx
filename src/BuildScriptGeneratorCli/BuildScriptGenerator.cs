@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -68,7 +69,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 exception = ex;
                 this.logger.LogError(ex, "Invalid usage");
-                this.console.WriteLine(ex.Message);
+                this.console.Error.WriteLine(ex.Message);
                 return false;
             }
         }

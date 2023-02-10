@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
@@ -139,7 +140,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (string.IsNullOrEmpty(dockerfile))
                 {
                     exitCode = ProcessConstants.ExitFailure;
-                    console.Error.Write("Couldn't generate dockerfile.");
+                    console.Error.WriteLine("Couldn't generate dockerfile.");
                 }
                 else
                 {
@@ -167,7 +168,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.SourceDir = string.IsNullOrEmpty(this.SourceDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(this.SourceDir);
             if (!Directory.Exists(this.SourceDir))
             {
-                console.Error.Write($"Could not find the source directory '{this.SourceDir}'.");
+                console.Error.WriteLine($"Could not find the source directory '{this.SourceDir}'.");
                 return false;
             }
 
@@ -177,7 +178,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var buildImageSplit = this.BuildImage.Split(':');
                 if (buildImageSplit.Length != 2)
                 {
-                    console.Error.Write("Provided build image must be in the format '<image>:<tag>'.");
+                    console.Error.WriteLine("Provided build image must be in the format '<image>:<tag>'.");
                     return false;
                 }
             }
@@ -185,14 +186,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Invalid to specify platform version without platform name
             if (string.IsNullOrEmpty(this.PlatformName) && !string.IsNullOrEmpty(this.PlatformVersion))
             {
-                console.Error.Write("Cannot use platform version without specifying platform name also.");
+                console.Error.WriteLine("Cannot use platform version without specifying platform name also.");
                 return false;
             }
 
             // Invalid to specify runtime platform version without platform name
             if (string.IsNullOrEmpty(this.RuntimePlatformName) && !string.IsNullOrEmpty(this.RuntimePlatformVersion))
             {
-                console.Error.Write("Cannot use runtime platform version without specifying runtime platform name also.");
+                console.Error.WriteLine("Cannot use runtime platform version without specifying runtime platform name also.");
                 return false;
             }
 
@@ -212,7 +213,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 if (!int.TryParse(this.BindPort, out int port) || port < 0 || port > 65535)
                 {
-                    console.Error.Write($"Provided bind port '{this.BindPort}' is not valid.");
+                    console.Error.WriteLine($"Provided bind port '{this.BindPort}' is not valid.");
                     return false;
                 }
             }

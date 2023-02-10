@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.CommandLine;
+using System.CommandLine.IO;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -13,7 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (!string.IsNullOrWhiteSpace(message))
             {
-                console.Error.Write("Error: " + message);
+                console.Error.WriteLine("Error: " + message);
             }
         }
     }

@@ -5,6 +5,7 @@
 
 using System;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
@@ -159,7 +160,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     {
                         if (args.Data != null)
                         {
-                            console.Error.Write(args.Data);
+                            console.Error.WriteLine(args.Data);
                         }
                     },
                     waitTimeForExit: null);

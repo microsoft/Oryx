@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -125,7 +126,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!string.IsNullOrEmpty(suppliedPlatformsAndVersionsFile)
                 && !File.Exists(suppliedPlatformsAndVersionsFile))
             {
-                console.Error.Write($"Supplied file '{suppliedPlatformsAndVersionsFile}' does not exist.");
+                console.Error.WriteLine($"Supplied file '{suppliedPlatformsAndVersionsFile}' does not exist.");
                 return false;
             }
 
@@ -163,7 +164,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (!platformNames.ContainsKey(platformName))
                 {
-                    console.Error.Write(
+                    console.Error.WriteLine(
                         $"Platform name '{platformName}' is not valid. Make sure platform name matches one of the " +
                         $"following names: {string.Join(", ", platformNames.Keys)}");
                     return false;
@@ -212,7 +213,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     }
                     else
                     {
-                        console.Error.Write(
+                        console.Error.WriteLine(
                             $"Invalid value for switch '{PlatformsAndVersionsTemplate}'.");
                         return ProcessConstants.ExitFailure;
                     }
@@ -283,7 +284,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     {
                         if (args.Data != null)
                         {
-                            console.Error.Write(args.Data);
+                            console.Error.WriteLine(args.Data);
                         }
                     },
                     waitTimeForExit: null);
@@ -413,7 +414,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (!this.SkipDetection && string.IsNullOrEmpty(this.SourceDir))
             {
-                console.Error.Write("Source directory is required.");
+                console.Error.WriteLine("Source directory is required.");
                 return false;
             }
 
@@ -421,7 +422,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 && string.IsNullOrEmpty(this.PlatformsAndVersions)
                 && string.IsNullOrEmpty(this.PlatformsAndVersionsFile))
             {
-                console.Error.Write("Platform names and versions are required.");
+                console.Error.WriteLine("Platform names and versions are required.");
                 return false;
             }
 
