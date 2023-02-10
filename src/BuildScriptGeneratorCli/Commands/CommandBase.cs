@@ -255,10 +255,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 disposable.Dispose();
             }
-
-            // Sends queued messages to Application Insights
-            NLog.LogManager.Flush(LoggingConstants.FlushTimeout);
-            NLog.LogManager.Shutdown();
         }
     }
 }
