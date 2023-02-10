@@ -9,6 +9,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Oryx.BuildScriptGenerator;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -31,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     builder.AddApplicationInsights(
                          configureTelemetryConfiguration: (config) => config.ConnectionString = connectionString,
-                         configureApplicationInsightsLoggerOptions: (options) => { });
+                         configureApplicationInsightsLoggerOptions: (options) => { options.FlushOnDispose });
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
                 })
                 .AddSingleton<TelemetryClient>(new TelemetryClient(new TelemetryConfiguration
