@@ -329,6 +329,7 @@
     enable-dynamic-install-key: ENABLE_DYNAMIC_INSTALL
     sdk-storage-base-url-key-name: ORYX_SDK_STORAGE_BASE_URL
     testing-sdk-storage-url-key-name: ORYX_TEST_SDK_STORAGE_URL
+    private-staging-storage-sas-token-key: SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN
     private-staging-sdk-storage-base-url: https://oryxsdksstaging.blob.core.windows.net
     dev-sdk-storage-base-url: https://oryxsdksdev.blob.core.windows.net
     sandbox-sdk-storage-base-url: https://oryxsdkssandbox.blob.core.windows.net
@@ -457,6 +458,20 @@
   constants:
     dotnetcore-staging-runtime-versions:
       -
+    python-staging-runtime-versions:
+      -
+    node-staging-runtime-versions:
+      -
+    java-staging-runtime-versions:
+      -
+    php-staging-runtime-versions:
+      -
+    hugo-staging-runtime-versions:
+      -
+    ruby-staging-runtime-versions:
+      -
+    golang-staging-runtime-versions:
+      -    
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator

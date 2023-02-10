@@ -45,10 +45,13 @@ debianFlavor=$DEBIAN_FLAVOR
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 
 sdkStorageAccountUrl="$ORYX_SDK_STORAGE_BASE_URL"
+sasToken=""
 if [ -z "$sdkStorageAccountUrl" ]; then
   sdkStorageAccountUrl=$PRIVATE_STAGING_SDK_STORAGE_BASE_URL
 fi
-
+if [ sdkStorageAccountUrl = $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ]; then
+    sasToken=$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN
+fi
 if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
   # Use default sdk file name
 	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
@@ -63,7 +66,7 @@ if [ -z "$targetDir" ]; then
 fi
 
 START_TIME=$SECONDS
-downloadFileAndVerifyChecksum $PLATFORM_NAME $VERSION $fileName $sdkStorageAccountUrl
+downloadFileAndVerifyChecksum $PLATFORM_NAME $VERSION $fileName $sdkStorageAccountUrl $sasToken
 ELAPSED_TIME=$(($SECONDS - $START_TIME))
 echo "Downloaded and verified checksum in $ELAPSED_TIME sec(s)."
 

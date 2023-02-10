@@ -23,7 +23,7 @@ namespace Oryx.Integration.Tests
                 output, 
                 testTempDirTestFixture, 
                 repoRootDirTestFixture,
-                string.Empty)
+                SdkStorageConstants.PrivateStagingStorageSasTokenKey)
         {
         }
     }

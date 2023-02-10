@@ -5,6 +5,7 @@ package consts
 const EnableDynamicInstallKey string = "ENABLE_DYNAMIC_INSTALL"
 const SdkStorageBaseUrlKeyName string = "ORYX_SDK_STORAGE_BASE_URL"
 const TestingSdkStorageUrlKeyName string = "ORYX_TEST_SDK_STORAGE_URL"
+const PrivateStagingStorageSasTokenKey string = "SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN"
 const PrivateStagingSdkStorageBaseUrl string = "https://oryxsdksstaging.blob.core.windows.net"
 const DevSdkStorageBaseUrl string = "https://oryxsdksdev.blob.core.windows.net"
 const SandboxSdkStorageBaseUrl string = "https://oryxsdkssandbox.blob.core.windows.net"

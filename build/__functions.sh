@@ -90,6 +90,41 @@ function shouldStageRuntimeVersion()
 			return 0
 		fi
 		;;
+	'python'
+		if [[ " ${PYTHON_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
+			return 0
+		fi
+		;;
+	'node'
+		if [[ " ${NODE_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
+			return 0
+		fi
+		;;
+	'java'
+		if [[ " ${JAVA_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
+			return 0
+		fi
+		;;
+	'php'
+		if [[ " ${PHP_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
+			return 0
+		fi
+		;;
+	'hugo'
+		if [[ " ${HUGO_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
+			return 0
+		fi
+		;;
+	'ruby'
+		if [[ " ${RUBY_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
+			return 0
+		fi
+		;;
+	'golang'
+		if [[ " ${GOLANG_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
+			return 0
+		fi
+		;;
 	*) 
 		echo "Platform '$platformName' does not support staging."
 		;;

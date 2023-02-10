@@ -84,6 +84,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Build build images'
+  env:
+    SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/buildBuildImages.sh
     args: -t ${{ parameters.imageType }} -s $(storageAccountUrl)
@@ -169,6 +171,7 @@ steps:
     SQLSERVER_DATABASE_USERNAME: $(SQLSERVER-DATABASE-USERNAME)
     SQLSERVER_DATABASE_PASSWORD: $(SQLSERVER-DATABASE-PASSWORD)
     ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
+    SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: CopyFiles@2
