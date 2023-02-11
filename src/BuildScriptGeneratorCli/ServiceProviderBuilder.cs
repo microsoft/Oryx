@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     builder.AddApplicationInsights(
                          configureTelemetryConfiguration: (config) => config.ConnectionString = connectionString,
-                         configureApplicationInsightsLoggerOptions: (options) => { options.FlushOnDispose });
+                         configureApplicationInsightsLoggerOptions: (options) => { });
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
                 })
                 .AddSingleton<TelemetryClient>(new TelemetryClient(new TelemetryConfiguration
