@@ -44,6 +44,9 @@ RUN set -eux; \
         && docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
     fi
 
+#Force install old version of unix-odbc (temporary)
+RUN apt-get install unixodbc-dev=2.3.7 unixodbc=2.3.7 odbcinst1debian2=2.3.7 odbcinst=2.3.7
+
 RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
     && docker-php-ext-install gd \
         mysqli \
