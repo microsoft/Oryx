@@ -29,24 +29,27 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             _ = bool.TryParse(disableTelemetryEnvVariableValue, out bool disableTelemetry);
 
             var aiKey = disableTelemetry ? string.Empty : Environment.GetEnvironmentVariable(
-                LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
+                LoggingConstants.ApplicationInsightsConnectionStringKeyEnvironmentVariableName);
             this.serviceCollection = new ServiceCollection();
-            var connectionString = string.Empty;
             this.serviceCollection
                 .AddBuildScriptGeneratorServices()
                 .AddCliServices(console)
                 .AddLogging(builder =>
                 {
-                    builder.AddApplicationInsights(
-                         configureTelemetryConfiguration: (config) => config.ConnectionString = connectionString,
-                         configureApplicationInsightsLoggerOptions: (options) => { });
+                    if (!string.IsNullOrWhiteSpace(aiKey))
+                    {
+                        builder.AddApplicationInsights(
+                        configureTelemetryConfiguration: (config) => config.ConnectionString = aiKey,
+                        configureApplicationInsightsLoggerOptions: (options) => { });
+                    }
+
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
                     var pathFormat = !string.IsNullOrWhiteSpace(logFilePath) ? logFilePath : LoggingConstants.DefaultLogPath;
                     builder.AddFile(pathFormat);
                 })
                 .AddSingleton<TelemetryClient>(new TelemetryClient(new TelemetryConfiguration
                 {
-                    ConnectionString = connectionString,
+                    ConnectionString = aiKey,
                 }));
         }
 
