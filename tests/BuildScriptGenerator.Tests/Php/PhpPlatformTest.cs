@@ -518,7 +518,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 detector,
                 phpInstaller,
                 phpComposerInstaller,
-                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()));
+               new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
+               {
+                   ConnectionString = "test"
+               }));
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
