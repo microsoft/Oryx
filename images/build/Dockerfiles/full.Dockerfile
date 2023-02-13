@@ -21,6 +21,7 @@ RUN ./build.sh golang     /opt/startupcmdgen/golang
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
 ARG DEBIAN_FLAVOR
 ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
+ARG AI_KEY
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE}
 

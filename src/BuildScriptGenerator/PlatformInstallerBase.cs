@@ -46,14 +46,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendAptGetInstallPackages(
                 "make",
                 "unzip",
-                "build-essential",
                 "libpq-dev",
                 "moreutils",
                 "python3-pip",
                 "swig",
-                "tk-dev",
                 "unixodbc-dev",
-                "uuid-dev");
+                "build-essential", // Adding additional python 3 packages to support all optional python modules: https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+                "gdb",
+                "lcov",
+                "pkg-config",
+                "libbz2-dev",
+                "libffi-dev",
+                "libgdbm-dev",
+                "liblzma-dev",
+                "libncurses5-dev",
+                "libreadline6-dev",
+                "libsqlite3-dev",
+                "libssl-dev",
+                "lzma",
+                "lzma-dev",
+                "tk-dev",
+                "uuid-dev",
+                "zlib1g-dev");
 
             // Install Python 3.8
             stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
@@ -192,17 +206,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"    curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb")
                 .AppendLine($"    dpkg -i libffi6_3.2.1-9_amd64.deb")
                 .AppendLine($"    rm libffi6_3.2.1-9_amd64.deb")
-                .AppendLine($"  fi")
-                .AppendLine("fi")
-
-                // Required for python 3.10 and 3.11
-                .AppendLine($"PIP_GCC_FLAGS=\"\"")
-                .AppendLine($"if [ \"$platformName\" = \"python\" ]; then")
-                .AppendLine($"  if [[ '{version}' == 3.10* ]] || [[ '{version}' == 3.11* ]]; then")
-                .AppendLine($"    echo \"Enabling --global-option to pip for gcc modules...\"")
-                .AppendLine($"    pythonMajorMinorVersion={version.Substring(0, version.LastIndexOf('.'))}")
-                .AppendLine($"    dynamicInstallationPythonIncludeDirectory={versionDirInTemp}/include/python$pythonMajorMinorVersion")
-                .AppendLine($"    PIP_GCC_FLAGS=\"--global-option=build_ext --global-option=-I$dynamicInstallationPythonIncludeDirectory\"")
                 .AppendLine($"  fi")
                 .AppendLine("fi")
 

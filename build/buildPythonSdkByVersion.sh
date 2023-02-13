@@ -37,17 +37,31 @@ buildPythonfromSource()
         apt-get update && \
         apt-get upgrade -y && \
         DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            # Adding additional python packages to support all optional python modules:
+            # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
             build-essential \
-            tk-dev \
-            libgeos-dev \
-            libssl-dev \
-            libncurses5-dev \
-            libsqlite3-dev \
-            libreadline-dev \
-            libbz2-dev \
-            libgdm-dev \
+            gdb \
+            lcov \
             libbluetooth-dev \
+            libbz2-dev \
+            libffi-dev \
+            libgdbm-dev \
+            libgdm-dev \
+            libgeos-dev \
+            liblzma-dev \
+            libncurses5-dev \
+            libreadline-dev \
+            libreadline6-dev \
+            libsqlite3-dev \
+            libssl-dev \
+            lzma \
+            lzma-dev \
+            pkg-config \
+            python3-dev \
+            tk-dev \
             uuid-dev
+            uuid-dev \
+            zlib1g-dev \
 
     # Try getting the keys 5 times at most
     /tmp/receiveGpgKeys.sh $gpgKey

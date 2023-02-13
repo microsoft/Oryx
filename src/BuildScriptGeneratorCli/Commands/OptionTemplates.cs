@@ -26,5 +26,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string AppType = "--apptype <application-type>";
         public const string CompressDestinationDir = "--compress-destination-dir";
         public const string DynamicInstallRootDir = "--dynamic-install-root-dir <dir-path>";
+
+        public const string EventName = "--event-name <event-name>";
+        public const string ProcessingTime = "--processing-time <processing-time>";
+        public const string CallerId = "--caller-id <caller-id>";
     }
 }
