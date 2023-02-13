@@ -13,15 +13,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 {
     internal class TestConsole : IConsole
     {
-        private readonly StringBuilder _stdOutStringBuilder;
-        private readonly StringWriter _stdOutStringWriter;
-        private readonly StringBuilder _stdErrStringBuilder;
-        private readonly StringWriter _stdErrStringWriter;
-        private string _stdOutput;
-        private string _stdError;
-        private bool _stdOutputCalled;
-        private bool _stdErrorCalled;
-
         public TestConsole()
             : this(newLineCharacter: null)
         {
@@ -29,77 +20,53 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
 
         public TestConsole(string newLineCharacter)
         {
-            _stdOutStringBuilder = new StringBuilder();
-            _stdOutStringWriter = new StringWriter(_stdOutStringBuilder);
-            _stdOutStringWriter.NewLine = newLineCharacter;
-            _stdErrStringBuilder = new StringBuilder();
-            _stdErrStringWriter = new StringWriter(_stdErrStringBuilder);
-            _stdErrStringWriter.NewLine = newLineCharacter;
+            this.Out = new StandardStreamWriter(newLineCharacter);
+            this.Error = new StandardStreamWriter(newLineCharacter);
         }
 
-        public string StdOutput
+        public bool IsInputRedirected { get; protected set; }
+
+        public bool IsOutputRedirected { get; protected set; }
+
+        public bool IsErrorRedirected { get; protected set; }
+
+        public IStandardStreamWriter Out { get; protected set; }
+
+        // Legacy Property
+        public string StdOutput => Out.ToString();
+
+        public IStandardStreamWriter Error { get; protected set; }
+
+        // Legacy Property
+        public string StdError => Error.ToString();
+
+        // From System.CommandLine.IO TestConsole
+        // https://github.com/dotnet/command-line-api/blob/76437b04511d88543df5cde2c7910e8d40e30888/src/System.CommandLine/IO/TestConsole.cs
+        internal class StandardStreamWriter : TextWriter, IStandardStreamWriter
         {
-            get
+            private readonly StringBuilder _stringBuilder = new StringBuilder();
+
+            public StandardStreamWriter()
+                : this(newLineCharacter: null) { }
+
+            public StandardStreamWriter(string newLineCharacter)
             {
-                if (!_stdOutputCalled)
-                {
-                    _stdOutStringWriter.Flush();
-                    _stdOutput = _stdOutStringBuilder.ToString();
-                    _stdOutputCalled = true;
-                }
-                return _stdOutput;
+                this.NewLine = newLineCharacter;
             }
-        }
 
-        public string StdError
-        {
-            get
+            public override void Write(char value)
             {
-                if (!_stdErrorCalled)
-                {
-                    _stdErrStringWriter.Flush();
-                    _stdError = _stdErrStringBuilder.ToString();
-                    _stdErrorCalled = true;
-                }
-                return _stdError;
+                _stringBuilder.Append(value);
             }
-        }
 
-        public TextWriter Out => _stdOutStringWriter;
+            public override void Write(string value)
+            {
+                _stringBuilder.Append(value);
+            }
 
-        public TextWriter Error => _stdErrStringWriter;
+            public override Encoding Encoding { get; } = Encoding.Unicode;
 
-        public TextReader In => throw new NotImplementedException();
-
-        public bool IsInputRedirected => throw new NotImplementedException();
-
-        public bool IsOutputRedirected => true;
-
-        public bool IsErrorRedirected => true;
-
-        public ConsoleColor ForegroundColor
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-
-        public ConsoleColor BackgroundColor
-        {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
-        }
-
-        IStandardStreamWriter IStandardOut.Out => throw new NotImplementedException();
-
-        IStandardStreamWriter IStandardError.Error => throw new NotImplementedException();
-
-#pragma warning disable 0067
-        public event ConsoleCancelEventHandler CancelKeyPress;
-#pragma warning restore 0067
-
-        public void ResetColor()
-        {
-            throw new NotImplementedException();
+            public override string ToString() => _stringBuilder.ToString();
         }
     }
 }
