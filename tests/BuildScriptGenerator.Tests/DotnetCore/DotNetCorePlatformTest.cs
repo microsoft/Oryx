@@ -163,7 +163,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 Options.Create(dotNetCoreScriptGeneratorOptions),
                 installer,
                 globalJsonSdkResolver,
-                null);
+                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
+                {
+                    ConnectionString = "test"
+                }));
         }
 
         private class TestDotNetCorePlatform : DotNetCorePlatform

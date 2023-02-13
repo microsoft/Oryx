@@ -997,7 +997,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 detector,
                 environment,
                 platformInstaller,
-                null);
+                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
+                {
+                    ConnectionString = "test"
+                }));
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -1018,7 +1021,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 detector,
                 environment,
                 platformInstaller,
-                null);
+                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
+                {
+                    ConnectionString = "test"
+                }));
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -1044,7 +1050,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 detector,
                 environment,
                 installer,
-                null);
+               new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
+               {
+                   ConnectionString = "test"
+               }));
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

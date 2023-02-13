@@ -636,7 +636,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
                 new DefaultStandardOutputWriter(),
-                null);
+                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
+                {
+                    ConnectionString = "test"
+                }));
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()
