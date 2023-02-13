@@ -129,10 +129,10 @@
     golang16-tar-sha256: 7fe7a73f55ba3e2285da36f8b085e5c0159e9564ef5f63ee0ed6b818ade8ef04
     golang17-version: 1.17
     golang17-tar-sha256: 6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d
-    golang18-version: 1.18.8
-    golang18-tar-sha256: 4d854c7bad52d53470cf32f1b287a5c0c441dc6b98306dea27358e099698142a
-    golang19-version: 1.19.3
-    golang19-tar-sha256: 74b9640724fd4e6bb0ed2a1bc44ae813a03f1e72a4c76253e2d5c015494430ba
+    golang18-version: 1.18.10
+    golang18-tar-sha256: 5e05400e4c79ef5394424c0eff5b9141cb782da25f64f79d54c98af0a37f8d49
+    golang19-version: 1.19.5
+    golang19-tar-sha256: 36519702ae2fd573c9869461990ae550c8c0d955cd28d2827a6b159fda81ff95
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
@@ -176,12 +176,12 @@
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
-    php82-version: 8.2.1
+    php82-version: 8.2.2
     php82-keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php82-tar-sha256: 650d3bd7a056cabf07f6a0f6f1dd8ba45cd369574bbeaa36de7d1ece212c17af
-    php81-version: 8.1.14
+    php82-tar-sha256: bdc4aa38e652bac86039601840bae01c0c3653972eaa6f9f93d5f71953a7ee33
+    php81-version: 8.1.15
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php81-tar-sha256: e16e47a872d58685913ac848ce92ec49f42c1828110c98c65fb6265a08724a1a
+    php81-tar-sha256: cd450fb4ee50488c5bf5f08851f514e5a1cac18c9512234d9e16c3a1d35781a6
     php80-version: 8.0.27
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
     php80-tar-sha256: f942cbfe2f7bacbb8039fb79bbec41c76ea779ac5c8157f21e1e0c1b28a5fc3a
@@ -283,9 +283,9 @@
     node8-version: 8.17.0
     node10-version: 10.23.0
     node12-version: 12.22.11
-    node14-version: 14.20.1
-    node16-version: 16.18.0
-    node18-version: 18.12.1
+    node14-version: 14.21.2
+    node16-version: 16.19.0
+    node18-version: 18.14.0
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 6.14.15
