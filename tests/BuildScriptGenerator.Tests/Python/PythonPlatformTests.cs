@@ -414,7 +414,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 NullLogger<PythonPlatform>.Instance,
                 detector,
                 new PythonPlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
-                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()));
+                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
+                {
+                    ConnectionString = "test"
+                }));
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

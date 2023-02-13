@@ -449,7 +449,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                     Options.Create(commonOptions)),
                 NullLogger<DefaultDockerfileGenerator>.Instance,
                 Options.Create(commonOptions),
-                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()));
+                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
+                {
+                    ConnectionString = "test"
+                }));
         }
 
         private string ConvertToRuntimeName(string platformName)
