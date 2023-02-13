@@ -343,15 +343,15 @@ namespace Microsoft.Oryx.Tests.Common
             AddEnvVarArgs(args, _globalEnvVars);
             AddEnvVarArgs(args, dockerRunArguments.EnvironmentVariables);
 
-            var aiKeyOverride = Environment.GetEnvironmentVariable(
-                "TEST_OVERRIDE_" + LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
-            if (!string.IsNullOrWhiteSpace(aiKeyOverride))
+            var aiConnectionStringOverride = Environment.GetEnvironmentVariable(
+                "TEST_OVERRIDE_" + LoggingConstants.ApplicationInsightsConnectionStringKeyEnvironmentVariableName);
+            if (!string.IsNullOrWhiteSpace(aiConnectionStringOverride))
             {
                 AddEnvVarArg(
                     args,
                     new EnvironmentVariable(
-                        LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName,
-                        aiKeyOverride));
+                        LoggingConstants.ApplicationInsightsConnectionStringKeyEnvironmentVariableName,
+                        aiConnectionStringOverride));
             }
 
             var appServiceAppName = Environment.GetEnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName);

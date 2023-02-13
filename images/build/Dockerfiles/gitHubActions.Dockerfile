@@ -2,6 +2,8 @@ ARG DEBIAN_FLAVOR
 FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-${DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+ARG AI_CONNECTION_STRING
+
 # Install basic build tools
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -177,7 +179,7 @@ ENV LANG="C.UTF-8" \
     NUGET_XMLDOC_MODE="skip" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
     NUGET_PACKAGES="/var/nuget" \
-    ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
+    ORYX_AI_CONNECTION_STRING="${AI_CONNECTION_STRING}" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}"
 
