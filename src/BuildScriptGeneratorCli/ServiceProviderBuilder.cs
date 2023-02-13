@@ -10,6 +10,7 @@ using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -22,22 +23,31 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public ServiceProviderBuilder(string logFilePath = null, IConsole console = null)
         {
+            var disableTelemetryEnvVariableValue = Environment.GetEnvironmentVariable(
+               LoggingConstants.OryxDisableTelemetryEnvironmentVariableName);
+            _ = bool.TryParse(disableTelemetryEnvVariableValue, out bool disableTelemetry);
+            var config = new TelemetryConfiguration();
+            var aiKey = disableTelemetry ? string.Empty : Environment.GetEnvironmentVariable(
+                LoggingConstants.ApplicationInsightsConnectionStringKeyEnvironmentVariableName);
+            if (!string.IsNullOrEmpty(aiKey))
+            {
+                config.ConnectionString = aiKey;
+            }
+
             this.serviceCollection = new ServiceCollection();
-            var connectionString = string.Empty;
             this.serviceCollection
                 .AddBuildScriptGeneratorServices()
                 .AddCliServices(console)
                 .AddLogging(builder =>
                 {
                     builder.AddApplicationInsights(
-                         configureTelemetryConfiguration: (config) => config.ConnectionString = connectionString,
-                         configureApplicationInsightsLoggerOptions: (options) => { });
+                        configureTelemetryConfiguration: (c) => c = config,
+                        configureApplicationInsightsLoggerOptions: (options) => { });
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
+                    var pathFormat = !string.IsNullOrWhiteSpace(logFilePath) ? logFilePath : LoggingConstants.DefaultLogPath;
+                    builder.AddFile(pathFormat);
                 })
-                .AddSingleton<TelemetryClient>(new TelemetryClient(new TelemetryConfiguration
-                {
-                    ConnectionString = connectionString,
-                }));
+                .AddSingleton<TelemetryClient>(new TelemetryClient(config));
         }
 
         public ServiceProviderBuilder ConfigureServices(Action<IServiceCollection> configure)
