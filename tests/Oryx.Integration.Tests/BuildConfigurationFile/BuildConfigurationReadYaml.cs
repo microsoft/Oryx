@@ -147,7 +147,7 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
                 new DefaultStandardOutputWriter(),
-                null);
+                new Microsoft.ApplicationInsights.TelemetryClient(new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration()));
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()

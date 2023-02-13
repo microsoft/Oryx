@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             console.CancelKeyPress += this.Console_CancelKeyPress;
 
             ILogger<CommandBase> logger = null;
+            TelemetryClient telemetryClient = null;
 
             try
             {
@@ -50,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
 
                 logger = this.serviceProvider?.GetRequiredService<ILogger<CommandBase>>();
-                var telemetryClient = this.serviceProvider?.GetRequiredService<TelemetryClient>();
+                telemetryClient = this.serviceProvider?.GetRequiredService<TelemetryClient>();
                 logger?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
 
                 var envSettings = this.serviceProvider?.GetRequiredService<CliEnvironmentSettings>();
@@ -110,6 +111,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             finally
             {
+                telemetryClient?.Flush();
                 this.DisposeServiceProvider();
             }
         }
@@ -197,10 +199,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 disposable.Dispose();
             }
-
-            // Sends queued messages to Application Insights
-            NLog.LogManager.Flush(LoggingConstants.FlushTimeout);
-            NLog.LogManager.Shutdown();
         }
     }
 }

@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -38,6 +42,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Extensions
         public static void LogEvent(this TelemetryClient telemetryClient, string eventName, IDictionary<string, string> props = null)
         {
             telemetryClient.TrackEvent(eventName, props);
+        }
+
+        public static void LogTimedEvent(this TelemetryClient telemetryClient, string eventName, double processingTime, IDictionary<string, string> props = null)
+        {
+            telemetryClient.TrackEvent(
+                eventName,
+                props,
+                new Dictionary<string, double> { { "processingTime", processingTime } });
         }
 
         public static void LogTrace(this TelemetryClient telemetryClient, string message, IDictionary<string, string> props = null)
