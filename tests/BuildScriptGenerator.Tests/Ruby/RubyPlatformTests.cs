@@ -374,7 +374,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Ruby
                 NullLogger<TestRubyPlatform>.Instance,
                 detector,
                 rubyInstaller,
-                null);
+                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()));
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

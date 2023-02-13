@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Oryx.BuildScriptGenerator;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -23,6 +24,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public ServiceProviderBuilder(string logFilePath = null, IConsole console = null)
         {
+            var disableTelemetryEnvVariableValue = Environment.GetEnvironmentVariable(
+               LoggingConstants.OryxDisableTelemetryEnvironmentVariableName);
+            _ = bool.TryParse(disableTelemetryEnvVariableValue, out bool disableTelemetry);
+
+            var aiKey = disableTelemetry ? string.Empty : Environment.GetEnvironmentVariable(
+                LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
             this.serviceCollection = new ServiceCollection();
             var connectionString = string.Empty;
             this.serviceCollection
@@ -34,6 +41,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                          configureTelemetryConfiguration: (config) => config.ConnectionString = connectionString,
                          configureApplicationInsightsLoggerOptions: (options) => { });
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
+                    var pathFormat = !string.IsNullOrWhiteSpace(logFilePath) ? logFilePath : LoggingConstants.DefaultLogPath;
+                    builder.AddFile(pathFormat);
                 })
                 .AddSingleton<TelemetryClient>(new TelemetryClient(new TelemetryConfiguration
                 {
