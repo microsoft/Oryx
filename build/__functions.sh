@@ -90,37 +90,37 @@ function shouldStageRuntimeVersion()
 			return 0
 		fi
 		;;
-	'python'
+	'python')
 		if [[ " ${PYTHON_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
 			return 0
 		fi
 		;;
-	'node'
+	'node')
 		if [[ " ${NODE_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
 			return 0
 		fi
 		;;
-	'java'
+	'java')
 		if [[ " ${JAVA_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
 			return 0
 		fi
 		;;
-	'php'
+	'php')
 		if [[ " ${PHP_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
 			return 0
 		fi
 		;;
-	'hugo'
+	'hugo')
 		if [[ " ${HUGO_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
 			return 0
 		fi
 		;;
-	'ruby'
+	'ruby')
 		if [[ " ${RUBY_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
 			return 0
 		fi
 		;;
-	'golang'
+	'golang')
 		if [[ " ${GOLANG_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
 			return 0
 		fi

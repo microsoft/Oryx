@@ -84,9 +84,6 @@ elif [ "$1" = $DEV_SDK_STORAGE_BASE_URL ]; then
 elif [ "$1" = $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ]; then
     sourceSdk=$PRIVATE_STAGING_SDK_STORAGE_BASE_URL
     sasToken=$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN
-elif [ "$1" = $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ]; then
-    sourceSdk=$PRIVATE_STAGING_SDK_STORAGE_BASE_URL
-    sasToken=$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN
 else
 	echo "Error: $1 is an invalid source storage account url."
 	exit 1

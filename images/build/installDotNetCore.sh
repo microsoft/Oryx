@@ -14,7 +14,7 @@ sasToken=""
 if [ -z "$sdkStorageAccountUrl" ]; then
     sdkStorageAccountUrl=$PRIVATE_STAGING_SDK_STORAGE_BASE_URL
 fi
-if [ sdkStorageAccountUrl = $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ]; then
+if [ $sdkStorageAccountUrl = $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ]; then
     sasToken=$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN
 fi
 echo
