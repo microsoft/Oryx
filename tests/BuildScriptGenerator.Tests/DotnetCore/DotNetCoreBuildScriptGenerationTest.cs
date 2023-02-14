@@ -10,6 +10,10 @@ using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.Detector.DotNetCore;
 using Xunit;
 using System.Collections.Generic;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
+using Moq;
+using System;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
@@ -87,6 +91,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 isDotNetCoreVersionAlreadyInstalled.Value,
                 DotNetCoreInstallationScript);
             var globalJsonSdkResolver = new GlobalJsonSdkResolver(NullLogger<GlobalJsonSdkResolver>.Instance);
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}",Guid.NewGuid().ToString());
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestDotNetCorePlatform(
                 Options.Create(DotNetCoreScriptGeneratorOptions),
                 Options.Create(commonOptions),
@@ -94,7 +101,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 NullLogger<TestDotNetCorePlatform>.Instance,
                 detector,
                 DotNetCoreInstaller,
-                globalJsonSdkResolver);
+                globalJsonSdkResolver,
+                telemetryClientMock.Object.GetTelemetryClient());
         }
 
         private class TestDotNetCorePlatform : DotNetCorePlatform
@@ -106,7 +114,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 ILogger<DotNetCorePlatform> logger,
                 IDotNetCorePlatformDetector detector,
                 DotNetCorePlatformInstaller DotNetCoreInstaller,
-                GlobalJsonSdkResolver globalJsonSdkResolver)
+                GlobalJsonSdkResolver globalJsonSdkResolver,
+                TelemetryClient telemetryClient)
                 : base(
                       DotNetCoreVersionProvider,
                       logger,
@@ -114,7 +123,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                       commonOptions,
                       DotNetCoreScriptGeneratorOptions,
                       DotNetCoreInstaller,
-                      globalJsonSdkResolver)
+                      globalJsonSdkResolver,
+                      telemetryClient)
             {
             }
         }

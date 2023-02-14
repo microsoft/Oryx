@@ -7,12 +7,14 @@ using System;
 using System.IO;
 using System.Linq;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -33,6 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<ExecCommand>>();
+            var telemetryClient = serviceProvider.GetRequiredService<TelemetryClient>();
             var env = serviceProvider.GetRequiredService<IEnvironment>();
             var opts = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
@@ -55,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             int exitCode;
-            using (var timedEvent = logger.LogTimedEvent("ExecCommand"))
+            using (var timedEvent = telemetryClient.LogTimedEvent("ExecCommand"))
             {
                 // Build envelope script
                 var scriptBuilder = new ShellScriptBuilder("\n")

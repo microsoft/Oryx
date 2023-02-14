@@ -10,7 +10,9 @@ using Microsoft.Oryx.Tests.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Xunit;
-
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.ApplicationInsights;
+using Moq;
 
 namespace Oryx.Integration.Tests.BuildConfigurationFile
 {
@@ -136,6 +138,9 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                 platforms,
                 defaultPlatformDetector,
                 new DefaultStandardOutputWriter());
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new DefaultBuildScriptGenerator(
                 defaultPlatformDetector,
                 envScriptProvider,
@@ -146,7 +151,7 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                     Options.Create(commonOptions)),
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
-                new DefaultStandardOutputWriter());
+                new DefaultStandardOutputWriter(), telemetryClientMock.Object.GetTelemetryClient()); 
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()

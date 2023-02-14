@@ -90,37 +90,33 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             int exitCode;
             var logger = serviceProvider.GetRequiredService<ILogger<DockerfileCommand>>();
-            using (var timedEvent = logger.LogTimedEvent("DockerFileCommand", buildEventProps))
-            {
-                ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
-                var sourceRepo = new LocalSourceRepo(this.SourceDir, loggerFactory);
-                var ctx = new DockerfileContext
-                {
-                    SourceRepo = sourceRepo,
-                };
 
-                var dockerfile = serviceProvider.GetRequiredService<IDockerfileGenerator>().GenerateDockerfile(ctx);
-                if (string.IsNullOrEmpty(dockerfile))
+            ILoggerFactory loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+            var sourceRepo = new LocalSourceRepo(this.SourceDir, loggerFactory);
+            var ctx = new DockerfileContext
+            {
+                SourceRepo = sourceRepo,
+            };
+
+            var dockerfile = serviceProvider.GetRequiredService<IDockerfileGenerator>().GenerateDockerfile(ctx);
+            if (string.IsNullOrEmpty(dockerfile))
+            {
+                exitCode = ProcessConstants.ExitFailure;
+                console.WriteErrorLine("Couldn't generate dockerfile.");
+            }
+            else
+            {
+                exitCode = ProcessConstants.ExitSuccess;
+                if (string.IsNullOrEmpty(this.OutputPath))
                 {
-                    exitCode = ProcessConstants.ExitFailure;
-                    console.WriteErrorLine("Couldn't generate dockerfile.");
+                    console.WriteLine(dockerfile);
                 }
                 else
                 {
-                    exitCode = ProcessConstants.ExitSuccess;
-                    if (string.IsNullOrEmpty(this.OutputPath))
-                    {
-                        console.WriteLine(dockerfile);
-                    }
-                    else
-                    {
-                        this.OutputPath.SafeWriteAllText(dockerfile);
-                        this.OutputPath = Path.GetFullPath(this.OutputPath).TrimEnd('/').TrimEnd('\\');
-                        console.WriteLine($"Dockerfile written to '{this.OutputPath}'.");
-                    }
+                    this.OutputPath.SafeWriteAllText(dockerfile);
+                    this.OutputPath = Path.GetFullPath(this.OutputPath).TrimEnd('/').TrimEnd('\\');
+                    console.WriteLine($"Dockerfile written to '{this.OutputPath}'.");
                 }
-
-                timedEvent.AddProperty("exitCode", exitCode.ToString());
             }
 
             return exitCode;
