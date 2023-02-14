@@ -146,9 +146,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Golang
                 Options.Create(commonOptions),
                 isGolangVersionAlreadyInstalled.Value,
                 golangInstallationScript);
-            var telemetryClientMock = new Mock<TelemetryClientMock>();
-            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestGolangPlatform(
                 Options.Create(golangScriptGeneratorOptions),
                 Options.Create(commonOptions),
@@ -156,7 +153,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Golang
                 NullLogger<TestGolangPlatform>.Instance,
                 detector,
                 golangInstaller, 
-                telemetryClientMock.Object.GetTelemetryClient());
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
