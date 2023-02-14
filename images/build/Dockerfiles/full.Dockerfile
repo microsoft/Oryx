@@ -88,4 +88,3 @@ RUN set -ex \
 
 ENV ENABLE_DYNAMIC_INSTALL="true" \
     PATH="$PATH:/opt/oryx" \
-    ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
