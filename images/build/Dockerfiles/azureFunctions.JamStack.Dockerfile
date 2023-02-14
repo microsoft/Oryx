@@ -46,19 +46,12 @@ RUN set -ex \
         lzma \
         lzma-dev \
         zlib1g-dev \
-
-    && rm -rf /var/lib/apt/lists/*
-
         # Required for PostgreSQL
         libpq-dev \
         # Required for mysqlclient
         default-libmysqlclient-dev \
         # Required for ts
-        moreutils \
-        rsync \
         zip \
-        tk-dev \
-        uuid-dev \
         #TODO : Add these to fix php failures. Check if these can be removed.
         libargon2-0 \
         libonig-dev \
