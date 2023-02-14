@@ -156,7 +156,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var dotNetCoreScriptGeneratorOptions = new DotNetCoreScriptGeneratorOptions();
             var telemetryClientMock = new Mock<TelemetryClientMock>();
             var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             dotNetCoreScriptGeneratorOptions.DefaultRuntimeVersion = envVarDefaultVersion;
             var installer = new DotNetCorePlatformInstaller(
                 Options.Create(commonOptions),
@@ -169,7 +169,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 Options.Create(dotNetCoreScriptGeneratorOptions),
                 installer,
                 globalJsonSdkResolver,
-                telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                telemetryClientMock.Object.GetTelemetryClient());
         }
 
         private class TestDotNetCorePlatform : DotNetCorePlatform

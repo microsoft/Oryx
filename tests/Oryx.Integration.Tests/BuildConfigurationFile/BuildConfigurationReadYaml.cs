@@ -140,7 +140,7 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                 new DefaultStandardOutputWriter());
             var telemetryClientMock = new Mock<TelemetryClientMock>();
             var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-        //    telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new DefaultBuildScriptGenerator(
                 defaultPlatformDetector,
                 envScriptProvider,
@@ -151,8 +151,7 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                     Options.Create(commonOptions)),
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
-                new DefaultStandardOutputWriter(), telemetryClientMock.Object.GetTelemetryClient(connectionString));
-               
+                new DefaultStandardOutputWriter(), telemetryClientMock.Object.GetTelemetryClient()); 
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()

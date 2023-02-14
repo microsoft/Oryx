@@ -7,12 +7,9 @@ using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using System;
 
-public interface ITelemetyClientMock
-{ }
-
-public class TelemetryClientMock : ITelemetyClientMock
+public class TelemetryClientMock
 {
-    //public virtual string connectionString { get; set; }
+    public virtual string connectionString { get; set; }
     private TelemetryClient telemetryClient;
     private TelemetryConfiguration telemetryConfigutration;
 
@@ -21,13 +18,12 @@ public class TelemetryClientMock : ITelemetyClientMock
         this.telemetryConfigutration = new TelemetryConfiguration();
         this.telemetryClient = new TelemetryClient(this.telemetryConfigutration);
     }
-    public TelemetryClient GetTelemetryClient(string connectionString)
+    public TelemetryClient GetTelemetryClient()
     {
         this.telemetryConfigutration = new TelemetryConfiguration()
         {
-            ConnectionString = connectionString,
+            ConnectionString = this.connectionString,
         };
         return new TelemetryClient(telemetryConfigutration);
     }
-   
 }

@@ -446,7 +446,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             var telemetryClientMock = new Mock<TelemetryClientMock>();
             var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             return new DefaultDockerfileGenerator(
                 new DefaultCompatiblePlatformDetector(
@@ -454,8 +454,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                     NullLogger<DefaultCompatiblePlatformDetector>.Instance,
                     Options.Create(commonOptions)),
                 NullLogger<DefaultDockerfileGenerator>.Instance,
-                Options.Create(commonOptions), telemetryClientMock.Object.GetTelemetryClient(connectionString));
-                
+                Options.Create(commonOptions), telemetryClientMock.Object.GetTelemetryClient());   
         }
 
         private string ConvertToRuntimeName(string platformName)

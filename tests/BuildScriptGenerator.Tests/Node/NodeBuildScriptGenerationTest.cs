@@ -979,7 +979,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             var telemetryClientMock = new Mock<TelemetryClientMock>();
             var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new NodePlatform(
                 Options.Create(commonOptions),
                 Options.Create(nodeScriptGeneratorOptions),
@@ -987,7 +987,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
                 new TestEnvironment(),
-                new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance), telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance), telemetryClientMock.Object.GetTelemetryClient());
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(ISourceRepo sourceRepo)

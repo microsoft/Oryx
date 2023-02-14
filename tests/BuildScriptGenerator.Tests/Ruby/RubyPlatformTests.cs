@@ -372,15 +372,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Ruby
                 rubyInstallationScript);
             var telemetryClientMock = new Mock<TelemetryClientMock>();
             var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestRubyPlatform(
                 Options.Create(rubyScriptGeneratorOptions),
                 Options.Create(commonOptions),
                 versionProvider,
                 NullLogger<TestRubyPlatform>.Instance,
                 detector,
-                rubyInstaller, telemetryClientMock.Object.GetTelemetryClient(connectionString));
-                
+                rubyInstaller, telemetryClientMock.Object.GetTelemetryClient());      
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
