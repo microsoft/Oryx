@@ -3,12 +3,16 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Php;
+using Moq;
+using System;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
@@ -135,6 +139,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             phpScriptGeneratorOptions = phpScriptGeneratorOptions ?? new PhpScriptGeneratorOptions();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+        //    telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new PhpPlatform(
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),
@@ -144,7 +151,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 detector: null,
                 phpInstaller: null,
                 phpComposerInstaller: null,
-                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()));
+                telemetryClientMock.Object.GetTelemetryClient(connectionString));
         }
 
         private static BuildScriptGeneratorContext CreateBuildScriptGeneratorContext(ISourceRepo sourceRepo)

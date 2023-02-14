@@ -4,12 +4,15 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Tests.Common;
+using Moq;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
@@ -441,6 +444,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             IProgrammingPlatform[] platforms,
             BuildScriptGeneratorOptions commonOptions)
         {
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             return new DefaultDockerfileGenerator(
                 new DefaultCompatiblePlatformDetector(
@@ -448,8 +454,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                     NullLogger<DefaultCompatiblePlatformDetector>.Instance,
                     Options.Create(commonOptions)),
                 NullLogger<DefaultDockerfileGenerator>.Instance,
-                Options.Create(commonOptions),
-                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()));
+                Options.Create(commonOptions), telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                
         }
 
         private string ConvertToRuntimeName(string platformName)

@@ -3,13 +3,16 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Detector.DotNetCore;
+using Moq;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
@@ -151,6 +154,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 defaultVersion);
             var commonOptions = new BuildScriptGeneratorOptions();
             var dotNetCoreScriptGeneratorOptions = new DotNetCoreScriptGeneratorOptions();
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             dotNetCoreScriptGeneratorOptions.DefaultRuntimeVersion = envVarDefaultVersion;
             var installer = new DotNetCorePlatformInstaller(
                 Options.Create(commonOptions),
@@ -163,7 +169,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 Options.Create(dotNetCoreScriptGeneratorOptions),
                 installer,
                 globalJsonSdkResolver,
-                null);
+                telemetryClientMock.Object.GetTelemetryClient(connectionString));
         }
 
         private class TestDotNetCorePlatform : DotNetCorePlatform

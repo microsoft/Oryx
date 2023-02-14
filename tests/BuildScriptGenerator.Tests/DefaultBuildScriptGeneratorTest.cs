@@ -6,11 +6,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Tests.Common;
+using Moq;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests
@@ -617,7 +620,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             commonOptions.SourceDir = "/app";
             commonOptions.DestinationDir = "/output";
-
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             var defaultPlatformDetector = new DefaultPlatformsInformationProvider(
                 platforms,
                 new DefaultStandardOutputWriter());
@@ -636,7 +641,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
                 new DefaultStandardOutputWriter(),
-                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()));
+                telemetryClientMock.Object.GetTelemetryClient(connectionString));
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()

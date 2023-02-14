@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -12,6 +13,8 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.Detector.Golang;
 using Microsoft.Oryx.Tests.Common;
+using Moq;
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -143,14 +146,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Golang
                 Options.Create(commonOptions),
                 isGolangVersionAlreadyInstalled.Value,
                 golangInstallationScript);
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+          //  telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestGolangPlatform(
                 Options.Create(golangScriptGeneratorOptions),
                 Options.Create(commonOptions),
                 versionProvider,
                 NullLogger<TestGolangPlatform>.Instance,
                 detector,
-                golangInstaller,
-                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()));
+                golangInstaller, 
+                telemetryClientMock.Object.GetTelemetryClient(connectionString));
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

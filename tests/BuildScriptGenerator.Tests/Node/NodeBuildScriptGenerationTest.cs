@@ -3,7 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -11,6 +14,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Node;
 using Microsoft.Oryx.Tests.Common;
+using Moq;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
@@ -973,6 +977,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             nodeScriptGeneratorOptions = nodeScriptGeneratorOptions ?? new NodeScriptGeneratorOptions();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new NodePlatform(
                 Options.Create(commonOptions),
                 Options.Create(nodeScriptGeneratorOptions),
@@ -980,7 +987,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
                 new TestEnvironment(),
-                new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance), new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()));
+                new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance), telemetryClientMock.Object.GetTelemetryClient(connectionString));
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(ISourceRepo sourceRepo)

@@ -3,10 +3,14 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Hugo;
 using Microsoft.Oryx.Detector.Hugo;
+using Moq;
+using System;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
@@ -76,13 +80,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
         {
             buildScriptGeneratorOptions = buildScriptGeneratorOptions ?? new BuildScriptGeneratorOptions();
             hugoScriptGeneratorOptions = hugoScriptGeneratorOptions ?? new HugoScriptGeneratorOptions();
-
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+           // telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new HugoPlatform(
                 Options.Create(buildScriptGeneratorOptions),
                 Options.Create(hugoScriptGeneratorOptions),
                 NullLogger<HugoPlatform>.Instance,
                 new HugoPlatformInstaller(Options.Create(buildScriptGeneratorOptions), NullLoggerFactory.Instance),
-                detector, new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()));
+                detector, telemetryClientMock.Object.GetTelemetryClient(connectionString));
         }
     }
 }
