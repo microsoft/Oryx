@@ -29,7 +29,7 @@ dateparser==1.0.0
 defusedxml==0.7.1
 Deprecated==1.2.13
 diff-match-patch==20200713
-Django==3.2.16
+Django==3.2.17
 django-appconf==1.0.4
 django-axes==5.8.0
 django-compressor==2.4
@@ -65,7 +65,7 @@ msal==1.13.0
 msal-extensions==0.3.0
 msrest==0.6.21
 natural-keys==1.6.0
-oauthlib==3.2.1
+oauthlib==3.2.2
 odfpy==1.4.1
 openpyxl==3.0.10
 outcome==1.1.0
