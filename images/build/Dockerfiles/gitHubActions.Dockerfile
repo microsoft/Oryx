@@ -2,7 +2,6 @@ ARG DEBIAN_FLAVOR
 FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-${DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
-ARG AI_CONNECTION_STRING
 
 # Install basic build tools
 RUN apt-get update \
@@ -111,7 +110,7 @@ RUN set -ex \
 FROM main AS final
 ARG SDK_STORAGE_BASE_URL_VALUE
 ARG IMAGES_DIR="/opt/tmp/images"
-ARG AI_KEY
+ARG AI_CONNECTION_STRING
 
 COPY --from=intermediate /opt /opt
 
