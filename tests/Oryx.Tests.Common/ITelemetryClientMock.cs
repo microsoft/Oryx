@@ -26,5 +26,4 @@ public class TelemetryClientMock
         };
         return new TelemetryClient(telemetryConfigutration);
     }
-   
 }

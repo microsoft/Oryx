@@ -454,8 +454,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                     NullLogger<DefaultCompatiblePlatformDetector>.Instance,
                     Options.Create(commonOptions)),
                 NullLogger<DefaultDockerfileGenerator>.Instance,
-                Options.Create(commonOptions), telemetryClientMock.Object.GetTelemetryClient());
-                
+                Options.Create(commonOptions), telemetryClientMock.Object.GetTelemetryClient());   
         }
 
         private string ConvertToRuntimeName(string platformName)
