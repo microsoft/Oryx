@@ -514,7 +514,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 phpComposerInstallationScript);
             var telemetryClientMock = new Mock<TelemetryClientMock>();
             var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-          //  telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestPhpPlatform(
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),
@@ -524,7 +524,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 detector,
                 phpInstaller,
                 phpComposerInstaller,
-                telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                telemetryClientMock.Object.GetTelemetryClient());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

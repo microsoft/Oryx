@@ -994,7 +994,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLoggerFactory.Instance);
             var telemetryClientMock = new Mock<TelemetryClientMock>();
             var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-          //  telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestNodePlatform(
                 Options.Create(commonOptions),
                 Options.Create(nodeScriptGeneratorOptions),
@@ -1002,7 +1002,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector,
                 environment,
-                platformInstaller, telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                platformInstaller, telemetryClientMock.Object.GetTelemetryClient());
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -1017,7 +1017,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var detector = new TestNodePlatformDetector(detectedVersion: detectedVersion);
             var telemetryClientMock = new Mock<TelemetryClientMock>();
             var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-        //    telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestNodePlatform(
                 Options.Create(commonOptions),
                 Options.Create(nodeScriptGeneratorOptions),
@@ -1025,7 +1025,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector,
                 environment,
-                platformInstaller, telemetryClientMock.Object.GetTelemetryClient(connectionString));  
+                platformInstaller, telemetryClientMock.Object.GetTelemetryClient());  
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -1041,7 +1041,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLoggerFactory.Instance);
             var telemetryClientMock = new Mock<TelemetryClientMock>();
             var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-        //    telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             var versionProvider = new TestNodeVersionProvider();
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
             var detector = new TestNodePlatformDetector();
@@ -1053,7 +1053,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 detector,
                 environment,
                 installer,
-                telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                telemetryClientMock.Object.GetTelemetryClient());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

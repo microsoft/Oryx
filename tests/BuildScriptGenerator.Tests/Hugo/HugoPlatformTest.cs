@@ -82,13 +82,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
             hugoScriptGeneratorOptions = hugoScriptGeneratorOptions ?? new HugoScriptGeneratorOptions();
             var telemetryClientMock = new Mock<TelemetryClientMock>();
             var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-           // telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new HugoPlatform(
                 Options.Create(buildScriptGeneratorOptions),
                 Options.Create(hugoScriptGeneratorOptions),
                 NullLogger<HugoPlatform>.Instance,
                 new HugoPlatformInstaller(Options.Create(buildScriptGeneratorOptions), NullLoggerFactory.Instance),
-                detector, telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                detector, telemetryClientMock.Object.GetTelemetryClient());
         }
     }
 }
