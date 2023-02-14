@@ -13,9 +13,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string ApplicationInsightsConnectionStringKeyEnvironmentVariableName
             = "ORYX_AI_CONNECTION_STRING";
 
-        public const string ApplicationInsightsConnectionStringKeyEnvironmentVariableName
-            = "ORYX_AI_CONNECTION_STRING";
-
         public const string OryxDisableTelemetryEnvironmentVariableName
             = "ORYX_DISABLE_TELEMETRY";
 
