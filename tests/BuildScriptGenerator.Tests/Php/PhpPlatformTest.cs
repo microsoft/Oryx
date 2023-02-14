@@ -5,6 +5,7 @@
 
 using Castle.Core.Internal;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -14,6 +15,8 @@ using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Php;
+using Moq;
+using System;
 using System.Linq;
 using Xunit;
 
@@ -509,6 +512,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 Options.Create(commonOptions),
                 isPhpComposerAlreadyInstalled.Value,
                 phpComposerInstallationScript);
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+          //  telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestPhpPlatform(
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),
@@ -518,10 +524,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 detector,
                 phpInstaller,
                 phpComposerInstaller,
-               new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
-               {
-                   ConnectionString = "test"
-               }));
+                telemetryClientMock.Object.GetTelemetryClient(connectionString));
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

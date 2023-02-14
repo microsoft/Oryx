@@ -12,6 +12,8 @@ using Xunit;
 using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
+using Moq;
+using System;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
@@ -89,6 +91,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 isDotNetCoreVersionAlreadyInstalled.Value,
                 DotNetCoreInstallationScript);
             var globalJsonSdkResolver = new GlobalJsonSdkResolver(NullLogger<GlobalJsonSdkResolver>.Instance);
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}",Guid.NewGuid().ToString());
+        //    telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestDotNetCorePlatform(
                 Options.Create(DotNetCoreScriptGeneratorOptions),
                 Options.Create(commonOptions),
@@ -96,10 +101,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 NullLogger<TestDotNetCorePlatform>.Instance,
                 detector,
                 DotNetCoreInstaller,
-                globalJsonSdkResolver, new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
-                {
-                    ConnectionString = "test"
-                }));
+                globalJsonSdkResolver,
+                telemetryClientMock.Object.GetTelemetryClient(connectionString));
         }
 
         private class TestDotNetCorePlatform : DotNetCorePlatform

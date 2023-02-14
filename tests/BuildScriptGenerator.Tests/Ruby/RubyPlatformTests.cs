@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -11,6 +12,8 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.BuildScriptGenerator.Ruby;
 using Microsoft.Oryx.Detector.Ruby;
+using Moq;
+using System;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Ruby
@@ -367,17 +370,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Ruby
                 Options.Create(commonOptions),
                 isRubyVersionAlreadyInstalled.Value,
                 rubyInstallationScript);
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestRubyPlatform(
                 Options.Create(rubyScriptGeneratorOptions),
                 Options.Create(commonOptions),
                 versionProvider,
                 NullLogger<TestRubyPlatform>.Instance,
                 detector,
-                rubyInstaller,
-                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
-                {
-                    ConnectionString = "test"
-                }));
+                rubyInstaller, telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

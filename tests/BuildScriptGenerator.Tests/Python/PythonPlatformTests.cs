@@ -3,9 +3,13 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Castle.Core.Internal;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -17,6 +21,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Python;
 using Microsoft.Oryx.Tests.Common;
+using Moq;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
@@ -381,7 +386,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             pythonScriptGeneratorOptions = pythonScriptGeneratorOptions ?? new PythonScriptGeneratorOptions();
-
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new PythonPlatform(
                 Options.Create(commonOptions),
                 Options.Create(pythonScriptGeneratorOptions),
@@ -389,7 +396,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 NullLogger<PythonPlatform>.Instance,
                 detector: null,
                 platformInstaller,
-                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()));
+                telemetryClientMock.Object.GetTelemetryClient(connectionString));
         }
 
         private PythonPlatform CreatePlatform(
@@ -407,6 +414,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             pythonScriptGeneratorOptions = pythonScriptGeneratorOptions ?? new PythonScriptGeneratorOptions();
             var detector = new TestPythonPlatformDetector(detectedVersion: detectedVersion);
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new PythonPlatform(
                 Options.Create(commonOptions),
                 Options.Create(pythonScriptGeneratorOptions),
@@ -414,10 +424,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 NullLogger<PythonPlatform>.Instance,
                 detector,
                 new PythonPlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
-                new ApplicationInsights.TelemetryClient(new ApplicationInsights.Extensibility.TelemetryConfiguration()
-                {
-                    ConnectionString = "test"
-                }));
+                telemetryClientMock.Object.GetTelemetryClient(connectionString));
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
