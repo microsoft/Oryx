@@ -45,7 +45,7 @@ RUN set -eux; \
 		libtidy-dev \
 		libkrb5-dev \
 		libxslt-dev \
-		unixodbc-dev \
+		unixodbc-dev= \
 		openssh-server \
 		vim \
 		wget \

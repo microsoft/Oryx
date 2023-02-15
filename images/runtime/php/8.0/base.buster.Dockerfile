@@ -33,9 +33,6 @@ RUN apt-get update \
     && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
-#Force install old version of unix-odbc (temporary)
-RUN apt-get install -y --allow-downgrades unixodbc-dev=2.3* unixodbc=2.3* odbcinst1debian2=2.3* odbcinst=2.3*
-
 RUN set -eux; \
     if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* ]]; then \
 		apt-get update \
