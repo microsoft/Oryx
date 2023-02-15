@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<string[]> property,
             Option<string> dynamicInstallRootDir,
             Option<string> logPath,
-            Option<bool> debugMod)
+            Option<bool> debugMode)
             : base(
                 sourceDir,
                 platform,
@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
                 property,
                 dynamicInstallRootDir,
                 logPath,
-                debugMod)
+                debugMode)
         {
             this.languageName = languageName;
             this.languageVersion = languageVersion;

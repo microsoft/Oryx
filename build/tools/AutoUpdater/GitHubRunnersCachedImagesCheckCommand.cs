@@ -4,9 +4,9 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.CommandLine;
 using System.IO;
 using System.Net.Http;
-using McMaster.Extensions.CommandLineUtils;
 
 namespace AutoUpdater
 {
@@ -21,6 +21,11 @@ namespace AutoUpdater
         [Argument(0, Description = "The source directory.")]
         [DirectoryExists]
         public string SourceDir { get; set; }
+
+        public static Command Export()
+        {
+            var sourceDirArgument = Argument
+        }
 
         public int OnExecute(CommandLineApplication app, IConsole console)
         {

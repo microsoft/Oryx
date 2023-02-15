@@ -25,8 +25,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<string[]> property,
             Option<string> dynamicInstallRootDir,
             Option<string> logPath,
-            Option<bool> debugMod)
-            : base(sourceDir, platform, platformVersion, package, osRequirements, appType, buildCommandFile, compressDestinationDir, property, dynamicInstallRootDir, logPath, debugMod)
+            Option<bool> debugMode)
+            : base(sourceDir, platform, platformVersion, package, osRequirements, appType, buildCommandFile, compressDestinationDir, property, dynamicInstallRootDir, logPath, debugMode)
         {
             this.buildScriptOutputOption = buildScriptOutputOption;
         }

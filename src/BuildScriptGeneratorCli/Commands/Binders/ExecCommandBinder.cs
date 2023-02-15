@@ -17,8 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<string> execSourceDirOption,
             Argument<string> commandArgument,
             Option<string> logPath,
-            Option<bool> debugMod)
-            : base(logPath, debugMod)
+            Option<bool> debugMode)
+            : base(logPath, debugMode)
         {
             this.execSourceDirOption = execSourceDirOption;
             this.commandArgument = commandArgument;

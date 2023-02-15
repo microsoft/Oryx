@@ -15,8 +15,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
         public PlatformsCommandBinder(
             Option<bool> jsonOption,
             Option<string> logPath,
-            Option<bool> debugMod)
-            : base(logPath, debugMod)
+            Option<bool> debugMode)
+            : base(logPath, debugMode)
         {
             this.jsonOption = jsonOption;
         }

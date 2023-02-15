@@ -100,7 +100,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer", "src\BuildSer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer.Tests", "tests\BuildServer.Tests\BuildServer.Tests.csproj", "{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Automation", "build\tools\Automation\Automation.csproj", "{18F7BB74-0A1E-4289-9161-515E65E667CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation", "build\tools\Automation\Automation.csproj", "{18F7BB74-0A1E-4289-9161-515E65E667CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoUpdater", "build\tools\AutoUpdater\AutoUpdater.csproj", "{AAF9B9BF-9D03-4FEF-9D76-7676DDB75AFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -180,6 +182,10 @@ Global
 		{18F7BB74-0A1E-4289-9161-515E65E667CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18F7BB74-0A1E-4289-9161-515E65E667CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18F7BB74-0A1E-4289-9161-515E65E667CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAF9B9BF-9D03-4FEF-9D76-7676DDB75AFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAF9B9BF-9D03-4FEF-9D76-7676DDB75AFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAF9B9BF-9D03-4FEF-9D76-7676DDB75AFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAF9B9BF-9D03-4FEF-9D76-7676DDB75AFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

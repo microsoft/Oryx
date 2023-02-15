@@ -3,7 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using McMaster.Extensions.CommandLineUtils;
+using System.CommandLine;
 
 namespace AutoUpdater
 {
