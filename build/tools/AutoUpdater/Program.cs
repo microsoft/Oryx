@@ -4,20 +4,20 @@
 // --------------------------------------------------------------------------------------------
 
 using System.CommandLine;
+using System.Threading.Tasks;
 
 namespace AutoUpdater
 {
-    [Command("autoupdater", Description = "Tool to run checks and send out PRs if necessary.")]
-    [Subcommand(typeof(GitHubRunnersCachedImagesCheckCommand))]
-    class Program
+    internal class Program
     {
-        internal int OnExecute(CommandLineApplication app, IConsole console)
+        internal static async Task<int> Main(string[] args)
         {
-            app.ShowHelp();
+            var rootCommand = new RootCommand();
+            rootCommand.Name = "autoupdater";
+            rootCommand.Description = "Tool to run checks and send out PRs if necessary.";
+            rootCommand.AddCommand(GitHubRunnersCachedImagesCheckCommand.Export());
 
-            return 0;
+            return await rootCommand.InvokeAsync(args);
         }
-
-        private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
     }
 }

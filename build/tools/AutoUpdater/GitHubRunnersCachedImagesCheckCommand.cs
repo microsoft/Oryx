@@ -5,38 +5,57 @@
 
 using System;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using System.Net.Http;
 
 namespace AutoUpdater
 {
-    [Command(
-        "digest",
-        Description = "Compares docker image digest between Oryx master branch and GitHub runners Readme file and " +
-        "creates a pull requests if they differ.")]
     public class GitHubRunnersCachedImagesCheckCommand
     {
         private readonly HttpClient httpClient = new HttpClient();
 
-        [Argument(0, Description = "The source directory.")]
-        [DirectoryExists]
+        public GitHubRunnersCachedImagesCheckCommand()
+        {
+        }
+
+        public GitHubRunnersCachedImagesCheckCommand(GHRunnerCachedImgCheckProperty input)
+        {
+            this.SourceDir = input.SourceDir;
+        }
+
         public string SourceDir { get; set; }
 
         public static Command Export()
         {
-            var sourceDirArgument = Argument
+            var sourceDirArg = new Argument<string>("SourceDir", "The source directory.");
+            var command = new Command(
+                name: "digest",
+                description: "Compares docker image digest between Oryx master branch and GitHub runners Readme file and " +
+        "creates a pull requests if they differ.");
+            command.Add(sourceDirArg);
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var ghCashedImgCheckCommand = new GitHubRunnersCachedImagesCheckCommand(prop);
+                    ghCashedImgCheckCommand.OnExecute();
+                },
+                new GHRunnerCachedImgCheckBinder(sourceDirArg));
+            return command;
         }
 
-        public int OnExecute(CommandLineApplication app, IConsole console)
+        public int OnExecute()
         {
+            var console = new SystemConsole();
             string sourceDir = null;
-            if (string.IsNullOrEmpty(SourceDir))
+            if (string.IsNullOrEmpty(this.SourceDir))
             {
                 sourceDir = Directory.GetCurrentDirectory();
             }
             else
             {
-                sourceDir = Path.GetFullPath(SourceDir);
+                sourceDir = Path.GetFullPath(this.SourceDir);
             }
 
             if (!Directory.Exists(sourceDir))
@@ -44,8 +63,8 @@ namespace AutoUpdater
                 throw new DirectoryNotFoundException($"Could not find directory '{sourceDir}'.");
             }
 
-            var gitHubRunnersReadMeDigest = GetDigestFromGitHubRunnersReadMe();
-            var oryxDockerfileDigest = GetDigestFromOryxGitHubRunnersDockerfile();
+            var gitHubRunnersReadMeDigest = this.GetDigestFromGitHubRunnersReadMe();
+            var oryxDockerfileDigest = this.GetDigestFromOryxGitHubRunnersDockerfile();
 
             if (string.IsNullOrEmpty(gitHubRunnersReadMeDigest))
             {
@@ -111,8 +130,8 @@ namespace AutoUpdater
                 fileName: scriptPath,
                 arguments: new string[] { },
                 workingDirectory: Path.GetTempPath(),
-                // Preserve the output structure and use AppendLine as these handlers
-                // are called for each line that is written to the output.
+                /* Preserve the output structure and use AppendLine as these handlers
+                   are called for each line that is written to the output.*/
                 standardOutputHandler: (sender, args) =>
                 {
                     console.WriteLine(args.Data);
@@ -130,18 +149,18 @@ namespace AutoUpdater
         private string GetDigestFromGitHubRunnersReadMe()
         {
             var url = "https://raw.githubusercontent.com/actions/virtual-environments/main/images/linux/Ubuntu2004-README.md";
-            return GetImageDigest(url);
+            return this.GetImageDigest(url);
         }
 
         private string GetDigestFromOryxGitHubRunnersDockerfile()
         {
             var url = "https://raw.githubusercontent.com/microsoft/Oryx/master/images/build/Dockerfiles/gitHubRunners.BuildPackDepsStretch.Dockerfile";
-            return GetImageDigest(url);
+            return this.GetImageDigest(url);
         }
 
         private string GetImageDigest(string url)
         {
-            var content = httpClient.GetStringAsync(url).Result;
+            var content = this.httpClient.GetStringAsync(url).Result;
             var lines = content.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in lines)
             {
@@ -149,6 +168,7 @@ namespace AutoUpdater
                 {
                     var prefix = "sha256:";
                     var startIndex = line.IndexOf(prefix, StringComparison.OrdinalIgnoreCase);
+
                     // sha256 is 64 characters long
                     return line.Substring(startIndex + prefix.Length, 64);
                 }
