@@ -156,7 +156,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Golang
                 NullLogger<TestGolangPlatform>.Instance,
                 detector,
                 golangInstaller, 
-                telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

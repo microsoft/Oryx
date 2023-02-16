@@ -151,7 +151,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 detector: null,
                 phpInstaller: null,
                 phpComposerInstaller: null,
-                telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private static BuildScriptGeneratorContext CreateBuildScriptGeneratorContext(ISourceRepo sourceRepo)

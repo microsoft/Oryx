@@ -6,7 +6,6 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
@@ -169,7 +168,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 Options.Create(dotNetCoreScriptGeneratorOptions),
                 installer,
                 globalJsonSdkResolver,
-                telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private class TestDotNetCorePlatform : DotNetCorePlatform

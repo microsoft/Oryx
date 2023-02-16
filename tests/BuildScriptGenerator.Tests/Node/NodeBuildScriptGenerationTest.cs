@@ -987,7 +987,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
                 new TestEnvironment(),
-                new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance), telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance), TelemetryClientHelper.GetTelemetryClient());
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(ISourceRepo sourceRepo)

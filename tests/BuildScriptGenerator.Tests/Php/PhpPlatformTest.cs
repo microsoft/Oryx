@@ -524,7 +524,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 detector,
                 phpInstaller,
                 phpComposerInstaller,
-                telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

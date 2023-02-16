@@ -620,9 +620,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             commonOptions.SourceDir = "/app";
             commonOptions.DestinationDir = "/output";
-            var telemetryClientMock = new Mock<TelemetryClientMock>();
-            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             var defaultPlatformDetector = new DefaultPlatformsInformationProvider(
                 platforms,
                 new DefaultStandardOutputWriter());
@@ -641,7 +638,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
                 new DefaultStandardOutputWriter(),
-                telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()

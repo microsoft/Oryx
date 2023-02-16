@@ -151,8 +151,7 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                     Options.Create(commonOptions)),
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
-                new DefaultStandardOutputWriter(), telemetryClientMock.Object.GetTelemetryClient(connectionString));
-               
+                new DefaultStandardOutputWriter(), TelemetryClientHelper.GetTelemetryClient()); 
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()

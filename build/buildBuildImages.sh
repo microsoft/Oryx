@@ -22,11 +22,11 @@ declare BUILD_SIGNED=""
 # SIGNTYPE is set to 'real' on the Oryx-CI build definition itself (not in yaml file)
 if [ "$SIGNTYPE" == "real" ] || [ "$SIGNTYPE" == "Real" ]
 then
-	# "SignType" will be real only for builds by scheduled and/or manual builds  of ORYX-CI
+	# "SignType" will be real only for builds by scheduled and/or manual builds of ORYX-CI
 	BUILD_SIGNED="true"
 else
 	# locally we need to fake "binaries" directory to get a successful "copybuildscriptbinaries" build stage
-    mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/binaries
+	mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/binaries
 fi
 
 # NOTE: We are using only one label here and put all information in it 
@@ -36,28 +36,28 @@ labelContent="git_commit=$GIT_COMMIT, build_number=$BUILD_NUMBER, release_tag_na
 # https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
 PARAMS=""
 while (( "$#" )); do
-  case "$1" in
-    -t|--type)
-      imageTypeToBuild=$2
-      shift 2
-      ;;
-    -s|--sdk-storage-account-url)
-      sdkStorageAccountUrl=$2
-      shift 2
-      ;;
-    --) # end argument parsing
-      shift
-      break
-      ;;
-    -*|--*=) # unsupported flags
-      echo "Error: Unsupported flag $1" >&2
-      exit 1
-      ;;
-    *) # preserve positional arguments
-      PARAMS="$PARAMS $1"
-      shift
-      ;;
-  esac
+	case "$1" in
+		-t|--type)
+		imageTypeToBuild=$2
+		shift 2
+		;;
+		-s|--sdk-storage-account-url)
+		sdkStorageAccountUrl=$2
+		shift 2
+		;;
+		--) # end argument parsing
+		shift
+		break
+		;;
+		-*|--*=) # unsupported flags
+		echo "Error: Unsupported flag $1" >&2
+		exit 1
+		;;
+		*) # preserve positional arguments
+		PARAMS="$PARAMS $1"
+		shift
+		;;
+	esac
 done
 # set positional arguments in their proper place
 eval set -- "$PARAMS"
@@ -202,7 +202,7 @@ function buildGitHubActionsImage() {
 	echo
 	echo "-------------Creating build image for GitHub Actions-------------------"
 	docker build -t $builtImageName \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
@@ -292,7 +292,7 @@ function buildLtsVersionsImage() {
 	echo
 	echo "-------------Creating lts versions build image-------------------"
 	docker build -t $builtImageName \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$ltsBuildImageDockerFile" \
@@ -368,7 +368,7 @@ function buildVsoImage() {
 		BUILD_IMAGE=$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE
 		local builtImageName="$ACR_BUILD_VSO_FOCAL_IMAGE_NAME"
 		local tagName="vso-ubuntu-focal"
-	elif  [ "$debianFlavor" == "bullseye" ]; then
+	elif [ "$debianFlavor" == "bullseye" ]; then
 		BUILD_IMAGE=$BUILD_IMAGES_VSO_BULLSEYE_DOCKERFILE
 		local builtImageName="$ACR_BUILD_VSO_BULLSEYE_IMAGE_NAME"
 		local tagName="vso-debian-bullseye"
@@ -382,7 +382,7 @@ function buildVsoImage() {
 	echo "-------------Creating VSO $debianFlavor build image-------------------"
 	
 	docker build -t $builtImageName \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGE" \
@@ -421,7 +421,7 @@ function buildCliImage() {
 	echo
 	echo "-------------Creating CLI image-------------------"
 	docker build -t $builtImageName \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
@@ -455,7 +455,7 @@ function buildFullImage() {
 	echo
 	echo "-------------Creating full image-------------------"
 	docker build -t $builtImageName \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
@@ -539,11 +539,11 @@ elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage "buster"
 	buildCliImage "bullseye"
 elif [ "$imageTypeToBuild" == "cli-stretch" ]; then
-    buildCliImage
+	buildCliImage
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
 elif [ "$imageTypeToBuild" == "cli-bullseye" ]; then
-    buildCliImage "bullseye"
+	buildCliImage "bullseye"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else

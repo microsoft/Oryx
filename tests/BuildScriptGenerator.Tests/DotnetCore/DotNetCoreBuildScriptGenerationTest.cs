@@ -11,9 +11,6 @@ using Microsoft.Oryx.Detector.DotNetCore;
 using Xunit;
 using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
-using Moq;
-using System;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
@@ -101,8 +98,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 NullLogger<TestDotNetCorePlatform>.Instance,
                 detector,
                 DotNetCoreInstaller,
-                globalJsonSdkResolver,
-                telemetryClientMock.Object.GetTelemetryClient(connectionString));
+                globalJsonSdkResolver, 
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private class TestDotNetCorePlatform : DotNetCorePlatform
