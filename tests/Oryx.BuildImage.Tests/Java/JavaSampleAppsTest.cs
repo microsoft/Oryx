@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [InlineData(ImageTestHelperConstants.CliRepository)]
         public void JavaSampleAppsTestsCli(string imageTag)
         {

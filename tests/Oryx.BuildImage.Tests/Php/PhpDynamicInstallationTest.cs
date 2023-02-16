@@ -109,6 +109,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
+
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(VersionAndImageNameData))]
         public void BuildsAppByInstallingSdkDynamicallyGithubActions(string phpVersion, string imageName, string phpComposerVersion)
@@ -116,7 +117,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion);
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [MemberData(nameof(VersionAndImageNameDataCli))]
         public void BuildsAppByInstallingSdkDynamicallyCli(string phpVersion, string imageName, string phpComposerVersion)
         {

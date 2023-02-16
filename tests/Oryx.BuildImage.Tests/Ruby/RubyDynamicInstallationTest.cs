@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 RubyVersions.Ruby31Version, imageTestHelper.GetGitHubActionsBuildImage());
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [InlineData(ImageTestHelperConstants.CliRepository)]
         public void PipelineTestInvocationCli(string imageTag)
         {
