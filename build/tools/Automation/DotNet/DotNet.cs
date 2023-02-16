@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,20 +9,19 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Xml.XPath;
+using Microsoft.Oryx.Automation.Client;
+using Microsoft.Oryx.Automation.DotNet.Models;
+using Microsoft.Oryx.Automation.Models;
+using Microsoft.Oryx.Automation.Services;
+using Microsoft.Oryx.Automation.Telemetry;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-namespace Microsoft.Oryx.Automation
+namespace Microsoft.Oryx.Automation.DotNet
 {
     /// <Summary>
-    ///
-    /// TODO:
-    ///     - Replace Console.WriteLine with Logging
-    ///     - Add unit tests
-    ///
-    /// This class is reponsible for encapsulating logic for automating SDK releases for DotNet.
+    /// This class is reponsible for encapsulating logic for automating SDK and runtime releases for DotNet.
     /// This includes:
     ///     - Getting new release version and sha
     ///     - Updating constants.yaml with version and sha
@@ -33,93 +31,125 @@ namespace Microsoft.Oryx.Automation
     ///           Oryx tests.
     ///     - Updating versionsToBuild.txt
     /// </Summary>
-    public class DotNet : Program
+    public class DotNet
     {
-        private string repoAbsolutePath = string.Empty;
-        private HashSet<string> prodSdkVersions = new HashSet<string>();
+        private readonly IHttpClient httpClient;
+        private readonly ILogger logger;
+        private readonly IVersionService versionService;
+        private readonly IYamlFileReaderService yamlFileReaderService;
 
-        public DotNet(string repoAbsolutePath, HashSet<string> prodSdkVersions)
+        public DotNet(IHttpClient httpClient, ILogger logger, IVersionService versionService, IYamlFileReaderService yamlFileReaderService)
         {
-            this.repoAbsolutePath = repoAbsolutePath;
-            this.prodSdkVersions = prodSdkVersions;
+            this.httpClient = httpClient;
+            this.logger = logger;
+            this.versionService = versionService;
+            this.yamlFileReaderService = yamlFileReaderService;
         }
 
-        /// <Summary>
-        /// Gets DotNet's new release version and sha.
-        ///
-        /// This is accomplished by:
-        ///     - Checking release meta data url if there's a new release
-        ///     - If new release, then store release information into PlatformConstants
-        ///        Otherwise don't store anything
-        /// </Summary>
-        /// <param name="dateTarget">yyyy-mm-dd format string that defaults to today's date</param>
-        /// <returns>PlatformConstants used later to update constants.yaml</returns>
-        public override async Task<List<PlatformConstant>> GetPlatformConstantsAsync(string dateTarget)
+        public async Task RunAsync(string oryxRootPath)
         {
-            // check dotnet releases' meta data
-            var response = await HttpClientHelper.GetRequestStringAsync(Constants.DotNetReleasesMetaDataUrl);
-            var releaseNotes = JsonConvert.DeserializeObject<ReleaseNotes>(response);
+            List<VersionObj> newVersionsObjs = await this.GetNewVersionObjsAsync();
+            if (newVersionsObjs.Count > 0)
+            {
+                string constantsYamlAbsolutePath = Path.Combine(oryxRootPath, "build", Constants.ConstantsYaml);
+                List<YamlConstants> yamlConstantsObjs = await this.yamlFileReaderService.ReadConstantsYamlFileAsync(constantsYamlAbsolutePath);
+                this.UpdateOryxConstantsForNewVersions(newVersionsObjs, yamlConstantsObjs, oryxRootPath);
+            }
+        }
 
-            // releaseIndex contains release meta data
-            var releasesIndex = releaseNotes == null ? new List<ReleaseNote>() : releaseNotes.ReleasesIndex;
-            List<PlatformConstant> platformConstants = new List<PlatformConstant>();
+        public async Task<HashSet<string>> GetOryxSdkVersionsAsync(string url)
+        {
+            HashSet<string> versions = new HashSet<string>();
+            var response = await this.httpClient.GetDataAsync(url);
+
+            XDocument xmlDoc = XDocument.Parse(response);
+            var versionElements = xmlDoc.Descendants("Version");
+
+            foreach (var versionElement in versionElements)
+            {
+                string version = versionElement.Value;
+                versions.Add(version);
+            }
+
+            return versions;
+        }
+
+        public async Task<List<VersionObj>> GetNewVersionObjsAsync()
+        {
+            List<VersionObj> versionObjs = new List<VersionObj>();
+            string url = Constants.OryxSdkStorageBaseUrl + "/dotnet?restype=container&comp=list&include=metadata";
+            HashSet<string> oryxSdkVersions = await this.GetOryxSdkVersionsAsync(url);
+
+            // Deserialize release meta data
+            var response = await this.httpClient.GetDataAsync(Constants.ReleasesIndexJsonUrl);
+            var releaseNotes = JsonConvert.DeserializeObject<ReleaseNotes>(response);
+            var releasesIndex = releaseNotes == null ? new List<ReleaseNote>() : releaseNotes.ReleaseIndexes;
             foreach (var releaseIndex in releasesIndex)
             {
-                var dateReleased = releaseIndex.LatestReleaseDate;
-                if (!DatesMatch(dateTarget, dateReleased) || this.prodSdkVersions.Contains(releaseIndex.LatestSdk))
+                string latestVersion = releaseIndex.LatestSdk;
+                if (!this.versionService.IsVersionWithinRange(latestVersion, minVersion: Constants.MinSdkVersion) ||
+                    oryxSdkVersions.Contains(latestVersion))
                 {
                     continue;
                 }
 
-                // get actual release information and store into PlatformConstants
+                // Get the actual release information from releases.json
                 string releasesJsonUrl = releaseIndex.ReleasesJsonUrl;
-                response = await HttpClientHelper.GetRequestStringAsync(releasesJsonUrl);
+                response = await this.httpClient.GetDataAsync(releasesJsonUrl);
                 var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
                 var releases = releasesJson == null ? new List<Release>() : releasesJson.Releases;
                 foreach (var release in releases)
                 {
-                    // check releasedToday again since there
-                    // are still releases from other dates.
                     string sdkVersion = release.Sdk.Version;
-                    if (!DatesMatch(dateTarget, release.ReleaseDate) || this.prodSdkVersions.Contains(sdkVersion))
+
+                    // Check the version is not already in our storage account
+                    if (oryxSdkVersions.Contains(sdkVersion) ||
+                        !this.versionService.IsVersionWithinRange(sdkVersion, minVersion: Constants.MinSdkVersion))
                     {
                         continue;
                     }
 
-                    // create sdk PlatformConstant
-                    string sha = GetSha(release.Sdk.Files);
-                    PlatformConstant platformConstant = new PlatformConstant
+                    // create sdk version object
+                    string sha = this.GetSha(release.Sdk.Files);
+                    VersionObj versionObj = new VersionObj
                     {
                         Version = sdkVersion,
                         Sha = sha,
-                        PlatformName = Constants.DotNetName,
                         VersionType = Constants.SdkName,
                     };
-                    platformConstants.Add(platformConstant);
+                    versionObjs.Add(versionObj);
 
-                    // create runtime (netcore) PlatfromConstant
+                    // create runtime (netcore) version object
                     string runtimeVersion = release.Runtime.Version;
-                    sha = GetSha(release.Runtime.Files);
-                    platformConstant = new PlatformConstant
+                    if (!this.versionService.IsVersionWithinRange(runtimeVersion, minVersion: Constants.MinRuntimeVersion))
+                    {
+                        continue;
+                    }
+
+                    sha = this.GetSha(release.Runtime.Files);
+                    versionObj = new VersionObj
                     {
                         Version = runtimeVersion,
                         Sha = sha,
-                        PlatformName = Constants.DotNetName,
                         VersionType = Constants.DotNetCoreName,
                     };
-                    platformConstants.Add(platformConstant);
+                    versionObjs.Add(versionObj);
 
-                    // create runtime (aspnetcore) PlatformConstant
-                    string aspnetCoreRuntimeVersion = release.AspnetCoreRuntime.Version;
-                    sha = GetSha(release.AspnetCoreRuntime.Files);
-                    platformConstant = new PlatformConstant
+                    // create runtime (aspnetcore) version object
+                    string aspnetCoreRuntimeVersion = release.AspNetCoreRuntime.Version;
+                    if (!this.versionService.IsVersionWithinRange(aspnetCoreRuntimeVersion, minVersion: Constants.MinRuntimeVersion))
+                    {
+                        continue;
+                    }
+
+                    sha = this.GetSha(release.AspNetCoreRuntime.Files);
+                    versionObj = new VersionObj
                     {
                         Version = aspnetCoreRuntimeVersion,
                         Sha = sha,
-                        PlatformName = Constants.DotNetName,
                         VersionType = Constants.DotNetAspCoreName,
                     };
-                    platformConstants.Add(platformConstant);
+                    versionObjs.Add(versionObj);
 
                     // TODO: add new Major.Minor version string to runtime-version list of runtimes
                     // for the constants.yaml list
@@ -127,54 +157,33 @@ namespace Microsoft.Oryx.Automation
                 }
             }
 
-            return platformConstants;
+            return versionObjs = versionObjs.OrderBy(v => v.Version).ToList();
         }
 
-        public override async Task PullSdkVersionsAsync(string platform)
+        private void UpdateOryxConstantsForNewVersions(List<VersionObj> versionObjs, List<YamlConstants> yamlConstants, string oryxRootPath)
         {
-            string url = Constants.ProdSdkCdnStorageBaseUrl +
-                $"/{platform}?restype=container&comp=list&include=metadata";
-            var response = await HttpClientHelper.GetRequestStringAsync(url);
-            var xdoc = XDocument.Parse(response);
-
-            foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
-            {
-                var childElements = metadataElement.Elements();
-                var versionElement = childElements
-                                    .Where(e => string.Equals("sdk_version", e.Name.LocalName, StringComparison.OrdinalIgnoreCase))
-                                    .FirstOrDefault();
-                if (versionElement != null)
-                {
-                    this.prodSdkVersions.Add(versionElement.Value);
-                    Console.WriteLine(versionElement.Value);
-                }
-            }
-        }
-
-        /// <inheritdoc/>
-        public override void UpdateConstants(List<PlatformConstant> platformConstants, List<Constant> yamlConstants)
-        {
-            Dictionary<string, Constant> dotnetYamlConstants = GetYamlDotNetConstants(yamlConstants);
+            Dictionary<string, YamlConstants> dotnetYamlConstants = this.GetYamlDotNetConstants(yamlConstants);
 
             // update dotnetcore sdks and runtimes
-            foreach (var platformConstant in platformConstants)
+            foreach (var versionObj in versionObjs)
             {
-                string version = platformConstant.Version;
-                string sha = platformConstant.Sha;
-                string versionType = platformConstant.VersionType;
-                string dotNetConstantKey = GenerateDotNetConstantKey(platformConstant);
+                string version = versionObj.Version;
+                string sha = versionObj.Sha;
+                string versionType = versionObj.VersionType;
+                string dotNetConstantKey = this.GenerateDotNetConstantKey(versionObj);
                 Console.WriteLine($"[UpdateConstants] version: {version} versionType: {versionType} sha: {sha} dotNetConstantKey: {dotNetConstantKey}");
+
                 if (versionType.Equals(Constants.SdkName))
                 {
-                    Constant dotNetYamlConstant = dotnetYamlConstants[Constants.DotNetSdkKey];
+                    YamlConstants dotNetYamlConstant = dotnetYamlConstants[Constants.DotNetSdkKey];
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
 
                     // add sdk to versionsToBuild.txt
-                    this.UpdateVersionsToBuildTxt(platformConstant);
+                    this.UpdateVersionsToBuildTxt(versionObj, oryxRootPath);
                 }
                 else
                 {
-                    Constant dotNetYamlConstant = dotnetYamlConstants[Constants.DotNetRuntimeKey];
+                    YamlConstants dotNetYamlConstant = dotnetYamlConstants[Constants.DotNetRuntimeKey];
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
 
                     // store SHAs for net-core and aspnet-core
@@ -186,21 +195,21 @@ namespace Microsoft.Oryx.Automation
                 .WithNamingConvention(UnderscoredNamingConvention.Instance)
                 .Build();
 
-            var constantsYamlAbsolutePath = Path.Combine(this.repoAbsolutePath, "build", Constants.ConstantsYaml);
+            var constantsYamlAbsolutePath = Path.Combine(oryxRootPath, "build", Constants.ConstantsYaml);
             var stringResult = serializer.Serialize(yamlConstants);
             File.WriteAllText(constantsYamlAbsolutePath, stringResult);
         }
 
-        private static Dictionary<string, Constant> GetYamlDotNetConstants(List<Constant> yamlContents)
+        private Dictionary<string, YamlConstants> GetYamlDotNetConstants(List<YamlConstants> yamlContents)
         {
             var dotnetConstants = yamlContents.Where(c => c.Name == Constants.DotNetSdkKey || c.Name == Constants.DotNetRuntimeKey)
                                   .ToDictionary(c => c.Name, c => c);
             return dotnetConstants;
         }
 
-        private static string GenerateDotNetConstantKey(PlatformConstant platformConstant)
+        private string GenerateDotNetConstantKey(VersionObj versionObj)
         {
-            string[] splitVersion = platformConstant.Version.Split('.');
+            string[] splitVersion = versionObj.Version.Split('.');
             string majorVersion = splitVersion[0];
             string minorVersion = splitVersion[1];
 
@@ -209,7 +218,7 @@ namespace Microsoft.Oryx.Automation
             string majorMinor = majorVersionInt < 10 ? $"{majorVersion}{minorVersion}" : $"{majorVersion}Dot{minorVersion}";
 
             string constant;
-            if (platformConstant.VersionType.Equals(Constants.SdkName))
+            if (versionObj.VersionType.Equals(Constants.SdkName))
             {
                 // dotnet/dotnetcore are based on the major version
                 string prefix = majorVersionInt < 5 ? $"dot-net-core" : "dot-net";
@@ -218,13 +227,13 @@ namespace Microsoft.Oryx.Automation
             }
             else
             {
-                constant = $"{platformConstant.VersionType}-app-{majorMinor}";
+                constant = $"{versionObj.VersionType}-app-{majorMinor}";
             }
 
             return constant;
         }
 
-        private static string GetSha(List<FileObj> files)
+        private string GetSha(List<FileObj> files)
         {
             Regex regEx = new Regex(Constants.DotNetLinuxTarFileRegex);
             foreach (var file in files)
@@ -239,13 +248,13 @@ namespace Microsoft.Oryx.Automation
                 $"Pattern matching using regex: {Constants.DotNetLinuxTarFileRegex}");
         }
 
-        private void UpdateVersionsToBuildTxt(PlatformConstant platformConstant)
+        private void UpdateVersionsToBuildTxt(VersionObj platformConstant, string oryxRootPath)
         {
             HashSet<string> debianFlavors = new HashSet<string>() { "bullseye", "buster", "focal-scm", "stretch" };
             foreach (string debianFlavor in debianFlavors)
             {
                 var versionsToBuildTxtAbsolutePath = Path.Combine(
-                    this.repoAbsolutePath, "platforms", Constants.DotNetName, "versions", debianFlavor, Constants.VersionsToBuildTxt);
+                    oryxRootPath, "platforms", Constants.DotNetName, "versions", debianFlavor, Constants.VersionsToBuildTxt);
                 string line = $"\n{platformConstant.Version}, {platformConstant.Sha},";
                 File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
 
