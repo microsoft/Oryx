@@ -52,7 +52,7 @@ jobs:
 
       - name: Run SDK Automation
         run: |
-          dotnet run --project build/tools/Automation/Automation.csproj ${RELEASE_DATE} ${{ github.workspace }}
+          dotnet run --project build/tools/Automation/Automation.csproj ${{ inputs.platformName }} ${{ github.workspace }}
           ./build/generateConstants.sh
 
       - name: Commit new ${{ env.PLATFORM_NAME_CAMEL_CASE }} SDK versions
