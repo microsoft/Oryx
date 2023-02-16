@@ -40,9 +40,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 .AddCliServices(console)
                 .AddLogging(builder =>
                 {
+                    if (!string.IsNullOrEmpty(aiKey))
+                    {
                     builder.AddApplicationInsights(
-                        configureTelemetryConfiguration: (c) => c = config,
+                            configureTelemetryConfiguration: (c) => c.ConnectionString = aiKey,
                         configureApplicationInsightsLoggerOptions: (options) => { });
+                    }
+
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
                     var pathFormat = !string.IsNullOrWhiteSpace(logFilePath) ? logFilePath : LoggingConstants.DefaultLogPath;
                     builder.AddFile(pathFormat);
