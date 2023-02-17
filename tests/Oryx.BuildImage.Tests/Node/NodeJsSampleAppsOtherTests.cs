@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
-        [Fact, Trait("category", "cli")]
+        [Fact, Trait("category", "cli-stretch")]
         public void PipelineTestInvocationCli()
         {
             var imageTestHelper = new ImageTestHelper();

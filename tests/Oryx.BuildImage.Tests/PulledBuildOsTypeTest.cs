@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        [Trait("category", "cli")]
+        [Trait("category", "cli-stretch")]
         public void PulledCliStretchBuildImages_Contains_BUILDOS_TYPE_Info()
         {
             PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository), "DEBIAN|STRETCH");
@@ -98,6 +98,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), "DEBIAN|BULLSEYE");
         }
+
 
         [Fact]
         [Trait("category", "jamstack")]
