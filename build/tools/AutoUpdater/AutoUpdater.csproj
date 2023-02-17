@@ -3,7 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
-    <NoWarn>1591</NoWarn>
+    <!--Adding NoWarn for documentations to prevent them from failing builds.
+    CS1591: Missing XML comment for public type or member
+    SA1614: Element parameter documentation should have text
+    SA1616: Element return value doc should have text
+    SA1642: Constructor summary doc should start with standard text-->
+    <NoWarn>CS1591;SA1614;SA1616;SA1642</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

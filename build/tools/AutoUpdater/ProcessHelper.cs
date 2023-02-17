@@ -12,7 +12,7 @@ namespace AutoUpdater
 {
     public static class ProcessHelper
     {
-        public static (int exitCode, string output, string error) RunProcess(
+        public static (int ExitCode, string Output, string Error) RunProcess(
             string fileName,
             IEnumerable<string> arguments,
             string workingDirectory,
@@ -37,7 +37,7 @@ namespace AutoUpdater
                 },
                 waitTimeForExit);
 
-            return (exitCode, output: outputBuilder.ToString(), error: errorBuilder.ToString());
+            return (exitCode, Output: outputBuilder.ToString(), Error: errorBuilder.ToString());
         }
 
         public static int RunProcess(
@@ -167,7 +167,7 @@ namespace AutoUpdater
                     "chmod",
                     new string[] { "+rx", path },
                     workingDir ?? System.IO.Path.GetDirectoryName(path),
-                    null).exitCode;
+                    null).ExitCode;
             }
             catch
             {
