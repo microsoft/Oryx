@@ -16,6 +16,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string Release = "Release";
 
         //AI key 
-        public const string AiKey = "InstrumentationKey=test";
+        public const string AppInsightsConnectionString = "InstrumentationKey=test";
+        public const string AppInsightsConnectionStringEnvironmentVariable = "TEST_AI_CONNECTION_STRING";
     }
 }

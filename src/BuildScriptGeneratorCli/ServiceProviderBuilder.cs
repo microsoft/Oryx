@@ -35,11 +35,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                LoggingConstants.OryxDisableTelemetryEnvironmentVariableName);
             _ = bool.TryParse(disableTelemetryEnvVariableValue, out bool disableTelemetry);
             var config = new TelemetryConfiguration();
-            var aiKey = disableTelemetry ? null : Environment.GetEnvironmentVariable(
+            var aiConnectionString = disableTelemetry ? null : Environment.GetEnvironmentVariable(
                 LoggingConstants.ApplicationInsightsConnectionStringKeyEnvironmentVariableName);
-            if (!string.IsNullOrWhiteSpace(aiKey))
+            if (!string.IsNullOrWhiteSpace(aiConnectionString))
             {
-                config.ConnectionString = aiKey;
+                config.ConnectionString = aiConnectionString;
             }
 
             this.serviceCollection = new ServiceCollection();
@@ -48,10 +48,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 .AddCliServices(console)
                 .AddLogging(builder =>
                 {
-                    if (!string.IsNullOrWhiteSpace(aiKey))
+                    if (!string.IsNullOrWhiteSpace(aiConnectionString))
                     {
                         builder.AddApplicationInsights(
-                            configureTelemetryConfiguration: (c) => c.ConnectionString = aiKey,
+                            configureTelemetryConfiguration: (c) => c.ConnectionString = aiConnectionString,
                             configureApplicationInsightsLoggerOptions: (options) => { });
                     }
 

@@ -10,14 +10,14 @@ using System;
 
 public static class TelemetryClientHelper
 {
-    public static string aiKey = TestConstants.AiKey;
     public static TelemetryClient GetTelemetryClient()
     {
-        var telemetryConfig = new TelemetryConfiguration();
-        if (!string.IsNullOrWhiteSpace(aiKey))
+        var connectionString = Environment.GetEnvironmentVariable(TestConstants.AppInsightsConnectionStringEnvironmentVariable)
+         ?? TestConstants.AppInsightsConnectionString;
+        var telemetryConfig = new TelemetryConfiguration()
         {
-            telemetryConfig.ConnectionString = aiKey;
-        }
-        return new TelemetryClient(telemetryConfig);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+            ConnectionString = connectionString,
+        };
+        return new TelemetryClient(telemetryConfig);
     }
 }

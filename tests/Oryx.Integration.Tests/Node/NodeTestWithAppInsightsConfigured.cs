@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
-            var aIKey = appInsightKeyOrConnectionString;
+            var aiConnectionString = appInsightKeyOrConnectionString;
             var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
 
@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules").ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIEnabled}={agentExtensionVersionEnvValue}")
-                .AddCommand($"export {aIKey}=InstrumentationKey=asdas")
+                .AddCommand($"export {aiConnectionString}=InstrumentationKey=asdas")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, envVarValue), new EnvironmentVariable(aIEnabled, "~2") },
+                new List<EnvironmentVariable> { new EnvironmentVariable(aiConnectionString, envVarValue), new EnvironmentVariable(aIEnabled, "~2") },
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -103,7 +103,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var spcifyNodeVersionCommand = $"--platform {NodeConstants.PlatformName} --platform-version=" + nodeVersion;
-            var aIKey = appInsightKeyOrConnectionString;
+            var aiConnectionString = appInsightKeyOrConnectionString;
             var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
 
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules").ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIEnabled}={agentExtensionVersionEnvValue}")
-                .AddCommand($"export {aIKey}={envVarValue}")
+                .AddCommand($"export {aiConnectionString}={envVarValue}")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")
@@ -131,7 +131,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     buildScript
                 },
                 _imageHelper.GetRuntimeImage("node", nodeVersion),
-                new List<EnvironmentVariable> { new EnvironmentVariable(aIKey, envVarValue), new EnvironmentVariable(aIEnabled, "~2") },
+                new List<EnvironmentVariable> { new EnvironmentVariable(aiConnectionString, envVarValue), new EnvironmentVariable(aIEnabled, "~2") },
                 ContainerPort,
                 "/bin/sh",
                 new[]
