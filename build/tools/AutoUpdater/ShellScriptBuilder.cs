@@ -14,20 +14,20 @@ namespace AutoUpdater
     public class ShellScriptBuilder
     {
         private const string DefaultCommandSeparator = " && ";
-        private readonly StringBuilder _scriptBuilder;
-        private string _commandSeparator = DefaultCommandSeparator;
-        private bool _contentPresent = false;
+        private readonly StringBuilder scriptBuilder;
+        private string commandSeparator = DefaultCommandSeparator;
+        private bool contentPresent = false;
 
         /// <summary>
         /// Builds bash script commands in a single line. Note that this does not add the '#!/bin/bash'.
         /// </summary>
         public ShellScriptBuilder(string cmdSeparator = null)
         {
-            _scriptBuilder = new StringBuilder();
+            this.scriptBuilder = new StringBuilder();
 
             if (cmdSeparator != null)
             {
-                _commandSeparator = cmdSeparator;
+                this.commandSeparator = cmdSeparator;
             }
         }
 
@@ -38,18 +38,18 @@ namespace AutoUpdater
                 throw new ArgumentException("Interpreter path must be absolute");
             }
 
-            return Append("#!" + interpreterPath);
+            return this.Append("#!" + interpreterPath);
         }
 
         public ShellScriptBuilder AddCommand(string command)
         {
             command = command.Trim(' ', '&');
-            return Append(command);
+            return this.Append(command);
         }
 
         public ShellScriptBuilder Source(string command)
         {
-            return AddCommand(". " + command); // Dot is preferable to `source` as it's supported in more shells
+            return this.AddCommand(". " + command); // Dot is preferable to `source` as it's supported in more shells
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace AutoUpdater
         /// <returns></returns>
         public ShellScriptBuilder AddBuildCommand(string argumentsString)
         {
-            return Append($"oryx build --debug {argumentsString}");
+            return this.Append($"oryx build --debug {argumentsString}");
         }
 
         /// <summary>
@@ -69,32 +69,32 @@ namespace AutoUpdater
         /// <returns></returns>
         public ShellScriptBuilder AddScriptCommand(string argumentsString)
         {
-            return Append($"oryx build-script {argumentsString}");
+            return this.Append($"oryx build-script {argumentsString}");
         }
 
         public ShellScriptBuilder SetEnvironmentVariable(string name, string value)
         {
-            return Append($"export {name}={value}");
+            return this.Append($"export {name}={value}");
         }
 
         public ShellScriptBuilder CreateDirectory(string directory)
         {
-            return Append($"mkdir -p \"{directory}\"");
+            return this.Append($"mkdir -p \"{directory}\"");
         }
 
         public ShellScriptBuilder CreateFile(string file, string content)
         {
-            return Append($"echo {content} > \"{file}\"");
+            return this.Append($"echo {content} > \"{file}\"");
         }
 
         public ShellScriptBuilder SetExecutePermissionOnFile(string file)
         {
-            return Append($"chmod +x \"{file}\"");
+            return this.Append($"chmod +x \"{file}\"");
         }
 
         public ShellScriptBuilder AddDirectoryDoesNotExistCheck(string directory)
         {
-            return Append(
+            return this.Append(
                 $"if [ -d \"{directory}\" ]; then " +
                 $"echo Directory '{directory}' is still present 1>&2 && " +
                 "exit 1; fi");
@@ -102,7 +102,7 @@ namespace AutoUpdater
 
         public ShellScriptBuilder AddDirectoryExistsCheck(string directory)
         {
-            return Append(
+            return this.Append(
                 $"if [ ! -d \"{directory}\" ]; then " +
                 $"echo Directory '{directory}' not found 1>&2 && " +
                 "exit 1; fi");
@@ -110,7 +110,7 @@ namespace AutoUpdater
 
         public ShellScriptBuilder AddFileDoesNotExistCheck(string file)
         {
-            return Append(
+            return this.Append(
                 $"if [ -f \"{file}\" ]; then " +
                 $"echo File '{file}' is still present 1>&2 && " +
                 "exit 1; fi");
@@ -118,7 +118,7 @@ namespace AutoUpdater
 
         public ShellScriptBuilder AddFileExistsCheck(string file)
         {
-            return Append(
+            return this.Append(
                 $"if [ ! -f \"{file}\" ]; then " +
                 $"echo File '{file}' not found 1>&2 && " +
                 "exit 1; fi");
@@ -126,7 +126,7 @@ namespace AutoUpdater
 
         public ShellScriptBuilder AddLinkDoesNotExistCheck(string file)
         {
-            return Append(
+            return this.Append(
                 $"if [ -L \"{file}\" ]; then " +
                 $"echo Link '{file}' is still present 1>&2 && " +
                 "exit 1; fi");
@@ -134,7 +134,7 @@ namespace AutoUpdater
 
         public ShellScriptBuilder AddStringExistsInFileCheck(string searchString, string file)
         {
-            return Append(
+            return this.Append(
                 $"if ! grep -q '{searchString}' '{file}'; then " +
                 $"echo '{searchString}' not found 1>&2; " +
                 "exit 1; fi");
@@ -142,7 +142,7 @@ namespace AutoUpdater
 
         public ShellScriptBuilder AddStringDoesNotExistInFileCheck(string searchString, string file)
         {
-            return Append(
+            return this.Append(
                 $"if grep -q '{searchString}' '{file}'; then " +
                 $"echo '{searchString}' still found 1>&2; " +
                 "exit 1; fi");
@@ -150,19 +150,19 @@ namespace AutoUpdater
 
         public override string ToString()
         {
-            return _scriptBuilder.ToString();
+            return this.scriptBuilder.ToString();
         }
 
         private ShellScriptBuilder Append(string content)
         {
             // NOTE: do not use AppendLine as this script must be in one line
-            if (_contentPresent)
+            if (this.contentPresent)
             {
-                _scriptBuilder.Append(_commandSeparator);
+                this.scriptBuilder.Append(this.commandSeparator);
             }
 
-            _scriptBuilder.Append(content);
-            _contentPresent = true;
+            this.scriptBuilder.Append(content);
+            this.contentPresent = true;
             return this;
         }
     }
