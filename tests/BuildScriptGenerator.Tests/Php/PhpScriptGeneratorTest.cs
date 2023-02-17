@@ -138,10 +138,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 supportedPhpComposerVersions: new[] { "7.2.15", Common.PhpVersions.ComposerVersion });
 
             phpScriptGeneratorOptions = phpScriptGeneratorOptions ?? new PhpScriptGeneratorOptions();
-            commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
-            var telemetryClientMock = new Mock<TelemetryClientMock>();
-            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-        //    telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();          
             return new PhpPlatform(
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),

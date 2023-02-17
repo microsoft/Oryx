@@ -137,10 +137,7 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
             var envScriptProvider = new PlatformsInstallationScriptProvider(
                 platforms,
                 defaultPlatformDetector,
-                new DefaultStandardOutputWriter());
-            var telemetryClientMock = new Mock<TelemetryClientMock>();
-            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-        //    telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+                new DefaultStandardOutputWriter());         
             return new DefaultBuildScriptGenerator(
                 defaultPlatformDetector,
                 envScriptProvider,

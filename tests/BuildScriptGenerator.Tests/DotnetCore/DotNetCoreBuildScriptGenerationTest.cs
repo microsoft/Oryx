@@ -88,9 +88,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 isDotNetCoreVersionAlreadyInstalled.Value,
                 DotNetCoreInstallationScript);
             var globalJsonSdkResolver = new GlobalJsonSdkResolver(NullLogger<GlobalJsonSdkResolver>.Instance);
-            var telemetryClientMock = new Mock<TelemetryClientMock>();
-            var connectionString = string.Format("InstrumentationKey={0}",Guid.NewGuid().ToString());
-        //    telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestDotNetCorePlatform(
                 Options.Create(DotNetCoreScriptGeneratorOptions),
                 Options.Create(commonOptions),

@@ -369,10 +369,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Ruby
             var rubyInstaller = new TestRubyPlatformInstaller(
                 Options.Create(commonOptions),
                 isRubyVersionAlreadyInstalled.Value,
-                rubyInstallationScript);
-            var telemetryClientMock = new Mock<TelemetryClientMock>();
-            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+                rubyInstallationScript);        
             return new TestRubyPlatform(
                 Options.Create(rubyScriptGeneratorOptions),
                 Options.Create(commonOptions),

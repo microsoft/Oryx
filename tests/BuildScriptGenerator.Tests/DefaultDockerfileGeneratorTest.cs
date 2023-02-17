@@ -444,9 +444,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             IProgrammingPlatform[] platforms,
             BuildScriptGeneratorOptions commonOptions)
         {
-            var telemetryClientMock = new Mock<TelemetryClientMock>();
-            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             return new DefaultDockerfileGenerator(
                 new DefaultCompatiblePlatformDetector(

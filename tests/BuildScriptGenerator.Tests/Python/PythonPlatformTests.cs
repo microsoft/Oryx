@@ -410,10 +410,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 defaultVersion: defaultVersion);
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             pythonScriptGeneratorOptions = pythonScriptGeneratorOptions ?? new PythonScriptGeneratorOptions();
-            var detector = new TestPythonPlatformDetector(detectedVersion: detectedVersion);
-            var telemetryClientMock = new Mock<TelemetryClientMock>();
-            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
-         //   telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
+            var detector = new TestPythonPlatformDetector(detectedVersion: detectedVersion);      
             return new PythonPlatform(
                 Options.Create(commonOptions),
                 Options.Create(pythonScriptGeneratorOptions),
