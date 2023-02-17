@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.IO;
+using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -11,6 +13,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using NLog;
+using NLog.Config;
+using NLog.Extensions.Logging;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -23,13 +28,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public ServiceProviderBuilder(string logFilePath = null, IConsole console = null)
         {
+            LogManager.Configuration = BuildNLogConfiguration(logFilePath);
+            LogManager.ReconfigExistingLoggers();
+
             var disableTelemetryEnvVariableValue = Environment.GetEnvironmentVariable(
                LoggingConstants.OryxDisableTelemetryEnvironmentVariableName);
             _ = bool.TryParse(disableTelemetryEnvVariableValue, out bool disableTelemetry);
             var config = new TelemetryConfiguration();
-            var aiKey = disableTelemetry ? string.Empty : Environment.GetEnvironmentVariable(
+            var aiKey = disableTelemetry ? null : Environment.GetEnvironmentVariable(
                 LoggingConstants.ApplicationInsightsConnectionStringKeyEnvironmentVariableName);
-            if (!string.IsNullOrEmpty(aiKey))
+            if (!string.IsNullOrWhiteSpace(aiKey))
             {
                 config.ConnectionString = aiKey;
             }
@@ -40,12 +48,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 .AddCliServices(console)
                 .AddLogging(builder =>
                 {
-                    builder.AddApplicationInsights(
-                        configureTelemetryConfiguration: (c) => c = config,
-                        configureApplicationInsightsLoggerOptions: (options) => { });
+                    if (!string.IsNullOrWhiteSpace(aiKey))
+                    {
+                        builder.AddApplicationInsights(
+                            configureTelemetryConfiguration: (c) => c.ConnectionString = aiKey,
+                            configureApplicationInsightsLoggerOptions: (options) => { });
+                    }
+
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
-                    var pathFormat = !string.IsNullOrWhiteSpace(logFilePath) ? logFilePath : LoggingConstants.DefaultLogPath;
-                    builder.AddFile(pathFormat);
+                    builder.AddNLog(new NLogProviderOptions
+                    {
+                        CaptureMessageTemplates = true,
+                        CaptureMessageProperties = true,
+                    });
                 })
                 .AddSingleton<TelemetryClient>(new TelemetryClient(config));
         }
@@ -65,6 +80,31 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public IServiceProvider Build()
         {
             return this.serviceCollection.BuildServiceProvider();
+        }
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Reliability", "CA2000:Dispose objects before losing scope", Justification = "Cannot prematurely dispose of Application insights objects.")]
+        private static LoggingConfiguration BuildNLogConfiguration([CanBeNull] string logPath)
+        {
+            var config = new LoggingConfiguration();
+            bool hasLogPath = !string.IsNullOrWhiteSpace(logPath);
+            if (hasLogPath || config.AllTargets.Count == 0)
+            {
+                if (!hasLogPath)
+                {
+                    logPath = LoggingConstants.DefaultLogPath;
+                }
+
+                // Default layout: "${longdate}|${level:uppercase=true}|${logger}|${message}"
+                var fileTarget = new NLog.Targets.FileTarget("file")
+                {
+                    FileName = Path.GetFullPath(logPath),
+                    Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}${exception:format=ToString}",
+                };
+                config.AddTarget(fileTarget);
+                config.AddRuleForAllLevels(fileTarget);
+            }
+
+            return config;
         }
     }
 }
