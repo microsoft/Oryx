@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("14", "~2", ExtVarNames.ApplicationInsightsConnectionStringEnvVarName, "InstrumentationKey=asdas;")]
+        [InlineData("14", "~2", ExtVarNames.ApplicationInsightsConnectionStringEnvVarName, "InstrumentationKey=asdas")]
         [InlineData("14", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
         //Without pre-IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~2'
         // and that will enable oryx's appInsight attach logic
@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules").ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export {aIEnabled}={agentExtensionVersionEnvValue}")
-                .AddCommand($"export {aIKey}=asdas")
+                .AddCommand($"export {aIKey}=InstrumentationKey=asdas")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .AddFileExistsCheck($"{FilePaths.NodeGlobalModulesPath}/{FilePaths.NodeAppInsightsLoaderFileName}")

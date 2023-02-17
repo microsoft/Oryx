@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             int containerDebugPort = 8080;
 
             var script = new ShellScriptBuilder()
-                .AddCommand($"export {aIKey}=InstrumentationKey=asdas;")
+                .AddCommand($"export {aIKey}=InstrumentationKey=asdas")
                 .AddCommand($"export {aIEnabled}=TRUE")
                 .AddCommand($"cd {appDir}")
                 .AddCommand("npm install")
