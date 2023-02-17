@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var testConsole = new TestConsole();
 
             // Act
-            var exitCode = scriptCommand.OnExecute();
+            var exitCode = scriptCommand.OnExecute(testConsole);
 
             // Assert
             Assert.NotEqual(0, exitCode);
@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var testConsole = new TestConsole();
 
             // Act
-            var exitCode = cmd.OnExecute();
+            var exitCode = cmd.OnExecute(testConsole);
 
             // Assert
             Assert.NotEqual(0, exitCode);

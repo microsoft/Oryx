@@ -29,10 +29,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public bool DebugMode { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "All arguments are necessary for OnExecute call, even if not used.")]
-        public int OnExecute()
+        public int OnExecute(IConsole console)
         {
             ILogger<CommandBase> logger = null;
-            var console = new SystemConsole();
             Console.CancelKeyPress += this.Console_CancelKeyPress;
 
             try

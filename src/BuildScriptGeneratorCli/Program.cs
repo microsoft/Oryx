@@ -5,6 +5,7 @@
 
 using System;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -22,22 +23,23 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal static async Task<int> Main(string[] args)
         {
+            var console = new SystemConsole();
             var rootCommand = new RootCommand();
             rootCommand.Name = "oryx";
             rootCommand.Description = "Generates and runs build scripts for multiple platforms.";
 
             // var versionOption = new Option<bool>(aliases: new[] { "-v", "--version" }, "Print version information.");
-            rootCommand.AddCommand(BuildCommand.Export());
-            rootCommand.AddCommand(BuildScriptCommand.Export());
-            rootCommand.AddCommand(BuildpackBuildCommand.Export());
-            rootCommand.AddCommand(BuildpackDetectCommand.Export());
-            rootCommand.AddCommand(DetectCommand.Export());
-            rootCommand.AddCommand(DockerfileCommand.Export());
-            rootCommand.AddCommand(ExecCommand.Export());
-            rootCommand.AddCommand(PlatformsCommand.Export());
-            rootCommand.AddCommand(PrepareEnvironmentCommand.Export());
-            rootCommand.AddCommand(RunScriptCommand.Export());
-            rootCommand.AddCommand(TelemetryCommand.Export());
+            rootCommand.AddCommand(BuildCommand.Export(console));
+            rootCommand.AddCommand(BuildScriptCommand.Export(console));
+            rootCommand.AddCommand(BuildpackBuildCommand.Export(console));
+            rootCommand.AddCommand(BuildpackDetectCommand.Export(console));
+            rootCommand.AddCommand(DetectCommand.Export(console));
+            rootCommand.AddCommand(DockerfileCommand.Export(console));
+            rootCommand.AddCommand(ExecCommand.Export(console));
+            rootCommand.AddCommand(PlatformsCommand.Export(console));
+            rootCommand.AddCommand(PrepareEnvironmentCommand.Export(console));
+            rootCommand.AddCommand(RunScriptCommand.Export(console));
+            rootCommand.AddCommand(TelemetryCommand.Export(console));
 
             // rootCommand.AddGlobalOption(versionOption);
             return await rootCommand.InvokeAsync(args);

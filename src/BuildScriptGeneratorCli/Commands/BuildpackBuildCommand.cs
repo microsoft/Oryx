@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public string PlanPath { get; set; }
 
-        public static new Command Export()
+        public static new Command Export(IConsole console)
         {
             // Options for BuildpackBuildCommand
             var layersDirOption = new Option<string>("--layers-dir", "Layers directory path.");
@@ -110,7 +110,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var buildpackBuildCommand = new BuildpackBuildCommand(prop);
-                    buildpackBuildCommand.OnExecute();
+                    buildpackBuildCommand.OnExecute(console);
                 },
                 new BuildpackBuildCommandBinder(
                     layersDirOption,

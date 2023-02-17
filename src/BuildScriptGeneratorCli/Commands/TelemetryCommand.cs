@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public string[] Properties { get; set; }
 
-        public static Command Export()
+        public static Command Export(IConsole console)
         {
             var eventNameOption = new Option<string>(name: OptionTemplates.EventName);
             var processingTimeOption = new Option<double>(name: OptionTemplates.ProcessingTime);
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var telemetryCommand = new TelemetryCommand(prop);
-                    telemetryCommand.OnExecute();
+                    telemetryCommand.OnExecute(console);
                 },
                 new TelemetryCommandBinder(
                     eventNameOption,

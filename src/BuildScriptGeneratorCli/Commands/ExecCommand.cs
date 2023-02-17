@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public string Command { get; set; }
 
-        public static Command Export()
+        public static Command Export(IConsole console)
         {
             var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
             var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var execCommand = new ExecCommand(prop);
-                    execCommand.OnExecute();
+                    execCommand.OnExecute(console);
                 },
                 new ExecCommandBinder(
                     execSourceDirOption,

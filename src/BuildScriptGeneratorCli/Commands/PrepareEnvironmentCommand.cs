@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public string PlatformsAndVersionsFile { get; set; }
 
-        public static Command Export()
+        public static Command Export(IConsole console)
         {
             var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
             var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var prepareEnvironmentCommand = new PrepareEnvironmentCommand(prop);
-                    prepareEnvironmentCommand.OnExecute();
+                    prepareEnvironmentCommand.OnExecute(console);
                 },
                 new PrepareEnvironmentCommandBinder(
                     sourceDirOption,

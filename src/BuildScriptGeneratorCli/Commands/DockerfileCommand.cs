@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public string OutputPath { get; set; }
 
-        public static Command Export()
+        public static Command Export(IConsole console)
         {
             var sourceDirArgument = new Argument<string>("sourceDir", "The source directory. If no value is provided, the current directory is used.");
             var buildImageOption = new Option<string>(
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var dockerfileCommand = new DockerfileCommand(prop);
-                    dockerfileCommand.OnExecute();
+                    dockerfileCommand.OnExecute(console);
                 },
                 new DockerfileCommandBinder(
                     sourceDirArgument,

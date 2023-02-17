@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public string[] RemainingArgs { get; }
 
-        public static Command Export()
+        public static Command Export(IConsole console)
         {
             var appDirArgument = new Argument<string>("appDir", "The application directory");
             var platformNameOption = new Option<string>(OptionTemplates.Platform, "The name of the programming platform, e.g. 'nodejs'.");
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var runScriptCommand = new RunScriptCommand(prop);
-                    runScriptCommand.OnExecute();
+                    runScriptCommand.OnExecute(console);
                 },
                 new RunScriptCommandBinder(
                     appDirArgument,

@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public string PlanPath { get; set; }
 
-        public static Command Export()
+        public static Command Export(IConsole console)
         {
             var sourceDirArgument = new Argument<string>("SourceDir", "The source directory.");
             var platformDirOption = new Option<string>("--platform-dir", "Platform directory path.");
@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var buildpackDetectCommand = new BuildpackDetectCommand(prop);
-                    buildpackDetectCommand.OnExecute();
+                    buildpackDetectCommand.OnExecute(console);
                 },
                 new BuildpackDetectCommandBinder(
                     sourceDirArgument,

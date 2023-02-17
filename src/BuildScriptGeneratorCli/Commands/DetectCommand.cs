@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public string OutputFormat { get; set; }
 
-        public static Command Export()
+        public static Command Export(IConsole console)
         {
             var sourceDirArgument = new Argument<string>("sourceDirArg", "The source directory. If no value is provided, the current directory is used.");
             var outputFormatOption = new Option<string>(
@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var detectCommand = new DetectCommand(prop);
-                    detectCommand.OnExecute();
+                    detectCommand.OnExecute(console);
                 },
                 new DetectCommandBinder(
                     sourceDirArgument,

@@ -212,7 +212,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var testConsole = new TestConsole();
 
             // Act
-            var exitCode = buildCommand.OnExecute();
+            var exitCode = buildCommand.OnExecute(testConsole);
 
             // Assert
             Assert.Equal(0, exitCode);
