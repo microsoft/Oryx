@@ -13,7 +13,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Tests.Common;
-using Moq;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests

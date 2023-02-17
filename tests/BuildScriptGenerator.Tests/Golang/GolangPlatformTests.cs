@@ -13,8 +13,6 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.Detector.Golang;
 using Microsoft.Oryx.Tests.Common;
-using Moq;
-using System;
 using System.Collections.Generic;
 using Xunit;
 

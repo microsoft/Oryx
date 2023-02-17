@@ -11,7 +11,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Detector.DotNetCore;
-using Moq;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore

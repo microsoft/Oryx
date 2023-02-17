@@ -11,8 +11,6 @@ using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Php;
-using Moq;
-using System;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php

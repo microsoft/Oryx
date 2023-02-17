@@ -14,7 +14,6 @@ using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Node;
 using Microsoft.Oryx.Tests.Common;
-using Moq;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node

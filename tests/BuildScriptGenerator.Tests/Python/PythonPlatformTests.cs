@@ -21,7 +21,6 @@ using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Python;
 using Microsoft.Oryx.Tests.Common;
-using Moq;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python

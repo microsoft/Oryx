@@ -15,8 +15,6 @@ using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Php;
-using Moq;
-using System;
 using System.Linq;
 using Xunit;
 

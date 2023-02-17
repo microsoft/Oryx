@@ -12,8 +12,6 @@ using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.BuildScriptGenerator.Ruby;
 using Microsoft.Oryx.Detector.Ruby;
-using Moq;
-using System;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Ruby

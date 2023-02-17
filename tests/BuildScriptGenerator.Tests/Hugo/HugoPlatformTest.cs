@@ -9,8 +9,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Hugo;
 using Microsoft.Oryx.Detector.Hugo;
-using Moq;
-using System;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo

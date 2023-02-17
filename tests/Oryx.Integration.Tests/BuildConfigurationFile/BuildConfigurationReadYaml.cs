@@ -10,9 +10,6 @@ using Microsoft.Oryx.Tests.Common;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Xunit;
-using Microsoft.ApplicationInsights.Extensibility;
-using Microsoft.ApplicationInsights;
-using Moq;
 
 namespace Oryx.Integration.Tests.BuildConfigurationFile
 {
