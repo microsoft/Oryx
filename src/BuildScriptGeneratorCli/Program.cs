@@ -19,8 +19,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string GitCommit = "GitCommit";
         public const string ReleaseTagName = "RELEASE_TAG_NAME";
 
-        public bool Version { get; set; }
-
         internal static async Task<int> Main(string[] args)
         {
             var console = new SystemConsole();
@@ -68,21 +66,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             return null;
-        }
-
-        internal int OnExecute()
-        {
-            if (this.Version)
-            {
-                var version = GetVersion();
-                var commit = GetMetadataValue(GitCommit);
-                var releaseTagName = GetMetadataValue(ReleaseTagName);
-                Console.WriteLine($"Version: {version}, Commit: {commit}, ReleaseTagName: {releaseTagName}");
-
-                return ProcessConstants.ExitSuccess;
-            }
-
-            return ProcessConstants.ExitSuccess;
         }
     }
 }
