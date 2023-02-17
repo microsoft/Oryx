@@ -512,6 +512,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 Options.Create(commonOptions),
                 isPhpComposerAlreadyInstalled.Value,
                 phpComposerInstallationScript);
+            var telemetryClientMock = new Mock<TelemetryClientMock>();
+            var connectionString = string.Format("InstrumentationKey={0}", Guid.NewGuid().ToString());
+          //  telemetryClientMock.Setup(x => x.connectionString).Returns(connectionString);
             return new TestPhpPlatform(
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),
