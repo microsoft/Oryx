@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("14", "~2", ExtVarNames.UserAppInsightsKeyEnv, "asdas")]
+        [InlineData("14", "~2", ExtVarNames.ApplicationInsightsConnectionStringEnvVarName, "InstrumentationKey=asdas;")]
         [InlineData("14", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
         //Without pre-IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~2'
         // and that will enable oryx's appInsight attach logic
@@ -85,11 +85,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("14", "~3", ExtVarNames.UserAppInsightsKeyEnv, "asdas")]
         [InlineData("14", "~3", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
-        [InlineData("14", "", ExtVarNames.UserAppInsightsKeyEnv, "asdas")]
         [InlineData("14", "", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
-        [InlineData("14", "disabled", ExtVarNames.UserAppInsightsKeyEnv, "asdas")]
         [InlineData("14", "disabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
         //With New IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~3'
         // and that will disable oryx's appInsight attach logic
