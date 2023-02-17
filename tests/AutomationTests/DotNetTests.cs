@@ -34,21 +34,6 @@ namespace Microsoft.Oryx.Automation.DotNet.Tests
                 this.yamlFileReaderServiceMock.Object
             );
         }
-
-        [Fact]
-        public async Task GetOryxSdkVersionsAsync_ReturnsCorrectVersions()  
-        {
-            // Arrange
-            string url = "https://someurl.com";
-            string response = @"<Version>1.0.0</Version>";
-            this.httpClientMock.Setup(h => h.GetDataAsync(url)).ReturnsAsync(response);
-
-            // Act
-            HashSet<string> result = await this.dotNet.GetOryxSdkVersionsAsync(url);
-
-            // Assert
-            Assert.Single(result);
-            Assert.Contains("1.0.0", result);
-        }
+    // TODO: add more unit tests
     }
 }

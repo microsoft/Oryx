@@ -57,28 +57,11 @@ namespace Microsoft.Oryx.Automation.DotNet
             }
         }
 
-        public async Task<HashSet<string>> GetOryxSdkVersionsAsync(string url)
-        {
-            HashSet<string> versions = new HashSet<string>();
-            var response = await this.httpClient.GetDataAsync(url);
-
-            XDocument xmlDoc = XDocument.Parse(response);
-            var versionElements = xmlDoc.Descendants("Version");
-
-            foreach (var versionElement in versionElements)
-            {
-                string version = versionElement.Value;
-                versions.Add(version);
-            }
-
-            return versions;
-        }
-
         public async Task<List<VersionObj>> GetNewVersionObjsAsync()
         {
             List<VersionObj> versionObjs = new List<VersionObj>();
             string url = Constants.OryxSdkStorageBaseUrl + "/dotnet?restype=container&comp=list&include=metadata";
-            HashSet<string> oryxSdkVersions = await this.GetOryxSdkVersionsAsync(url);
+            HashSet<string> oryxSdkVersions = await this.httpClient.GetOryxSdkVersionsAsync(url);
 
             // Deserialize release meta data
             var response = await this.httpClient.GetDataAsync(Constants.ReleasesIndexJsonUrl);

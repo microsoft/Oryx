@@ -3,8 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Microsoft.Oryx.Automation.Client
 {
@@ -41,6 +43,24 @@ namespace Microsoft.Oryx.Automation.Client
                 Console.WriteLine("Stack Trace: " + ex.StackTrace);
                 return null;
             }
+        }
+
+        public async Task<HashSet<string>> GetOryxSdkVersionsAsync(string url)
+        {
+            HashSet<string> versions = new HashSet<string>();
+            HttpClientImpl httpClientImpl = new HttpClientImpl();
+            var response = await httpClientImpl.GetDataAsync(url);
+
+            XDocument xmlDoc = XDocument.Parse(response);
+            var versionElements = xmlDoc.Descendants("Version");
+
+            foreach (var versionElement in versionElements)
+            {
+                string version = versionElement.Value;
+                versions.Add(version);
+            }
+
+            return versions;
         }
     }
 }
