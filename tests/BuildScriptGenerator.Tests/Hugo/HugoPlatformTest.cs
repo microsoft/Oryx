@@ -85,7 +85,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
                 Options.Create(hugoScriptGeneratorOptions),
                 NullLogger<HugoPlatform>.Instance,
                 new HugoPlatformInstaller(Options.Create(buildScriptGeneratorOptions), NullLoggerFactory.Instance),
-                detector, TelemetryClientHelper.GetTelemetryClient());
+                detector, 
+                TelemetryClientHelper.GetTelemetryClient());
         }
     }
 }
