@@ -80,8 +80,11 @@ if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 				buildImageFilter="cli"
 				buildImageTagFilter="debian-stretch"
 			elif [[ "$strippedVal" == "cli-debian-buster" ]];then
-				buildImageFilter="cli-buster"
+				buildImageFilter="cli"
 				buildImageTagFilter="debian-buster"
+			elif [[ "$strippedVal" == "cli-debian-bullseye" ]];then
+				buildImageFilter="cli"
+				buildImageTagFilter="debian-bullseye"
 			fi
 		fi
 	done

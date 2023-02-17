@@ -1,6 +1,6 @@
 ARG PARENT_DEBIAN_FLAVOR
-FROM oryxdevmcr.azurecr.io/public/oryx/build:github-${PARENT_DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
+FROM oryxdevmcr.azurecr.io/public/oryx/cli:${PARENT_DEBIAN_FLAVOR} AS main
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /tmp
 
@@ -11,32 +11,29 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     PYTHONIOENCODING="UTF-8" \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
-    LC_ALL="C.UTF-8"
-
-ARG IMAGES_DIR="/opt/tmp/images"
-RUN oryx prep --skip-detection --platforms-and-versions nodejs=14 --debug \
-    && echo "$DEBIAN_FLAVOR" \
-    && . /tmp/build/__goVersions.sh \
-    && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
-    && ${IMAGES_DIR}/retry.sh "curl -SLsO https://golang.org/dl/$downloadedFileName" \
-    && mkdir -p /usr/local \
-    && gzip -d $downloadedFileName \
-    && tar -xf "go${GO_VERSION}.linux-amd64.tar" -C /usr/local \
-    && rm -rf $downloadedFileName
-
+    LC_ALL="C.UTF-8" \
+    ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/python/latest/bin:/opt/yarn/stable/bin"
+    
 RUN set -ex \
     # Install Python SDKs
     # Upgrade system python
     && PYTHONIOENCODING="UTF-8" \
+    # It's not clear whether these are needed at runtime...
     && apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         # Adding additional python packages to support all optional python modules:
         # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+        git \
+        make \
+        unzip \
+        # The tools in this package are used when installing packages for Python
         build-essential \
+        moreutils \
         python3-pip \
         swig \
         tk-dev \
+        unixodbc-dev \
         uuid-dev \
         python3-dev \
         libffi-dev \
@@ -49,13 +46,55 @@ RUN set -ex \
         lzma \
         lzma-dev \
         zlib1g-dev \
-
-    && rm -rf /var/lib/apt/lists/*
+        # Required for PostgreSQL
+        libpq-dev \
+        # Required for mysqlclient
+        default-libmysqlclient-dev \
+        # Required for ts
+        zip \
+        #TODO : Add these to fix php failures. Check if these can be removed.
+        libargon2-0 \
+        libonig-dev \
+        libedit-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    # This is the folder containing 'links' to benv and build script generator
+    && mkdir -p /opt/oryx
+ARG IMAGES_DIR="/opt/tmp/images"
+ARG BUILD_DIR="/opt/tmp/build"
 
 RUN set -ex \
+ && yarnCacheFolder="/usr/local/share/yarn-cache" \
+ && mkdir -p $yarnCacheFolder \
+ && chmod 777 $yarnCacheFolder \
+ && . ${BUILD_DIR}/__nodeVersions.sh \
+ && if [ "${DEBIAN_FLAVOR}" == "bullseye" || "${DEBIAN_FLAVOR}" == "buster" ]; then ${IMAGES_DIR}/installPlatform.sh nodejs ${NODE16_VERSION}; fi \
+ && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
+ && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
+ && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
+ && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+ && mkdir -p /opt/yarn \
+ && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
+ && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
+ && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+RUN set -ex \
+ && . ${BUILD_DIR}/__nodeVersions.sh \
+ && ln -s $YARN_VERSION /opt/yarn/stable \
+ && ln -s $YARN_VERSION /opt/yarn/latest \
+ && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
+ && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
+RUN set -ex \
+ && mkdir -p /links \
+ && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
+  
+RUN set -ex \
+    # Install Python SDKs
+    # Upgrade system python
+    && PYTHONIOENCODING="UTF-8" \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
+    && mkdir -p /usr/local/share/pip-cache/lib \
+    && chmod -R 777 /usr/local/share/pip-cache \
     && pip3 install pip --upgrade \
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \
