@@ -59,8 +59,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                // ImageId = Settings.BuildImageName,
-                ImageId = "oryxdevmcr.azurecr.io/public/oryx/cli:debian-stretch",
+                ImageId = Settings.BuildImageName,
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
             });
