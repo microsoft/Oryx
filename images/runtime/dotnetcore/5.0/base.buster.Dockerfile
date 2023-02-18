@@ -1,11 +1,11 @@
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS tools-install
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos --version 5.0.236902
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace --version 5.0.236902
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump --version 5.0.236902
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters --version 5.0.236902
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump --version 5.0.236902
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 6.1.*
 
 FROM mcr.microsoft.com/mirror/docker/library/debian:buster-slim
