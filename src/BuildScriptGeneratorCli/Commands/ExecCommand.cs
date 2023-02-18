@@ -44,7 +44,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
             var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
             var execSourceDirOption = new Option<string>(
-                aliases: new[] { "-s", "--src" },
+                aliases: OptionTemplates.Source,
                 description: "The command to execute in an app-specific environment.");
             var commandArgument = new Argument<string>("command", "The command to execute in an app-specific environment.");
 

@@ -36,7 +36,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class PrepareEnvironmentCommand : CommandBase
     {
-        private const string SourceDirectoryTemplate = "-s|--src";
         private const string SkipDetectionTemplate = "--skip-detection";
         private const string PlatformsAndVersionsTemplate = "--platforms-and-versions";
         private const string PlatformsAndVersionsFileTemplate = "--platforms-and-versions-file";
@@ -68,7 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
             var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
             var sourceDirOption = new Option<string>(
-                aliases: new[] { "-s", "--src" },
+                aliases: OptionTemplates.Source,
                 description: "The source directory.");
             var skipDetectionOption = new Option<bool>(SkipDetectionTemplate, "Skip detection of platforms and install the requested platforms.");
             var platformsAndVersions = new Option<string>(

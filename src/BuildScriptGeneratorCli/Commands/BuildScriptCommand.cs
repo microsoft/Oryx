@@ -57,7 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var appTypeOption = new Option<string>(OptionTemplates.AppType, OptionTemplates.AppTypeDescription);
             var buildCommandFileNameOption = new Option<string>(OptionTemplates.BuildCommandsFileName, OptionTemplates.BuildCommandsFileNameDescription);
             var compressDestDirOption = new Option<bool>(OptionTemplates.CompressDestinationDir, OptionTemplates.CompressDestinationDirDescription);
-            var propertyOption = new Option<string[]>(aliases: new[] { "-p", OptionTemplates.Property }, OptionTemplates.PropertyDescription);
+            var propertyOption = new Option<string[]>(OptionTemplates.Property, OptionTemplates.PropertyDescription);
             var dynamicInstallRootDirOption = new Option<string>(OptionTemplates.DynamicInstallRootDir, OptionTemplates.DynamicInstallRootDirDescription);
             var buildScriptOutputOption = new Option<string>(
                 name: "--output",

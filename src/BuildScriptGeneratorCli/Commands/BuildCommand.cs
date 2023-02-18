@@ -104,18 +104,18 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var appTypeOption = new Option<string>(OptionTemplates.AppType, OptionTemplates.AppTypeDescription);
             var buildCommandFileNameOption = new Option<string>(OptionTemplates.BuildCommandsFileName, OptionTemplates.BuildCommandsFileNameDescription);
             var compressDestDirOption = new Option<bool>(OptionTemplates.CompressDestinationDir, OptionTemplates.CompressDestinationDirDescription);
-            var propertyOption = new Option<string[]>(aliases: new[] { "-p", OptionTemplates.Property }, OptionTemplates.PropertyDescription);
+            var propertyOption = new Option<string[]>(OptionTemplates.Property, OptionTemplates.PropertyDescription);
             var dynamicInstallRootDirOption = new Option<string>(OptionTemplates.DynamicInstallRootDir, OptionTemplates.DynamicInstallRootDirDescription);
 
             // Hiding Language Option because it is obselete
-            var languageOption = new Option<string>(aliases: new[] { "-l", OptionTemplates.Language }, OptionTemplates.LanguageDescription);
+            var languageOption = new Option<string>(OptionTemplates.Language, OptionTemplates.LanguageDescription);
             languageOption.IsHidden = true;
 
             // LanguageVer Option is obselete
             var languageVerOption = new Option<string>(OptionTemplates.LanguageVersion, OptionTemplates.LanguageVersionDescription);
             languageVerOption.IsHidden = true;
-            var intermediateDirOption = new Option<string>(aliases: new[] { "-i", OptionTemplates.IntermediateDir }, OptionTemplates.IntermediateDirDescription);
-            var outputOption = new Option<string>(aliases: new[] { "-o", OptionTemplates.Output }, OptionTemplates.OutputDescription);
+            var intermediateDirOption = new Option<string>(OptionTemplates.IntermediateDir, OptionTemplates.IntermediateDirDescription);
+            var outputOption = new Option<string>(aliases: OptionTemplates.Output, OptionTemplates.OutputDescription);
             var manifestDirOption = new Option<string>(OptionTemplates.ManifestDir, OptionTemplates.ManifestDirDescription);
 
             var command = new Command("build", "Build an app.")

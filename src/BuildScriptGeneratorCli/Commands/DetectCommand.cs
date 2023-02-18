@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var sourceDirArgument = new Argument<string>("sourceDirArg", "The source directory. If no value is provided, the current directory is used.");
             var outputFormatOption = new Option<string>(
-                aliases: new[] { "-o", "--output" },
+                aliases: OptionTemplates.Output,
                 description: "Output the detected platform data in chosen format. " +
                              "Example: json, table. " +
                              "If not set, by default output will print out as a table. ");

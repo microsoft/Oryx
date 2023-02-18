@@ -52,9 +52,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static new Command Export(IConsole console)
         {
             // Options for BuildpackBuildCommand
-            var layersDirOption = new Option<string>("--layers-dir", "Layers directory path.");
-            var platformDirOption = new Option<string>("--platform-dir", "Platform directory path.");
-            var planPathOption = new Option<string>("--plan-path", "Build plan TOML path.");
+            var layersDirOption = new Option<string>(OptionTemplates.LayersDir, "Layers directory path.");
+            var platformDirOption = new Option<string>(OptionTemplates.PlatformDir, "Platform directory path.");
+            var planPathOption = new Option<string>(OptionTemplates.PlanPath, "Build plan TOML path.");
 
             // Options from BuildCommand
             var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
@@ -67,19 +67,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var appTypeOption = new Option<string>(OptionTemplates.AppType, OptionTemplates.AppTypeDescription);
             var buildCommandFileNameOption = new Option<string>(OptionTemplates.BuildCommandsFileName, OptionTemplates.BuildCommandsFileNameDescription);
             var compressDestDirOption = new Option<bool>(OptionTemplates.CompressDestinationDir, OptionTemplates.CompressDestinationDirDescription);
-            var propertyOption = new Option<string[]>(aliases: new[] { "-p", OptionTemplates.Property }, OptionTemplates.PropertyDescription);
+            var propertyOption = new Option<string[]>(OptionTemplates.Property, OptionTemplates.PropertyDescription);
             var dynamicInstallRootDirOption = new Option<string>(OptionTemplates.DynamicInstallRootDir, OptionTemplates.DynamicInstallRootDirDescription);
 
             // Hiding Language Option because it is obselete
-            var languageOption = new Option<string>(aliases: new[] { "-l", OptionTemplates.Language }, OptionTemplates.LanguageDescription);
+            var languageOption = new Option<string>(OptionTemplates.Language, OptionTemplates.LanguageDescription);
             languageOption.IsHidden = true;
 
             // Hiding LanguageVer Option because it is obselete
             var languageVerOption = new Option<string>(OptionTemplates.LanguageVersion, OptionTemplates.LanguageVersionDescription);
             languageVerOption.IsHidden = true;
 
-            var intermediateDirOption = new Option<string>(aliases: new[] { "-i", OptionTemplates.IntermediateDir }, OptionTemplates.IntermediateDirDescription);
-            var outputOption = new Option<string>(aliases: new[] { "-o", OptionTemplates.Output }, OptionTemplates.OutputDescription);
+            var intermediateDirOption = new Option<string>(OptionTemplates.IntermediateDir, OptionTemplates.IntermediateDirDescription);
+            var outputOption = new Option<string>(OptionTemplates.Output, OptionTemplates.OutputDescription);
             var manifestDirOption = new Option<string>(OptionTemplates.ManifestDir, OptionTemplates.ManifestDirDescription);
 
             var command = new Command("buildpack-build", "Build an app in the current working directory (for use in a Buildpack).")
