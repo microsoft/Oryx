@@ -9,6 +9,7 @@ using System.CommandLine.IO;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -85,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var buildScriptCommand = new BuildScriptCommand(prop);
-                    buildScriptCommand.OnExecute(console);
+                    return Task.FromResult(buildScriptCommand.OnExecute(console));
                 },
                 new BuildScriptCommandBinder(
                     buildScriptOutputOption,

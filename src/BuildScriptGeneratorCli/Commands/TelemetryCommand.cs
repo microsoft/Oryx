@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -40,7 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var eventNameOption = new Option<string>(name: OptionTemplates.EventName);
             var processingTimeOption = new Option<double>(name: OptionTemplates.ProcessingTime);
-            var propertyOption = new Option<string[]>(name: OptionTemplates.Property);
+            var propertyOption = new Option<string[]>(aliases: OptionTemplates.Property);
             var logFile = new Option<string>(name: OptionTemplates.Log);
             var debugOption = new Option<bool>(name: OptionTemplates.Debug);
 
@@ -58,7 +59,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var telemetryCommand = new TelemetryCommand(prop);
-                    telemetryCommand.OnExecute(console);
+                    return Task.FromResult(telemetryCommand.OnExecute(console));
                 },
                 new TelemetryCommandBinder(
                     eventNameOption,

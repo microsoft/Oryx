@@ -8,6 +8,7 @@ using System.CommandLine;
 using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -63,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var buildpackDetectCommand = new BuildpackDetectCommand(prop);
-                    buildpackDetectCommand.OnExecute(console);
+                    return Task.FromResult(buildpackDetectCommand.OnExecute(console));
                 },
                 new BuildpackDetectCommandBinder(
                     sourceDirArgument,

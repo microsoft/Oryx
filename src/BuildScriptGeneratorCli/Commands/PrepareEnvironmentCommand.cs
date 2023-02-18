@@ -10,6 +10,7 @@ using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -93,7 +94,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var prepareEnvironmentCommand = new PrepareEnvironmentCommand(prop);
-                    prepareEnvironmentCommand.OnExecute(console);
+                    return Task.FromResult(prepareEnvironmentCommand.OnExecute(console));
                 },
                 new PrepareEnvironmentCommandBinder(
                     sourceDirOption,

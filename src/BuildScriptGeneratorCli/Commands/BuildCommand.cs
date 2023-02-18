@@ -10,6 +10,7 @@ using System.CommandLine.IO;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
@@ -144,7 +145,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     // InvocationContext provided in SetHandler
                     var buildCommand = new BuildCommand(prop);
-                    buildCommand.OnExecute(console);
+                    return Task.FromResult(buildCommand.OnExecute(console));
                 },
                 new BuildCommandBinder(
                     languageOption,

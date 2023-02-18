@@ -11,6 +11,7 @@ using System.CommandLine.IO;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -61,7 +62,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var detectCommand = new DetectCommand(prop);
-                    detectCommand.OnExecute(console);
+                    return Task.FromResult(detectCommand.OnExecute(console));
                 },
                 new DetectCommandBinder(
                     sourceDirArgument,

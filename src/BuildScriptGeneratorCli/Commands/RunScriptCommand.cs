@@ -7,6 +7,7 @@ using System;
 using System.CommandLine;
 using System.CommandLine.IO;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -67,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var runScriptCommand = new RunScriptCommand(prop);
-                    runScriptCommand.OnExecute(console);
+                    return Task.FromResult(runScriptCommand.OnExecute(console));
                 },
                 new RunScriptCommandBinder(
                     appDirArgument,

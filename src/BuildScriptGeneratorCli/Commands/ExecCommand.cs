@@ -8,6 +8,7 @@ using System.CommandLine;
 using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -63,7 +64,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var execCommand = new ExecCommand(prop);
-                    execCommand.OnExecute(console);
+                    return Task.FromResult(execCommand.OnExecute(console));
                 },
                 new ExecCommandBinder(
                     execSourceDirOption,

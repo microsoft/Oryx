@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -47,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 (prop) =>
                 {
                     var platformsCommand = new PlatformsCommand(prop);
-                    platformsCommand.OnExecute(console);
+                    return Task.FromResult(platformsCommand.OnExecute(console));
                 },
                 new PlatformsCommandBinder(
                     jsonOption,
