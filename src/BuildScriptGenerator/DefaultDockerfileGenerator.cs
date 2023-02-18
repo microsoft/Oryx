@@ -20,9 +20,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultDockerfileGenerator : IDockerfileGenerator
     {
+        private const string DefaultCliImageTag = "debian-buster-stable";
         private const string DynamicRuntimeImageTag = "dynamic";
 
-        private readonly Dictionary<string, List<string>> supportedRuntimeVersions = new Dictionary<string, List<string>>()
+        private readonly Dictionary<string, Dictionary<string, string>> supportedRuntimeVersions = new Dictionary<string, Dictionary<string, string>>()
         {
             { "dotnetcore", DotNetCoreSdkVersions.RuntimeVersions },
             { "node", NodeVersions.RuntimeVersions },
@@ -51,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 var createScriptArguments = new Dictionary<string, string>();
                 var dockerfileBuildImageName = "cli";
-                var dockerfileBuildImageTag = "stable";
+                var dockerfileBuildImageTag = DefaultCliImageTag;
 
                 if (!string.IsNullOrEmpty(this.commonOptions.BuildImage))
                 {
@@ -117,6 +118,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     if (!string.IsNullOrEmpty(dockerfileRuntimeImage))
                     {
                         break;
+                    }
+                }
+
+                // If the user didn't provided a custom build image, attempt to update the build image tag to
+                // accurately reflect the debian flavor used by the provided/found for the runtime image.
+                if (string.IsNullOrEmpty(this.commonOptions.BuildImage) && this.supportedRuntimeVersions.ContainsKey(dockerfileRuntimeImage))
+                {
+                    var runtimeDictionary = this.supportedRuntimeVersions[dockerfileRuntimeImage];
+                    if (runtimeDictionary.ContainsKey(dockerfileRuntimeImageTag))
+                    {
+                        var debianFlavor = runtimeDictionary[dockerfileRuntimeImageTag];
+                        dockerfileBuildImageTag = $"debian-{debianFlavor}-stable";
                     }
                 }
 
@@ -222,7 +235,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             if (!string.IsNullOrEmpty(platformName))
             {
-                var runtimeVersions = this.supportedRuntimeVersions[platformName];
+                var runtimeVersions = this.supportedRuntimeVersions[platformName]?.Keys;
                 if (runtimeVersions == null || !runtimeVersions.Any())
                 {
                     return DynamicRuntimeImageTag;
