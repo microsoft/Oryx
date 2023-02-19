@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("14", "~2", ExtVarNames.ApplicationInsightsConnectionStringEnvVarName, TestConstants.AppInsightsConnectionString)]
+        [InlineData("14", "~2", ExtVarNames.UserAppInsightsConnectionStringEnv, TestConstants.AppInsightsConnectionString)]
         [InlineData("14", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
         //Without pre-IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~2'
         // and that will enable oryx's appInsight attach logic
