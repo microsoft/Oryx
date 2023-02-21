@@ -15,6 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Python39Version = "3.9.15";
         public const string Python310Version = "3.10.8";
         public const string Python311Version = "3.11.0";
-        public static readonly Dictionary<string, string> RuntimeVersions = new Dictionary<string, string> { { "3.7", "bullseye" }, { "3.8", "bullseye" }, { "3.9", "buster" }, { "3.10", "bullseye" }, { "3.11", "bullseye" } };
+        public static readonly Dictionary<string, string> RuntimeVersions = new Dictionary<string, string> { { "3.7", "debian-bullseye" }, { "3.8", "debian-bullseye" }, { "3.9", "debian-buster" }, { "3.10", "debian-bullseye" }, { "3.11", "debian-bullseye" }, { "dynamic", "debian-buster" } };
     }
 }

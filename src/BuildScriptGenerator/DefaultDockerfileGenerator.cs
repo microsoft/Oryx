@@ -122,14 +122,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 // If the user didn't provided a custom build image, attempt to update the build image tag to
-                // accurately reflect the debian flavor used by the provided/found for the runtime image.
+                // accurately reflect the OS flavor used by the provided/found for the runtime image.
                 if (string.IsNullOrEmpty(this.commonOptions.BuildImage) && this.supportedRuntimeVersions.ContainsKey(dockerfileRuntimeImage))
                 {
                     var runtimeDictionary = this.supportedRuntimeVersions[dockerfileRuntimeImage];
                     if (runtimeDictionary.ContainsKey(dockerfileRuntimeImageTag))
                     {
-                        var debianFlavor = runtimeDictionary[dockerfileRuntimeImageTag];
-                        dockerfileBuildImageTag = $"debian-{debianFlavor}-stable";
+                        var osFlavor = runtimeDictionary[dockerfileRuntimeImageTag];
+                        dockerfileBuildImageTag = $"{osFlavor}-stable";
                     }
                 }
 
@@ -233,9 +233,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <returns>The converted platform runtime image version.</returns>
         private string ConvertToRuntimeVersion(string platformName, string platformVersion)
         {
-            if (!string.IsNullOrEmpty(platformName))
+            if (!string.IsNullOrEmpty(platformName) && this.supportedRuntimeVersions.ContainsKey(platformName))
             {
-                var runtimeVersions = this.supportedRuntimeVersions[platformName]?.Keys;
+                var runtimeVersions = this.supportedRuntimeVersions[platformName].Keys
+                    .Where(v => !string.Equals(v, DynamicRuntimeImageTag, StringComparison.OrdinalIgnoreCase));
                 if (runtimeVersions == null || !runtimeVersions.Any())
                 {
                     return DynamicRuntimeImageTag;

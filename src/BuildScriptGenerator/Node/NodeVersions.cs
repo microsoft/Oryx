@@ -20,6 +20,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string NodeAppInsightsSdkVersion = "1.8.7";
         public const string Pm2Version = "4.5.6";
         public const string NpmVersion = "6.14.15";
-        public static readonly Dictionary<string, string> RuntimeVersions = new Dictionary<string, string> { { "14", "buster" }, { "16", "buster" }, { "18", "bullseye" } };
+        public static readonly Dictionary<string, string> RuntimeVersions = new Dictionary<string, string> { { "14", "debian-buster" }, { "16", "debian-buster" }, { "18", "debian-bullseye" }, { "dynamic", "debian-buster" } };
     }
 }

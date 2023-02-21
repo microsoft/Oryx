@@ -47,11 +47,12 @@
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
     dot-net-70-sdk-version: 7.0.102
     runtime-versions:
-      3.0: buster
-      3.1: buster
-      5.0: buster
-      6.0: buster
-      7.0: buster
+      3.0: debian-buster
+      3.1: debian-buster
+      5.0: debian-buster
+      6.0: debian-buster
+      7.0: debian-buster
+      dynamic: debian-buster
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator/DotNetCore
@@ -147,11 +148,12 @@
     python310-version: 3.10.8
     python311-version: 3.11.0
     runtime-versions:
-      3.7: bullseye
-      3.8: bullseye
-      3.9: buster
-      3.10: bullseye
-      3.11: bullseye
+      3.7: debian-bullseye
+      3.8: debian-bullseye
+      3.9: debian-buster
+      3.10: debian-bullseye
+      3.11: debian-bullseye
+      dynamic: debian-buster
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
@@ -195,10 +197,15 @@
     php56-keys: 0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
     php56-tar-sha256: 1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c
     runtime-versions:
-      7.4: buster
-      8.0: buster
-      8.1: bullseye
-      8.2: bullseye
+      7.4: debian-buster
+      8.0: debian-buster
+      8.1: debian-bullseye
+      8.2: debian-bullseye
+    fpm-runtime-versions:
+      7.4-fpm: debian-buster
+      8.0-fpm: debian-buster
+      8.1-fpm: debian-bullseye
+      8.2-fpm: debian-bullseye
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
@@ -220,9 +227,10 @@
     ruby30-version: 3.0.5
     ruby30-tar-sha256: cf7cb5ba2030fe36596a40980cdecfd79a0337d35860876dc2b10a38675bddde
     runtime-versions:
-      2.5: buster
-      2.6: buster
-      2.7: buster
+      2.5: debian-buster
+      2.6: debian-buster
+      2.7: debian-buster
+      dynamic: debian-buster
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
@@ -280,9 +288,10 @@
     pm2-version: 4.5.6
     npm-version: 6.14.15
     runtime-versions:
-      14: buster
-      16: buster
-      18: bullseye
+      14: debian-buster
+      16: debian-buster
+      18: debian-bullseye
+      dynamic: debian-buster
   outputs:
   - type: shell
     directory: build
