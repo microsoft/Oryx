@@ -414,7 +414,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         .AddOptionsServices()
                         .Configure<BuildScriptGeneratorOptions>(options =>
                         {
-                            // These values are not retrieve through the 'config' api since we do not expect
+                            // These values are not retrieved through the 'config' api since we do not expect
                             // them to be provided by an end user.
                             options.SourceDir = this.SourceDir;
                             options.IntermediateDir = this.IntermediateDir;
