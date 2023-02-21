@@ -29,6 +29,7 @@ namespace Microsoft.Oryx.Automation
                 .AddSingleton<IVersionService, VersionService>()
                 .AddSingleton<IYamlFileReaderService, YamlFileReaderService>()
                 .AddScoped<DotNet.DotNet>()
+                .AddScoped<Python.Python>()
                 .AddLogging()
                 .BuildServiceProvider();
 
@@ -40,7 +41,10 @@ namespace Microsoft.Oryx.Automation
                     var dotNet = serviceProvider.GetRequiredService<DotNet.DotNet>();
                     await dotNet.RunAsync(oryxRootPath);
                     break;
-
+                case "python":
+                    var python = serviceProvider.GetRequiredService<Python.Python>();
+                    await python.RunAsync(oryxRootPath);
+                    break;
                 default:
                     Console.WriteLine($"Unsupported platform: {args[0]}");
                     Console.WriteLine($"Supported platforms: {string.Join(", ", supportedPlatforms)}");
