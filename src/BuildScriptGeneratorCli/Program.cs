@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             rootCommand.AddCommand(TelemetryCommand.Export(console));
 
             // rootCommand.AddGlobalOption(versionOption);
-            return await rootCommand.InvokeAsync(args);
+            return await rootCommand.InvokeAsync(args, console);
         }
 
         internal static string GetVersion()
