@@ -229,15 +229,15 @@ function buildGitHubActionsImage() {
 function buildJamStackImage() {
 	local debianFlavor=$1
 	local devImageTag=azfunc-jamstack
-	local parentImageTag=github
+	local parentImageTag=cli
 	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
 
-	buildGitHubActionsImage $debianFlavor
+	buildCliImage $debianFlavor
 
 	if [ -z "$debianFlavor" ]; then
 		debianFlavor="stretch"
 	fi
-	parentImageTag=actions-debian-$debianFlavor
+	parentImageTag=debian-$debianFlavor
 	devImageTag=$devImageTag-debian-$debianFlavor
 	echo "dev image tag: "$devImageTag
 	builtImageName=$builtImageName-debian-$debianFlavor
@@ -410,6 +410,7 @@ function buildCliImage() {
 
 	if [ -z "$debianFlavor" ] || [ $debianFlavor == "stretch" ] ; then
 		debianFlavor="stretch"
+		#Change buildImage name to fix validation pipeline
 		builtImageName="$builtImageName:debian-$debianFlavor"
 	else
 		builtImageName="$builtImageName:debian-$debianFlavor"

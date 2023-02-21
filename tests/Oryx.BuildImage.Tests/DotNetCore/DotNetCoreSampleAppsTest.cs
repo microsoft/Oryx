@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        [Fact, Trait("category", "cli")]
+        [Fact, Trait("category", "cli-stretch")]
         public void PipelineTestInvocationCli()
         {
             GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliRepository);

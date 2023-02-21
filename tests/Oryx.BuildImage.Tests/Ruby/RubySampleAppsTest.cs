@@ -40,7 +40,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [InlineData(ImageTestHelperConstants.CliRepository)]
         public void PipelineTestInvocationCli(string imageTag)
         {
