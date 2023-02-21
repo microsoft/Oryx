@@ -509,7 +509,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var phpComposerInstaller = new TestPhpComposerInstaller(
                 Options.Create(commonOptions),
                 isPhpComposerAlreadyInstalled.Value,
-                phpComposerInstallationScript);         
+                phpComposerInstallationScript);   
             return new TestPhpPlatform(
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),

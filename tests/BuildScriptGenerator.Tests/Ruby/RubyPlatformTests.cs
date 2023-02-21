@@ -366,7 +366,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Ruby
             var rubyInstaller = new TestRubyPlatformInstaller(
                 Options.Create(commonOptions),
                 isRubyVersionAlreadyInstalled.Value,
-                rubyInstallationScript);        
+                rubyInstallationScript);
             return new TestRubyPlatform(
                 Options.Create(rubyScriptGeneratorOptions),
                 Options.Create(commonOptions),

@@ -134,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 supportedPhpComposerVersions: new[] { "7.2.15", Common.PhpVersions.ComposerVersion });
 
             phpScriptGeneratorOptions = phpScriptGeneratorOptions ?? new PhpScriptGeneratorOptions();
-            commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();          
+            commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();    
             return new PhpPlatform(
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),

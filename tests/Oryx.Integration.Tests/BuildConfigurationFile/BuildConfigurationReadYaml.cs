@@ -134,7 +134,7 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
             var envScriptProvider = new PlatformsInstallationScriptProvider(
                 platforms,
                 defaultPlatformDetector,
-                new DefaultStandardOutputWriter());         
+                new DefaultStandardOutputWriter());
             return new DefaultBuildScriptGenerator(
                 defaultPlatformDetector,
                 envScriptProvider,
