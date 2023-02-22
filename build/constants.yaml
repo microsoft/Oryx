@@ -47,16 +47,12 @@
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
     dot-net-70-sdk-version: 7.0.200
     runtime-versions:
-    - 1.0
-    - 1.1
-    - 2.0
-    - 2.1
-    - 2.2
-    - 3.0
-    - 3.1
-    - 5.0
-    - 6.0
-    - 7.0
+      3.0: debian-buster
+      3.1: debian-buster
+      5.0: debian-buster
+      6.0: debian-buster
+      7.0: debian-buster
+      dynamic: debian-buster
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator/DotNetCore
@@ -152,12 +148,12 @@
     python310-version: 3.10.8
     python311-version: 3.11.0
     runtime-versions:
-    - 2.7
-    - 3.6
-    - 3.8
-    - 3.9
-    - 3.10
-    - 3.11
+      3.7: debian-bullseye
+      3.8: debian-bullseye
+      3.9: debian-buster
+      3.10: debian-bullseye
+      3.11: debian-bullseye
+      dynamic: debian-buster
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
@@ -201,14 +197,15 @@
     php56-keys: 0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
     php56-tar-sha256: 1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c
     runtime-versions:
-    - 5.6
-    - 7.0
-    - 7.2
-    - 7.3
-    - 7.4
-    - 8.0
-    - 8.1
-    - 8.2
+      7.4: debian-buster
+      8.0: debian-buster
+      8.1: debian-bullseye
+      8.2: debian-bullseye
+    fpm-runtime-versions:
+      7.4-fpm: debian-buster
+      8.0-fpm: debian-buster
+      8.1-fpm: debian-bullseye
+      8.2-fpm: debian-bullseye
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
@@ -230,9 +227,10 @@
     ruby30-version: 3.0.5
     ruby30-tar-sha256: cf7cb5ba2030fe36596a40980cdecfd79a0337d35860876dc2b10a38675bddde
     runtime-versions:
-    - 2.5
-    - 2.6
-    - 2.7
+      2.5: debian-buster
+      2.6: debian-buster
+      2.7: debian-buster
+      dynamic: debian-buster
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator
@@ -290,33 +288,10 @@
     pm2-version: 4.5.6
     npm-version: 6.14.15
     runtime-versions:
-    - 4.4
-    - 4.5
-    - 4.8
-    - 6
-    - 6.2
-    - 6.6
-    - 6.9
-    - 6.10
-    - 6.11
-    - 8
-    - 8.0
-    - 8.1
-    - 8.2
-    - 8.8
-    - 8.9
-    - 8.11
-    - 8.12
-    - 9.4
-    - 10
-    - 10.1
-    - 10.10
-    - 10.12
-    - 10.14
-    - 12
-    - 14
-    - 16
-    - 18
+      14: debian-buster
+      16: debian-buster
+      18: debian-bullseye
+      dynamic: debian-buster
   outputs:
   - type: shell
     directory: build
@@ -455,7 +430,7 @@
 - name: staging-runtime-constants
   constants:
     dotnetcore-staging-runtime-versions:
-    - 
+    -
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator

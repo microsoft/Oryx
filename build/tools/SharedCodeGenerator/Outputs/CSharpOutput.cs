@@ -46,7 +46,8 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
             }
 
             var header = $"// {Program.BuildAutogenDisclaimer(this.collection.SourcePath)}";
-            if (this.collection.ListConstants?.Any() == true)
+            if (this.collection.ListConstants?.Any() == true ||
+                this.collection.DictionaryConstants?.Any() == true)
             {
                 header += $"{Environment.NewLine}{Environment.NewLine}using System.Collections.Generic;";
             }
@@ -62,6 +63,11 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs.CSharp
                     pair => pair.Key.Camelize(),
                     pair => pair.Value.Any(s => !string.IsNullOrEmpty(s?.ToString()))
                         ? $"{{ \"{string.Join("\", \"", pair.Value)}\" }}"
+                        : "{ }"),
+                DictionaryConstants = this.collection.DictionaryConstants?.ToDictionary(
+                    pair => pair.Key.Camelize(),
+                    pair => pair.Value.Any(s => !string.IsNullOrEmpty(s.Key?.ToString()) && !string.IsNullOrEmpty(s.Value?.ToString()))
+                        ? $"{{ {string.Join(", ", pair.Value.Select(p => $"{{ \"{p.Key}\", \"{p.Value}\" }}"))} }}"
                         : "{ }"),
             };
 
