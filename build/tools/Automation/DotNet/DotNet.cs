@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.Automation.DotNet
 
             // Deserialize release metadata
             var response = await this.httpClient.GetDataAsync(Constants.ReleasesIndexJsonUrl);
-            var releaseNotes = JsonConvert.DeserializeObject<ReleaseNotes>(response);
+            var releaseNotes = response == null ? null : JsonConvert.DeserializeObject<ReleaseNotes>(response);
             var releasesIndex = releaseNotes == null ? new List<ReleaseNote>() : releaseNotes.ReleaseIndexes;
             foreach (var releaseIndex in releasesIndex)
             {
