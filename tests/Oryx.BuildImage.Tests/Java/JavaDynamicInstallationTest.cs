@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetGitHubActionsBuildImage());
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [MemberData(nameof(VersionsData))]
         public void BuildsMavenArcheTypeSampleWithDynamicInstallationCli(string version)
         {
