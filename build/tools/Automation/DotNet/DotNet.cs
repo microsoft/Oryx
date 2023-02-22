@@ -34,12 +34,13 @@ namespace Microsoft.Oryx.Automation.DotNet
     {
         private readonly HttpClient httpClient;
         private readonly IVersionService versionService;
-        private readonly IYamlFileReaderService yamlFileReaderService;
+        private readonly IYamlFileService yamlFileReaderService;
+        private string oryxRootPath;
 
         public DotNet(
             IHttpClientFactory httpClientFactory,
             IVersionService versionService,
-            IYamlFileReaderService yamlFileReaderService)
+            IYamlFileService yamlFileReaderService)
         {
             this.httpClient = httpClientFactory.CreateClient();
             this.versionService = versionService;
@@ -48,12 +49,13 @@ namespace Microsoft.Oryx.Automation.DotNet
 
         public async Task RunAsync(string oryxRootPath)
         {
+            this.oryxRootPath = oryxRootPath;
             List<VersionObj> newVersionsObjs = await this.GetNewVersionObjsAsync();
             if (newVersionsObjs.Count > 0)
             {
-                string constantsYamlAbsolutePath = Path.Combine(oryxRootPath, "build", Constants.ConstantsYaml);
+                string constantsYamlAbsolutePath = Path.Combine(this.oryxRootPath, "build", Constants.ConstantsYaml);
                 List<ConstantsYamlFile> yamlConstantsObjs = await this.yamlFileReaderService.ReadConstantsYamlFileAsync(constantsYamlAbsolutePath);
-                this.UpdateOryxConstantsForNewVersions(newVersionsObjs, yamlConstantsObjs, oryxRootPath);
+                this.UpdateOryxConstantsForNewVersions(newVersionsObjs, yamlConstantsObjs);
             }
         }
 
@@ -151,7 +153,7 @@ namespace Microsoft.Oryx.Automation.DotNet
             this.httpClient.Dispose();
         }
 
-        private void UpdateOryxConstantsForNewVersions(List<VersionObj> versionObjs, List<ConstantsYamlFile> yamlConstants, string oryxRootPath)
+        private void UpdateOryxConstantsForNewVersions(List<VersionObj> versionObjs, List<ConstantsYamlFile> yamlConstants)
         {
             Dictionary<string, ConstantsYamlFile> dotnetYamlConstants = this.GetYamlDotNetConstants(yamlConstants);
 
@@ -170,7 +172,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
 
                     // add sdk to versionsToBuild.txt
-                    this.UpdateVersionsToBuildTxt(versionObj, oryxRootPath);
+                    this.UpdateVersionsToBuildTxt(versionObj);
                 }
                 else
                 {
@@ -182,13 +184,8 @@ namespace Microsoft.Oryx.Automation.DotNet
                 }
             }
 
-            var serializer = new SerializerBuilder()
-                .WithNamingConvention(UnderscoredNamingConvention.Instance)
-                .Build();
-
-            var constantsYamlAbsolutePath = Path.Combine(oryxRootPath, "build", Constants.ConstantsYaml);
-            var stringResult = serializer.Serialize(yamlConstants);
-            File.WriteAllText(constantsYamlAbsolutePath, stringResult);
+            var constantsYamlAbsolutePath = Path.Combine(this.oryxRootPath, "build", Constants.ConstantsYaml);
+            this.yamlFileReaderService.WriteConstantsYamlFile(constantsYamlAbsolutePath, yamlConstants);
         }
 
         private Dictionary<string, ConstantsYamlFile> GetYamlDotNetConstants(List<ConstantsYamlFile> yamlContents)
@@ -239,13 +236,18 @@ namespace Microsoft.Oryx.Automation.DotNet
                 $"Pattern matching using regex: {Constants.DotNetLinuxTarFileRegex}");
         }
 
-        private void UpdateVersionsToBuildTxt(VersionObj platformConstant, string oryxRootPath)
+        private void UpdateVersionsToBuildTxt(VersionObj platformConstant)
         {
             HashSet<string> debianFlavors = new HashSet<string>() { "bullseye", "buster", "focal-scm", "stretch" };
             foreach (string debianFlavor in debianFlavors)
             {
                 var versionsToBuildTxtAbsolutePath = Path.Combine(
-                    oryxRootPath, "platforms", Constants.DotNetName, "versions", debianFlavor, Constants.VersionsToBuildTxt);
+                    this.oryxRootPath,
+                    "platforms",
+                    Constants.DotNetName,
+                    "versions",
+                    debianFlavor,
+                    Constants.VersionsToBuildTxt);
                 string line = $"\n{platformConstant.Version}, {platformConstant.Sha},";
                 File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
 

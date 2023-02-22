@@ -1,4 +1,4 @@
-// --------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -13,7 +13,7 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Microsoft.Oryx.Automation.Services
 {
-    public class YamlFileReaderService : IYamlFileReaderService
+    public class YamlFileService : IYamlFileService
     {
         public async Task<List<ConstantsYamlFile>> ReadConstantsYamlFileAsync(string filePath)
         {
@@ -41,6 +41,27 @@ namespace Microsoft.Oryx.Automation.Services
             {
                 Console.WriteLine($"Error reading YAML file: {ex.Message}");
                 throw;
+            }
+        }
+
+        public void WriteConstantsYamlFile(string filePath, List<ConstantsYamlFile> yamlConstants)
+        {
+            try
+            {
+                var serializer = new SerializerBuilder()
+                    .WithNamingConvention(UnderscoredNamingConvention.Instance)
+                    .Build();
+
+                var stringResult = serializer.Serialize(yamlConstants);
+                File.WriteAllText(filePath, stringResult);
+            }
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine($"Error writing constants YAML file: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred while writing the YAML file: {ex.Message}");
             }
         }
     }
