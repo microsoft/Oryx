@@ -27,6 +27,7 @@ RUN { \
 } >> /etc/apache2/apache2.conf
 
 # Install common PHP extensions
+# TEMPORARY: Holding odbc related packages from upgrading.
 RUN apt-mark hold msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
     && apt-get update \
     && apt-get upgrade -y \

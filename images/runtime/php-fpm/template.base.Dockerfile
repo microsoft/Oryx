@@ -26,6 +26,7 @@ RUN nginx -t
 ENV NGINX_PORT 8080
 
 # Install common PHP extensions
+# TEMPORARY: Holding odbc related packages from upgrading.
 RUN apt-mark hold msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
     && apt-get update \
     && apt-get upgrade -y \
