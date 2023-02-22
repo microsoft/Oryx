@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Oryx.Automation.DotNet;
 using Microsoft.Oryx.Automation.Services;
 
 namespace Microsoft.Oryx.Automation
@@ -25,7 +26,7 @@ namespace Microsoft.Oryx.Automation
                 .AddHttpClient()
                 .AddSingleton<IVersionService, VersionService>()
                 .AddSingleton<IYamlFileService, YamlFileService>()
-                .AddScoped<DotNet.DotNet>()
+                .AddScoped<DotNetAutomator>()
                 .BuildServiceProvider();
 
             string oryxRootPath = args[1];
@@ -33,7 +34,7 @@ namespace Microsoft.Oryx.Automation
             switch (platform)
             {
                 case "dotnet":
-                    var dotNet = serviceProvider.GetRequiredService<DotNet.DotNet>();
+                    var dotNet = serviceProvider.GetRequiredService<DotNetAutomator>();
                     await dotNet.RunAsync(oryxRootPath);
                     break;
 

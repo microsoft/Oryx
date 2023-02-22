@@ -14,8 +14,6 @@ using Microsoft.Oryx.Automation.Extensions;
 using Microsoft.Oryx.Automation.Models;
 using Microsoft.Oryx.Automation.Services;
 using Newtonsoft.Json;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Microsoft.Oryx.Automation.DotNet
 {
@@ -30,14 +28,14 @@ namespace Microsoft.Oryx.Automation.DotNet
     ///           Oryx tests.
     ///     - Updating versionsToBuild.txt
     /// </Summary>
-    public class DotNet : IDisposable
+    public class DotNetAutomator : IDisposable
     {
         private readonly HttpClient httpClient;
         private readonly IVersionService versionService;
         private readonly IYamlFileService yamlFileReaderService;
         private string oryxRootPath;
 
-        public DotNet(
+        public DotNetAutomator(
             IHttpClientFactory httpClientFactory,
             IVersionService versionService,
             IYamlFileService yamlFileReaderService)
