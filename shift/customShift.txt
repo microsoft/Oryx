@@ -1,0 +1,4 @@
+#Enter a custom shift info in the following format:
+#{Github username} {Cover start date} {Cover end date}
+#Please make sure the date is in the format YYYY-MM-DD
+harryli0108 1999-02-01 1999-02-08

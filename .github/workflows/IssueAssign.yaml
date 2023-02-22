@@ -1,0 +1,17 @@
+name: "Auto Assign Issue"
+
+on:
+  issues:
+    types: [opened, reopened]
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  Debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Assign issues
+        run: |
+          chmod +x ./shift/autoIssueAssign.sh
+          ./shift/autoIssueAssign.sh ./shift/customShift.txt ${{ secrets.GITHUB_TOKEN }}
