@@ -34,8 +34,8 @@ namespace Microsoft.Oryx.Automation
             switch (platform)
             {
                 case "dotnet":
-                    var dotNet = serviceProvider.GetRequiredService<DotNetAutomator>();
-                    await dotNet.RunAsync(oryxRootPath);
+                    var dotNetAutomator = serviceProvider.GetRequiredService<DotNetAutomator>();
+                    await dotNetAutomator.RunAsync(oryxRootPath);
                     break;
 
                 default:
