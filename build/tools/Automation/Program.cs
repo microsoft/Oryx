@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Automation
             }
 
             var serviceProvider = new ServiceCollection()
-                .AddScoped<IHttpClient, HttpClientImpl>()
+                .AddHttpClientImpl()
                 .AddScoped<ILogger, LoggerImpl>()
                 .AddSingleton<IVersionService, VersionService>()
                 .AddSingleton<IYamlFileReaderService, YamlFileReaderService>()

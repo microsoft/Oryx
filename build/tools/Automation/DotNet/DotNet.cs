@@ -8,8 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Xml.Linq;
-using Microsoft.Oryx.Automation.Client;
 using Microsoft.Oryx.Automation.DotNet.Models;
 using Microsoft.Oryx.Automation.Models;
 using Microsoft.Oryx.Automation.Services;

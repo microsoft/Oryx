@@ -7,10 +7,20 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.Oryx.Automation.Client
 {
-    public class HttpClientImpl : IHttpClient
+    public static class HttpClientExtensions
+    {
+        public static IServiceCollection AddHttpClientImpl(this IServiceCollection services)
+        {
+            services.AddSingleton<HttpClientImpl>();
+            return services;
+        }
+    }
+
+    public class HttpClientImpl : IDisposable
     {
         private readonly HttpClient httpClient;
 
@@ -23,18 +33,15 @@ namespace Microsoft.Oryx.Automation.Client
         {
             try
             {
-                Console.WriteLine("Making request to: " + url);
+                Console.WriteLine("Making GET request to: " + url);
                 HttpResponseMessage response = await this.httpClient.GetAsync(url);
                 Console.WriteLine($"Response received.: {response.StatusCode}");
                 if (!response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine("Error in GetDataAsync method, status code: " + response.StatusCode);
                     return null;
                 }
 
-                Console.WriteLine("Reading response content.");
                 string responseContent = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Response content read.");
                 return responseContent;
             }
             catch (Exception ex)
@@ -48,8 +55,7 @@ namespace Microsoft.Oryx.Automation.Client
         public async Task<HashSet<string>> GetOryxSdkVersionsAsync(string url)
         {
             HashSet<string> versions = new HashSet<string>();
-            HttpClientImpl httpClientImpl = new HttpClientImpl();
-            var response = await httpClientImpl.GetDataAsync(url);
+            var response = await this.GetDataAsync(url);
 
             XDocument xmlDoc = XDocument.Parse(response);
             var versionElements = xmlDoc.Descendants("Version");
@@ -61,6 +67,11 @@ namespace Microsoft.Oryx.Automation.Client
             }
 
             return versions;
+        }
+
+        public void Dispose()
+        {
+            this.httpClient?.Dispose();
         }
     }
 }

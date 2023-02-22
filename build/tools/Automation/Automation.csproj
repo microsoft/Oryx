@@ -13,10 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.32" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.32" />
     <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.21.0" />
-    <PackageReference Include="Moq" Version="4.18.4" />
     <PackageReference Include="NuGet.Versioning" Version="6.4.0" />
-    <PackageReference Include="xunit.assert" Version="2.4.2" />
-    <PackageReference Include="xunit.extensibility.core" Version="2.4.2" />
     <PackageReference Include="YamlDotNet" Version="12.3.1" />
   </ItemGroup>
 
