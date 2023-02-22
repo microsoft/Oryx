@@ -16,6 +16,6 @@ namespace Microsoft.Oryx.Automation.DotNet.Models
         public string VersionDisplay { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "files")]
-        public List<FileObj> Files { get; set; } = new List<FileObj>();
+        public List<File> Files { get; set; } = new List<File>();
     }
 }

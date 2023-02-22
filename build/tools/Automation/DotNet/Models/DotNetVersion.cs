@@ -5,7 +5,7 @@
 namespace Microsoft.Oryx.Automation.DotNet.Models
 {
     // </Summary>
-    public class VersionObj
+    public class DotNetVersion
     {
         /// <Summary>
         /// The version of the platfom.

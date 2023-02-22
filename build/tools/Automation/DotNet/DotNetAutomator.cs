@@ -48,23 +48,23 @@ namespace Microsoft.Oryx.Automation.DotNet
         public async Task RunAsync(string oryxRootPath)
         {
             this.oryxRootPath = oryxRootPath;
-            List<VersionObj> newVersionsObjs = await this.GetNewVersionObjsAsync();
-            if (newVersionsObjs.Count > 0)
+            List<DotNetVersion> newDotNetVersions = await this.GetNewDotNetVersionsAsync();
+            if (newDotNetVersions.Count > 0)
             {
-                string constantsYamlAbsolutePath = Path.Combine(this.oryxRootPath, "build", Constants.ConstantsYaml);
+                string constantsYamlAbsolutePath = Path.Combine(this.oryxRootPath, "build", DotNetConstants.ConstantsYaml);
                 List<ConstantsYamlFile> yamlConstantsObjs = await this.yamlFileReaderService.ReadConstantsYamlFileAsync(constantsYamlAbsolutePath);
-                this.UpdateOryxConstantsForNewVersions(newVersionsObjs, yamlConstantsObjs);
+                this.UpdateOryxConstantsForNewVersions(newDotNetVersions, yamlConstantsObjs);
             }
         }
 
-        public async Task<List<VersionObj>> GetNewVersionObjsAsync()
+        public async Task<List<DotNetVersion>> GetNewDotNetVersionsAsync()
         {
-            List<VersionObj> versionObjs = new List<VersionObj>();
-            string url = Constants.OryxSdkStorageBaseUrl + Constants.OryxSdkStorageDotNetSuffixUrl;
+            List<DotNetVersion> versionObjs = new List<DotNetVersion>();
+            string url = Constants.OryxSdkStorageBaseUrl + DotNetConstants.OryxSdkStorageDotNetSuffixUrl;
             HashSet<string> oryxSdkVersions = await this.httpClient.GetOryxSdkVersionsAsync(url);
 
             // Deserialize release metadata
-            var response = await this.httpClient.GetDataAsync(Constants.ReleasesIndexJsonUrl);
+            var response = await this.httpClient.GetDataAsync(DotNetConstants.ReleasesIndexJsonUrl);
             var releaseNotes = response == null ? null : JsonConvert.DeserializeObject<ReleaseNotes>(response);
             var releasesIndex = releaseNotes == null ? new List<ReleaseNote>() : releaseNotes.ReleaseIndexes;
             foreach (var releaseIndex in releasesIndex)
@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                 // or if it is already present in set of ORYX SDK versions,
                 // skip to the next version in the loop.
                 string latestVersion = releaseIndex.LatestSdk;
-                if (!this.versionService.IsVersionWithinRange(latestVersion, minVersion: Constants.DotNetMinSdkVersion) ||
+                if (!this.versionService.IsVersionWithinRange(latestVersion, minVersion: DotNetConstants.DotNetMinSdkVersion) ||
                     oryxSdkVersions.Contains(latestVersion))
                 {
                     continue;
@@ -90,50 +90,50 @@ namespace Microsoft.Oryx.Automation.DotNet
 
                     // Check the version is not already in our storage account
                     if (oryxSdkVersions.Contains(sdkVersion) ||
-                        !this.versionService.IsVersionWithinRange(sdkVersion, minVersion: Constants.DotNetMinSdkVersion))
+                        !this.versionService.IsVersionWithinRange(sdkVersion, minVersion: DotNetConstants.DotNetMinSdkVersion))
                     {
                         continue;
                     }
 
                     // create sdk version object
                     string sha = this.GetSha(release.Sdk.Files);
-                    VersionObj versionObj = new VersionObj
+                    DotNetVersion versionObj = new DotNetVersion
                     {
                         Version = sdkVersion,
                         Sha = sha,
-                        VersionType = Constants.SdkName,
+                        VersionType = DotNetConstants.SdkName,
                     };
                     versionObjs.Add(versionObj);
 
                     // create runtime (netcore) version object
                     string runtimeVersion = release.Runtime.Version;
-                    if (!this.versionService.IsVersionWithinRange(runtimeVersion, minVersion: Constants.DotNetMinRuntimeVersion))
+                    if (!this.versionService.IsVersionWithinRange(runtimeVersion, minVersion: DotNetConstants.DotNetMinRuntimeVersion))
                     {
                         continue;
                     }
 
                     sha = this.GetSha(release.Runtime.Files);
-                    versionObj = new VersionObj
+                    versionObj = new DotNetVersion
                     {
                         Version = runtimeVersion,
                         Sha = sha,
-                        VersionType = Constants.DotNetCoreName,
+                        VersionType = DotNetConstants.DotNetCoreName,
                     };
                     versionObjs.Add(versionObj);
 
                     // create runtime (aspnetcore) version object
                     string aspnetCoreRuntimeVersion = release.AspNetCoreRuntime.Version;
-                    if (!this.versionService.IsVersionWithinRange(aspnetCoreRuntimeVersion, minVersion: Constants.DotNetMinRuntimeVersion))
+                    if (!this.versionService.IsVersionWithinRange(aspnetCoreRuntimeVersion, minVersion: DotNetConstants.DotNetMinRuntimeVersion))
                     {
                         continue;
                     }
 
                     sha = this.GetSha(release.AspNetCoreRuntime.Files);
-                    versionObj = new VersionObj
+                    versionObj = new DotNetVersion
                     {
                         Version = aspnetCoreRuntimeVersion,
                         Sha = sha,
-                        VersionType = Constants.DotNetAspCoreName,
+                        VersionType = DotNetConstants.DotNetAspCoreName,
                     };
                     versionObjs.Add(versionObj);
 
@@ -151,7 +151,7 @@ namespace Microsoft.Oryx.Automation.DotNet
             this.httpClient.Dispose();
         }
 
-        private void UpdateOryxConstantsForNewVersions(List<VersionObj> versionObjs, List<ConstantsYamlFile> yamlConstants)
+        private void UpdateOryxConstantsForNewVersions(List<DotNetVersion> versionObjs, List<ConstantsYamlFile> yamlConstants)
         {
             Dictionary<string, ConstantsYamlFile> dotnetYamlConstants = this.GetYamlDotNetConstants(yamlConstants);
 
@@ -164,9 +164,9 @@ namespace Microsoft.Oryx.Automation.DotNet
                 string dotNetConstantKey = this.GenerateDotNetConstantKey(versionObj);
                 Console.WriteLine($"[UpdateConstants] version: {version} versionType: {versionType} sha: {sha} dotNetConstantKey: {dotNetConstantKey}");
 
-                if (versionType.Equals(Constants.SdkName))
+                if (versionType.Equals(DotNetConstants.SdkName))
                 {
-                    ConstantsYamlFile dotNetYamlConstant = dotnetYamlConstants[Constants.DotNetSdkKey];
+                    ConstantsYamlFile dotNetYamlConstant = dotnetYamlConstants[DotNetConstants.DotNetSdkKey];
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
 
                     // add sdk to versionsToBuild.txt
@@ -174,7 +174,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                 }
                 else
                 {
-                    ConstantsYamlFile dotNetYamlConstant = dotnetYamlConstants[Constants.DotNetRuntimeKey];
+                    ConstantsYamlFile dotNetYamlConstant = dotnetYamlConstants[DotNetConstants.DotNetRuntimeKey];
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
 
                     // store SHAs for net-core and aspnet-core
@@ -182,18 +182,18 @@ namespace Microsoft.Oryx.Automation.DotNet
                 }
             }
 
-            var constantsYamlAbsolutePath = Path.Combine(this.oryxRootPath, "build", Constants.ConstantsYaml);
+            var constantsYamlAbsolutePath = Path.Combine(this.oryxRootPath, "build", DotNetConstants.ConstantsYaml);
             this.yamlFileReaderService.WriteConstantsYamlFile(constantsYamlAbsolutePath, yamlConstants);
         }
 
         private Dictionary<string, ConstantsYamlFile> GetYamlDotNetConstants(List<ConstantsYamlFile> yamlContents)
         {
-            var dotnetConstants = yamlContents.Where(c => c.Name == Constants.DotNetSdkKey || c.Name == Constants.DotNetRuntimeKey)
+            var dotnetConstants = yamlContents.Where(c => c.Name == DotNetConstants.DotNetSdkKey || c.Name == DotNetConstants.DotNetRuntimeKey)
                                   .ToDictionary(c => c.Name, c => c);
             return dotnetConstants;
         }
 
-        private string GenerateDotNetConstantKey(VersionObj versionObj)
+        private string GenerateDotNetConstantKey(DotNetVersion versionObj)
         {
             string[] splitVersion = versionObj.Version.Split('.');
             string majorVersion = splitVersion[0];
@@ -204,7 +204,7 @@ namespace Microsoft.Oryx.Automation.DotNet
             string majorMinor = majorVersionInt < 10 ? $"{majorVersion}{minorVersion}" : $"{majorVersion}Dot{minorVersion}";
 
             string constant;
-            if (versionObj.VersionType.Equals(Constants.SdkName))
+            if (versionObj.VersionType.Equals(DotNetConstants.SdkName))
             {
                 // dotnet/dotnetcore are based on the major version
                 string prefix = majorVersionInt < 5 ? $"dot-net-core" : "dot-net";
@@ -219,9 +219,9 @@ namespace Microsoft.Oryx.Automation.DotNet
             return constant;
         }
 
-        private string GetSha(List<FileObj> files)
+        private string GetSha(List<Models.File> files)
         {
-            Regex regEx = new Regex(Constants.DotNetLinuxTarFileRegex);
+            Regex regEx = new Regex(DotNetConstants.DotNetLinuxTarFileRegex);
             foreach (var file in files)
             {
                 if (regEx.IsMatch(file.Name))
@@ -231,10 +231,10 @@ namespace Microsoft.Oryx.Automation.DotNet
             }
 
             throw new MissingFieldException(message: $"[GetSha] Expected SHA feild is missing in {files}\n" +
-                $"Pattern matching using regex: {Constants.DotNetLinuxTarFileRegex}");
+                $"Pattern matching using regex: {DotNetConstants.DotNetLinuxTarFileRegex}");
         }
 
-        private void UpdateVersionsToBuildTxt(VersionObj platformConstant)
+        private void UpdateVersionsToBuildTxt(DotNetVersion platformConstant)
         {
             HashSet<string> debianFlavors = new HashSet<string>() { "bullseye", "buster", "focal-scm", "stretch" };
             foreach (string debianFlavor in debianFlavors)
@@ -242,18 +242,18 @@ namespace Microsoft.Oryx.Automation.DotNet
                 var versionsToBuildTxtAbsolutePath = Path.Combine(
                     this.oryxRootPath,
                     "platforms",
-                    Constants.DotNetName,
+                    DotNetConstants.DotNetName,
                     "versions",
                     debianFlavor,
-                    Constants.VersionsToBuildTxt);
+                    DotNetConstants.VersionsToBuildTxt);
                 string line = $"\n{platformConstant.Version}, {platformConstant.Sha},";
-                File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
+                System.IO.File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
 
                 // sort
                 Console.WriteLine($"[UpdateVersionsToBuildTxt] Updating {versionsToBuildTxtAbsolutePath}...");
-                var contents = File.ReadAllLines(versionsToBuildTxtAbsolutePath);
+                var contents = System.IO.File.ReadAllLines(versionsToBuildTxtAbsolutePath);
                 Array.Sort(contents);
-                File.WriteAllLines(versionsToBuildTxtAbsolutePath, contents.Distinct());
+                System.IO.File.WriteAllLines(versionsToBuildTxtAbsolutePath, contents.Distinct());
             }
         }
     }

@@ -12,7 +12,7 @@ namespace Microsoft.Oryx.Automation.DotNet.Models
         public string ReleaseDate { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "sdk")]
-        public SdkObj Sdk { get; set; } = new SdkObj();
+        public DotNetSdk Sdk { get; set; } = new DotNetSdk();
 
         [JsonProperty(PropertyName = "runtime")]
         public RuntimeDotNet Runtime { get; set; } = new RuntimeDotNet();
