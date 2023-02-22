@@ -31,7 +31,7 @@ parameters:
         value: full
       - 
         key: Cli
-        value: cli
+        value: cli-stretch
       - 
         key: CliBuster
         value: cli-buster

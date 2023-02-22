@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
+using System.Linq;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Tests.Common
@@ -439,61 +440,25 @@ namespace Microsoft.Oryx.Tests.Common
         {
             {
                 DotNetCoreConstants.RuntimePlatformName,
-                new Dictionary<string, string>
-                {
-                    { "3.0", "debian-buster" },
-                    { "3.1", "debian-buster" },
-                    { "5.0", "debian-buster" },
-                    { "6.0", "debian-buster" },
-                    { "7.0", "debian-buster" },
-                    { "dynamic", "debian-buster" },
-                }
+                DotNetCoreSdkVersions.RuntimeVersions
             },
             {
                 NodeConstants.NodeToolName,
-                new Dictionary<string, string>
-                {
-                    { "14", "debian-buster" },
-                    { "16", "debian-buster" },
-                    { "18", "debian-bullseye" },
-                    { "dynamic", "debian-buster" },
-                }
+                NodeVersions.RuntimeVersions
             },
             {
                 PhpConstants.PlatformName,
-                new Dictionary<string, string>
-                {
-                    { "7.4", "debian-buster" },
-                    { "8.0", "debian-buster" },
-                    { "8.1", "debian-bullseye" },
-                    { "8.2", "debian-bullseye" },
-                    { "7.4-fpm", "debian-buster" },
-                    { "8.0-fpm", "debian-buster" },
-                    { "8.1-fpm", "debian-bullseye" },
-                    { "8.2-fpm", "debian-bullseye" },
-                }
+                PhpVersions.RuntimeVersions
+                    .Union(PhpVersions.FpmRuntimeVersions)
+                    .ToDictionary(x => x.Key, x => x.Value)
             },
             {
                 PythonConstants.PlatformName,
-                new Dictionary<string, string>
-                {
-                    { "3.7", "debian-bullseye" },
-                    { "3.8", "debian-bullseye" },
-                    { "3.9", "debian-buster" },
-                    { "3.10", "debian-bullseye" },
-                    { "3.11", "debian-bullseye" },
-                    { "dynamic", "debian-buster" },
-                }
+                PythonVersions.RuntimeVersions
             },
             {
                 RubyConstants.PlatformName,
-                new Dictionary<string, string>
-                {
-                    { "2.5", "debian-buster" },
-                    { "2.6", "debian-buster" },
-                    { "2.7", "debian-buster" },
-                    { "dynamic", "debian-buster" },
-                }
+                RubyVersions.RuntimeVersions
             },
         };
     }

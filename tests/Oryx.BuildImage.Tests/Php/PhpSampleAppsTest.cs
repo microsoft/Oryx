@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [InlineData(PhpVersions.Php74Version, ImageTestHelperConstants.CliRepository)]
         [InlineData(PhpVersions.Php73Version, ImageTestHelperConstants.CliRepository)]
         public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_Cli(string phpVersion, string imageTag) {

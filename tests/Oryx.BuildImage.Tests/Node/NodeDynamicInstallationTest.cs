@@ -74,6 +74,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
+
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-stretch")]
         [MemberData(nameof(ImageNameData))]
@@ -82,7 +83,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [Trait("build-image", "cli-debian-stretch")]
         [MemberData(nameof(ImageNameDataCli))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCli(string version, string buildImageName)
