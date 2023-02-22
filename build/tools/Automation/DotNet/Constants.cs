@@ -19,7 +19,8 @@ namespace Microsoft.Oryx.Automation.DotNet
         public const string DotNetLinuxTarFileRegex = ".*-linux-x64.tar.gz";
         public const string ReleasesIndexJsonUrl = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json";
         public const string OryxSdkStorageBaseUrl = "https://oryx-cdn.microsoft.io";
-        public const string MinSdkVersion = "6.0.405";
-        public const string MinRuntimeVersion = "6.0.12";
+        public const string OryxSdkStorageDotNetSuffixUrl = "/dotnet?restype=container&comp=list&include=metadata";
+        public const string DotNetMinSdkVersion = "6.0.405";
+        public const string DotNetMinRuntimeVersion = "6.0.12";
     }
 }

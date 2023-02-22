@@ -9,7 +9,7 @@ namespace Microsoft.Oryx.Automation.Models
     /// <Summary>
     /// This is used to deserialize Constants.ConstantsYaml file
     /// </Summary>
-    public class YamlConstants
+    public class ConstantsYamlFile
     {
         public string Name { get; set; } = string.Empty;
 

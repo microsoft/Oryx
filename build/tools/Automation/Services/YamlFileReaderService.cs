@@ -13,13 +13,13 @@ namespace Microsoft.Oryx.Automation.Services
 {
     public class YamlFileReaderService : IYamlFileReaderService
     {
-        public async Task<List<YamlConstants>> ReadConstantsYamlFileAsync(string filePath)
+        public async Task<List<ConstantsYamlFile>> ReadConstantsYamlFileAsync(string filePath)
         {
             string fileContents = await File.ReadAllTextAsync(filePath);
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(UnderscoredNamingConvention.Instance)
                 .Build();
-            var yamlContents = deserializer.Deserialize<List<YamlConstants>>(fileContents);
+            var yamlContents = deserializer.Deserialize<List<ConstantsYamlFile>>(fileContents);
 
             return yamlContents;
         }

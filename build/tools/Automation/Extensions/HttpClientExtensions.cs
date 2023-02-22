@@ -7,34 +7,17 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Microsoft.Oryx.Automation.Client
+namespace Microsoft.Oryx.Automation.Extensions
 {
     public static class HttpClientExtensions
     {
-        public static IServiceCollection AddHttpClientImpl(this IServiceCollection services)
-        {
-            services.AddSingleton<HttpClientImpl>();
-            return services;
-        }
-    }
-
-    public class HttpClientImpl : IDisposable
-    {
-        private readonly HttpClient httpClient;
-
-        public HttpClientImpl()
-        {
-            this.httpClient = new HttpClient();
-        }
-
-        public async Task<string> GetDataAsync(string url)
+        public static async Task<string> GetDataAsync(this HttpClient httpClient, string url)
         {
             try
             {
                 Console.WriteLine("Making GET request to: " + url);
-                HttpResponseMessage response = await this.httpClient.GetAsync(url);
+                HttpResponseMessage response = await httpClient.GetAsync(url);
                 Console.WriteLine($"Response received.: {response.StatusCode}");
                 if (!response.IsSuccessStatusCode)
                 {
@@ -52,10 +35,10 @@ namespace Microsoft.Oryx.Automation.Client
             }
         }
 
-        public async Task<HashSet<string>> GetOryxSdkVersionsAsync(string url)
+        public static async Task<HashSet<string>> GetOryxSdkVersionsAsync(this HttpClient httpClient, string url)
         {
             HashSet<string> versions = new HashSet<string>();
-            var response = await this.GetDataAsync(url);
+            var response = await httpClient.GetDataAsync(url);
 
             XDocument xmlDoc = XDocument.Parse(response);
             var versionElements = xmlDoc.Descendants("Version");
@@ -67,11 +50,6 @@ namespace Microsoft.Oryx.Automation.Client
             }
 
             return versions;
-        }
-
-        public void Dispose()
-        {
-            this.httpClient?.Dispose();
         }
     }
 }

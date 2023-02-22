@@ -11,9 +11,6 @@ namespace Microsoft.Oryx.Automation.DotNet.Models
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; } = string.Empty;
 
-        [JsonProperty(PropertyName = "rid")]
-        public string Rid { get; set; } = string.Empty;
-
         [JsonProperty(PropertyName = "url")]
         public string Url { get; set; } = string.Empty;
 

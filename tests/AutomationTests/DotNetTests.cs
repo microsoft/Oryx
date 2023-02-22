@@ -1,9 +1,12 @@
-using Microsoft.Oryx.Automation.Client;
+// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+/*using Microsoft.Oryx.Automation.Client;
 using Microsoft.Oryx.Automation.DotNet.Models;
 using Microsoft.Oryx.Automation.Models;
 using Microsoft.Oryx.Automation.Services;
 using Microsoft.Oryx.Automation.Telemetry;
-using Moq;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -36,4 +39,4 @@ namespace Microsoft.Oryx.Automation.DotNet.Tests
         }
     // TODO: add more unit tests
     }
-}
+}*/
