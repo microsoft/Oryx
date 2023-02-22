@@ -69,6 +69,9 @@ namespace Microsoft.Oryx.Automation.DotNet
             var releasesIndex = releaseNotes == null ? new List<ReleaseNote>() : releaseNotes.ReleaseIndexes;
             foreach (var releaseIndex in releasesIndex)
             {
+                // If the latest version is not within the acceptable range (inclusive),
+                // or if it is already present in set of ORYX SDK versions,
+                // skip to the next version in the loop.
                 string latestVersion = releaseIndex.LatestSdk;
                 if (!this.versionService.IsVersionWithinRange(latestVersion, minVersion: Constants.DotNetMinSdkVersion) ||
                     oryxSdkVersions.Contains(latestVersion))

@@ -12,6 +12,17 @@ namespace Microsoft.Oryx.Automation.Extensions
 {
     public static class HttpClientExtensions
     {
+        /// <summary>
+        /// Sends a GET request to the specified URL using the given HttpClient
+        /// instance and returns the response content as a string.
+        /// Returns null if the response status code is not successful.
+        /// </summary>
+        /// <param name="httpClient">The HttpClient instance to use for the request.</param>
+        /// <param name="url">The URL to send the request to.</param>
+        /// <returns>A Task<string> representing the asynchronous operation. The result of
+        /// the task is the response content as a string, or null if the response status code is not
+        /// successful.
+        /// </returns>
         public static async Task<string> GetDataAsync(this HttpClient httpClient, string url)
         {
             try
@@ -35,6 +46,20 @@ namespace Microsoft.Oryx.Automation.Extensions
             }
         }
 
+        /// <summary>
+        /// Sends a GET request to the specified URL using the given
+        /// HttpClient instance and returns a HashSet<string> containing
+        /// the ORYX SDK versions retrieved from the response content.
+        /// The response content is expected to be an XML document
+        /// containing one or more "Version" objects, each with a single
+        /// string value representing a version number.
+        /// </summary>
+        /// <param name="httpClient">The HttpClient instance to use for the request.</param>
+        /// <param name="url">The URL to send the request to.</param>
+        /// <returns>A Task HashSet<string> representing the asynchronous operation. The result of
+        /// the task is a HashSet<string> containing the ORYX SDK versions retrieved from the
+        /// response content.
+        /// </returns>
         public static async Task<HashSet<string>> GetOryxSdkVersionsAsync(this HttpClient httpClient, string url)
         {
             HashSet<string> versions = new HashSet<string>();
