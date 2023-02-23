@@ -737,7 +737,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.False(result.IsSuccess);
-                    Assert.Contains($"Error: Platform '{DotNetCoreConstants.PlatformName}' version '{runtimeVersion}' is unsupported.", result.StdErr);
+                    Assert.Contains($"Debug mode enabled\nPlatform '{DotNetCoreConstants.PlatformName}' version '{runtimeVersion}' is unsupported.", result.StdErr);
                 },
                 result.GetDebugInfo());
         }

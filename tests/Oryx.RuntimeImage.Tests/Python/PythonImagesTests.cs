@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             {
                 ImageId = _imageHelper.GetRuntimeImage("python", version),
                 CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { "info" }
+                CommandArguments = new[] { "version" }
             });
 
             // Assert

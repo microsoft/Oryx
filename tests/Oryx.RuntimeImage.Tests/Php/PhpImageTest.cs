@@ -230,7 +230,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             {
                 ImageId = _imageHelper.GetRuntimeImage("php", version),
                 CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { "info" }
+                CommandArguments = new[] { "version" }
             });
 
             // Assert

@@ -384,7 +384,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.False(result.IsSuccess);
-                    Assert.Contains($"Error: Platform '{NodeConstants.PlatformName}' version '{version}' is unsupported.", result.StdErr);
+                    Assert.Contains($"Debug mode enabled\nPlatform '{NodeConstants.PlatformName}' version '{version}' is unsupported.", result.StdErr);
                 },
                 result.GetDebugInfo());
         }

@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(
                 () =>
                 {
-                    Assert.Contains("Error: Could not detect", result.StdErr);
+                    Assert.Contains("Required argument missing for command: 'build'.", result.StdErr);
                     Assert.DoesNotContain("does not exist", result.StdErr);
                 },
                 result.GetDebugInfo());

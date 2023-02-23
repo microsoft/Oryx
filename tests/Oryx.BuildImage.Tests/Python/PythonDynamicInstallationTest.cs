@@ -571,7 +571,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.False(result.IsSuccess);
-                    Assert.Contains($"Error: Platform '{PythonConstants.PlatformName}' version '{version}' is unsupported.", result.StdErr);
+                    Assert.Contains($"Debug mode enabled\nPlatform '{PythonConstants.PlatformName}' version '{version}' is unsupported.", result.StdErr);
                 },
                 result.GetDebugInfo());
         }
