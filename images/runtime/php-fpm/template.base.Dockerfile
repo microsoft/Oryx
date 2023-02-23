@@ -26,7 +26,9 @@ RUN nginx -t
 ENV NGINX_PORT 8080
 
 # Install common PHP extensions
-RUN apt-get update \
+# TEMPORARY: Holding odbc related packages from upgrading.
+RUN apt-mark hold msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
+    && apt-get update \
     && apt-get upgrade -y \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
     && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
