@@ -102,8 +102,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer.Tests", "tests\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation", "build\tools\Automation\Automation.csproj", "{18F7BB74-0A1E-4289-9161-515E65E667CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoUpdater", "build\tools\AutoUpdater\AutoUpdater.csproj", "{AAF9B9BF-9D03-4FEF-9D76-7676DDB75AFE}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
