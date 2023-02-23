@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Oryx.Automation.DotNet.Models;
 using Microsoft.Oryx.Automation.Extensions;
 using Microsoft.Oryx.Automation.Models;
@@ -59,7 +60,7 @@ namespace Microsoft.Oryx.Automation.DotNet
 
         public async Task<List<DotNetVersion>> GetNewDotNetVersionsAsync()
         {
-            List<DotNetVersion> versionObjs = new List<DotNetVersion>();
+            List<DotNetVersion> dotNetVersions = new List<DotNetVersion>();
             string url = Constants.OryxSdkStorageBaseUrl + DotNetConstants.OryxSdkStorageDotNetSuffixUrl;
             HashSet<string> oryxSdkVersions = await this.httpClient.GetOryxSdkVersionsAsync(url);
 
@@ -86,69 +87,94 @@ namespace Microsoft.Oryx.Automation.DotNet
                 var releases = releasesJson == null ? new List<Release>() : releasesJson.Releases;
                 foreach (var release in releases)
                 {
-                    string sdkVersion = release.Sdk.Version;
-
-                    // Check the version is not already in our storage account
-                    if (oryxSdkVersions.Contains(sdkVersion) ||
-                        !this.versionService.IsVersionWithinRange(sdkVersion, minVersion: DotNetConstants.DotNetMinSdkVersion))
+                    // Skip if the SDK version already exists in our storage account.
+                    if (oryxSdkVersions.Contains(release.Sdk.Version))
                     {
                         continue;
                     }
 
-                    // create sdk version object
-                    string sha = this.GetSha(release.Sdk.Files);
-                    DotNetVersion versionObj = new DotNetVersion
+                    var dotNetSdkVersion = this.GetDotNetVersion(release, DotNetConstants.SdkName);
+                    var dotNetCoreVersion = this.GetDotNetVersion(release, DotNetConstants.DotNetCoreName);
+                    var dotNetAspCoreVersion = this.GetDotNetVersion(release, DotNetConstants.DotNetAspCoreName);
+                    if (dotNetSdkVersion != null &&
+                        dotNetCoreVersion != null &&
+                        dotNetAspCoreVersion != null)
                     {
-                        Version = sdkVersion,
-                        Sha = sha,
-                        VersionType = DotNetConstants.SdkName,
-                    };
-                    versionObjs.Add(versionObj);
-
-                    // create runtime (netcore) version object
-                    string runtimeVersion = release.Runtime.Version;
-                    if (!this.versionService.IsVersionWithinRange(runtimeVersion, minVersion: DotNetConstants.DotNetMinRuntimeVersion))
-                    {
-                        continue;
+                        dotNetVersions.Add(dotNetSdkVersion);
+                        dotNetVersions.Add(dotNetCoreVersion);
+                        dotNetVersions.Add(dotNetAspCoreVersion);
                     }
-
-                    sha = this.GetSha(release.Runtime.Files);
-                    versionObj = new DotNetVersion
+                    else
                     {
-                        Version = runtimeVersion,
-                        Sha = sha,
-                        VersionType = DotNetConstants.DotNetCoreName,
-                    };
-                    versionObjs.Add(versionObj);
-
-                    // create runtime (aspnetcore) version object
-                    string aspnetCoreRuntimeVersion = release.AspNetCoreRuntime.Version;
-                    if (!this.versionService.IsVersionWithinRange(aspnetCoreRuntimeVersion, minVersion: DotNetConstants.DotNetMinRuntimeVersion))
-                    {
-                        continue;
+                        throw new InvalidOperationException("Not all .NET versions are available.");
                     }
-
-                    sha = this.GetSha(release.AspNetCoreRuntime.Files);
-                    versionObj = new DotNetVersion
-                    {
-                        Version = aspnetCoreRuntimeVersion,
-                        Sha = sha,
-                        VersionType = DotNetConstants.DotNetAspCoreName,
-                    };
-                    versionObjs.Add(versionObj);
-
-                    // TODO: add new Major.Minor version string to runtime-version list of runtimes
-                    // for the constants.yaml list
-                    // Example: https://github.com/microsoft/Oryx/pull/1560/files#diff-47c28d7a6c8135707f46b624b5913e35beea6dfbe7a8be2db7efefde606eba59R47
                 }
             }
 
-            return versionObjs = versionObjs.OrderBy(v => v.Version).ToList();
+            return dotNetVersions = dotNetVersions.OrderBy(v => v.Version).ToList();
         }
 
         public void Dispose()
         {
             this.httpClient.Dispose();
+        }
+
+        private DotNetVersion GetDotNetVersion(Release release, string versionType)
+        {
+            switch (versionType)
+            {
+                case DotNetConstants.SdkName:
+                    string sdkVersion = release.Sdk.Version;
+                    if (!this.versionService.IsVersionWithinRange(
+                        sdkVersion, minVersion: DotNetConstants.DotNetMinSdkVersion))
+                    {
+                        return null;
+                    }
+
+                    string sha = this.GetSha(release.Sdk.Files);
+                    return new DotNetVersion
+                    {
+                        Version = release.Sdk.Version,
+                        Sha = sha,
+                        VersionType = DotNetConstants.SdkName,
+                    };
+
+                case DotNetConstants.DotNetCoreName:
+                    // Runtime (netcore)
+                    string runtimeVersion = release.Runtime.Version;
+                    if (!this.versionService.IsVersionWithinRange(
+                        runtimeVersion,
+                        minVersion: DotNetConstants.DotNetMinRuntimeVersion))
+                    {
+                        return null;
+                    }
+
+                    sha = this.GetSha(release.Runtime.Files);
+                    return new DotNetVersion
+                    {
+                        Version = runtimeVersion,
+                        Sha = sha,
+                        VersionType = DotNetConstants.DotNetCoreName,
+                    };
+                case DotNetConstants.DotNetAspCoreName:
+                    // Runtime (aspnetcore)
+                    string aspnetCoreRuntimeVersion = release.AspNetCoreRuntime.Version;
+                    if (!this.versionService.IsVersionWithinRange(aspnetCoreRuntimeVersion, minVersion: DotNetConstants.DotNetMinRuntimeVersion))
+                    {
+                        return null;
+                    }
+
+                    sha = this.GetSha(release.AspNetCoreRuntime.Files);
+                    return new DotNetVersion
+                    {
+                        Version = aspnetCoreRuntimeVersion,
+                        Sha = sha,
+                        VersionType = DotNetConstants.DotNetAspCoreName,
+                    };
+
+                default:
+                    throw new InvalidDataException($"Invalid DotNet version type: {versionType}");
+            }
         }
 
         private void UpdateOryxConstantsForNewVersions(List<DotNetVersion> versionObjs, List<ConstantsYamlFile> yamlConstants)
