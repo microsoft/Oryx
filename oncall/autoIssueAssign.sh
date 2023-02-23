@@ -26,12 +26,12 @@ while read line || [ -n "$line" ]; do
   else
     # Extract the name, start date, and end date from the line
     name=$(echo $line | cut -d ' ' -f1)
-    start_date=$(echo $line | cut -d ' ' -f 2)
-    start_date=$(date -d $start_date +%s)
-    end_date=$(echo $line | cut -d ' ' -f 3)
-    end_date=$(date -d $end_date +%s)
+    startDate=$(echo $line | cut -d ' ' -f 2)
+    startDate=$(date -d $startDate +%s)
+    endDate=$(echo $line | cut -d ' ' -f 3)
+    endDate=$(date -d $endDate +%s)
     # Check if the current date is within the date range
-    if [ "$today" -ge "$start_date" ] && [ "$today" -le "$end_date" ]; then
+    if [ "$today" -ge "$startDate" ] && [ "$today" -le "$endDate" ]; then
       echo "Custom shift found"
       autoAssign $name $token
       exit 0
@@ -41,7 +41,7 @@ done < "$file"
 
 oncallList=("waliMSFT" "cormacpayne" "harryli0108" "snehapar9" "pauld-msft" "william-msft")
 oncallLen=${#oncallList[@]}
-# achor Date is Feb 21 2022 0:00 PST
+# achor Date is Feb 21 2023 10:00AM PST
 anchorDate=1677002400
 d=$(((today - anchorDate)/60/60/24/7))
 pos=`echo "$d%$oncallLen" | bc`

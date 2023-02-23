@@ -2,4 +2,3 @@
 #{Github username} {Cover start date} {Cover end date}
 #Please make sure the date is in the format YYYY-MM-DD
 harryli0108 1999-02-01 1999-02-08
-#harryli0108 2023-02-21 2023-02-23
