@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             {
                 ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { "version" }
+                CommandArguments = new[] { "info" }
             });
 
             // Assert
@@ -79,7 +79,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             {
                 ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
                 CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { "version" }
+                CommandArguments = new[] { "info" }
             });
 
             // Assert

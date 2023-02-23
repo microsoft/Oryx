@@ -145,7 +145,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 {
                     // InvocationContext provided in SetHandler
                     var buildCommand = new BuildCommand(prop);
-                    return Task.FromResult(buildCommand.OnExecute(console));
+                    var returnCode = buildCommand.OnExecute(console);
+                    return Task.FromResult(returnCode);
                 },
                 new BuildCommandBinder(
                     languageOption,

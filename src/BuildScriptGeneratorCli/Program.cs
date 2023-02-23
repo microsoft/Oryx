@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             rootCommand.Name = "oryx";
             rootCommand.Description = "Generates and runs build scripts for multiple platforms.";
 
-            // var versionOption = new Option<bool>(aliases: new[] { "-v", "--version" }, "Print version information.");
+            var infoOption = new Option<bool>(aliases: new[] { "-i", "--info" }, "Print more detailed version information.");
             rootCommand.AddCommand(BuildCommand.Export(console));
             rootCommand.AddCommand(BuildScriptCommand.Export(console));
             rootCommand.AddCommand(BuildpackBuildCommand.Export(console));
@@ -38,6 +38,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             rootCommand.AddCommand(PrepareEnvironmentCommand.Export(console));
             rootCommand.AddCommand(RunScriptCommand.Export(console));
             rootCommand.AddCommand(TelemetryCommand.Export(console));
+            rootCommand.AddOption(infoOption);
+
+            rootCommand.SetHandler(
+                (infoOptionVal) =>
+            {
+                var returnCode = OnExecute(console, infoOptionVal);
+                return Task.FromResult(returnCode);
+            },
+                infoOption);
 
             // rootCommand.AddGlobalOption(versionOption);
             return await rootCommand.InvokeAsync(args, console);
@@ -66,6 +75,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             return null;
+        }
+
+        internal static int OnExecute(IConsole console, bool setVersion)
+        {
+            if (setVersion)
+            {
+                var version = GetVersion();
+                var commit = GetMetadataValue(GitCommit);
+                var releaseTagName = GetMetadataValue(ReleaseTagName);
+                console.WriteLine($"Version: {version}, Commit: {commit}, ReleaseTagName: {releaseTagName}");
+            }
+
+            return ProcessConstants.ExitSuccess;
         }
     }
 }

@@ -105,7 +105,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 ImageId = buildImageName,
                 CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { "--version" }
+                CommandArguments = new[] { "--info" }
             });
 
             // Assert

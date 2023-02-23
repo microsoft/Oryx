@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             {
                 ImageId = _imageHelper.GetRuntimeImage("ruby", "dynamic"),
                 CommandToExecuteOnRun = "oryx",
-                CommandArguments = new[] { "version" }
+                CommandArguments = new[] { "info" }
             });
 
             // Assert
