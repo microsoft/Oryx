@@ -13,5 +13,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: Assign issues
         run: |
-          chmod +x ./shift/autoIssueAssign.sh
-          ./shift/autoIssueAssign.sh ./shift/customShift.txt ${{ secrets.GITHUB_TOKEN }}
+          chmod +x ./oncall/autoIssueAssign.sh
+          ./oncall/autoIssueAssign.sh ./oncall/customRotation.txt ${{ secrets.GITHUB_TOKEN }}

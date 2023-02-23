@@ -13,7 +13,7 @@ file=$1
 token=$2
 
 if [ ! -f "$file" ]; then
-  echo "Error: Custom shift file not found"
+  echo "Error: Custom rotation file not found"
   exit 1
 fi
 
@@ -32,7 +32,7 @@ while read line || [ -n "$line" ]; do
     endDate=$(date -d $endDate +%s)
     # Check if the current date is within the date range
     if [ "$today" -ge "$startDate" ] && [ "$today" -le "$endDate" ]; then
-      echo "Custom shift found"
+      echo "Custom rotation found"
       autoAssign $name $token
       exit 0
     fi
