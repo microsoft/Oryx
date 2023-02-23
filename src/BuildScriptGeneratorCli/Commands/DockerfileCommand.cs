@@ -79,15 +79,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
-            var buildEventProps = new Dictionary<string, string>()
-            {
-                { "platform", this.PlatformName },
-                { "platformVersion", this.PlatformVersion },
-                { "runtimePlatformName", this.RuntimePlatformName },
-                { "runtimePlatformVersion", this.RuntimePlatformVersion },
-                { "buildImage", this.BuildImage },
-            };
-
             int exitCode;
             var logger = serviceProvider.GetRequiredService<ILogger<DockerfileCommand>>();
 
