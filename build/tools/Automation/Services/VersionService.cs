@@ -20,8 +20,9 @@ namespace Microsoft.Oryx.Automation.Services
         /// <returns>True if the version is within the specified range and not in the list of exception versions. False otherwise.</returns>
         public bool IsVersionWithinRange(string version, string minVersion = null, string maxVersion = null, List<string> exceptionVersions = null)
         {
-            // Try to parse the version string into a SemanticVersion object
-            if (!SemanticVersion.TryParse(version, out var semanticVersion))
+            // Try to parse the version string into a SemanticVersion object and ignores pre-releases
+            if (!SemanticVersion.TryParse(version, out var semanticVersion) ||
+                semanticVersion.IsPrerelease)
             {
                 return false;
             }
