@@ -3,8 +3,6 @@ name: "Auto Assign Issue"
 on:
   issues:
     types: [opened, reopened]
-env:
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   Debug:

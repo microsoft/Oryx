@@ -1,7 +1,7 @@
 #!/bin/bash
 autoAssign() {
   echo "Current oncall is $1"
-  response=`curl -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $2" https://api.github.com/repos/microsoft/Oryx/issues | jq '.[]| select(.assignee == null or .assignee == "")' | jq '.number'`
+  response=`curl -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $2" https://api.github.com/repos/harryli0108/githubActionTest/issues?assignee=none | jq '.[]| .number'`
     arr=($response)
     for i in "${arr[@]}";
     do
@@ -41,7 +41,7 @@ done < "$file"
 
 oncallList=("waliMSFT" "cormacpayne" "harryli0108" "snehapar9" "pauld-msft" "william-msft")
 oncallLen=${#oncallList[@]}
-# achor Date is Feb 21 2023 10:00AM PST
+# anchor Date is Feb 21 2023 10:00AM PST
 anchorDate=1677002400
 d=$(((today - anchorDate)/60/60/24/7))
 pos=`echo "$d%$oncallLen" | bc`
