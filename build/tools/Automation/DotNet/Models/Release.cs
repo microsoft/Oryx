@@ -8,8 +8,8 @@ namespace Microsoft.Oryx.Automation.DotNet.Models
 {
     public class Release
     {
-        [JsonProperty(PropertyName = "release-date")]
-        public string ReleaseDate { get; set; } = string.Empty;
+        [JsonProperty(PropertyName = "release-version")]
+        public string ReleaseVersion { get; set; } = string.Empty;
 
         [JsonProperty(PropertyName = "sdk")]
         public DotNetSdk Sdk { get; set; } = new DotNetSdk();
