@@ -163,8 +163,8 @@
     file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20230115.1
-    php-fpm-runtime-base-tag: 20230115.2
+    php-runtime-base-tag: 20230221.3
+    php-fpm-runtime-base-tag: 20230221.1
     composer-version: 2.0.8
     composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
     composer1-9-version: 1.9.3
@@ -172,12 +172,12 @@
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
-    php82-version: 8.2.1
+    php82-version: 8.2.2
     php82-keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php82-tar-sha256: 650d3bd7a056cabf07f6a0f6f1dd8ba45cd369574bbeaa36de7d1ece212c17af
-    php81-version: 8.1.14
+    php82-tar-sha256: bdc4aa38e652bac86039601840bae01c0c3653972eaa6f9f93d5f71953a7ee33
+    php81-version: 8.1.15
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php81-tar-sha256: e16e47a872d58685913ac848ce92ec49f42c1828110c98c65fb6265a08724a1a
+    php81-tar-sha256: cd450fb4ee50488c5bf5f08851f514e5a1cac18c9512234d9e16c3a1d35781a6
     php80-version: 8.0.27
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
     php80-tar-sha256: f942cbfe2f7bacbb8039fb79bbec41c76ea779ac5c8157f21e1e0c1b28a5fc3a
