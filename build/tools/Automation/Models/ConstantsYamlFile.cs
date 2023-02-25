@@ -14,5 +14,7 @@ namespace Microsoft.Oryx.Automation.Models
         public string Name { get; set; } = string.Empty;
 
         public Dictionary<string, object> Constants { get; set; } = new Dictionary<string, object>();
+
+        public List<object> Outputs { get; set; } = new List<object>();
     }
 }
