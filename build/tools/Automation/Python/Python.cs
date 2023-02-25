@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Oryx.Automation.Client;
+using Microsoft.Oryx.Automation.Extensions;
 using Microsoft.Oryx.Automation.Models;
 using Microsoft.Oryx.Automation.Python.Models;
 using Microsoft.Oryx.Automation.Services;
-using Microsoft.Oryx.Automation.Telemetry;
 using Newtonsoft.Json;
 using Oryx.Microsoft.Automation.Python;
 using YamlDotNet.Serialization;
@@ -15,17 +15,18 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Microsoft.Oryx.Automation.Python
 {
-    public class Python
+    public class Python : IDisposable
     {
-        private readonly IHttpClient httpClient;
-        private readonly ILogger logger;
+        private readonly HttpClient httpClient;
         private readonly IVersionService versionService;
         private readonly IYamlFileReaderService yamlFileReaderService;
 
-        public Python(IHttpClient httpClient, ILogger logger, IVersionService versionService, IYamlFileReaderService yamlFileReaderService)
+        public Python(
+            IHttpClientFactory httpClientFactory,
+            IVersionService versionService,
+            IYamlFileReaderService yamlFileReaderService)
         {
-            this.httpClient = httpClient;
-            this.logger = logger;
+            this.httpClient = httpClientFactory.CreateClient();
             this.versionService = versionService;
             this.yamlFileReaderService = yamlFileReaderService;
         }
@@ -37,7 +38,7 @@ namespace Microsoft.Oryx.Automation.Python
             {
                 // Deserialize constants.yaml
                 string constantsYamlAbsolutePath = Path.Combine(oryxRootPath, "build", Constants.ConstantsYaml);
-                List<YamlConstants> yamlConstantsObjs = await this.yamlFileReaderService.ReadConstantsYamlFileAsync(constantsYamlAbsolutePath);
+                List<ConstantsYamlFile> yamlConstantsObjs = await this.yamlFileReaderService.ReadConstantsYamlFileAsync(constantsYamlAbsolutePath);
 
                 this.UpdateOryxConstantsForNewVersions(versionObjs, yamlConstantsObjs, oryxRootPath);
             }
@@ -73,9 +74,14 @@ namespace Microsoft.Oryx.Automation.Python
             return versionObjs;
         }
 
-        private void UpdateOryxConstantsForNewVersions(List<VersionObj> versionObjs, List<YamlConstants> yamlConstants, string oryxRootPath)
+        public void Dispose()
         {
-            Dictionary<string, YamlConstants> pythonYamlConstants = this.GetYamlPythonConstants(yamlConstants);
+            this.httpClient.Dispose();
+        }
+
+        private void UpdateOryxConstantsForNewVersions(List<VersionObj> versionObjs, List<ConstantsYamlFile> constantsYamlFile, string oryxRootPath)
+        {
+            Dictionary<string, ConstantsYamlFile> pythonYamlConstants = this.GetYamlPythonConstants(constantsYamlFile);
 
             foreach (var versionObj in versionObjs)
             {
@@ -92,7 +98,7 @@ namespace Microsoft.Oryx.Automation.Python
                 .Build();
 
             var constantsYamlAbsolutePath = Path.Combine(oryxRootPath, "build", Constants.ConstantsYaml);
-            var stringResult = serializer.Serialize(yamlConstants);
+            var stringResult = serializer.Serialize(constantsYamlFile);
             File.WriteAllText(constantsYamlAbsolutePath, stringResult);
         }
 
@@ -131,7 +137,7 @@ namespace Microsoft.Oryx.Automation.Python
             return $"python{majorMinor}-version";
         }
 
-        private Dictionary<string, YamlConstants> GetYamlPythonConstants(List<YamlConstants> yamlContents)
+        private Dictionary<string, ConstantsYamlFile> GetYamlPythonConstants(List<ConstantsYamlFile> yamlContents)
         {
             var pythonConstants = yamlContents.Where(c => c.Name == Constants.YamlPythonKey)
                                   .ToDictionary(c => c.Name, c => c);

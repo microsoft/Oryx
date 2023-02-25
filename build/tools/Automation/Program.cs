@@ -6,9 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Oryx.Automation.Client;
 using Microsoft.Oryx.Automation.Services;
-using Microsoft.Oryx.Automation.Telemetry;
 
 namespace Microsoft.Oryx.Automation
 {
@@ -24,13 +22,11 @@ namespace Microsoft.Oryx.Automation
             }
 
             var serviceProvider = new ServiceCollection()
-                .AddScoped<IHttpClient, HttpClientImpl>()
-                .AddScoped<ILogger, LoggerImpl>()
+                .AddHttpClient()
                 .AddSingleton<IVersionService, VersionService>()
                 .AddSingleton<IYamlFileReaderService, YamlFileReaderService>()
                 .AddScoped<DotNet.DotNet>()
                 .AddScoped<Python.Python>()
-                .AddLogging()
                 .BuildServiceProvider();
 
             string oryxRootPath = args[1];
@@ -46,7 +42,7 @@ namespace Microsoft.Oryx.Automation
                     await python.RunAsync(oryxRootPath);
                     break;
                 default:
-                    Console.WriteLine($"Unsupported platform: {args[0]}");
+                    Console.WriteLine($"Unsupported platform: {platform}");
                     Console.WriteLine($"Supported platforms: {string.Join(", ", supportedPlatforms)}");
                     break;
             }

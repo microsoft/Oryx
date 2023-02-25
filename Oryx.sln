@@ -102,7 +102,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer.Tests", "tests\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation", "build\tools\Automation\Automation.csproj", "{18F7BB74-0A1E-4289-9161-515E65E667CE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomationTests", "tests\AutomationTests\AutomationTests.csproj", "{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation.Tests", "tests\AutomationTests\Automation.Tests.csproj", "{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

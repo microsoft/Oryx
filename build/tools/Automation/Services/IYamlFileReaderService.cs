@@ -10,6 +10,6 @@ namespace Microsoft.Oryx.Automation.Services
 {
     public interface IYamlFileReaderService
     {
-        Task<List<YamlConstants>> ReadConstantsYamlFileAsync(string filePath);
+        Task<List<ConstantsYamlFile>> ReadConstantsYamlFileAsync(string filePath);
     }
 }
