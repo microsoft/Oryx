@@ -35,8 +35,7 @@ namespace Microsoft.Oryx.Automation.Extensions
                     return null;
                 }
 
-                string responseContent = await response.Content.ReadAsStringAsync();
-                return responseContent;
+                return await response.Content.ReadAsStringAsync();
             }
             catch (Exception ex)
             {
@@ -64,6 +63,10 @@ namespace Microsoft.Oryx.Automation.Extensions
         {
             HashSet<string> versions = new HashSet<string>();
             var response = await httpClient.GetDataAsync(url);
+            if (response == null)
+            {
+                return versions;
+            }
 
             XDocument xmlDoc = XDocument.Parse(response);
             var versionElements = xmlDoc.Descendants("Version");

@@ -15,16 +15,16 @@ using YamlDotNet.Serialization.NamingConventions;
 
 namespace Microsoft.Oryx.Automation.Python
 {
-    public class Python : IDisposable
+    public class PythonAutomator : IDisposable
     {
         private readonly HttpClient httpClient;
         private readonly IVersionService versionService;
-        private readonly IYamlFileReaderService yamlFileReaderService;
+        private readonly IYamlFileService yamlFileReaderService;
 
-        public Python(
+        public PythonAutomator(
             IHttpClientFactory httpClientFactory,
             IVersionService versionService,
-            IYamlFileReaderService yamlFileReaderService)
+            IYamlFileService yamlFileReaderService)
         {
             this.httpClient = httpClientFactory.CreateClient();
             this.versionService = versionService;
@@ -114,7 +114,7 @@ namespace Microsoft.Oryx.Automation.Python
             string majorMinor = string.Join(".", parts.Take(2));
 
             // Look up the GPG key in the dictionary
-            if (Constants.VersionGpgKeys.TryGetValue(majorMinor, out string gpgKey))
+            if (PythonConstants.VersionGpgKeys.TryGetValue(majorMinor, out string gpgKey))
             {
                 return gpgKey;
             }
@@ -139,7 +139,7 @@ namespace Microsoft.Oryx.Automation.Python
 
         private Dictionary<string, ConstantsYamlFile> GetYamlPythonConstants(List<ConstantsYamlFile> yamlContents)
         {
-            var pythonConstants = yamlContents.Where(c => c.Name == Constants.YamlPythonKey)
+            var pythonConstants = yamlContents.Where(c => c.Name == PythonConstants.ConstantsYamlPythonKey)
                                   .ToDictionary(c => c.Name, c => c);
             return pythonConstants;
         }
@@ -150,7 +150,7 @@ namespace Microsoft.Oryx.Automation.Python
             foreach (string debianFlavor in debianFlavors)
             {
                 var versionsToBuildTxtAbsolutePath = Path.Combine(
-                    oryxRootPath, "platforms", Constants.PythonName, "versions", debianFlavor, Constants.VersionsToBuildTxt);
+                    oryxRootPath, "platforms", PythonConstants.ConstantsYamlPythonKey, "versions", debianFlavor, Constants.VersionsToBuildTxt);
                 string line = $"\n{platformConstant.Version}, {platformConstant.GpgKey},";
                 File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
 

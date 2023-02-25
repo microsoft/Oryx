@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.Automation.DotNet.Models
 {
-    public class FileObj
+    public class File
     {
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; } = string.Empty;

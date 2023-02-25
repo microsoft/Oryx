@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Oryx.Automation.DotNet;
+using Microsoft.Oryx.Automation.Python;
 using Microsoft.Oryx.Automation.Services;
 
 namespace Microsoft.Oryx.Automation
@@ -24,9 +26,9 @@ namespace Microsoft.Oryx.Automation
             var serviceProvider = new ServiceCollection()
                 .AddHttpClient()
                 .AddSingleton<IVersionService, VersionService>()
-                .AddSingleton<IYamlFileReaderService, YamlFileReaderService>()
-                .AddScoped<DotNet.DotNet>()
-                .AddScoped<Python.Python>()
+                .AddSingleton<IYamlFileService, YamlFileService>()
+                .AddScoped<DotNetAutomator>()
+                .AddScoped<PythonAutomator>()
                 .BuildServiceProvider();
 
             string oryxRootPath = args[1];
@@ -34,12 +36,12 @@ namespace Microsoft.Oryx.Automation
             switch (platform)
             {
                 case "dotnet":
-                    var dotNet = serviceProvider.GetRequiredService<DotNet.DotNet>();
-                    await dotNet.RunAsync(oryxRootPath);
+                    var dotNetAutomator = serviceProvider.GetRequiredService<DotNetAutomator>();
+                    await dotNetAutomator.RunAsync(oryxRootPath);
                     break;
                 case "python":
-                    var python = serviceProvider.GetRequiredService<Python.Python>();
-                    await python.RunAsync(oryxRootPath);
+                    var pythonAutomator = serviceProvider.GetRequiredService<PythonAutomator>();
+                    await pythonAutomator.RunAsync(oryxRootPath);
                     break;
                 default:
                     Console.WriteLine($"Unsupported platform: {platform}");
