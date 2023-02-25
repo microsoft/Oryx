@@ -150,7 +150,7 @@ namespace Microsoft.Oryx.Automation.Python
             foreach (string debianFlavor in debianFlavors)
             {
                 var versionsToBuildTxtAbsolutePath = Path.Combine(
-                    oryxRootPath, "platforms", PythonConstants.ConstantsYamlPythonKey, "versions", debianFlavor, Constants.VersionsToBuildTxt);
+                    oryxRootPath, "platforms", PythonConstants.PythonName, "versions", debianFlavor, Constants.VersionsToBuildTxt);
                 string line = $"\n{platformConstant.Version}, {platformConstant.GpgKey},";
                 File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
 
