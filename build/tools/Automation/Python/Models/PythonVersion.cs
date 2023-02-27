@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Oryx.Automation.Python.Models
 {
-    public class VersionObj
+    public class PythonVersion
     {
         public string Version { get; set; } = string.Empty;
 

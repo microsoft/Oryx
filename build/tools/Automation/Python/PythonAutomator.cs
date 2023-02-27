@@ -23,37 +23,39 @@ namespace Microsoft.Oryx.Automation.Python
     {
         private readonly HttpClient httpClient;
         private readonly IVersionService versionService;
-        private readonly IYamlFileService yamlFileReaderService;
+        private readonly IFileService fileService;
+        private readonly IYamlFileService yamlFileService;
         private string pythonMinReleaseVersion;
         private string pythonMaxReleaseVersion;
 
         public PythonAutomator(
             IHttpClientFactory httpClientFactory,
             IVersionService versionService,
-            IYamlFileService yamlFileReaderService)
+            IFileService fileService,
+            IYamlFileService yamlFileService)
         {
             this.httpClient = httpClientFactory.CreateClient();
             this.versionService = versionService;
-            this.yamlFileReaderService = yamlFileReaderService;
+            this.yamlFileService = yamlFileService;
         }
 
-        public async Task RunAsync(string oryxRootPath)
+        public async Task RunAsync()
         {
-            List<VersionObj> versionObjs = await this.GetNewVersionObjsAsync();
-            if (versionObjs.Count > 0)
+            List<PythonVersion> pythonVersions = await this.GetNewPythonVersionsAsync();
+            if (pythonVersions.Count > 0)
             {
                 // Deserialize constants.yaml
                 this.pythonMinReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMinReleaseVersionEnvVar);
                 this.pythonMaxReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMaxReleaseVersionEnvVar);
-                string constantsYamlAbsolutePath = Path.Combine(oryxRootPath, "build", Constants.ConstantsYaml);
+                string constantsYamlSubPath = Path.Combine("build", Constants.ConstantsYaml);
                 List<ConstantsYamlFile> yamlConstantsObjs =
-                    await this.yamlFileReaderService.ReadConstantsYamlFileAsync(constantsYamlAbsolutePath);
+                    await this.yamlFileService.ReadConstantsYamlFileAsync(constantsYamlSubPath);
 
-                this.UpdateOryxConstantsForNewVersions(versionObjs, yamlConstantsObjs, oryxRootPath);
+                this.UpdateOryxConstantsForNewVersions(pythonVersions, yamlConstantsObjs);
             }
         }
 
-        public async Task<List<VersionObj>> GetNewVersionObjsAsync()
+        public async Task<List<PythonVersion>> GetNewPythonVersionsAsync()
         {
             var response = await this.httpClient.GetDataAsync(PythonConstants.PythonReleaseUrl);
             var releases = JsonConvert.DeserializeObject<List<Models.Release>>(response);
@@ -61,7 +63,7 @@ namespace Microsoft.Oryx.Automation.Python
             HashSet<string> oryxSdkVersions = await this.httpClient.GetOryxSdkVersionsAsync(
                 Constants.OryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl);
 
-            var versionObjs = new List<VersionObj>();
+            var pythonVersions = new List<PythonVersion>();
             foreach (var release in releases)
             {
                 string newVersion = release.Name.Replace("Python", string.Empty).Trim();
@@ -73,7 +75,7 @@ namespace Microsoft.Oryx.Automation.Python
                         maxVersion: this.pythonMaxReleaseVersion) &&
                     !oryxSdkVersions.Contains(newVersion))
                 {
-                    versionObjs.Add(new VersionObj
+                    pythonVersions.Add(new PythonVersion
                     {
                         Version = newVersion,
                         GpgKey = this.GetGpgKeyForVersion(newVersion),
@@ -81,7 +83,7 @@ namespace Microsoft.Oryx.Automation.Python
                 }
             }
 
-            return versionObjs;
+            return pythonVersions;
         }
 
         public void Dispose()
@@ -90,27 +92,29 @@ namespace Microsoft.Oryx.Automation.Python
         }
 
         private void UpdateOryxConstantsForNewVersions(
-            List<VersionObj> versionObjs, List<ConstantsYamlFile> constantsYamlFile, string oryxRootPath)
+            List<PythonVersion> pythonVersions, List<ConstantsYamlFile> constantsYamlFile)
         {
             Dictionary<string, ConstantsYamlFile> pythonYamlConstants = this.GetYamlPythonConstants(constantsYamlFile);
 
-            foreach (var versionObj in versionObjs)
+            foreach (var pythonVersion in pythonVersions)
             {
-                string version = versionObj.Version;
-                string pythonConstantKey = this.GeneratePythonConstantKey(versionObj);
+                string version = pythonVersion.Version;
+                string pythonConstantKey = this.GeneratePythonConstantKey(pythonVersion);
                 Console.WriteLine($"[UpdateConstants] version: {version} pythonConstantKey: {pythonConstantKey}");
                 pythonYamlConstants["python-versions"].Constants[pythonConstantKey] = version;
 
-                this.UpdateVersionsToBuildTxt(versionObj, oryxRootPath);
+                // update versionsToBuild.txt
+                string line = $"\n{pythonVersion.Version}, {pythonVersion.GpgKey},";
+                this.fileService.UpdateVersionsToBuildTxt(PythonConstants.PythonName, line);
             }
 
             var serializer = new SerializerBuilder()
                 .WithNamingConvention(UnderscoredNamingConvention.Instance)
                 .Build();
 
-            var constantsYamlAbsolutePath = Path.Combine(oryxRootPath, "build", Constants.ConstantsYaml);
+            var constantsYamlSubPath = Path.Combine("build", Constants.ConstantsYaml);
             var stringResult = serializer.Serialize(constantsYamlFile);
-            File.WriteAllText(constantsYamlAbsolutePath, stringResult);
+            File.WriteAllText(constantsYamlSubPath, stringResult);
         }
 
         private string GetGpgKeyForVersion(string version)
@@ -135,9 +139,9 @@ namespace Microsoft.Oryx.Automation.Python
             }
         }
 
-        private string GeneratePythonConstantKey(VersionObj versionObj)
+        private string GeneratePythonConstantKey(PythonVersion pythonVersion)
         {
-            string[] splitVersion = versionObj.Version.Split('.');
+            string[] splitVersion = pythonVersion.Version.Split('.');
             string majorVersion = splitVersion[0];
             string minorVersion = splitVersion[1];
 
@@ -153,24 +157,6 @@ namespace Microsoft.Oryx.Automation.Python
             var pythonConstants = yamlContents.Where(c => c.Name == PythonConstants.ConstantsYamlPythonKey)
                                   .ToDictionary(c => c.Name, c => c);
             return pythonConstants;
-        }
-
-        private void UpdateVersionsToBuildTxt(VersionObj platformConstant, string oryxRootPath)
-        {
-            HashSet<string> debianFlavors = new HashSet<string>() { "bullseye", "buster", "focal-scm", "stretch" };
-            foreach (string debianFlavor in debianFlavors)
-            {
-                var versionsToBuildTxtAbsolutePath = Path.Combine(
-                    oryxRootPath, "platforms", PythonConstants.PythonName, "versions", debianFlavor, Constants.VersionsToBuildTxt);
-                string line = $"\n{platformConstant.Version}, {platformConstant.GpgKey},";
-                File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
-
-                // sort
-                Console.WriteLine($"[UpdateVersionsToBuildTxt] Updating {versionsToBuildTxtAbsolutePath}...");
-                var contents = File.ReadAllLines(versionsToBuildTxtAbsolutePath);
-                Array.Sort(contents);
-                File.WriteAllLines(versionsToBuildTxtAbsolutePath, contents.Distinct());
-            }
         }
     }
 }

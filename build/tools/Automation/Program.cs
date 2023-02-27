@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.Automation
                     break;
                 case "python":
                     var pythonAutomator = serviceProvider.GetRequiredService<PythonAutomator>();
-                    await pythonAutomator.RunAsync(oryxRootPath);
+                    await pythonAutomator.RunAsync();
                     break;
                 default:
                     Console.WriteLine($"Unsupported platform: {platform}");
