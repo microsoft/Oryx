@@ -23,16 +23,20 @@ namespace Microsoft.Oryx.Automation
                 Environment.Exit(1);
             }
 
+            string oryxRootPath = args[1];
+            string platform = args[0].ToLower();
             var serviceProvider = new ServiceCollection()
                 .AddHttpClient()
                 .AddSingleton<IVersionService, VersionService>()
+                .AddSingleton<IFileService>(serviceProvider =>
+                {
+                    return new FileService(oryxRootPath);
+                })
                 .AddSingleton<IYamlFileService, YamlFileService>()
                 .AddScoped<DotNetAutomator>()
                 .AddScoped<PythonAutomator>()
                 .BuildServiceProvider();
 
-            string oryxRootPath = args[1];
-            string platform = args[0].ToLower();
             switch (platform)
             {
                 case "dotnet":
