@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (this.DebugMode)
                 {
-                    Console.Error.WriteLine("Debug mode enabled");
+                    Console.WriteLine("Debug mode enabled");
                 }
 
                 using (var timedEvent = logger?.LogTimedEvent(this.GetType().Name))

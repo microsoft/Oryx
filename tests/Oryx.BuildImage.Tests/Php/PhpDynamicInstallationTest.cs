@@ -292,7 +292,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(() =>
             {
                 Assert.False(result.IsSuccess);
-                Assert.Contains($"Debug mode enabled\nPlatform '{PhpConstants.PlatformName}' version '{version}' is unsupported.", result.StdErr);
+                Assert.Contains($"Platform '{PhpConstants.PlatformName}' version '{version}' is unsupported.", result.StdErr);
             },
             result.GetDebugInfo());
         }

@@ -41,7 +41,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static Command Export(IConsole console)
         {
-            var sourceDirArgument = new Argument<string>("sourceDirArg", "The source directory. If no value is provided, the current directory is used.");
+            var sourceDirArgument = new Argument<string>(
+                name: "SourceDir",
+                description: "The source directory. If no value is provided, the current directory is used.",
+                getDefaultValue: () => Directory.GetCurrentDirectory());
             var outputFormatOption = new Option<string>(
                 aliases: OptionTemplates.Output,
                 description: "Output the detected platform data in chosen format. " +

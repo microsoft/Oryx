@@ -61,7 +61,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static Command Export(IConsole console)
         {
-            var sourceDirArgument = new Argument<string>("sourceDir", "The source directory. If no value is provided, the current directory is used.");
+            var sourceDirArgument = new Argument<string>(
+                name: "SourceDir",
+                description: "The source directory. If no value is provided, the current directory is used.",
+                getDefaultValue: () => Directory.GetCurrentDirectory());
             var buildImageOption = new Option<string>(
                 name: "--build-image",
                 description: "The mcr.microsoft.com/oryx build image to use in the dockerfile, provided in the format '<image>:<tag>'." +

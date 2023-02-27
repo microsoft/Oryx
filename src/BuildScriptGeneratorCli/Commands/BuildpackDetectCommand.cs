@@ -44,7 +44,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static Command Export(IConsole console)
         {
-            var sourceDirArgument = new Argument<string>("SourceDir", "The source directory.");
+            var sourceDirArgument = new Argument<string>(
+                name: "SourceDir",
+                description: "The source directory.",
+                getDefaultValue: () => Directory.GetCurrentDirectory());
             var platformDirOption = new Option<string>(OptionTemplates.PlatformDir, "Platform directory path.");
             var planPathOption = new Option<string>(OptionTemplates.PlanPath, "Build plan TOML path.");
             var logFilePathOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);

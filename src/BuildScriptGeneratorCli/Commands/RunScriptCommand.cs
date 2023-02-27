@@ -47,7 +47,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static Command Export(IConsole console)
         {
-            var appDirArgument = new Argument<string>("appDir", "The application directory");
+            var appDirArgument = new Argument<string>(
+                name: "appDir",
+                description: "The application directory",
+                getDefaultValue: () => Directory.GetCurrentDirectory());
             var platformNameOption = new Option<string>(OptionTemplates.Platform, "The name of the programming platform, e.g. 'nodejs'.");
             var platformVersionOption = new Option<string>(OptionTemplates.PlatformVersion, "The version of the platform to run the application on, e.g. '10' for node js.");
             var outputOption = new Option<string>("--output", "[Optional] Path to which the script will be written. If not specified, will default to STDOUT.");

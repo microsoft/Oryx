@@ -11,7 +11,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 
-// using Microsoft.VisualBasic;
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class Program
@@ -41,9 +40,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             rootCommand.AddOption(infoOption);
 
             rootCommand.SetHandler(
-                (infoOptionVal) =>
+                (infoSetter) =>
             {
-                var returnCode = OnExecute(console, infoOptionVal);
+                var returnCode = OnExecute(console, infoSetter);
                 return Task.FromResult(returnCode);
             },
                 infoOption);
@@ -77,9 +76,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return null;
         }
 
-        internal static int OnExecute(IConsole console, bool setVersion)
+        internal static int OnExecute(IConsole console, bool setInfo)
         {
-            if (setVersion)
+            if (setInfo)
             {
                 var version = GetVersion();
                 var commit = GetMetadataValue(GitCommit);

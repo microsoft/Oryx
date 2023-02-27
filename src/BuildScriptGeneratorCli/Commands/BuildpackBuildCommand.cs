@@ -60,7 +60,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Options from BuildCommand
             var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
             var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
-            var sourceDirArgument = new Argument<string>("sourceDir", "The source directory.");
+            var sourceDirArgument = new Argument<string>(
+                name: "SourceDir",
+                description: "The source directory.",
+                getDefaultValue: () => Directory.GetCurrentDirectory());
             var platformOption = new Option<string>(OptionTemplates.Platform, OptionTemplates.PlatformDescription);
             var platformVersionOption = new Option<string>(OptionTemplates.PlatformVersion, OptionTemplates.PlatformVersionDescription);
             var packageOption = new Option<bool>(OptionTemplates.Package, OptionTemplates.PackageDescription);
