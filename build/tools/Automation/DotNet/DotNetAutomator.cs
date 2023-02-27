@@ -34,7 +34,6 @@ namespace Microsoft.Oryx.Automation.DotNet
         private readonly IVersionService versionService;
         private readonly IFileService fileService;
         private readonly IYamlFileService yamlFileService;
-        private string oryxRootPath;
         private string oryxSdkStorageBaseUrl;
         private string dotNetMinReleaseVersion;
         private string dotNetMaxReleaseVersion;
@@ -53,9 +52,8 @@ namespace Microsoft.Oryx.Automation.DotNet
             this.yamlFileService = yamlFileReaderService;
         }
 
-        public async Task RunAsync(string oryxRootPath)
+        public async Task RunAsync()
         {
-            this.oryxRootPath = oryxRootPath;
             this.oryxSdkStorageBaseUrl = Environment.GetEnvironmentVariable(Constants.OryxSdkStorageBaseUrlEnvVar);
             if (string.IsNullOrEmpty(this.oryxSdkStorageBaseUrl))
             {
@@ -80,8 +78,8 @@ namespace Microsoft.Oryx.Automation.DotNet
             List<DotNetVersion> newDotNetVersions = await this.GetNewDotNetVersionsAsync();
             if (newDotNetVersions.Count > 0)
             {
-                string constantsYamlAbsolutePath = Path.Combine(this.oryxRootPath, "build", Constants.ConstantsYaml);
-                List<ConstantsYamlFile> yamlConstantsObjs = await this.yamlFileService.ReadConstantsYamlFileAsync(constantsYamlAbsolutePath);
+                string constantsYamlSubPath = Path.Combine("build", Constants.ConstantsYaml);
+                List<ConstantsYamlFile> yamlConstantsObjs = await this.yamlFileService.ReadConstantsYamlFileAsync(constantsYamlSubPath);
                 this.UpdateOryxConstantsForNewVersions(newDotNetVersions, yamlConstantsObjs);
             }
         }
@@ -221,8 +219,8 @@ namespace Microsoft.Oryx.Automation.DotNet
                 }
             }
 
-            var constantsYamlAbsolutePath = Path.Combine(this.oryxRootPath, "build", Constants.ConstantsYaml);
-            this.yamlFileService.WriteConstantsYamlFile(constantsYamlAbsolutePath, yamlConstants);
+            var constantsYamlSubPath = Path.Combine("build", Constants.ConstantsYaml);
+            this.yamlFileService.WriteConstantsYamlFile(constantsYamlSubPath, yamlConstants);
         }
 
         private Dictionary<string, ConstantsYamlFile> GetYamlDotNetConstants(List<ConstantsYamlFile> yamlContents)
@@ -272,28 +270,5 @@ namespace Microsoft.Oryx.Automation.DotNet
             throw new MissingFieldException(message: $"[GetSha] Expected SHA feild is missing in {files}\n" +
                 $"Pattern matching using regex: {DotNetConstants.DotNetLinuxTarFileRegex}");
         }
-
-        /*private void UpdateVersionsToBuildTxt(DotNetVersion platformConstant)
-        {
-            HashSet<string> debianFlavors = new HashSet<string>() { "bullseye", "buster", "focal-scm", "stretch" };
-            foreach (string debianFlavor in debianFlavors)
-            {
-                var versionsToBuildTxtAbsolutePath = Path.Combine(
-                    this.oryxRootPath,
-                    "platforms",
-                    DotNetConstants.DotNetName,
-                    "versions",
-                    debianFlavor,
-                    Constants.VersionsToBuildTxtFileName);
-                string line = $"\n{platformConstant.Version}, {platformConstant.Sha},";
-                System.IO.File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
-
-                // sort
-                Console.WriteLine($"[UpdateVersionsToBuildTxt] Updating {versionsToBuildTxtAbsolutePath}...");
-                var contents = System.IO.File.ReadAllLines(versionsToBuildTxtAbsolutePath);
-                Array.Sort(contents);
-                System.IO.File.WriteAllLines(versionsToBuildTxtAbsolutePath, contents.Distinct());
-            }
-        }*/
     }
 }

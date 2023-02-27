@@ -15,11 +15,19 @@ namespace Microsoft.Oryx.Automation.Services
 {
     public class YamlFileService : IYamlFileService
     {
-        public async Task<List<ConstantsYamlFile>> ReadConstantsYamlFileAsync(string filePath)
+        private string oryxRootPath;
+
+        public YamlFileService(string oryxRootPath)
+        {
+            this.oryxRootPath = oryxRootPath;
+        }
+
+        public async Task<List<ConstantsYamlFile>> ReadConstantsYamlFileAsync(string subPath)
         {
             try
             {
-                string fileContents = await File.ReadAllTextAsync(filePath);
+                string absolutePath = Path.Combine(this.oryxRootPath, subPath);
+                string fileContents = await File.ReadAllTextAsync(absolutePath);
                 var deserializer = new DeserializerBuilder()
                     .WithNamingConvention(UnderscoredNamingConvention.Instance)
                     .Build();
@@ -44,7 +52,7 @@ namespace Microsoft.Oryx.Automation.Services
             }
         }
 
-        public void WriteConstantsYamlFile(string filePath, List<ConstantsYamlFile> yamlConstants)
+        public void WriteConstantsYamlFile(string subPath, List<ConstantsYamlFile> yamlConstants)
         {
             try
             {
@@ -52,8 +60,9 @@ namespace Microsoft.Oryx.Automation.Services
                     .WithNamingConvention(UnderscoredNamingConvention.Instance)
                     .Build();
 
+                string absolutePath = Path.Combine(this.oryxRootPath, subPath);
                 var stringResult = serializer.Serialize(yamlConstants);
-                File.WriteAllText(filePath, stringResult);
+                File.WriteAllText(absolutePath, stringResult);
             }
             catch (FileNotFoundException ex)
             {
