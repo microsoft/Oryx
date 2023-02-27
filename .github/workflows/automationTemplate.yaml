@@ -28,8 +28,9 @@ on:
 env:
   MAX_RETRIES: 10
   TIMEOUT_SECONDS: 900
-  #DOTNET_MIN_RELEASE_VERSION: 6.0.14
-  #PYTHON_MIN_RELEASE_VERSION: 3.10.9
+  DOTNET_MIN_RELEASE_VERSION:  ${{ vars.DOTNET_MIN_RELEASE_VERSION }}
+  PYTHON_MIN_RELEASE_VERSION:  ${{ vars.PYTHON_MIN_RELEASE_VERSION }}
+  PYTHON_MAX_RELEASE_VERSION:  ${{ vars.PYTHON_MAX_RELEASE_VERSION }}
 
 jobs:
   build:
@@ -50,6 +51,7 @@ jobs:
             releaseDate=`date +%F`
             echo "Defaulting to todays date ${releaseDate}"
           fi
+          echo "RELEASE_DATE=${releaseDate}" >> $GITHUB_ENV
           echo "RELEASE_DATE=${releaseDate}" >> $GITHUB_ENV
 
           declare -A platformNamesAsInBasePipeline
