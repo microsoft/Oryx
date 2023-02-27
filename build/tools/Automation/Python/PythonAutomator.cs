@@ -1,4 +1,8 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,6 +24,8 @@ namespace Microsoft.Oryx.Automation.Python
         private readonly HttpClient httpClient;
         private readonly IVersionService versionService;
         private readonly IYamlFileService yamlFileReaderService;
+        private string pythonMinReleaseVersion;
+        private string pythonMaxReleaseVersion;
 
         public PythonAutomator(
             IHttpClientFactory httpClientFactory,
@@ -37,8 +43,11 @@ namespace Microsoft.Oryx.Automation.Python
             if (versionObjs.Count > 0)
             {
                 // Deserialize constants.yaml
+                this.pythonMinReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMinReleaseVersionEnvVar);
+                this.pythonMaxReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMaxReleaseVersionEnvVar);
                 string constantsYamlAbsolutePath = Path.Combine(oryxRootPath, "build", Constants.ConstantsYaml);
-                List<ConstantsYamlFile> yamlConstantsObjs = await this.yamlFileReaderService.ReadConstantsYamlFileAsync(constantsYamlAbsolutePath);
+                List<ConstantsYamlFile> yamlConstantsObjs =
+                    await this.yamlFileReaderService.ReadConstantsYamlFileAsync(constantsYamlAbsolutePath);
 
                 this.UpdateOryxConstantsForNewVersions(versionObjs, yamlConstantsObjs, oryxRootPath);
             }
@@ -46,12 +55,11 @@ namespace Microsoft.Oryx.Automation.Python
 
         public async Task<List<VersionObj>> GetNewVersionObjsAsync()
         {
-            var url = "https://www.python.org/api/v2/downloads/release/";
-            var response = await this.httpClient.GetDataAsync(url);
+            var response = await this.httpClient.GetDataAsync(PythonConstants.PythonReleaseUrl);
             var releases = JsonConvert.DeserializeObject<List<Models.Release>>(response);
 
-            url = "https://oryx-cdn.microsoft.io/python?restype=container&comp=list&include=metadata";
-            HashSet<string> oryxSdkVersions = await this.httpClient.GetOryxSdkVersionsAsync(url);
+            HashSet<string> oryxSdkVersions = await this.httpClient.GetOryxSdkVersionsAsync(
+                Constants.OryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl);
 
             var versionObjs = new List<VersionObj>();
             foreach (var release in releases)
@@ -59,10 +67,12 @@ namespace Microsoft.Oryx.Automation.Python
                 string newVersion = release.Name.Replace("Python", string.Empty).Trim();
 
                 if (!release.PreRelease &&
-                    this.versionService.IsVersionWithinRange(newVersion, minVersion: "3.10.9") &&
+                    this.versionService.IsVersionWithinRange(
+                        newVersion,
+                        minVersion: this.pythonMinReleaseVersion,
+                        maxVersion: this.pythonMaxReleaseVersion) &&
                     !oryxSdkVersions.Contains(newVersion))
                 {
-                    Console.WriteLine($"newVersion {newVersion}");
                     versionObjs.Add(new VersionObj
                     {
                         Version = newVersion,
@@ -79,7 +89,8 @@ namespace Microsoft.Oryx.Automation.Python
             this.httpClient.Dispose();
         }
 
-        private void UpdateOryxConstantsForNewVersions(List<VersionObj> versionObjs, List<ConstantsYamlFile> constantsYamlFile, string oryxRootPath)
+        private void UpdateOryxConstantsForNewVersions(
+            List<VersionObj> versionObjs, List<ConstantsYamlFile> constantsYamlFile, string oryxRootPath)
         {
             Dictionary<string, ConstantsYamlFile> pythonYamlConstants = this.GetYamlPythonConstants(constantsYamlFile);
 
