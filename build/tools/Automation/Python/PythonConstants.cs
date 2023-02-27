@@ -12,6 +12,7 @@ namespace Oryx.Microsoft.Automation.Python
         public const string PythonName = "python";
         public const string VersionsToBuildTxt = "versionsToBuild.txt";
         public const string ConstantsYamlPythonKey = "python-versions";
+        public const string PythonBlockedVersionsEnvVar = "PYTHON_BLOCKED_VERSIONS";
         public const string PythonMinReleaseVersionEnvVar = "PYTHON_MIN_RELEASE_VERSION";
         public const string PythonMaxReleaseVersionEnvVar = "PYTHON_MAX_RELEASE_VERSION";
         public const string PythonReleaseUrl = "https://www.python.org/api/v2/downloads/release/";

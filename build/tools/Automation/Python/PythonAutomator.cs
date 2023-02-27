@@ -14,8 +14,6 @@ using Microsoft.Oryx.Automation.Python.Models;
 using Microsoft.Oryx.Automation.Services;
 using Newtonsoft.Json;
 using Oryx.Microsoft.Automation.Python;
-using YamlDotNet.Serialization;
-using YamlDotNet.Serialization.NamingConventions;
 
 namespace Microsoft.Oryx.Automation.Python
 {
@@ -27,6 +25,7 @@ namespace Microsoft.Oryx.Automation.Python
         private readonly IYamlFileService yamlFileService;
         private string pythonMinReleaseVersion;
         private string pythonMaxReleaseVersion;
+        private List<string> pythonBlockedVersions;
 
         public PythonAutomator(
             IHttpClientFactory httpClientFactory,
@@ -36,6 +35,7 @@ namespace Microsoft.Oryx.Automation.Python
         {
             this.httpClient = httpClientFactory.CreateClient();
             this.versionService = versionService;
+            this.fileService = fileService;
             this.yamlFileService = yamlFileService;
         }
 
@@ -44,9 +44,19 @@ namespace Microsoft.Oryx.Automation.Python
             List<PythonVersion> pythonVersions = await this.GetNewPythonVersionsAsync();
             if (pythonVersions.Count > 0)
             {
-                // Deserialize constants.yaml
                 this.pythonMinReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMinReleaseVersionEnvVar);
                 this.pythonMaxReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMaxReleaseVersionEnvVar);
+                var blockedVersions = Environment.GetEnvironmentVariable(
+                    PythonConstants.PythonBlockedVersionsEnvVar);
+                if (!string.IsNullOrEmpty(blockedVersions))
+                {
+                    var versionStrings = blockedVersions.Split(',');
+                    foreach (var versionString in versionStrings)
+                    {
+                        this.pythonBlockedVersions.Add(versionString.Trim());
+                    }
+                }
+
                 string constantsYamlSubPath = Path.Combine("build", Constants.ConstantsYaml);
                 List<ConstantsYamlFile> yamlConstantsObjs =
                     await this.yamlFileService.ReadConstantsYamlFileAsync(constantsYamlSubPath);
@@ -72,7 +82,8 @@ namespace Microsoft.Oryx.Automation.Python
                     this.versionService.IsVersionWithinRange(
                         newVersion,
                         minVersion: this.pythonMinReleaseVersion,
-                        maxVersion: this.pythonMaxReleaseVersion) &&
+                        maxVersion: this.pythonMaxReleaseVersion,
+                        this.pythonBlockedVersions) &&
                     !oryxSdkVersions.Contains(newVersion))
                 {
                     pythonVersions.Add(new PythonVersion
@@ -101,20 +112,17 @@ namespace Microsoft.Oryx.Automation.Python
                 string version = pythonVersion.Version;
                 string pythonConstantKey = this.GeneratePythonConstantKey(pythonVersion);
                 Console.WriteLine($"[UpdateConstants] version: {version} pythonConstantKey: {pythonConstantKey}");
-                pythonYamlConstants["python-versions"].Constants[pythonConstantKey] = version;
+
+                ConstantsYamlFile pythonYamlConstant = pythonYamlConstants[PythonConstants.ConstantsYamlPythonKey];
+                pythonYamlConstant.Constants[pythonConstantKey] = version;
 
                 // update versionsToBuild.txt
                 string line = $"\n{pythonVersion.Version}, {pythonVersion.GpgKey},";
                 this.fileService.UpdateVersionsToBuildTxt(PythonConstants.PythonName, line);
             }
 
-            var serializer = new SerializerBuilder()
-                .WithNamingConvention(UnderscoredNamingConvention.Instance)
-                .Build();
-
             var constantsYamlSubPath = Path.Combine("build", Constants.ConstantsYaml);
-            var stringResult = serializer.Serialize(constantsYamlFile);
-            File.WriteAllText(constantsYamlSubPath, stringResult);
+            this.yamlFileService.WriteConstantsYamlFile(constantsYamlSubPath, constantsYamlFile);
         }
 
         private string GetGpgKeyForVersion(string version)
