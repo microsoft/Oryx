@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
-
 using System;
 using System.IO;
 using System.Linq;
@@ -18,24 +17,39 @@ namespace Microsoft.Oryx.Automation.Services
             this.oryxRootPath = oryxRootPath;
         }
 
+        /// <summary>
+        /// Appends a line to the versionsToBuild.txt file
+        /// for the specified platform and Debian flavor.
+        /// The file is sorted and duplicates are removed
+        /// after the line is appended.
+        /// </summary>
+        /// <param name="platformName">The name of the platform.</param>
+        /// <param name="line">The line to append to the file.</param>
         public void UpdateVersionsToBuildTxt(string platformName, string line)
         {
-            foreach (string debianFlavor in Constants.DebianFlavors)
+            try
             {
-                var versionsToBuildTxtAbsolutePath = Path.Combine(
-                    this.oryxRootPath,
-                    "platforms",
-                    platformName,
-                    "versions",
-                    debianFlavor,
-                    Constants.VersionsToBuildTxtFileName);
-                System.IO.File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
+                foreach (string debianFlavor in Constants.DebianFlavors)
+                {
+                    string versionsToBuildTxtAbsolutePath = Path.Combine(
+                        this.oryxRootPath,
+                        "platforms",
+                        platformName,
+                        "versions",
+                        debianFlavor,
+                        Constants.VersionsToBuildTxtFileName);
+                    System.IO.File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
 
-                // sort
-                Console.WriteLine($"[UpdateVersionsToBuildTxt] Updating {versionsToBuildTxtAbsolutePath}...");
-                var contents = System.IO.File.ReadAllLines(versionsToBuildTxtAbsolutePath);
-                Array.Sort(contents);
-                System.IO.File.WriteAllLines(versionsToBuildTxtAbsolutePath, contents.Distinct());
+                    // sort
+                    Console.WriteLine($"[UpdateVersionsToBuildTxt] Updating {versionsToBuildTxtAbsolutePath}...");
+                    var contents = System.IO.File.ReadAllLines(versionsToBuildTxtAbsolutePath);
+                    Array.Sort(contents);
+                    System.IO.File.WriteAllLines(versionsToBuildTxtAbsolutePath, contents.Distinct());
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Failed to update versionsToBuild.txt under {this.oryxRootPath}: {ex.Message}");
             }
         }
     }
