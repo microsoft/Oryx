@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.Automation.Tests.Services
 
         public YamlFileServiceTests()
         {
-            _yamlFileService = new YamlFileService();
+            _yamlFileService = new YamlFileService("C:\\Temp\\Oryx");
         }
 
         [Fact]

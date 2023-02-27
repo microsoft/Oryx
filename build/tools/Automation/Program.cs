@@ -28,11 +28,8 @@ namespace Microsoft.Oryx.Automation
             var serviceProvider = new ServiceCollection()
                 .AddHttpClient()
                 .AddSingleton<IVersionService, VersionService>()
-                .AddSingleton<IFileService>(serviceProvider =>
-                {
-                    return new FileService(oryxRootPath);
-                })
-                .AddSingleton<IYamlFileService, YamlFileService>()
+                .AddSingleton<IFileService>(new FileService(oryxRootPath))
+                .AddSingleton<IYamlFileService>(new YamlFileService(oryxRootPath))
                 .AddScoped<DotNetAutomator>()
                 .AddScoped<PythonAutomator>()
                 .BuildServiceProvider();
@@ -41,7 +38,7 @@ namespace Microsoft.Oryx.Automation
             {
                 case "dotnet":
                     var dotNetAutomator = serviceProvider.GetRequiredService<DotNetAutomator>();
-                    await dotNetAutomator.RunAsync(oryxRootPath);
+                    await dotNetAutomator.RunAsync();
                     break;
                 case "python":
                     var pythonAutomator = serviceProvider.GetRequiredService<PythonAutomator>();
