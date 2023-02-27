@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.Automation.Tests.Services
             _yamlFileService.WriteConstantsYamlFile(filePath, yamlConstants);
 
             // Assert
-            Assert.Equal("- name: test\r\n  constants:\r\n    key1: value1\r\n    key2: value2\r\n", File.ReadAllText(filePath));
+            Assert.Equal("- name: test\r\n  constants:\r\n    key1: value1\r\n    key2: value2\r\n  outputs: []\r\n", File.ReadAllText(filePath));
 
             // Clean up
             File.Delete(filePath);
