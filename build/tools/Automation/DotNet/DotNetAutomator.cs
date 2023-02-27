@@ -32,6 +32,7 @@ namespace Microsoft.Oryx.Automation.DotNet
     {
         private readonly HttpClient httpClient;
         private readonly IVersionService versionService;
+        private readonly IFileService fileService;
         private readonly IYamlFileService yamlFileService;
         private string oryxRootPath;
         private string oryxSdkStorageBaseUrl;
@@ -43,10 +44,12 @@ namespace Microsoft.Oryx.Automation.DotNet
         public DotNetAutomator(
             IHttpClientFactory httpClientFactory,
             IVersionService versionService,
+            IFileService fileService,
             IYamlFileService yamlFileReaderService)
         {
             this.httpClient = httpClientFactory.CreateClient();
             this.versionService = versionService;
+            this.fileService = fileService;
             this.yamlFileService = yamlFileReaderService;
         }
 
@@ -203,8 +206,10 @@ namespace Microsoft.Oryx.Automation.DotNet
                     ConstantsYamlFile dotNetYamlConstant = dotnetYamlConstants[DotNetConstants.DotNetSdkKey];
                     dotNetYamlConstant.Constants[dotNetConstantKey] = version;
 
-                    // add sdk to versionsToBuild.txt
-                    this.UpdateVersionsToBuildTxt(dotNetVersion);
+                    // update versionsToBuild.txt
+                    this.fileService.UpdateVersionsToBuildTxt(
+                        DotNetConstants.DotNetName,
+                        $"\n{dotNetVersion.Version}, {dotNetVersion.Sha},");
                 }
                 else
                 {
@@ -268,7 +273,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                 $"Pattern matching using regex: {DotNetConstants.DotNetLinuxTarFileRegex}");
         }
 
-        private void UpdateVersionsToBuildTxt(DotNetVersion platformConstant)
+        /*private void UpdateVersionsToBuildTxt(DotNetVersion platformConstant)
         {
             HashSet<string> debianFlavors = new HashSet<string>() { "bullseye", "buster", "focal-scm", "stretch" };
             foreach (string debianFlavor in debianFlavors)
@@ -279,7 +284,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                     DotNetConstants.DotNetName,
                     "versions",
                     debianFlavor,
-                    Constants.VersionsToBuildTxt);
+                    Constants.VersionsToBuildTxtFileName);
                 string line = $"\n{platformConstant.Version}, {platformConstant.Sha},";
                 System.IO.File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
 
@@ -289,6 +294,6 @@ namespace Microsoft.Oryx.Automation.DotNet
                 Array.Sort(contents);
                 System.IO.File.WriteAllLines(versionsToBuildTxtAbsolutePath, contents.Distinct());
             }
-        }
+        }*/
     }
 }
