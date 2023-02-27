@@ -17,7 +17,7 @@ jobs:
   SdkRuntimeAutomation:
     strategy:
       matrix:
-        platformName: [dotnet]
+        platformName: [dotnet, python]
     uses: ./.github/workflows/automationTemplate.yaml
     with:
       platformName: ${{ matrix.platformName }}

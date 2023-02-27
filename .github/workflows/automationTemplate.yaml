@@ -25,7 +25,8 @@ on:
 env:
   MAX_RETRIES: 10
   TIMEOUT_SECONDS: 900
-  DOTNET_MIN_RELEASE_VERSION: 6.0.14
+  #DOTNET_MIN_RELEASE_VERSION: 6.0.14
+  #PYTHON_MIN_RELEASE_VERSION: 3.10.9
 
 jobs:
   build:
@@ -48,7 +49,7 @@ jobs:
           echo "RELEASE_DATE=${releaseDate}" >> $GITHUB_ENV
 
           declare -A platformNamesAsInBasePipeline
-          platformNamesAsInBasePipeline=( ["dotnet"]="DotNetCore" )
+          platformNamesAsInBasePipeline=( ["dotnet"]="DotNetCore" ["python"]="Python" )
           echo "PLATFORM_NAME_CAMEL_CASE=${platformNamesAsInBasePipeline[${{ inputs.platformName }}]}" >> $GITHUB_ENV
 
       - name: Run SDK Automation

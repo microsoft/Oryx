@@ -41,22 +41,22 @@ namespace Microsoft.Oryx.Automation.Python
 
         public async Task RunAsync()
         {
+            this.pythonMinReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMinReleaseVersionEnvVar);
+            this.pythonMaxReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMaxReleaseVersionEnvVar);
+            var blockedVersions = Environment.GetEnvironmentVariable(
+                PythonConstants.PythonBlockedVersionsEnvVar);
+            if (!string.IsNullOrEmpty(blockedVersions))
+            {
+                var versionStrings = blockedVersions.Split(',');
+                foreach (var versionString in versionStrings)
+                {
+                    this.pythonBlockedVersions.Add(versionString.Trim());
+                }
+            }
+
             List<PythonVersion> pythonVersions = await this.GetNewPythonVersionsAsync();
             if (pythonVersions.Count > 0)
             {
-                this.pythonMinReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMinReleaseVersionEnvVar);
-                this.pythonMaxReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMaxReleaseVersionEnvVar);
-                var blockedVersions = Environment.GetEnvironmentVariable(
-                    PythonConstants.PythonBlockedVersionsEnvVar);
-                if (!string.IsNullOrEmpty(blockedVersions))
-                {
-                    var versionStrings = blockedVersions.Split(',');
-                    foreach (var versionString in versionStrings)
-                    {
-                        this.pythonBlockedVersions.Add(versionString.Trim());
-                    }
-                }
-
                 string constantsYamlSubPath = Path.Combine("build", Constants.ConstantsYaml);
                 List<ConstantsYamlFile> yamlConstantsObjs =
                     await this.yamlFileService.ReadConstantsYamlFileAsync(constantsYamlSubPath);
