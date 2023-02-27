@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.Automation.Python
         public async Task<List<PythonVersion>> GetNewPythonVersionsAsync()
         {
             var response = await this.httpClient.GetDataAsync(PythonConstants.PythonReleaseUrl);
-            var releases = JsonConvert.DeserializeObject<List<Models.Release>>(response);
+            var releases = JsonConvert.DeserializeObject<List<Release>>(response);
 
             HashSet<string> oryxSdkVersions = await this.httpClient.GetOryxSdkVersionsAsync(
                 Constants.OryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl);
@@ -155,7 +155,7 @@ namespace Microsoft.Oryx.Automation.Python
 
             // prevent duplicate majorMinor where 11.0 and 1.10 both will generate a 110 key.
             int majorVersionInt = int.Parse(majorVersion);
-            string majorMinor = majorVersionInt < 10 ? $"{majorVersion}{minorVersion}" : $"{majorVersion}Dot{minorVersion}";
+            string majorMinor = majorVersionInt < 10 ? $"{majorVersion}{minorVersion}" : $"{majorVersion}_{minorVersion}";
 
             return $"python{majorMinor}-version";
         }
