@@ -238,7 +238,7 @@ namespace Microsoft.Oryx.Automation.DotNet
 
             // prevent duplicate majorMinor where 11.0 and 1.10 both will generate a 110 key.
             int majorVersionInt = int.Parse(majorVersion);
-            string majorMinor = majorVersionInt < 10 ? $"{majorVersion}{minorVersion}" : $"{majorVersion}Dot{minorVersion}";
+            string majorMinor = majorVersionInt < 10 ? $"{majorVersion}{minorVersion}" : $"{majorVersion}_{minorVersion}";
 
             string constant;
             if (dotNetVersion.VersionType.Equals(DotNetConstants.SdkName))

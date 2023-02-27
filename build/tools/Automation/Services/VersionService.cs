@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+using System;
 using System.Collections.Generic;
 using NuGet.Versioning;
 
@@ -52,6 +53,7 @@ namespace Microsoft.Oryx.Automation.Services
                         && semanticVersion == blockedSemanticVersion)
                     {
                         // If the exception version matches the version, return false
+                        Console.WriteLine($"Blocking version: {blockedVersion}");
                         return false;
                     }
                 }
