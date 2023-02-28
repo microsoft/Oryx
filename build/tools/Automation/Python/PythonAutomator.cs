@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.Automation.Python
 {
     public class PythonAutomator
     {
-        private readonly IHttpServiceExtension httpServiceExtension;
+        private readonly IHttpService httpService;
         private readonly IVersionService versionService;
         private readonly IFileService fileService;
         private readonly IYamlFileService yamlFileService;
@@ -26,12 +26,12 @@ namespace Microsoft.Oryx.Automation.Python
         private List<string> pythonBlockedVersions;
 
         public PythonAutomator(
-            IHttpServiceExtension httpServiceExtension,
+            IHttpService httpService,
             IVersionService versionService,
             IFileService fileService,
             IYamlFileService yamlFileService)
         {
-            this.httpServiceExtension = httpServiceExtension;
+            this.httpService = httpService;
             this.versionService = versionService;
             this.fileService = fileService;
             this.yamlFileService = yamlFileService;
@@ -65,10 +65,10 @@ namespace Microsoft.Oryx.Automation.Python
 
         public async Task<List<PythonVersion>> GetNewPythonVersionsAsync()
         {
-            var response = await this.httpServiceExtension.GetDataAsync(PythonConstants.PythonReleaseUrl);
+            var response = await this.httpService.GetDataAsync(PythonConstants.PythonReleaseUrl);
             var releases = JsonConvert.DeserializeObject<List<Release>>(response);
 
-            HashSet<string> oryxSdkVersions = await this.httpServiceExtension.GetOryxSdkVersionsAsync(
+            HashSet<string> oryxSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(
                 Constants.OryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl);
 
             var pythonVersions = new List<PythonVersion>();
