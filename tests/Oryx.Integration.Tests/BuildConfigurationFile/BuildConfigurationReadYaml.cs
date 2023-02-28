@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Xunit;
 
-
 namespace Oryx.Integration.Tests.BuildConfigurationFile
 {
     public class BuildConfigurationReadYaml : IClassFixture<TestTempDirTestFixture>
@@ -146,7 +145,8 @@ namespace Oryx.Integration.Tests.BuildConfigurationFile
                     Options.Create(commonOptions)),
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
-                new DefaultStandardOutputWriter());
+                new DefaultStandardOutputWriter(), 
+                TelemetryClientHelper.GetTelemetryClient()); 
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()

@@ -1,7 +1,7 @@
 - name: ext-var-names
   constants:
     environment-type: ORYX_ENV_TYPE
-    application-insights-instrumentation-key-env-var-name: ORYX_AI_INSTRUMENTATION_KEY
+    application-insights-connection-string-env-var-name: ORYX_AI_CONNECTION_STRING
     app-service-app-name-env-var-name: APPSETTING_WEBSITE_SITE_NAME
     scm-commit-id-env-var-name: SCM_COMMIT_ID
     php-origin: PHP_ORIGIN
@@ -430,7 +430,7 @@
 - name: staging-runtime-constants
   constants:
     dotnetcore-staging-runtime-versions:
-    -
+    - 
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator

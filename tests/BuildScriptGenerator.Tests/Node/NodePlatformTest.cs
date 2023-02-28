@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -995,7 +996,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector,
                 environment,
-                platformInstaller);
+                platformInstaller,
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -1008,6 +1010,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             var versionProvider = new TestNodeVersionProvider();
             var detector = new TestNodePlatformDetector(detectedVersion: detectedVersion);
+        
             return new TestNodePlatform(
                 Options.Create(commonOptions),
                 Options.Create(nodeScriptGeneratorOptions),
@@ -1015,7 +1018,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector,
                 environment,
-                platformInstaller);
+                platformInstaller, 
+                TelemetryClientHelper.GetTelemetryClient());  
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -1029,7 +1033,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 Options.Create(cliOptions),
                 sdkAlreadyInstalled,
                 NullLoggerFactory.Instance);
-
             var versionProvider = new TestNodeVersionProvider();
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
             var detector = new TestNodePlatformDetector();
@@ -1040,7 +1043,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector,
                 environment,
-                installer);
+                installer,
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
@@ -1062,7 +1066,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 ILogger<NodePlatform> logger,
                 INodePlatformDetector detector,
                 IEnvironment environment,
-                NodePlatformInstaller nodePlatformInstaller)
+                NodePlatformInstaller nodePlatformInstaller,
+                TelemetryClient telemetryClient)
                 : base(
                       cliOptions,
                       nodeScriptGeneratorOptions,
@@ -1070,7 +1075,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                       logger,
                       detector,
                       environment,
-                      nodePlatformInstaller)
+                      nodePlatformInstaller,
+                      telemetryClient)
             {
             }
         }
