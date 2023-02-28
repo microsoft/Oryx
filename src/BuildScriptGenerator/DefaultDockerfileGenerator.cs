@@ -7,9 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
@@ -20,9 +22,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultDockerfileGenerator : IDockerfileGenerator
     {
+        private const string DefaultCliImageTag = "debian-buster-stable";
         private const string DynamicRuntimeImageTag = "dynamic";
 
-        private readonly Dictionary<string, List<string>> supportedRuntimeVersions = new Dictionary<string, List<string>>()
+        private readonly Dictionary<string, Dictionary<string, string>> supportedRuntimeVersions = new Dictionary<string, Dictionary<string, string>>()
         {
             { "dotnetcore", DotNetCoreSdkVersions.RuntimeVersions },
             { "node", NodeVersions.RuntimeVersions },
@@ -34,24 +37,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly ICompatiblePlatformDetector platformDetector;
         private readonly ILogger<DefaultDockerfileGenerator> logger;
         private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly TelemetryClient telemetryClient;
 
         public DefaultDockerfileGenerator(
             ICompatiblePlatformDetector platformDetector,
             ILogger<DefaultDockerfileGenerator> logger,
-            IOptions<BuildScriptGeneratorOptions> commonOptions)
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
+            TelemetryClient telemetryClient)
         {
             this.platformDetector = platformDetector;
             this.logger = logger;
             this.commonOptions = commonOptions.Value;
+            this.telemetryClient = telemetryClient;
         }
 
         public string GenerateDockerfile(DockerfileContext ctx)
         {
-            using (var timedEvent = this.logger.LogTimedEvent("GenerateDockerfile"))
+            using (var timedEvent = this.telemetryClient.LogTimedEvent("GenerateDockerfile"))
             {
                 var createScriptArguments = new Dictionary<string, string>();
                 var dockerfileBuildImageName = "cli";
-                var dockerfileBuildImageTag = "stable";
+                var dockerfileBuildImageTag = DefaultCliImageTag;
 
                 if (!string.IsNullOrEmpty(this.commonOptions.BuildImage))
                 {
@@ -120,6 +126,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     }
                 }
 
+                // If the user didn't provided a custom build image, attempt to update the build image tag to
+                // accurately reflect the OS flavor used by the provided/found for the runtime image.
+                if (string.IsNullOrEmpty(this.commonOptions.BuildImage) && this.supportedRuntimeVersions.ContainsKey(dockerfileRuntimeImage))
+                {
+                    var runtimeDictionary = this.supportedRuntimeVersions[dockerfileRuntimeImage];
+                    if (runtimeDictionary.ContainsKey(dockerfileRuntimeImageTag))
+                    {
+                        var osFlavor = runtimeDictionary[dockerfileRuntimeImageTag];
+                        dockerfileBuildImageTag = $"{osFlavor}-stable";
+                    }
+                }
+
                 var formattedCreateScriptArguments = createScriptArguments.Any() ?
                     string.Join(' ', createScriptArguments.Select(arg => $"-{arg.Key} {arg.Value}")) : string.Empty;
 
@@ -137,7 +155,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var generatedDockerfile = TemplateHelper.Render(
                     TemplateHelper.TemplateResource.Dockerfile,
                     properties,
-                    this.logger);
+                    this.logger,
+                    this.telemetryClient);
 
                 // Remove the Container Registry Analysis snippet, if it exists in the template.
                 var pattern = "# DisableDockerDetector \".*?\"\n";
@@ -220,9 +239,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <returns>The converted platform runtime image version.</returns>
         private string ConvertToRuntimeVersion(string platformName, string platformVersion)
         {
-            if (!string.IsNullOrEmpty(platformName))
+            if (!string.IsNullOrEmpty(platformName) && this.supportedRuntimeVersions.ContainsKey(platformName))
             {
-                var runtimeVersions = this.supportedRuntimeVersions[platformName];
+                var runtimeVersions = this.supportedRuntimeVersions[platformName].Keys
+                    .Where(v => !string.Equals(v, DynamicRuntimeImageTag, StringComparison.OrdinalIgnoreCase));
                 if (runtimeVersions == null || !runtimeVersions.Any())
                 {
                     return DynamicRuntimeImageTag;

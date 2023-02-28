@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -33,6 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private readonly BuildScriptGeneratorOptions commonOptions;
         private readonly DotNetCorePlatformInstaller platformInstaller;
         private readonly GlobalJsonSdkResolver globalJsonSdkResolver;
+        private readonly TelemetryClient telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DotNetCorePlatform"/> class.
@@ -51,7 +53,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
             DotNetCorePlatformInstaller platformInstaller,
-            GlobalJsonSdkResolver globalJsonSdkResolver)
+            GlobalJsonSdkResolver globalJsonSdkResolver,
+            TelemetryClient telemetryClient)
         {
             this.versionProvider = versionProvider;
             this.logger = logger;
@@ -60,6 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             this.commonOptions = commonOptions.Value;
             this.platformInstaller = platformInstaller;
             this.globalJsonSdkResolver = globalJsonSdkResolver;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <inheritdoc/>
@@ -153,7 +157,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             var script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.DotNetCoreSnippet,
                 templateProperties,
-                this.logger);
+                this.logger,
+                this.telemetryClient);
 
             SetStartupFileNameInfoInManifestFile(context, projectFile, manifestFileProperties);
 

@@ -21,6 +21,7 @@ declare -r ORYX_PYTHON_IMAGE_BASE_PLACEHOLDER="%BASE_TAG%"
 
 source "$PYTHON_VERSIONS_PATH"
 
+# Please make sure that any changes to debian flavors supported here are also reflected in build/constants.yaml
 declare -r PYTHON_BULLSEYE_VERSION_ARRAY=($PYTHON37_VERSION $PYTHON38_VERSION $PYTHON310_VERSION $PYTHON311_VERSION)
 declare -r PYTHON_BUSTER_VERSION_ARRAY=($PYTHON39_VERSION)
 ImageDebianFlavor="$1"

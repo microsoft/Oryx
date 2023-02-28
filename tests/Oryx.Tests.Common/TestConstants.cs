@@ -3,6 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
+
 namespace Microsoft.Oryx.Tests.Common
 {
     public static class TestConstants
@@ -12,5 +14,9 @@ namespace Microsoft.Oryx.Tests.Common
         // Xunit trait values
         public const string Category = "Category";
         public const string Release = "Release";
+
+        //AI key 
+        public const string AppInsightsConnectionString = "InstrumentationKey=test";
+        public const string AppInsightsConnectionStringEnvironmentVariable = "TEST_AI_CONNECTION_STRING";
     }
 }
