@@ -5,14 +5,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
-using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
-using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Ruby;
 
@@ -29,6 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
         private readonly ILogger<RubyPlatform> logger;
         private readonly IRubyPlatformDetector detector;
         private readonly RubyPlatformInstaller rubyInstaller;
+        private readonly TelemetryClient telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RubyPlatform"/> class.
@@ -45,7 +43,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             IRubyVersionProvider rubyVersionProvider,
             ILogger<RubyPlatform> logger,
             IRubyPlatformDetector detector,
-            RubyPlatformInstaller rubyInstaller)
+            RubyPlatformInstaller rubyInstaller,
+            TelemetryClient telemetryClient)
         {
             this.rubyScriptGeneratorOptions = rubyScriptGeneratorOptions.Value;
             this.commonOptions = commonOptions.Value;
@@ -53,6 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             this.logger = logger;
             this.detector = detector;
             this.rubyInstaller = rubyInstaller;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <summary>
@@ -137,7 +137,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.RubyBuildSnippet,
                 scriptProps,
-                this.logger);
+                this.logger,
+                this.telemetryClient);
 
             return new BuildScriptSnippet
             {

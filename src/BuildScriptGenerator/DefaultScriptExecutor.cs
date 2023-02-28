@@ -4,18 +4,22 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Diagnostics;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultScriptExecutor : IScriptExecutor
     {
         private readonly ILogger<DefaultScriptExecutor> logger;
+        private readonly TelemetryClient telemetryClient;
 
-        public DefaultScriptExecutor(ILogger<DefaultScriptExecutor> logger)
+        public DefaultScriptExecutor(ILogger<DefaultScriptExecutor> logger, TelemetryClient telemetryClient)
         {
             this.logger = logger;
+            this.telemetryClient = telemetryClient;
         }
 
         public int ExecuteScript(
@@ -42,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             DataReceivedEventHandler stdErrHandler)
         {
             int exitCode;
-            using (var timedEvent = this.logger.LogTimedEvent("ExecuteScript"))
+            using (var timedEvent = this.telemetryClient.LogTimedEvent("ExecuteScript"))
             {
                 exitCode = ProcessHelper.RunProcess(
                     scriptPath,

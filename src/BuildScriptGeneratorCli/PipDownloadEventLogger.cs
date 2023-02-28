@@ -4,8 +4,10 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Linq;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -21,10 +23,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly ILogger logger;
 
         private EventStopwatch currentDownload;
+        private TelemetryClient telemetryClient;
 
-        public PipDownloadEventLogger(ILogger logger)
+        public PipDownloadEventLogger(ILogger logger, TelemetryClient telemetryClient)
         {
             this.logger = logger;
+            this.telemetryClient = telemetryClient;
         }
 
         public void ProcessLine(string line)
@@ -44,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
                 if (parts[1].StartsWith("http"))
                 {
-                    this.currentDownload = this.logger.LogTimedEvent(EventName);
+                    this.currentDownload = this.telemetryClient.LogTimedEvent(EventName);
                     this.currentDownload.AddProperty("markerLine", cleanLine);
 
                     var url = parts[1].ReplaceUrlUserInfo();
