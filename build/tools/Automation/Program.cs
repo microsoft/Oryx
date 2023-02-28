@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Oryx.Automation.DotNet;
 using Microsoft.Oryx.Automation.Python;
 using Microsoft.Oryx.Automation.Services;
+using Oryx.Microsoft.Automation.Python;
 
 namespace Microsoft.Oryx.Automation
 {
@@ -37,11 +38,11 @@ namespace Microsoft.Oryx.Automation
 
             switch (platform)
             {
-                case "dotnet":
+                case DotNetConstants.DotNetName:
                     var dotNetAutomator = serviceProvider.GetRequiredService<DotNetAutomator>();
                     await dotNetAutomator.RunAsync();
                     break;
-                case "python":
+                case PythonConstants.PythonName:
                     var pythonAutomator = serviceProvider.GetRequiredService<PythonAutomator>();
                     await pythonAutomator.RunAsync();
                     break;
