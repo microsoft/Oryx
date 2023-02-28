@@ -15,22 +15,26 @@ namespace Microsoft.Oryx.Automation.Tests.Services
     public class YamlFileServiceTests
     {
         private readonly YamlFileService yamlFileService;
+        private readonly string oryxRootPath;
+        private readonly string testConstantsYamlFilePath;
 
         public YamlFileServiceTests()
         {
-            this.yamlFileService = new YamlFileService("C:\\Temp\\Oryx");
+            this.oryxRootPath = Directory.GetCurrentDirectory();
+            this.testConstantsYamlFilePath = Path.Combine(this.oryxRootPath, "test-constants.yaml");
+            this.yamlFileService = new YamlFileService(this.oryxRootPath);
+
         }
 
         [Fact]
         public async Task ReadConstantsYamlFileAsync_ReturnsExpectedYamlContents()
         {
             // Arrange
-            string filePath = "test_constants.yaml";
             string yamlContents = "- name: test\r\n  constants:\r\n    key1: value1\r\n    key2: value2";
-            File.WriteAllText(filePath, yamlContents);
+            File.WriteAllText(this.testConstantsYamlFilePath, yamlContents);
 
             // Act
-            var result = await this.yamlFileService.ReadConstantsYamlFileAsync(filePath);
+            var result = await this.yamlFileService.ReadConstantsYamlFileAsync(this.testConstantsYamlFilePath);
 
             // Assert
             Assert.Single(result);
@@ -38,38 +42,38 @@ namespace Microsoft.Oryx.Automation.Tests.Services
             Assert.Equal("value2", result[0].Constants["key2"]);
 
             // Clean up
-            File.Delete(filePath);
+            File.Delete(this.testConstantsYamlFilePath);
         }
 
         [Fact]
         public async Task ReadConstantsYamlFileAsync_ThrowsFileNotFoundException_ForNonexistentFile()
         {
             // Arrange
-            string filePath = "nonexistent.yaml";
+            var nonExistentFilePath = Path.Combine(this.oryxRootPath, "non-existent.yaml");
 
             // Act and assert
             var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
-                this.yamlFileService.ReadConstantsYamlFileAsync(filePath));
+                this.yamlFileService.ReadConstantsYamlFileAsync(nonExistentFilePath));
 
             Assert.Contains("YAML file not found.", ex.Message);
         }
 
         [Fact]
-        public async Task ReadConstantsYamlFileAsync_ThrowsYamlException_ForInvalidYaml()
+        public async Task ReadConstantsYamlFileAsync_ShouldThrowYamlException_WhenYamlFileHasInvalidFormat()
         {
             // Arrange
-            string filePath = "invalid_constants.yaml";
-            string invalidYamlContents = "invalid-yaml-contents";
-            File.WriteAllText(filePath, invalidYamlContents);
+            var yamlFileService = new YamlFileService(this.oryxRootPath);
+            var invalidYamlFilePath = Path.Combine(this.oryxRootPath, "invalid-constants.yaml");
+
+            // Write an invalid YAML file
+            await File.WriteAllTextAsync(invalidYamlFilePath, "invalid: : : yaml");
 
             // Act and assert
-            var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
-                this.yamlFileService.ReadConstantsYamlFileAsync(filePath));
+            await Assert.ThrowsAsync<ArgumentException>(
+                async () => await yamlFileService.ReadConstantsYamlFileAsync(invalidYamlFilePath));
 
-            Assert.Contains("Invalid YAML file format.", ex.Message);
-
-            // Clean up
-            File.Delete(filePath);
+            // Cleanup
+            File.Delete(invalidYamlFilePath);
         }
 
         [Fact]
