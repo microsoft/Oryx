@@ -26,12 +26,13 @@ namespace Microsoft.Oryx.Automation
             string oryxRootPath = args[1];
             string platform = args[0].ToLower();
             var serviceProvider = new ServiceCollection()
-                .AddHttpClient()
+                .AddSingleton<IHttpServiceExtension, HttpServiceExtension>()
                 .AddSingleton<IVersionService, VersionService>()
                 .AddSingleton<IFileService>(new FileService(oryxRootPath))
                 .AddSingleton<IYamlFileService>(new YamlFileService(oryxRootPath))
                 .AddScoped<DotNetAutomator>()
                 .AddScoped<PythonAutomator>()
+                .AddHttpClient()
                 .BuildServiceProvider();
 
             switch (platform)
