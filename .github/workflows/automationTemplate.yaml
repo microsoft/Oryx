@@ -3,19 +3,12 @@ name: Oryx-SDK-Runtime-Automation-Template
 on:
   workflow_call:
     inputs:
-      releaseDate:
-        required: false
-        type: string
       platformName:
         required: true
         type: string
 
   workflow_dispatch:
     inputs:
-      releaseDate:
-        description: 'The date to check for new releases. Format: yyyy-mm-dd'
-        required: false
-        type: string
       platformName:
         required: true
         type: string
@@ -25,8 +18,9 @@ on:
 env:
   MAX_RETRIES: 10
   TIMEOUT_SECONDS: 900
-  DOTNET_MIN_RELEASE_VERSION: 6.0.14
-
+  DOTNET_MIN_RELEASE_VERSION: ${{ vars.DOTNET_MIN_RELEASE_VERSION }}
+  DOTNET_MAX_RELEASE_VERSION: ${{ vars.DOTNET_MAX_RELEASE_VERSION }}
+  DOTNET_BLOCKED_VERSIONS_ARRAY: ${{ vars.DOTNET_BLOCKED_VERSIONS_ARRAY }}
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -37,14 +31,7 @@ jobs:
       - name: Set Required Environment Variables
         run: |
           set -x
-          releaseDate=${{ inputs.releaseDate }}
-          if ! [[ "${releaseDate}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]
-          then
-            echo "release date is empty or invalid $releaseDate."
-            echo "Expecting date format yyyy-mm-dd"
-            releaseDate=`date +%F`
-            echo "Defaulting to todays date ${releaseDate}"
-          fi
+          releaseDate=`date +%F`
           echo "RELEASE_DATE=${releaseDate}" >> $GITHUB_ENV
 
           declare -A platformNamesAsInBasePipeline

@@ -6,7 +6,7 @@ namespace Microsoft.Oryx.Automation.DotNet
 {
     public class DotNetConstants
     {
-        public const string DotNetBlockedVersionsEnvVar = "DOTNET_BLOCKED_VERSIONS";
+        public const string DotNetBlockedVersionsEnvVar = "DOTNET_BLOCKED_VERSIONS_ARRAY";
         public const string DotNetMinReleaseVersionEnvVar = "DOTNET_MIN_RELEASE_VERSION";
         public const string DotNetMaxReleaseVersionEnvVar = "DOTNET_MAX_RELEASE_VERSION";
         public const string DotNetMaxVersionEnvVar = "DOTNET_MAX_VERSION";
