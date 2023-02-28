@@ -7,9 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.SourceRepo;
 using Microsoft.Oryx.Common.Extensions;
@@ -31,6 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly IPhpPlatformDetector detector;
         private readonly PhpPlatformInstaller phpInstaller;
         private readonly PhpComposerInstaller phpComposerInstaller;
+        private readonly TelemetryClient telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PhpPlatform"/> class.
@@ -51,7 +54,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             ILogger<PhpPlatform> logger,
             IPhpPlatformDetector detector,
             PhpPlatformInstaller phpInstaller,
-            PhpComposerInstaller phpComposerInstaller)
+            PhpComposerInstaller phpComposerInstaller,
+            TelemetryClient telemetryClient)
         {
             this.phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
             this.commonOptions = commonOptions.Value;
@@ -61,6 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             this.detector = detector;
             this.phpInstaller = phpInstaller;
             this.phpComposerInstaller = phpComposerInstaller;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <summary>
@@ -133,7 +138,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     {
                         Newtonsoft.Json.Linq.JObject deps = composerFile?.require;
                         var depSpecs = deps.ToObject<IDictionary<string, string>>();
-                        this.logger.LogDependencies(
+                        this.telemetryClient.LogDependencies(
                             this.Name,
                             phpPlatformDetectorResult.PlatformVersion,
                             depSpecs.Select(kv => kv.Key + kv.Value));
@@ -148,7 +153,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             }
 
             var props = new PhpBashBuildSnippetProperties { ComposerFileExists = composerFileExists };
-            string snippet = TemplateHelper.Render(TemplateHelper.TemplateResource.PhpBuildSnippet, props, this.logger);
+            string snippet = TemplateHelper.Render(TemplateHelper.TemplateResource.PhpBuildSnippet, props, this.logger, this.telemetryClient);
             return new BuildScriptSnippet { BashBuildScriptSnippet = snippet, BuildProperties = buildProperties };
         }
 

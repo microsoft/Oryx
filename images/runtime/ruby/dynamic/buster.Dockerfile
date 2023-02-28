@@ -24,8 +24,8 @@ ENV ENABLE_DYNAMIC_INSTALL="true"
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ARG AI_CONNECTION_STRING
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 RUN ${IMAGES_DIR}/runtime/ruby/install-dependencies.sh
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx
