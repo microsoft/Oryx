@@ -45,6 +45,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var command = new Command("platforms", "Show a list of supported platforms along with their versions and build properties.");
             command.AddOption(jsonOption);
+            command.AddOption(logOption);
+            command.AddOption(debugOption);
 
             command.SetHandler(
                 (prop) =>
@@ -55,7 +57,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 new PlatformsCommandBinder(
                     jsonOption,
                     logOption,
-                    jsonOption));
+                    debugOption));
             return command;
         }
 
