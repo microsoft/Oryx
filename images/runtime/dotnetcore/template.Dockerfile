@@ -18,10 +18,10 @@ RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 FROM %BASE_IMAGE_REPO%:%RUNTIME_BASE_IMAGE_TAG%
 
 # Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
+ARG AI_CONNECTION_STRING
 ARG USER_DOTNET_AI_VERSION
 ENV USER_DOTNET_AI_VERSION=${USER_DOTNET_AI_VERSION}
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING} 
 ENV DOTNET_VERSION=%DOTNET_VERSION%
 ENV ASPNETCORE_LOGGING__CONSOLE__DISABLECOLORS=true
 #Bake in client certificate path into image to avoid downloading it

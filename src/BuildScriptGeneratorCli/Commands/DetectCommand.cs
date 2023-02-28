@@ -11,11 +11,13 @@ using System.CommandLine.IO;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Microsoft.ApplicationInsights;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.Detector;
 using Newtonsoft.Json;
 
@@ -79,6 +81,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+            var telemetryClient = serviceProvider.GetRequiredService<TelemetryClient>();
             var logger = loggerFactory.CreateLogger<DetectCommand>();
             var sourceRepo = new LocalSourceRepo(this.SourceDir, loggerFactory);
             var ctx = new DetectorContext
@@ -88,7 +91,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var detector = serviceProvider.GetRequiredService<IDetector>();
             var detectedPlatformResults = detector.GetAllDetectedPlatforms(ctx);
-            using (var timedEvent = logger.LogTimedEvent("DetectCommand"))
+            using (var timedEvent = telemetryClient.LogTimedEvent("DetectCommand"))
             {
                 if (detectedPlatformResults == null || !detectedPlatformResults.Any())
                 {

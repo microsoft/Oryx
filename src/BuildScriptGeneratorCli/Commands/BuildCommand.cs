@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -201,10 +202,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var environment = serviceProvider.GetRequiredService<IEnvironment>();
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            var buildOperationId = logger.StartOperation(BuildOperationName(environment));
+            var telemetryClient = serviceProvider.GetRequiredService<TelemetryClient>();
+            var buildOperationId = telemetryClient.StartOperation(BuildOperationName(environment));
 
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
-            var sourceRepoCommitId = GetSourceRepoCommitId(environment, sourceRepo, logger);
+            var sourceRepoCommitId = GetSourceRepoCommitId(environment, sourceRepo, logger, telemetryClient);
 
             var oryxVersion = Program.GetVersion();
             var oryxCommitId = Program.GetMetadataValue(Program.GitCommit);
@@ -222,8 +224,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 { "sourceRepoCommitId", sourceRepoCommitId },
                 { "platformName", this.PlatformName },
             };
-
-            logger.LogEvent("BuildRequested", buildEventProps);
+            telemetryClient.LogEvent("BuildRequested", buildEventProps);
 
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
@@ -251,7 +252,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Generate build script
             string scriptContent;
             Exception exception;
-            using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
+            using (var stopwatch = telemetryClient.LogTimedEvent("GenerateBuildScript"))
             {
                 var checkerMessages = new List<ICheckerMessage>();
                 var scriptGenerator = new BuildScriptGenerator(
@@ -288,7 +289,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // Write build script to selected path
             File.WriteAllText(buildScriptPath, scriptContent);
-            logger.LogTrace("Build script written to file");
+            telemetryClient.LogTrace("Build script written to file");
             if (this.DebugMode)
             {
                 console.WriteLine($"Build script content:\n{scriptContent}");
@@ -306,8 +307,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var buildScriptOutput = new StringBuilder();
             var stdOutEventLoggers = new ITextStreamProcessor[]
             {
-                new TextSpanEventLogger(logger, this.measurableStdOutSpans),
-                new PipDownloadEventLogger(logger),
+                new TextSpanEventLogger(logger, this.measurableStdOutSpans, telemetryClient),
+                new PipDownloadEventLogger(logger, telemetryClient),
             };
 
             DataReceivedEventHandler stdOutBaseHandler = (sender, args) =>
@@ -354,7 +355,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // Run the generated script
             int exitCode;
-            using (var timedEvent = logger.LogTimedEvent("RunBuildScript", buildEventProps))
+            using (var timedEvent = telemetryClient.LogTimedEvent("RunBuildScript", buildEventProps))
             {
                 console.WriteLine(string.Empty);
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
@@ -374,7 +375,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (exitCode != ProcessConstants.ExitSuccess)
             {
-                logger.LogLongMessage(
+               logger.LogLongMessage(
                     LogLevel.Error,
                     header: "Error running build script",
                     buildScriptOutput.ToString(),
@@ -384,7 +385,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         ["oryxVersion"] = oryxVersion,
                         ["oryxReleaseTagName"] = oryxReleaseTagName,
                     });
-                return exitCode;
+               return exitCode;
             }
 
             return ProcessConstants.ExitSuccess;
@@ -508,13 +509,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return serviceProviderBuilder.Build();
         }
 
-        private static string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)
+        private static string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger, TelemetryClient telemetryClient)
         {
             string commitId = env.GetEnvironmentVariable(ExtVarNames.ScmCommitIdEnvVarName);
 
             if (string.IsNullOrEmpty(commitId))
             {
-                using (var timedEvent = logger.LogTimedEvent("GetGitCommitId"))
+                using (var timedEvent = telemetryClient.LogTimedEvent("GetGitCommitId"))
                 {
                     commitId = repo.GetGitCommitId();
                     timedEvent.AddProperty(nameof(commitId), commitId);

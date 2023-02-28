@@ -8,6 +8,8 @@ using System.CommandLine;
 using System.CommandLine.IO;
 using System.IO;
 using JetBrains.Annotations;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
@@ -30,19 +32,38 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             LogManager.Configuration = BuildNLogConfiguration(logFilePath);
             LogManager.ReconfigExistingLoggers();
 
+            var disableTelemetryEnvVariableValue = Environment.GetEnvironmentVariable(
+               LoggingConstants.OryxDisableTelemetryEnvironmentVariableName);
+            _ = bool.TryParse(disableTelemetryEnvVariableValue, out bool disableTelemetry);
+            var config = new TelemetryConfiguration();
+            var aiConnectionString = disableTelemetry ? null : Environment.GetEnvironmentVariable(
+                LoggingConstants.ApplicationInsightsConnectionStringKeyEnvironmentVariableName);
+            if (!string.IsNullOrWhiteSpace(aiConnectionString))
+            {
+                config.ConnectionString = aiConnectionString;
+            }
+
             this.serviceCollection = new ServiceCollection();
             this.serviceCollection
                 .AddBuildScriptGeneratorServices()
                 .AddCliServices(console)
                 .AddLogging(builder =>
                 {
+                    if (!string.IsNullOrWhiteSpace(aiConnectionString))
+                    {
+                        builder.AddApplicationInsights(
+                            configureTelemetryConfiguration: (c) => c.ConnectionString = aiConnectionString,
+                            configureApplicationInsightsLoggerOptions: (options) => { });
+                    }
+
                     builder.SetMinimumLevel(Extensions.Logging.LogLevel.Trace);
                     builder.AddNLog(new NLogProviderOptions
                     {
                         CaptureMessageTemplates = true,
                         CaptureMessageProperties = true,
                     });
-                });
+                })
+                .AddSingleton<TelemetryClient>(new TelemetryClient(config));
         }
 
         public ServiceProviderBuilder ConfigureServices(Action<IServiceCollection> configure)
@@ -66,24 +87,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private static LoggingConfiguration BuildNLogConfiguration([CanBeNull] string logPath)
         {
             var config = new LoggingConfiguration();
-
-            var disableTelemetryEnvVariableValue = Environment.GetEnvironmentVariable(
-                LoggingConstants.OryxDisableTelemetryEnvironmentVariableName);
-            _ = bool.TryParse(disableTelemetryEnvVariableValue, out bool disableTelemetry);
-
-            var aiKey = disableTelemetry ? string.Empty : Environment.GetEnvironmentVariable(
-                LoggingConstants.ApplicationInsightsInstrumentationKeyEnvironmentVariableName);
-            if (!string.IsNullOrWhiteSpace(aiKey))
-            {
-                var aiTarget = new ApplicationInsights.NLogTarget.ApplicationInsightsTarget()
-                {
-                    Name = "ai",
-                    InstrumentationKey = aiKey,
-                };
-                config.AddTarget(aiTarget);
-                config.AddRuleForAllLevels(aiTarget);
-            }
-
             bool hasLogPath = !string.IsNullOrWhiteSpace(logPath);
             if (hasLogPath || config.AllTargets.Count == 0)
             {
