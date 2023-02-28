@@ -14,11 +14,11 @@ namespace Microsoft.Oryx.Automation.Tests.Services
 {
     public class YamlFileServiceTests
     {
-        private readonly YamlFileService _yamlFileService;
+        private readonly YamlFileService yamlFileService;
 
         public YamlFileServiceTests()
         {
-            _yamlFileService = new YamlFileService("C:\\Temp\\Oryx");
+            this.yamlFileService = new YamlFileService("C:\\Temp\\Oryx");
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace Microsoft.Oryx.Automation.Tests.Services
             File.WriteAllText(filePath, yamlContents);
 
             // Act
-            var result = await _yamlFileService.ReadConstantsYamlFileAsync(filePath);
+            var result = await this.yamlFileService.ReadConstantsYamlFileAsync(filePath);
 
             // Assert
             Assert.Single(result);
@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.Automation.Tests.Services
 
             // Act and assert
             var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
-                _yamlFileService.ReadConstantsYamlFileAsync(filePath));
+                this.yamlFileService.ReadConstantsYamlFileAsync(filePath));
 
             Assert.Contains("YAML file not found.", ex.Message);
         }
@@ -64,7 +64,7 @@ namespace Microsoft.Oryx.Automation.Tests.Services
 
             // Act and assert
             var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
-                _yamlFileService.ReadConstantsYamlFileAsync(filePath));
+                this.yamlFileService.ReadConstantsYamlFileAsync(filePath));
 
             Assert.Contains("Invalid YAML file format.", ex.Message);
 
@@ -91,7 +91,7 @@ namespace Microsoft.Oryx.Automation.Tests.Services
             };
 
             // Act
-            _yamlFileService.WriteConstantsYamlFile(filePath, yamlConstants);
+            this.yamlFileService.WriteConstantsYamlFile(filePath, yamlConstants);
 
             // Assert
             Assert.Equal("- name: test\r\n  constants:\r\n    key1: value1\r\n    key2: value2\r\n  outputs: []\r\n", File.ReadAllText(filePath));
