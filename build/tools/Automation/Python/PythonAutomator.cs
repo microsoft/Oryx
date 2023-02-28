@@ -6,9 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Oryx.Automation.Extensions;
 using Microsoft.Oryx.Automation.Models;
 using Microsoft.Oryx.Automation.Python.Models;
 using Microsoft.Oryx.Automation.Services;
@@ -17,9 +15,9 @@ using Oryx.Microsoft.Automation.Python;
 
 namespace Microsoft.Oryx.Automation.Python
 {
-    public class PythonAutomator : IDisposable
+    public class PythonAutomator
     {
-        private readonly HttpClient httpClient;
+        private readonly IHttpServiceExtension httpServiceExtension;
         private readonly IVersionService versionService;
         private readonly IFileService fileService;
         private readonly IYamlFileService yamlFileService;
@@ -28,12 +26,12 @@ namespace Microsoft.Oryx.Automation.Python
         private List<string> pythonBlockedVersions;
 
         public PythonAutomator(
-            IHttpClientFactory httpClientFactory,
+            IHttpServiceExtension httpServiceExtension,
             IVersionService versionService,
             IFileService fileService,
             IYamlFileService yamlFileService)
         {
-            this.httpClient = httpClientFactory.CreateClient();
+            this.httpServiceExtension = httpServiceExtension;
             this.versionService = versionService;
             this.fileService = fileService;
             this.yamlFileService = yamlFileService;
@@ -67,10 +65,10 @@ namespace Microsoft.Oryx.Automation.Python
 
         public async Task<List<PythonVersion>> GetNewPythonVersionsAsync()
         {
-            var response = await this.httpClient.GetDataAsync(PythonConstants.PythonReleaseUrl);
+            var response = await this.httpServiceExtension.GetDataAsync(PythonConstants.PythonReleaseUrl);
             var releases = JsonConvert.DeserializeObject<List<Release>>(response);
 
-            HashSet<string> oryxSdkVersions = await this.httpClient.GetOryxSdkVersionsAsync(
+            HashSet<string> oryxSdkVersions = await this.httpServiceExtension.GetOryxSdkVersionsAsync(
                 Constants.OryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl);
 
             var pythonVersions = new List<PythonVersion>();
@@ -95,11 +93,6 @@ namespace Microsoft.Oryx.Automation.Python
             }
 
             return pythonVersions;
-        }
-
-        public void Dispose()
-        {
-            this.httpClient.Dispose();
         }
 
         private void UpdateOryxConstantsForNewVersions(
