@@ -8,11 +8,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Newtonsoft.Json;
 
@@ -30,8 +32,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var logger = serviceProvider.GetRequiredService<ILogger<PlatformsCommand>>();
             var platformInfo = new List<PlatformResult>();
+            var telemetryClient = serviceProvider.GetRequiredService<TelemetryClient>();
 
-            using (logger.LogTimedEvent("ListPlatforms"))
+            using (telemetryClient.LogTimedEvent("ListPlatforms"))
             {
                 var availableIPlatforms = serviceProvider.GetRequiredService<IEnumerable<IProgrammingPlatform>>()
                     .Where(p => !string.IsNullOrWhiteSpace(p.Name))

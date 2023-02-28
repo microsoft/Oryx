@@ -76,13 +76,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Hugo
         {
             buildScriptGeneratorOptions = buildScriptGeneratorOptions ?? new BuildScriptGeneratorOptions();
             hugoScriptGeneratorOptions = hugoScriptGeneratorOptions ?? new HugoScriptGeneratorOptions();
-
             return new HugoPlatform(
                 Options.Create(buildScriptGeneratorOptions),
                 Options.Create(hugoScriptGeneratorOptions),
                 NullLogger<HugoPlatform>.Instance,
                 new HugoPlatformInstaller(Options.Create(buildScriptGeneratorOptions), NullLoggerFactory.Instance),
-                detector);
+                detector, 
+                TelemetryClientHelper.GetTelemetryClient());
         }
     }
 }

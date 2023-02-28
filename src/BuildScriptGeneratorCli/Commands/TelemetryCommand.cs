@@ -6,9 +6,11 @@
 using System;
 using System.Collections.Generic;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -29,6 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var logger = serviceProvider.GetRequiredService<ILogger<TelemetryCommand>>();
+            var telemetryClient = serviceProvider.GetRequiredService<TelemetryClient>();
 
             var eventProps = new Dictionary<string, string>();
             if (this.Properties?.Length > 0)
@@ -48,11 +51,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (this.ProcessingTime > 0)
             {
-                logger.LogTimedEvent(this.EventName, this.ProcessingTime, eventProps);
+                telemetryClient.LogTimedEvent(this.EventName, this.ProcessingTime, eventProps);
             }
             else
             {
-                logger.LogEvent(this.EventName, eventProps);
+                telemetryClient.LogEvent(this.EventName, eventProps);
             }
 
             return ProcessConstants.ExitSuccess;

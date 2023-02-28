@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -23,6 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
         private readonly ILogger<GolangPlatform> logger;
         private readonly IGolangPlatformDetector detector;
         private readonly GolangPlatformInstaller golangInstaller;
+        private readonly TelemetryClient telemetryClient;
 
         public GolangPlatform(
             IOptions<GolangScriptGeneratorOptions> goScriptGeneratorOptions,
@@ -30,7 +32,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
             IGolangVersionProvider goVersionProvider,
             ILogger<GolangPlatform> logger,
             IGolangPlatformDetector detector,
-            GolangPlatformInstaller golangInstaller)
+            GolangPlatformInstaller golangInstaller,
+            TelemetryClient telemetryClient)
         {
             this.goScriptGeneratorOptions = goScriptGeneratorOptions.Value;
             this.commonOptions = commonOptions.Value;
@@ -38,6 +41,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
             this.logger = logger;
             this.detector = detector;
             this.golangInstaller = golangInstaller;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <summary>
@@ -105,7 +109,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.GolangSnippet,
                 scriptProps,
-                this.logger);
+                this.logger,
+                this.telemetryClient);
 
             return new BuildScriptSnippet
             {
