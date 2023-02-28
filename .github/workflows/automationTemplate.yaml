@@ -6,19 +6,12 @@ on:
       - 'williamhe/**'
   workflow_call:
     inputs:
-      releaseDate:
-        required: false
-        type: string
       platformName:
         required: true
         type: string
 
   workflow_dispatch:
     inputs:
-      releaseDate:
-        description: 'The date to check for new releases. Format: yyyy-mm-dd'
-        required: false
-        type: string
       platformName:
         required: true
         type: string
@@ -34,7 +27,6 @@ env:
   PYTHON_MIN_RELEASE_VERSION: ${{ vars.PYTHON_MIN_RELEASE_VERSION }}
   PYTHON_MAX_RELEASE_VERSION: ${{ vars.PYTHON_MAX_RELEASE_VERSION }}
   PYTHON_BLOCKED_VERSIONS_ARRAY: ${{ vars.PYTHON_BLOCKED_VERSIONS_ARRAY }}
-
 jobs:
   build:
     runs-on: ubuntu-20.04

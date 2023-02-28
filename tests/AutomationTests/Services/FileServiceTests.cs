@@ -14,7 +14,6 @@ namespace Microsoft.Oryx.Automation.Tests.Services
         public void UpdateVersionsToBuildTxt_ShouldUpdateFile()
         {
             // Arrange
-            string oryxRootPath = "C:\\Temp\\Oryx";
             string platformName = "dotnet";
             string line = "1.0.0\n";
             var mockFileService = new Mock<IFileService>();
