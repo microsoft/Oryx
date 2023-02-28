@@ -16,7 +16,7 @@ using System.Text;
 
 namespace Automation.Tests.Services
 {
-    public class HttpClientExtensionsTests
+    public class HttpServiceTests
     {
         [Fact]
         public async Task GetOryxSdkVersionsAsync_ReturnsExpectedVersions()
@@ -32,11 +32,11 @@ namespace Automation.Tests.Services
             httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
             string url = "http://example.com/sdk-versions";
 
-            // Create an instance of HttpServiceExtension using the mocked HttpClientFactory
-            HttpServiceExtension httpServiceExtension = new HttpServiceExtension(httpClientFactoryMock.Object);
+            // Create an instance of HttpService using the mocked HttpClientFactory
+            HttpService httpService = new HttpService(httpClientFactoryMock.Object);
 
             // Act
-            HashSet<string> versions = await httpServiceExtension.GetOryxSdkVersionsAsync(url);
+            HashSet<string> versions = await httpService.GetOryxSdkVersionsAsync(url);
 
             // Assert
             Assert.Equal(new HashSet<string> { "1.0.0", "2.0.0" }, versions);
@@ -53,10 +53,10 @@ namespace Automation.Tests.Services
             var client = new HttpClient(handler);
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             httpClientFactoryMock.Setup(x => x.CreateClient(It.IsAny<string>())).Returns(client);
-            var serviceExtension = new HttpServiceExtension(httpClientFactoryMock.Object);
+            var service = new HttpService(httpClientFactoryMock.Object);
 
             // Act
-            var result = await serviceExtension.GetDataAsync("https://example.com");
+            var result = await service.GetDataAsync("https://example.com");
 
             // Assert
             Assert.Equal(expectedContent, result);
@@ -73,10 +73,10 @@ namespace Automation.Tests.Services
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
             httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
-            var serviceExtension = new HttpServiceExtension(httpClientFactoryMock.Object);
+            var service = new HttpService(httpClientFactoryMock.Object);
 
             // Act
-            var result = await serviceExtension.GetDataAsync("https://example.com");
+            var result = await service.GetDataAsync("https://example.com");
 
             // Assert
             Assert.Null(result);
@@ -98,10 +98,10 @@ namespace Automation.Tests.Services
             httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
             string url = "http://example.com/sdk-versions";
 
-            var serviceExtension = new HttpServiceExtension(httpClientFactoryMock.Object);
+            var service = new HttpService(httpClientFactoryMock.Object);
 
             // Act
-            HashSet<string> versions = await serviceExtension.GetOryxSdkVersionsAsync(url);
+            HashSet<string> versions = await service.GetOryxSdkVersionsAsync(url);
 
             // Assert
             Assert.NotNull(versions);
@@ -128,10 +128,10 @@ namespace Automation.Tests.Services
             httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
             string url = "http://example.com/sdk-versions";
 
-            var serviceExtension = new HttpServiceExtension(httpClientFactoryMock.Object);
+            var service = new HttpService(httpClientFactoryMock.Object);
 
             // Act
-            HashSet<string> versions = await serviceExtension.GetOryxSdkVersionsAsync(url);
+            HashSet<string> versions = await service.GetOryxSdkVersionsAsync(url);
 
             // Assert
             Assert.NotNull(versions);

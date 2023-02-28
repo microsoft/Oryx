@@ -13,14 +13,14 @@ namespace Microsoft.Oryx.Automation.DotNet.Tests
 {
     public class DotNetAutomatorTests
     {
-        private readonly IHttpServiceExtension httpService;
+        private readonly IHttpService httpService;
         private readonly IVersionService versionService;
         private readonly IFileService fileService;
         private readonly IYamlFileService yamlFileService;
 
         public DotNetAutomatorTests()
         {
-            this.httpService = Mock.Of<IHttpServiceExtension>();
+            this.httpService = Mock.Of<IHttpService>();
             this.versionService = Mock.Of<IVersionService>();
             this.fileService = Mock.Of<IFileService>();
             this.yamlFileService = Mock.Of<IYamlFileService>();

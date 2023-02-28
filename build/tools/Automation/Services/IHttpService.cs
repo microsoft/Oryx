@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Oryx.Automation.Services
 {
-    public interface IHttpServiceExtension
+    public interface IHttpService
     {
         public Task<string> GetDataAsync(string url);
 

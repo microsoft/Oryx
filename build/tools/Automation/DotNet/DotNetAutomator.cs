@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Automation.DotNet
     /// </Summary>
     public class DotNetAutomator
     {
-        private readonly IHttpServiceExtension httpServiceExtension;
+        private readonly IHttpService httpService;
         private readonly IVersionService versionService;
         private readonly IFileService fileService;
         private readonly IYamlFileService yamlFileService;
@@ -39,12 +39,12 @@ namespace Microsoft.Oryx.Automation.DotNet
         private HashSet<string> oryxDotNetSdkVersions;
 
         public DotNetAutomator(
-            IHttpServiceExtension httpServiceExtension,
+            IHttpService httpService,
             IVersionService versionService,
             IFileService fileService,
             IYamlFileService yamlFileReaderService)
         {
-            this.httpServiceExtension = httpServiceExtension;
+            this.httpService = httpService;
             this.versionService = versionService;
             this.fileService = fileService;
             this.yamlFileService = yamlFileReaderService;
@@ -58,7 +58,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                 this.oryxSdkStorageBaseUrl = Constants.OryxSdkStorageBaseUrl;
             }
 
-            this.oryxDotNetSdkVersions = await this.httpServiceExtension.GetOryxSdkVersionsAsync(
+            this.oryxDotNetSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(
                 Constants.OryxSdkStorageBaseUrl + DotNetConstants.DotNetSuffixUrl);
             this.dotNetMinReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMinReleaseVersionEnvVar);
             this.dotNetMaxReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMaxReleaseVersionEnvVar);
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.Automation.DotNet
             List<DotNetVersion> dotNetVersions = new List<DotNetVersion>();
 
             // Deserialize release metadata
-            var response = await this.httpServiceExtension.GetDataAsync(DotNetConstants.ReleasesIndexJsonUrl);
+            var response = await this.httpService.GetDataAsync(DotNetConstants.ReleasesIndexJsonUrl);
             var releaseNotes = response == null ? null : JsonConvert.DeserializeObject<ReleaseNotes>(response);
             var releasesIndex = releaseNotes == null ? new List<ReleaseNote>() : releaseNotes.ReleaseIndexes;
             foreach (var releaseIndex in releasesIndex)
@@ -103,7 +103,7 @@ namespace Microsoft.Oryx.Automation.DotNet
 
                 // Get the actual release information from releases.json
                 string releasesJsonUrl = releaseIndex.ReleasesJsonUrl;
-                response = await this.httpServiceExtension.GetDataAsync(releasesJsonUrl);
+                response = await this.httpService.GetDataAsync(releasesJsonUrl);
                 var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
                 var releases = releasesJson == null ? new List<Release>() : releasesJson.Releases;
                 foreach (var release in releases)

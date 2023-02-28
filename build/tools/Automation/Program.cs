@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Automation
             string oryxRootPath = args[1];
             string platform = args[0].ToLower();
             var serviceProvider = new ServiceCollection()
-                .AddSingleton<IHttpServiceExtension, HttpServiceExtension>()
+                .AddSingleton<IHttpService, HttpService>()
                 .AddSingleton<IVersionService, VersionService>()
                 .AddSingleton<IFileService>(new FileService(oryxRootPath))
                 .AddSingleton<IYamlFileService>(new YamlFileService(oryxRootPath))
