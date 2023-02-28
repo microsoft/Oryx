@@ -14,7 +14,7 @@ using System.Threading;
 using Xunit;
 using System.Text;
 
-namespace Microsoft.Oryx.Automation.Tests.Extensions
+namespace Automation.Tests.Services
 {
     public class HttpClientExtensionsTests
     {
@@ -91,8 +91,8 @@ namespace Microsoft.Oryx.Automation.Tests.Extensions
             mockHttpMessageHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK) 
-                    { Content = new StringContent(responseContent, Encoding.UTF8, "application/xml") });
+                .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
+                { Content = new StringContent(responseContent, Encoding.UTF8, "application/xml") });
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
             httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.Automation.Tests.Extensions
                 .Setup<Task<HttpResponseMessage>>(
                     "SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.OK)
-                    { Content = new StringContent(responseContent) });
+                { Content = new StringContent(responseContent) });
             var httpClientFactoryMock = new Mock<IHttpClientFactory>();
             var httpClient = new HttpClient(mockHttpMessageHandler.Object);
             httpClientFactoryMock.Setup(_ => _.CreateClient(It.IsAny<string>())).Returns(httpClient);
@@ -152,7 +152,7 @@ namespace Microsoft.Oryx.Automation.Tests.Extensions
 
             protected override Task<HttpResponseMessage> SendAsync(
                 HttpRequestMessage request,
-                System.Threading.CancellationToken cancellationToken)
+                CancellationToken cancellationToken)
             {
                 return Task.FromResult(_response);
             }
