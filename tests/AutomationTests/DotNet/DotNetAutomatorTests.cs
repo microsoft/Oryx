@@ -2,57 +2,44 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
-using System.Net;
-using System.Net.Http;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Oryx.Automation.DotNet;
-using Microsoft.Oryx.Automation.Services;
-using Moq;
 using Xunit;
+using Moq;
+using Microsoft.Oryx.Automation.DotNet.Models;
+using Microsoft.Oryx.Automation.Services;
 
-namespace Microsoft.Oryx.Automation.Tests.DotNet
+namespace Microsoft.Oryx.Automation.DotNet.Tests
 {
     public class DotNetAutomatorTests
     {
-        private readonly Mock<IHttpClientFactory> httpClientFactoryMock;
-        private readonly Mock<IVersionService> versionServiceMock;
-        private readonly Mock<IFileService> fileReaderServiceMock;
-        private readonly Mock<IYamlFileService> yamlFileReaderServiceMock;
+        private readonly IHttpService httpService;
+        private readonly IVersionService versionService;
+        private readonly IFileService fileService;
+        private readonly IYamlFileService yamlFileService;
 
         public DotNetAutomatorTests()
         {
-            this.httpClientFactoryMock = new Mock<IHttpClientFactory>();
-            this.versionServiceMock = new Mock<IVersionService>();
-            this.yamlFileReaderServiceMock = new Mock<IYamlFileService>();
+            this.httpService = Mock.Of<IHttpService>();
+            this.versionService = Mock.Of<IVersionService>();
+            this.fileService = Mock.Of<IFileService>();
+            this.yamlFileService = Mock.Of<IYamlFileService>();
         }
 
         [Fact]
-        public async Task RunAsync_Should_Call_HttpClient_GetOryxSdkVersionsAsync()
+        public async Task GetNewDotNetVersionsAsync_ReturnsEmptyList_WhenNoNewVersions()
         {
             // Arrange
-            var httpClientMock = new Mock<HttpClient>();
-            var expectedResponse = "Expected response string";
-            httpClientMock.Setup(client => client.GetAsync(It.IsAny<string>()))
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(expectedResponse)
-                });
+            var dotNetAutomator = new DotNetAutomator(this.httpService, this.versionService, this.fileService, this.yamlFileService);
+            var expected = new List<DotNetVersion>();
 
-            this.httpClientFactoryMock.Setup(factory => factory.CreateClient(It.IsAny<string>()))
-                .Returns(httpClientMock.Object);
-
-            var dotNetAutomator = new DotNetAutomator(
-                this.httpClientFactoryMock.Object,
-                this.versionServiceMock.Object,
-                this.fileReaderServiceMock.Object,
-                this.yamlFileReaderServiceMock.Object);
+            Mock.Get(this.httpService).Setup(x => x.GetDataAsync(It.IsAny<string>())).ReturnsAsync("");
 
             // Act
-            await dotNetAutomator.RunAsync();
+            var actual = await dotNetAutomator.GetNewDotNetVersionsAsync();
 
             // Assert
-            httpClientMock.Verify(client => client.GetAsync($"{It.IsAny<string>()}/sdk-version"), expectedResponse);
+            Assert.Equal(expected, actual);
         }
     }
 }

@@ -10,11 +10,11 @@ using System.Xml.Linq;
 
 namespace Microsoft.Oryx.Automation.Services
 {
-    public class HttpServiceExtension : IHttpServiceExtension, IDisposable
+    public class HttpService : IHttpService, IDisposable
     {
         private HttpClient httpClient;
 
-        public HttpServiceExtension(IHttpClientFactory httpClientFactory)
+        public HttpService(IHttpClientFactory httpClientFactory)
         {
             this.httpClient = httpClientFactory.CreateClient();
         }
