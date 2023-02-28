@@ -6,11 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Oryx.Automation.DotNet.Models;
-using Microsoft.Oryx.Automation.Extensions;
 using Microsoft.Oryx.Automation.Models;
 using Microsoft.Oryx.Automation.Services;
 using Newtonsoft.Json;
@@ -28,9 +26,9 @@ namespace Microsoft.Oryx.Automation.DotNet
     ///           Oryx tests.
     ///     - Updating versionsToBuild.txt
     /// </Summary>
-    public class DotNetAutomator : IDisposable
+    public class DotNetAutomator
     {
-        private readonly HttpClient httpClient;
+        private readonly IHttpServiceExtension httpServiceExtension;
         private readonly IVersionService versionService;
         private readonly IFileService fileService;
         private readonly IYamlFileService yamlFileService;
@@ -41,12 +39,12 @@ namespace Microsoft.Oryx.Automation.DotNet
         private HashSet<string> oryxDotNetSdkVersions;
 
         public DotNetAutomator(
-            IHttpClientFactory httpClientFactory,
+            IHttpServiceExtension httpServiceExtension,
             IVersionService versionService,
             IFileService fileService,
             IYamlFileService yamlFileReaderService)
         {
-            this.httpClient = httpClientFactory.CreateClient();
+            this.httpServiceExtension = httpServiceExtension;
             this.versionService = versionService;
             this.fileService = fileService;
             this.yamlFileService = yamlFileReaderService;
@@ -60,7 +58,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                 this.oryxSdkStorageBaseUrl = Constants.OryxSdkStorageBaseUrl;
             }
 
-            this.oryxDotNetSdkVersions = await this.httpClient.GetOryxSdkVersionsAsync(
+            this.oryxDotNetSdkVersions = await this.httpServiceExtension.GetOryxSdkVersionsAsync(
                 Constants.OryxSdkStorageBaseUrl + DotNetConstants.DotNetSuffixUrl);
             this.dotNetMinReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMinReleaseVersionEnvVar);
             this.dotNetMaxReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMaxReleaseVersionEnvVar);
@@ -89,7 +87,7 @@ namespace Microsoft.Oryx.Automation.DotNet
             List<DotNetVersion> dotNetVersions = new List<DotNetVersion>();
 
             // Deserialize release metadata
-            var response = await this.httpClient.GetDataAsync(DotNetConstants.ReleasesIndexJsonUrl);
+            var response = await this.httpServiceExtension.GetDataAsync(DotNetConstants.ReleasesIndexJsonUrl);
             var releaseNotes = response == null ? null : JsonConvert.DeserializeObject<ReleaseNotes>(response);
             var releasesIndex = releaseNotes == null ? new List<ReleaseNote>() : releaseNotes.ReleaseIndexes;
             foreach (var releaseIndex in releasesIndex)
@@ -105,7 +103,7 @@ namespace Microsoft.Oryx.Automation.DotNet
 
                 // Get the actual release information from releases.json
                 string releasesJsonUrl = releaseIndex.ReleasesJsonUrl;
-                response = await this.httpClient.GetDataAsync(releasesJsonUrl);
+                response = await this.httpServiceExtension.GetDataAsync(releasesJsonUrl);
                 var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
                 var releases = releasesJson == null ? new List<Release>() : releasesJson.Releases;
                 foreach (var release in releases)
@@ -131,11 +129,6 @@ namespace Microsoft.Oryx.Automation.DotNet
             }
 
             return dotNetVersions = dotNetVersions.OrderBy(v => v.Version).ToList();
-        }
-
-        public void Dispose()
-        {
-            this.httpClient.Dispose();
         }
 
         private bool ReleaseVersionIsNotInRangeOrSdkVersionAlreadyExists(string releaseVersion, string sdkVersion)

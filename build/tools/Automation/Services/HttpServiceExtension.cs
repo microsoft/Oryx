@@ -8,27 +8,33 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Microsoft.Oryx.Automation.Extensions
+namespace Microsoft.Oryx.Automation.Services
 {
-    public static class HttpClientExtensions
+    public class HttpServiceExtension : IHttpServiceExtension, IDisposable
     {
+        private HttpClient httpClient;
+
+        public HttpServiceExtension(IHttpClientFactory httpClientFactory)
+        {
+            this.httpClient = httpClientFactory.CreateClient();
+        }
+
         /// <summary>
-        /// Sends a GET request to the specified URL using the given HttpClient
+        /// Sends a GET request to the specified URL.
         /// instance and returns the response content as a string.
         /// Returns null if the response status code is not successful.
         /// </summary>
-        /// <param name="httpClient">The HttpClient instance to use for the request.</param>
         /// <param name="url">The URL to send the request to.</param>
         /// <returns>A Task<string> representing the asynchronous operation. The result of
         /// the task is the response content as a string, or null if the response status code is not
         /// successful.
         /// </returns>
-        public static async Task<string> GetDataAsync(this HttpClient httpClient, string url)
+        public async Task<string> GetDataAsync(string url)
         {
             try
             {
                 Console.WriteLine("Making GET request to: " + url);
-                HttpResponseMessage response = await httpClient.GetAsync(url);
+                HttpResponseMessage response = await this.httpClient.GetAsync(url);
                 Console.WriteLine($"Response received.: {response.StatusCode}");
                 if (!response.IsSuccessStatusCode)
                 {
@@ -59,10 +65,10 @@ namespace Microsoft.Oryx.Automation.Extensions
         /// the task is a HashSet<string> containing the ORYX SDK versions retrieved from the
         /// response content.
         /// </returns>
-        public static async Task<HashSet<string>> GetOryxSdkVersionsAsync(this HttpClient httpClient, string url)
+        public async Task<HashSet<string>> GetOryxSdkVersionsAsync(string url)
         {
             HashSet<string> versions = new HashSet<string>();
-            var response = await httpClient.GetDataAsync(url);
+            var response = await this.GetDataAsync(url);
             if (response == null)
             {
                 return versions;
@@ -78,6 +84,11 @@ namespace Microsoft.Oryx.Automation.Extensions
             }
 
             return versions;
+        }
+
+        public void Dispose()
+        {
+            this.httpClient.Dispose();
         }
     }
 }
