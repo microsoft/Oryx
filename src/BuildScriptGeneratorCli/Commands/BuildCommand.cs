@@ -119,6 +119,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // LanguageVer Option is obselete
             var languageVerOption = new Option<string>(OptionTemplates.LanguageVersion, OptionTemplates.LanguageVersionDescription);
             languageVerOption.IsHidden = true;
+
             var intermediateDirOption = new Option<string>(OptionTemplates.IntermediateDir, OptionTemplates.IntermediateDirDescription);
             var outputOption = new Option<string>(aliases: OptionTemplates.Output, OptionTemplates.OutputDescription);
             var manifestDirOption = new Option<string>(OptionTemplates.ManifestDir, OptionTemplates.ManifestDirDescription);
@@ -153,23 +154,23 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(returnCode);
                 },
                 new BuildCommandBinder(
-                    languageOption,
-                    languageVerOption,
-                    intermediateDirOption,
-                    outputOption,
-                    manifestDirOption,
-                    sourceDirArgument,
-                    platformOption,
-                    platformVersionOption,
-                    packageOption,
-                    osReqOption,
-                    appTypeOption,
-                    buildCommandFileNameOption,
-                    compressDestDirOption,
-                    propertyOption,
-                    dynamicInstallRootDirOption,
-                    logOption,
-                    debugOption));
+                    languageName: languageOption,
+                    languageVersion: languageVerOption,
+                    intermediateDir: intermediateDirOption,
+                    output: outputOption,
+                    manifestDir: manifestDirOption,
+                    sourceDir: sourceDirArgument,
+                    platform: platformOption,
+                    platformVersion: platformVersionOption,
+                    package: packageOption,
+                    osRequirements: osReqOption,
+                    appType: appTypeOption,
+                    buildCommandFile: buildCommandFileNameOption,
+                    compressDestinationDir: compressDestDirOption,
+                    property: propertyOption,
+                    dynamicInstallRootDir: dynamicInstallRootDirOption,
+                    logPath: logOption,
+                    debugMode: debugOption));
             return command;
         }
 

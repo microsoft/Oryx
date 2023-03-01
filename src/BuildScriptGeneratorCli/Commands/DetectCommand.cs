@@ -70,10 +70,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(detectCommand.OnExecute(console));
                 },
                 new DetectCommandBinder(
-                    sourceDirArgument,
-                    outputFormatOption,
-                    logFilePathOption,
-                    debugOption));
+                    sourceDirArgument: sourceDirArgument,
+                    outputFormatOption: outputFormatOption,
+                    logPath: logFilePathOption,
+                    debugMode: debugOption));
 
             return command;
         }

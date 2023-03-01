@@ -92,19 +92,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(buildScriptCommand.OnExecute(console));
                 },
                 new BuildScriptCommandBinder(
-                    buildScriptOutputOption,
-                    sourceDirArgument,
-                    platformOption,
-                    platformVersionOption,
-                    packageOption,
-                    osReqOption,
-                    appTypeOption,
-                    buildCommandFileNameOption,
-                    compressDestDirOption,
-                    propertyOption,
-                    dynamicInstallRootDirOption,
-                    logOption,
-                    debugOption));
+                    buildScriptOutputOption: buildScriptOutputOption,
+                    sourceDir: sourceDirArgument,
+                    platform: platformOption,
+                    platformVersion: platformVersionOption,
+                    package: packageOption,
+                    osRequirements: osReqOption,
+                    appType: appTypeOption,
+                    buildCommandFile: buildCommandFileNameOption,
+                    compressDestinationDir: compressDestDirOption,
+                    property: propertyOption,
+                    dynamicInstallRootDir: dynamicInstallRootDirOption,
+                    logPath: logOption,
+                    debugMode: debugOption));
             return command;
         }
 

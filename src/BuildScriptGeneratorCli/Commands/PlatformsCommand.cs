@@ -55,9 +55,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(platformsCommand.OnExecute(console));
                 },
                 new PlatformsCommandBinder(
-                    jsonOption,
-                    logOption,
-                    debugOption));
+                    jsonOption: jsonOption,
+                    logPath: logOption,
+                    debugMode: debugOption));
             return command;
         }
 

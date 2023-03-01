@@ -99,12 +99,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(prepareEnvironmentCommand.OnExecute(console));
                 },
                 new PrepareEnvironmentCommandBinder(
-                    sourceDirOption,
-                    skipDetectionOption,
-                    platformsAndVersions,
-                    platformsAndVersionsFile,
-                    logOption,
-                    debugOption));
+                    sourceDirOption: sourceDirOption,
+                    skipDetectionOption: skipDetectionOption,
+                    platformsAndVersionsOption: platformsAndVersions,
+                    platformsAndVersionsFileOption: platformsAndVersionsFile,
+                    logFileOption: logOption,
+                    debugOption: debugOption));
             return command;
         }
 

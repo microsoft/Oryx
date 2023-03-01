@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var debugMode = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
 
             var command = new Command("buildpack-detect", "Determine whether Oryx can be applied as a buildpack to an app in the current " +
-        "working directory.")
+                "working directory.")
             {
                 sourceDirArgument,
                 platformDirOption,
@@ -70,11 +70,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(buildpackDetectCommand.OnExecute(console));
                 },
                 new BuildpackDetectCommandBinder(
-                    sourceDirArgument,
-                    platformDirOption,
-                    planPathOption,
-                    logFilePathOption,
-                    debugMode));
+                    sourceDirArgument: sourceDirArgument,
+                    platformDirOption: platformDirOption,
+                    planPathOption: planPathOption,
+                    logPathOption: logFilePathOption,
+                    debugMode: debugMode));
 
             return command;
         }
