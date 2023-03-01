@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
-
 using Microsoft.Oryx.Automation.Services;
 using Moq.Protected;
 using Moq;
@@ -41,7 +40,6 @@ namespace Automation.Tests.Services
             // Assert
             Assert.Equal(new HashSet<string> { "1.0.0", "2.0.0" }, versions);
         }
-
 
         [Fact]
         public async Task GetDataAsync_ReturnsResponseContent_WhenSuccessful()
@@ -158,5 +156,4 @@ namespace Automation.Tests.Services
             }
         }
     }
-
 }

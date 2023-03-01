@@ -23,7 +23,6 @@ namespace Microsoft.Oryx.Automation.Tests.Services
             this.oryxRootPath = Directory.GetCurrentDirectory();
             this.testConstantsYamlFilePath = Path.Combine(this.oryxRootPath, "test-constants.yaml");
             this.yamlFileService = new YamlFileService(this.oryxRootPath);
-
         }
 
         [Fact]

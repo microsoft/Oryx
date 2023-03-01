@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.Automation.Services
             {
                 Console.WriteLine("Making GET request to: " + url);
                 HttpResponseMessage response = await this.httpClient.GetAsync(url);
-                Console.WriteLine($"Response received.: {response.StatusCode}");
+                Console.WriteLine($"Response received: {response.StatusCode}");
                 if (!response.IsSuccessStatusCode)
                 {
                     return null;

@@ -28,8 +28,8 @@ namespace Microsoft.Oryx.Automation
             string platform = args[0].ToLower();
             var serviceProvider = new ServiceCollection()
                 .AddSingleton<IHttpService, HttpService>()
-                .AddSingleton<IVersionService, VersionService>()
                 .AddSingleton<IFileService>(new FileService(oryxRootPath))
+                .AddSingleton<IVersionService, VersionService>()
                 .AddSingleton<IYamlFileService>(new YamlFileService(oryxRootPath))
                 .AddScoped<DotNetAutomator>()
                 .AddScoped<PythonAutomator>()

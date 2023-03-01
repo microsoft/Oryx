@@ -38,13 +38,13 @@ namespace Microsoft.Oryx.Automation.Services
                         "versions",
                         debianFlavor,
                         Constants.VersionsToBuildTxtFileName);
-                    System.IO.File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
+                    File.AppendAllText(versionsToBuildTxtAbsolutePath, line + Environment.NewLine);
 
                     // sort
                     Console.WriteLine($"[UpdateVersionsToBuildTxt] Updating {versionsToBuildTxtAbsolutePath}...");
-                    var contents = System.IO.File.ReadAllLines(versionsToBuildTxtAbsolutePath);
+                    var contents = File.ReadAllLines(versionsToBuildTxtAbsolutePath);
                     Array.Sort(contents);
-                    System.IO.File.WriteAllLines(versionsToBuildTxtAbsolutePath, contents.Distinct());
+                    File.WriteAllLines(versionsToBuildTxtAbsolutePath, contents.Distinct());
                 }
             }
             catch (Exception ex)
