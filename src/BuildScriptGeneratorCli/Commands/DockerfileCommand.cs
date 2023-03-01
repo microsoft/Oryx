@@ -105,15 +105,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(dockerfileCommand.OnExecute(console));
                 },
                 new DockerfileCommandBinder(
-                    sourceDirArgument: sourceDirArgument,
-                    buildImageOption: buildImageOption,
-                    platformOption: platformOption,
-                    platformVersionOption: platformVersionOption,
-                    runtimePlatformOption: runtimePlatformOption,
-                    runtimePlatformVersionOption: runtimePlatformVersionOption,
-                    bindPortOption: bindPortOption,
-                    outputOption: outputOption,
-                    logFileOption: logOption,
+                    sourceDir: sourceDirArgument,
+                    buildImage: buildImageOption,
+                    platform: platformOption,
+                    platformVersion: platformVersionOption,
+                    runtimePlatform: runtimePlatformOption,
+                    runtimePlatformVersion: runtimePlatformVersionOption,
+                    bindPort: bindPortOption,
+                    output: outputOption,
+                    logPath: logOption,
                     debugMode: debugOption));
             return command;
         }

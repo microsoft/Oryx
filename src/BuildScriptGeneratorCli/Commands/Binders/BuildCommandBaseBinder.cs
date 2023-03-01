@@ -16,19 +16,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
     public abstract class BuildCommandBaseBinder<T> : CommandBaseBinder<T>
         where T : BuildCommandBaseProperty
     {
-#pragma warning disable SA1401 // Fields should be private
-        protected Argument<string> sourceDir;
-        protected Option<string> platform;
-        protected Option<string> platformVersion;
-        protected Option<bool> package;
-        protected Option<string> osRequirements;
-        protected Option<string> appType;
-        protected Option<string> buildCommandFile;
-        protected Option<bool> compressDestinationDir;
-        protected Option<string[]> property;
-        protected Option<string> dynamicInstallRootDir;
-#pragma warning restore SA1401 // Fields should be private
-
         public BuildCommandBaseBinder(
             Argument<string> sourceDir,
             Option<string> platform,
@@ -44,16 +31,37 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<bool> debugMode)
             : base(logPath, debugMode)
         {
-            this.sourceDir = sourceDir;
-            this.platform = platform;
-            this.platformVersion = platformVersion;
-            this.package = package;
-            this.osRequirements = osRequirements;
-            this.appType = appType;
-            this.buildCommandFile = buildCommandFile;
-            this.compressDestinationDir = compressDestinationDir;
-            this.property = property;
-            this.dynamicInstallRootDir = dynamicInstallRootDir;
+            this.SourceDir = sourceDir;
+            this.Platform = platform;
+            this.PlatformVersion = platformVersion;
+            this.Package = package;
+            this.OsRequirements = osRequirements;
+            this.AppType = appType;
+            this.BuildCommandFile = buildCommandFile;
+            this.CompressDestinationDir = compressDestinationDir;
+            this.Property = property;
+            this.DynamicInstallRootDir = dynamicInstallRootDir;
         }
+
+        protected Argument<string> SourceDir { get; set; }
+
+        protected Option<string> Platform { get; set; }
+
+        protected Option<string> PlatformVersion { get; set; }
+
+        protected Option<bool> Package { get; set; }
+
+        protected Option<string> OsRequirements { get; set; }
+
+        protected Option<string> AppType { get; set; }
+
+        protected Option<string> BuildCommandFile { get; set; }
+
+        protected Option<bool> CompressDestinationDir { get; set; }
+
+        protected Option<string[]> Property { get; set; }
+
+        protected Option<string> DynamicInstallRootDir { get; set; }
+
     }
 }

@@ -15,27 +15,27 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class ExecCommandBinder : CommandBaseBinder<ExecCommandProperty>
     {
-        private Option<string> execSourceDirOption;
-        private Argument<string> commandArgument;
+        private Option<string> execSourceDir;
+        private Argument<string> command;
 
         public ExecCommandBinder(
-            Option<string> execSourceDirOption,
-            Argument<string> commandArgument,
+            Option<string> execSourceDir,
+            Argument<string> command,
             Option<string> logPath,
             Option<bool> debugMode)
             : base(logPath, debugMode)
         {
-            this.execSourceDirOption = execSourceDirOption;
-            this.commandArgument = commandArgument;
+            this.execSourceDir = execSourceDir;
+            this.command = command;
         }
 
         protected override ExecCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new ExecCommandProperty
             {
-                SourceDir = bindingContext.ParseResult.GetValueForOption(this.execSourceDirOption),
-                Command = bindingContext.ParseResult.GetValueForArgument(this.commandArgument),
-                DebugMode = bindingContext.ParseResult.GetValueForOption(this.debugMode),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.logPath),
+                SourceDir = bindingContext.ParseResult.GetValueForOption(this.execSourceDir),
+                Command = bindingContext.ParseResult.GetValueForArgument(this.command),
+                DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
+                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
             };
     }
 }

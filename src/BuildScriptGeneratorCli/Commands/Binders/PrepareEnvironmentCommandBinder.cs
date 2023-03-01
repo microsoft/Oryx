@@ -10,35 +10,35 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class PrepareEnvironmentCommandBinder : CommandBaseBinder<PrepareEnvironmentCommandProperty>
     {
-        private Option<string> sourceDirOption;
-        private Option<bool> skipDetectionOption;
-        private Option<string> platformsAndVersionsOption;
-        private Option<string> platformsAndVersionsFileOption;
+        private Option<string> sourceDir;
+        private Option<bool> skipDetection;
+        private Option<string> platformsAndVersions;
+        private Option<string> platformsAndVersionsFile;
 
         public PrepareEnvironmentCommandBinder(
             Option<string> sourceDirOption,
-            Option<bool> skipDetectionOption,
-            Option<string> platformsAndVersionsOption,
-            Option<string> platformsAndVersionsFileOption,
-            Option<string> logFileOption,
-            Option<bool> debugOption)
-            : base(logFileOption, debugOption)
+            Option<bool> skipDetection,
+            Option<string> platformsAndVersions,
+            Option<string> platformsAndVersionsFile,
+            Option<string> logPath,
+            Option<bool> debugMode)
+            : base(logPath, debugMode)
         {
-            this.sourceDirOption = sourceDirOption;
-            this.skipDetectionOption = skipDetectionOption;
-            this.platformsAndVersionsOption = platformsAndVersionsOption;
-            this.platformsAndVersionsFileOption = platformsAndVersionsFileOption;
+            this.sourceDir = sourceDirOption;
+            this.skipDetection = skipDetection;
+            this.platformsAndVersions = platformsAndVersions;
+            this.platformsAndVersionsFile = platformsAndVersionsFile;
         }
 
         protected override PrepareEnvironmentCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new PrepareEnvironmentCommandProperty
             {
-                SourceDir = bindingContext.ParseResult.GetValueForOption(this.sourceDirOption),
-                SkipDetection = bindingContext.ParseResult.GetValueForOption(this.skipDetectionOption),
-                PlatformsAndVersions = bindingContext.ParseResult.GetValueForOption(this.platformsAndVersionsOption),
-                PlatformsAndVersionsFile = bindingContext.ParseResult.GetValueForOption(this.platformsAndVersionsFileOption),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.logPath),
-                DebugMode = bindingContext.ParseResult.GetValueForOption(this.debugMode),
+                SourceDir = bindingContext.ParseResult.GetValueForOption(this.sourceDir),
+                SkipDetection = bindingContext.ParseResult.GetValueForOption(this.skipDetection),
+                PlatformsAndVersions = bindingContext.ParseResult.GetValueForOption(this.platformsAndVersions),
+                PlatformsAndVersionsFile = bindingContext.ParseResult.GetValueForOption(this.platformsAndVersionsFile),
+                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }
 }

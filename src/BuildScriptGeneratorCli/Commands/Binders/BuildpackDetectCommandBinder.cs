@@ -15,31 +15,31 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class BuildpackDetectCommandBinder : CommandBaseBinder<BuildpackDetectCommandProperty>
     {
-        private Argument<string> sourceDirArgument;
-        private Option<string> platformDirOption;
-        private Option<string> planPathOption;
+        private Argument<string> sourceDir;
+        private Option<string> platformDir;
+        private Option<string> planPath;
 
         public BuildpackDetectCommandBinder(
-            Argument<string> sourceDirArgument,
-            Option<string> platformDirOption,
-            Option<string> planPathOption,
-            Option<string> logPathOption,
+            Argument<string> sourceDir,
+            Option<string> platformDir,
+            Option<string> planPath,
+            Option<string> logPath,
             Option<bool> debugMode)
-            : base(logPathOption, debugMode)
+            : base(logPath, debugMode)
         {
-            this.sourceDirArgument = sourceDirArgument;
-            this.platformDirOption = platformDirOption;
-            this.planPathOption = planPathOption;
+            this.sourceDir = sourceDir;
+            this.platformDir = platformDir;
+            this.planPath = planPath;
         }
 
         protected override BuildpackDetectCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new BuildpackDetectCommandProperty
             {
-                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.sourceDirArgument),
-                PlatformDir = bindingContext.ParseResult.GetValueForOption(this.platformDirOption),
-                PlanPath = bindingContext.ParseResult.GetValueForOption(this.planPathOption),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.logPath),
-                DebugMode = bindingContext.ParseResult.GetValueForOption(this.debugMode),
+                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.sourceDir),
+                PlatformDir = bindingContext.ParseResult.GetValueForOption(this.platformDir),
+                PlanPath = bindingContext.ParseResult.GetValueForOption(this.planPath),
+                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }
 }

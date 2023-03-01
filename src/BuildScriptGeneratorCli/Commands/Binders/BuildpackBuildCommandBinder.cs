@@ -15,9 +15,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class BuildpackBuildCommandBinder : BuildCommandBaseBinder<BuildpackBuildCommandProperty>
     {
-        private Option<string> layersDirOption;
-        private Option<string> platformDirOption;
-        private Option<string> planPathOption;
+        private Option<string> layersDir;
+        private Option<string> platformDir;
+        private Option<string> planPath;
         private Option<string> languageName;
         private Option<string> languageVersion;
         private Option<string> intermediateDir;
@@ -25,9 +25,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
         private Option<string> manifestDir;
 
         public BuildpackBuildCommandBinder(
-            Option<string> layersDirOption,
-            Option<string> platformDirOption,
-            Option<string> planPathOption,
+            Option<string> layersDir,
+            Option<string> platformDir,
+            Option<string> planPath,
             Option<string> languageName,
             Option<string> languageVersion,
             Option<string> intermediateDir,
@@ -59,9 +59,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
                 logPath,
                 debugMode)
         {
-            this.layersDirOption = layersDirOption;
-            this.platformDirOption = platformDirOption;
-            this.planPathOption = planPathOption;
+            this.layersDir = layersDir;
+            this.platformDir = platformDir;
+            this.planPath = planPath;
             this.languageName = languageName;
             this.languageVersion = languageVersion;
             this.intermediateDir = intermediateDir;
@@ -72,26 +72,26 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
         protected override BuildpackBuildCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new BuildpackBuildCommandProperty
             {
-                LayersDir = bindingContext.ParseResult.GetValueForOption(this.layersDirOption),
-                PlatformDir = bindingContext.ParseResult.GetValueForOption(this.platformDirOption),
-                PlanPath = bindingContext.ParseResult.GetValueForOption(this.planPathOption),
+                LayersDir = bindingContext.ParseResult.GetValueForOption(this.layersDir),
+                PlatformDir = bindingContext.ParseResult.GetValueForOption(this.platformDir),
+                PlanPath = bindingContext.ParseResult.GetValueForOption(this.planPath),
                 LanguageName = bindingContext.ParseResult.GetValueForOption(this.languageName),
                 LanguageVersion = bindingContext.ParseResult.GetValueForOption(this.languageVersion),
                 IntermediateDir = bindingContext.ParseResult.GetValueForOption(this.intermediateDir),
                 DestinationDir = bindingContext.ParseResult.GetValueForOption(this.output),
                 ManifestDir = bindingContext.ParseResult.GetValueForOption(this.manifestDir),
-                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.sourceDir),
-                PlatformName = bindingContext.ParseResult.GetValueForOption(this.platform),
-                PlatformVersion = bindingContext.ParseResult.GetValueForOption(this.platformVersion),
-                ShouldPackage = bindingContext.ParseResult.GetValueForOption(this.package),
-                OsRequirements = bindingContext.ParseResult.GetValueForOption(this.osRequirements),
-                AppType = bindingContext.ParseResult.GetValueForOption(this.appType),
-                BuildCommandsFileName = bindingContext.ParseResult.GetValueForOption(this.buildCommandFile),
-                CompressDestinationDir = bindingContext.ParseResult.GetValueForOption(this.compressDestinationDir),
-                Properties = bindingContext.ParseResult.GetValueForOption(this.property),
-                DynamicInstallRootDir = bindingContext.ParseResult.GetValueForOption(this.dynamicInstallRootDir),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.logPath),
-                DebugMode = bindingContext.ParseResult.GetValueForOption(this.debugMode),
+                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.SourceDir),
+                PlatformName = bindingContext.ParseResult.GetValueForOption(this.Platform),
+                PlatformVersion = bindingContext.ParseResult.GetValueForOption(this.PlatformVersion),
+                ShouldPackage = bindingContext.ParseResult.GetValueForOption(this.Package),
+                OsRequirements = bindingContext.ParseResult.GetValueForOption(this.OsRequirements),
+                AppType = bindingContext.ParseResult.GetValueForOption(this.AppType),
+                BuildCommandsFileName = bindingContext.ParseResult.GetValueForOption(this.BuildCommandFile),
+                CompressDestinationDir = bindingContext.ParseResult.GetValueForOption(this.CompressDestinationDir),
+                Properties = bindingContext.ParseResult.GetValueForOption(this.Property),
+                DynamicInstallRootDir = bindingContext.ParseResult.GetValueForOption(this.DynamicInstallRootDir),
+                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }
 }

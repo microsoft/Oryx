@@ -74,10 +74,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(runScriptCommand.OnExecute(console));
                 },
                 new RunScriptCommandBinder(
-                    appDirArgument: appDirArgument,
-                    platformNameOption: platformNameOption,
-                    platformVersionOption: platformVersionOption,
-                    outputOption: outputOption,
+                    appDir: appDirArgument,
+                    platformName: platformNameOption,
+                    platformVersion: platformVersionOption,
+                    output: outputOption,
                     logPath: logOption,
                     debugMode: debugOption));
             return command;

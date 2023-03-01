@@ -15,27 +15,27 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class DetectCommandBinder : CommandBaseBinder<DetectCommandProperty>
     {
-        private Argument<string> sourceDirArgument;
-        private Option<string> outputFormatOption;
+        private Argument<string> sourceDir;
+        private Option<string> outputFormat;
 
         public DetectCommandBinder(
-            Argument<string> sourceDirArgument,
-            Option<string> outputFormatOption,
+            Argument<string> sourceDir,
+            Option<string> outputFormat,
             Option<string> logPath,
             Option<bool> debugMode)
             : base(logPath, debugMode)
         {
-            this.sourceDirArgument = sourceDirArgument;
-            this.outputFormatOption = outputFormatOption;
+            this.sourceDir = sourceDir;
+            this.outputFormat = outputFormat;
         }
 
         protected override DetectCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new DetectCommandProperty
             {
-                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.sourceDirArgument),
-                OutputFormat = bindingContext.ParseResult.GetValueForOption(this.outputFormatOption),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.logPath),
-                DebugMode = bindingContext.ParseResult.GetValueForOption(this.debugMode),
+                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.sourceDir),
+                OutputFormat = bindingContext.ParseResult.GetValueForOption(this.outputFormat),
+                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }
 }

@@ -10,35 +10,35 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class RunScriptCommandBinder : CommandBaseBinder<RunScriptCommandProperty>
     {
-        private Argument<string> appDirArgument;
-        private Option<string> platformNameOption;
-        private Option<string> platformVersionOption;
-        private Option<string> outputOption;
+        private Argument<string> appDir;
+        private Option<string> platformName;
+        private Option<string> platformVersion;
+        private Option<string> output;
 
         public RunScriptCommandBinder(
-            Argument<string> appDirArgument,
-            Option<string> platformNameOption,
-            Option<string> platformVersionOption,
-            Option<string> outputOption,
+            Argument<string> appDir,
+            Option<string> platformName,
+            Option<string> platformVersion,
+            Option<string> output,
             Option<string> logPath,
             Option<bool> debugMode)
             : base(logPath, debugMode)
         {
-            this.appDirArgument = appDirArgument;
-            this.platformNameOption = platformNameOption;
-            this.platformVersionOption = platformVersionOption;
-            this.outputOption = outputOption;
+            this.appDir = appDir;
+            this.platformName = platformName;
+            this.platformVersion = platformVersion;
+            this.output = output;
         }
 
         protected override RunScriptCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new RunScriptCommandProperty
             {
-                AppDir = bindingContext.ParseResult.GetValueForArgument(this.appDirArgument),
-                PlatformName = bindingContext.ParseResult.GetValueForOption(this.platformNameOption),
-                PlatformVersion = bindingContext.ParseResult.GetValueForOption(this.platformVersionOption),
-                OutputPath = bindingContext.ParseResult.GetValueForOption(this.outputOption),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.logPath),
-                DebugMode = bindingContext.ParseResult.GetValueForOption(this.debugMode),
+                AppDir = bindingContext.ParseResult.GetValueForArgument(this.appDir),
+                PlatformName = bindingContext.ParseResult.GetValueForOption(this.platformName),
+                PlatformVersion = bindingContext.ParseResult.GetValueForOption(this.platformVersion),
+                OutputPath = bindingContext.ParseResult.GetValueForOption(this.output),
+                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }
 }

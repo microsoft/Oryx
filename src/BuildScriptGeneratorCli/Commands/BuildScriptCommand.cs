@@ -92,7 +92,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(buildScriptCommand.OnExecute(console));
                 },
                 new BuildScriptCommandBinder(
-                    buildScriptOutputOption: buildScriptOutputOption,
+                    buildScriptOutput: buildScriptOutputOption,
                     sourceDir: sourceDirArgument,
                     platform: platformOption,
                     platformVersion: platformVersionOption,

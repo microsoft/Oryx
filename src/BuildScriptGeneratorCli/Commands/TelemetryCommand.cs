@@ -64,11 +64,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(telemetryCommand.OnExecute(console));
                 },
                 new TelemetryCommandBinder(
-                    eventNameOption: eventNameOption,
-                    processingTimeOption: processingTimeOption,
-                    propertiesOption: propertyOption,
-                    logFile: logFile,
-                    debugOption: debugOption));
+                    eventName: eventNameOption,
+                    processingTime: processingTimeOption,
+                    properties: propertyOption,
+                    logPath: logFile,
+                    debugMode: debugOption));
             return command;
         }
 

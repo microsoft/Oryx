@@ -100,11 +100,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 },
                 new PrepareEnvironmentCommandBinder(
                     sourceDirOption: sourceDirOption,
-                    skipDetectionOption: skipDetectionOption,
-                    platformsAndVersionsOption: platformsAndVersions,
-                    platformsAndVersionsFileOption: platformsAndVersionsFile,
-                    logFileOption: logOption,
-                    debugOption: debugOption));
+                    skipDetection: skipDetectionOption,
+                    platformsAndVersions: platformsAndVersions,
+                    platformsAndVersionsFile: platformsAndVersionsFile,
+                    logPath: logOption,
+                    debugMode: debugOption));
             return command;
         }
 

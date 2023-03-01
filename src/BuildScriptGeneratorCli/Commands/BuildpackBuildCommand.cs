@@ -117,9 +117,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(buildpackBuildCommand.OnExecute(console));
                 },
                 new BuildpackBuildCommandBinder(
-                    layersDirOption: layersDirOption,
-                    platformDirOption: platformDirOption,
-                    planPathOption: planPathOption,
+                    layersDir: layersDirOption,
+                    platformDir: platformDirOption,
+                    planPath: planPathOption,
                     languageName: languageOption,
                     languageVersion: languageVerOption,
                     intermediateDir: intermediateDirOption,

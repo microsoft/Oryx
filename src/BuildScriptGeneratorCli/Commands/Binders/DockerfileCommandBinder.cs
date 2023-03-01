@@ -15,51 +15,51 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class DockerfileCommandBinder : CommandBaseBinder<DockerfileCommandProperty>
     {
-        private Argument<string> sourceDirArgument;
-        private Option<string> buildImageOption;
-        private Option<string> platformOption;
-        private Option<string> platformVersionOption;
-        private Option<string> runtimePlatformOption;
-        private Option<string> runtimePlatformVersionOption;
-        private Option<string> bindPortOption;
-        private Option<string> outputOption;
+        private Argument<string> sourceDir;
+        private Option<string> buildImage;
+        private Option<string> platform;
+        private Option<string> platformVersion;
+        private Option<string> runtimePlatform;
+        private Option<string> runtimePlatformVersion;
+        private Option<string> bindPort;
+        private Option<string> output;
 
         public DockerfileCommandBinder(
-            Argument<string> sourceDirArgument,
-            Option<string> buildImageOption,
-            Option<string> platformOption,
-            Option<string> platformVersionOption,
-            Option<string> runtimePlatformOption,
-            Option<string> runtimePlatformVersionOption,
-            Option<string> bindPortOption,
-            Option<string> outputOption,
-            Option<string> logFileOption,
+            Argument<string> sourceDir,
+            Option<string> buildImage,
+            Option<string> platform,
+            Option<string> platformVersion,
+            Option<string> runtimePlatform,
+            Option<string> runtimePlatformVersion,
+            Option<string> bindPort,
+            Option<string> output,
+            Option<string> logPath,
             Option<bool> debugMode)
-            : base(logFileOption, debugMode)
+            : base(logPath, debugMode)
         {
-            this.sourceDirArgument = sourceDirArgument;
-            this.buildImageOption = buildImageOption;
-            this.platformOption = platformOption;
-            this.platformVersionOption = platformVersionOption;
-            this.runtimePlatformOption = runtimePlatformOption;
-            this.runtimePlatformVersionOption = runtimePlatformVersionOption;
-            this.bindPortOption = bindPortOption;
-            this.outputOption = outputOption;
+            this.sourceDir = sourceDir;
+            this.buildImage = buildImage;
+            this.platform = platform;
+            this.platformVersion = platformVersion;
+            this.runtimePlatform = runtimePlatform;
+            this.runtimePlatformVersion = runtimePlatformVersion;
+            this.bindPort = bindPort;
+            this.output = output;
         }
 
         protected override DockerfileCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new DockerfileCommandProperty
             {
-                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.sourceDirArgument),
-                BuildImage = bindingContext.ParseResult.GetValueForOption(this.buildImageOption),
-                PlatformName = bindingContext.ParseResult.GetValueForOption(this.platformOption),
-                PlatformVersion = bindingContext.ParseResult.GetValueForOption(this.platformVersionOption),
-                RuntimePlatformName = bindingContext.ParseResult.GetValueForOption(this.runtimePlatformOption),
-                RuntimePlatformVersion = bindingContext.ParseResult.GetValueForOption(this.runtimePlatformVersionOption),
-                BindPort = bindingContext.ParseResult.GetValueForOption(this.bindPortOption),
-                OutputPath = bindingContext.ParseResult.GetValueForOption(this.outputOption),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.logPath),
-                DebugMode = bindingContext.ParseResult.GetValueForOption(this.debugMode),
+                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.sourceDir),
+                BuildImage = bindingContext.ParseResult.GetValueForOption(this.buildImage),
+                PlatformName = bindingContext.ParseResult.GetValueForOption(this.platform),
+                PlatformVersion = bindingContext.ParseResult.GetValueForOption(this.platformVersion),
+                RuntimePlatformName = bindingContext.ParseResult.GetValueForOption(this.runtimePlatform),
+                RuntimePlatformVersion = bindingContext.ParseResult.GetValueForOption(this.runtimePlatformVersion),
+                BindPort = bindingContext.ParseResult.GetValueForOption(this.bindPort),
+                OutputPath = bindingContext.ParseResult.GetValueForOption(this.output),
+                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }
 }

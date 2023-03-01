@@ -30,8 +30,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             new PlatformsCommandProperty
             {
                 OutputJson = bindingContext.ParseResult.GetValueForOption(this.jsonOption),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.logPath),
-                DebugMode = bindingContext.ParseResult.GetValueForOption(this.debugMode),
+                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }
 }

@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var platformDirOption = new Option<string>(OptionTemplates.PlatformDir, "Platform directory path.");
             var planPathOption = new Option<string>(OptionTemplates.PlanPath, "Build plan TOML path.");
             var logFilePathOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
-            var debugMode = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
 
             var command = new Command("buildpack-detect", "Determine whether Oryx can be applied as a buildpack to an app in the current " +
                 "working directory.")
@@ -60,7 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 platformDirOption,
                 planPathOption,
                 logFilePathOption,
-                debugMode,
+                debugOption,
             };
 
             command.SetHandler(
@@ -70,11 +70,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(buildpackDetectCommand.OnExecute(console));
                 },
                 new BuildpackDetectCommandBinder(
-                    sourceDirArgument: sourceDirArgument,
-                    platformDirOption: platformDirOption,
-                    planPathOption: planPathOption,
-                    logPathOption: logFilePathOption,
-                    debugMode: debugMode));
+                    sourceDir: sourceDirArgument,
+                    platformDir: platformDirOption,
+                    planPath: planPathOption,
+                    logPath: logFilePathOption,
+                    debugMode: debugOption));
 
             return command;
         }
