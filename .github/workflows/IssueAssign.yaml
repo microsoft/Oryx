@@ -4,12 +4,16 @@ on:
   issues:
     types: [opened, reopened]
 
+env:
+  ISSUE_NUM: ${{ github.event.issue.number }}
+  TOKEN: ${{ github.token }}
+
 jobs:
-  Debug:
+  AutoIssueAssign:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Assign issues
         run: |
           chmod +x ./oncall/autoIssueAssign.sh
-          ./oncall/autoIssueAssign.sh ./oncall/customRotation.txt ${{ secrets.GITHUB_TOKEN }}
+          ./oncall/autoIssueAssign.sh --token ${{ env.TOKEN }} --issue ${{ env.ISSUE_NUM }} --custom ${{ vars.CUSTOM_ONCALL_ROTATION }} ${{ vars.ONCALL_LIST }}

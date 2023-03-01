@@ -1,51 +1,71 @@
 #!/bin/bash
+
 autoAssign() {
-  echo "Current oncall is $1"
-  response=`curl -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $2" https://api.github.com/repos/harryli0108/githubActionTest/issues?assignee=none | jq '.[]| .number'`
-    arr=($response)
-    for i in "${arr[@]}";
-    do
-      curl -X POST "https://api.github.com/repos/microsoft/Oryx/issues/$i/assignees" -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $2" -d "{\"assignees\": ["\"$1\""]}"
-    done
+  curl -X POST "https://api.github.com/repos/microsoft/Oryx/issues/$3/assignees" -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $2" -d "{\"assignees\": ["\"$1\""]}"
 }
 
-file=$1
-token=$2
+checkCustomOncall() {
+  input=$1
+  today=$2
+  token=$3
+  issue=$4
+  currentOncall=$5
+  if [ -z "$input" ]; then
+    return 1
+  fi
 
-if [ ! -f "$file" ]; then
-  echo "Error: Custom rotation file not found"
-  exit 1
-fi
+  IFS="," read -ra arr <<< "$1"
+  name=${arr[0]}
+  startDate=${arr[1]}
+  endDate=${arr[2]}
+  startDate=$(date -d $startDate +%s)
+  endDate=$(date -d $endDate +%s)
+  if [ "$today" -ge "$startDate" ] && [ "$today" -le "$endDate" ]; then
+    echo "Custom shift found"
+    autoAssign $name $token $issue
+    return 0
+  else
+    autoAssign $currentOncall $token $issue
+    return 0
+  fi
+}
+
+# https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
+ONCALLS=""
+while (( "$#" )); do
+  case "$1" in
+    --token) #Github token flag
+    authToken=$2
+    shift 2
+    ;;
+    --issue) # Issue number flag
+    issueNum=$2
+    shift 2
+    ;;
+    --custom) # Custom shift flag
+    customRotation=$2
+    shift 2
+    ;;
+    --)
+    shift
+    break
+    ;;
+    *)
+    ONCALLS="$ONCALLS $1"
+    shift
+    ;;
+  esac
+done
+eval set -- "$ONCALLS"
 
 today=$(date +%s)
 
-while read line || [ -n "$line" ]; do
-  if [ "${line:0:1}" = "#" ]
-    then
-      continue
-  else
-    # Extract the name, start date, and end date from the line
-    name=$(echo $line | cut -d ' ' -f1)
-    startDate=$(echo $line | cut -d ' ' -f 2)
-    startDate=$(date -d $startDate +%s)
-    endDate=$(echo $line | cut -d ' ' -f 3)
-    endDate=$(date -d $endDate +%s)
-    # Check if the current date is within the date range
-    if [ "$today" -ge "$startDate" ] && [ "$today" -le "$endDate" ]; then
-      echo "Custom rotation found"
-      autoAssign $name $token
-      exit 0
-    fi
-  fi
-done < "$file"
-
-oncallList=("waliMSFT" "cormacpayne" "harryli0108" "snehapar9" "pauld-msft" "william-msft")
-oncallLen=${#oncallList[@]}
-# anchor Date is Feb 21 2023 10:00AM PST
+oncallArrLen=${#ONCALLS[@]}
+# achor Date is Feb 21 2022 0:00
 anchorDate=1677002400
 d=$(((today - anchorDate)/60/60/24/7))
-pos=`echo "$d%$oncallLen" | bc`
-currentOncall=`echo ${oncallList[$pos]}`
+pos=`echo "$d%$oncallArrLen" | bc`
+currentOncall=`echo ${ONCALLS[$pos]}`
 
-autoAssign $currentOncall $token
+checkCustomOncall $customRotation $today $authToken $issueNum $currentOncall
 exit 0
