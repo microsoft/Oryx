@@ -62,6 +62,5 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
         protected Option<string[]> Property { get; set; }
 
         protected Option<string> DynamicInstallRootDir { get; set; }
-
     }
 }
