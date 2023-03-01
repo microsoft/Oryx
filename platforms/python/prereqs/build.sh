@@ -18,7 +18,8 @@ gpgKey=$GPG_KEY
 pythonSdkFileName=""
 PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2da64da38f516078c7/public/get-pip.py"
 
-# for buster and ubuntu we would need following libraries
+    # Adding additional python packages to support all optional python modules:
+    # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
     apt-get update && \
 	apt-get upgrade -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -31,8 +32,6 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
         libbluetooth-dev \
         tk-dev \
         uuid-dev \
-        # Adding additional python packages to support all optional python modules:
-        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
         build-essential \
         gdb \
         lcov \
