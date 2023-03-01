@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.Automation.DotNet
         private string oryxSdkStorageBaseUrl;
         private string dotNetMinReleaseVersion;
         private string dotNetMaxReleaseVersion;
-        private List<string> dotNetBlockedVersions;
+        private List<string> dotNetBlockedVersions = new List<string>();
         private HashSet<string> oryxDotNetSdkVersions;
 
         public DotNetAutomator(
