@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.Automation.Services
                         "versions",
                         debianFlavor,
                         Constants.VersionsToBuildTxtFileName);
-                    File.AppendAllText(versionsToBuildTxtAbsolutePath, line);
+                    File.AppendAllText(versionsToBuildTxtAbsolutePath, line + Environment.NewLine);
 
                     // sort
                     Console.WriteLine($"[UpdateVersionsToBuildTxt] Updating {versionsToBuildTxtAbsolutePath}...");
