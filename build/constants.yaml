@@ -145,7 +145,7 @@
     python37-version: 3.7.15
     python38-version: 3.8.16
     python39-version: 3.9.15
-    python310-version: 3.10.9
+    python310-version: 3.10.8
     python311-version: 3.11.0
     runtime-versions:
       3.7: debian-bullseye
