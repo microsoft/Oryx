@@ -8,6 +8,6 @@ namespace Microsoft.Oryx.Automation.Services
 {
     public interface IVersionService
     {
-        public bool IsVersionWithinRange(string version, string minVersion = null, string maxVersion = null, List<string> exceptionVersions = null);
+        public bool IsVersionWithinRange(string version, string minVersion = null, string maxVersion = null, List<string> blockedVersions = null);
     }
 }

@@ -7,6 +7,6 @@ namespace Microsoft.Oryx.Automation.Services
 {
     public interface IFileService
     {
-        public void UpdateVersionsToBuildTxt(string platformName, string line);
+        void UpdateVersionsToBuildTxt(string platformName, string line);
     }
 }
