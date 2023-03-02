@@ -22,7 +22,8 @@ namespace Microsoft.Oryx.Automation.Services
         public bool IsVersionWithinRange(string version, string minVersion = null, string maxVersion = null, List<string> blockedVersions = null)
         {
             // Try to parse the version string into a SemanticVersion object and ignores pre-releases
-            if (!SemanticVersion.TryParse(version, out var semanticVersion))
+            if (!SemanticVersion.TryParse(version, out var semanticVersion) ||
+                semanticVersion.IsPrerelease)
             {
                 return false;
             }
