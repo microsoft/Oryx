@@ -20,7 +20,10 @@ namespace Microsoft.Oryx.Automation.Tests.Services
 
         public YamlFileServiceTests()
         {
-            this.oryxRootPath = Directory.GetCurrentDirectory();
+            string testPath = Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(testPath);
+            this.oryxRootPath = testPath;
+
             this.testConstantsYamlFilePath = Path.Combine(this.oryxRootPath, "test-constants.yaml");
             this.yamlFileService = new YamlFileService(this.oryxRootPath);
         }
@@ -28,27 +31,32 @@ namespace Microsoft.Oryx.Automation.Tests.Services
         [Fact]
         public async Task ReadConstantsYamlFileAsync_ReturnsExpectedYamlContents()
         {
-            // Arrange
-            string yamlContents = "- name: test\r\n  constants:\r\n    key1: value1\r\n    key2: value2";
-            File.WriteAllText(this.testConstantsYamlFilePath, yamlContents);
+            try
+            {
+                // Arrange
+                string yamlContents = "- name: test\r\n  constants:\r\n    key1: value1\r\n    key2: value2";
+                File.WriteAllText(this.testConstantsYamlFilePath, yamlContents);
 
-            // Act
-            var result = await this.yamlFileService.ReadConstantsYamlFileAsync(this.testConstantsYamlFilePath);
+                // Act
+                var result = await this.yamlFileService.ReadConstantsYamlFileAsync(this.testConstantsYamlFilePath);
 
-            // Assert
-            Assert.Single(result);
-            Assert.Equal("value1", result[0].Constants["key1"]);
-            Assert.Equal("value2", result[0].Constants["key2"]);
-
-            // Clean up
-            File.Delete(this.testConstantsYamlFilePath);
+                // Assert
+                Assert.Single(result);
+                Assert.Equal("value1", result[0].Constants["key1"]);
+                Assert.Equal("value2", result[0].Constants["key2"]);
+            }
+            finally
+            {
+                // Clean up
+                File.Delete(this.testConstantsYamlFilePath);
+            }
         }
 
         [Fact]
         public async Task ReadConstantsYamlFileAsync_ThrowsFileNotFoundException_ForNonexistentFile()
         {
             // Arrange
-            var nonExistentFilePath = Path.Combine(this.oryxRootPath, "non-existent.yaml");
+            var nonExistentFilePath = "non-existent.yaml";
 
             // Act and assert
             var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
@@ -60,27 +68,32 @@ namespace Microsoft.Oryx.Automation.Tests.Services
         [Fact]
         public async Task ReadConstantsYamlFileAsync_ShouldThrowYamlException_WhenYamlFileHasInvalidFormat()
         {
-            // Arrange
-            var yamlFileService = new YamlFileService(this.oryxRootPath);
-            var invalidYamlFilePath = Path.Combine(this.oryxRootPath, "invalid-constants.yaml");
+            try
+            {
+                // Arrange
+                var yamlFileService = new YamlFileService(this.oryxRootPath);
 
-            // Write an invalid YAML file
-            await File.WriteAllTextAsync(invalidYamlFilePath, "invalid: : : yaml");
+                // Write an invalid YAML file
+                await File.WriteAllTextAsync(this.testConstantsYamlFilePath, "invalid: : : yaml");
 
-            // Act and assert
-            await Assert.ThrowsAsync<ArgumentException>(
-                async () => await yamlFileService.ReadConstantsYamlFileAsync(invalidYamlFilePath));
-
-            // Cleanup
-            File.Delete(invalidYamlFilePath);
+                // Act and assert
+                await Assert.ThrowsAsync<ArgumentException>(
+                    async () => await yamlFileService.ReadConstantsYamlFileAsync(this.testConstantsYamlFilePath));
+            }
+            finally
+            {
+                // Cleanup
+                File.Delete(this.testConstantsYamlFilePath);
+            }
         }
 
         [Fact]
         public void WriteConstantsYamlFile_WritesYamlContentsToGivenFilePath()
         {
-            // Arrange
-            string filePath = "test_constants.yaml";
-            var yamlConstants = new List<ConstantsYamlFile>
+            try
+            {
+                // Arrange
+                var yamlConstants = new List<ConstantsYamlFile>
             {
                 new ConstantsYamlFile
                 {
@@ -93,14 +106,19 @@ namespace Microsoft.Oryx.Automation.Tests.Services
                 }
             };
 
-            // Act
-            this.yamlFileService.WriteConstantsYamlFile(filePath, yamlConstants);
+                // Act
+                this.yamlFileService.WriteConstantsYamlFile(this.testConstantsYamlFilePath, yamlConstants);
 
-            // Assert
-            Assert.Equal("- name: test\r\n  constants:\r\n    key1: value1\r\n    key2: value2\r\n  outputs: []\r\n", File.ReadAllText(filePath));
-
-            // Clean up
-            File.Delete(filePath);
+                // Assert
+                Assert.Equal(
+                    "- name: test\r\n  constants:\r\n    key1: value1\r\n    key2: value2\r\n  outputs: []\r\n",
+                    File.ReadAllText(this.testConstantsYamlFilePath));
+            }
+            finally
+            {
+                // Clean up
+                File.Delete(this.testConstantsYamlFilePath);
+            }
         }
     }
 }

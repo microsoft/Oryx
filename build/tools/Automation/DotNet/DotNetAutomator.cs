@@ -85,12 +85,7 @@ namespace Microsoft.Oryx.Automation.DotNet
         public async Task<List<DotNetVersion>> GetNewDotNetVersionsAsync()
         {
             List<DotNetVersion> dotNetVersions = new List<DotNetVersion>();
-
-            // Deserialize release metadata
-            var response = await this.httpService.GetDataAsync(DotNetConstants.ReleasesIndexJsonUrl);
-            var releaseNotes = response == null ? null : JsonConvert.DeserializeObject<ReleaseNotes>(response);
-            var releasesIndex = releaseNotes == null ? new List<ReleaseNote>() : releaseNotes.ReleaseIndexes;
-            foreach (var releaseIndex in releasesIndex)
+            foreach (var releaseIndex in await this.GetReleasesIndexAsync())
             {
                 // If the latest release version is not within the acceptable range (inclusive),
                 // or if the sdk version is present in the set of ORYX SDK versions,
@@ -101,12 +96,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                     continue;
                 }
 
-                // Get the actual release information from releases.json
-                string releasesJsonUrl = releaseIndex.ReleasesJsonUrl;
-                response = await this.httpService.GetDataAsync(releasesJsonUrl);
-                var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
-                var releases = releasesJson == null ? new List<Release>() : releasesJson.Releases;
-                foreach (var release in releases)
+                foreach (var release in await this.GetReleasesAsync(releaseIndex.ReleasesJsonUrl))
                 {
                     // Check again since the "release" is separate from "releaseIndex".
                     if (this.ReleaseVersionIsNotInRangeOrSdkVersionAlreadyExists(
@@ -128,7 +118,49 @@ namespace Microsoft.Oryx.Automation.DotNet
                 }
             }
 
-            return dotNetVersions = dotNetVersions.OrderBy(v => v.Version).ToList();
+            return dotNetVersions.OrderBy(v => v.Version).ToList();
+        }
+
+        private async Task<List<ReleaseNote>> GetReleasesIndexAsync()
+        {
+            try
+            {
+                // Deserialize release metadata
+                var response = await this.httpService.GetDataAsync(DotNetConstants.ReleasesIndexJsonUrl);
+                var releaseNotes = JsonConvert.DeserializeObject<ReleaseNotes>(response);
+                return releaseNotes.ReleaseIndexes;
+            }
+            catch (JsonException ex)
+            {
+                throw new JsonException($"Failed to deserialize release notes: {ex}");
+            }
+        }
+
+        private async Task<List<Release>> GetReleasesAsync(string releaseUrl)
+        {
+            try
+            {
+                var response = await this.httpService.GetDataAsync(releaseUrl);
+                if (string.IsNullOrEmpty(response))
+                {
+                    // If the response is empty, return an empty list
+                    return new List<Release>();
+                }
+
+                var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
+                if (releasesJson == null || releasesJson.Releases == null)
+                {
+                    // If deserialization fails or the releases list is null, return an empty list
+                    return new List<Release>();
+                }
+
+                return releasesJson.Releases;
+            }
+            catch (JsonException ex)
+            {
+                var errorMessage = $"Error deserializing JSON response for release url {releaseUrl}: {ex.Message}";
+                throw new JsonException(errorMessage, ex);
+            }
         }
 
         private bool ReleaseVersionIsNotInRangeOrSdkVersionAlreadyExists(string releaseVersion, string sdkVersion)

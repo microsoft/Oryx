@@ -9,8 +9,8 @@ namespace Microsoft.Oryx.Automation.Services
 {
     public interface IHttpService
     {
-        public Task<string> GetDataAsync(string url);
+        Task<string> GetDataAsync(string url);
 
-        public Task<HashSet<string>> GetOryxSdkVersionsAsync(string url);
+        Task<HashSet<string>> GetOryxSdkVersionsAsync(string url);
     }
 }
