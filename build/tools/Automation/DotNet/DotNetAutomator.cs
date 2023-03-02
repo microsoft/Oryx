@@ -144,14 +144,15 @@ namespace Microsoft.Oryx.Automation.DotNet
                 if (string.IsNullOrEmpty(response))
                 {
                     // If the response is empty, return an empty list
-                    return new List<Release>();
+                    throw new ArgumentNullException($"An empty response was returned by: {releaseUrl}");
                 }
 
                 var releasesJson = JsonConvert.DeserializeObject<ReleasesJson>(response);
                 if (releasesJson == null || releasesJson.Releases == null)
                 {
-                    // If deserialization fails or the releases list is null, return an empty list
-                    return new List<Release>();
+                    // If deserialization fails or the releases list is null, throw exception
+                    // since this should never be empty
+                    throw new ArgumentNullException($"An empty response was returned by: {releaseUrl}");
                 }
 
                 return releasesJson.Releases;
