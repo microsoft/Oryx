@@ -67,5 +67,9 @@ d=$(((today - anchorDate)/60/60/24/7))
 pos=`echo "$d%$oncallArrLen" | bc`
 currentOncall=`echo ${ONCALLS[$pos]}`
 
-checkCustomOncall $customRotation $today $authToken $issueNum $currentOncall
+if [[ -v customRotation ]]; then #check if custom rotation argument is present or not
+  checkCustomOncall $customRotation $today $authToken $issueNum $currentOncall
+else
+  autoAssign $currentOncall $authToken $issueNum
+fi
 exit 0
