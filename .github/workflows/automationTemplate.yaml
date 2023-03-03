@@ -21,6 +21,9 @@ env:
   DOTNET_MIN_RELEASE_VERSION: ${{ vars.DOTNET_MIN_RELEASE_VERSION }}
   DOTNET_MAX_RELEASE_VERSION: ${{ vars.DOTNET_MAX_RELEASE_VERSION }}
   DOTNET_BLOCKED_VERSIONS_ARRAY: ${{ vars.DOTNET_BLOCKED_VERSIONS_ARRAY }}
+  PYTHON_MIN_RELEASE_VERSION: ${{ vars.PYTHON_MIN_RELEASE_VERSION }}
+  PYTHON_MAX_RELEASE_VERSION: ${{ vars.PYTHON_MAX_RELEASE_VERSION }}
+  PYTHON_BLOCKED_VERSIONS_ARRAY: ${{ vars.PYTHON_BLOCKED_VERSIONS_ARRAY }}
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -35,8 +38,9 @@ jobs:
           echo "RELEASE_DATE=${releaseDate}" >> $GITHUB_ENV
 
           declare -A platformNamesAsInBasePipeline
-          platformNamesAsInBasePipeline=( ["dotnet"]="DotNetCore" )
+          platformNamesAsInBasePipeline=( ["dotnet"]="DotNetCore" ["python"]="Python" )
           echo "PLATFORM_NAME_CAMEL_CASE=${platformNamesAsInBasePipeline[${{ inputs.platformName }}]}" >> $GITHUB_ENV
+          printenv
 
       - name: Run SDK Automation
         run: |
@@ -51,7 +55,7 @@ jobs:
           
           git status
           git add -A
-          git commit -m "Add new SDK versions" && true
+          git commit -m "Add new ${{ inputs.platformName }} SDK versions" && true
           gitCommitExitCode=${PIPESTATUS[0]}
           if [[ $gitCommitExitCode = 0 ]]; then
             cancelWorkflow=0

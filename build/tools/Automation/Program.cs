@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Oryx.Automation.DotNet;
+using Microsoft.Oryx.Automation.Python;
 using Microsoft.Oryx.Automation.Services;
+using Oryx.Microsoft.Automation.Python;
 
 namespace Microsoft.Oryx.Automation
 {
@@ -30,16 +32,20 @@ namespace Microsoft.Oryx.Automation
                 .AddSingleton<IVersionService, VersionService>()
                 .AddSingleton<IYamlFileService>(new YamlFileService(oryxRootPath))
                 .AddScoped<DotNetAutomator>()
+                .AddScoped<PythonAutomator>()
                 .AddHttpClient()
                 .BuildServiceProvider();
 
             switch (platform)
             {
-                case "dotnet":
+                case DotNetConstants.DotNetName:
                     var dotNetAutomator = serviceProvider.GetRequiredService<DotNetAutomator>();
                     await dotNetAutomator.RunAsync();
                     break;
-
+                case PythonConstants.PythonName:
+                    var pythonAutomator = serviceProvider.GetRequiredService<PythonAutomator>();
+                    await pythonAutomator.RunAsync();
+                    break;
                 default:
                     Console.WriteLine($"Unsupported platform: {platform}");
                     Console.WriteLine($"Supported platforms: {string.Join(", ", supportedPlatforms)}");
