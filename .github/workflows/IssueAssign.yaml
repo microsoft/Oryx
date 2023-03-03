@@ -9,11 +9,11 @@ env:
   TOKEN: ${{ github.token }}
 
 jobs:
-  AutoIssueAssign:
+  IssueAssign:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Assign issues
         run: |
-          chmod +x ./oncall/autoIssueAssign.sh
-          ./oncall/autoIssueAssign.sh --token ${{ env.TOKEN }} --issue ${{ env.ISSUE_NUM }} --custom ${{ vars.CUSTOM_ONCALL_ROTATION }} ${{ vars.ONCALL_LIST }}
+          chmod +x ./scripts/oncallAutoAssignIssue.sh
+          ./scripts/oncallAutoAssignIssue.sh --token ${{ env.TOKEN }} --issue ${{ env.ISSUE_NUM }} --custom ${{ vars.CUSTOM_ONCALL_ROTATION }} ${{ vars.ONCALL_LIST }}
