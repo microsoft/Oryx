@@ -1,9 +1,6 @@
 name: Oryx-SDK-Runtime-Automation-Template
 
 on:
-  push:
-    branches:
-      - 'williamhe/**'
   workflow_call:
     inputs:
       platformName:
