@@ -169,7 +169,8 @@ namespace Microsoft.Oryx.Automation.DotNet
             if (!this.versionService.IsVersionWithinRange(
                 releaseVersion,
                 minVersion: this.dotNetMinReleaseVersion,
-                maxVersion: this.dotNetMaxReleaseVersion))
+                maxVersion: this.dotNetMaxReleaseVersion,
+                blockedVersions: this.dotNetBlockedVersions))
             {
                 return true;
             }
