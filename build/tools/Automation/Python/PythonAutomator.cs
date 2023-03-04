@@ -21,6 +21,7 @@ namespace Microsoft.Oryx.Automation.Python
         private readonly IVersionService versionService;
         private readonly IFileService fileService;
         private readonly IYamlFileService yamlFileService;
+        private string oryxSdkStorageBaseUrl;
         private string pythonMinReleaseVersion;
         private string pythonMaxReleaseVersion;
         private List<string> pythonBlockedVersions = null;
@@ -39,6 +40,12 @@ namespace Microsoft.Oryx.Automation.Python
 
         public async Task RunAsync()
         {
+            this.oryxSdkStorageBaseUrl = Environment.GetEnvironmentVariable(Constants.OryxSdkStorageBaseUrlEnvVar);
+            if (string.IsNullOrEmpty(this.oryxSdkStorageBaseUrl))
+            {
+                this.oryxSdkStorageBaseUrl = Constants.OryxSdkStorageBaseUrl;
+            }
+
             this.pythonMinReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMinReleaseVersionEnvVar);
             this.pythonMaxReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMaxReleaseVersionEnvVar);
             var blockedVersions = Environment.GetEnvironmentVariable(
@@ -69,7 +76,7 @@ namespace Microsoft.Oryx.Automation.Python
             var releases = JsonConvert.DeserializeObject<List<Release>>(response);
 
             HashSet<string> oryxSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(
-                Constants.OryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl);
+                this.oryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl);
 
             var pythonVersions = new List<PythonVersion>();
             foreach (var release in releases)

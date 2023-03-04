@@ -59,7 +59,7 @@ namespace Microsoft.Oryx.Automation.DotNet
             }
 
             this.oryxDotNetSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(
-                Constants.OryxSdkStorageBaseUrl + DotNetConstants.DotNetSuffixUrl);
+                this.oryxSdkStorageBaseUrl + DotNetConstants.DotNetSuffixUrl);
             this.dotNetMinReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMinReleaseVersionEnvVar);
             this.dotNetMaxReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMaxReleaseVersionEnvVar);
             var blockedVersions = Environment.GetEnvironmentVariable(
