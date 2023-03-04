@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Automation.Python
         private readonly IYamlFileService yamlFileService;
         private string pythonMinReleaseVersion;
         private string pythonMaxReleaseVersion;
-        private List<string> pythonBlockedVersions;
+        private List<string> pythonBlockedVersions = null;
 
         public PythonAutomator(
             IHttpService httpService,
