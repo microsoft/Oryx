@@ -38,11 +38,11 @@ tryAssignIssueToCustomOncall() {
   # Custom oncall rotation defined in repo variable. Using format:
   # {github-username},{start-date},{end-date}
 
-  # Devide each entry by ";"
+  # Divide each entry by ";"
   IFS=';' read -ra arr <<< "$input"
   for i in "${arr[@]}"
   do
-    # Devide each field by ","
+    # Divide each field by ","
     IFS=',' read -ra entry <<< "$i"
     name=$(echo ${entry[0]})
     startDate=$(echo ${entry[1]})
