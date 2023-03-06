@@ -15,10 +15,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class BuildScriptCommandBinder : BuildCommandBaseBinder<BuildScriptCommandProperty>
     {
-        private Option<string> buildScriptOutput;
+        private Option<string> outputPath;
 
         public BuildScriptCommandBinder(
-            Option<string> buildScriptOutput,
+            Option<string> outputPath,
             Argument<string> sourceDir,
             Option<string> platform,
             Option<string> platformVersion,
@@ -33,13 +33,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<bool> debugMode)
             : base(sourceDir, platform, platformVersion, package, osRequirements, appType, buildCommandFile, compressDestinationDir, property, dynamicInstallRootDir, logPath, debugMode)
         {
-            this.buildScriptOutput = buildScriptOutput;
+            this.outputPath = outputPath;
         }
 
         protected override BuildScriptCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new BuildScriptCommandProperty
             {
-                OutputPath = bindingContext.ParseResult.GetValueForOption(this.buildScriptOutput),
+                OutputPath = bindingContext.ParseResult.GetValueForOption(this.outputPath),
                 SourceDir = bindingContext.ParseResult.GetValueForArgument(this.SourceDir),
                 PlatformName = bindingContext.ParseResult.GetValueForOption(this.Platform),
                 PlatformVersion = bindingContext.ParseResult.GetValueForOption(this.PlatformVersion),
