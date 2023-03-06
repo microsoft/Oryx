@@ -102,6 +102,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer.Tests", "tests\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation", "build\tools\Automation\Automation.csproj", "{18F7BB74-0A1E-4289-9161-515E65E667CE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation.Tests", "tests\AutomationTests\Automation.Tests.csproj", "{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -180,10 +182,10 @@ Global
 		{18F7BB74-0A1E-4289-9161-515E65E667CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18F7BB74-0A1E-4289-9161-515E65E667CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18F7BB74-0A1E-4289-9161-515E65E667CE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AAF9B9BF-9D03-4FEF-9D76-7676DDB75AFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AAF9B9BF-9D03-4FEF-9D76-7676DDB75AFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AAF9B9BF-9D03-4FEF-9D76-7676DDB75AFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AAF9B9BF-9D03-4FEF-9D76-7676DDB75AFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -213,6 +215,7 @@ Global
 		{F13BEF5A-5426-4F77-879F-A7F812F1E336} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
 		{5BD3E03A-3086-4CF6-950B-215C1E76B7F5} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
 		{18F7BB74-0A1E-4289-9161-515E65E667CE} = {2AA826A1-5647-46B2-9885-20E89050653F}
+		{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3577CC82-8B1B-4B06-829A-3E1CCE78A2C3}
