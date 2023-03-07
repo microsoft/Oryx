@@ -7,9 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
@@ -35,20 +37,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly ICompatiblePlatformDetector platformDetector;
         private readonly ILogger<DefaultDockerfileGenerator> logger;
         private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly TelemetryClient telemetryClient;
 
         public DefaultDockerfileGenerator(
             ICompatiblePlatformDetector platformDetector,
             ILogger<DefaultDockerfileGenerator> logger,
-            IOptions<BuildScriptGeneratorOptions> commonOptions)
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
+            TelemetryClient telemetryClient)
         {
             this.platformDetector = platformDetector;
             this.logger = logger;
             this.commonOptions = commonOptions.Value;
+            this.telemetryClient = telemetryClient;
         }
 
         public string GenerateDockerfile(DockerfileContext ctx)
         {
-            using (var timedEvent = this.logger.LogTimedEvent("GenerateDockerfile"))
+            using (var timedEvent = this.telemetryClient.LogTimedEvent("GenerateDockerfile"))
             {
                 var createScriptArguments = new Dictionary<string, string>();
                 var dockerfileBuildImageName = "cli";
@@ -150,7 +155,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 var generatedDockerfile = TemplateHelper.Render(
                     TemplateHelper.TemplateResource.Dockerfile,
                     properties,
-                    this.logger);
+                    this.logger,
+                    this.telemetryClient);
 
                 // Remove the Container Registry Analysis snippet, if it exists in the template.
                 var pattern = "# DisableDockerDetector \".*?\"\n";

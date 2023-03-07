@@ -617,7 +617,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             commonOptions.SourceDir = "/app";
             commonOptions.DestinationDir = "/output";
-
             var defaultPlatformDetector = new DefaultPlatformsInformationProvider(
                 platforms,
                 new DefaultStandardOutputWriter());
@@ -635,7 +634,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
                     Options.Create(commonOptions)),
                 checkers,
                 NullLogger<DefaultBuildScriptGenerator>.Instance,
-                new DefaultStandardOutputWriter());
+                new DefaultStandardOutputWriter(),
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()

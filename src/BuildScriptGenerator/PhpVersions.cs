@@ -6,8 +6,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class PhpVersions
     {
-        public const string PhpRuntimeBaseTag = "20230115.1";
-        public const string PhpFpmRuntimeBaseTag = "20230115.2";
+        public const string PhpRuntimeBaseTag = "20230221.3";
+        public const string PhpFpmRuntimeBaseTag = "20230221.1";
         public const string ComposerVersion = "2.0.8";
         public const string ComposerSetupSha384 = "55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae";
         public const string Composer19Version = "1.9.3";
@@ -15,12 +15,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Composer20Version = "2.0.8";
         public const string Composer22Version = "2.2.9";
         public const string Composer23Version = "2.3.4";
-        public const string Php82Version = "8.2.1";
+        public const string Php82Version = "8.2.2";
         public const string Php82Keys = "1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544";
-        public const string Php82TarSha256 = "650d3bd7a056cabf07f6a0f6f1dd8ba45cd369574bbeaa36de7d1ece212c17af";
-        public const string Php81Version = "8.1.14";
+        public const string Php82TarSha256 = "bdc4aa38e652bac86039601840bae01c0c3653972eaa6f9f93d5f71953a7ee33";
+        public const string Php81Version = "8.1.15";
         public const string Php81Keys = "528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544";
-        public const string Php81TarSha256 = "e16e47a872d58685913ac848ce92ec49f42c1828110c98c65fb6265a08724a1a";
+        public const string Php81TarSha256 = "cd450fb4ee50488c5bf5f08851f514e5a1cac18c9512234d9e16c3a1d35781a6";
         public const string Php80Version = "8.0.27";
         public const string Php80Keys = "1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F";
         public const string Php80TarSha256 = "f942cbfe2f7bacbb8039fb79bbec41c76ea779ac5c8157f21e1e0c1b28a5fc3a";

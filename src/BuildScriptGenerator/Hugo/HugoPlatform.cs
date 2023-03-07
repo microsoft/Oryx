@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -21,19 +22,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
         private readonly BuildScriptGeneratorOptions commonOptions;
         private readonly HugoScriptGeneratorOptions hugoScriptGeneratorOptions;
         private readonly IHugoPlatformDetector detector;
+        private readonly TelemetryClient telemetryClient;
 
         public HugoPlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<HugoScriptGeneratorOptions> hugoScriptGeneratorOptions,
             ILogger<HugoPlatform> logger,
             HugoPlatformInstaller platformInstaller,
-            IHugoPlatformDetector detector)
+            IHugoPlatformDetector detector,
+            TelemetryClient telemetryClient)
         {
             this.logger = logger;
             this.platformInstaller = platformInstaller;
             this.commonOptions = commonOptions.Value;
             this.hugoScriptGeneratorOptions = hugoScriptGeneratorOptions.Value;
             this.detector = detector;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <inheritdoc/>
@@ -91,7 +95,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Hugo
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.HugoSnippet,
                 model: null,
-                this.logger);
+                this.logger,
+                this.telemetryClient);
 
             return new BuildScriptSnippet
             {

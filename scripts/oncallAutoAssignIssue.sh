@@ -27,7 +27,10 @@ tryAssignIssueToCustomOncall() {
   token=$2
   issue=$3
   input="$CUSTOM_ONCALL_ROTATION"
+  # Github parses new line as "\n\r". We're removing the "\n" and changing "\r" to ";" in order to parse entries
+  # Removing "\n"
   input="${input//$'\n'/''}"
+  # Replacing "\r" with ";"
   input="${input//$'\r'/';'}"
   if [ -z "$input" ]; then
     return 1
@@ -35,11 +38,11 @@ tryAssignIssueToCustomOncall() {
   # Custom oncall rotation defined in repo variable. Using format:
   # {github-username},{start-date},{end-date}
 
-  # Devide each entry by ";"
+  # Divide each entry by ";"
   IFS=';' read -ra arr <<< "$input"
   for i in "${arr[@]}"
   do
-    # Devide each field by ","
+    # Divide each field by ","
     IFS=',' read -ra entry <<< "$i"
     name=$(echo ${entry[0]})
     startDate=$(echo ${entry[1]})
