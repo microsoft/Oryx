@@ -27,10 +27,7 @@ tryAssignIssueToCustomOncall() {
   token=$2
   issue=$3
   input="$CUSTOM_ONCALL_ROTATION"
-  # Github parses new line as "\n\r". We're removing the "\n" and changing "\r" to ";" in order to parse entries
-  # Removing "\n"
   input="${input//$'\n'/''}"
-  # Replacing "\r" with ";"
   input="${input//$'\r'/';'}"
   if [ -z "$input" ]; then
     return 1
@@ -38,11 +35,11 @@ tryAssignIssueToCustomOncall() {
   # Custom oncall rotation defined in repo variable. Using format:
   # {github-username},{start-date},{end-date}
 
-  # Divide each entry by ";"
+  # Devide each entry by ";"
   IFS=';' read -ra arr <<< "$input"
   for i in "${arr[@]}"
   do
-    # Divide each field by ","
+    # Devide each field by ","
     IFS=',' read -ra entry <<< "$i"
     name=$(echo ${entry[0]})
     startDate=$(echo ${entry[1]})
@@ -57,7 +54,7 @@ tryAssignIssueToCustomOncall() {
 }
 
 # https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
-ONCALLS=""
+PARAMS=""
 while (( "$#" )); do
   case "$1" in
     --token) #Github token flag
@@ -73,21 +70,26 @@ while (( "$#" )); do
     break
     ;;
     *)
-    ONCALLS="$ONCALLS $1"
+    PARAMS="$PARAMS $1"
     shift
     ;;
   esac
 done
-eval set -- "$ONCALLS"
+eval set -- "$PARAMS"
 
 today=$(date +%s)
 
-oncallArrLen=${#ONCALLS[@]}
+# Oncall rotation is defined in repo variable. Using format:
+# {github-username-1},{github-username-2},...
+# Parsing oncall engineer lists into array and seperating them by ','
+IFS=',' read -ra parsedOncalls <<< "$ONCALL_LIST"
+
+oncallArrLen=${#parsedOncalls[@]}
 # anchor Date is Feb 21 2022 0:00
 anchorDate=1677002400
 d=$(((today - anchorDate)/60/60/24/7))
 pos=`echo "$d%$oncallArrLen" | bc`
-currentOncall=`echo ${ONCALLS[$pos]}`
+currentOncall=`echo ${parsedOncalls[$pos]}`
 
 # Check if custom rotation env var is present or not
 if [ -n "$CUSTOM_ONCALL_ROTATION" ]; then
