@@ -1,5 +1,5 @@
 parameters:
-  ascName: oryxSP
+  ascName: oryx-automation-service-principal
   acrDevName: oryxdevmcr
   acrProdName: oryxmcr
   acrPmeProdName: oryxprodmcr

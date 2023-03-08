@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
 using McMaster.Extensions.CommandLineUtils;
@@ -18,7 +17,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -121,14 +120,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var environment = serviceProvider.GetRequiredService<IEnvironment>();
             var logger = serviceProvider.GetRequiredService<ILogger<BuildCommand>>();
-            var buildOperationId = logger.StartOperation(BuildOperationName(environment));
+            var telemetryClient = serviceProvider.GetRequiredService<TelemetryClient>();
+            var buildOperationId = telemetryClient.StartOperation(BuildOperationName(environment));
 
             var sourceRepo = serviceProvider.GetRequiredService<ISourceRepoProvider>().GetSourceRepo();
-            var sourceRepoCommitId = GetSourceRepoCommitId(environment, sourceRepo, logger);
+            var sourceRepoCommitId = GetSourceRepoCommitId(environment, sourceRepo, logger, telemetryClient);
 
             var oryxVersion = Program.GetVersion();
             var oryxCommitId = Program.GetMetadataValue(Program.GitCommit);
             var oryxReleaseTagName = Program.GetMetadataValue(Program.ReleaseTagName);
+
             var buildEventProps = new Dictionary<string, string>()
             {
                 { "oryxVersion", oryxVersion },
@@ -139,9 +140,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     string.Join(' ', environment.GetCommandLineArgs())
                 },
                 { "sourceRepoCommitId", sourceRepoCommitId },
+                { "platformName", this.PlatformName },
             };
-
-            logger.LogEvent("BuildRequested", buildEventProps);
+            telemetryClient.LogEvent("BuildRequested", buildEventProps);
 
             var options = serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
 
@@ -154,12 +155,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 buildInfo.AddDefinition("Repository Commit", sourceRepoCommitId);
             }
 
+            if (!string.IsNullOrWhiteSpace(options.DebianFlavor))
+            {
+                buildInfo.AddDefinition("OS Type", options.DebianFlavor);
+            }
+
+            if (!string.IsNullOrWhiteSpace(options.ImageType))
+            {
+                buildInfo.AddDefinition("Image Type", options.ImageType);
+            }
+
             console.WriteLine(buildInfo.ToString());
 
             // Generate build script
             string scriptContent;
             Exception exception;
-            using (var stopwatch = logger.LogTimedEvent("GenerateBuildScript"))
+            using (var stopwatch = telemetryClient.LogTimedEvent("GenerateBuildScript"))
             {
                 var checkerMessages = new List<ICheckerMessage>();
                 var scriptGenerator = new BuildScriptGenerator(
@@ -196,7 +207,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // Write build script to selected path
             File.WriteAllText(buildScriptPath, scriptContent);
-            logger.LogTrace("Build script written to file");
+            telemetryClient.LogTrace("Build script written to file");
             if (this.DebugMode)
             {
                 console.WriteLine($"Build script content:\n{scriptContent}");
@@ -207,13 +218,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 { "scriptPath", buildScriptPath },
                 { "envVars", string.Join(",", GetEnvVarNames(environment)) },
+                { "osType", options.DebianFlavor },
+                { "imageType", options.ImageType },
             };
 
             var buildScriptOutput = new StringBuilder();
             var stdOutEventLoggers = new ITextStreamProcessor[]
             {
-                new TextSpanEventLogger(logger, this.measurableStdOutSpans),
-                new PipDownloadEventLogger(logger),
+                new TextSpanEventLogger(logger, this.measurableStdOutSpans, telemetryClient),
+                new PipDownloadEventLogger(logger, telemetryClient),
             };
 
             DataReceivedEventHandler stdOutBaseHandler = (sender, args) =>
@@ -260,7 +273,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             // Run the generated script
             int exitCode;
-            using (var timedEvent = logger.LogTimedEvent("RunBuildScript", buildEventProps))
+            using (var timedEvent = telemetryClient.LogTimedEvent("RunBuildScript", buildEventProps))
             {
                 console.WriteLine();
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
@@ -280,7 +293,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (exitCode != ProcessConstants.ExitSuccess)
             {
-                logger.LogLongMessage(
+               logger.LogLongMessage(
                     LogLevel.Error,
                     header: "Error running build script",
                     buildScriptOutput.ToString(),
@@ -290,7 +303,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         ["oryxVersion"] = oryxVersion,
                         ["oryxReleaseTagName"] = oryxReleaseTagName,
                     });
-                return exitCode;
+               return exitCode;
             }
 
             return ProcessConstants.ExitSuccess;
@@ -398,7 +411,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                         .AddOptionsServices()
                         .Configure<BuildScriptGeneratorOptions>(options =>
                         {
-                            // These values are not retrieve through the 'config' api since we do not expect
+                            // These values are not retrieved through the 'config' api since we do not expect
                             // them to be provided by an end user.
                             options.SourceDir = this.SourceDir;
                             options.IntermediateDir = this.IntermediateDir;
@@ -406,50 +419,21 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                             options.ManifestDir = this.ManifestDir;
                             options.Properties = buildProperties;
                             options.ScriptOnly = false;
-
-                            // For debian flavor, we first check for existance of an environment variable
-                            // which contains the os type. If this does not exist, parse the
-                            // FilePaths.OsTypeFileName file for the correct flavor
-                            if (string.IsNullOrWhiteSpace(options.DebianFlavor))
-                            {
-                                var ostypeFilePath = Path.Join("/opt", "oryx", FilePaths.OsTypeFileName);
-                                if (File.Exists(ostypeFilePath))
-                                {
-                                    if (this.DebugMode)
-                                    {
-                                        console.WriteLine(
-                                            $"Warning: DEBIAN_FLAVOR environment variable not found. " +
-                                            $"Falling back to debian flavor in the {ostypeFilePath} file.");
-                                    }
-
-                                    // these file contents are in the format <OS_type>|<Os_version>, e.g. DEBIAN|BULLSEYE
-                                    // we want the Os_version part only, as all lowercase
-                                    var fullOsTypeFileContents = File.ReadAllText(ostypeFilePath);
-                                    options.DebianFlavor = fullOsTypeFileContents.Split("|").TakeLast(1).SingleOrDefault().Trim().ToLowerInvariant();
-                                }
-                                else
-                                {
-                                    // If we cannot resolve the debian flavor, error out as we will not be able to determine
-                                    // the correct SDKs to pull
-                                    var errorMessage = $"Error: Image debian flavor not found in DEBIAN_FLAVOR environment variable or the " +
-                                        $"{Path.Join("/opt", "oryx", FilePaths.OsTypeFileName)} file. Exiting...";
-                                    console.WriteErrorLine(errorMessage);
-                                    throw new InvalidUsageException(errorMessage);
-                                }
-                            }
+                            options.DebianFlavor = this.ResolveOsType(options, console);
+                            options.ImageType = this.ResolveImageType(options, console);
                         });
                 });
 
             return serviceProviderBuilder.Build();
         }
 
-        private static string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger)
+        private static string GetSourceRepoCommitId(IEnvironment env, ISourceRepo repo, ILogger<BuildCommand> logger, TelemetryClient telemetryClient)
         {
             string commitId = env.GetEnvironmentVariable(ExtVarNames.ScmCommitIdEnvVarName);
 
             if (string.IsNullOrEmpty(commitId))
             {
-                using (var timedEvent = logger.LogTimedEvent("GetGitCommitId"))
+                using (var timedEvent = telemetryClient.LogTimedEvent("GetGitCommitId"))
                 {
                     commitId = repo.GetGitCommitId();
                     timedEvent.AddProperty(nameof(commitId), commitId);

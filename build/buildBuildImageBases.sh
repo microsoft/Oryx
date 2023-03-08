@@ -39,7 +39,7 @@ function buildImages() {
 	for dockerFile in $dockerFiles; do
 		versionDir=$(dirname "${dockerFile}")
 		versionDirName=$(basename $versionDir)
-		imageName="$BASE_IMAGES_REPO:$dirName-build-$versionDirName$UNIQUE_TAG"
+		imageName="$BASE_IMAGES_PUBLIC_REPO:$dirName-build-$versionDirName$UNIQUE_TAG"
 		docker build -f $dockerFile -t "$imageName" $REPO_DIR
 		echo "$imageName" >> $ARTIFACTS_FILE
 	done

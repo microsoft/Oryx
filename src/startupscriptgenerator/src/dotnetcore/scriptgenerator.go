@@ -22,6 +22,7 @@ type DotnetCoreStartupScriptGenerator struct {
 	UserStartupCommand string
 	DefaultAppFilePath string
 	BindPort           string
+	BindPort2          string
 	Manifest           common.BuildManifest
 	Configuration      Configuration
 }
@@ -36,36 +37,69 @@ func (gen *DotnetCoreStartupScriptGenerator) shouldApplicationInsightsBeConfigur
 	dotNetRuntimeVersion := ""
 	fmt.Printf("\nAgent extension %s", gen.Configuration.AppInsightsAgentExtensionVersion)
 	fmt.Printf("\nBefore if loop >> DotNet Runtime %s", gen.Manifest.DotNetCoreRuntimeVersion)
-	
+
 	if gen.Manifest.DotNetCoreRuntimeVersion != "" {
 		dotNetRuntimeVersion = gen.Manifest.DotNetCoreRuntimeVersion
 	} else {
 		dotNetRuntimeVersion = os.Getenv("DOTNET_VERSION")
 	}
-	
+
 	fmt.Printf("\nDotNet Runtime %s", dotNetRuntimeVersion)
-	
+
 	if dotNetRuntimeVersion != "" {
 		dotNetAppInsightsSupportedVersionConstraint, err := semver.NewConstraint(">= 6.0.0-0")
 		if err != nil {
-    		fmt.Printf("\nError in creating semver constraint %s", err)
+			fmt.Printf("\nError in creating semver constraint %s", err)
 		}
 
 		dotNetCurrentVersion, err := semver.NewVersion(dotNetRuntimeVersion)
 		if err != nil {
-    		fmt.Printf("\nError in parsing current version to semver version %s", err)
+			fmt.Printf("\nError in parsing current version to semver version %s", err)
 		}
 		// Check if the version meets the constraints. The a variable will be true.
 		constraintCheckResult := dotNetAppInsightsSupportedVersionConstraint.Check(dotNetCurrentVersion)
-				
-	    if constraintCheckResult &&
-	       appInsightsAgentExtensionVersionEnv != "" &&
-	       appInsightsAgentExtensionVersionEnv == "~3" {
-			   fmt.Printf("\nBefore returning true")
-			   return true
+
+		if constraintCheckResult &&
+			appInsightsAgentExtensionVersionEnv != "" &&
+			appInsightsAgentExtensionVersionEnv == "~3" {
+			fmt.Printf("\nBefore returning true")
+			return true
 		}
 	}
-		
+
+	return false
+}
+
+// Checks if the .NET runtime version meets the version contraint
+func (gen *DotnetCoreStartupScriptGenerator) isDotnetRuntimeVersionMeetConstraint(versionConstraint string) bool {
+	dotNetRuntimeVersion := ""
+
+	if gen.Manifest.DotNetCoreRuntimeVersion != "" {
+		dotNetRuntimeVersion = gen.Manifest.DotNetCoreRuntimeVersion
+	} else {
+		dotNetRuntimeVersion = os.Getenv("DOTNET_VERSION")
+	}
+
+	fmt.Printf("\nDotNet Runtime %s", dotNetRuntimeVersion)
+
+	if dotNetRuntimeVersion != "" {
+		dotNetRuntimeVersionConstraint, err := semver.NewConstraint(">= " + versionConstraint)
+		if err != nil {
+			fmt.Printf("\nError in creating semver constraint %s", err)
+			return false
+		}
+
+		dotNetCurrentVersion, err := semver.NewVersion(dotNetRuntimeVersion)
+		if err != nil {
+			fmt.Printf("\nError in parsing current version to semver version %s", err)
+			return false
+		}
+		// Check if the version meets the constraints. The a variable will be true.
+		constraintCheckResult := dotNetRuntimeVersionConstraint.Check(dotNetCurrentVersion)
+
+		return constraintCheckResult
+	}
+
 	return false
 }
 
@@ -79,7 +113,19 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 
 	// Expose the port so that a custom command can use it if needed
 	common.SetEnvironmentVariableInScript(scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
+	if gen.BindPort2 != "" {
+		scriptBuilder.WriteString("export PORT2=" + gen.BindPort2 + "\n\n")
+	}
 	scriptBuilder.WriteString("export ASPNETCORE_URLS=http://*:$PORT\n\n")
+
+	logger.LogInformation("Setting up Kestrel Endpoints with BindPort and BindPort2 Env variables")
+
+	scriptBuilder.WriteString("if [ ! -z \"$PORT2\" ]; then" + "\n")
+	scriptBuilder.WriteString("		export Kestrel__Endpoints__Http2__Url=http://*:$PORT2\n")
+	scriptBuilder.WriteString("		export Kestrel__Endpoints__Http2__Protocols=Http2\n")
+	scriptBuilder.WriteString("		export Kestrel__Endpoints__Http1__Url=http://*:$PORT\n\n")
+	scriptBuilder.WriteString("fi")
+	scriptBuilder.WriteString("\n\n")
 
 	appPath := gen.AppPath
 	if gen.RunFromPath != "" {
@@ -94,14 +140,14 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 
 	logger.LogInformation("Looking for App-Insights configuration and Enable codeless attach if needed")
 	if gen.shouldApplicationInsightsBeConfigured() {
-		
-		// We are going to set env variables in the startup logic 
+
+		// We are going to set env variables in the startup logic
 		// for appinsights attach experience only if dotnetcore 6 or newer
 		fmt.Printf("Environment Variables for Application Insight's Codeless Configuration exists.. \n")
 		fmt.Printf("Setting up Environment Variables for Application Insights for codeless config.. \n")
 		scriptBuilder.WriteString("echo Setting up Application Insights for codeless config.. \n")
-		scriptBuilder.WriteString("export ASPNETCORE_HOSTINGSTARTUPASSEMBLIES="+consts.UserNetcoreHostingstartupAssemblies+"\n")
-		scriptBuilder.WriteString("export DOTNET_STARTUP_HOOKS="+consts.UserDotnetStartupHooks+"\n")
+		scriptBuilder.WriteString("export ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=" + consts.UserNetcoreHostingstartupAssemblies + "\n")
+		scriptBuilder.WriteString("export DOTNET_STARTUP_HOOKS=" + consts.UserDotnetStartupHooks + "\n")
 		fmt.Printf("Setting up Environment Variables for Application Insights is done.. \n")
 	}
 

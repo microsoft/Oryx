@@ -22,14 +22,20 @@ parameters:
         key: VsoFocal
         value: vso-focal
       - 
+        key: VsoBullseye
+        value: vso-bullseye
+      - 
         key: Full
         value: full
       - 
         key: Cli
-        value: cli
+        value: cli-stretch
       - 
         key: CliBuster
         value: cli-buster
+      - 
+        key: CliBullseye
+        value: cli-bullseye
       - 
         key: Buildpack
         value: buildpack

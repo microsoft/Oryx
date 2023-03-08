@@ -14,6 +14,7 @@ RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
 FROM oryxdevmcr.azurecr.io/private/oryx/oryx-run-base-${DEBIAN_FLAVOR}
 ARG DEBIAN_FLAVOR
+ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 ARG SDK_STORAGE_ENV_NAME
 ARG SDK_STORAGE_BASE_URL_VALUE
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
@@ -23,8 +24,8 @@ ENV ENABLE_DYNAMIC_INSTALL="true"
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ARG AI_CONNECTION_STRING
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN rm -rf /tmp/oryx
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen

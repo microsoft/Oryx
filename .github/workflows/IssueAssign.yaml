@@ -1,0 +1,20 @@
+name: "Auto Assign Issue"
+
+on:
+  issues:
+    types: [opened, reopened]
+
+env:
+  ISSUE_NUM: ${{ github.event.issue.number }}
+  TOKEN: ${{ github.token }}
+  CUSTOM_ONCALL_ROTATION: ${{ vars.CUSTOM_ONCALL_ROTATION }}
+
+jobs:
+  IssueAssign:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Assign issues
+        run: |
+          chmod +x ./scripts/oncallAutoAssignIssue.sh
+          ./scripts/oncallAutoAssignIssue.sh --token ${{ env.TOKEN }} --issue ${{ env.ISSUE_NUM }} ${{ vars.ONCALL_LIST }}

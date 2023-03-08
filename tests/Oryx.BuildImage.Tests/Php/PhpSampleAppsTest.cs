@@ -96,16 +96,23 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "cli")]
-        [InlineData(PhpVersions.Php74Version, "cli")]
-        [InlineData(PhpVersions.Php73Version, "cli")]
+        [Theory, Trait("category", "cli-stretch")]
+        [InlineData(PhpVersions.Php74Version, ImageTestHelperConstants.CliRepository)]
+        [InlineData(PhpVersions.Php73Version, ImageTestHelperConstants.CliRepository)]
         public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_Cli(string phpVersion, string imageTag) {
             GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(phpVersion, imageTag);
         }
 
         [Theory, Trait("category", "cli-buster")]
-        [InlineData(PhpVersions.Php80Version, "cli-buster")]
+        [InlineData(PhpVersions.Php80Version, ImageTestHelperConstants.CliBusterTag)]
         public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_CliBuster(string phpVersion, string imageTag) {
+            GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(phpVersion, imageTag);
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(PhpVersions.Php80Version, ImageTestHelperConstants.CliBullseyeTag)]
+        public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_CliBullseye(string phpVersion, string imageTag)
+        {
             GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(phpVersion, imageTag);
         }
 
@@ -203,7 +210,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage("lts-versions-buster"),
+                ImageId = _imageHelper.GetBuildImage(ImageTestHelperConstants.LtsVersionsBuster),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

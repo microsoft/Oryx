@@ -36,6 +36,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
         public bool ConfigureYarnCache { get; set; }
 
+        public string YarnTimeOutConfig { get; set; }
+
         public bool PruneDevDependencies { get; set; }
 
         public string AppInsightsInjectCommand { get; set; }
@@ -63,6 +65,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string CustomBuildCommand { get; set; }
 
         public string NpmVersionSpec { get; set; }
+
+        public string YarnVersionSpec { get; set; }
 
         /// <summary>
         /// Gets or sets a list of commands for the build.

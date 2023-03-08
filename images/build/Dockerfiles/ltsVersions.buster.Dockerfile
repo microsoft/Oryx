@@ -3,8 +3,7 @@ FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-buster AS ma
 # Install basic build tools
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
-RUN LANG="C.UTF-8" \
-    && apt-get update \
+RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         git \
@@ -33,6 +32,19 @@ RUN LANG="C.UTF-8" \
         libproj-dev \
         gdal-bin \
         libgdal-dev \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+        python3-dev \
+        libffi-dev \
+        gdb \
+        lcov \
+        pkg-config \
+        libgdbm-dev \
+        liblzma-dev \
+        libreadline6-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
@@ -47,7 +59,7 @@ COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tm
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
  
 FROM main AS final
-ARG AI_KEY
+ARG AI_CONNECTION_STRING
 ARG SDK_STORAGE_BASE_URL_VALUE
 
 COPY --from=intermediate /opt /opt
@@ -62,6 +74,8 @@ COPY --from=intermediate /opt /opt
 ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts"
 
 ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8" \
     ORIGINAL_PATH="$PATH" \
     PATH="$ORYX_PATHS:$PATH" \
     NUGET_XMLDOC_MODE="skip" \
@@ -69,7 +83,7 @@ ENV LANG="C.UTF-8" \
     NUGET_PACKAGES="/var/nuget" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
     ENABLE_DYNAMIC_INSTALL="true" \
-    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
+    ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING} \
     PYTHONIOENCODING="UTF-8" \
     DEBIAN_FLAVOR="buster"
 

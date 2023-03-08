@@ -43,6 +43,8 @@ ENABLE\_NODE\_MONOREPO\_BUILD| Apply node monorepo build if repo indicates it   
 COMPRESS\_DESTINATION\_DIR   | Indicates if the entire output directory needs to be compressed.   | ""      | `false` | `true`, `false`
 PRUNE\_DEV\_DEPENDENCIES     | Only the prod dependencies are copied to the output for Node apps. | ""      | `false` | `true`, `false`
 NPM\_REGISTRY\_URL           | Specify the npm registry url.                                | ""      | "http://foobar.com/"
+YARN\_TIMEOUT\_CONFIG        | Specify the yarn timeout config with a delay in milliseconds.                                | ""      | "600000"
+
 
 Setting name for Python apps | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------
@@ -52,6 +54,9 @@ DISABLE\_PYTHON\_BUILD       | Do not apply Python build even if repo indicates 
 VIRTUALENV\_NAME             | Specify Python virtual environment name                        | ""      | "antenv2.7"
 DISABLE\_COLLECTSTATIC       | Disable running `collectstatic` when building Django apps.     | `false` | `true`, `false`
 CUSTOM\_REQUIREMENTSTXT\_PATH| Specify where a requirements.txt is locating. If not set, default is at root of the repo.| ""    | "subdir/requirements.txt"
+PYTHON\_ENABLE\_GUNICORN\_MULTIWORKERS| Enable Gunicorn multi worker multi thread config.     | `false` | `true`, `false`
+PYTHON\_GUNICORN\_CUSTOM\_WORKER\_NUM| Only works when `PYTHON\_ENABLE\_GUNICORN\_MULTIWORKERS` is set to `true`. Specify Gunicorn multi worker number. If not set, default is (2 * CPU core num) + 1| `(2 * CPU core num) + 1`, `1`    | "2"
+PYTHON\_GUNICORN\_CUSTOM\_THREAD\_NUM| Only works when `PYTHON\_ENABLE\_GUNICORN\_MULTIWORKERS` is set to `true`. Specify Gunicorn multi thread number. If not set, default is single thread. | ""    | "4"
 
 Setting name for Php apps    | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------

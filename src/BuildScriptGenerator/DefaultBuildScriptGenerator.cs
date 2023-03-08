@@ -9,9 +9,11 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using JetBrains.Annotations;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Common.Extensions;
@@ -31,6 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly IEnumerable<IChecker> checkers;
         private readonly ILogger<DefaultBuildScriptGenerator> logger;
         private readonly IStandardOutputWriter writer;
+        private readonly TelemetryClient telemetryClient;
 
         public DefaultBuildScriptGenerator(
             DefaultPlatformsInformationProvider platformsInformationProvider,
@@ -39,7 +42,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             ICompatiblePlatformDetector compatiblePlatformDetector,
             IEnumerable<IChecker> checkers,
             ILogger<DefaultBuildScriptGenerator> logger,
-            IStandardOutputWriter writer)
+            IStandardOutputWriter writer,
+            TelemetryClient telemetryClient)
         {
             this.platformsInformationProvider = platformsInformationProvider;
             this.environmentSetupScriptProvider = environmentSetupScriptProvider;
@@ -49,6 +53,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.checkers = checkers;
             this.writer = writer;
             this.logger.LogDebug("Available checkers: {checkerCount}", this.checkers?.Count() ?? 0);
+            this.telemetryClient = telemetryClient;
         }
 
         public void GenerateBashScript(
@@ -94,7 +99,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
             }
 
-            using (var timedEvent = this.logger.LogTimedEvent("GetBuildSnippets"))
+            using (var timedEvent = this.telemetryClient.LogTimedEvent("GetBuildSnippets"))
             {
                 buildScriptSnippets = this.GetBuildSnippets(
                     context,
@@ -175,7 +180,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 tools.Keys.Count,
                 string.Join(',', tools.Keys));
 
-            using (var timedEvent = this.logger.LogTimedEvent("RunCheckers"))
+            using (var timedEvent = this.telemetryClient.LogTimedEvent("RunCheckers"))
             {
                 var repoMessages = checkers.SelectMany(checker => checker.CheckSourceRepo(ctx.SourceRepo));
                 checkerMessageSink.AddRange(repoMessages);
@@ -418,7 +423,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.BaseBashScript,
                 buildScriptProps,
-                this.logger);
+                this.logger,
+                this.telemetryClient);
             return script;
         }
     }

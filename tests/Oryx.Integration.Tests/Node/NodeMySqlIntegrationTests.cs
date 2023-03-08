@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -10,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-14-3")]
+    [Trait("category", "node-14-skipped")]
     [Trait("db", "mysql")]
     public class NodeMySqlIntegrationTests : DatabaseTestsBase, IClassFixture<Fixtures.MySqlDbContainerFixture>
     {
@@ -19,10 +20,21 @@ namespace Microsoft.Oryx.Integration.Tests
         {
         }
 
-        [Theory(Skip = "bug: 1505700 may be intermittent")]
-        [InlineData("latest")]
-        [InlineData("github-actions")]
-        public async Task NodeApp_MySqlDBAsync(string imageTag)
+        [Fact(Skip = "Bug #1505700 may be intermittent")]        
+        [Trait("build-image", "debian-stretch")]
+        public async Task Node14App_MySqlDB_WithLatestStretchBuildImageAsync()
+        {
+            await NodeApp_MySqlDBAsync(ImageTestHelperConstants.LatestStretchTag);
+        }
+
+        [Fact(Skip = "Bug #1505700 may be intermittent")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task Node14App_MySqlDB_WithGitHubActionsBusterBuildImageAsync()
+        {
+            await NodeApp_MySqlDBAsync(ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        private async Task NodeApp_MySqlDBAsync(string imageTag)
         {
             await RunTestAsync(
                 "nodejs",

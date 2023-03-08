@@ -68,9 +68,9 @@ The PHP toolset will run when the following conditions are met:
 
 The following process is applied for each build:
 
-1. Run custom script if specified by `PRE_BUILD_SCRIPT_PATH`.
+1. Run custom command or script if specified by `PRE_BUILD_COMMAND` or `PRE_BUILD_SCRIPT_PATH`.
 1. Run `php composer.phar install --ignore-platform-reqs --no-interaction` if composer file found.
-1. Run custom script if specified by `POST_BUILD_SCRIPT_PATH`.
+1. Run custom command or script if specified by `POST_BUILD_COMMAND` or `POST_BUILD_SCRIPT_PATH`.
 
 ## Package manager
 
@@ -87,8 +87,7 @@ The following process is applied to determine how to start an app:
 
 # Version support
 
-The PHP project defines this [release schedule][]. Oryx supports all actively supported
-releases (7.2, 7.3, 7.4), in addition to 5.6 & 7.0.
+The PHP project defines this [release schedule][]. Oryx supports all [actively supported releases](https://www.php.net/supported-versions.php).
 
 We will update the `patch` version of a release at least once every 3 months,
 replacing the previous `patch` version for that release.

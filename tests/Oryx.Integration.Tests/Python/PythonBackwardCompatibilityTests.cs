@@ -12,7 +12,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     public class PythonBackwardCompatibilityTests : PythonEndToEndTestsBase
     {
         public PythonBackwardCompatibilityTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -21,6 +20,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanRunPythonApp_UsingEarlierBuiltPackagesDirectoryAsync()
         {
             // This is AppService's scenario where previously built apps can still run
@@ -77,6 +78,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanRunPythonApp_WithoutBuildManifestFileAsync()
         {
             // This is AppService's scenario where previously built apps can still run

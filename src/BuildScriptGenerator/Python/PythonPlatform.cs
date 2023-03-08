@@ -7,9 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
@@ -81,6 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly ILogger<PythonPlatform> logger;
         private readonly IPythonPlatformDetector detector;
         private readonly PythonPlatformInstaller platformInstaller;
+        private readonly TelemetryClient telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PythonPlatform"/> class.
@@ -97,7 +100,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             IPythonVersionProvider versionProvider,
             ILogger<PythonPlatform> logger,
             IPythonPlatformDetector detector,
-            PythonPlatformInstaller platformInstaller)
+            PythonPlatformInstaller platformInstaller,
+            TelemetryClient telemetryClient)
         {
             this.commonOptions = commonOptions.Value;
             this.pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
@@ -105,6 +109,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.logger = logger;
             this.detector = detector;
             this.platformInstaller = platformInstaller;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <inheritdoc/>
@@ -243,7 +248,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     = compressedVirtualEnvFileName;
             }
 
-            this.TryLogDependencies(pythonVersion, context.SourceRepo);
+            var customRequirementsTxtPath = this.pythonScriptGeneratorOptions.CustomRequirementsTxtPath;
+            if (!string.IsNullOrEmpty(customRequirementsTxtPath) &&
+                !context.SourceRepo.FileExists(customRequirementsTxtPath))
+            {
+                throw new InvalidUsageException($"Path '{customRequirementsTxtPath}' provided to CUSTOM_REQUIREMENTSTXT_PATH environment variable " +
+                                                $"does not exist in the source repository. Please ensure that the path provided is relative to the " +
+                                                $"root of the source repository and exists in the current context.");
+            }
+
+            var requirementsTxtPath = customRequirementsTxtPath == null ? PythonConstants.RequirementsFileName : customRequirementsTxtPath;
+            if (context.SourceRepo.FileExists(requirementsTxtPath))
+            {
+                this.TryLogDependencies(requirementsTxtPath, pythonVersion, context.SourceRepo);
+            }
 
             var scriptProps = new PythonBashBuildSnippetProperties(
                 virtualEnvironmentName: virtualEnvName,
@@ -254,14 +272,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 compressVirtualEnvCommand: compressVirtualEnvCommand,
                 compressedVirtualEnvFileName: compressedVirtualEnvFileName,
                 runPythonPackageCommand: isPythonPackageCommandEnabled,
-                pythonBuildCommandsFileName: pythonBuildCommandsFile,
                 pythonVersion: pythonVersion,
-                pythonPackageWheelProperty: pythonPackageWheelType);
+                pythonBuildCommandsFileName: pythonBuildCommandsFile,
+                pythonPackageWheelProperty: pythonPackageWheelType,
+                customRequirementsTxtPath: customRequirementsTxtPath);
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,
                 scriptProps,
-                this.logger);
+                this.logger,
+                this.telemetryClient);
 
             return new BuildScriptSnippet()
             {
@@ -539,7 +559,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 string pythonVersion;
                 string templateName;
-                var version = new SemVer.Version(detectorResult.PlatformVersion);
+                var version = new SemanticVersioning.Version(detectorResult.PlatformVersion);
                 if (version.Major.Equals(2))
                 {
                     templateName = CondaConstants.DefaultPython2CondaEnvironmentYmlFileTemplateName;
@@ -565,7 +585,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonJupyterNotebookSnippet,
                 scriptProperties,
-                this.logger);
+                this.logger,
+                this.telemetryClient);
 
             return new BuildScriptSnippet
             {
@@ -598,20 +619,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             return (virtualEnvModule, virtualEnvParams);
         }
 
-        private void TryLogDependencies(string pythonVersion, ISourceRepo repo)
+        private void TryLogDependencies(string requirementsTxtPath, string pythonVersion, ISourceRepo repo)
         {
-            var customRequirementsTxtPath = this.pythonScriptGeneratorOptions.CustomRequirementsTxtPath;
-            var requirementsTxtPath = customRequirementsTxtPath == null ? PythonConstants.RequirementsFileName : customRequirementsTxtPath;
-            if (!repo.FileExists(requirementsTxtPath))
-            {
-                return;
-            }
-
             try
             {
                 var deps = repo.ReadAllLines(requirementsTxtPath)
                     .Where(line => !line.TrimStart().StartsWith("#"));
-                this.logger.LogDependencies(PythonConstants.PlatformName, pythonVersion, deps);
+                this.telemetryClient.LogDependencies(PythonConstants.PlatformName, pythonVersion, deps);
             }
             catch (Exception exc)
             {

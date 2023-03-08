@@ -63,9 +63,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             var imageTestHelper = new ImageTestHelper();
             PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
-                imageTestHelper.GetVsoBuildImage("vso-focal"));
+                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
             OryxBuildImage_Contains_VersionAndCommit_Information(
-                imageTestHelper.GetVsoBuildImage("vso-focal"));
+                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
         }
 
         [SkippableFact, Trait("category", "jamstack")]
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "vso-focal")]
-        [InlineData("vso-focal")]
+        [InlineData(ImageTestHelperConstants.VsoFocal)]
         public void OryxVsoBuildImage_Contains_PHP_Xdebug(string imageVersion)
         {
             var imageTestHelper = new ImageTestHelper();
@@ -148,10 +148,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "vso-focal")]
-        [InlineData("bundler", "vso-focal")]
-        [InlineData("rake", "vso-focal")]
-        [InlineData("ruby-debug-ide", "vso-focal")]
-        [InlineData("debase", "vso-focal")]
+        [InlineData("bundler", ImageTestHelperConstants.VsoFocal)]
+        [InlineData("rake", ImageTestHelperConstants.VsoFocal)]
+        [InlineData("ruby-debug-ide", ImageTestHelperConstants.VsoFocal)]
+        [InlineData("debase", ImageTestHelperConstants.VsoFocal)]
         public void OryxVsoBuildImage_Contains_Required_Ruby_Gems(string gemName, string imageVersion)
         {
             var imageTestHelper = new ImageTestHelper();
@@ -240,7 +240,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
             // Arrange
-            var expectedOutput = "v" + NodeConstants.NodeLtsVersion;
+            var expectedOutput = "v" + (buildImageName.Contains("stretch") 
+                ? FinalStretchVersions.FinalStretchNode14Version 
+                : NodeConstants.NodeLtsVersion);
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
@@ -309,8 +311,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NodeVersions.Node8Version, "v" + NodeVersions.Node8Version)]
         [InlineData(NodeVersions.Node10Version, "v" + NodeVersions.Node10Version)]
         [InlineData(NodeVersions.Node12Version, "v" + NodeVersions.Node12Version)]
-        [InlineData(NodeVersions.Node14Version, "v" + NodeVersions.Node14Version)]
-        [InlineData("lts", "v" + NodeConstants.NodeLtsVersion)]
+        [InlineData(FinalStretchVersions.FinalStretchNode14Version, "v" + FinalStretchVersions.FinalStretchNode14Version)]
+        [InlineData("lts", "v" + FinalStretchVersions.FinalStretchNode14Version)]
         public void NodeAlias_UsesVersion_SetOnBenv(string specifiedVersion, string expectedOutput)
         {
             // Arrange
@@ -581,7 +583,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             // Arrange
             var phpVersion = PhpVersions.Php73Version;
-            if (buildImageName.Contains("oryxdevmcr.azurecr.io/public/oryx/build:vso-focal"))
+            if (buildImageName.Contains("oryxdevmcr.azurecr.io/public/oryx/build:vso-ubuntu-focal"))
             {
                 phpVersion = PhpVersions.Php81Version;
             }

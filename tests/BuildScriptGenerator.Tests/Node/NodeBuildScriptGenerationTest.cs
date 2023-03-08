@@ -72,6 +72,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
           ""engines"" : { ""npm"" : ""5.4.2"" },
           ""dependencies"": { ""foo"" : ""1.0.0 - 2.9999.9999"", ""bar"" : "">=1.0.2 <2.1.2"" }
         }";
+
+        private const string PackageJsonWithYarnVersion = @"{
+          ""name"": ""mynodeapp"",
+          ""version"": ""1.0.0"",
+          ""description"": ""test app"",
+          ""main"": ""server.js"",
+          ""scripts"": {
+            ""test"": ""echo \""Error: no test specified\"" && exit 1"",
+            ""start"": ""node server.js""
+          },
+          ""author"": ""Dev"",
+          ""license"": ""ISC"",
+          ""engines"" : { ""yarn"" : ""1.20.0"" },
+          ""dependencies"": { ""foo"" : ""1.0.0 - 2.9999.9999"", ""bar"" : "">=1.0.2 <2.1.2"" }
+        }";
         private const string MalformedPackageJson = @"{
           ""name"": ""mynodeapp"",
           ""version"": ""1.0.0"",
@@ -124,6 +139,55 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 },
                 NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
                 NpmVersionSpec = "5.4.2",
+            };
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Equal(
+                TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
+                snippet.BashBuildScriptSnippet);
+            Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Fact]
+        public void GeneratedScript_HasYarnVersion_SpecifiedInPackageJson()
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions());
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithYarnVersion, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
+
+            var expected = new NodeBashBuildSnippetProperties
+            {
+                PackageInstallCommand = YarnInstallCommand,
+                PackageInstallerVersionCommand = NodeConstants.YarnVersionCommand,
+                NpmRunBuildCommand = null,
+                NpmRunBuildAzureCommand = null,
+                HasProdDependencies = true,
+                ProductionOnlyPackageInstallCommand = string.Format(
+                    NodeConstants.ProductionOnlyPackageInstallCommandTemplate,
+                    YarnInstallCommand),
+                CompressedNodeModulesFileName = null,
+                CompressNodeModulesCommand = null,
+                ConfigureYarnCache = false,
+                NodeBuildProperties = new Dictionary<string, string>
+                {
+                    {"PlatformWithVersion", "Node.js 10.10.10" },
+                },
+                NodeBuildCommandsFile = FilePaths.BuildCommandsFileName,
+                YarnVersionSpec = "1.20.0",
             };
 
             // Act
@@ -376,6 +440,34 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 TemplateHelper.Render(TemplateHelper.TemplateResource.NodeBuildSnippet, expected),
                 snippet.BashBuildScriptSnippet);
             Assert.True(scriptGenerator.IsCleanRepo(repo));
+        }
+
+        [Fact]
+        public void GeneratedScript_RunsYarnTimeoutConfigCommand_WhenYarnTimeoutConfigExist()
+        {
+            // Arrange
+            var scriptGenerator = GetNodePlatform(
+                defaultNodeVersion: NodeVersions.Node12Version,
+                new BuildScriptGeneratorOptions { PlatformVersion = "8.2.1" },
+                new NodeScriptGeneratorOptions { YarnTimeOutConfig = "60000" });
+            var repo = new MemorySourceRepo();
+            repo.AddFile(PackageJsonWithNpmVersion, NodeConstants.PackageJsonFileName);
+            var context = CreateScriptGeneratorContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10.10",
+            };
+
+            // Act
+            var snippet = scriptGenerator.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(snippet);
+            Assert.Contains($"Found yarn network timeout config.",
+                snippet.BashBuildScriptSnippet);
+            Assert.Contains($"Setting it up with command: yarn config set network-timeout 60000 -g",
+                snippet.BashBuildScriptSnippet);
         }
 
         [Fact]
@@ -888,7 +980,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
                 new TestEnvironment(),
-                new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance));
+                new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance), TelemetryClientHelper.GetTelemetryClient());
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(ISourceRepo sourceRepo)

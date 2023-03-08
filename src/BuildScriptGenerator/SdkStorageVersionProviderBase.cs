@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Xml.Linq;
+using System.Threading.Tasks;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -50,11 +50,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
-
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platformName);
-            var blobList = httpClient.GetStringAsync(url).Result;
-            var xdoc = XDocument.Parse(blobList);
+            var oryxSdkStorageAccountAccessToken = this.commonOptions.OryxSdkStorageAccountAccessToken;
+            var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient, oryxSdkStorageAccountAccessToken);
             var supportedVersions = new List<string>();
 
             var isStretch = string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase);
@@ -62,7 +60,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var sdkVersionMetadataName = isStretch
                 ? SdkStorageConstants.LegacySdkVersionMetadataName
                 : SdkStorageConstants.SdkVersionMetadataName;
-
             foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
             {
                 var childElements = metadataElement.Elements();
@@ -101,9 +98,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger.LogDebug("Getting the default version from url {defaultVersionUrl}.", defaultVersionUrl);
 
             // get default version
-            var defaultVersionContent = httpClient
-                .GetStringAsync(defaultVersionUrl)
-                .Result;
+            string defaultVersionContent;
+            try
+            {
+                defaultVersionContent = httpClient
+                    .GetStringAsync($"{defaultVersionUrl}{this.commonOptions.OryxSdkStorageAccountAccessToken}")
+                    .Result;
+            }
+            catch (AggregateException ae)
+            {
+                throw new AggregateException(
+                    $"Http request to retrieve the default version from '{defaultVersionUrl}' failed. " +
+                    $"{Constants.NetworkConfigurationHelpText}{Environment.NewLine}{ae}");
+            }
+
+            if (string.IsNullOrEmpty(defaultVersionContent))
+            {
+                throw new InvalidOperationException(
+                    $"Http request to retrieve the default version from '{defaultVersionUrl}' cannot return an empty result.");
+            }
 
             string defaultVersion = null;
             using (var stringReader = new StringReader(defaultVersionContent))

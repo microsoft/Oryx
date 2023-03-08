@@ -25,7 +25,18 @@ namespace Microsoft.Oryx.Integration.Tests
         // Unique category traits are needed to run each
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
-        [Fact, Trait("category", "php-81")]
+        [Fact, Trait("category", "php-8.2")]
+        [Trait("build-image", "debian-stretch")]
+        public async Task PipelineTestInvocationsPhp82Async()
+        {
+            string phpVersion82 = "8.2";
+            await Task.WhenAll(
+                ExifExampleAsync(phpVersion82),
+                PhpFpmExifExampleAsync(phpVersion82));
+        }
+
+        [Fact, Trait("category", "php-8.1")]
+        [Trait("build-image", "debian-stretch")]
         public async Task PipelineTestInvocationsPhp81Async()
         {   
             string phpVersion81 = "8.1";
@@ -34,7 +45,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 PhpFpmExifExampleAsync(phpVersion81));
         }
 
-        [Fact, Trait("category", "php-80")]
+        [Fact, Trait("category", "php-8.0")]
+        [Trait("build-image", "debian-stretch")]
         public async Task PipelineTestInvocationsPhp80Async()
         {   
             string phpVersion80 = "8.0";
@@ -43,7 +55,8 @@ namespace Microsoft.Oryx.Integration.Tests
                 PhpFpmExifExampleAsync(phpVersion80));
         }
 
-        [Fact, Trait("category", "php-74")]
+        [Fact, Trait("category", "php-7.4")]
+        [Trait("build-image", "debian-stretch")]
         public async Task PipelineTestInvocationsPhp74Async()
         {
             string phpVersion74 = "7.4";
@@ -52,11 +65,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 PhpFpmExifExampleAsync(phpVersion74));
         }
 
-        [Theory]
-        [InlineData("8.1")]
-        [InlineData("8.0")]
-        [InlineData("7.4")]
-        public async Task ExifExampleAsync(string phpVersion)
+        private async Task ExifExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "exif-example";
@@ -89,11 +98,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Theory]
-        [InlineData("8.1")]
-        [InlineData("8.0")]
-        [InlineData("7.4")]
-        public async Task PhpFpmExifExampleAsync(string phpVersion)
+        private async Task PhpFpmExifExampleAsync(string phpVersion)
         {
             // Arrange
             var appName = "exif-example";

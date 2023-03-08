@@ -15,7 +15,7 @@ using Xunit.Abstractions;
 namespace Microsoft.Oryx.Integration.Tests
 {
     [Collection("Php integration")]
-    [Trait("category", "php-74")]
+    [Trait("category", "php-7.4")]
     public class PhpPreRunCommandOrScriptTest : PhpEndToEndTestsBase
     {
         public PhpPreRunCommandOrScriptTest(ITestOutputHelper output, TestTempDirTestFixture fixture)
@@ -24,6 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task TwigExampleCanBuildAndRun_UsingPreRunCommandAsync()
         {
             // Arrange
@@ -70,6 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task TwigExampleCanBuildAndRun_UsingPreRunScriptAsync()
         {
             // Arrange
@@ -120,6 +122,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task TwigExampleCanBuildAndRun_UsingPreRunScriptToInstallExtensionAsync()
         {
             // Arrange
@@ -174,6 +177,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanRunApp_UsingPreRunCommand_FromBuildEnvFileAsync()
         {
             // Arrange

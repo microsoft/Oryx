@@ -49,15 +49,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsAsBaseBuildImage("github-actions-buster-base"),
+                    imageHelper.GetGitHubActionsAsBaseBuildImage(ImageTestHelperConstants.GitHubActionsBusterBase),
                     "buster");
-
 
                 //bullseye
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsAsBaseBuildImage("github-actions-bullseye-base"),
+                    imageHelper.GetGitHubActionsAsBaseBuildImage(ImageTestHelperConstants.GitHubActionsBullseyeBase),
                     "bullseye");
 
                 return data;
@@ -128,7 +127,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsAsBaseWithEnvBuildImage("github-actions-buster-base-withenv"),
+                    imageHelper.GetGitHubActionsAsBaseWithEnvBuildImage(ImageTestHelperConstants.GitHubActionsBusterBaseWithEnv),
                     "buster");
 
 
@@ -136,7 +135,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsAsBaseWithEnvBuildImage("github-actions-bullseye-base-withenv"),
+                    imageHelper.GetGitHubActionsAsBaseWithEnvBuildImage(ImageTestHelperConstants.GitHubActionsBullseyeBaseWithEnv),
                     "bullseye");
 
                 return data;

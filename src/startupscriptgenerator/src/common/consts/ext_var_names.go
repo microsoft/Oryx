@@ -3,7 +3,7 @@
 package consts
 
 const EnvironmentType string = "ORYX_ENV_TYPE"
-const ApplicationInsightsInstrumentationKeyEnvVarName string = "ORYX_AI_INSTRUMENTATION_KEY"
+const ApplicationInsightsConnectionStringEnvVarName string = "ORYX_AI_CONNECTION_STRING"
 const AppServiceAppNameEnvVarName string = "APPSETTING_WEBSITE_SITE_NAME"
 const ScmCommitIdEnvVarName string = "SCM_COMMIT_ID"
 const PhpOrigin string = "PHP_ORIGIN"
@@ -25,3 +25,5 @@ const UserDotnetStartupHooks string = "/DotNetCoreAgent/2.8.42/StartupHook/Micro
 const UserNetcoreHostingstartupAssemblies string = "Microsoft.ApplicationInsights.StartupBootstrapper"
 const PythonEnableGunicornMultiWorkersEnvVarName string = "PYTHON_ENABLE_GUNICORN_MULTIWORKERS"
 const PythonGunicornConfigPathEnvVarName string = "PYTHON_USE_GUNICORN_CONFIG_FROM_PATH"
+const PythonGunicornCustomWorkerNum string = "PYTHON_GUNICORN_CUSTOM_WORKER_NUM"
+const PythonGunicornCustomThreadNum string = "PYTHON_GUNICORN_CUSTOM_THREAD_NUM"

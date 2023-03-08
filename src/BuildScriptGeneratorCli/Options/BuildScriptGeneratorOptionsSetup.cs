@@ -24,6 +24,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             // "config.GetValue" call will get the most closest value provided based on the order of
             // configuration sources added to the ConfigurationBuilder above.
             options.BindPort = this.GetStringValue(SettingsKeys.BindPort);
+            options.BindPort2 = this.GetStringValue(SettingsKeys.BindPort2);
             options.BuildImage = this.GetStringValue(SettingsKeys.BuildImage);
             options.PlatformName = this.GetStringValue(SettingsKeys.PlatformName);
             options.PlatformVersion = this.GetStringValue(SettingsKeys.PlatformVersion);
@@ -50,10 +51,12 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.PostBuildScriptPath = this.GetStringValue(SettingsKeys.PostBuildScriptPath);
             options.PostBuildCommand = this.GetStringValue(SettingsKeys.PostBuildCommand);
             options.OryxSdkStorageBaseUrl = this.GetStringValue(SettingsKeys.OryxSdkStorageBaseUrl);
+            options.OryxSdkStorageAccountAccessToken = this.GetStringValue(SettingsKeys.OryxSdkStorageAccountAccessToken);
             options.AppType = this.GetStringValue(SettingsKeys.AppType);
             options.BuildCommandsFileName = this.GetStringValue(SettingsKeys.BuildCommandsFileName);
             options.CompressDestinationDir = this.GetBooleanValue(SettingsKeys.CompressDestinationDir);
             options.CustomRequirementsTxtPath = this.GetStringValue(SettingsKeys.CustomRequirementsTxtPath);
+            options.CallerId = this.GetStringValue(SettingsKeys.CallerId);
 
             // Dynamic install
             options.EnableDynamicInstall = this.GetBooleanValue(SettingsKeys.EnableDynamicInstall);

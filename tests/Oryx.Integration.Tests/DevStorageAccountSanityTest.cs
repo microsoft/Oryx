@@ -22,7 +22,8 @@ namespace Oryx.Integration.Tests
                 Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName) ?? SdkStorageConstants.DevSdkStorageBaseUrl,
                 output, 
                 testTempDirTestFixture, 
-                repoRootDirTestFixture)
+                repoRootDirTestFixture,
+                string.Empty)
         {
         }
     }

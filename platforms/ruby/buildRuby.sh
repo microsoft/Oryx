@@ -45,6 +45,7 @@ buildRuby() {
 		# Continue adding the version metadata with the name of Version
 		# which is what our legacy CLI will use
 		sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+		cp "$rubyPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.txt"
 	else
 		rubySdkFileName=ruby-$debianFlavor-$version.tar.gz
 		metadataFile="$targetDir/ruby-$debianFlavor-$version-metadata.txt"

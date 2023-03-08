@@ -49,6 +49,22 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
                 }
             }
 
+            // output the yaml list constants to shell with format CONSTANT_NAME=("val1" "val2" "val3")
+            if (this.collection.ListConstants?.Any() ?? false)
+            {
+                // exclude runtime versions constants lists, as they will just overwrite each other in shell
+                foreach (var constant in this.collection.ListConstants.Where(c => !c.Key.Equals("runtime-versions")))
+                {
+                    string name = constant.Key.Replace(ConstantCollection.NameSeparator[0], '_').ToUpper();
+                    var value = constant.Value.Count != 0
+                        ? $"\"{string.Join("\" \"", constant.Value)}\""
+                        : string.Empty;
+
+                    // Ex: PYTHON_VERSIONS=("3.7.7" "3.8.0")
+                    body.Append($"{name}=({value}){NewLine}");
+                }
+            }
+
             return body.ToString();
         }
     }

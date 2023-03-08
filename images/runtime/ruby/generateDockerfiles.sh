@@ -19,6 +19,7 @@ declare -r ORYX_IMAGE_TAG_PLACEHOLDER="%IMAGE_TAG%"
 
 source "$RUBY_VERSIONS_PATH"
 
+# Please make sure that any changes to debian flavors supported here are also reflected in build/constants.yaml
 declare -r RUBY_BUSTER_VERSION_ARRAY=($RUBY27_VERSION $RUBY26_VERSION $RUBY25_VERSION)
 
 ImageDebianFlavor="$1"
@@ -30,7 +31,7 @@ if [ "$ImageDebianFlavor" == "buster" ];then
 	VERSIONS_DIRECTORY=("${RUBY_BUSTER_VERSION_ARRAY[@]}")
 fi
 
-for VERSION_DIRECTORY in "${VERSION_DIRECTORY[@]}"
+for VERSION_DIRECTORY in "${VERSIONS_DIRECTORY[@]}"
 do
 	IFS='.' read -ra SPLIT_VERSION <<< "$VERSION_DIRECTORY"
     MAJOR_MINOR_VERSION="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"

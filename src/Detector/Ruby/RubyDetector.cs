@@ -5,6 +5,7 @@
 
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
@@ -200,7 +201,17 @@ namespace Microsoft.Oryx.Detector.Ruby
                     // Make sure it's in valid format.
                     if (rubyVersionLine.Length == 2)
                     {
-                        return rubyVersionLine[1];
+                        var fullVersion = rubyVersionLine[1];
+
+                        // Parse the ruby version to remove patch versioning from it.
+                        // At times, ruby will add a patch version such as p112 to the end of the semver version,
+                        // which causes Oryx to not find the correct version. This should take a version like
+                        // 2.3.1p112 and convert it to 2.3.1
+                        var parsedVersionMatches = Regex.Match(fullVersion, @"^(.*?)(?:p[0-9]+)*$");
+                        if (parsedVersionMatches.Success)
+                        {
+                            return parsedVersionMatches.Groups[1].Value;
+                        }
                     }
                 }
             }

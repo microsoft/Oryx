@@ -25,13 +25,14 @@ jobs:
     inputs:
       scriptPath: ${{ parameters.scriptPath }}
       args: ${{ parameters.imageDir }} ${{ parameters.imageDebianFlavor }}
+    env:
+      DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN: $(DotnetPrivateStorageAccountAccessToken)
 
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
     displayName: Generate Software Bill of Materials (SBOM)
     inputs:
       BuildDropPath: '$(Build.ArtifactStagingDirectory)'
-      PackageName: 'Visual Studio 2022'
-      PackageVersion: '17.0.2'
+      AdditionalComponentDetectorArgs: '--DirectoryExclusionList **/SampleApps/**'
 
   - task: CopyFiles@2
     displayName: Copy artifacts to staging directory

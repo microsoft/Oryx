@@ -20,9 +20,6 @@ az acr task create --name weeklyBaseImagePurgeTask -r oryxdevmcr --cmd "$PURGE_C
 PURGE_CMD="acr purge  --filter 'public/oryx/pack:.*'  --ago 30d --untagged"
 az acr task create --name weeklyBuildPackImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null
 
-PURGE_CMD="acr purge  --filter 'public/oryx/pack-builder:.*'  --ago 30d --untagged"
-az acr task create --name weeklyPackBuilderImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null
-
 PURGE_CMD="acr purge  --filter 'public/oryx/pack-stack-base:.*'  --ago 30d --untagged"
 az acr task create --name weeklyBuildPackStackBaseImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null
 
@@ -37,3 +34,6 @@ az acr task create --name weeklyPhpImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CM
 
 PURGE_CMD="acr purge  --filter 'public/oryx/python:.*'  --ago 30d --untagged"
 az acr task create --name weeklyPythonImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null
+
+PURGE_CMD="acr purge  --filter 'public/oryx/ruby:.*'  --ago 30d --untagged"
+az acr task create --name weeklyRubyImagePurgeTask -r oryxdevmcr --cmd "$PURGE_CMD" --schedule "0 22 * * WED" --timeout 9000 -c /dev/null

@@ -24,6 +24,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [InlineData("14", NodeVersions.Node14Version)]
         [InlineData("16", NodeVersions.Node16Version)]
+        [InlineData("18", NodeVersions.Node18Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void NodeVersionMatchesImageName(string nodeTag, string nodeVersion)
         {
@@ -99,7 +100,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             });
 
             // Assert
-            RunAsserts(() => Assert.Equal(result.ExitCode, exitCodeSentinel), result.GetDebugInfo());
+            RunAsserts(() => Assert.Equal(exitCodeSentinel, result.ExitCode), result.GetDebugInfo());
         }
 
         [Theory(Skip = "Investigating debugging using pm2")]

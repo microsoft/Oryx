@@ -4,7 +4,7 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -ex
+set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
@@ -33,6 +33,7 @@ getDotNetCoreSdk() {
 			# which is what our legacy CLI will use
 			sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
 			runtimeVersionMetadataName="$LEGACY_DOTNET_RUNTIME_VERSION_METADATA_NAME"
+			cp "$dotNetPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.txt"
 	else
 			downloadedFile=dotnet-$debianFlavor-$sdkVersion.tar.gz
 			metadataFile="$targetDir/dotnet-$debianFlavor-$sdkVersion-metadata.txt"
@@ -47,7 +48,11 @@ getDotNetCoreSdk() {
 		if [ -z "$downloadUrl" ]; then
 			# Use default download url file
 			downloadUrl="https://dotnetcli.blob.core.windows.net/dotnet/Sdk/$sdkVersion/dotnet-sdk-$sdkVersion-linux-x64.tar.gz"
+		elif  [[ "$downloadUrl" == *"dotnet-private"* ]]; then
+			# SAS-token is passed as en env-variable on the Oryx-PlatformBinary-DotNetCore pipeline
+			downloadUrl+=$DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN
 		fi
+		
 
 		tempDir="/tmp/oryx-dotnetInstall"
 		mkdir -p $tempDir

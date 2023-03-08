@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-14-11")]
+    [Trait("category", "node-14-stretch-1")]
     public class NodeWebFrontEndAppTest : NodeEndToEndTestsBase
     {
         public NodeWebFrontEndAppTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -21,6 +21,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("build-image", "debian-stretch")]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
         public async Task CanBuildAndRun_NodeWebFrontEndAppAsync(string nodeVersion)
         {
@@ -65,6 +66,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("webfrontend")]
         [InlineData("webfrontend-yarnlock")]
         public async Task CanBuildAndRun_NodeWebFrontEndApp_WhenPruneDevDependenciesIsTrueAsync(string appName)
@@ -112,6 +114,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_NodeWebFrontEndApp_AfterRebuild_WhenPruneDevDependenciesIsTrueAsync()
         {
             // Arrange

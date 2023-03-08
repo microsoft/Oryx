@@ -140,10 +140,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.Contains("#!" + expectedBashPath, result.StdOut);
-                    Assert.Contains($"{NodeConstants.PlatformName}={NodeConstants.NodeLtsVersion}", result.StdOut);
+                    Assert.Contains($"{NodeConstants.PlatformName}={FinalStretchVersions.FinalStretchNode16Version}", result.StdOut);
                     Assert.True(result.IsSuccess);
                     // Actual output from `node --version` starts with a 'v'
-                    Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
+                    Assert.Contains($"v{FinalStretchVersions.FinalStretchNode16Version}", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -173,7 +173,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     // Actual output from `node --version` starts with a 'v'
-                    Assert.Contains($"v{NodeConstants.NodeLtsVersion}", result.StdOut);
+                    Assert.Contains($"v{FinalStretchVersions.FinalStretchNode14Version}", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -253,7 +253,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var platformVersion = "10.17";
             var runtimeTag = "10";
             var repositoryName = "build";
-            var tagName = "lts-versions";
+            var tagName = ImageTestHelperConstants.LtsVersionsStretch;
             var script = new ShellScriptBuilder()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
                 .AddCommand($"oryx dockerfile {appPath} --platform {platformName} --platform-version {platformVersion}")

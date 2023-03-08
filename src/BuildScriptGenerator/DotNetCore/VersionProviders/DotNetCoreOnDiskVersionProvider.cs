@@ -2,7 +2,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,7 +48,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
                 try
                 {
-                    var version = new SemVer.Version(sdkVersionDir.Name);
+                    var version = new SemanticVersioning.Version(sdkVersionDir.Name);
                 }
                 catch
                 {

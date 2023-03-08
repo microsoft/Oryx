@@ -34,6 +34,7 @@ declare -r BUILD_IMAGES_FULL_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/full
 declare -r BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/azureFunctions.JamStack.Dockerfile"
 declare -r BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubActions.Dockerfile"
 declare -r BUILD_IMAGES_VSO_FOCAL_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/vso.focal.Dockerfile"
+declare -r BUILD_IMAGES_VSO_BULLSEYE_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/vso.bullseye.Dockerfile"
 declare -r BUILD_IMAGES_BUILDSCRIPTGENERATOR_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/buildScriptGenerator.Dockerfile"
 declare -r BUILD_IMAGES_SUPPORT_FILES_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/supportFilesForBuildingBuildImages.Dockerfile"
 declare -r BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_STRETCH_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubRunners.BuildPackDepsStretch.Dockerfile"
@@ -66,6 +67,7 @@ declare -r DEVBOX_RUNTIME_IMAGES_REPO_PREFIX="oryx"
 
 declare -r ACR_DEV_NAME="oryxdevmcr.azurecr.io"
 declare -r ACR_PUBLIC_PREFIX="$ACR_DEV_NAME/public/oryx"
+declare -r ACR_STAGING_PREFIX="$ACR_DEV_NAME/staging/oryx"
 declare -r ACR_BUILD_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/build"
 declare -r ACR_CLI_BUILD_IMAGE_REPO="$ACR_DEV_NAME/public/oryx/cli"
 declare -r ACR_RUNTIME_IMAGES_REPO="$ACR_PUBLIC_PREFIX"
@@ -74,9 +76,11 @@ declare -r ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:azfun
 declare -r ACR_BUILD_FULL_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:full"
 declare -r ACR_BUILD_LTS_VERSIONS_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:lts-versions"
 declare -r ACR_BUILD_GITHUB_ACTIONS_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:github-actions"
-declare -r ACR_BUILD_VSO_FOCAL_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-focal"
+declare -r ACR_BUILD_VSO_FOCAL_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-ubuntu-focal"
+declare -r ACR_BUILD_VSO_BULLSEYE_IMAGE_NAME="$ACR_BUILD_IMAGES_REPO:vso-debian-bullseye"
 
-declare -r BASE_IMAGES_REPO="$ACR_DEV_NAME/public/oryx/base"
+declare -r BASE_IMAGES_PUBLIC_REPO="$ACR_DEV_NAME/public/oryx/base"
+declare -r BASE_IMAGES_STAGING_REPO="$ACR_DEV_NAME/staging/oryx/base"
 
 # Flag to add information to images through labels (example: build number, commit sha)
 declare -r EMBED_BUILDCONTEXT_IN_IMAGES="${EMBEDBUILDCONTEXTINIMAGES:-false}"

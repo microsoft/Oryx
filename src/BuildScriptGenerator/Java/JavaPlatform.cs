@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
@@ -30,6 +31,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
         private readonly IJavaPlatformDetector detector;
         private readonly JavaPlatformInstaller javaPlatformInstaller;
         private readonly MavenInstaller mavenInstaller;
+        private readonly TelemetryClient telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JavaPlatform"/> class.
@@ -50,7 +52,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             ILogger<JavaPlatform> logger,
             IJavaPlatformDetector detector,
             JavaPlatformInstaller javaPlatformInstaller,
-            MavenInstaller mavenInstaller)
+            MavenInstaller mavenInstaller,
+            TelemetryClient telemetryClient)
         {
             this.commonOptions = commonOptions.Value;
             this.javaScriptGeneratorOptions = javaScriptGeneratorOptions.Value;
@@ -60,6 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             this.detector = detector;
             this.javaPlatformInstaller = javaPlatformInstaller;
             this.mavenInstaller = mavenInstaller;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <inheritdoc/>
@@ -138,7 +142,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
                 // Since the --quiet option is too quiet, we are trying to use a new switch below to just mute the
                 // messages related to transfer progress of these downloads.
                 // https://maven.apache.org/docs/3.6.1/release-notes.html#user-visible-changes
-                var currentMavenVersion = new SemVer.Version(javaPlatformDetectorResult.MavenVersion);
+                var currentMavenVersion = new SemanticVersioning.Version(javaPlatformDetectorResult.MavenVersion);
                 if (currentMavenVersion.CompareTo(JavaConstants.MinMavenVersionWithNoTransferProgressSupport) >= 0)
                 {
                     command = $"{command} --no-transfer-progress";
@@ -153,7 +157,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.JavaBuildSnippet,
                 scriptProps,
-                this.logger);
+                this.logger,
+                this.telemetryClient);
 
             return new BuildScriptSnippet
             {

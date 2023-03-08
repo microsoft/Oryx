@@ -4,8 +4,10 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -16,15 +18,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly ILogger logger;
 
+        private readonly TelemetryClient telemetryClient;
+
         private readonly Dictionary<string, TextSpan> beginnings = new Dictionary<string, TextSpan>();
 
         private readonly Dictionary<string, TextSpan> endings = new Dictionary<string, TextSpan>();
 
         private readonly Dictionary<TextSpan, EventStopwatch> events = new Dictionary<TextSpan, EventStopwatch>();
 
-        public TextSpanEventLogger(ILogger logger, TextSpan[] events)
+        public TextSpanEventLogger(ILogger logger, TextSpan[] events, TelemetryClient telemetryClient)
         {
             this.logger = logger;
+            this.telemetryClient = telemetryClient;
 
             foreach (var span in events)
             {
@@ -45,7 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 // Avoid a new measurement for a span already being measured
                 if (!this.events.ContainsKey(span))
                 {
-                    this.events[span] = this.logger.LogTimedEvent(span.Name);
+                    this.events[span] = this.telemetryClient.LogTimedEvent(span.Name);
                 }
             }
             else if (this.endings.ContainsKey(marker))

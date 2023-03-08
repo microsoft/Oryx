@@ -1,5 +1,5 @@
 parameters:
-  ascName: oryxSP
+  ascName: oryx-automation-service-principal
   acrDevName: oryxdevmcr.azurecr.io
   acrProdName: oryxmcr
   acrPmeProdName: oryxprodmcr
@@ -70,6 +70,11 @@ steps:
   inputs:
     SourceFolder: '$(System.ArtifactsDirectory)'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection - OSS Compliance'
+  inputs:
+    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
 - template: _setReleaseTag.yml
 

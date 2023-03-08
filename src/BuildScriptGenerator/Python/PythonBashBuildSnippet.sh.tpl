@@ -69,6 +69,7 @@ fi
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
         output=$( ( python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
+
         set -e
         echo "${output}"
         if [[ $pipInstallExitCode != 0 ]]
@@ -128,6 +129,7 @@ fi
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
         output=$( ( $python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target="{{ PackagesDirectory }}" --upgrade | ts $TS_FMT; exit ${PIPESTATUS[0]} ) 2>&1; exit ${PIPESTATUS[0]} )
         pipInstallExitCode=${PIPESTATUS[0]}
+
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
         set -e
@@ -253,7 +255,7 @@ fi
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             echo "Done in $ELAPSED_TIME sec(s)."
         else
-            output="Missing Django modile in Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
+            output="Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
             recommendation="Add Django to your requirements.txt file."
             LogWarning "${output} | Exit code: 0 | ${recommendation} | ${moreInformation}"
         fi
@@ -264,7 +266,7 @@ fi
 
 ReadImageType=$(cat /opt/oryx/.imagetype)
 
-if [ "$ReadImageType" = "vso-focal" ]
+if [ "$ReadImageType" = "vso-focal" ] || [ "$ReadImageType" = "vso-debian-bullseye" ]
 then
     echo $ReadImageType
     cat "$COMMAND_MANIFEST_FILE"

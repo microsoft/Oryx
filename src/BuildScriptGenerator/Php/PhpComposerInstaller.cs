@@ -38,9 +38,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
         {
             stringBuilder.AppendLine($"echo 'Installing php-composer specific dependencies...'");
+            stringBuilder.AppendLine("if [[ \"${DEBIAN_FLAVOR}\" = \"buster\" || \"${DEBIAN_FLAVOR}\" = \"bullseye\" ]]; then");
 
             // Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
-            stringBuilder.AppendLine("if [ \"${DEBIAN_FLAVOR}\" = \"buster\" ]; then");
             stringBuilder.AppendAptGetInstallPackages(
                 "ca-certificates",
                 "libargon2-0",

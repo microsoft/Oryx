@@ -14,7 +14,7 @@ azCopyDir="/tmp/azcopy-tool"
 function blobContainerExistsInDestination() {
 	local containerName="$1"
 	local exitCode=1
-	curl -I "$destinationSdk/$containerName?restype=container" 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
+	curl -I "$destinationSdkUrl/$containerName?restype=container" 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
 	grep "HTTP/1.1 200 OK" /tmp/curlOut.txt &> /dev/null
 	exitCode=$?
 	rm -f /tmp/curlOut.txt
@@ -29,34 +29,34 @@ function blobContainerExistsInDestination() {
 function copyBlobContainerFromProdToDestination() {
     local platformName="$1"
 
-    if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName; then
+    if [ $overwrite == "True" ] ; then
         echo
-        echo "Overwriting blob container '$platformName' in storage account '$destinationSdk'."
+        echo "Overwriting blob container '$platformName' in storage account '$destinationSdkUrl'."
         # azcopy copy [source] [destination] [flags]
         if [ $dryRun == "False" ] ; then
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
-                "$destinationSdk/$platformName$sasToken" --overwrite true --recursive
+                "$destinationSdkUrl/$platformName$sasToken" --overwrite true --recursive
         else
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
-                "$destinationSdk/$platformName$sasToken" --overwrite true --recursive --dry-run
+                "$destinationSdkUrl/$platformName$sasToken" --overwrite true --recursive --dry-run
         fi
     elif blobContainerExistsInDestination $platformName; then
         echo
-        echo "Blob container '$platformName' already exists in storage account '$destinationSdk'. Skipping copying it..."
+        echo "Blob container '$platformName' already exists in storage account '$destinationSdkUrl'. Skipping copying it..."
     else
         echo
-        echo "Blob container '$platformName' does not exist in storage account '$destinationSdk'. Copying it from $PROD_SDK_STORAGE_BASE_URL..."
+        echo "Blob container '$platformName' does not exist in storage account '$destinationSdkUrl'. Copying it from $PROD_SDK_STORAGE_BASE_URL..."
         # azcopy copy [source] [destination] [flags]
         if [ $dryRun == "False" ] ; then
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
-                "$destinationSdk/$platformName$sasToken" --overwrite false --recursive
+                "$destinationSdkUrl/$platformName$sasToken" --overwrite false --recursive
         else
             "$azCopyDir/azcopy" copy \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" \
-                "$destinationSdk/$platformName$sasToken" --overwrite false --recursive --dry-run
+                "$destinationSdkUrl/$platformName$sasToken" --overwrite false --recursive --dry-run
         fi
     fi
 }
@@ -72,21 +72,35 @@ if [ ! -f "$azCopyDir/azcopy" ]; then
     $azCopyDir/azcopy --version
 fi
 
-destinationSdk="$1"
+destinationSdkUrl="https://$1.blob.core.windows.net"
 sasToken=""
 
-if [ "$1" == $SANDBOX_SDK_STORAGE_BASE_URL ]; then
+# case insensitive matching because both secrets and urls are case insensitive
+shopt -s nocasematch
+if [[ "$destinationSdkUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
-elif [ "$1" == $DEV_SDK_STORAGE_BASE_URL ]; then
+elif [[ "$destinationSdkUrl" == $DEV_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
+elif [[ "$destinationSdkUrl" == $PROD_BACKUP_SDK_STORAGE_BASE_URL ]]; then
+    sasToken=$PROD_BACKUP_STORAGE_SAS_TOKEN
+# check if the personal sas token has been found in the oryx key vault
+elif [[ "$PERSONAL_STORAGE_SAS_TOKEN" != "\$($1-PERSONAL-STORAGE-SAS-TOKEN)" ]]; then 
+    sasToken=$PERSONAL_STORAGE_SAS_TOKEN
 else
-	echo "Error: $1 is an invalid destination storage account url."
+	echo "Error: $destinationSdkUrl is an invalid destination storage account url."
 	exit 1
 fi
+shopt -u nocasematch
 
 dryRun=$2
 if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then
 	echo "Error: Dry run must be True or False. Was: '$dryRun'"
+	exit 1
+fi
+
+overwrite=$3
+if [ $overwrite != "True" ] && [ $overwrite != "False" ]; then
+	echo "Error: Overwrite must be True or False. Was: '$overwrite'"
 	exit 1
 fi
 

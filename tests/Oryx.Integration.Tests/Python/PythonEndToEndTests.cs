@@ -13,7 +13,6 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "python")]
     public class PythonEndToEndTests : PythonEndToEndTestsBase
     {
         public PythonEndToEndTests(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -22,6 +21,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRun_Tweeter3AppAsync()
         {
             // Arrange
@@ -65,7 +66,55 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
+        [Fact]
+        [Trait("category", "python-3.11")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRun_DjangoRegex()
+        {
+            // Arrange
+            var appName = "django-regex-example-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python311Version}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new[] { volume, appOutputDirVolume },
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetRuntimeImage("python", "3.11"),
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello world from Django!", data);
+                });
+        }
+
         [Theory]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
         [InlineData("3.7")]
         public async Task BuildWithVirtualEnv_RemovesOryxPackagesDir_FromOlderBuildAsync(string pythonVersion)
         {
@@ -119,11 +168,23 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        
-        [Theory (Skip = "Bug 1410367")]
-        [InlineData("3.7")]
-        [InlineData("3.8")]
-        public async Task BuildWithVirtualEnv_From_File_Requirement_TxtAsync(string pythonVersion)
+        [Fact(Skip = "Bug #1410367")]
+        [Trait("category", "python-3.7")]
+        [Trait("build-image", "debian-stretch")]
+        public async Task BuildWithVirtualEnv_From_File_Requirement_TxtAsync_WithPython37()
+        {
+            await BuildWithVirtualEnv_From_File_Requirement_TxtAsync("3.7");
+        }
+
+        [Fact(Skip = "Bug #1410367")]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "debian-stretch")]
+        public async Task BuildWithVirtualEnv_From_File_Requirement_TxtAsync_WithPython38()
+        {
+            await BuildWithVirtualEnv_From_File_Requirement_TxtAsync("3.8");
+        }
+
+        private async Task BuildWithVirtualEnv_From_File_Requirement_TxtAsync(string pythonVersion)
         {
              // This is to test if we can build and run an app when both the files requirement.txt 
              // and setup.py are provided, we tend to prioritize the root level requirement.txt
@@ -162,7 +223,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact(Skip = "Bug 1410367") ]
+        [Fact(Skip = "Bug #1410367") ]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunPythonApp_UsingOutputDirectory_NestedUnderSourceDirectoryAsync()
         {
             // Arrange
@@ -205,7 +268,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        [Fact (Skip = "Bug 1410367")]
+        [Fact (Skip = "Bug #1410367")]
+        [Trait("category", "python-3.8")]
+        [Trait("build-image", "debian-stretch")]
         public async Task CanBuildAndRunPythonApp_UsingIntermediateDir_AndNestedOutputDirectoryAsync()
         {
             // Arrange

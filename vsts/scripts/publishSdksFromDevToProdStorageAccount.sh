@@ -4,12 +4,18 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -ex
+set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
 
 azCopyDir="/tmp/azcopy-tool"
+
+dryRun=$1
+if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then
+	echo "Error: Dry run must be True or False. Was: '$dryRun'"
+	exit 1
+fi
 
 function blobExistsInProd() {
 	local containerName="$1"
@@ -30,22 +36,35 @@ function blobExistsInProd() {
 function copyBlob() {
     local platformName="$1"
     local blobName="$2"
+    local isDefaultVersionFile="$3"
 
-    if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName; then
+    if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName || isDefaultVersionFile $blobName; then
         echo
         echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
-        "$azCopyDir/azcopy" copy \
-            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true
+        if [ $dryRun == "False" ]; then
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true
+        else
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true --dry-run
+        fi
     elif blobExistsInProd $platformName $blobName; then
         echo
         echo "Blob '$blobName' already exists in Prod storage container '$platformName'. Skipping copying it..."
     else
         echo
         echo "Blob '$blobName' does not exist in Prod storage container '$platformName'. Copying it..."
-        "$azCopyDir/azcopy" copy \
-            "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
-            "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
+        if [ $dryRun == "False" ]; then
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
+        else
+            "$azCopyDir/azcopy" copy \
+                "$DEV_SDK_STORAGE_BASE_URL/$platformName/$blobName$DEV_STORAGE_SAS_TOKEN" \
+                "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --dry-run
+        fi
     fi
 }
 
@@ -72,11 +91,13 @@ function copyPlatformBlobsToProdForDebianFlavor() {
 
     if [ "$debianFlavor" == "stretch" ]; then
         defaultFile="defaultVersion.txt"
+        copyBlob "$platformName" "$defaultFile"
         binaryPrefix="$platformName"
     else
-        defaultFile="defaultVersion.$debianFlavor.txt"
         binaryPrefix="$platformName-$debianFlavor"
     fi
+    defaultFile="defaultVersion.$debianFlavor.txt"
+    copyBlob "$platformName" "$defaultFile"
 
     # Here '3' is a file descriptor which is specifically used to read the versions file.
     # This is used since 'azcopy' command seems to also be using the standard file descriptor for stdin '0'
@@ -93,7 +114,6 @@ function copyPlatformBlobsToProdForDebianFlavor() {
         copyBlob "$platformName" "$binaryPrefix-$version.tar.gz"
 	done 3< "$versionsFile"
 
-    copyBlob "$platformName" "$defaultFile"
 }
 
 if [ ! -f "$azCopyDir/azcopy" ]; then

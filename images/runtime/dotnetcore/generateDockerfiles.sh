@@ -9,6 +9,9 @@ set -e
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && cd .. && pwd )
 
 source $REPO_DIR/build/__dotNetCoreRunTimeVersions.sh
+source $REPO_DIR/build/__stagingRuntimeConstants.sh
+source $REPO_DIR/build/__functions.sh
+source $REPO_DIR/build/__variables.sh
 
 echo "image Debian type: '$1'"
 ImageDebianFlavor="$1"
@@ -16,9 +19,12 @@ ImageDebianFlavor="$1"
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r DOCKERFILE_TEMPLATE="$DIR/template.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER="%RUNTIME_BASE_IMAGE_TAG%"
+declare -r BASE_IMAGE_REPO_PLACEHOLDER="%BASE_IMAGE_REPO%"
 declare -r DOTNET_VERSION_PLACEHOLDER="%DOTNET_VERSION%"
-declare -r NETCORE_BUSTER_VERSION_ARRAY=($NET_CORE_APP_30 $NET_CORE_APP_50 $NET_CORE_APP_60 $NET_CORE_APP_70)
-declare -r NETCORE_BULLSEYE_VERSION_ARRAY=($NET_CORE_APP_31)
+
+# Please make sure that any changes to debian flavors supported here are also reflected in build/constants.yaml
+declare -r NETCORE_BUSTER_VERSION_ARRAY=($NET_CORE_APP_30 $NET_CORE_APP_31 $NET_CORE_APP_50 $NET_CORE_APP_60 $NET_CORE_APP_70)
+declare -r NETCORE_BULLSEYE_VERSION_ARRAY=()
 
 cd $DIR
 
@@ -28,7 +34,7 @@ if [ "$ImageDebianFlavor" == "buster" ];then
 	VERSIONS_DIRECTORY=("${NETCORE_BUSTER_VERSION_ARRAY[@]}")
 elif [ "$ImageDebianFlavor" == "bullseye" ];then
 	VERSIONS_DIRECTORY=("${NETCORE_BULLSEYE_VERSION_ARRAY[@]}")
-fi 
+fi
 
 for VERSION_DIRECTORY in "${VERSIONS_DIRECTORY[@]}"
 do
@@ -44,4 +50,10 @@ do
 	RUNTIME_BASE_IMAGE_TAG="dotnetcore-$VERSION_DIRECTORY-$DOT_NET_CORE_RUNTIME_BASE_TAG"
 	sed -i "s|$RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER|$RUNTIME_BASE_IMAGE_TAG|g" "$TARGET_DOCKERFILE"
 	sed -i "s|$DOTNET_VERSION_PLACEHOLDER|$VERSION_DIRECTORY|g" "$TARGET_DOCKERFILE"
+
+	if shouldStageRuntimeVersion "dotnetcore" $VERSION_DIRECTORY ; then
+		sed -i "s|$BASE_IMAGE_REPO_PLACEHOLDER|$BASE_IMAGES_STAGING_REPO|g" "$TARGET_DOCKERFILE"
+	else
+		sed -i "s|$BASE_IMAGE_REPO_PLACEHOLDER|mcr.microsoft.com/oryx/base|g" "$TARGET_DOCKERFILE"
+	fi
 done

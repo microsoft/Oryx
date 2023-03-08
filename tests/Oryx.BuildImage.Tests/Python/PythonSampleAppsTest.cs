@@ -31,33 +31,33 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationLatest()
         {
             GeneratesScript_AndBuilds(Settings.BuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage("latest");
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("latest");
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.LatestStretchTag);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LatestStretchTag);
         }
 
         [Fact, Trait("category", "ltsversions")]
         public void PipelineTestInvocationLtsVersions()
         {
             GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage("lts-versions");
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("lts-versions");
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.LtsVersionsStretch);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LtsVersionsStretch);
         }
 
         [Fact, Trait("category", "vso-focal")]
         public void PipelineTestInvocationVsoFocal()
         {
-            JamSpell_CanBe_Installed_In_The_BuildImage("vso-focal");
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.VsoFocal);
         }
 
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions");
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt("github-actions-buster");
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsStretch);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        [Theory, Trait("category", "cli")]
-        [InlineData("cli")]
+        [Theory, Trait("category", "cli-stretch")]
+        [InlineData(ImageTestHelperConstants.CliRepository)]
         public void PipelineTestInvocationCli(string imageTag)
         {
             GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
@@ -66,8 +66,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli-buster")]
-        [InlineData("cli-buster")]
+        [InlineData(ImageTestHelperConstants.CliBusterTag)]
         public void PipelineTestInvocationCliBuster(string imageTag)
+        {
+            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
+            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
+        public void PipelineTestInvocationCliBullseye(string imageTag)
         {
             GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
             JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
@@ -107,6 +116,111 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                         $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Fact]
+        [Trait("category", "latest")]
+        public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt_WithLatestBuildImage()
+        {
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(Settings.BuildImageName);
+        }
+
+        [Fact]
+        [Trait("category", "ltsversions")]
+        public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt_WithLtsVersionsBuildImage()
+        {
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(Settings.LtsVersionsBuildImageName);
+        }
+
+        private void GeneratesScript_AndBuilds_WithCustomRequirementsTxt(string buildImageName)
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var oryxTestFolderName = "oryx-test-folder";
+            var fullCustomRequirementsTxtPath = $"{appDir}/{oryxTestFolderName}/{PythonConstants.RequirementsFileName}";
+            var subdirCustomRequirementsTxtPath = $"{oryxTestFolderName}/{PythonConstants.RequirementsFileName}";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddCommand($"mkdir -p {appDir}/{oryxTestFolderName}")
+                .AddCommand($"cp {appDir}/{PythonConstants.RequirementsFileName} {fullCustomRequirementsTxtPath}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("CUSTOM_REQUIREMENTSTXT_PATH", subdirCustomRequirementsTxtPath) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        result.StdOut);
+                    Assert.Contains($"REQUIREMENTS_TXT_FILE=\"{subdirCustomRequirementsTxtPath}\"", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+
+        [Fact]
+        [Trait("category", "latest")]
+        public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithLatestBuildImage()
+        {
+            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(Settings.BuildImageName);
+        }
+
+        [Fact]
+        [Trait("category", "ltsversions")]
+        public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithLtsVersionsBuildImage()
+        {
+            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(Settings.LtsVersionsBuildImageName);
+        }
+
+        private void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(string buildImageName)
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var oryxTestFolderName = "oryx-test-folder";
+            var subdirCustomRequirementsTxtPath = $"{oryxTestFolderName}/{PythonConstants.RequirementsFileName}";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = buildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("CUSTOM_REQUIREMENTSTXT_PATH", subdirCustomRequirementsTxtPath) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.False(result.IsSuccess);
+                    Assert.Contains(
+                        $"Path '{subdirCustomRequirementsTxtPath}' provided to CUSTOM_REQUIREMENTSTXT_PATH environment variable does not exist in the source repository.",
+                        result.StdErr);
                 },
                 result.GetDebugInfo());
         }
@@ -191,10 +305,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("github-actions")]
-        [InlineData("github-actions-buster")]
-        [InlineData("lts-versions")]
-        [InlineData("latest")]
+        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
+        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public void DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(string imageTag)
         {
             // Arrange
@@ -464,6 +578,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddScriptCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} " +
                 $"--platform-version {langVersion} > {generatedScript}")
@@ -487,7 +602,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.False(result.IsSuccess);
-                    Assert.Contains("Could not find a version that satisfies the requirement", result.StdOut);
+                    Assert.Contains("Missing parentheses in call to 'print'", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -813,7 +928,42 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage("vso-focal"),
+                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal),
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory, Trait("category", "vso-bullseye")]
+        [InlineData("flask-app")]
+        [InlineData("django-realworld-example-app")]
+        public void BuildPythonApps_AndHasLzmaModule(string appName)
+        {
+            // Arrange
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app1-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python310Version}")
+                .AddCommand($"python -V")
+                .AddCommand($"python -c \"import lzma\"")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetVsoBuildImage("vso-debian-bullseye"),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -1362,7 +1512,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    var semVer = new SemVer.Version(version);
+                    var semVer = new SemanticVersioning.Version(version);
                     var virtualEnvSuffix = $"{semVer.Major}.{semVer.Minor}";
                     Assert.Matches($"Pre-build script: /opt/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
                     Assert.Matches($"Pre-build script: /opt/python/{version}/bin/pip", result.StdOut);
@@ -1462,9 +1612,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData("lts-versions")]
-        [InlineData("vso-focal")]
-        [InlineData("latest")]
+        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
+        [InlineData(ImageTestHelperConstants.VsoFocal)]
+        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName)
         {
             // Arrange
@@ -1491,7 +1641,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         private string GetDefaultVirtualEnvName(string version)
         {
-            var ver = new SemVer.Version(version);
+            var ver = new SemanticVersioning.Version(version);
             return $"pythonenv{ver.Major}.{ver.Minor}";
         }
     }

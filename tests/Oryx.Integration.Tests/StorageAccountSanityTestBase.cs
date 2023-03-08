@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Integration.Tests;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -22,8 +23,11 @@ namespace Oryx.Integration.Tests
     public abstract class StorageAccountSanityTestBase
         : PlatformEndToEndTestsBase, IClassFixture<RepoRootDirTestFixture>
     {
+        private const string _fakeStorageUrl = "https://oryx-cdn-fake.microsoft.io";
+
         private readonly string _storageUrl;
         private readonly string _repoRootDir;
+        private readonly string _sdkStorageAccountAccessToken;
 
         private readonly string[] _debianFlavors = 
         {
@@ -34,11 +38,13 @@ namespace Oryx.Integration.Tests
             string storageUrl,
             ITestOutputHelper output,
             TestTempDirTestFixture testTempDirTestFixture,
-            RepoRootDirTestFixture repoRootDirTestFixture)
+            RepoRootDirTestFixture repoRootDirTestFixture,
+            string token)
             : base(output, testTempDirTestFixture)
         {
             _storageUrl = storageUrl;
             _repoRootDir = repoRootDirTestFixture.RepoRootDirPath;
+            _sdkStorageAccountAccessToken = token;
         }
 
         [Fact]
@@ -97,7 +103,7 @@ namespace Oryx.Integration.Tests
             var platformName = "nodejs";
             AssertExpectedDefaultVersion(platformName, platformName);
         }
-        
+
         [Fact]
         public void PhpComposerCoreContainer_HasExpectedListOfBlobs()
         {
@@ -167,6 +173,17 @@ namespace Oryx.Integration.Tests
             AssertExpectedDefaultVersion("maven", "java", "maven");
         }
 
+        [Fact]
+        public void Throws_CorrectHttpErrorMessage()
+        {
+            // Act
+            var error = Assert.Throws<AggregateException>(() => 
+                ListBlobsHelper.GetAllBlobs(_fakeStorageUrl, "dotnet", _httpClient, _sdkStorageAccountAccessToken));
+
+            // Assert
+            Assert.Contains(Microsoft.Oryx.BuildScriptGenerator.Constants.NetworkConfigurationHelpText, error.Message);
+        }
+
         private void AssertExpectedDefaultVersion(string platformName, params string[] expectedPlatformPath)
         {
             foreach (var debianFlavor in _debianFlavors)
@@ -198,9 +215,7 @@ namespace Oryx.Integration.Tests
 
         private XDocument GetMetadata(string platformName)
         {
-            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, _storageUrl, platformName);
-            var blobList = _httpClient.GetStringAsync(url).Result;
-            return XDocument.Parse(blobList);
+            return ListBlobsHelper.GetAllBlobs(_storageUrl, platformName, _httpClient, _sdkStorageAccountAccessToken);
         }
 
         private List<string> GetVersionsFromContainer(string debianFlavor, string platformName)

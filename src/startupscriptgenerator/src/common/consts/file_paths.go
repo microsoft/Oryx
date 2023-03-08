@@ -5,6 +5,7 @@ package consts
 const CompressedOutputFileName string = "oryx_output.tar.gz"
 const BuildManifestFileName string = "oryx-manifest.toml"
 const OsTypeFileName string = ".ostype"
+const ImageTypeFileName string = ".imagetype"
 const BuildCommandsFileName string = "oryx-build-commands.txt"
 const RunScriptGeneratorDir string = "/opt/startupcmdgen"
 const NodeAppInsightsLoaderFileName string = "applicationinsights/out/Bootstrap/Oryx.js"

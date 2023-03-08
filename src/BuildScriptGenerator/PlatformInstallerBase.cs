@@ -46,14 +46,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendAptGetInstallPackages(
                 "make",
                 "unzip",
-                "build-essential",
                 "libpq-dev",
                 "moreutils",
                 "python3-pip",
                 "swig",
-                "tk-dev",
                 "unixodbc-dev",
-                "uuid-dev");
+                "build-essential", // Adding additional python 3 packages to support all optional python modules: https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+                "gdb",
+                "lcov",
+                "pkg-config",
+                "libbz2-dev",
+                "libffi-dev",
+                "libgdbm-dev",
+                "liblzma-dev",
+                "libncurses5-dev",
+                "libreadline6-dev",
+                "libsqlite3-dev",
+                "libssl-dev",
+                "lzma",
+                "lzma-dev",
+                "tk-dev",
+                "uuid-dev",
+                "zlib1g-dev");
 
             // Install Python 3.8
             stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
@@ -74,6 +88,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendLine("ln -s $PYTHON38_VERSION stable");
         }
 
+        public static void InstallGolangToolingAndLanguage(StringBuilder stringBuilder)
+        {
+            stringBuilder.AppendLine("echo 'Installing golang tooling and language...'");
+            stringBuilder.AppendLine("BUILD_DIR=\"/opt/tmp/build\"");
+            stringBuilder.AppendLine("IMAGES_DIR=\"/opt/tmp/images\"");
+            stringBuilder.AppendLine(". ${BUILD_DIR}/__goVersions.sh");
+            stringBuilder.AppendLine("echo \"${GO_VERSION}\"");
+            stringBuilder.AppendLine("downloadedFileName=\"go${GO_VERSION}.linux-amd64.tar.gz\"");
+            stringBuilder.AppendLine("echo \"${downloadedFileName}\"");
+            stringBuilder.AppendLine("${IMAGES_DIR}/retry.sh \"curl -SLsO https://golang.org/dl/$downloadedFileName\"");
+            stringBuilder.AppendLine("mkdir -p /usr/local");
+            stringBuilder.AppendLine("gzip -d $downloadedFileName");
+            stringBuilder.AppendLine("tar -xf \"go${GO_VERSION}.linux-amd64.tar\" -C /usr/local");
+            stringBuilder.AppendLine("rm -rf $downloadedFileName");
+        }
+
         public virtual void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
         {
             stringBuilder.AppendLine("echo 'No platform specific dependencies to install.'");
@@ -85,6 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string directoryToInstall = null)
         {
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
+            var sdkStorageAccountAccessToken = this.CommonOptions.OryxSdkStorageAccountAccessToken;
 
             var versionDirInTemp = directoryToInstall;
             if (string.IsNullOrEmpty(versionDirInTemp))
@@ -96,7 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var snippet = new StringBuilder();
             snippet
                 .AppendLine()
-                .AppendLine($"if grep -q cli \"/opt/oryx/.imagetype\"; then")
+                .AppendLine($"if grep -q -e cli \"/opt/oryx/.imagetype\" -e jamstack \"/opt/oryx/.imagetype\"; then")
                 .AppendCommonSkeletonDepenendenciesInstallation()
                 .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
                 .AppendLine("fi")
@@ -117,7 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("else")
                 .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" " +
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")
@@ -153,33 +184,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
                 .AppendLine($"PATH=/opt/dotnet/{version}/dotnet:$PATH")
                 .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
+                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
                 .AppendLine($"source /opt/tmp/build/createSymlinksForDotnet.sh")
                 .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"nodejs\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
+                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"nodejs\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is nodejs..\"")
-                .AppendLine($"mkdir -p /home/codespace/.nodejs")
-                .AppendLine($"ln -sfn /opt/nodejs/{version} /home/codespace/.nodejs/current")
+                .AppendLine($"mkdir -p /home/codespace/nvm")
+                .AppendLine($"ln -sfn /opt/nodejs/{version} /home/codespace/nvm/current")
                 .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"php\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
+                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"php\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is php..\"")
                 .AppendLine($"mkdir -p /home/codespace/.php")
                 .AppendLine($"ln -sfn /opt/php/{version} /home/codespace/.php/current")
                 .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"python\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
+                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"python\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("   echo \"image detector file exists, platform is python..\"")
                 .AppendLine($"  [ -d \"/opt/python/$VERSION\" ] && echo /opt/python/{version}/lib >> /etc/ld.so.conf.d/python.conf")
                 .AppendLine($"  ldconfig")
                 .AppendLine($"  mkdir -p /home/codespace/.python")
                 .AppendLine($"  ln -sfn /opt/python/{version} /home/codespace/.python/current")
                 .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"java\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
+                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"java\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is java..\"")
-                .AppendLine($"mkdir -p /home/codespace/.java")
-                .AppendLine($"ln -sfn /opt/java/{version} /home/codespace/.java/current")
+                .AppendLine($"mkdir -p /home/codespace/java")
+                .AppendLine($"ln -sfn /opt/java/{version} /home/codespace/java/current")
                 .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"ruby\" ] && grep -q \"vso-focal\" \"$oryxImageDetectorFile\"; then")
+                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"ruby\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
                 .AppendLine("echo \"image detector file exists, platform is ruby..\"")
                 .AppendLine($"mkdir -p /home/codespace/.ruby")
                 .AppendLine($"ln -sfn /opt/ruby/{version} /home/codespace/.ruby/current")

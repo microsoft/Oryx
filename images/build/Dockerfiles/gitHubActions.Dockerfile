@@ -2,9 +2,9 @@ ARG DEBIAN_FLAVOR
 FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-${DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+
 # Install basic build tools
-RUN LANG="C.UTF-8" \
-    && apt-get update \
+RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         git \
@@ -34,6 +34,19 @@ RUN LANG="C.UTF-8" \
         # For .NET Core 1.1
         libuuid1 \
         libunwind8 \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+        python3-dev \
+        libffi-dev \
+        gdb \
+        lcov \
+        pkg-config \
+        libgdbm-dev \
+        liblzma-dev \
+        libreadline6-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
@@ -45,10 +58,8 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
             libcurl4 \
             libssl1.1 \
             libyaml-dev \
-        && rm -rf /var/lib/apt/lists/* \
-        && curl -LO http://security.debian.org/debian-security/pool/updates/main/libx/libxml2/libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb \
-        && dpkg -i libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb \
-        && rm libxml2_2.9.10+dfsg-6.7+deb11u2_amd64.deb ; \
+            libxml2 \
+        && rm -rf /var/lib/apt/lists/* ; \
     elif [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
@@ -99,7 +110,7 @@ RUN set -ex \
 FROM main AS final
 ARG SDK_STORAGE_BASE_URL_VALUE
 ARG IMAGES_DIR="/opt/tmp/images"
-ARG AI_KEY
+ARG AI_CONNECTION_STRING
 
 COPY --from=intermediate /opt /opt
 
@@ -160,12 +171,14 @@ RUN tmpDir="/opt/tmp" \
 ENV ORYX_PATHS="/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
 
 ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8" \
     ORIGINAL_PATH="$PATH" \
     PATH="$ORYX_PATHS:$PATH" \
     NUGET_XMLDOC_MODE="skip" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
     NUGET_PACKAGES="/var/nuget" \
-    ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
+    ORYX_AI_CONNECTION_STRING="${AI_CONNECTION_STRING}" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}"
 

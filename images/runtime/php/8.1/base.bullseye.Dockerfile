@@ -1,11 +1,9 @@
-# DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
-FROM php:8.1-bullseye
+FROM oryxdevmcr.azurecr.io/private/oryx/php-8.1
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.1.9
+ENV PHP_VERSION 8.1.15
 
 RUN a2enmod rewrite expires include deflate remoteip headers
-#Bake in client certificate path into image to avoid downloading it
-ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
+
 ENV APACHE_RUN_USER www-data
 # Edit the default DocumentRoot setting
 ENV APACHE_DOCUMENT_ROOT /home/site/wwwroot
@@ -29,14 +27,16 @@ RUN { \
 } >> /etc/apache2/apache2.conf
 
 # Install common PHP extensions
-RUN apt-get update \
+# TEMPORARY: Holding odbc related packages from upgrading.
+RUN apt-mark hold msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
+    && apt-get update \
     && apt-get upgrade -y \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
     && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.* ]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* ]]; then \
 		apt-get update \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends apache2-dev \
@@ -85,10 +85,7 @@ RUN set -eux; \
     fi
 
 # https://github.com/Imagick/imagick/issues/331
-RUN set -eux; \
-    if [[ $PHP_VERSION != 8.* ]]; then \
-        pecl install imagick && docker-php-ext-enable imagick; \
-    fi
+RUN pecl install imagick && docker-php-ext-enable imagick
 
 # deprecated from 5.*, so should be avoided 
 RUN set -eux; \
@@ -110,7 +107,7 @@ RUN set -eux; \
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 # pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 7.3.0)
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* ]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
@@ -145,3 +142,7 @@ RUN set -x \
     && rm -rf /var/lib/apt/lists/*
 
 RUN rm -rf /tmp/oryx
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"

@@ -1,11 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/component-detection-manifest.json",
-  "Registrations": [
+    "Registrations": [
     {
       "Component": {
         "pip": {
           "Name": "viztracer",
-          "Version": "0.14.3"
+          "Version": "0.15.5"
         },
         "Type": "pip"
       },

@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -262,6 +263,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             Assert.NotNull(buildScriptSnippet);
             Assert.Contains("custom command here", buildScriptSnippet.BashBuildScriptSnippet);
             Assert.DoesNotContain("lerna run build", buildScriptSnippet.BashBuildScriptSnippet);
+        }
+
+        [Fact]
+        public void GeneratedBuildSnippet_WillSetupYarnTimeOutConfig()
+        {
+            // Arrange
+            const string packageJson = @"{
+              ""main"": ""server.js"",
+              ""scripts"": {
+              },
+            }";
+            var commonOptions = new BuildScriptGeneratorOptions();
+            var nodePlatform = CreateNodePlatform(
+                commonOptions,
+                new NodeScriptGeneratorOptions { CustomRunBuildCommand = null, YarnTimeOutConfig = "60000" },
+                new NodePlatformInstaller(
+                    Options.Create(commonOptions),
+                    NullLoggerFactory.Instance));
+            var repo = new MemorySourceRepo();
+            repo.AddFile(packageJson, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "10.10",
+            };
+
+            // Act
+            var buildScriptSnippet = nodePlatform.GenerateBashBuildScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Contains("yarn config set network-timeout 60000 -g", buildScriptSnippet.BashBuildScriptSnippet);
         }
 
         [Fact]
@@ -962,7 +996,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector,
                 environment,
-                platformInstaller);
+                platformInstaller,
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -975,6 +1010,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             var versionProvider = new TestNodeVersionProvider();
             var detector = new TestNodePlatformDetector(detectedVersion: detectedVersion);
+        
             return new TestNodePlatform(
                 Options.Create(commonOptions),
                 Options.Create(nodeScriptGeneratorOptions),
@@ -982,7 +1018,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector,
                 environment,
-                platformInstaller);
+                platformInstaller, 
+                TelemetryClientHelper.GetTelemetryClient());  
         }
 
         private TestNodePlatform CreateNodePlatform(
@@ -996,7 +1033,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 Options.Create(cliOptions),
                 sdkAlreadyInstalled,
                 NullLoggerFactory.Instance);
-
             var versionProvider = new TestNodeVersionProvider();
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
             var detector = new TestNodePlatformDetector();
@@ -1007,7 +1043,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector,
                 environment,
-                installer);
+                installer,
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
@@ -1029,7 +1066,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 ILogger<NodePlatform> logger,
                 INodePlatformDetector detector,
                 IEnvironment environment,
-                NodePlatformInstaller nodePlatformInstaller)
+                NodePlatformInstaller nodePlatformInstaller,
+                TelemetryClient telemetryClient)
                 : base(
                       cliOptions,
                       nodeScriptGeneratorOptions,
@@ -1037,7 +1075,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                       logger,
                       detector,
                       environment,
-                      nodePlatformInstaller)
+                      nodePlatformInstaller,
+                      telemetryClient)
             {
             }
         }

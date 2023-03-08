@@ -37,6 +37,19 @@ RUN LANG="C.UTF-8" \
         libproj-dev \
         gdal-bin \
         libgdal-dev \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+        python3-dev \
+        libffi-dev \
+        gdb \
+        lcov \
+        pkg-config \
+        libgdbm-dev \
+        liblzma-dev \
+        libreadline6-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
@@ -51,7 +64,7 @@ COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tm
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 
 FROM main AS final
-ARG AI_KEY
+ARG AI_CONNECTION_STRING
 ARG SDK_STORAGE_BASE_URL_VALUE
 
 COPY --from=intermediate /opt /opt
@@ -73,7 +86,7 @@ ENV LANG="C.UTF-8" \
     NUGET_PACKAGES="/var/nuget" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
     ENABLE_DYNAMIC_INSTALL="true" \
-    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
+    ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING} \
     PYTHONIOENCODING="UTF-8" \
     DEBIAN_FLAVOR="stretch"
 
@@ -123,7 +136,7 @@ RUN set -ex \
     && . $buildDir/__nodeVersions.sh \
     && $imagesDir/installPlatform.sh nodejs $NODE10_VERSION \
     && $imagesDir/installPlatform.sh nodejs $NODE12_VERSION \
-    && $imagesDir/installPlatform.sh nodejs $NODE14_VERSION \
+    && $imagesDir/installPlatform.sh nodejs $FINAL_STRETCH_NODE14_VERSION \
     && $imagesDir/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
     && ${imagesDir}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
     && ${imagesDir}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
@@ -135,7 +148,7 @@ RUN set -ex \
     && cd /opt/nodejs \
     && ln -s $NODE10_VERSION 10 \
     && ln -s $NODE12_VERSION 12 \
-    && ln -s $NODE14_VERSION 14 \
+    && ln -s $FINAL_STRETCH_NODE14_VERSION 14 \
     && ln -s 14 lts \
     && npm install -g lerna@4.0.0 \
     && cd /opt/yarn \

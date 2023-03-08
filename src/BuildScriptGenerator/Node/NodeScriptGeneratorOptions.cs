@@ -28,5 +28,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public string DefaultVersion { get; set; }
 
         public bool EnableNodeMonorepoBuild { get; set; }
+
+        public string YarnTimeOutConfig { get; set; }
     }
 }
