@@ -57,7 +57,7 @@ tryAssignIssueToCustomOncall() {
 }
 
 # https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
-ONCALLS=""
+PARAMS=""
 while (( "$#" )); do
   case "$1" in
     --token) #Github token flag
@@ -73,21 +73,26 @@ while (( "$#" )); do
     break
     ;;
     *)
-    ONCALLS="$ONCALLS $1"
+    PARAMS="$PARAMS $1"
     shift
     ;;
   esac
 done
-eval set -- "$ONCALLS"
+eval set -- "$PARAMS"
 
 today=$(date +%s)
 
-oncallArrLen=${#ONCALLS[@]}
+# Oncall rotation is defined in repo variable. Using format:
+# {github-username-1},{github-username-2},...
+# Parsing oncall engineer lists into array and seperating them by ','
+IFS=',' read -ra parsedOncalls <<< "$ONCALL_LIST"
+
+oncallArrLen=${#parsedOncalls[@]}
 # anchor Date is Feb 21 2022 0:00
 anchorDate=1677002400
 d=$(((today - anchorDate)/60/60/24/7))
 pos=`echo "$d%$oncallArrLen" | bc`
-currentOncall=`echo ${ONCALLS[$pos]}`
+currentOncall=`echo ${parsedOncalls[$pos]}`
 
 # Check if custom rotation env var is present or not
 if [ -n "$CUSTOM_ONCALL_ROTATION" ]; then

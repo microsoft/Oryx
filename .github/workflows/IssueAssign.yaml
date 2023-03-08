@@ -8,6 +8,7 @@ env:
   ISSUE_NUM: ${{ github.event.issue.number }}
   TOKEN: ${{ github.token }}
   CUSTOM_ONCALL_ROTATION: ${{ vars.CUSTOM_ONCALL_ROTATION }}
+  ONCALL_LIST: ${{ vars.ONCALL_LIST }}
 
 jobs:
   IssueAssign:
@@ -17,4 +18,4 @@ jobs:
       - name: Assign issues
         run: |
           chmod +x ./scripts/oncallAutoAssignIssue.sh
-          ./scripts/oncallAutoAssignIssue.sh --token ${{ env.TOKEN }} --issue ${{ env.ISSUE_NUM }} ${{ vars.ONCALL_LIST }}
+          ./scripts/oncallAutoAssignIssue.sh --token ${{ env.TOKEN }} --issue ${{ env.ISSUE_NUM }}
