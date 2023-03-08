@@ -1,25 +1,18 @@
-// --------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Automation
 {
-    internal static class Constants
+    public class Constants
     {
+        public const string OryxSdkStorageBaseUrl = "https://oryx-cdn.microsoft.io";
+        public const string OryxSdkStorageBaseUrlEnvVar = "ORYX_SDK_STORAGE_BASE_URL";
+        public const string VersionsToBuildTxtFileName = "versionsToBuild.txt";
         public const string ConstantsYaml = "constants.yaml";
-        public const string SdkName = "sdk";
-        public const string VersionsToBuildTxt = "versionsToBuild.txt";
-        public const string ProdSdkCdnStorageBaseUrl = "https://oryx-cdn.microsoft.io";
-
-        public const string DotNetName = "dotnet";
-        public const string DotNetCoreName = "net-core";
-        public const string DotNetAspCoreName = "aspnet-core";
-        public const string DotNetSdkKey = "dot-net-core-sdk-versions";
-        public const string DotNetRuntimeKey = "dot-net-core-run-time-versions";
-        public const string DotNetReleasesMetaDataUrl = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json";
-        public const string DotNetLinuxTarFileRegex = ".*-linux-x64.tar.gz";
-
-        // TODO: add constants for other platforms
+        public static readonly HashSet<string> DebianFlavors = new HashSet<string>()
+        { "bullseye", "buster", "focal-scm", "stretch" };
     }
 }

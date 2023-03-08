@@ -6,9 +6,6 @@ on:
     - cron:  '55 12,23 * * *'  
   workflow_call:
     inputs:
-      releaseDate:
-        required: false
-        type: string
       platformName:
         required: true
         type: string
@@ -17,7 +14,7 @@ jobs:
   SdkRuntimeAutomation:
     strategy:
       matrix:
-        platformName: [dotnet]
+        platformName: [dotnet, python]
     uses: ./.github/workflows/automationTemplate.yaml
     with:
       platformName: ${{ matrix.platformName }}
