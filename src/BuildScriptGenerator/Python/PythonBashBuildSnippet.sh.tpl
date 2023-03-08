@@ -64,6 +64,8 @@ fi
     if [ -e "$REQUIREMENTS_TXT_FILE" ]
     then
         set +e
+        echo "Upgrading pip..."
+        python -m pip install --upgrade pip
         echo "Running pip install..."
         InstallCommand="python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE | ts $TS_FMT"
         printf %s " , $InstallCommand" >> "$COMMAND_MANIFEST_FILE"
