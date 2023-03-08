@@ -1450,7 +1450,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "latest")]
         [InlineData(PythonVersions.Python38Version)]
-        [InlineData(PythonVersions.Python27Version)]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext(string version)
         {
             // Arrange
