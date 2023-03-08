@@ -61,7 +61,7 @@ kombu==5.2.4
 libsass==0.21.0
 lxml==4.9.1
 MarkupPy==1.14
-msal==1.13.0
+msal==1.21.0
 msal-extensions==0.3.0
 msrest==0.6.21
 natural-keys==1.6.0
