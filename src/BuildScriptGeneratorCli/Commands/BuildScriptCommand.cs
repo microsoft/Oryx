@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var propertyOption = new Option<string[]>(OptionArgumentTemplates.Property, OptionArgumentTemplates.PropertyDescription);
             var dynamicInstallRootDirOption = new Option<string>(OptionArgumentTemplates.DynamicInstallRootDir, OptionArgumentTemplates.DynamicInstallRootDirDescription);
             var buildScriptOutputOption = new Option<string>(
-                name: "--output",
+                aliases: OptionArgumentTemplates.Output,
                 description: OptionArgumentTemplates.BuildScriptOutputDescription);
 
             var command = new Command(Name, Description)

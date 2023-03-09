@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static Command Export(IConsole console)
         {
             var sourceDirArgument = new Argument<string>(
-                name: "SourceDir",
+                name: OptionArgumentTemplates.SourceDir,
                 description: OptionArgumentTemplates.DetectSourceDirDescription,
                 getDefaultValue: () => Directory.GetCurrentDirectory());
             var outputFormatOption = new Option<string>(
