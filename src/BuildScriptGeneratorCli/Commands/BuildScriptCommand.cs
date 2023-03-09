@@ -23,6 +23,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class BuildScriptCommand : BuildCommandBase
     {
+        public const string Name = "build-script";
+        public const string Description = "Generate build script to standard output.";
+
         public BuildScriptCommand()
         {
         }
@@ -31,16 +34,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             this.OutputPath = input.OutputPath;
             this.SourceDir = input.SourceDir;
-            this.PlatformName = input.PlatformName;
+            this.PlatformName = input.Platform;
             this.PlatformVersion = input.PlatformVersion;
             this.ShouldPackage = input.ShouldPackage;
             this.OsRequirements = input.OsRequirements;
             this.AppType = input.AppType;
-            this.BuildCommandsFileName = input.BuildCommandsFileName;
+            this.BuildCommandsFileName = input.BuildCommandFile;
             this.CompressDestinationDir = input.CompressDestinationDir;
-            this.Properties = input.Properties;
+            this.Properties = input.Property;
             this.DynamicInstallRootDir = input.DynamicInstallRootDir;
-            this.LogFilePath = input.LogFilePath;
+            this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
 
@@ -48,27 +51,26 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static Command Export(IConsole console)
         {
-            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
-            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
             var sourceDirArgument = new Argument<string>(
-                name: "SourceDir",
-                description: "The source directory.",
+                name: OptionArgumentTemplates.SourceDir,
+                description: OptionArgumentTemplates.SourceDirDescription,
                 getDefaultValue: () => Directory.GetCurrentDirectory());
-            var platformOption = new Option<string>(OptionTemplates.Platform, OptionTemplates.PlatformDescription);
-            var platformVersionOption = new Option<string>(OptionTemplates.PlatformVersion, OptionTemplates.PlatformVersionDescription);
-            var packageOption = new Option<bool>(OptionTemplates.Package, OptionTemplates.PackageDescription);
-            var osReqOption = new Option<string>(OptionTemplates.OsRequirements, OptionTemplates.OsRequirementsDescription);
-            var appTypeOption = new Option<string>(OptionTemplates.AppType, OptionTemplates.AppTypeDescription);
-            var buildCommandFileNameOption = new Option<string>(OptionTemplates.BuildCommandsFileName, OptionTemplates.BuildCommandsFileNameDescription);
-            var compressDestDirOption = new Option<bool>(OptionTemplates.CompressDestinationDir, OptionTemplates.CompressDestinationDirDescription);
-            var propertyOption = new Option<string[]>(OptionTemplates.Property, OptionTemplates.PropertyDescription);
-            var dynamicInstallRootDirOption = new Option<string>(OptionTemplates.DynamicInstallRootDir, OptionTemplates.DynamicInstallRootDirDescription);
+            var platformOption = new Option<string>(OptionArgumentTemplates.Platform, OptionArgumentTemplates.PlatformDescription);
+            var platformVersionOption = new Option<string>(OptionArgumentTemplates.PlatformVersion, OptionArgumentTemplates.PlatformVersionDescription);
+            var packageOption = new Option<bool>(OptionArgumentTemplates.Package, OptionArgumentTemplates.PackageDescription);
+            var osReqOption = new Option<string>(OptionArgumentTemplates.OsRequirements, OptionArgumentTemplates.OsRequirementsDescription);
+            var appTypeOption = new Option<string>(OptionArgumentTemplates.AppType, OptionArgumentTemplates.AppTypeDescription);
+            var buildCommandFileNameOption = new Option<string>(OptionArgumentTemplates.BuildCommandsFileName, OptionArgumentTemplates.BuildCommandsFileNameDescription);
+            var compressDestDirOption = new Option<bool>(OptionArgumentTemplates.CompressDestinationDir, OptionArgumentTemplates.CompressDestinationDirDescription);
+            var propertyOption = new Option<string[]>(OptionArgumentTemplates.Property, OptionArgumentTemplates.PropertyDescription);
+            var dynamicInstallRootDirOption = new Option<string>(OptionArgumentTemplates.DynamicInstallRootDir, OptionArgumentTemplates.DynamicInstallRootDirDescription);
             var buildScriptOutputOption = new Option<string>(
                 name: "--output",
-                description: "The path that the build script will be written to. " +
-                          "If not specified, the result will be written to STDOUT.");
+                description: OptionArgumentTemplates.BuildScriptOutputDescription);
 
-            var command = new Command("build-script", "Generate build script to standard output.")
+            var command = new Command(Name, Description)
             {
                 logOption,
                 debugOption,
@@ -148,14 +150,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             if (!Directory.Exists(options.SourceDir))
             {
-                console.Error.WriteLine($"Could not find the source directory '{options.SourceDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
                 return false;
             }
 
             // Invalid to specify platform version without platform name
             if (string.IsNullOrEmpty(options.PlatformName) && !string.IsNullOrEmpty(options.PlatformVersion))
             {
-                console.Error.WriteLine("Cannot use platform version without platform name also.");
+                console.WriteErrorLine("Cannot use platform version without platform name also.");
                 return false;
             }
 

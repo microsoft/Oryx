@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class CommandBaseProperty
     {
-        public string LogFilePath { get; set; }
+        public string LogPath { get; set; }
 
         public bool DebugMode { get; set; }
     }

@@ -15,22 +15,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class PlatformsCommandBinder : CommandBaseBinder<PlatformsCommandProperty>
     {
-        private Option<bool> jsonOption;
-
         public PlatformsCommandBinder(
-            Option<bool> jsonOption,
+            Option<bool> outputJson,
             Option<string> logPath,
             Option<bool> debugMode)
             : base(logPath, debugMode)
         {
-            this.jsonOption = jsonOption;
+            this.OutputJson = outputJson;
         }
+
+        private Option<bool> OutputJson { get; set; }
 
         protected override PlatformsCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new PlatformsCommandProperty
             {
-                OutputJson = bindingContext.ParseResult.GetValueForOption(this.jsonOption),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                OutputJson = bindingContext.ParseResult.GetValueForOption(this.OutputJson),
+                LogPath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
                 DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }

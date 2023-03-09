@@ -15,9 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class ExecCommandBinder : CommandBaseBinder<ExecCommandProperty>
     {
-        private Option<string> execSourceDir;
-        private Argument<string> command;
-
         public ExecCommandBinder(
             Option<string> execSourceDir,
             Argument<string> command,
@@ -25,17 +22,23 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<bool> debugMode)
             : base(logPath, debugMode)
         {
-            this.execSourceDir = execSourceDir;
-            this.command = command;
+            // SourceDir matches with the name of the property
+            // execSourceDir matches with the name of the option
+            this.SourceDir = execSourceDir;
+            this.Command = command;
         }
+
+        private Option<string> SourceDir { get; set; }
+
+        private Argument<string> Command { get; set; }
 
         protected override ExecCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new ExecCommandProperty
             {
-                SourceDir = bindingContext.ParseResult.GetValueForOption(this.execSourceDir),
-                Command = bindingContext.ParseResult.GetValueForArgument(this.command),
+                SourceDir = bindingContext.ParseResult.GetValueForOption(this.SourceDir),
+                Command = bindingContext.ParseResult.GetValueForArgument(this.Command),
                 DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                LogPath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
             };
     }
 }

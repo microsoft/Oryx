@@ -15,8 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class BuildScriptCommandBinder : BuildCommandBaseBinder<BuildScriptCommandProperty>
     {
-        private Option<string> outputPath;
-
         public BuildScriptCommandBinder(
             Option<string> outputPath,
             Argument<string> sourceDir,
@@ -33,24 +31,26 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<bool> debugMode)
             : base(sourceDir, platform, platformVersion, package, osRequirements, appType, buildCommandFile, compressDestinationDir, property, dynamicInstallRootDir, logPath, debugMode)
         {
-            this.outputPath = outputPath;
+            this.OutputPath = outputPath;
         }
+
+        private Option<string> OutputPath { get; set; }
 
         protected override BuildScriptCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new BuildScriptCommandProperty
             {
-                OutputPath = bindingContext.ParseResult.GetValueForOption(this.outputPath),
+                OutputPath = bindingContext.ParseResult.GetValueForOption(this.OutputPath),
                 SourceDir = bindingContext.ParseResult.GetValueForArgument(this.SourceDir),
-                PlatformName = bindingContext.ParseResult.GetValueForOption(this.Platform),
+                Platform = bindingContext.ParseResult.GetValueForOption(this.Platform),
                 PlatformVersion = bindingContext.ParseResult.GetValueForOption(this.PlatformVersion),
-                ShouldPackage = bindingContext.ParseResult.GetValueForOption(this.Package),
+                ShouldPackage = bindingContext.ParseResult.GetValueForOption(this.ShouldPackage),
                 OsRequirements = bindingContext.ParseResult.GetValueForOption(this.OsRequirements),
                 AppType = bindingContext.ParseResult.GetValueForOption(this.AppType),
-                BuildCommandsFileName = bindingContext.ParseResult.GetValueForOption(this.BuildCommandFile),
+                BuildCommandFile = bindingContext.ParseResult.GetValueForOption(this.BuildCommandFile),
                 CompressDestinationDir = bindingContext.ParseResult.GetValueForOption(this.CompressDestinationDir),
-                Properties = bindingContext.ParseResult.GetValueForOption(this.Property),
+                Property = bindingContext.ParseResult.GetValueForOption(this.Property),
                 DynamicInstallRootDir = bindingContext.ParseResult.GetValueForOption(this.DynamicInstallRootDir),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                LogPath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
                 DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }

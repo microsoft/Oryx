@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 exception = ex;
                 this.logger.LogError(ex, "Invalid usage");
-                this.console.Error.WriteLine(ex.Message);
+                this.console.WriteErrorLine(ex.Message);
                 return false;
             }
         }

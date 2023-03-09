@@ -16,6 +16,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class BuildpackBuildCommand : BuildCommand
     {
+        // Use "new" keyword to avoid hiding the base class's static members
+        public new const string Name = "buildpack-build";
+        public new const string Description = "Build an app in the current working directory (for use in a Buildpack).";
+
         public BuildpackBuildCommand()
         {
         }
@@ -31,16 +35,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.DestinationDir = input.DestinationDir;
             this.ManifestDir = input.ManifestDir;
             this.SourceDir = input.SourceDir;
-            this.PlatformName = input.PlatformName;
+            this.PlatformName = input.Platform;
             this.PlatformVersion = input.PlatformVersion;
             this.ShouldPackage = input.ShouldPackage;
             this.OsRequirements = input.OsRequirements;
             this.AppType = input.AppType;
-            this.BuildCommandsFileName = input.BuildCommandsFileName;
+            this.BuildCommandsFileName = input.BuildCommandFile;
             this.CompressDestinationDir = input.CompressDestinationDir;
-            this.Properties = input.Properties;
+            this.Properties = input.Property;
             this.DynamicInstallRootDir = input.DynamicInstallRootDir;
-            this.LogFilePath = input.LogFilePath;
+            this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
 
@@ -53,40 +57,40 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static new Command Export(IConsole console)
         {
             // Options for BuildpackBuildCommand
-            var layersDirOption = new Option<string>(OptionTemplates.LayersDir, "Layers directory path.");
-            var platformDirOption = new Option<string>(OptionTemplates.PlatformDir, "Platform directory path.");
-            var planPathOption = new Option<string>(OptionTemplates.PlanPath, "Build plan TOML path.");
+            var layersDirOption = new Option<string>(OptionArgumentTemplates.LayersDir, OptionArgumentTemplates.LayersDirDescription);
+            var platformDirOption = new Option<string>(OptionArgumentTemplates.PlatformDir, OptionArgumentTemplates.PlatformDirDescription);
+            var planPathOption = new Option<string>(OptionArgumentTemplates.PlanPath, OptionArgumentTemplates.PlanPathDescription);
 
             // Options from BuildCommand
-            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
-            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
             var sourceDirArgument = new Argument<string>(
-                name: "SourceDir",
-                description: "The source directory.",
+                name: OptionArgumentTemplates.SourceDir,
+                description: OptionArgumentTemplates.SourceDirDescription,
                 getDefaultValue: () => Directory.GetCurrentDirectory());
-            var platformOption = new Option<string>(OptionTemplates.Platform, OptionTemplates.PlatformDescription);
-            var platformVersionOption = new Option<string>(OptionTemplates.PlatformVersion, OptionTemplates.PlatformVersionDescription);
-            var packageOption = new Option<bool>(OptionTemplates.Package, OptionTemplates.PackageDescription);
-            var osReqOption = new Option<string>(OptionTemplates.OsRequirements, OptionTemplates.OsRequirementsDescription);
-            var appTypeOption = new Option<string>(OptionTemplates.AppType, OptionTemplates.AppTypeDescription);
-            var buildCommandFileNameOption = new Option<string>(OptionTemplates.BuildCommandsFileName, OptionTemplates.BuildCommandsFileNameDescription);
-            var compressDestDirOption = new Option<bool>(OptionTemplates.CompressDestinationDir, OptionTemplates.CompressDestinationDirDescription);
-            var propertyOption = new Option<string[]>(OptionTemplates.Property, OptionTemplates.PropertyDescription);
-            var dynamicInstallRootDirOption = new Option<string>(OptionTemplates.DynamicInstallRootDir, OptionTemplates.DynamicInstallRootDirDescription);
+            var platformOption = new Option<string>(OptionArgumentTemplates.Platform, OptionArgumentTemplates.PlatformDescription);
+            var platformVersionOption = new Option<string>(OptionArgumentTemplates.PlatformVersion, OptionArgumentTemplates.PlatformVersionDescription);
+            var packageOption = new Option<bool>(OptionArgumentTemplates.Package, OptionArgumentTemplates.PackageDescription);
+            var osReqOption = new Option<string>(OptionArgumentTemplates.OsRequirements, OptionArgumentTemplates.OsRequirementsDescription);
+            var appTypeOption = new Option<string>(OptionArgumentTemplates.AppType, OptionArgumentTemplates.AppTypeDescription);
+            var buildCommandFileNameOption = new Option<string>(OptionArgumentTemplates.BuildCommandsFileName, OptionArgumentTemplates.BuildCommandsFileNameDescription);
+            var compressDestDirOption = new Option<bool>(OptionArgumentTemplates.CompressDestinationDir, OptionArgumentTemplates.CompressDestinationDirDescription);
+            var propertyOption = new Option<string[]>(OptionArgumentTemplates.Property, OptionArgumentTemplates.PropertyDescription);
+            var dynamicInstallRootDirOption = new Option<string>(OptionArgumentTemplates.DynamicInstallRootDir, OptionArgumentTemplates.DynamicInstallRootDirDescription);
 
             // Hiding Language Option because it is obselete
-            var languageOption = new Option<string>(OptionTemplates.Language, OptionTemplates.LanguageDescription);
+            var languageOption = new Option<string>(OptionArgumentTemplates.Language, OptionArgumentTemplates.LanguageDescription);
             languageOption.IsHidden = true;
 
             // Hiding LanguageVer Option because it is obselete
-            var languageVerOption = new Option<string>(OptionTemplates.LanguageVersion, OptionTemplates.LanguageVersionDescription);
+            var languageVerOption = new Option<string>(OptionArgumentTemplates.LanguageVersion, OptionArgumentTemplates.LanguageVersionDescription);
             languageVerOption.IsHidden = true;
 
-            var intermediateDirOption = new Option<string>(OptionTemplates.IntermediateDir, OptionTemplates.IntermediateDirDescription);
-            var outputOption = new Option<string>(OptionTemplates.Output, OptionTemplates.OutputDescription);
-            var manifestDirOption = new Option<string>(OptionTemplates.ManifestDir, OptionTemplates.ManifestDirDescription);
+            var intermediateDirOption = new Option<string>(OptionArgumentTemplates.IntermediateDir, OptionArgumentTemplates.IntermediateDirDescription);
+            var outputOption = new Option<string>(OptionArgumentTemplates.Output, OptionArgumentTemplates.OutputDescription);
+            var manifestDirOption = new Option<string>(OptionArgumentTemplates.ManifestDir, OptionArgumentTemplates.ManifestDirDescription);
 
-            var command = new Command("buildpack-build", "Build an app in the current working directory (for use in a Buildpack).")
+            var command = new Command(Name, Description)
             {
                 layersDirOption,
                 platformDirOption,
@@ -152,7 +156,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(this.LayersDir))
                 {
                     logger.LogError("Could not find provided layers directory.");
-                    console.Error.WriteLine($"Could not find layers directory '{this.LayersDir}'.");
+                    console.WriteErrorLine($"Could not find layers directory '{this.LayersDir}'.");
                     result = false;
                 }
             }
@@ -163,7 +167,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!File.Exists(this.PlanPath))
                 {
                     logger?.LogError("Could not find build plan file {planPath}", this.PlanPath);
-                    console.Error.WriteLine($"Could not find build plan file '{this.PlanPath}'.");
+                    console.WriteErrorLine($"Could not find build plan file '{this.PlanPath}'.");
                     result = false;
                 }
             }
@@ -174,7 +178,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(this.PlatformDir))
                 {
                     logger?.LogError("Could not find platform directory {platformDir}", this.PlatformDir);
-                    console.Error.WriteLine($"Could not find platform directory '{this.PlatformDir}'.");
+                    console.WriteErrorLine($"Could not find platform directory '{this.PlatformDir}'.");
                     result = false;
                 }
             }

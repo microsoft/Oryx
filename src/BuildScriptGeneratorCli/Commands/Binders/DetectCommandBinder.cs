@@ -15,9 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class DetectCommandBinder : CommandBaseBinder<DetectCommandProperty>
     {
-        private Argument<string> sourceDir;
-        private Option<string> outputFormat;
-
         public DetectCommandBinder(
             Argument<string> sourceDir,
             Option<string> outputFormat,
@@ -25,16 +22,20 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<bool> debugMode)
             : base(logPath, debugMode)
         {
-            this.sourceDir = sourceDir;
-            this.outputFormat = outputFormat;
+            this.SourceDir = sourceDir;
+            this.OutputFormat = outputFormat;
         }
+
+        private Argument<string> SourceDir { get; set; }
+
+        private Option<string> OutputFormat { get; set; }
 
         protected override DetectCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new DetectCommandProperty
             {
-                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.sourceDir),
-                OutputFormat = bindingContext.ParseResult.GetValueForOption(this.outputFormat),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.SourceDir),
+                OutputFormat = bindingContext.ParseResult.GetValueForOption(this.OutputFormat),
+                LogPath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
                 DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }

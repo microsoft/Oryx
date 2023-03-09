@@ -39,9 +39,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class PrepareEnvironmentCommand : CommandBase
     {
-        private const string SkipDetectionTemplate = "--skip-detection";
-        private const string PlatformsAndVersionsTemplate = "--platforms-and-versions";
-        private const string PlatformsAndVersionsFileTemplate = "--platforms-and-versions-file";
+        public const string Name = "prep";
+        public const string Description = "Sets up environment by detecting and installing platforms.";
 
         public PrepareEnvironmentCommand()
         {
@@ -53,7 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.SkipDetection = input.SkipDetection;
             this.PlatformsAndVersions = input.PlatformsAndVersions;
             this.PlatformsAndVersionsFile = input.PlatformsAndVersionsFile;
-            this.LogFilePath = input.LogFilePath;
+            this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
 
@@ -67,22 +66,22 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static Command Export(IConsole console)
         {
-            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
-            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
             var sourceDirOption = new Option<string>(
-                aliases: OptionTemplates.Source,
-                description: "The source directory.");
-            var skipDetectionOption = new Option<bool>(SkipDetectionTemplate, "Skip detection of platforms and install the requested platforms.");
+                aliases: OptionArgumentTemplates.Source,
+                description: OptionArgumentTemplates.SourceDirDescription);
+            var skipDetectionOption = new Option<bool>(
+                name: OptionArgumentTemplates.PrepareEnvironmentSkipDetection,
+                description: OptionArgumentTemplates.PrepareEnvioronmentSkipDetectionDescription);
             var platformsAndVersions = new Option<string>(
-                name: PlatformsAndVersionsTemplate,
-                description: "Comma separated values of platforms and versions to be installed. " +
-                             "Example: dotnet=3.1.200,php=7.4.5,node=2.3");
+                name: OptionArgumentTemplates.PrepareEnvironmentPlatformsAndVersions,
+                description: OptionArgumentTemplates.PrepareEnvironmentPlatformsAndVersionsDescription);
             var platformsAndVersionsFile = new Option<string>(
-                name: PlatformsAndVersionsFileTemplate,
-                description: "A .env file which contains list of platforms and the versions that need to be installed. " +
-                             "Example: \ndotnet=3.1.200\nphp=7.4.5\nnode=2.3");
+                name: OptionArgumentTemplates.PrepareEnvironmentPlatformsAndVersionsFile,
+                description: OptionArgumentTemplates.PrepareEnvironmentPlatformsAndVersionsFileDescription);
 
-            var command = new Command("prep", "Sets up environment by detecting and installing platforms.")
+            var command = new Command(Name, Description)
             {
                 logOption,
                 debugOption,
@@ -99,7 +98,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(prepareEnvironmentCommand.OnExecute(console));
                 },
                 new PrepareEnvironmentCommandBinder(
-                    sourceDirOption: sourceDirOption,
+                    sourceDir: sourceDirOption,
                     skipDetection: skipDetectionOption,
                     platformsAndVersions: platformsAndVersions,
                     platformsAndVersionsFile: platformsAndVersionsFile,
@@ -128,7 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!string.IsNullOrEmpty(suppliedPlatformsAndVersionsFile)
                 && !File.Exists(suppliedPlatformsAndVersionsFile))
             {
-                console.Error.WriteLine($"Supplied file '{suppliedPlatformsAndVersionsFile}' does not exist.");
+                console.WriteErrorLine($"Supplied file '{suppliedPlatformsAndVersionsFile}' does not exist.");
                 return false;
             }
 
@@ -166,7 +165,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (!platformNames.ContainsKey(platformName))
                 {
-                    console.Error.WriteLine(
+                    console.WriteErrorLine(
                         $"Platform name '{platformName}' is not valid. Make sure platform name matches one of the " +
                         $"following names: {string.Join(", ", platformNames.Keys)}");
                     return false;
@@ -201,7 +200,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (this.SkipDetection)
                 {
                     console.WriteLine(
-                        $"Skipping platform detection since '{SkipDetectionTemplate}' switch was used...");
+                        $"Skipping platform detection since '{OptionArgumentTemplates.PrepareEnvironmentSkipDetection}' switch was used...");
 
                     var platforms = serviceProvider.GetRequiredService<IEnumerable<IProgrammingPlatform>>();
                     if (TryValidateSuppliedPlatformsAndVersions(
@@ -216,8 +215,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     }
                     else
                     {
-                        console.Error.WriteLine(
-                            $"Invalid value for switch '{PlatformsAndVersionsTemplate}'.");
+                        console.WriteErrorLine(
+                            $"Invalid value for switch '{OptionArgumentTemplates.PrepareEnvironmentPlatformsAndVersions}'.");
                         return ProcessConstants.ExitFailure;
                     }
                 }
@@ -287,7 +286,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     {
                         if (args.Data != null)
                         {
-                            console.Error.WriteLine(args.Data);
+                            console.WriteErrorLine(args.Data);
                         }
                     },
                     waitTimeForExit: null);
@@ -337,7 +336,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!File.Exists(versionsFilePath))
                 {
                     throw new FileNotFoundException(
-                        $"Could not find the file provided to the '{PlatformsAndVersionsFileTemplate}' switch.",
+                        $"Could not find the file provided to the '{OptionArgumentTemplates.PrepareEnvironmentPlatformsAndVersionsFile}' switch.",
                         versionsFilePath);
                 }
 
@@ -419,7 +418,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             if (!this.SkipDetection && string.IsNullOrEmpty(this.SourceDir))
             {
-                console.Error.WriteLine("Source directory is required.");
+                console.WriteErrorLine("Source directory is required.");
                 return false;
             }
 
@@ -427,7 +426,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 && string.IsNullOrEmpty(this.PlatformsAndVersions)
                 && string.IsNullOrEmpty(this.PlatformsAndVersionsFile))
             {
-                console.Error.WriteLine("Platform names and versions are required.");
+                console.WriteErrorLine("Platform names and versions are required.");
                 return false;
             }
 

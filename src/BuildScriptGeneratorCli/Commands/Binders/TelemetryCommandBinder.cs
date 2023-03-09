@@ -10,10 +10,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class TelemetryCommandBinder : CommandBaseBinder<TelemetryCommandProperty>
     {
-        private Option<string> eventName;
-        private Option<double> processingTime;
-        private Option<string[]> properties;
-
         public TelemetryCommandBinder(
             Option<string> eventName,
             Option<double> processingTime,
@@ -22,18 +18,24 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<bool> debugMode)
             : base(logPath, debugMode)
         {
-            this.eventName = eventName;
-            this.processingTime = processingTime;
-            this.properties = properties;
+            this.EventName = eventName;
+            this.ProcessingTime = processingTime;
+            this.Properties = properties;
         }
+
+        private Option<string> EventName { get; set; }
+
+        private Option<double> ProcessingTime { get; set; }
+
+        private Option<string[]> Properties { get; set; }
 
         protected override TelemetryCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new TelemetryCommandProperty
             {
-                EventName = bindingContext.ParseResult.GetValueForOption(this.eventName),
-                ProcessingTime = bindingContext.ParseResult.GetValueForOption(this.processingTime),
-                Properties = bindingContext.ParseResult.GetValueForOption(this.properties),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                EventName = bindingContext.ParseResult.GetValueForOption(this.EventName),
+                ProcessingTime = bindingContext.ParseResult.GetValueForOption(this.ProcessingTime),
+                Properties = bindingContext.ParseResult.GetValueForOption(this.Properties),
+                LogPath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
                 DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }

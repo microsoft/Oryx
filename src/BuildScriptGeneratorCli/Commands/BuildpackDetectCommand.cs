@@ -20,6 +20,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class BuildpackDetectCommand : CommandBase
     {
+        public const string Name = "buildpack-detect";
+        public const string Description =
+            "Determine whether Oryx can be applied as a buildpack to an app in the current " +
+            "working directory.";
+
         // CodeDetectFail @ https://github.com/buildpack/lifecycle/blob/master/detector.go
         public const int DetectorFailCode = 100;
 
@@ -32,7 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.PlatformDir = input.PlatformDir;
             this.SourceDir = input.SourceDir;
             this.PlanPath = input.PlanPath;
-            this.LogFilePath = input.LogFilePath;
+            this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
 
@@ -45,16 +50,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static Command Export(IConsole console)
         {
             var sourceDirArgument = new Argument<string>(
-                name: "SourceDir",
-                description: "The source directory.",
+                name: OptionArgumentTemplates.SourceDir,
+                description: OptionArgumentTemplates.SourceDirDescription,
                 getDefaultValue: () => Directory.GetCurrentDirectory());
-            var platformDirOption = new Option<string>(OptionTemplates.PlatformDir, "Platform directory path.");
-            var planPathOption = new Option<string>(OptionTemplates.PlanPath, "Build plan TOML path.");
-            var logFilePathOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
-            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var platformDirOption = new Option<string>(OptionArgumentTemplates.PlatformDir, OptionArgumentTemplates.BuildpackDetectPlatformDirDescription);
+            var planPathOption = new Option<string>(OptionArgumentTemplates.PlanPath, OptionArgumentTemplates.BuildpackDetectPlatformDirDescription);
+            var logFilePathOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
 
-            var command = new Command("buildpack-detect", "Determine whether Oryx can be applied as a buildpack to an app in the current " +
-                "working directory.")
+            var command = new Command(Name, Description)
             {
                 sourceDirArgument,
                 platformDirOption,
@@ -89,7 +93,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!Directory.Exists(options.SourceDir))
             {
                 logger.LogError("Could not find the source directory.");
-                console.Error.WriteLine($"Could not find the source directory '{options.SourceDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{options.SourceDir}'.");
                 result = false;
             }
 
@@ -99,7 +103,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!File.Exists(this.PlanPath))
                 {
                     logger?.LogError("Could not find build plan file {planPath}", this.PlanPath);
-                    console.Error.WriteLine($"Could not find build plan file '{this.PlanPath}'.");
+                    console.WriteErrorLine($"Could not find build plan file '{this.PlanPath}'.");
                     result = false;
                 }
             }
@@ -110,7 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (!Directory.Exists(this.PlatformDir))
                 {
                     logger?.LogError("Could not find platform directory {platformDir}", this.PlatformDir);
-                    console.Error.WriteLine($"Could not find platform directory '{this.PlatformDir}'.");
+                    console.WriteErrorLine($"Could not find platform directory '{this.PlatformDir}'.");
                     result = false;
                 }
             }

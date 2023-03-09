@@ -15,7 +15,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
     {
         public string SourceDir { get; set; }
 
-        public string PlatformName { get; set; }
+        public string Platform { get; set; }
 
         public string PlatformVersion { get; set; }
 
@@ -25,11 +25,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 
         public string AppType { get; set; }
 
-        public string BuildCommandsFileName { get; set; }
+        public string BuildCommandFile { get; set; }
 
         public bool CompressDestinationDir { get; set; }
 
-        public string[] Properties { get; set; }
+        public string[] Property { get; set; }
 
         public string DynamicInstallRootDir { get; set; }
     }

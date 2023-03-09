@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     internal class RunScriptCommand : CommandBase
     {
         public const string Name = "run-script";
+        public const string Description = "Generate startup script for an app.";
 
         public RunScriptCommand()
         {
@@ -29,9 +30,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.AppDir = input.AppDir;
             this.PlatformName = input.PlatformName;
             this.PlatformVersion = input.PlatformVersion;
-            this.OutputPath = input.OutputPath;
+            this.OutputPath = input.Output;
             this.RemainingArgs = input.RemainingArgs;
-            this.LogFilePath = input.LogFilePath;
+            this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
 
@@ -48,16 +49,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static Command Export(IConsole console)
         {
             var appDirArgument = new Argument<string>(
-                name: "appDir",
-                description: "The application directory",
+                name: OptionArgumentTemplates.AppDir,
+                description: OptionArgumentTemplates.AppDirDescription,
                 getDefaultValue: () => Directory.GetCurrentDirectory());
-            var platformNameOption = new Option<string>(OptionTemplates.Platform, "The name of the programming platform, e.g. 'nodejs'.");
-            var platformVersionOption = new Option<string>(OptionTemplates.PlatformVersion, "The version of the platform to run the application on, e.g. '10' for node js.");
-            var outputOption = new Option<string>("--output", "[Optional] Path to which the script will be written. If not specified, will default to STDOUT.");
-            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
-            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var platformNameOption = new Option<string>(OptionArgumentTemplates.Platform, OptionArgumentTemplates.RunScriptPlatformDescription);
+            var platformVersionOption = new Option<string>(OptionArgumentTemplates.PlatformVersion, OptionArgumentTemplates.RunScriptPlatformVersionDescription);
+            var outputOption = new Option<string>(OptionArgumentTemplates.Output, OptionArgumentTemplates.RunScriptOutputDescription);
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
 
-            var command = new Command("run-script", "Generate startup script for an app.")
+            var command = new Command(Name, Description)
             {
                 appDirArgument,
                 platformNameOption,
@@ -100,7 +101,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var script = runScriptGenerator.GenerateBashScript(ctx);
             if (string.IsNullOrEmpty(script))
             {
-                console.Error.WriteLine("Couldn't generate startup script.");
+                console.WriteErrorLine("Couldn't generate startup script.");
                 return ProcessConstants.ExitFailure;
             }
 
@@ -125,7 +126,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.AppDir = string.IsNullOrEmpty(this.AppDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(this.AppDir);
             if (!Directory.Exists(this.AppDir))
             {
-                console.Error.WriteLine($"Could not find the source directory '{this.AppDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{this.AppDir}'.");
                 return false;
             }
 

@@ -15,10 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class BuildpackDetectCommandBinder : CommandBaseBinder<BuildpackDetectCommandProperty>
     {
-        private Argument<string> sourceDir;
-        private Option<string> platformDir;
-        private Option<string> planPath;
-
         public BuildpackDetectCommandBinder(
             Argument<string> sourceDir,
             Option<string> platformDir,
@@ -27,18 +23,24 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Option<bool> debugMode)
             : base(logPath, debugMode)
         {
-            this.sourceDir = sourceDir;
-            this.platformDir = platformDir;
-            this.planPath = planPath;
+            this.SourceDir = sourceDir;
+            this.PlatformDir = platformDir;
+            this.PlanPath = planPath;
         }
+
+        private Argument<string> SourceDir { get; set; }
+
+        private Option<string> PlatformDir { get; set; }
+
+        private Option<string> PlanPath { get; set; }
 
         protected override BuildpackDetectCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new BuildpackDetectCommandProperty
             {
-                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.sourceDir),
-                PlatformDir = bindingContext.ParseResult.GetValueForOption(this.platformDir),
-                PlanPath = bindingContext.ParseResult.GetValueForOption(this.planPath),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                SourceDir = bindingContext.ParseResult.GetValueForArgument(this.SourceDir),
+                PlatformDir = bindingContext.ParseResult.GetValueForOption(this.PlatformDir),
+                PlanPath = bindingContext.ParseResult.GetValueForOption(this.PlanPath),
+                LogPath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
                 DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }

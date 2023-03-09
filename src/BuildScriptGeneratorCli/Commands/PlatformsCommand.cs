@@ -24,6 +24,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class PlatformsCommand : CommandBase
     {
+        public const string Name = "platforms";
+        public const string Description = "Show a list of supported platforms along with their versions and build properties.";
+
         public PlatformsCommand()
         {
         }
@@ -31,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public PlatformsCommand(PlatformsCommandProperty input)
         {
             this.OutputJson = input.OutputJson;
-            this.LogFilePath = input.LogFilePath;
+            this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
 
@@ -39,11 +42,11 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static Command Export(IConsole console)
         {
-            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
-            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
-            var jsonOption = new Option<bool>("--json", "Output the supported platform data in JSON format.");
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
+            var jsonOption = new Option<bool>(OptionArgumentTemplates.PlatformsJsonOutput, OptionArgumentTemplates.PlatformsJsonOutputDescription);
 
-            var command = new Command("platforms", "Show a list of supported platforms along with their versions and build properties.");
+            var command = new Command(Name, Description);
             command.AddOption(jsonOption);
             command.AddOption(logOption);
             command.AddOption(debugOption);
@@ -55,7 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     return Task.FromResult(platformsCommand.OnExecute(console));
                 },
                 new PlatformsCommandBinder(
-                    jsonOption: jsonOption,
+                    outputJson: jsonOption,
                     logPath: logOption,
                     debugMode: debugOption));
             return command;

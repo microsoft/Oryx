@@ -21,10 +21,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 
         public string LanguageName
         {
-            get => this.PlatformName;
+            get => this.Platform;
             set
             {
-                this.PlatformName = value;
+                this.Platform = value;
                 this.LanguageWasSet = true;
             }
         }

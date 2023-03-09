@@ -15,15 +15,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 {
     public class BuildpackBuildCommandBinder : BuildCommandBaseBinder<BuildpackBuildCommandProperty>
     {
-        private Option<string> layersDir;
-        private Option<string> platformDir;
-        private Option<string> planPath;
-        private Option<string> languageName;
-        private Option<string> languageVersion;
-        private Option<string> intermediateDir;
-        private Option<string> output;
-        private Option<string> manifestDir;
-
         public BuildpackBuildCommandBinder(
             Option<string> layersDir,
             Option<string> platformDir,
@@ -59,38 +50,54 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
                 logPath,
                 debugMode)
         {
-            this.layersDir = layersDir;
-            this.platformDir = platformDir;
-            this.planPath = planPath;
-            this.languageName = languageName;
-            this.languageVersion = languageVersion;
-            this.intermediateDir = intermediateDir;
-            this.output = output;
-            this.manifestDir = manifestDir;
+            this.LayersDir = layersDir;
+            this.PlatformDir = platformDir;
+            this.PlanPath = planPath;
+            this.LanguageName = languageName;
+            this.LanguageVersion = languageVersion;
+            this.IntermediateDir = intermediateDir;
+            this.Output = output;
+            this.ManifestDir = manifestDir;
         }
+
+        private Option<string> LayersDir { get; set; }
+
+        private Option<string> PlatformDir { get; set; }
+
+        private Option<string> PlanPath { get; set; }
+
+        private Option<string> LanguageName { get; set; }
+
+        private Option<string> LanguageVersion { get; set; }
+
+        private Option<string> IntermediateDir { get; set; }
+
+        private Option<string> Output { get; set; }
+
+        private Option<string> ManifestDir { get; set; }
 
         protected override BuildpackBuildCommandProperty GetBoundValue(BindingContext bindingContext) =>
             new BuildpackBuildCommandProperty
             {
-                LayersDir = bindingContext.ParseResult.GetValueForOption(this.layersDir),
-                PlatformDir = bindingContext.ParseResult.GetValueForOption(this.platformDir),
-                PlanPath = bindingContext.ParseResult.GetValueForOption(this.planPath),
-                LanguageName = bindingContext.ParseResult.GetValueForOption(this.languageName),
-                LanguageVersion = bindingContext.ParseResult.GetValueForOption(this.languageVersion),
-                IntermediateDir = bindingContext.ParseResult.GetValueForOption(this.intermediateDir),
-                DestinationDir = bindingContext.ParseResult.GetValueForOption(this.output),
-                ManifestDir = bindingContext.ParseResult.GetValueForOption(this.manifestDir),
+                LayersDir = bindingContext.ParseResult.GetValueForOption(this.LayersDir),
+                PlatformDir = bindingContext.ParseResult.GetValueForOption(this.PlatformDir),
+                PlanPath = bindingContext.ParseResult.GetValueForOption(this.PlanPath),
+                LanguageName = bindingContext.ParseResult.GetValueForOption(this.LanguageName),
+                LanguageVersion = bindingContext.ParseResult.GetValueForOption(this.LanguageVersion),
+                IntermediateDir = bindingContext.ParseResult.GetValueForOption(this.IntermediateDir),
+                DestinationDir = bindingContext.ParseResult.GetValueForOption(this.Output),
+                ManifestDir = bindingContext.ParseResult.GetValueForOption(this.ManifestDir),
                 SourceDir = bindingContext.ParseResult.GetValueForArgument(this.SourceDir),
-                PlatformName = bindingContext.ParseResult.GetValueForOption(this.Platform),
+                Platform = bindingContext.ParseResult.GetValueForOption(this.Platform),
                 PlatformVersion = bindingContext.ParseResult.GetValueForOption(this.PlatformVersion),
-                ShouldPackage = bindingContext.ParseResult.GetValueForOption(this.Package),
+                ShouldPackage = bindingContext.ParseResult.GetValueForOption(this.ShouldPackage),
                 OsRequirements = bindingContext.ParseResult.GetValueForOption(this.OsRequirements),
                 AppType = bindingContext.ParseResult.GetValueForOption(this.AppType),
-                BuildCommandsFileName = bindingContext.ParseResult.GetValueForOption(this.BuildCommandFile),
+                BuildCommandFile = bindingContext.ParseResult.GetValueForOption(this.BuildCommandFile),
                 CompressDestinationDir = bindingContext.ParseResult.GetValueForOption(this.CompressDestinationDir),
-                Properties = bindingContext.ParseResult.GetValueForOption(this.Property),
+                Property = bindingContext.ParseResult.GetValueForOption(this.Property),
                 DynamicInstallRootDir = bindingContext.ParseResult.GetValueForOption(this.DynamicInstallRootDir),
-                LogFilePath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
+                LogPath = bindingContext.ParseResult.GetValueForOption(this.LogPath),
                 DebugMode = bindingContext.ParseResult.GetValueForOption(this.DebugMode),
             };
     }

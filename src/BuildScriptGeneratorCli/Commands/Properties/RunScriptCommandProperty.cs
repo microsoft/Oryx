@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 
         public string PlatformVersion { get; set; }
 
-        public string OutputPath { get; set; }
+        public string Output { get; set; }
 
         public string[] RemainingArgs { get; }
     }

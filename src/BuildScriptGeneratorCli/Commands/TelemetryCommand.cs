@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     internal class TelemetryCommand : CommandBase
     {
         public const string Name = "telemetry";
+        public const string Description = "[INTERNAL ONLY COMMAND]";
 
         public TelemetryCommand()
         {
@@ -29,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.EventName = input.EventName;
             this.ProcessingTime = input.ProcessingTime;
             this.Properties = input.Properties;
-            this.LogFilePath = input.LogFilePath;
+            this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
 
@@ -41,13 +42,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static Command Export(IConsole console)
         {
-            var eventNameOption = new Option<string>(name: OptionTemplates.EventName);
-            var processingTimeOption = new Option<double>(name: OptionTemplates.ProcessingTime);
-            var propertyOption = new Option<string[]>(aliases: OptionTemplates.Property);
-            var logFile = new Option<string>(name: OptionTemplates.Log);
-            var debugOption = new Option<bool>(name: OptionTemplates.Debug);
+            var eventNameOption = new Option<string>(name: OptionArgumentTemplates.EventName);
+            var processingTimeOption = new Option<double>(name: OptionArgumentTemplates.ProcessingTime);
+            var propertyOption = new Option<string[]>(aliases: OptionArgumentTemplates.Property);
+            var logFile = new Option<string>(name: OptionArgumentTemplates.Log);
+            var debugOption = new Option<bool>(name: OptionArgumentTemplates.Debug);
 
-            var command = new Command("telemetry", "[INTERNAL ONLY COMMAND]")
+            var command = new Command(Name, Description)
             {
                 eventNameOption,
                 processingTimeOption,

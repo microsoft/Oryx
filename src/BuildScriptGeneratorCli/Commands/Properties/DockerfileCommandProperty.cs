@@ -17,16 +17,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 
         public string BuildImage { get; set; }
 
-        public string PlatformName { get; set; }
+        public string Platform { get; set; }
 
         public string PlatformVersion { get; set; }
 
-        public string RuntimePlatformName { get; set; }
+        public string RuntimePlatform { get; set; }
 
         public string RuntimePlatformVersion { get; set; }
 
         public string BindPort { get; set; }
 
-        public string OutputPath { get; set; }
+        public string Output { get; set; }
     }
 }

@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             Argument<string> sourceDir,
             Option<string> platform,
             Option<string> platformVersion,
-            Option<bool> package,
+            Option<bool> shouldPackage,
             Option<string> osRequirements,
             Option<string> appType,
             Option<string> buildCommandFile,
@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             this.SourceDir = sourceDir;
             this.Platform = platform;
             this.PlatformVersion = platformVersion;
-            this.Package = package;
+            this.ShouldPackage = shouldPackage;
             this.OsRequirements = osRequirements;
             this.AppType = appType;
             this.BuildCommandFile = buildCommandFile;
@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
 
         protected Option<string> PlatformVersion { get; set; }
 
-        protected Option<bool> Package { get; set; }
+        protected Option<bool> ShouldPackage { get; set; }
 
         protected Option<string> OsRequirements { get; set; }
 

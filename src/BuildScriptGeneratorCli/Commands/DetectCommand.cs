@@ -25,6 +25,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class DetectCommand : CommandBase
     {
+        public const string Name = "detect";
+        public const string Description = "Detect all platforms and versions in the given app source directory.";
+
         public DetectCommand()
         {
         }
@@ -33,7 +36,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             this.SourceDir = input.SourceDir;
             this.OutputFormat = input.OutputFormat;
-            this.LogFilePath = input.LogFilePath;
+            this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
 
@@ -45,17 +48,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             var sourceDirArgument = new Argument<string>(
                 name: "SourceDir",
-                description: "The source directory. If no value is provided, the current directory is used.",
+                description: OptionArgumentTemplates.DetectSourceDirDescription,
                 getDefaultValue: () => Directory.GetCurrentDirectory());
             var outputFormatOption = new Option<string>(
-                aliases: OptionTemplates.Output,
-                description: "Output the detected platform data in chosen format. " +
-                             "Example: json, table. " +
-                             "If not set, by default output will print out as a table. ");
-            var logFilePathOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
-            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+                aliases: OptionArgumentTemplates.Output,
+                description: OptionArgumentTemplates.DetectOutputDescription);
+            var logFilePathOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
 
-            var command = new Command("detect", "Detect all platforms and versions in the given app source directory.")
+            var command = new Command(Name, Description)
             {
                 sourceDirArgument,
                 outputFormatOption,
@@ -96,7 +97,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 if (detectedPlatformResults == null || !detectedPlatformResults.Any())
                 {
                     logger?.LogError($"No platforms and versions detected from source directory: '{this.SourceDir}'");
-                    console.Error.WriteLine($"No platforms and versions detected from source directory: '{this.SourceDir}'");
+                    console.WriteErrorLine($"No platforms and versions detected from source directory: '{this.SourceDir}'");
                 }
 
                 if (!string.IsNullOrEmpty(this.OutputFormat)
@@ -121,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (!Directory.Exists(this.SourceDir))
             {
                 logger?.LogError("Could not find the source directory.");
-                console.Error.WriteLine($"Could not find the source directory: '{this.SourceDir}'");
+                console.WriteErrorLine($"Could not find the source directory: '{this.SourceDir}'");
 
                 return false;
             }
@@ -131,7 +132,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 && !string.Equals(this.OutputFormat, "table", StringComparison.OrdinalIgnoreCase))
             {
                 logger?.LogError("Unsupported output format. Supported output formats are: json, table.");
-                console.Error.WriteLine($"Unsupported output format: '{this.OutputFormat}'. " +
+                console.WriteErrorLine($"Unsupported output format: '{this.OutputFormat}'. " +
                     "Supported output formats are: json, table.");
 
                 return false;

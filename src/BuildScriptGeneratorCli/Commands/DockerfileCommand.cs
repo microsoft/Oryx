@@ -23,6 +23,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
     internal class DockerfileCommand : CommandBase
     {
+        public const string Name = "dockerfile";
+        public const string Description = "Generates a dockerfile to build and run an app.";
+
         private readonly string[] supportedRuntimePlatforms = { "dotnetcore", "node", "php", "python", "ruby" };
 
         public DockerfileCommand()
@@ -33,13 +36,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         {
             this.SourceDir = input.SourceDir;
             this.BuildImage = input.BuildImage;
-            this.PlatformName = input.PlatformName;
+            this.PlatformName = input.Platform;
             this.PlatformVersion = input.PlatformVersion;
-            this.RuntimePlatformName = input.RuntimePlatformName;
+            this.RuntimePlatformName = input.RuntimePlatform;
             this.RuntimePlatformVersion = input.RuntimePlatformVersion;
             this.BindPort = input.BindPort;
-            this.OutputPath = input.OutputPath;
-            this.LogFilePath = input.LogFilePath;
+            this.OutputPath = input.Output;
+            this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
 
@@ -62,29 +65,26 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static Command Export(IConsole console)
         {
             var sourceDirArgument = new Argument<string>(
-                name: "SourceDir",
-                description: "The source directory. If no value is provided, the current directory is used.",
+                name: OptionArgumentTemplates.SourceDir,
+                description: OptionArgumentTemplates.DockerfileSourceDirDescription,
                 getDefaultValue: () => Directory.GetCurrentDirectory());
             var buildImageOption = new Option<string>(
-                name: "--build-image",
-                description: "The mcr.microsoft.com/oryx build image to use in the dockerfile, provided in the format '<image>:<tag>'." +
-                             "If no value is provided, the 'cli:stable' Oryx image will be used.");
-            var platformOption = new Option<string>(OptionTemplates.Platform, OptionTemplates.PlatformDescription);
-            var platformVersionOption = new Option<string>(OptionTemplates.PlatformVersion, OptionTemplates.PlatformVersionDescription);
-            var runtimePlatformOption = new Option<string>(OptionTemplates.RuntimePlatform, OptionTemplates.RuntimePlatformDescription);
-            var runtimePlatformVersionOption = new Option<string>(OptionTemplates.RuntimePlatformVersion, OptionTemplates.RuntimePlatformVersionDescription);
+                name: OptionArgumentTemplates.DockerfileBuildImage,
+                description: OptionArgumentTemplates.DockerfileBuildImageDescription);
+            var platformOption = new Option<string>(OptionArgumentTemplates.Platform, OptionArgumentTemplates.PlatformDescription);
+            var platformVersionOption = new Option<string>(OptionArgumentTemplates.PlatformVersion, OptionArgumentTemplates.PlatformVersionDescription);
+            var runtimePlatformOption = new Option<string>(OptionArgumentTemplates.RuntimePlatform, OptionArgumentTemplates.RuntimePlatformDescription);
+            var runtimePlatformVersionOption = new Option<string>(OptionArgumentTemplates.RuntimePlatformVersion, OptionArgumentTemplates.RuntimePlatformVersionDescription);
             var bindPortOption = new Option<string>(
-                name: "--bind-port",
-                description: "The port where the application will bind to in the runtime image. If not provided, the default port will " +
-                          "vary based on the platform used; Python uses 80, all other platforms used 8080.");
+                name: OptionArgumentTemplates.DockerfileBindPort,
+                description: OptionArgumentTemplates.DockerfileBindPortDescription);
             var outputOption = new Option<string>(
-                name: "--output",
-                description: "The path that the dockerfile will be written to. " +
-                             "If not specified, the contents of the dockerfile will be written to STDOUT.");
-            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
-            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+                aliases: OptionArgumentTemplates.Output,
+                description: OptionArgumentTemplates.DockerfileOutputDescription);
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
 
-            var command = new Command("dockerfile", "Generates a dockerfile to build and run an app.")
+            var command = new Command(Name, Description)
             {
                 sourceDirArgument,
                 buildImageOption,
@@ -134,7 +134,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             if (string.IsNullOrEmpty(dockerfile))
             {
                 exitCode = ProcessConstants.ExitFailure;
-                console.Error.WriteLine("Couldn't generate dockerfile.");
+                console.WriteErrorLine("Couldn't generate dockerfile.");
             }
             else
             {
@@ -159,7 +159,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.SourceDir = string.IsNullOrEmpty(this.SourceDir) ? Directory.GetCurrentDirectory() : Path.GetFullPath(this.SourceDir);
             if (!Directory.Exists(this.SourceDir))
             {
-                console.Error.WriteLine($"Could not find the source directory '{this.SourceDir}'.");
+                console.WriteErrorLine($"Could not find the source directory '{this.SourceDir}'.");
                 return false;
             }
 
@@ -169,7 +169,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var buildImageSplit = this.BuildImage.Split(':');
                 if (buildImageSplit.Length != 2)
                 {
-                    console.Error.WriteLine("Provided build image must be in the format '<image>:<tag>'.");
+                    console.WriteErrorLine("Provided build image must be in the format '<image>:<tag>'.");
                     return false;
                 }
             }
@@ -177,14 +177,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // Invalid to specify platform version without platform name
             if (string.IsNullOrEmpty(this.PlatformName) && !string.IsNullOrEmpty(this.PlatformVersion))
             {
-                console.Error.WriteLine("Cannot use platform version without specifying platform name also.");
+                console.WriteErrorLine("Cannot use platform version without specifying platform name also.");
                 return false;
             }
 
             // Invalid to specify runtime platform version without platform name
             if (string.IsNullOrEmpty(this.RuntimePlatformName) && !string.IsNullOrEmpty(this.RuntimePlatformVersion))
             {
-                console.Error.WriteLine("Cannot use runtime platform version without specifying runtime platform name also.");
+                console.WriteErrorLine("Cannot use runtime platform version without specifying runtime platform name also.");
                 return false;
             }
 
@@ -204,7 +204,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             {
                 if (!int.TryParse(this.BindPort, out int port) || port < 0 || port > 65535)
                 {
-                    console.Error.WriteLine($"Provided bind port '{this.BindPort}' is not valid.");
+                    console.WriteErrorLine($"Provided bind port '{this.BindPort}' is not valid.");
                     return false;
                 }
             }

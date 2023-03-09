@@ -25,6 +25,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     internal class ExecCommand : CommandBase
     {
         public const string Name = "exec";
+        public const string Description =
+            "Execute an arbitrary command in the default shell, in an environment " +
+            "with the best-matching platform tool versions.";
 
         public ExecCommand()
         {
@@ -35,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.SourceDir = input.SourceDir;
             this.Command = input.Command;
             this.DebugMode = input.DebugMode;
-            this.LogFilePath = input.LogFilePath;
+            this.LogFilePath = input.LogPath;
         }
 
         public string SourceDir { get; set; }
@@ -44,17 +47,16 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public static Command Export(IConsole console)
         {
-            var logOption = new Option<string>(OptionTemplates.Log, OptionTemplates.LogDescription);
-            var debugOption = new Option<bool>(OptionTemplates.Debug, OptionTemplates.DebugDescription);
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
             var execSourceDirOption = new Option<string>(
-                aliases: OptionTemplates.Source,
-                description: "The command to execute in an app-specific environment.");
+                aliases: OptionArgumentTemplates.Source,
+                description: OptionArgumentTemplates.ExecSourceDescription);
             var commandArgument = new Argument<string>("command", "The command to execute in an app-specific environment.");
 
             var command = new Command(
-                name: "exec",
-                description: "Execute an arbitrary command in the default shell, in an environment " +
-                             "with the best-matching platform tool versions.")
+                name: Name,
+                description: Description)
             {
                 logOption,
                 debugOption,
@@ -164,7 +166,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     {
                         if (args.Data != null)
                         {
-                            console.Error.WriteLine(args.Data);
+                            console.WriteErrorLine(args.Data);
                         }
                     },
                     waitTimeForExit: null);
