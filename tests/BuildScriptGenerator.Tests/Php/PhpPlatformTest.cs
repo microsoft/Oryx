@@ -4,6 +4,8 @@
 // --------------------------------------------------------------------------------------------
 
 using Castle.Core.Internal;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -507,7 +509,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var phpComposerInstaller = new TestPhpComposerInstaller(
                 Options.Create(commonOptions),
                 isPhpComposerAlreadyInstalled.Value,
-                phpComposerInstallationScript);
+                phpComposerInstallationScript);   
             return new TestPhpPlatform(
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),
@@ -516,7 +518,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 NullLogger<TestPhpPlatform>.Instance,
                 detector,
                 phpInstaller,
-                phpComposerInstaller);
+                phpComposerInstaller,
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
@@ -539,7 +542,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 ILogger<PhpPlatform> logger,
                 IPhpPlatformDetector detector,
                 PhpPlatformInstaller phpInstaller,
-                PhpComposerInstaller phpComposerInstaller)
+                PhpComposerInstaller phpComposerInstaller,
+                TelemetryClient telemetryClient)
                 : base(
                       phpScriptGeneratorOptions,
                       commonOptions,
@@ -548,7 +552,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                       logger,
                       detector,
                       phpInstaller,
-                      phpComposerInstaller)
+                      phpComposerInstaller,
+                      telemetryClient)
             {
             }
         }

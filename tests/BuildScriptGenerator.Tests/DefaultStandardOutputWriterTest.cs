@@ -3,7 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using NLog.Targets;
 using System;
 using System.Diagnostics;
 using Xunit;
