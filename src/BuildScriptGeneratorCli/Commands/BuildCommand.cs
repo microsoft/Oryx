@@ -52,8 +52,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
         public BuildCommand(BuildCommandProperty input)
         {
-            this.languageVersionWasSet = input.LanguageVersionWasSet;
-            this.LanguageVersion = input.LanguageVersion;
             this.IntermediateDir = input.IntermediateDir;
             this.DestinationDir = input.DestinationDir;
             this.ManifestDir = input.ManifestDir;
@@ -69,6 +67,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             this.DynamicInstallRootDir = input.DynamicInstallRootDir;
             this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
+
+            // Handling obselete options
+            if (input.LanguageVersionWasSet)
+            {
+                this.LanguageVersion = input.LanguageVersion;
+            }
+
+            if (input.LanguageWasSet)
+            {
+                this.LanguageName = input.LanguageName;
+            }
         }
 
         public string IntermediateDir { get; set; }

@@ -24,8 +24,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             get => this.Platform;
             set
             {
+                // Transition to System.Commandline caused this one to set every time when binder is used.
+                // Adding this check to set it only when it is actually set by the user.
+                this.LanguageWasSet = ((value == null) || (value == string.Empty)) ? false : true;
                 this.Platform = value;
-                this.LanguageWasSet = true;
             }
         }
 
@@ -34,8 +36,10 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Commands
             get => this.PlatformVersion;
             set
             {
+                // Transition to System.Commandline caused this one to set every time when binder is used.
+                // Adding this check to set it only when it is actually set by the user.
+                this.LanguageVersionWasSet = ((value == null) || (value == string.Empty)) ? false : true;
                 this.PlatformVersion = value;
-                this.LanguageVersionWasSet = true;
             }
         }
 
