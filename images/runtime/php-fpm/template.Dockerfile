@@ -16,8 +16,8 @@ RUN ./build.sh php /opt/startupcmdgen/startupcmdgen
 FROM mcr.microsoft.com/oryx/base:%RUNTIME_BASE_IMAGE_TAG%
 
 # Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ARG AI_CONNECTION_STRING
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 
 # Oryx++ Builder variables
 ENV CNB_STACK_ID="oryx.stacks.skeleton"

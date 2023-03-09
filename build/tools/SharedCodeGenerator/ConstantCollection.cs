@@ -39,5 +39,15 @@ namespace Microsoft.Oryx.SharedCodeGenerator
                     .ToDictionary(pair => pair.Key, pair => pair.Value as IList<object>);
             }
         }
+
+        public Dictionary<string, IDictionary<object, object>> DictionaryConstants
+        {
+            get
+            {
+                return this.Constants?
+                    .Where(pair => pair.Value is IDictionary<object, object>)
+                    .ToDictionary(pair => pair.Key, pair => pair.Value as IDictionary<object, object>);
+            }
+        }
     }
 }
