@@ -621,7 +621,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
-                $"--platform-version {PythonVersions.Python36Version}")
+                $"--platform-version {PythonVersions.Python37Version}")
                 .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
@@ -642,10 +642,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python36Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
                         result.StdOut);
                     Assert.Contains(
-                       $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python36Version}\"",
+                       $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python37Version}\"",
                        result.StdOut);
                     Assert.Contains(
                        $"{ManifestFilePropertyKeys.SourceDirectoryInBuildContainer}=\"{appDir}\"",
