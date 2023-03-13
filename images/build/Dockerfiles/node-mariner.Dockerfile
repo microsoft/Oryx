@@ -20,13 +20,10 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 
 # Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
-# Also install some PHP requirements (unsure why it's gated by buster flavor, maybe due to some libraries being released per debian flavor, but we should try to install these pre-reqs no matter what)
+# Also install some PHP requirements  
 RUN tdnf update -y \
     && tdnf install -y \
-       python \ 
-  
-RUN tdnf update -y \
-    && tdnf install -y \
+        python \
 # .NET Core dependencies for running Oryx
         rsync \
         libgdiplus \
