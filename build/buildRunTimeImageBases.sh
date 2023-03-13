@@ -157,7 +157,7 @@ for dockerFile in $dockerFiles; do
             --build-arg NODE16_VERSION=$NODE16_VERSION \
             --build-arg NODE18_VERSION=$NODE18_VERSION \
             --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
-            --secret id=dotnet_storage_account_token_id,env=DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN \
+            --secret id=sdk_staging_private_storage_sas_token_id,env=SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN \
             $labels \
             .
     else

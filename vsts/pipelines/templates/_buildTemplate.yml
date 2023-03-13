@@ -93,6 +93,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Build Buster runtime images'
+  env:
+    SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
     args: -s $(storageAccountUrl) buster
@@ -100,6 +102,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Build Bullseye runtime images'
+  env:
+    SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
     args: -s $(storageAccountUrl) bullseye 

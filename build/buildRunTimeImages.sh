@@ -19,6 +19,11 @@ source $REPO_DIR/build/__stagingRuntimeConstants.sh
 PARAMS=""
 while (( "$#" )); do
   case "$1" in
+    -t|--sas-token)
+      stagingPrivateStorageSasToken=$2
+      echo "token value: $2"
+      shift 2
+      ;;
     -s|--sdk-storage-account-url)
       sdkStorageAccountUrl=$2
       shift 2
@@ -42,6 +47,10 @@ eval set -- "$PARAMS"
 
 if [ -z "$sdkStorageAccountUrl" ]; then
   sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
+fi
+if [ -z "$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN" ]; then
+    echo "Setting environment variable 'SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN' to the value that is passed from the CLI. $stagingPrivateStorageSasToken"
+    export SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN=$stagingPrivateStorageSasToken
 fi
 echo
 echo "SDK storage account url set to: $sdkStorageAccountUrl"
@@ -148,17 +157,34 @@ for dockerFile in $dockerFiles; do
     cd $REPO_DIR
     
     echo
-    docker build \
-        -f $dockerFile \
-        -t $localImageTagName \
-        --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-        --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
-        --build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
-        --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
-        --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION \
-        $args \
-        $labels \
-        .
+    
+    if shouldPassStorageSasToken $platformName $platformVersion ; then
+        # pass in env var as a secret, which is mounted during a single run command of the build
+        # https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md#secret
+        DOCKER_BUILDKIT=1 docker build -f $dockerFile \
+            -t $localImageTagName \
+            --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+            --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
+            --build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
+            --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
+            --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION \
+            --secret id=sdk_staging_private_storage_sas_token_id,env=SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN \
+            $args \
+            $labels \
+            .
+    else
+        docker build \
+            -f $dockerFile \
+            -t $localImageTagName \
+            --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+            --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
+            --build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
+            --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
+            --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION \
+            $args \
+            $labels \
+            .
+    fi
 
     echo
     echo "'$localImageTagName' image history:"
