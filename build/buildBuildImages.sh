@@ -438,6 +438,61 @@ function buildCliImage() {
 	docker tag $builtImageName "$devImageRepo:$devImageTag"
 }
 
+function buildCliMarinerImage() {
+	buildBuildScriptGeneratorImage
+	
+	local devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO"
+	local devImageTag="mariner"
+	local builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
+
+	local builtImageName="$ACR_CLI_BUILD_IMAGE_REPO"
+
+	builtImageName="$builtImageName:mariner"
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
+
+	echo
+	echo "-------------Creating CLI-MARINER image-------------------"
+	docker build -t $builtImageName \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
+		--build-arg DEBIAN_FLAVOR=$debianFlavor \
+		--label com.microsoft.oryx="$labelContent" \
+		-f "$BUILD_IMAGES_CLI_MARINER_DOCKERFILE" \
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+	docker tag $builtImageName "$devImageRepo:$devImageTag"
+}
+
+function buildNodeMarinerImage() {
+	
+
+	local builtImageName="node-mariner"
+
+	builtImageName="$builtImageName:latest"
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
+
+	echo
+	echo "-------------Creating CLI-MARINER image-------------------"
+	docker build -t $builtImageName \
+		-f "$BUILD_IMAGES_NODE_MARINER_DOCKERFILE" \
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+}
+
 function buildFullImage() {
 	buildBuildScriptGeneratorImage
 	
@@ -547,6 +602,10 @@ elif [ "$imageTypeToBuild" == "cli-bullseye" ]; then
 	buildCliImage "bullseye"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
+elif [ "$imageTypeToBuild" == "cli-mariner" ]; then
+    buildCliMarinerImage
+elif [ "$imageTypeToBuild" == "node-mariner" ];then
+    buildNodeMarinerImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
 githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, buildpack"
