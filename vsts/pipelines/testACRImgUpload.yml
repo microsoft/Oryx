@@ -52,7 +52,7 @@ variables:
   group: Oryx
   Packaging.EnableSBOMSigning: true
 
-jobs:
+stages:
 - stage: CreateReleaseTag
   jobs:
   - job: CreateReleaseTag
