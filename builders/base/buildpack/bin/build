@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+echo "---> Oryx Buildpack"
+
+# 1. Get arguments
+layersdir=$1
+
+# 2. Create the Oryx layer directory for the buildpack
+oryxlayer="$layersdir"/oryx
+mkdir -p "$oryxlayer"
+
+# 3. Make the Oryx layer available during launch
+echo -e '[types]\nlaunch = true' > "$layersdir/oryx.toml"
+
+# 4. Set Oryx-specific environment variables
+export ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io"
+export ENABLE_DYNAMIC_INSTALL="true"
+export ORYX_AI_INSTRUMENTATION_KEY="4aadba6b-30c8-42db-9b93-024d5c62b887"
+
+# 5. Use the Oryx CLI to build the application
+oryx build . --output ./oryx-output
+
+# 6. Set the default start command
+cat > "$layersdir/launch.toml" << EOL
+[[processes]]
+type = "run"
+command = "oryx create-script -appPath ./oryx-output; ./run.sh"
+default = true
+EOL
