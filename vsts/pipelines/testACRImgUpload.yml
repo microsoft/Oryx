@@ -53,31 +53,31 @@ variables:
   Packaging.EnableSBOMSigning: true
 
 stages:
-- stage: CreateReleaseTag
-  jobs:
-  - job: CreateReleaseTag
-    pool:
-      name: AzurePipelines-EO
-      demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-    variables:
-      skipComponentGovernanceDetection: true
-    steps:
-    - task: ShellScript@2
-      inputs:
-        scriptPath: ./vsts/scripts/testImgCreateReleaseTag.sh
-      displayName: 'Create release tag'
-    - script: |
-        set -ex
-        sourcesArtifactsDir="$(Build.SourcesDirectory)/artifacts"
-        mkdir -p "$sourcesArtifactsDir"
-        echo "$(RELEASE_TAG_NAME)" > "$sourcesArtifactsDir/releaseTag.txt"
-      displayName: 'Write release tag name to an artifact file'
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish artifact file having the release tag name'
-      inputs:
-        targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag.txt
-        artifactName: releaseTag
+  - stage: CreateReleaseTag
+    jobs:
+    - job: CreateReleaseTag
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        skipComponentGovernanceDetection: true
+      steps:
+      - task: ShellScript@2
+        inputs:
+          scriptPath: ./vsts/scripts/testImgCreateReleaseTag.sh
+        displayName: 'Create release tag'
+      - script: |
+          set -ex
+          sourcesArtifactsDir="$(Build.SourcesDirectory)/artifacts"
+          mkdir -p "$sourcesArtifactsDir"
+          echo "$(RELEASE_TAG_NAME)" > "$sourcesArtifactsDir/releaseTag.txt"
+        displayName: 'Write release tag name to an artifact file'
+      - task: PublishPipelineArtifact@1
+        displayName: 'Publish artifact file having the release tag name'
+        inputs:
+          targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag.txt
+          artifactName: releaseTag
   
   - stage: Build
     displayName: Build Stage
