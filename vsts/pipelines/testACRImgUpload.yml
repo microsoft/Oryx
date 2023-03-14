@@ -6,7 +6,7 @@ parameters:
   - name: containerRegistryName
     displayName: Container registry name for pushing built image
     type: string
-    default: any
+    default: oryxtestmcr.azurecr.io
   - name: buildImages
     type: object
     default:
