@@ -13,13 +13,13 @@ parameters:
       - 
         key: Latest
         value: latest
-      -
+      - 
         key: LtsVersions
         value: ltsversions
-      -
+      - 
         key: Jamstack
         value: jamstack
-      - vsts/pipelines/ci.yml
+      - 
         key: GithubActions
         value: githubactions
       - 
