@@ -115,6 +115,6 @@ stages:
           - template: templates/_buildTemplate.yml
             parameters:
                 imageType: ${{ buildImage.value }}
-                acrName: ${{ containerRegistryName }}
+                acrName: ${{ parameters.containerRegistryName }}
                 imageName: oryxtestmcr.azurecr.io/public/oryx
 
