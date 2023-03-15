@@ -532,6 +532,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildCliImage "buster"
 	buildCliImage "bullseye"
 	buildCliImage
+	buildCliBuilderImage "buster"
 	buildBuildPackImage
 	buildFullImage "buster"
 	buildFullImage "bullseye"
