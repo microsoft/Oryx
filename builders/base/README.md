@@ -9,11 +9,11 @@ locally to `docker` with this ACR instance's credentials.
 
 #### Build CLI image
 
-_Note_: The CLI image used is built from the `corm/builder-skeleton-image` branch in the Oryx repository to avoid using
-the current CLI image that has components dynamically installed via `apt-get` at run-time.
+_Note_: The CLI Builder image used has its OS packages pre-baked, since the builder **CAN NOT** run as a root user and
+dynamically install components via `apt-get` at run-time.
 
 ```
-./oryx/build/buildBuildImages.sh -t cli-buster
+./oryx/build/buildBuildImages.sh -t cli-builder-buster
 
 docker tag oryx/cli-buster:debian-buster oryxprodmcr.azurecr.io/public/oryx/cli:builder-debian-buster-{BUILD_ID}
 ```
