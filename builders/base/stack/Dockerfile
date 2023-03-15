@@ -1,5 +1,6 @@
 # 1. Set a common base
-FROM mcr.microsoft.com/oryx/cli:builder-debian-buster-20230208.1 as base
+ARG CLI_BUILDER_IMAGE="mcr.microsoft.com/oryx/cli:builder-debian-buster-20230208.1"
+FROM ${CLI_BUILDER_IMAGE} as base
 
 # 2. Set required CNB information
 ENV CNB_USER_ID=1000

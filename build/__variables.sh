@@ -55,6 +55,8 @@ declare -r BASE_IMAGES_ARTIFACTS_FILE_PREFIX="$ARTIFACTS_DIR/images"
 declare -r RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images"
 declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images-acr.txt"
 declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images-acr"
+declare -r ACR_BUILDER_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/builder-images-acr.txt"
+declare -r ACR_CAPPS_BUILDER_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/capps-builder-images-acr.txt"
 
 declare -r PACK_IMAGE_NAME='pack'
 declare -r PACK_STACK_BASE_IMAGE_NAME="pack-stack-base"

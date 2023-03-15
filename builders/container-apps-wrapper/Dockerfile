@@ -1,5 +1,5 @@
-ARG BASE_BUILDER_TAG="20230208.1"
-FROM mcr.microsoft.com/oryx/builder:${BASE_BUILDER_TAG}
+ARG BASE_BUILDER_IMAGE="mcr.microsoft.com/oryx/builder:20230208.1"
+FROM ${BASE_BUILDER_IMAGE}
 
 # these environment variables are generally going to be overwritten:
 # APP_IMAGE: name that the builder will push the final image as, e.g. testacr.azurecr.io/app/capps-runnable-app
