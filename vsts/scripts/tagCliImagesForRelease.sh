@@ -19,6 +19,7 @@ if [ -f "$outPmeFile" ]; then
     rm $outPmeFile
 fi
 
+# CLI Images
 cliImage="$sourceImageRepo/cli:debian-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 cliBusterImage="$sourceImageRepo/cli:debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 cliBullseyeImage="$sourceImageRepo/cli:debian-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
@@ -43,6 +44,18 @@ echo "Retagging CLI bullseye image for $prodPmeImageRepo with 'debian-bullseye-$
 echo "$prodPmeImageRepo/cli:debian-bullseye-$RELEASE_TAG_NAME">>"$outPmeFile"
 docker tag "$cliBullseyeImage" "$prodPmeImageRepo/cli:debian-bullseye-$RELEASE_TAG_NAME"
 
+# CLI Builder images
+devCliBuilderBusterImage="$sourceImageRepo/cli:builder-debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+builderProdTag="builder-debian-buster-$RELEASE_TAG_NAME"
+builderProdStableTag="builder-debian-buster-stable"
+prodCliBuilderBusterImage="$prodPmeImageRepo/cli:$builderProdTag"
+echo "Pulling CLI builder buster image '$devCliBuilderBusterImage'..."
+docker pull "$devCliBuilderBusterImage"
+
+echo "Retagging CLI builder buster image for '$prodPmeImageRepo/cli' with '$builderProdTag'..."
+echo "$prodCliBuilderBusterImage">>"$outPmeFile"
+docker tag "$devCliBuilderBusterImage" "$prodCliBuilderBusterImage"
+
 if [ "$sourceBranchName" == "main" ]; then
     echo "Retagging CLI image with '{os type}-stable'..."
 
@@ -54,6 +67,9 @@ if [ "$sourceBranchName" == "main" ]; then
 
     docker tag "$cliBullseyeImage" "$prodPmeImageRepo/cli:debian-bullseye-stable"
     echo "$prodPmeImageRepo/cli:debian-bullseye-stable">>"$outPmeFile"
+
+    docker tag "$devCliBuilderBusterImage" "$prodPmeImageRepo/cli:$builderProdStableTag"
+    echo "$prodPmeImageRepo/cli:$builderProdStableTag">>"$outPmeFile"
 else
     echo "Not creating 'stable' or 'latest' tags as source branch is not 'main'. Current branch is $sourceBranchName"
 fi

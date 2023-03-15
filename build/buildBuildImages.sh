@@ -438,6 +438,40 @@ function buildCliImage() {
 	docker tag $builtImageName "$devImageRepo:$devImageTag"
 }
 
+function buildCliBuilderImage() {
+	buildBuildScriptGeneratorImage
+	
+	local debianFlavor=$1
+	local builtImageRepo="$ACR_CLI_BUILD_IMAGE_REPO"
+	local devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO"
+
+	if [ -z "$debianFlavor" ]; then
+		debianFlavor="stretch"
+	fi
+	imageTag="builder-debian-$debianFlavor"
+	devImageName="$devImageRepo:$imageTag"
+	builtImageName="$builtImageRepo:$imageTag"
+
+	echo
+	echo "-------------Creating CLI Builder image-------------------"
+	docker build -t $builtImageName \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
+		--build-arg DEBIAN_FLAVOR=$debianFlavor \
+		--label com.microsoft.oryx="$labelContent" \
+		-f "$BUILD_IMAGES_CLI_BUILDER_DOCKERFILE" \
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+	echo "Tagging '$builtImageName' with dev name '$devImageName'"
+	docker tag $builtImageName $devImageName
+}
+
 function buildFullImage() {
 	buildBuildScriptGeneratorImage
 	
@@ -545,6 +579,8 @@ elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
 elif [ "$imageTypeToBuild" == "cli-bullseye" ]; then
 	buildCliImage "bullseye"
+elif [ "$imageTypeToBuild" == "cli-builder-buster" ]; then
+	buildCliBuilderImage "buster"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else

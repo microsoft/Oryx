@@ -39,6 +39,9 @@ parameters:
         key: CliBullseye
         value: cli-bullseye
       - 
+        key: CliBuilderBuster
+        value: cli-builder-buster
+      - 
         key: Buildpack
         value: buildpack
 

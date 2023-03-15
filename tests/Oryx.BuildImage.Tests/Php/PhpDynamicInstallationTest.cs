@@ -108,6 +108,26 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 return data;
             }
         }
+        
+        public static TheoryData<string, string, string> VersionAndImageNameDataCliBuilderBuster
+        {
+            get
+            {
+                var data = new TheoryData<string, string, string>();
+                var imageHelper = new ImageTestHelper();
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag), PhpVersions.ComposerVersion);
+
+                // test latest php-composer version
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag), PhpVersions.Composer23Version);
+                return data;
+            }
+        }
 
 
         [Theory, Trait("category", "githubactions")]
@@ -134,6 +154,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "cli-bullseye")]
         [MemberData(nameof(VersionAndImageNameDataCliBullseye))]
         public void BuildsAppByInstallingSdkDynamicallyCliBullseye(string phpVersion, string imageName, string phpComposerVersion)
+        {
+            BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion, "/opt/php");
+        }
+
+        [Theory, Trait("category", "cli-builder-buster")]
+        [MemberData(nameof(VersionAndImageNameDataCliBuilderBuster))]
+        public void BuildsAppByInstallingSdkDynamicallyCliBuilderBuster(string phpVersion, string imageName, string phpComposerVersion)
         {
             BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion, "/opt/php");
         }

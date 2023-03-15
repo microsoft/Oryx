@@ -30,6 +30,7 @@ declare -r ORYXTESTS_GITHUB_ACTIONS_ASBASE_BUILDIMAGE_DOCKERFILE="$REPO_DIR/test
 declare -r ORYXTESTS_GITHUB_ACTIONS_ASBASE_WITHENV_BUILDIMAGE_DOCKERFILE="$REPO_DIR/tests/images/build/gitHubActions.AsBaseWithEnv.Dockerfile"
 declare -r RUNTIME_IMAGES_SRC_DIR="$REPO_DIR/images/runtime"
 declare -r BUILD_IMAGES_CLI_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/cli.Dockerfile"
+declare -r BUILD_IMAGES_CLI_BUILDER_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/cliBuilder.Dockerfile"
 declare -r BUILD_IMAGES_FULL_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/full.Dockerfile"
 declare -r BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/azureFunctions.JamStack.Dockerfile"
 declare -r BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubActions.Dockerfile"

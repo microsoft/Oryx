@@ -74,6 +74,19 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
+        public static TheoryData<string, string> ImageNameDataCliBuilderBuster
+        {
+            get
+            {
+                var data = new TheoryData<string, string>();
+                var imageTestHelper = new ImageTestHelper();
+                data.Add("12.22.11", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag));
+                data.Add("14.19.1", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag));
+                data.Add("16.14.2", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag));
+                return data;
+            }
+        }
+
 
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-stretch")]
@@ -103,6 +116,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("build-image", "cli-debian-bullseye")]
         [MemberData(nameof(ImageNameDataCliBullseye))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBullseye(string version, string buildImageName)
+        {
+            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
+        }
+
+        [Theory, Trait("category", "cli-builder-buster")]
+        [MemberData(nameof(ImageNameDataCliBuilderBuster))]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBuilderBuster(string version, string buildImageName)
         {
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }
