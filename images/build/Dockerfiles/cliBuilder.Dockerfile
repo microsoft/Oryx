@@ -40,6 +40,8 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
             libsqlite3-dev \
             libxml2-dev \
             xz-utils \
+            # ruby pre-req
+            libyaml-dev \
         && rm -rf /var/lib/apt/lists/* ; \
     elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \ 
         apt-get update \
