@@ -76,6 +76,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// The Universal Wheel option.
         /// </summary>
         internal const string UniversalWheel = "universal";
+        
+        /// <summary>
+        /// The pip upgrade command
+        /// </summary>
+        internal const string pipUpgradeCommand = "--upgrade";
 
         private readonly BuildScriptGeneratorOptions commonOptions;
         private readonly PythonScriptGeneratorOptions pythonScriptGeneratorOptions;
@@ -180,6 +185,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 Path.Combine(context.SourceRepo.RootPath, pythonBuildCommandsFile) :
                 Path.Combine(this.commonOptions.ManifestDir, pythonBuildCommandsFile);
             manifestFileProperties[nameof(pythonBuildCommandsFile)] = pythonBuildCommandsFile;
+            //if OryxDisablePipUpgrade is ture then we do not upgrade pip hence is set to the empty string.
+            var pipUpgrade = this.commonOptions.OryxDisablePipUpgrade? string.Empty : pipUpgradeCommand;
 
             if (!isPythonPackageCommandEnabled && !string.IsNullOrWhiteSpace(pythonPackageWheelType))
             {
@@ -275,7 +282,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 pythonVersion: pythonVersion,
                 pythonBuildCommandsFileName: pythonBuildCommandsFile,
                 pythonPackageWheelProperty: pythonPackageWheelType,
-                customRequirementsTxtPath: customRequirementsTxtPath);
+                customRequirementsTxtPath: customRequirementsTxtPath,
+                oryxPipUpgradeCommand:pipUpgrade);
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,
