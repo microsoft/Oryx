@@ -115,7 +115,7 @@ steps:
         docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       done
-    displayName: 'Copy CLI Images to Test ACR'
+  displayName: 'Copy CLI Images to Test ACR'
 
 - script: |
       for image in "${{ parameters.ltsImages }}"; do
@@ -123,7 +123,7 @@ steps:
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       done
-    displayName: 'Copy lts Images to Test ACR'
+  displayName: 'Copy lts Images to Test ACR'
 
 - script: |
       for image in "${{ parameters.vsoImages }}"; do
@@ -131,7 +131,7 @@ steps:
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       done
-    displayName: 'Copy Vso Images to Test ACR'
+  displayName: 'Copy Vso Images to Test ACR'
 
 - script: |
       for image in "${{ parameters.fullImages }}"; do
@@ -139,7 +139,7 @@ steps:
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       done
-    displayName: 'Copy Full Images to Test ACR'
+  displayName: 'Copy Full Images to Test ACR'
 
 - script: |
       for image in "${{ parameters.githubActions }}"; do
@@ -147,7 +147,7 @@ steps:
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       done
-    displayName: 'Copy Github Action Images to Test ACR'
+  displayName: 'Copy Github Action Images to Test ACR'
 
 - task: Docker@1
   displayName: Dev Container registry logout
