@@ -1,7 +1,6 @@
 parameters:
   - name: nightlyTagName
     displayName: The tag of image built by nightly pipeline
-    type: any
   - name: containerRegistryName
     displayName: Container registry name for pushing built image
     type: string
