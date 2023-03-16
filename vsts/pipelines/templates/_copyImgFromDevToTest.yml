@@ -132,7 +132,10 @@ steps:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrTestName }}
 
-- script: |
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
       for image in "${{ parameters.cliImages }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -140,7 +143,10 @@ steps:
       done
   displayName: 'Copy CLI Images to Test ACR'
 
-- script: |
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
       for image in "${{ parameters.ltsImages }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -148,7 +154,10 @@ steps:
       done
   displayName: 'Copy lts Images to Test ACR'
 
-- script: |
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
       for image in "${{ parameters.vsoImages }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -156,7 +165,10 @@ steps:
       done
   displayName: 'Copy Vso Images to Test ACR'
 
-- script: |
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
       for image in "${{ parameters.fullImages }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -164,7 +176,10 @@ steps:
       done
   displayName: 'Copy Full Images to Test ACR'
 
-- script: |
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
       for image in "${{ parameters.githubActions }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
