@@ -110,7 +110,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrTestName }}
 
 - script: |
-      for image in "${{ parameters.cliImages }}"; do
+      for image in "${{ parameters.cliImages[@] }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -118,7 +118,7 @@ steps:
   displayName: 'Copy CLI Images to Test ACR'
 
 - script: |
-      for image in "${{ parameters.ltsImages }}"; do
+      for image in "${{ parameters.ltsImages[@] }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -126,7 +126,7 @@ steps:
   displayName: 'Copy lts Images to Test ACR'
 
 - script: |
-      for image in "${{ parameters.vsoImages }}"; do
+      for image in "${{ parameters.vsoImages[@] }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -134,7 +134,7 @@ steps:
   displayName: 'Copy Vso Images to Test ACR'
 
 - script: |
-      for image in "${{ parameters.fullImages }}"; do
+      for image in "${{ parameters.fullImages[@] }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -142,7 +142,7 @@ steps:
   displayName: 'Copy Full Images to Test ACR'
 
 - script: |
-      for image in "${{ parameters.githubActions }}"; do
+      for image in "${{ parameters.githubActions[@] }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
