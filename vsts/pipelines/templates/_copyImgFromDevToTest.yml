@@ -1,11 +1,24 @@
 parameters:
-  ascName: oryx-automation-service-principal
-  acrDevName: oryxdevmcr.azurecr.io
-  acrTestName: oryxtestmcr.azurecr.io
-  testImageName: oryxtestmcr.azurecr.io/public/oryx
-  acrDevContainerName: oryxdevmcr.azurecr.io/public/oryx
-  acrTestContainerName: oryxtestmcr.azurecr.io/public/oryx
-  nightlyTag: any
+  - name: ascName
+    type: string
+    default: oryx-automation-service-principal
+  - name: acrDevName
+    type: string
+    default: oryxdevmcr.azurecr.io
+  - name: acrTestName
+    type: string
+    default: oryxtestmcr.azurecr.io
+  - name: testImageName
+    type: string
+    default: oryxtestmcr.azurecr.io/public/oryx
+  - name: acrDevContainerName
+    type: string
+    default: oryxdevmcr.azurecr.io/public/oryx
+  - name: acrTestContainerName
+    type: string
+    default: oryxtestmcr.azurecr.io/public/oryx
+  - name: nightlyTag
+    type: any
   - name: cliImages
     type: object
     default:
@@ -18,37 +31,45 @@ parameters:
       - name: 'cli-stretch'
         sourceTag: 'debian-stretch-Oryx-Nightly.'
         destinationTag: 'debian-stretch.'
-  ltsImages:
-    - name: 'lts-buster'
-      sourceTag: 'lts-versions-debian-buster-Oryx-Nightly.'
-      destinationTag: 'lts-versions-debian-buster.'
-    - name: 'lts-stretch'
-      sourceTag: 'lts-versions-debian-stretch-Oryx-Nightly.'
-      destinationTag: 'lts-versions-debian-stretch.'
-  vsoImages:
-    - name: 'vso-ubuntu'
-      sourceTag: 'vso-ubuntu-focal-Oryx-Nightly.'
-      destinationTag: 'vso-ubuntu-focal.'
-    - name: 'vso-bullseye'
-      sourceTag: 'vso-debian-bullseye-Oryx-Nightly.'
-      destinationTag: 'vso-debian-bullseye.'
-  fullImages:
-    - name: 'full-buster'
-      sourceTag: 'full-debian-buster-Oryx-Nightly.'
-      destinationTag: 'full-debian-buster.'
-    - name: 'full-bullseye'
-      sourceTag: 'full-debian-bullseye-Oryx-Nightly.'
-      destinationTag: 'full-debian-bullseye.'
-  githubActions:
-    - name: 'github-actions-bullseye'
-      sourceTag: 'github-actions-debian-bullseye-Oryx-Nightly.'
-      destinationTag: 'github-actions-debian-bullseye.'
-    - name: 'github-actions-buster'
-      sourceTag: 'github-actions-debian-buster-Oryx-Nightly.'
-      destinationTag: 'github-actions-debian-buster.'
-    - name: 'github-actions-stretch'
-      sourceTag: 'github-actions-debian-stretch-Oryx-Nightly.'
-      destinationTag: 'github-actions-debian-stretch.'
+  - name: ltsImages
+    type: object
+    default:
+      - name: 'lts-buster'
+        sourceTag: 'lts-versions-debian-buster-Oryx-Nightly.'
+        destinationTag: 'lts-versions-debian-buster.'
+      - name: 'lts-stretch'
+        sourceTag: 'lts-versions-debian-stretch-Oryx-Nightly.'
+        destinationTag: 'lts-versions-debian-stretch.'
+  - name: vsoImages
+    type: object
+    default:
+      - name: 'vso-ubuntu'
+        sourceTag: 'vso-ubuntu-focal-Oryx-Nightly.'
+        destinationTag: 'vso-ubuntu-focal.'
+      - name: 'vso-bullseye'
+        sourceTag: 'vso-debian-bullseye-Oryx-Nightly.'
+        destinationTag: 'vso-debian-bullseye.'
+  - name: fullImages
+    type: object
+    default:
+      - name: 'full-buster'
+        sourceTag: 'full-debian-buster-Oryx-Nightly.'
+        destinationTag: 'full-debian-buster.'
+      - name: 'full-bullseye'
+        sourceTag: 'full-debian-bullseye-Oryx-Nightly.'
+        destinationTag: 'full-debian-bullseye.'
+  - name: githubActions
+    type: object
+    default:
+      - name: 'github-actions-bullseye'
+        sourceTag: 'github-actions-debian-bullseye-Oryx-Nightly.'
+        destinationTag: 'github-actions-debian-bullseye.'
+      - name: 'github-actions-buster'
+        sourceTag: 'github-actions-debian-buster-Oryx-Nightly.'
+        destinationTag: 'github-actions-debian-buster.'
+      - name: 'github-actions-stretch'
+        sourceTag: 'github-actions-debian-stretch-Oryx-Nightly.'
+        destinationTag: 'github-actions-debian-stretch.'
 
 steps:
 
@@ -120,7 +141,7 @@ steps:
   displayName: 'Copy CLI Images to Test ACR'
 
 - script: |
-      for image in "${{ parameters.ltsImages[@] }}"; do
+      for image in "${{ parameters.ltsImages }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -128,7 +149,7 @@ steps:
   displayName: 'Copy lts Images to Test ACR'
 
 - script: |
-      for image in "${{ parameters.vsoImages[@] }}"; do
+      for image in "${{ parameters.vsoImages }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -136,7 +157,7 @@ steps:
   displayName: 'Copy Vso Images to Test ACR'
 
 - script: |
-      for image in "${{ parameters.fullImages[@] }}"; do
+      for image in "${{ parameters.fullImages }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -144,7 +165,7 @@ steps:
   displayName: 'Copy Full Images to Test ACR'
 
 - script: |
-      for image in "${{ parameters.githubActions[@] }}"; do
+      for image in "${{ parameters.githubActions }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
