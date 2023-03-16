@@ -6,16 +6,18 @@ parameters:
   acrDevContainerName: oryxdevmcr.azurecr.io/public/oryx
   acrTestContainerName: oryxtestmcr.azurecr.io/public/oryx
   nightlyTag: any
-  cliImages:
-    - name: 'cli-buster'
-      sourceTag: 'debian-buster-Oryx-Nightly.'
-      destinationTag: 'debian-buster.'
-    - name: 'cli-bullseye'
-      sourceTag: 'debian-bullseye-Oryx-Nightly.'
-      destinationTag: 'debian-bullseye.'
-    - name: 'cli-stretch'
-      sourceTag: 'debian-stretch-Oryx-Nightly.'
-      destinationTag: 'debian-stretch.'
+  - name: cliImages
+    type: object
+    default:
+      - name: 'cli-buster'
+        sourceTag: 'debian-buster-Oryx-Nightly.'
+        destinationTag: 'debian-buster.'
+      - name: 'cli-bullseye'
+        sourceTag: 'debian-bullseye-Oryx-Nightly.'
+        destinationTag: 'debian-bullseye.'
+      - name: 'cli-stretch'
+        sourceTag: 'debian-stretch-Oryx-Nightly.'
+        destinationTag: 'debian-stretch.'
   ltsImages:
     - name: 'lts-buster'
       sourceTag: 'lts-versions-debian-buster-Oryx-Nightly.'
@@ -110,7 +112,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrTestName }}
 
 - script: |
-      for image in "${{ parameters.cliImages[@] }}"; do
+      for image in "${{ parameters.cliImages }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
