@@ -1,0 +1,166 @@
+parameters:
+  ascName: oryx-automation-service-principal
+  acrDevName: oryxdevmcr.azurecr.io
+  acrTestName: oryxtestmcr.azurecr.io
+  testImageName: oryxtestmcr.azurecr.io/public/oryx
+  acrDevContainerName: oryxdevmcr.azurecr.io/public/oryx
+  acrTestContainerName: oryxtestmcr.azurecr.io/public/oryx
+  nightlyTag: any
+  cliImages:
+    - name: 'cli-buster'
+      sourceTag: 'debian-buster-Oryx-Nightly.'
+      destinationTag: 'debian-buster.'
+    - name: 'cli-bullseye'
+      sourceTag: 'debian-bullseye-Oryx-Nightly.'
+      destinationTag: 'debian-bullseye.'
+    - name: 'cli-stretch'
+      sourceTag: 'debian-stretch-Oryx-Nightly.'
+      destinationTag: 'debian-stretch.'
+  ltsImages:
+    - name: 'lts-buster'
+      sourceTag: 'lts-versions-debian-buster-Oryx-Nightly.'
+      destinationTag: 'lts-versions-debian-buster.'
+    - name: 'lts-stretch'
+      sourceTag: 'lts-versions-debian-stretch-Oryx-Nightly.'
+      destinationTag: 'lts-versions-debian-stretch.'
+  vsoImages:
+    - name: 'vso-ubuntu'
+      sourceTag: 'vso-ubuntu-focal-Oryx-Nightly.'
+      destinationTag: 'vso-ubuntu-focal.'
+    - name: 'vso-bullseye'
+      sourceTag: 'vso-debian-bullseye-Oryx-Nightly.'
+      destinationTag: 'vso-debian-bullseye.'
+  fullImages:
+    - name: 'full-buster'
+      sourceTag: 'full-debian-buster-Oryx-Nightly.'
+      destinationTag: 'full-debian-buster.'
+    - name: 'full-bullseye'
+      sourceTag: 'full-debian-bullseye-Oryx-Nightly.'
+      destinationTag: 'full-debian-bullseye.'
+  githubActions:
+    - name: 'github-actions-bullseye'
+      sourceTag: 'github-actions-debian-bullseye-Oryx-Nightly.'
+      destinationTag: 'github-actions-debian-bullseye.'
+    - name: 'github-actions-buster'
+      sourceTag: 'github-actions-debian-buster-Oryx-Nightly.'
+      destinationTag: 'github-actions-debian-buster.'
+    - name: 'github-actions-stretch'
+      sourceTag: 'github-actions-debian-stretch-Oryx-Nightly.'
+      destinationTag: 'github-actions-debian-stretch.'
+  
+
+steps:
+
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection - OSS Compliance'
+  inputs:
+    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+
+- script: |
+    if [ "$(ReleaseBuildImages)" != "true" ] && [ "$(ReleaseRuntimeImages)" != "true" ]
+    then
+      echo "Invalid configuration."
+      echo "Variable 'ReleaseBuildImages' or 'ReleaseRuntimeImages' needs to be 'true' to run this"
+      exit 1
+    fi
+  displayName: 'Validate release pipeline run'
+
+- script: |
+    docker -v
+    echo "Installing stable version of Docker CE................"
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt update
+    sudo apt-get install docker-ce=5:20.10.5~3-0~ubuntu-focal docker-ce-cli=5:20.10.5~3-0~ubuntu-focal containerd.io
+    echo "After installing ................"
+    docker -v
+  displayName: 'Install Docker 20.10.5'
+  condition: true
+
+- script: |
+    sudo rm -rf /usr/share/dotnet
+    sudo rm -rf /opt/ghc
+    sudo rm -rf "/usr/local/share/boost"
+    sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+    docker images && docker system prune -fa && docker images && echo
+  displayName: 'clean docker images'
+
+- script: |
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+      echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      sudo apt update
+      sudo apt-get install docker-ce=5:20.10.5~3-0~ubuntu-focal docker-ce-cli=5:20.10.5~3-0~ubuntu-focal containerd.io
+      docker -v
+  displayName: 'Install Docker 20.10.5'
+
+- checkout: self
+  clean: true
+
+- task: Docker@1
+  displayName: Dev container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrDevName }}
+
+- task: Docker@1
+  displayName: Test container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrTestName }}
+
+- script: |
+      for image in "${{ parameters.cliImages }}"; do
+        docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+        docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+        docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      done
+    displayName: 'Copy CLI Images to Test ACR'
+
+
+- script: |
+      for image in "${{ parameters.ltsImages }}"; do
+        docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+        docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+        docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      done
+    displayName: 'Copy lts Images to Test ACR'
+
+- script: |
+      for image in "${{ parameters.vsoImages }}"; do
+        docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+        docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+        docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      done
+    displayName: 'Copy Vso Images to Test ACR'
+
+- script: |
+      for image in "${{ parameters.fullImages }}"; do
+        docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+        docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+        docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      done
+    displayName: 'Copy Full Images to Test ACR'
+
+- script: |
+      for image in "${{ parameters.githubActions }}"; do
+        docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+        docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+        docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      done
+    displayName: 'Copy Github Action Images to Test ACR'
+
+- task: Docker@1
+  displayName: Dev Container registry logout
+  inputs:
+    command: logout
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrDevName }}
+
+- task: Docker@1
+  displayName: Dev Container registry logout
+  inputs:
+    command: logout
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrTestName }}
