@@ -91,6 +91,7 @@ jobs:
   timeoutInMinutes: 480
   steps:
   - template: templates/_builderTemplate.yml
+  dependsOn: Job_BuildImage_CliBuilderBuster
 
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
