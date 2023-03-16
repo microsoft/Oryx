@@ -47,7 +47,6 @@ parameters:
     - name: 'github-actions-stretch'
       sourceTag: 'github-actions-debian-stretch-Oryx-Nightly.'
       destinationTag: 'github-actions-debian-stretch.'
-  
 
 steps:
 
@@ -117,7 +116,6 @@ steps:
         docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       done
     displayName: 'Copy CLI Images to Test ACR'
-
 
 - script: |
       for image in "${{ parameters.ltsImages }}"; do
