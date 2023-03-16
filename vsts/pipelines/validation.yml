@@ -82,6 +82,16 @@ jobs:
       parameters:
           imageType: ${{ buildImage.value }}
 
+- job: Job_BuilderImages
+  displayName: Build Builder Images
+  pool:
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+  timeoutInMinutes: 480
+  steps:
+  - template: templates/_builderTemplate.yml
+
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images
   pool:
