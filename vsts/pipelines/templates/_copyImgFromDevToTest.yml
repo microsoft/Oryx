@@ -18,7 +18,7 @@ parameters:
     type: string
     default: oryxtestmcr.azurecr.io/public/oryx
   - name: nightlyTag
-    type: any
+    type: string
   - name: cliImages
     type: object
     default:
