@@ -10,6 +10,7 @@ declare -r ORYX_BUILDPACK_VERSION_PLACEHOLDER="%ORYX_BUILDPACK_VERSION%"
 declare -r ORYX_RUN_STACK_IMAGE_PLACEHOLDER="%ORYX_RUN_STACK_IMAGE%"
 declare -r ORYX_BUILD_STACK_IMAGE_PLACEHOLDER="%ORYX_BUILD_STACK_IMAGE%"
 declare -r MCR_BUILDER_IMAGE_REPO="mcr.microsoft.com/oryx/builder"
+declare -r MCR_CLI_IMAGE_REPO="mcr.microsoft.com/oryx/cli"
 
 # parameter defaults
 builderImageVersion="20230208.1"
@@ -55,19 +56,21 @@ while (( "$#" )); do
   esac
 done
 
-function replaceRepoWithBuilderMCR() {
+function replaceRepo() {
   local imageName="$1"
-  # Retag build image with MCR builder repo
+  local newRepo="$2"
+  # Retag build image with new repo
     IFS=':' read -ra SPLIT_IMAGE_NAME <<< "$imageName"
     local repo="${SPLIT_IMAGE_NAME[0]}"
     local tag="${SPLIT_IMAGE_NAME[1]}"
-    local mcrImage="$MCR_BUILDER_IMAGE_REPO:$tag"
-    docker tag "$imageName" "$mcrImage"
-    echo $mcrImage
+    local newImage="$newRepo:$tag"
+    docker tag "$imageName" "$newImage"
+    echo $newImage
 }
 
 if [ -z $cliBuilderImage ]; then
     cliBuilderImage="$destinationFqdn/public/oryx/cli:builder-debian-buster-$builderImageVersion"
+    mcrCliBuilderImage=$(replaceRepo "$cliBuilderImage" "$MCR_CLI_IMAGE_REPO")
 fi
 
 # Create artifact dir & files
@@ -87,17 +90,17 @@ buildStackImage="$destinationFqdn/$destinationRepo:stack-build-$builderImageVers
 runStackImage="$destinationFqdn/$destinationRepo:stack-run-$builderImageVersion"
 
 docker build $SCRIPT_DIR/stack/ \
-    --build-arg CLI_BUILDER_IMAGE="$cliBuilderImage" \
+    --build-arg CLI_BUILDER_IMAGE="$mcrCliBuilderImage" \
     -t $baseImage \
     --target base
 
 docker build $SCRIPT_DIR/stack/ \
-    --build-arg CLI_BUILDER_IMAGE="$cliBuilderImage" \
+    --build-arg CLI_BUILDER_IMAGE="$mcrCliBuilderImage" \
     -t $runStackImage \
     --target run
 
 docker build $SCRIPT_DIR/stack/  \
-    --build-arg CLI_BUILDER_IMAGE="$cliBuilderImage" \
+    --build-arg CLI_BUILDER_IMAGE="$mcrCliBuilderImage" \
     -t $buildStackImage \
     --target build
 
@@ -123,10 +126,10 @@ echo "$buildPackImage" >> $ACR_BUILDER_IMAGES_ARTIFACTS_FILE
 echo "-------------------------------------------------"
 
 # replace image tags with their MCR equivalent
-mcrBaseImage=$(replaceRepoWithBuilderMCR "$baseImage")
-mcrRunStackImage=$(replaceRepoWithBuilderMCR "$runStackImage")
-mcrBuildStackImage=$(replaceRepoWithBuilderMCR "$buildStackImage")
-mcrBuildPackImage=$(replaceRepoWithBuilderMCR "$buildPackImage")
+mcrBaseImage=$(replaceRepo "$baseImage" "$MCR_BUILDER_IMAGE_REPO")
+mcrRunStackImage=$(replaceRepo "$runStackImage" "$MCR_BUILDER_IMAGE_REPO")
+mcrBuildStackImage=$(replaceRepo "$buildStackImage" "$MCR_BUILDER_IMAGE_REPO")
+mcrBuildPackImage=$(replaceRepo "$buildPackImage" "$MCR_BUILDER_IMAGE_REPO")
 
 # Copy template.builder.toml over to builder.toml and replace placeholders
 builderTomlTemplate="$SCRIPT_DIR/builder/template.builder.toml"
