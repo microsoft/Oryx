@@ -15,14 +15,14 @@ baseBuilderImage="mcr.microsoft.com/oryx/builder:20230208.1"
 PARAMS=""
 while (( "$#" )); do
   case "$1" in
-		-f|--destination-fqdn)
-		  destinationFqdn=$2
-		  shift 2
-		  ;;
-		-r|--destination-repo)
-		  destinationRepo=$2
-		  shift 2
-		  ;;
+    -f|--destination-fqdn)
+      destinationFqdn=$2
+      shift 2
+      ;;
+    -r|--destination-repo)
+      destinationRepo=$2
+      shift 2
+      ;;
     -t|--destination-tag)
       destinationTag=$2
       shift 2

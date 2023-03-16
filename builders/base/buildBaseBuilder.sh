@@ -19,45 +19,45 @@ buildpackVersion="0.0.4"
 
 PARAMS=""
 while (( "$#" )); do
-	case "$1" in
-		-c|--cli-builder-image)
-		cliBuilderImage=$2
-		shift 2
-		;;
-		-v|--builder-image-version)
-		builderImageVersion=$2
-		shift 2
-		;;
-		-f|--destination-registry-fqdn)
-		destinationFqdn=$2
-		shift 2
-		;;
-		-r|--destination-registry-repo)
-		destinationRepo=$2
-		shift 2
-		;;
-		--buildpack-version)
-		buildpackVersion=$2
-		shift 2
-		;;
-		--) # end argument parsing
-		shift
-		break
-		;;
-		-*|--*=) # unsupported flags
-		echo "Error: Unsupported flag $1" >&2
-		exit 1
-		;;
-		*) # preserve positional arguments
-		PARAMS="$PARAMS $1"
-		shift
-		;;
-	esac
+  case "$1" in
+    -c|--cli-builder-image)
+    cliBuilderImage=$2
+    shift 2
+    ;;
+    -v|--builder-image-version)
+    builderImageVersion=$2
+    shift 2
+    ;;
+    -f|--destination-registry-fqdn)
+    destinationFqdn=$2
+    shift 2
+    ;;
+    -r|--destination-registry-repo)
+    destinationRepo=$2
+    shift 2
+    ;;
+    --buildpack-version)
+    buildpackVersion=$2
+    shift 2
+    ;;
+    --) # end argument parsing
+    shift
+    break
+    ;;
+    -*|--*=) # unsupported flags
+    echo "Error: Unsupported flag $1" >&2
+    exit 1
+    ;;
+    *) # preserve positional arguments
+    PARAMS="$PARAMS $1"
+    shift
+    ;;
+  esac
 done
 
 function replaceRepoWithBuilderMCR() {
-	local imageName="$1"
-	# Retag build image with MCR builder repo
+  local imageName="$1"
+  # Retag build image with MCR builder repo
     IFS=':' read -ra SPLIT_IMAGE_NAME <<< "$imageName"
     local repo="${SPLIT_IMAGE_NAME[0]}"
     local tag="${SPLIT_IMAGE_NAME[1]}"
