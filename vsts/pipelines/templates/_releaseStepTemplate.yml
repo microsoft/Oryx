@@ -164,6 +164,14 @@ steps:
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Push builder images to PME staging ACR'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
+    args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-builder-images-mcr.txt'
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
   displayName: 'Push runtime images to PME staging ACR'
   inputs:
     type: FilePath

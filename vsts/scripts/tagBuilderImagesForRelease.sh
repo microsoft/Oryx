@@ -45,8 +45,8 @@ function tagBuilderImage() {
     echo -------------------------------------------------------------------------------
 }
 
-tagBuilderImage "oryxdevmcr.azurecr.io/public/oryx/builder:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
-tagBuilderImage "oryxdevmcr.azurecr.io/public/oryx/builder:capps-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "capps" "capps-$RELEASE_TAG_NAME"
+tagBuilderImage "$ACR_PUBLIC_PREFIX/builder:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
+tagBuilderImage "$ACR_PUBLIC_PREFIX/builder:capps-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "capps" "capps-$RELEASE_TAG_NAME"
 
 echo "printing pme tags from $outPmeFileMCR"
 cat $outPmeFileMCR
