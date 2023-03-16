@@ -6,6 +6,8 @@ parameters:
   acrDevContainerName: oryxdevmcr.azurecr.io/public/oryx
   acrTestContainerName: oryxtestmcr.azurecr.io/public/oryx
   nightlyTag: any
+
+variables:
   cliImages:
     - name: 'cli-buster'
       sourceTag: 'debian-buster-Oryx-Nightly.'
@@ -110,7 +112,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrTestName }}
 
 - script: |
-      for image in "${{ parameters.cliImages[@] }}"; do
+      for image in "${{ variables.cliImages[@] }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -118,7 +120,7 @@ steps:
   displayName: 'Copy CLI Images to Test ACR'
 
 - script: |
-      for image in "${{ parameters.ltsImages[@] }}"; do
+      for image in "${{ variables.ltsImages[@] }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -126,7 +128,7 @@ steps:
   displayName: 'Copy lts Images to Test ACR'
 
 - script: |
-      for image in "${{ parameters.vsoImages[@] }}"; do
+      for image in "${{ variables.vsoImages[@] }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -134,15 +136,18 @@ steps:
   displayName: 'Copy Vso Images to Test ACR'
 
 - script: |
-      for image in "${{ parameters.fullImages[@] }}"; do
+      for image in "${{ variables.fullImages[@] }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       done
   displayName: 'Copy Full Images to Test ACR'
 
-- script: |
-      for image in "${{ parameters.githubActions[@] }}"; do
+- task: Bash@3
+  inputs:
+    tagetType: 'inline'
+    script: |
+      for image in "${{ variables.githubActions[@] }}"; do
         docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
         docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
         docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
