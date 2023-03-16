@@ -12,7 +12,6 @@ declare -r ORYX_BUILD_STACK_IMAGE_PLACEHOLDER="%ORYX_BUILD_STACK_IMAGE%"
 declare -r MCR_BUILDER_IMAGE_REPO="mcr.microsoft.com/oryx/builder"
 
 # parameter defaults
-cliBuilderImage="mcr.microsoft.com/oryx/cli:builder-debian-buster-20230208.1"
 builderImageVersion="20230208.1"
 destinationFqdn="oryxprodmcr.azurecr.io"
 destinationRepo="public/oryx/builder"
@@ -66,6 +65,10 @@ function replaceRepoWithBuilderMCR() {
     docker tag "$imageName" "$mcrImage"
     echo $mcrImage
 }
+
+if [ -z $cliBuilderImage ]; then
+    cliBuilderImage="$destinationFqdn/public/oryx/cli:builder-debian-buster-$builderImageVersion"
+fi
 
 # Create artifact dir & files
 echo "Initializing artifacts file: $ACR_BUILDER_IMAGES_ARTIFACTS_FILE"

@@ -107,6 +107,13 @@ steps:
     scriptPath: ./vsts/scripts/tagCliImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Pull and create release tags for Builder images'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/tagBuilderImagesForRelease.sh
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 3.1.x'
   inputs:
