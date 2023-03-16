@@ -9,8 +9,9 @@ locally to `docker` with this ACR instance's credentials.
 
 #### Build CLI image
 
-_Note_: The CLI Builder image used has its OS packages pre-baked, since the builder **CAN NOT** run as a root user and
-dynamically install components via `apt-get` at run-time.
+_Note_: The CLI Builder image used has its OS packages pre-baked, since
+[the builder **CAN NOT** run as a root user](https://buildpacks.io/docs/operator-guide/create-a-stack/#specification)
+to dynamically install components via `apt-get` at run-time.
 
 ```
 ./oryx/build/buildBuildImages.sh -t cli-builder-buster
