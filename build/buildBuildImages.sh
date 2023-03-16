@@ -440,15 +440,16 @@ function buildCliImage() {
 
 function buildCliBuilderImage() {
 	buildBuildScriptGeneratorImage
-	
-	local debianFlavor=$1
+	local osType=$1
+	local osFlavor=$2
 	local builtImageRepo="$ACR_CLI_BUILD_IMAGE_REPO"
 	local devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO"
 
-	if [ -z "$debianFlavor" ]; then
-		debianFlavor="stretch"
+	if [ -z "$osType" && -z "$osFlavor" ]; then
+		osType="debian"
+		osFlavor="buster"
 	fi
-	imageTag="builder-debian-$debianFlavor"
+	imageTag="builder-$osType-$osFlavor"
 	devImageName="$devImageRepo:$imageTag"
 	builtImageName="$builtImageRepo:$imageTag"
 
@@ -457,7 +458,7 @@ function buildCliBuilderImage() {
 	docker build -t $builtImageName \
 		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
-		--build-arg DEBIAN_FLAVOR=$debianFlavor \
+		--build-arg DEBIAN_FLAVOR=$osFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_BUILDER_DOCKERFILE" \
 		.
@@ -532,7 +533,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildCliImage "buster"
 	buildCliImage "bullseye"
 	buildCliImage
-	buildCliBuilderImage "buster"
+	buildCliBuilderImage "debian" "buster"
 	buildBuildPackImage
 	buildFullImage "buster"
 	buildFullImage "bullseye"
@@ -574,7 +575,7 @@ elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 	buildCliImage "buster"
 	buildCliImage "bullseye"
-	buildCliBuilderImage "buster"
+	buildCliBuilderImage "debian" "buster"
 elif [ "$imageTypeToBuild" == "cli-stretch" ]; then
 	buildCliImage
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
@@ -582,7 +583,7 @@ elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 elif [ "$imageTypeToBuild" == "cli-bullseye" ]; then
 	buildCliImage "bullseye"
 elif [ "$imageTypeToBuild" == "cli-builder-buster" ]; then
-	buildCliBuilderImage "buster"
+	buildCliBuilderImage "debian" "buster"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else

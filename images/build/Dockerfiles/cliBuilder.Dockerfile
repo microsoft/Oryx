@@ -4,7 +4,7 @@ ARG DEBIAN_FLAVOR
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl as main
 ARG DEBIAN_FLAVOR
 ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
-ARG AI_KEY
+ARG AI_CONNECTION_STRING
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
@@ -18,7 +18,7 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8" \
-    ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
+    ORYX_AI_CONNECTION_STRING="${AI_CONNECTION_STRING}" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 
 # Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
