@@ -27,7 +27,7 @@ steps:
   displayName: 'Build container apps builder images'
   inputs:
     scriptPath: ./builders/container-apps/buildCappsBuilder.sh
-    args: -f ${{ parameters.acrName }} -r "public/oryx/builder" -t "capps-$(Build.DefinitionName).$(Build.BuildNumber)"" -b "${{ parameters.acrName }}/public/oryx/builder:$(Build.DefinitionName).$(Build.BuildNumber)"
+    args: -f ${{ parameters.acrName }} -r "public/oryx/builder" -t "capps-$(Build.DefinitionName).$(Build.BuildNumber)" -b "${{ parameters.acrName }}/public/oryx/builder:$(Build.DefinitionName).$(Build.BuildNumber)"
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
 
 - task: Docker@1
