@@ -22,26 +22,12 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 
 # Install an assortment of traditional tooling (unicode, SSL, HTTP, etc.)
-# Also install some PHP requirements (unsure why it's gated by buster flavor, maybe due to some libraries being released per debian flavor, but we should try to install these pre-reqs no matter what)
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu63 \
             libcurl4 \
             libssl1.1 \
-            # PHP pre-reqs
-            ca-certificates \
-            libargon2-0 \
-            libcurl4-openssl-dev \
-            libedit-dev \
-            libonig-dev \
-            libncurses6 \
-            libsodium-dev \
-            libsqlite3-dev \
-            libxml2-dev \
-            xz-utils \
-            # ruby pre-req
-            libyaml-dev \
         && rm -rf /var/lib/apt/lists/* ; \
     elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \ 
         apt-get update \
@@ -75,6 +61,19 @@ RUN apt-get update \
         libgdiplus \
         # Required for mysqlclient
         default-libmysqlclient-dev \
+        # PHP pre-reqs
+        ca-certificates \
+        libargon2-0 \
+        libcurl4-openssl-dev \
+        libedit-dev \
+        libonig-dev \
+        libncurses6 \
+        libsodium-dev \
+        libsqlite3-dev \
+        libxml2-dev \
+        xz-utils \
+        # ruby pre-req
+        libyaml-dev \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
