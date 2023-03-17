@@ -37,6 +37,11 @@ labelContent="git_commit=$GIT_COMMIT, build_number=$BUILD_NUMBER, release_tag_na
 PARAMS=""
 while (( "$#" )); do
   case "$1" in
+    -token|--sas-token)
+      stagingPrivateStorageSasToken=$2
+      echo "token value: $2"
+      shift 2
+      ;;
     -t|--type)
       imageTypeToBuild=$2
       shift 2
@@ -68,7 +73,10 @@ echo "Image type to build is set to: $imageTypeToBuild"
 if [ -z "$sdkStorageAccountUrl" ]; then
 	sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
 fi
-
+if [ -z "$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN" ]; then
+    echo "Setting environment variable 'SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN' to the value that is passed from the CLI. $stagingPrivateStorageSasToken"
+    export SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN=$stagingPrivateStorageSasToken
+fi
 echo
 echo "SDK storage account url set to: $sdkStorageAccountUrl"
 

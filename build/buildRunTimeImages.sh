@@ -19,7 +19,7 @@ source $REPO_DIR/build/__stagingRuntimeConstants.sh
 PARAMS=""
 while (( "$#" )); do
   case "$1" in
-    -t|--sas-token)
+    -token|--sas-token)
       stagingPrivateStorageSasToken=$2
       echo "token value: $2"
       shift 2
