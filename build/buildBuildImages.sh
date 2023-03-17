@@ -447,7 +447,7 @@ function buildCliBuilderImage() {
 
 	if [ -z "$osType" && -z "$osFlavor" ]; then
 		osType="debian"
-		osFlavor="buster"
+		osFlavor="bullseye"
 	fi
 	imageTag="builder-$osType-$osFlavor"
 	devImageName="$devImageRepo:$imageTag"
@@ -533,7 +533,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildCliImage "buster"
 	buildCliImage "bullseye"
 	buildCliImage
-	buildCliBuilderImage "debian" "buster"
+	buildCliBuilderImage "debian" "bullseye"
 	buildBuildPackImage
 	buildFullImage "buster"
 	buildFullImage "bullseye"
@@ -575,20 +575,20 @@ elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 	buildCliImage "buster"
 	buildCliImage "bullseye"
-	buildCliBuilderImage "debian" "buster"
+	buildCliBuilderImage "debian" "bullseye"
 elif [ "$imageTypeToBuild" == "cli-stretch" ]; then
 	buildCliImage
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
 elif [ "$imageTypeToBuild" == "cli-bullseye" ]; then
 	buildCliImage "bullseye"
-elif [ "$imageTypeToBuild" == "cli-builder-buster" ]; then
-	buildCliBuilderImage "debian" "buster"
+elif [ "$imageTypeToBuild" == "cli-builder-bullseye" ]; then
+	buildCliBuilderImage "debian" "bullseye"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
-githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, cli-builder-buster, buildpack"
+githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, cli-builder-bullseye, buildpack"
 	exit 1
 fi
 

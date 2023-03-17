@@ -37,8 +37,8 @@ parameters:
         key: CliBullseye
         value: cli-bullseye
       - 
-        key: CliBuilderBuster
-        value: cli-builder-buster
+        key: CliBuilderBullseye
+        value: cli-builder-bullseye
       - 
         key: Buildpack
         value: buildpack
@@ -94,7 +94,7 @@ jobs:
   timeoutInMinutes: 480
   steps:
   - template: templates/_builderTemplate.yml
-  dependsOn: Job_BuildImage_CliBuilderBuster
+  dependsOn: Job_BuildImage_CliBuilderBullseye
 
 - job: Job_RuntimeImages
   displayName: Build and Test Runtime Images

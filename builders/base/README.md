@@ -23,15 +23,15 @@ _Note_: The CLI Builder image used has its OS packages pre-baked, since
 to dynamically install components via `apt-get` at run-time.
 
 ```
-./oryx/build/buildBuildImages.sh -t cli-builder-buster
+./oryx/build/buildBuildImages.sh -t cli-builder-bullseye
 
-docker tag oryx/cli-buster:debian-buster oryxprodmcr.azurecr.io/public/oryx/cli:builder-debian-buster-{BUILD_ID}
+docker tag oryx/cli:builder-debian-bullseye oryxprodmcr.azurecr.io/public/oryx/cli:builder-debian-bullseye-{BUILD_ID}
 ```
 
 #### Push CLI image
 
 ```
-docker push oryxprodmcr.azurecr.io/public/oryx/cli:builder-debian-buster-{BUILD_ID}
+docker push oryxprodmcr.azurecr.io/public/oryx/cli:builder-debian-bullseye-{BUILD_ID}
 ```
 
 #### Update the stack Dockerfile with the new CLI tag

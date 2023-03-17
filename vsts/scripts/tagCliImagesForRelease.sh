@@ -45,16 +45,16 @@ echo "$prodPmeImageRepo/cli:debian-bullseye-$RELEASE_TAG_NAME">>"$outPmeFile"
 docker tag "$cliBullseyeImage" "$prodPmeImageRepo/cli:debian-bullseye-$RELEASE_TAG_NAME"
 
 # CLI Builder images
-devCliBuilderBusterImage="$sourceImageRepo/cli:builder-debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
-builderProdTag="builder-debian-buster-$RELEASE_TAG_NAME"
-builderProdStableTag="builder-debian-buster-stable"
-prodCliBuilderBusterImage="$prodPmeImageRepo/cli:$builderProdTag"
-echo "Pulling CLI builder buster image '$devCliBuilderBusterImage'..."
-docker pull "$devCliBuilderBusterImage"
+devCliBuilderBullseyeImage="$sourceImageRepo/cli:builder-debian-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+builderProdTag="builder-debian-bullseye-$RELEASE_TAG_NAME"
+builderProdStableTag="builder-debian-bullseye-stable"
+prodCliBuilderBullseyeImage="$prodPmeImageRepo/cli:$builderProdTag"
+echo "Pulling CLI builder bullseye image '$devCliBuilderBullseyeImage'..."
+docker pull "$devCliBuilderBullseyeImage"
 
 echo "Retagging CLI builder buster image for '$prodPmeImageRepo/cli' with '$builderProdTag'..."
-echo "$prodCliBuilderBusterImage">>"$outPmeFile"
-docker tag "$devCliBuilderBusterImage" "$prodCliBuilderBusterImage"
+echo "$prodCliBuilderBullseyeImage">>"$outPmeFile"
+docker tag "$devCliBuilderBullseyeImage" "$prodCliBuilderBullseyeImage"
 
 if [ "$sourceBranchName" == "main" ]; then
     echo "Retagging CLI image with '{os type}-stable'..."
@@ -68,7 +68,7 @@ if [ "$sourceBranchName" == "main" ]; then
     docker tag "$cliBullseyeImage" "$prodPmeImageRepo/cli:debian-bullseye-stable"
     echo "$prodPmeImageRepo/cli:debian-bullseye-stable">>"$outPmeFile"
 
-    docker tag "$devCliBuilderBusterImage" "$prodPmeImageRepo/cli:$builderProdStableTag"
+    docker tag "$devCliBuilderBullseyeImage" "$prodPmeImageRepo/cli:$builderProdStableTag"
     echo "$prodPmeImageRepo/cli:$builderProdStableTag">>"$outPmeFile"
 else
     echo "Not creating 'stable' or 'latest' tags as source branch is not 'main'. Current branch is $sourceBranchName"

@@ -74,9 +74,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 RubyVersions.Ruby31Version, imageTestHelper.GetCliImage(imageTag));
         }
 
-        [Theory, Trait("category", "cli-builder-buster")]
-        [InlineData(ImageTestHelperConstants.CliBuilderBusterTag)]
-        public void PipelineTestInvocationCliBuilderBuster(string imageTag)
+        [Theory, Trait("category", "cli-builder-bullseye")]
+        [InlineData(ImageTestHelperConstants.CliBuilderBullseyeTag)]
+        public void PipelineTestInvocationCliBuilderBullseye(string imageTag)
         {
             var imageTestHelper = new ImageTestHelper();
             GeneratesScript_AndBuildSinatraAppWithDynamicInstall(

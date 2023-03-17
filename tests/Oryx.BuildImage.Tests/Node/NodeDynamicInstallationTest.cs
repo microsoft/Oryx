@@ -74,15 +74,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        public static TheoryData<string, string> ImageNameDataCliBuilderBuster
+        public static TheoryData<string, string> ImageNameDataCliBuilderBullseye
         {
             get
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag));
-                data.Add("14.19.1", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag));
-                data.Add("16.14.2", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBusterTag));
+                data.Add("12.22.11", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
+                data.Add("14.19.1", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
+                data.Add("16.14.2", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
                 return data;
             }
         }
@@ -120,9 +120,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }
 
-        [Theory, Trait("category", "cli-builder-buster")]
-        [MemberData(nameof(ImageNameDataCliBuilderBuster))]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBuilderBuster(string version, string buildImageName)
+        [Theory, Trait("category", "cli-builder-bullseye")]
+        [MemberData(nameof(ImageNameDataCliBuilderBullseye))]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBuilderBullseye(string version, string buildImageName)
         {
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }

@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _cliStretchTag = ImageTestHelperConstants.CliStretchTag;
         private const string _cliBusterTag = ImageTestHelperConstants.CliBusterTag;
         private const string _cliBullseyeTag = ImageTestHelperConstants.CliBullseyeTag;
-        private const string _cliBuilderBusterTag = ImageTestHelperConstants.CliBuilderBusterTag;
+        private const string _cliBuilderBullseyeTag = ImageTestHelperConstants.CliBuilderBullseyeTag;
         private const string _latestTag = ImageTestHelperConstants.LatestStretchTag;
         private const string _ltsVersionsStretch = ImageTestHelperConstants.LtsVersionsStretch;
         private const string _ltsVersionsBuster = ImageTestHelperConstants.LtsVersionsBuster;
@@ -255,9 +255,9 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetCliImage(_cliBullseyeTag);
             }
-            else if(string.Equals(tag, _cliBuilderBusterTag))
+            else if(string.Equals(tag, _cliBuilderBullseyeTag))
             {
-                return GetCliBuilderImage(_cliBuilderBusterTag);
+                return GetCliBuilderImage(_cliBuilderBullseyeTag);
             }
             else if (string.Equals(tag, _fullStretch))
             {
@@ -419,9 +419,9 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetCliBuilderImage(string imageTagPrefix = null)
         {
             if (!string.IsNullOrEmpty(imageTagPrefix)
-                && string.Equals(imageTagPrefix.ToLower(), _cliBuilderBusterTag))
+                && string.Equals(imageTagPrefix.ToLower(), _cliBuilderBullseyeTag))
             {
-                return $"{_repoPrefix}/{_cliRepository}:{_cliBuilderBusterTag}{_tagSuffix}";
+                return $"{_repoPrefix}/{_cliRepository}:{_cliBuilderBullseyeTag}{_tagSuffix}";
             }
 
             throw new ArgumentException($"Could not find cli builder image with image tag prefix '{imageTagPrefix}'.");
@@ -514,7 +514,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string CliStretchTag = "debian-stretch";
         public const string CliBusterTag = "debian-buster";
         public const string CliBullseyeTag = "debian-bullseye";
-        public const string CliBuilderBusterTag = "builder-debian-buster";
+        public const string CliBuilderBullseyeTag = "builder-debian-bullseye";
         public const string LatestStretchTag = "debian-stretch";
         public const string LtsVersionsStretch = "lts-versions-debian-stretch";
         public const string LtsVersionsBuster = "lts-versions-debian-buster";
