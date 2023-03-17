@@ -1,4 +1,6 @@
 #!/bin/bash
+set -exo pipefail
+
 # This script that builds the builder image using the dockerfile in this directory,
 # and pushes it to a specified azure container registry. Users must specify an 
 # ACR name to push the image to, and have the option to override the image repo and tag for the image.

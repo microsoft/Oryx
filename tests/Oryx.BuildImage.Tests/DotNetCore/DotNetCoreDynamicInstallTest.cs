@@ -93,9 +93,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli-builder-buster")]
-        [InlineData(NetCoreApp31MvcApp, "3.1")]
-        [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0")]
+        [InlineData(NetCore6PreviewWebApp, "6.0")]
+        [InlineData(NetCoreApp70WebApp, "7.0")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuilderBuster(
             string appName,
             string runtimeVersion)
