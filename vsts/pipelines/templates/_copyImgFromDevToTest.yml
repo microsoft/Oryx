@@ -23,53 +23,53 @@ parameters:
     type: object
     default:
       - name: 'cli-buster'
-        sourceTag: 'debian-buster-Oryx-Nightly.'
-        destinationTag: 'debian-buster.'
+        sourceTag: 'debian-buster-Oryx-Nightly'
+        destinationTag: 'debian-buster'
       - name: 'cli-bullseye'
-        sourceTag: 'debian-bullseye-Oryx-Nightly.'
-        destinationTag: 'debian-bullseye.'
+        sourceTag: 'debian-bullseye-Oryx-Nightly'
+        destinationTag: 'debian-bullseye'
       - name: 'cli-stretch'
-        sourceTag: 'debian-stretch-Oryx-Nightly.'
-        destinationTag: 'debian-stretch.'
+        sourceTag: 'debian-stretch-Oryx-Nightly'
+        destinationTag: 'debian-stretch'
   - name: ltsImages
     type: object
     default:
       - name: 'lts-buster'
-        sourceTag: 'lts-versions-debian-buster-Oryx-Nightly.'
-        destinationTag: 'lts-versions-debian-buster.'
+        sourceTag: 'lts-versions-debian-buster-Oryx-Nightly'
+        destinationTag: 'lts-versions-debian-buster'
       - name: 'lts-stretch'
-        sourceTag: 'lts-versions-debian-stretch-Oryx-Nightly.'
-        destinationTag: 'lts-versions-debian-stretch.'
+        sourceTag: 'lts-versions-debian-stretch-Oryx-Nightly'
+        destinationTag: 'lts-versions-debian-stretch'
   - name: vsoImages
     type: object
     default:
       - name: 'vso-ubuntu'
-        sourceTag: 'vso-ubuntu-focal-Oryx-Nightly.'
-        destinationTag: 'vso-ubuntu-focal.'
+        sourceTag: 'vso-ubuntu-focal-Oryx-Nightly'
+        destinationTag: 'vso-ubuntu-focal'
       - name: 'vso-bullseye'
-        sourceTag: 'vso-debian-bullseye-Oryx-Nightly.'
-        destinationTag: 'vso-debian-bullseye.'
+        sourceTag: 'vso-debian-bullseye-Oryx-Nightly'
+        destinationTag: 'vso-debian-bullseye'
   - name: fullImages
     type: object
     default:
       - name: 'full-buster'
-        sourceTag: 'full-debian-buster-Oryx-Nightly.'
-        destinationTag: 'full-debian-buster.'
+        sourceTag: 'full-debian-buster-Oryx-Nightly'
+        destinationTag: 'full-debian-buster'
       - name: 'full-bullseye'
-        sourceTag: 'full-debian-bullseye-Oryx-Nightly.'
-        destinationTag: 'full-debian-bullseye.'
+        sourceTag: 'full-debian-bullseye-Oryx-Nightly'
+        destinationTag: 'full-debian-bullseye'
   - name: githubActions
     type: object
     default:
       - name: 'github-actions-bullseye'
-        sourceTag: 'github-actions-debian-bullseye-Oryx-Nightly.'
-        destinationTag: 'github-actions-debian-bullseye.'
+        sourceTag: 'github-actions-debian-bullseye-Oryx-Nightly'
+        destinationTag: 'github-actions-debian-bullseye'
       - name: 'github-actions-buster'
-        sourceTag: 'github-actions-debian-buster-Oryx-Nightly.'
-        destinationTag: 'github-actions-debian-buster.'
+        sourceTag: 'github-actions-debian-buster-Oryx-Nightly'
+        destinationTag: 'github-actions-debian-buster'
       - name: 'github-actions-stretch'
-        sourceTag: 'github-actions-debian-stretch-Oryx-Nightly.'
-        destinationTag: 'github-actions-debian-stretch.'
+        sourceTag: 'github-actions-debian-stretch-Oryx-Nightly'
+        destinationTag: 'github-actions-debian-stretch'
 
 steps:
 
@@ -132,15 +132,11 @@ steps:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrTestName }}
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
+- ${{ each image in parameters.cliImages }}
     script: |
-      for image in "${{ parameters.cliImages }}"; do
-        docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
-        docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
-        docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
-      done
+      docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
   displayName: 'Copy CLI Images to Test ACR'
 
 - task: Bash@3
