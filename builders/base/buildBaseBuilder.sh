@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ex
 
 declare -r SCRIPT_DIR=$( cd $( dirname "$0" ) && pwd )
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
