@@ -70,8 +70,6 @@ RUN apt-get update \
         libgssapi-krb5-2 \
         libstdc++6 \
         zlib1g \
-        # For .NET Core 1.1 (I believe we can remove this, .NET Core 1.1 has been 'End of Support" for three years)
-        libuuid1 \
         libunwind8 \
         rsync \
         libgdiplus \

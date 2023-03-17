@@ -52,7 +52,7 @@ prodCliBuilderBullseyeImage="$prodPmeImageRepo/cli:$builderProdTag"
 echo "Pulling CLI builder bullseye image '$devCliBuilderBullseyeImage'..."
 docker pull "$devCliBuilderBullseyeImage"
 
-echo "Retagging CLI builder buster image for '$prodPmeImageRepo/cli' with '$builderProdTag'..."
+echo "Retagging CLI builder bullseye image for '$prodPmeImageRepo/cli' with '$builderProdTag'..."
 echo "$prodCliBuilderBullseyeImage">>"$outPmeFile"
 docker tag "$devCliBuilderBullseyeImage" "$prodCliBuilderBullseyeImage"
 
