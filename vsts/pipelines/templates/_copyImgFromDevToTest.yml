@@ -93,35 +93,35 @@ steps:
 - ${{ each image in parameters.cliImages }}:
   - script: |
       docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
-      docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Copy CLI Images to Test ACR'
 
 - ${{ each image in parameters.ltsImages }}:
   - script: |
       docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
-      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Copy lts Images to Test ACR'
 
 - ${{ each image in parameters.vsoImages }}:
   - script: |
       docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
-      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Copy Vso Images to Test ACR'
 
 - ${{ each image in parameters.fullImages }}:
   - script: |
       docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
-      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Copy Full Images to Test ACR'
 
 - ${{ each image in parameters.githubActions }}:
   - script: |
       docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
-      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Copy Github Action Images to Test ACR'
 
