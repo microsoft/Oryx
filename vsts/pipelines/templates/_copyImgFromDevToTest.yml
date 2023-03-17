@@ -76,14 +76,14 @@ steps:
 - checkout: self
   clean: true
 
-- task: Docker@1
+- task: Docker@2
   displayName: Dev container registry login
   inputs:
     command: login
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrDevName }}
 
-- task: Docker@1
+- task: Docker@2
   displayName: Test container registry login
   inputs:
     command: login
@@ -125,14 +125,14 @@ steps:
       docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Copy Github Action Images to Test ACR'
 
-- task: Docker@1
+- task: Docker@2
   displayName: Dev Container registry logout
   inputs:
     command: logout
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrDevName }}
 
-- task: Docker@1
+- task: Docker@2
   displayName: Dev Container registry logout
   inputs:
     command: logout
