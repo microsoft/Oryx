@@ -137,7 +137,7 @@ steps:
       docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
       docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
-  displayName: 'Copy CLI Images to Test ACR'
+    displayName: 'Copy CLI Images to Test ACR'
 
 - task: Bash@3
   inputs:
