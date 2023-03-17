@@ -80,10 +80,9 @@ steps:
   displayName: Dev container registry login
   inputs:
     command: login
-    azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrDevName }}
+    containerRegistry: ${{ parameters.ascName }}
 
-- task: Docker@2
+- task: Docker@1
   displayName: Test container registry login
   inputs:
     command: login
