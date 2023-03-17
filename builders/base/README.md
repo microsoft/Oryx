@@ -1,6 +1,15 @@
 ## Oryx Builder
 
-### Steps for releasing new builder
+### Official release
+The Oryx-CI pipeline will release a version of the base builder image as `mcr.microsoft.com/oryx/builder:{TAG}`.
+
+### Local testing and release to personal ACR
+Use the `./build/buildBuildImages.sh` script to build a local version of the cli-builder image.
+Use the `./buildBaseBuilder.sh` script, passing in the cli-builder image you just built, to build a local version 
+of the basebuilder image.
+
+### Manual release
+The following steps detail releasing a new base builder image manually.
 
 #### Prerequisites
 
