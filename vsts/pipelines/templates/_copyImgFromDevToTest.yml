@@ -76,11 +76,12 @@ steps:
 - checkout: self
   clean: true
 
-- task: Docker@2
+- task: Docker@1
   displayName: Dev container registry login
   inputs:
     command: login
-    containerRegistry: ${{ parameters.ascName }}
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrDevName }}
 
 - task: Docker@1
   displayName: Test container registry login
@@ -91,6 +92,7 @@ steps:
 
 - ${{ each image in parameters.cliImages }}:
   - script: |
+      az acr login --name oryxdevmcr.azurecr.io
       docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
       docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
@@ -124,14 +126,14 @@ steps:
       docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Copy Github Action Images to Test ACR'
 
-- task: Docker@2
+- task: Docker@1
   displayName: Dev Container registry logout
   inputs:
     command: logout
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrDevName }}
 
-- task: Docker@2
+- task: Docker@1
   displayName: Dev Container registry logout
   inputs:
     command: logout
