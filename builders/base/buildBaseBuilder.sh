@@ -4,8 +4,11 @@ set -ex
 declare -r SCRIPT_DIR=$( cd $( dirname "$0" ) && pwd )
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
+source $REPO_DIR/build/__sdkStorageConstants.sh
 
 # constants
+declare -r ORYX_AI_CONNECTION_STRING_PLACEHOLDER="%ORYX_AI_CONNECTION_STRING%"
+declare -r ORYX_SDK_STORAGE_BASE_URL_PLACEHOLDER="%ORYX_SDK_STORAGE_BASE_URL%"
 declare -r ORYX_BUILDPACK_IMAGE_PLACEHOLDER="%ORYX_BUILDPACK_IMAGE%"
 declare -r ORYX_BUILDPACK_VERSION_PLACEHOLDER="%ORYX_BUILDPACK_VERSION%"
 declare -r ORYX_RUN_STACK_IMAGE_PLACEHOLDER="%ORYX_RUN_STACK_IMAGE%"
@@ -18,6 +21,7 @@ builderImageVersion="20230208.1"
 destinationFqdn="oryxprodmcr.azurecr.io"
 destinationRepo="public/oryx/builder"
 buildpackVersion="0.0.4"
+storageAccountUrl="$PROD_SDK_CDN_STORAGE_BASE_URL"
 
 PARAMS=""
 while (( "$#" )); do
@@ -40,6 +44,10 @@ while (( "$#" )); do
     ;;
     --buildpack-version)
     buildpackVersion=$2
+    shift 2
+    ;;
+    -s|--storage-account-url)
+    storageAccountUrl=$2
     shift 2
     ;;
     --) # end argument parsing
@@ -110,6 +118,12 @@ echo "$runStackImage" >> $ACR_BUILDER_IMAGES_ARTIFACTS_FILE
 echo "$buildStackImage" >> $ACR_BUILDER_IMAGES_ARTIFACTS_FILE
 echo "-------------------------------------------------"
 
+# Copy buildpack/bin/template.build over to buildpack/bin/build and replace placeholders
+buildFileTemplate="$SCRIPT_DIR/buildpack/bin/template.build"
+targetBuildFile="$SCRIPT_DIR/buildpack/bin/build"
+cp "$buildFileTemplate" "$targetBuildFile"
+sed -i "s|$ORYX_AI_CONNECTION_STRING_PLACEHOLDER|$APPLICATION_INSIGHTS_CONNECTION_STRING|g" "$targetBuildFile"
+sed -i "s|$ORYX_SDK_STORAGE_BASE_URL_PLACEHOLDER|$storageAccountUrl|g" "$targetBuildFile"
 
 # Copy template.buildpack.toml over to buildpack.toml and replace placeholders
 buildpackTomlTemplate="$SCRIPT_DIR/buildpack/template.buildpack.toml"

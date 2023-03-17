@@ -19,7 +19,7 @@ ENV	COMPRESSED_APP_LOCATION="/app-source/app.tar.gz" \
 	CNB_PLATFORM_API="0.9" \
 	ORYX_SDK_STORAGE_BASE_URL="https://oryx-cdn.microsoft.io" \
 	ENABLE_DYNAMIC_INSTALL="true" \
-	ORYX_AI_INSTRUMENTATION_KEY="4aadba6b-30c8-42db-9b93-024d5c62b887" \
+	ORYX_AI_CONNECTION_STRING="InstrumentationKey=4aadba6b-30c8-42db-9b93-024d5c62b887" \
 	MANAGEMENT_RESOURCE_URI="https://management.core.windows.net/"
 
 USER root
