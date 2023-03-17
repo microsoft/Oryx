@@ -132,7 +132,7 @@ steps:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrTestName }}
 
-- ${{ each image in parameters.cliImages }}
+- ${{ each image in parameters.cliImages }}:
   - script: |
       docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
       docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
