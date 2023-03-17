@@ -133,7 +133,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrTestName }}
 
 - ${{ each image in parameters.cliImages }}
-    script: |
+  - script: |
       docker pull "${{ parameters.acrDevContainerName }}/cli:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
       docker tag "${{ parameters.acrDevContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
       docker push "${{ parameters.acrTestContainerName }}/cli:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
