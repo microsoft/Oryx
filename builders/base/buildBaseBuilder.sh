@@ -78,7 +78,7 @@ function replaceRepo() {
 }
 
 if [ -z $cliBuilderImage ]; then
-    cliBuilderImage="$destinationFqdn/public/oryx/cli:builder-debian-buster-$builderImageVersion"
+    cliBuilderImage="$destinationFqdn/public/oryx/cli:builder-debian-bullseye-$builderImageVersion"
     docker pull $cliBuilderImage
     mcrCliBuilderImage=$(replaceRepo "$cliBuilderImage" "$MCR_CLI_IMAGE_REPO")
 fi
