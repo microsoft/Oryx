@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 description: OptionArgumentTemplates.SourceDirDescription,
                 getDefaultValue: () => Directory.GetCurrentDirectory());
             var platformDirOption = new Option<string>(OptionArgumentTemplates.PlatformDir, OptionArgumentTemplates.BuildpackDetectPlatformDirDescription);
-            var planPathOption = new Option<string>(OptionArgumentTemplates.PlanPath, OptionArgumentTemplates.BuildpackDetectPlatformDirDescription);
+            var planPathOption = new Option<string>(OptionArgumentTemplates.PlanPath, OptionArgumentTemplates.PlanPathDescription);
             var logFilePathOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
             var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
 

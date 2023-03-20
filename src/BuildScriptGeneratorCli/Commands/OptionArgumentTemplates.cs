@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static readonly string BuildpackDetectPlatformDirDescription = "Platform directory path.";
 
         // ExecCommand
-        public static readonly string ExecSourceDescription = "The command to execute in an app-specific environment.";
+        public static readonly string ExecSourceDescription = "Source directory.";
 
         // DetectCommand
         public static readonly string DetectSourceDirDescription = "The source directory. If no value is provided, the current directory is used.";
