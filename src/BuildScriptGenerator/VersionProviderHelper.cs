@@ -33,6 +33,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             {
                 versionDirectories = Directory.EnumerateDirectories(versionsDir, "*", listOptions)
                     .Select(versionDir => new DirectoryInfo(versionDir));
+                foreach (DirectoryInfo versionDirectory in versionDirectories)
+                {
+                    Console.WriteLine($"Version Directory Full name : {versionDirectory.FullName}");
+                }
             }
             catch (IOException)
             {

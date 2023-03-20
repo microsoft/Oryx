@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // of Oryx might explicitly supply the platform of the app as .NET Core, we still need to make sure the
             // build environment is setup with detected platforms' sdks.
             this.outputWriter.WriteLine("Detecting platforms...");
-
+            this.outputWriter.WriteLine("Entered here!");
             foreach (var platform in this.platforms)
             {
                 // Check if a platform is enabled or not

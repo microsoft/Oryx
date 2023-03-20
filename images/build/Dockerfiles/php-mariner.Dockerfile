@@ -18,6 +18,7 @@ RUN tdnf update -y \
       #  libgdiplus \
          # Required for mysqlclient
         mariadb \
+        wget \
        # mysql \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
@@ -28,10 +29,15 @@ RUN tdnf update -y \
     && tmpDir="/opt/tmp" \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
-    && mkdir -p /opt/php/8.1/bin \
-    && chmod -R 777 opt/php/8.1/bin \
+    && mkdir -p /opt/php/8.1.0 \
+    && chmod -R 777 /opt/php/8.1.0 \
+    && mkdir -p /opt/php-composer/2.0.8 \
+    && chmod -R 777 /opt/php-composer/2.0.8 \
    # && cp -R /usr/lib/python3.9 /opt/python/3.9.16/bin \
    # && ln -s opt/python/3.9.16/bin/python3.9 /usr/lib/python3.9 \
+    && curl -sS https://getcomposer.org/installer | php \
+    && mv composer.phar /usr/local/bin/composer \
+    && chmod +x /usr/local/bin/composer \
     && echo "php-mariner" > /opt/oryx/.imagetype \
     && echo "MARINER" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 

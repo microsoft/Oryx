@@ -19,6 +19,7 @@ RUN tdnf update -y \
          # Required for mysqlclient
         mariadb \
        # mysql \
+        rubygem-bigdecimal \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
@@ -28,8 +29,8 @@ RUN tdnf update -y \
     && tmpDir="/opt/tmp" \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
-    && mkdir -p /opt/ruby/3.1/bin \
-    && chmod -R 777 opt/ruby/3.1/bin \
+    && mkdir -p /opt/ruby/3.1.3 \
+    && chmod -R 777 /opt/ruby/3.1.3 \
    # && cp -R /usr/lib/python3.9 /opt/python/3.9.16/bin \
    # && ln -s opt/python/3.9.16/bin/python3.9 /usr/lib/python3.9 \
     && echo "ruby-mariner" > /opt/oryx/.imagetype \

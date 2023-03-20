@@ -38,6 +38,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
                     return this.sdkStorageVersionProvider.GetVersionInfo();
                 }
 
+                Console.WriteLine($"Entered here - Version Provider");
+
                 this.versionInfo = this.onDiskVersionProvider.GetVersionInfo();
             }
 

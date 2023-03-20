@@ -67,7 +67,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Ruby
         {
             get
             {
+                Console.WriteLine("Entered here to get supported versions");
                 var versionInfo = this.rubyVersionProvider.GetVersionInfo();
+                foreach (var version in versionInfo.SupportedVersions)
+                {
+                   Console.WriteLine($"version : {version}");
+                }
+
+                Console.WriteLine("Entered here");
                 return versionInfo.SupportedVersions;
             }
         }
