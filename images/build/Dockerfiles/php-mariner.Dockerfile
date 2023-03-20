@@ -1,5 +1,5 @@
 # Use the mariner base image
-FROM mcr.microsoft.com/cbl-mariner/base/nodejs:16 as main
+FROM mcr.microsoft.com/cbl-mariner/base/php:8.1 as main
 
 ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
 ARG AI_CONNECTION_STRING
@@ -19,7 +19,6 @@ RUN tdnf update -y \
          # Required for mysqlclient
         mariadb \
        # mysql \
-    && npm install yarn -g \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
@@ -29,11 +28,11 @@ RUN tdnf update -y \
     && tmpDir="/opt/tmp" \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
-    && mkdir -p /opt/nodejs/16.18.1/bin \
-    && chmod -R 777 opt/nodejs/16.18.1/bin \
+    && mkdir -p /opt/php/8.1/bin \
+    && chmod -R 777 opt/php/8.1/bin \
    # && cp -R /usr/lib/python3.9 /opt/python/3.9.16/bin \
    # && ln -s opt/python/3.9.16/bin/python3.9 /usr/lib/python3.9 \
-    && echo "nodejs-mariner" > /opt/oryx/.imagetype \
+    && echo "php-mariner" > /opt/oryx/.imagetype \
     && echo "MARINER" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 RUN tmpDir="/opt/tmp" \

@@ -78,6 +78,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 this.outputWriter.WriteLine("Could not detect any platform in the source directory.");
             }
 
+            this.outputWriter.WriteLine("Entered here");
+
             return platformInfos;
         }
     }

@@ -493,6 +493,75 @@ function buildNodeMarinerImage() {
 
 }
 
+function buildPythonMarinerImage() {
+	
+
+	local builtImageName="python-mariner"
+
+	builtImageName="$builtImageName:latest"
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
+
+	echo
+	echo "-------------Creating CLI-MARINER image-------------------"
+	docker build -t $builtImageName \
+		-f "$BUILD_IMAGES_PYTHON_MARINER_DOCKERFILE" \
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+}
+
+function buildPhpMarinerImage() {
+	
+
+	local builtImageName="php-mariner"
+
+	builtImageName="$builtImageName:latest"
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
+
+	echo
+	echo "-------------Creating PHP-MARINER image-------------------"
+	docker build -t $builtImageName \
+		-f "$BUILD_IMAGES_PHP_MARINER_DOCKERFILE"\
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+}
+
+function buildRubyMarinerImage() {
+	
+
+	local builtImageName="ruby-mariner"
+
+	builtImageName="$builtImageName:latest"
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
+
+	echo
+	echo "-------------Creating RUBY-MARINER image-------------------"
+	docker build -t $builtImageName \
+		-f "$BUILD_IMAGES_RUBY_MARINER_DOCKERFILE"\
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+}
+
 function buildFullImage() {
 	buildBuildScriptGeneratorImage
 	
@@ -606,6 +675,12 @@ elif [ "$imageTypeToBuild" == "cli-mariner" ]; then
     buildCliMarinerImage
 elif [ "$imageTypeToBuild" == "node-mariner" ];then
     buildNodeMarinerImage
+elif [ "$imageTypeToBuild" == "python-mariner" ];then
+    buildPythonMarinerImage
+elif [ "$imageTypeToBuild" == "php-mariner" ];then
+    buildPhpMarinerImage
+elif [ "$imageTypeToBuild" == "ruby-mariner" ];then
+    buildRubyMarinerImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
 githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, buildpack"

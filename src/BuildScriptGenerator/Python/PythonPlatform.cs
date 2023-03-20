@@ -665,6 +665,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                     PythonConstants.PlatformName,
                     version,
                     supportedVersions);
+                System.Console.WriteLine("Entered here");
                 this.logger.LogError(
                     exc,
                     $"Exception caught, the version '{version}' is not supported for the Python platform.");

@@ -21,7 +21,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public virtual PlatformVersionInfo GetVersionInfo()
         {
             this.logger.LogDebug("Getting list of versions from {installDir}", PythonConstants.InstalledPythonVersionsDir);
-
+            System.Console.WriteLine("Getting the installed versions");
             var installedVersions = VersionProviderHelper.GetVersionsFromDirectory(
                             PythonConstants.InstalledPythonVersionsDir);
 

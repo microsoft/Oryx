@@ -242,6 +242,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 this.logger.LogDebug($"Repo is {cleanOrNot} for {platform.Name}");
 
                 var snippet = platform.GenerateBashBuildScriptSnippet(context, detectorResult);
+                System.Console.WriteLine($"Snippet + {snippet.BashBuildScriptSnippet}");
                 if (snippet != null)
                 {
                     this.logger.LogDebug(

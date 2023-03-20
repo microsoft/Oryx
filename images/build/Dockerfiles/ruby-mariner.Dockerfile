@@ -1,5 +1,5 @@
 # Use the mariner base image
-FROM mcr.microsoft.com/cbl-mariner/base/nodejs:16 as main
+FROM mcr.microsoft.com/cbl-mariner/base/ruby:3.1 as main
 
 ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
 ARG AI_CONNECTION_STRING
@@ -19,7 +19,6 @@ RUN tdnf update -y \
          # Required for mysqlclient
         mariadb \
        # mysql \
-    && npm install yarn -g \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
@@ -29,11 +28,11 @@ RUN tdnf update -y \
     && tmpDir="/opt/tmp" \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
-    && mkdir -p /opt/nodejs/16.18.1/bin \
-    && chmod -R 777 opt/nodejs/16.18.1/bin \
+    && mkdir -p /opt/ruby/3.1/bin \
+    && chmod -R 777 opt/ruby/3.1/bin \
    # && cp -R /usr/lib/python3.9 /opt/python/3.9.16/bin \
    # && ln -s opt/python/3.9.16/bin/python3.9 /usr/lib/python3.9 \
-    && echo "nodejs-mariner" > /opt/oryx/.imagetype \
+    && echo "ruby-mariner" > /opt/oryx/.imagetype \
     && echo "MARINER" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 RUN tmpDir="/opt/tmp" \
@@ -49,9 +48,8 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8" \
-    PATH="/usr/local/go/bin:/opt/python/latest/bin:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts:$PATH" \
+    PATH="/usr/local/go/bin:/opt/python/latest/bin:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts:/opt/ruby:$PATH" \
     ORYX_AI_CONNECTION_STRING="${AI_CONNECTION_STRING}" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 
-ENTRYPOINT [ "benv" ] 
- 
+ENTRYPOINT [ "benv" ]
