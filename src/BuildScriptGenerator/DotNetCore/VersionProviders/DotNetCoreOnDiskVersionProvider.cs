@@ -57,8 +57,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
 
                 var netCoreAppDirPath = Path.Combine(sdkVersionDirPath, "shared", "Microsoft.NETCore.App");
+
+                Console.Write($"Path : {netCoreAppDirPath}");
                 if (Directory.Exists(netCoreAppDirPath))
                 {
+                    Console.WriteLine($"Entered here in {netCoreAppDirPath}");
                     var runtimeVersionDirNames = Directory.GetDirectories(netCoreAppDirPath);
                     foreach (var runtimeVersionDirPath in runtimeVersionDirNames)
                     {
@@ -66,6 +69,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                         versionMap[runtimeVersionDir.Name] = sdkVersionDir.Name;
                     }
                 }
+            }
+
+            foreach (var map in versionMap)
+            {
+                Console.WriteLine("Entered the foreach loop for dotnet");
+                Console.WriteLine($" Key : {map.Key} and Value : {map.Value}");
             }
 
             return versionMap;

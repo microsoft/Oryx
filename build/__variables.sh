@@ -35,6 +35,7 @@ declare -r BUILD_IMAGES_NODE_MARINER_DOCKERFILE="$REPO_DIR/images/build/Dockerfi
 declare -r BUILD_IMAGES_PYTHON_MARINER_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/python-mariner.Dockerfile"
 declare -r BUILD_IMAGES_PHP_MARINER_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/php-mariner.Dockerfile"
 declare -r BUILD_IMAGES_RUBY_MARINER_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/ruby-mariner.Dockerfile"
+declare -r BUILD_IMAGES_DOTNET_MARINER_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/dotnet-mariner.Dockerfile"
 declare -r BUILD_IMAGES_FULL_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/full.Dockerfile"
 declare -r BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/azureFunctions.JamStack.Dockerfile"
 declare -r BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubActions.Dockerfile"

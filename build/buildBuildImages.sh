@@ -562,6 +562,29 @@ function buildRubyMarinerImage() {
 
 }
 
+function buildDotNetMarinerImage() {
+	
+
+	local builtImageName="dotnet-mariner"
+
+	builtImageName="$builtImageName:latest"
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
+
+	echo
+	echo "-------------Creating DOTNET-MARINER image-------------------"
+	docker build -t $builtImageName \
+		-f "$BUILD_IMAGES_DOTNET_MARINER_DOCKERFILE"\
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+}
+
 function buildFullImage() {
 	buildBuildScriptGeneratorImage
 	
@@ -681,6 +704,8 @@ elif [ "$imageTypeToBuild" == "php-mariner" ];then
     buildPhpMarinerImage
 elif [ "$imageTypeToBuild" == "ruby-mariner" ];then
     buildRubyMarinerImage
+elif [ "$imageTypeToBuild" == "dotnet-mariner" ];then
+    buildDotNetMarinerImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
 githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, buildpack"
