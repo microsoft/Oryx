@@ -77,7 +77,9 @@ ENV LANG="C.UTF-8" \
     PYTHONIOENCODING="UTF-8" \
     DEBIAN_FLAVOR="stretch"
 
-RUN set -ex \
+RUN --mount=type=secret,id=sdk_staging_private_storage_sas_token_id \
+    && set -ex \
+    && export SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN="$(cat /run/secrets/sdk_staging_private_storage_sas_token_id)" \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
@@ -190,6 +192,7 @@ RUN set -ex \
     # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
     && ${imagesDir}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083" \
     && update-ca-certificates \
-    && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
+    && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" \
+    && export SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN=""
 
 ENTRYPOINT [ "benv" ]

@@ -40,7 +40,6 @@ LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN --mount=type=secret,id=sdk_staging_private_storage_sas_token_id \
     set -ex \
-    echo $(cat /run/secrets/sdk_staging_private_storage_sas_token_id) \
     echo $USER_DOTNET_AI_VERSION && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get install unzip -y \ 
