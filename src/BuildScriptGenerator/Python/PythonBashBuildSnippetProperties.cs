@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string pythonBuildCommandsFileName = null,
             string pythonPackageWheelProperty = null,
             string customRequirementsTxtPath = null,
-            string oryxPipUpgradeCommand = null)
+            string pipUpgradeFlag = null)
         {
             this.VirtualEnvironmentName = virtualEnvironmentName;
             this.VirtualEnvironmentModule = virtualEnvironmentModule;
@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.PythonBuildCommandsFileName = pythonBuildCommandsFileName;
             this.PythonVersion = pythonVersion;
             this.CustomRequirementsTxtPath = customRequirementsTxtPath;
-            this.OryxPipCommand = oryxPipUpgradeCommand;
+            this.PipUpgradeFlag = pipUpgradeFlag;
         }
 
         public string VirtualEnvironmentName { get; set; }
@@ -72,6 +72,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
 
         public string CustomRequirementsTxtPath { get; set; }
 
-        public string OryxPipCommand { get; set; }
+        public string PipUpgradeFlag { get; set; }
     }
 }
