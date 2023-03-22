@@ -28,8 +28,8 @@ RUN tdnf update -y \
     && tmpDir="/opt/tmp" \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
-    && mkdir -p /opt/dotnet/7.0.202 \
-    && chmod -R 777 /opt/dotnet/7.0.202 \
+    && mkdir -p /opt/dotnet/7.0.202/shared/Microsoft.NETCore.App/7.0.4 \
+    && chmod -R 777 /opt/dotnet/7.0.202/shared/Microsoft.NETCore.App/7.0.4 \
    # && cp -R /usr/lib/python3.9 /opt/python/3.9.16/bin \
    # && ln -s opt/python/3.9.16/bin/python3.9 /usr/lib/python3.9 \
     && echo "dotnet-mariner" > /opt/oryx/.imagetype \
