@@ -73,9 +73,9 @@ echo "Image type to build is set to: $imageTypeToBuild"
 if [ -z "$sdkStorageAccountUrl" ]; then
 	sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
 fi
-if [ $sdkStorageAccountUrl == $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ] && [ -z "$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN" ]; then
-    echo "Setting environment variable 'SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN' to the value that is passed from the CLI. $stagingPrivateStorageSasToken"
-    export SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN=$stagingPrivateStorageSasToken
+if [ $sdkStorageAccountUrl == $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ] && [ -z "$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" ]; then
+    echo "Setting environment variable 'ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN' to the value that is passed from the CLI. $stagingPrivateStorageSasToken"
+    export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=$stagingPrivateStorageSasToken
 fi
 echo
 echo "SDK storage account url set to: $sdkStorageAccountUrl"
@@ -215,7 +215,7 @@ function buildGitHubActionsImage() {
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
-		--secret id=sdk_staging_private_storage_sas_token_id,env=SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -305,7 +305,7 @@ function buildLtsVersionsImage() {
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$ltsBuildImageDockerFile" \
-		--secret id=sdk_staging_private_storage_sas_token_id,env=SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -396,7 +396,7 @@ function buildVsoImage() {
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGE" \
-		--secret id=sdk_staging_private_storage_sas_token_id,env=SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -437,7 +437,7 @@ function buildCliImage() {
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
-		--secret id=sdk_staging_private_storage_sas_token_id,env=SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -472,7 +472,7 @@ function buildFullImage() {
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_FULL_DOCKERFILE" \
-		--secret id=sdk_staging_private_storage_sas_token_id,env=SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName

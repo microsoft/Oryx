@@ -46,7 +46,7 @@ jobs:
     displayName: 'Test Dev storage account'
     env:
       ORYX_TEST_SDK_STORAGE_URL: ${{ parameters.storageAccountUrl }}
-      SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
+      ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
     inputs:
       scriptPath: ./build/testIntegration.sh
       args: StorageAccountTests=Dev

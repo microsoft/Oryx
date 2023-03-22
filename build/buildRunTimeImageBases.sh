@@ -157,7 +157,7 @@ for dockerFile in $dockerFiles; do
             --build-arg NODE16_VERSION=$NODE16_VERSION \
             --build-arg NODE18_VERSION=$NODE18_VERSION \
             --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
-            --secret id=sdk_staging_private_storage_sas_token_id,env=SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN \
+            --secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
             $labels \
             .
     else

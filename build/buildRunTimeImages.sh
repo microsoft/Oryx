@@ -48,9 +48,9 @@ eval set -- "$PARAMS"
 if [ -z "$sdkStorageAccountUrl" ]; then
   sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
 fi
-if [ -z "$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN" ]; then
-    echo "Setting environment variable 'SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN' to the value that is passed from the CLI. $stagingPrivateStorageSasToken"
-    export SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN=$stagingPrivateStorageSasToken
+if [ -z "$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" ]; then
+    echo "Setting environment variable 'ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN' to the value that is passed from the CLI."
+    export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=$stagingPrivateStorageSasToken
 fi
 echo
 echo "SDK storage account url set to: $sdkStorageAccountUrl"
@@ -158,33 +158,19 @@ for dockerFile in $dockerFiles; do
     
     echo
     
-    if shouldPassStorageSasToken $platformName $platformVersion ; then
-        # pass in env var as a secret, which is mounted during a single run command of the build
-        # https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md#secret
-        DOCKER_BUILDKIT=1 docker build -f $dockerFile \
-            -t $localImageTagName \
-            --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-            --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
-            --build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
-            --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
-            --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION \
-            --secret id=sdk_staging_private_storage_sas_token_id,env=SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN \
-            $args \
-            $labels \
-            .
-    else
-        docker build \
-            -f $dockerFile \
-            -t $localImageTagName \
-            --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
-            --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
-            --build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
-            --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
-            --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION \
-            $args \
-            $labels \
-            .
-    fi
+    # pass in env var as a secret, which is mounted during a single run command of the build
+    # https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md#secret
+    DOCKER_BUILDKIT=1 docker build -f $dockerFile \
+        -t $localImageTagName \
+        --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+        --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
+        --build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
+        --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
+        --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION \
+        --secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
+        $args \
+        $labels \
+        .
 
     echo
     echo "'$localImageTagName' image history:"

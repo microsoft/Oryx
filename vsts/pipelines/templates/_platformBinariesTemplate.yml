@@ -20,7 +20,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Building platform binaries'
   env:
-    SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/buildPlatformBinaries.sh
     args: ${{ parameters.platformName }} ${{ parameters.debianFlavor }} https://${{ parameters.destinationSdkStorageAccountName }}.blob.core.windows.net

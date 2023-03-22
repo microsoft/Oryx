@@ -21,7 +21,10 @@ ENV NODE_VERSION ${NODE14_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 
 ARG IMAGES_DIR=/tmp/oryx/images
-RUN ${IMAGES_DIR}/installPlatform.sh nodejs $NODE_VERSION --dir /usr/local --links false \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -ex \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && ${IMAGES_DIR}/installPlatform.sh nodejs $NODE_VERSION --dir /usr/local --links false \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN curl -L https://npmjs.org/install.sh | npm_install=6.14.15 sh
 RUN ${IMAGES_DIR}/runtime/node/installDependencies.sh

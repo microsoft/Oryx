@@ -131,19 +131,3 @@ function shouldStageRuntimeVersion()
 	esac
 	return 1
 }
-
-## this method checks if we need to pass the storage SAS token.
-## it is mainly needed to further retrieve the zip file from the `appinsights.agent` container of the oryxsdksstaging storage.
-function shouldPassStorageSasToken()
-{
-	platformName="$1"
-
-	case $platformName in
-	'dotnet'|'dotnetcore')
-		echo "For Platform '$platformName', the image needs the token as secret."
-		return 0
-		;;
-	*)
-	esac
-	return 1
-}

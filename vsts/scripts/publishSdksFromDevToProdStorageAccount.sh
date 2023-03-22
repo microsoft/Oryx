@@ -42,11 +42,11 @@ function copyBlob() {
         echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
         if [ $dryRun == "False" ]; then
             "$azCopyDir/azcopy" copy \
-                "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL/$platformName/$blobName$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN" \
+                "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true
         else
             "$azCopyDir/azcopy" copy \
-                "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL/$platformName/$blobName$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN" \
+                "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --overwrite true --dry-run
         fi
     elif blobExistsInProd $platformName $blobName; then
@@ -57,11 +57,11 @@ function copyBlob() {
         echo "Blob '$blobName' does not exist in Prod storage container '$platformName'. Copying it..."
         if [ $dryRun == "False" ]; then
             "$azCopyDir/azcopy" copy \
-                "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL/$platformName/$blobName$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN" \
+                "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN"
         else
             "$azCopyDir/azcopy" copy \
-                "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL/$platformName/$blobName$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN" \
+                "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" \
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --dry-run
         fi
     fi

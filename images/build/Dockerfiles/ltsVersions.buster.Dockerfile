@@ -74,7 +74,9 @@ ENV LANG="C.UTF-8" \
     PYTHONIOENCODING="UTF-8" \
     DEBIAN_FLAVOR="buster"
 
-RUN set -ex \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -ex \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \

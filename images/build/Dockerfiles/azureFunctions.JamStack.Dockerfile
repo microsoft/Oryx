@@ -39,7 +39,9 @@ RUN set -ex \
         uuid-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN set -ex \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -ex \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \

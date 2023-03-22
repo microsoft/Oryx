@@ -82,7 +82,7 @@ if [[ "$destinationSdkUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]]; then
 elif [[ "$destinationSdkUrl" == $DEV_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
 elif [[ "$destinationSdkUrl" == $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ]]; then
-    sasToken=$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN
+    sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
 elif [[ "$destinationSdkUrl" == $PROD_BACKUP_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$PROD_BACKUP_STORAGE_SAS_TOKEN
 # check if the personal sas token has been found in the oryx key vault

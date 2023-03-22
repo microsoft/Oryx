@@ -77,9 +77,9 @@ ENV LANG="C.UTF-8" \
     PYTHONIOENCODING="UTF-8" \
     DEBIAN_FLAVOR="stretch"
 
-RUN --mount=type=secret,id=sdk_staging_private_storage_sas_token_id \
-    && set -ex \
-    && export SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN="$(cat /run/secrets/sdk_staging_private_storage_sas_token_id)" \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -ex \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
@@ -193,6 +193,6 @@ RUN --mount=type=secret,id=sdk_staging_private_storage_sas_token_id \
     && ${imagesDir}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083" \
     && update-ca-certificates \
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" \
-    && export SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN=""
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 ENTRYPOINT [ "benv" ]

@@ -81,7 +81,9 @@ COPY --from=intermediate /opt /opt
 # Even though this adds a new docker layer we are doing this 
 # because we want to avoid duplication (which is always error-prone)
 
-RUN set -ex \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -ex \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \

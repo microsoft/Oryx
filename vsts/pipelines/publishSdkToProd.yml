@@ -27,7 +27,7 @@ stages:
         displayName: '(Dry run) Publish SDKs from dev to prod storage account'
         env:
           DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
-          SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
+          ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
           PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
         inputs:
           scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh
@@ -62,7 +62,7 @@ stages:
               displayName: 'Publish SDKs from dev to prod storage account'
               env:
                 DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
-                SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
+                ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
                 PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
               inputs:
                 scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh

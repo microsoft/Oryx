@@ -49,8 +49,8 @@ sasToken=""
 if [ -z "$sdkStorageAccountUrl" ]; then
   sdkStorageAccountUrl=$PRIVATE_STAGING_SDK_STORAGE_BASE_URL
 fi
-if [ sdkStorageAccountUrl = $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ]; then
-    sasToken=$SDK_STAGING_PRIVATE_STORAGE_SAS_TOKEN
+if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
+    sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
 fi
 if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
   # Use default sdk file name

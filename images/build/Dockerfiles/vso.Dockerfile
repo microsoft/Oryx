@@ -15,7 +15,10 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 
-RUN buildDir="/opt/tmp/build" \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -ex \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \
     # Install .NET Core SDKS
     && nugetPacakgesDir="/var/nuget" \
