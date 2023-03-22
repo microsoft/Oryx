@@ -46,6 +46,7 @@ jobs:
           PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
           PROD_BACKUP_STORAGE_SAS_TOKEN: $(PROD-BACKUP-STORAGE-SAS-TOKEN)
           PERSONAL_STORAGE_SAS_TOKEN: $(${{ upper(parameters.destinationStorageAccountName) }}-PERSONAL-STORAGE-SAS-TOKEN)
+          ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
         inputs:
           scriptPath: ./vsts/scripts/copySdksFromProdToStorageAccount.sh
           args:  ${{ parameters.destinationStorageAccountName }} ${{ parameters.dryRun }} ${{ parameters.overwrite }}
