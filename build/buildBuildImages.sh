@@ -39,7 +39,6 @@ while (( "$#" )); do
   case "$1" in
     -token|--sas-token)
       stagingPrivateStorageSasToken=$2
-      echo "token value: $2"
       shift 2
       ;;
     -t|--type)
@@ -74,7 +73,7 @@ if [ -z "$sdkStorageAccountUrl" ]; then
 	sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
 fi
 if [ $sdkStorageAccountUrl == $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ] && [ -z "$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" ]; then
-    echo "Setting environment variable 'ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN' to the value that is passed from the CLI. $stagingPrivateStorageSasToken"
+    echo "Setting environment variable 'ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN' to the value that is passed from the CLI."
     export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=$stagingPrivateStorageSasToken
 fi
 echo

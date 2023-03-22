@@ -21,7 +21,6 @@ while (( "$#" )); do
   case "$1" in
     -token|--sas-token)
       stagingPrivateStorageSasToken=$2
-      echo "token value: $2"
       shift 2
       ;;
     -s|--sdk-storage-account-url)
