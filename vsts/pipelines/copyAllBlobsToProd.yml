@@ -43,6 +43,7 @@ jobs:
           ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
           SANDBOX_STORAGE_SAS_TOKEN: $(SANDBOX-STORAGE-SAS-TOKEN)
           PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
+          ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
         inputs:
           scriptPath: ./vsts/scripts/copyAllBlobsToProdStorageAccount.sh
           args:  ${{ parameters.sourceStorageAccount }} ${{ parameters.dryRun }}
