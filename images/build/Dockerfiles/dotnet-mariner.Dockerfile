@@ -48,7 +48,7 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8" \
-    PATH="/usr/local/go/bin:/opt/python/latest/bin:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts:/opt/dotnet:$PATH" \
+    PATH="/usr/local/go/bin:/opt/python/latest/bin:/opt/oryx:/opt/dotnet:$PATH" \
     ORYX_AI_CONNECTION_STRING="${AI_CONNECTION_STRING}" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 

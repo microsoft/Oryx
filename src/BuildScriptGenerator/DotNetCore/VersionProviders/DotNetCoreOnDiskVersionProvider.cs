@@ -65,7 +65,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                     var runtimeVersionDirNames = Directory.GetDirectories(netCoreAppDirPath);
                     foreach (var runtimeVersionDirPath in runtimeVersionDirNames)
                     {
+                        Console.WriteLine($" Entered for loop for dotnetcore : {runtimeVersionDirPath}");
                         var runtimeVersionDir = new DirectoryInfo(runtimeVersionDirPath);
+                        Console.WriteLine($"Name of runtime version dir : {runtimeVersionDir.Name}");
                         versionMap[runtimeVersionDir.Name] = sdkVersionDir.Name;
                     }
                 }
