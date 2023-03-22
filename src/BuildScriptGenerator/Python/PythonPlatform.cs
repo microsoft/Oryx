@@ -76,7 +76,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// The Universal Wheel option.
         /// </summary>
         internal const string UniversalWheel = "universal";
-        
+
         /// <summary>
         /// The pip upgrade command
         /// </summary>
@@ -186,7 +186,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 Path.Combine(this.commonOptions.ManifestDir, pythonBuildCommandsFile);
             manifestFileProperties[nameof(pythonBuildCommandsFile)] = pythonBuildCommandsFile;
 
-            //If OryxDisablePipUpgrade is true then we do not upgrade pip hence is set to the empty string.
+            // If OryxDisablePipUpgrade is true then we do not upgrade pip hence is set to the empty string.
             var pipUpgrade = this.commonOptions.OryxDisablePipUpgrade ? string.Empty : PipUpgradeFlag;
 
             if (!isPythonPackageCommandEnabled && !string.IsNullOrWhiteSpace(pythonPackageWheelType))

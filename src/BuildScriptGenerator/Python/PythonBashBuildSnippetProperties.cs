@@ -3,8 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     /// <summary>
