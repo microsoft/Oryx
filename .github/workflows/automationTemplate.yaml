@@ -119,8 +119,14 @@ jobs:
           set -x
           buildNumber=$(cat /tmp/status.json | jq ".buildNumber" | tr -d '"')
           platform=${{ inputs.platformName }}
-          [[ "$platform" == "dotnet" ]] && platform="dot-net-core" || platform=$platform
-          yq -i "(.[] | select(.name==\"$platform-run-time-versions\") | .constants.$platform-runtime-base-tag) = $buildNumber" build/constants.yaml
+          runtimeName=$platform-versions
+          
+          if [[ "$platform" == "dotnet" ]]; then
+            platform="dot-net-core"
+            runtimeName=dot-net-core-run-time-versions
+          fi
+
+          yq -i "(.[] | select(.name==\"$runtimeName\") | .constants.$platform-runtime-base-tag) = $buildNumber" build/constants.yaml
           
           # run automation again to preserve constants.yaml YamlDotNet indentation
           # since YamlDoNet and yq do not share indentation spacing
