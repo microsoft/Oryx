@@ -438,6 +438,41 @@ function buildCliImage() {
 	docker tag $builtImageName "$devImageRepo:$devImageTag"
 }
 
+function buildCliBuilderImage() {
+	buildBuildScriptGeneratorImage
+	local osType=$1
+	local osFlavor=$2
+	local builtImageRepo="$ACR_CLI_BUILD_IMAGE_REPO"
+	local devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO"
+
+	if [ -z "$osType" && -z "$osFlavor" ]; then
+		osType="debian"
+		osFlavor="bullseye"
+	fi
+	imageTag="builder-$osType-$osFlavor"
+	devImageName="$devImageRepo:$imageTag"
+	builtImageName="$builtImageRepo:$imageTag"
+
+	echo
+	echo "-------------Creating CLI Builder image-------------------"
+	docker build -t $builtImageName \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
+		--build-arg DEBIAN_FLAVOR=$osFlavor \
+		--label com.microsoft.oryx="$labelContent" \
+		-f "$BUILD_IMAGES_CLI_BUILDER_DOCKERFILE" \
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+	echo "Tagging '$builtImageName' with dev name '$devImageName'"
+	docker tag $builtImageName $devImageName
+}
+
 function buildFullImage() {
 	buildBuildScriptGeneratorImage
 	
@@ -498,6 +533,7 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildCliImage "buster"
 	buildCliImage "bullseye"
 	buildCliImage
+	buildCliBuilderImage "debian" "bullseye"
 	buildBuildPackImage
 	buildFullImage "buster"
 	buildFullImage "bullseye"
@@ -539,17 +575,20 @@ elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 	buildCliImage "buster"
 	buildCliImage "bullseye"
+	buildCliBuilderImage "debian" "bullseye"
 elif [ "$imageTypeToBuild" == "cli-stretch" ]; then
 	buildCliImage
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
 elif [ "$imageTypeToBuild" == "cli-bullseye" ]; then
 	buildCliImage "bullseye"
+elif [ "$imageTypeToBuild" == "cli-builder-bullseye" ]; then
+	buildCliBuilderImage "debian" "bullseye"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
-githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, buildpack"
+githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, cli-builder-bullseye, buildpack"
 	exit 1
 fi
 
