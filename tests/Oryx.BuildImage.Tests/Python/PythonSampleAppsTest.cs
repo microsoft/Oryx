@@ -1639,6 +1639,40 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Fact]
+        private void DisablePipUpgradeFlag( )
+        {
+            // Arrange
+            var appName = "flask-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
+                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = Settings.LtsVersionsBuildImageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("ORYX_DISABLE_PIP_UPGRADE", "false") },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    string expectedOutput = "--upgrade | ts $TS_FMT";
+                    Assert.Contains(expectedOutput, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         private string GetDefaultVirtualEnvName(string version)
         {
             var ver = new SemanticVersioning.Version(version);
