@@ -357,7 +357,8 @@ benv-resolve() {
 
 # Resolve java versions
   if matchesName "java" "$name" || matchesName "java_version" "$name" && [ "${value::1}" != "/" ]; then
-    platformDir=$(benv-getPlatformDir "java" "$value" "$_benvDynamicInstallRootDir")
+   # platformDir=$(benv-getPlatformDir "java" "$value" "$_benvDynamicInstallRootDir")
+    platformDir="/opt/java/17.0.2"
     if [ "$platformDir" == "NotFound" ]; then
       benv-showSupportedVersionsErrorInfo "java" "java" "$value" "$_benvDynamicInstallRootDir"
       return 1

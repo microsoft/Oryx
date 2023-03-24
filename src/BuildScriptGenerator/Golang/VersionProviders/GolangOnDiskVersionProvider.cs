@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Golang
             this.logger.LogDebug("Getting list of versions from {installDir}", GolangConstants.DynamicInstalledGolangVersionsDir);
 
             var installedVersions = VersionProviderHelper.GetMajorMinorVersionsFromDirectory(
-                            GolangConstants.DynamicInstalledGolangVersionsDir);
+                            GolangConstants.InstalledGolangVersionsDir);
 
             return PlatformVersionInfo.CreateOnDiskVersionInfo(installedVersions, GolangConstants.GolangDefaultVersion);
         }

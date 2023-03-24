@@ -585,6 +585,76 @@ function buildDotNetMarinerImage() {
 
 }
 
+function buildJavaMarinerImage() {
+	
+
+	local builtImageName="java-mariner"
+
+	builtImageName="$builtImageName:latest"
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
+
+	echo
+	echo "-------------Creating JAVA-MARINER image-------------------"
+	docker build -t $builtImageName \
+		-f "$BUILD_IMAGES_JAVA_MARINER_DOCKERFILE"\
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+}
+
+function buildGolangMarinerImage() {
+	
+
+	local builtImageName="golang-mariner"
+
+	builtImageName="$builtImageName:latest"
+	echo "dev image tag: "$devImageTag
+	echo "built image name: "$builtImageName
+
+	echo
+	echo "-------------Creating GOLANG-MARINER image-------------------"
+	docker build -t $builtImageName \
+		-f "$BUILD_IMAGES_GOLANG_MARINER_DOCKERFILE"\
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+}
+
+#function buildHugoMarinerImage() {
+	
+
+#	local builtImageName="hugo-mariner"
+
+#	builtImageName="$builtImageName:latest"
+#	echo "dev image tag: "$devImageTag
+#	echo "built image name: "$builtImageName
+
+#	echo
+#	echo "-------------Creating HUGO-MARINER image-------------------"
+#	docker build -t $builtImageName \
+#		-f "$BUILD_IMAGES_HUGO_MARINER_DOCKERFILE"\
+		.
+
+#	createImageNameWithReleaseTag $builtImageName
+
+#	echo
+#	echo "$builtImageName image history"
+#	docker history $builtImageName
+
+#}
+
+
 function buildFullImage() {
 	buildBuildScriptGeneratorImage
 	
@@ -706,6 +776,12 @@ elif [ "$imageTypeToBuild" == "ruby-mariner" ];then
     buildRubyMarinerImage
 elif [ "$imageTypeToBuild" == "dotnet-mariner" ];then
     buildDotNetMarinerImage
+elif [ "$imageTypeToBuild" == "java-mariner" ];then
+    buildJavaMarinerImage
+elif [ "$imageTypeToBuild" == "golang-mariner" ];then
+    buildGolangMarinerImage
+elif [ "$imageTypeToBuild" == "hugo-mariner" ];then
+    buildHugoMarinerImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
 githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, buildpack"

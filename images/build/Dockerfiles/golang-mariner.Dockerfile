@@ -1,5 +1,5 @@
 # Use the mariner base image
-FROM mcr.microsoft.com/cbl-mariner/base/php:8.1 as main
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-fips-cbl-mariner2.0 as main
 
 ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
 ARG AI_CONNECTION_STRING
@@ -18,8 +18,6 @@ RUN tdnf update -y \
       #  libgdiplus \
          # Required for mysqlclient
         mariadb \
-        wget \
-        tzdata \
        # mysql \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
@@ -30,15 +28,11 @@ RUN tdnf update -y \
     && tmpDir="/opt/tmp" \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
-    && mkdir -p /opt/php/8.1.0 \
-    && chmod -R 777 /opt/php/8.1.0 \
-    && mkdir -p /opt/php-composer/2.0.8 \
-    && chmod -R 777 /opt/php-composer/2.0.8 \
+    && mkdir -p /opt/golang/1.18 \
+    && chmod -R 777 /opt/golang/1.18 \
    # && cp -R /usr/lib/python3.9 /opt/python/3.9.16/bin \
    # && ln -s opt/python/3.9.16/bin/python3.9 /usr/lib/python3.9 \
-    && curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /opt/php-composer/2.0.8 \
-    && echo "php-mariner" > /opt/oryx/.imagetype \
+    && echo "golang-mariner" > /opt/oryx/.imagetype \
     && echo "MARINER" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 RUN tmpDir="/opt/tmp" \
@@ -54,7 +48,7 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8" \
-    PATH="/usr/local/go/bin:/opt/python/latest/bin:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts:$PATH" \
+    PATH="/usr/local/go/bin:/opt/python/latest/bin:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts:/opt/golang:$PATH" \
     ORYX_AI_CONNECTION_STRING="${AI_CONNECTION_STRING}" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 

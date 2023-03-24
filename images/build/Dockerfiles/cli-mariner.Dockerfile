@@ -23,12 +23,12 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
 RUN tdnf update -y \
     && tdnf install -y \
        nodejs \ 
-       python \ 
-       dotnet-sdk-7.0 \
-       golang \ 
-       php \
-       ruby \
-       java \
+      # python \ 
+      # dotnet-sdk-7.0 \
+      # golang \ 
+      # php \
+      # ruby \
+      # java \
        maven 
   
 RUN tdnf update -y \

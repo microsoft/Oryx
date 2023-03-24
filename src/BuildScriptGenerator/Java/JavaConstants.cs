@@ -17,8 +17,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Java
 
         public const string CreatePackageCommandUsingMaven = "mvn clean package";
         public const string CompileCommandUsingMaven = "mvn clean compile";
-        public const string CreatePackageCommandUsingMavenWrapper = "./mvnw clean package";
-        public const string CompileCommandUsingMavenWrapper = "./mvnw clean compile";
+        public const string CreatePackageCommandUsingMavenWrapper = "mvn wrapper:wrapper;./mvnw clean compile";
+        public const string CompileCommandUsingMavenWrapper = "mvn wrapper:wrapper;./mvnw clean compile";
         public static readonly SemanticVersioning.Version
             MinMavenVersionWithNoTransferProgressSupport = new SemanticVersioning.Version("3.6.1");
     }

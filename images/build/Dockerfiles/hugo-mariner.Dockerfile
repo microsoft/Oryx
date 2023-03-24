@@ -1,5 +1,5 @@
 # Use the mariner base image
-FROM mcr.microsoft.com/cbl-mariner/base/php:8.1 as main
+FROM mcr.microsoft.com/cbl-mariner/base/nodejs:16 as main
 
 ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
 ARG AI_CONNECTION_STRING
@@ -18,9 +18,9 @@ RUN tdnf update -y \
       #  libgdiplus \
          # Required for mysqlclient
         mariadb \
-        wget \
-        tzdata \
        # mysql \
+        golang \
+    && npm install yarn -g \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
@@ -30,15 +30,13 @@ RUN tdnf update -y \
     && tmpDir="/opt/tmp" \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
-    && mkdir -p /opt/php/8.1.0 \
-    && chmod -R 777 /opt/php/8.1.0 \
-    && mkdir -p /opt/php-composer/2.0.8 \
-    && chmod -R 777 /opt/php-composer/2.0.8 \
+    && mkdir -p /opt/hugo/0.96.0 \
+    && chmod -R 777 opt/hugo/0.96.0 \
+    && curl -L https://github.com/gohugoio/hugo/releases/download/v0.54.0/hugo_0.54.0_Linux-64bit.tar.gz | tar xvz \
+    && mv hugo /opt/hugo/0.96.0 \
    # && cp -R /usr/lib/python3.9 /opt/python/3.9.16/bin \
    # && ln -s opt/python/3.9.16/bin/python3.9 /usr/lib/python3.9 \
-    && curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /opt/php-composer/2.0.8 \
-    && echo "php-mariner" > /opt/oryx/.imagetype \
+    && echo "hugo-mariner" > /opt/oryx/.imagetype \
     && echo "MARINER" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 RUN tmpDir="/opt/tmp" \

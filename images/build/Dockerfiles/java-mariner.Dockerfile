@@ -1,5 +1,5 @@
 # Use the mariner base image
-FROM mcr.microsoft.com/cbl-mariner/base/php:8.1 as main
+FROM mcr.microsoft.com/openjdk/jdk:17-mariner as main
 
 ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
 ARG AI_CONNECTION_STRING
@@ -18,9 +18,8 @@ RUN tdnf update -y \
       #  libgdiplus \
          # Required for mysqlclient
         mariadb \
-        wget \
-        tzdata \
        # mysql \
+        maven \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
@@ -30,15 +29,15 @@ RUN tdnf update -y \
     && tmpDir="/opt/tmp" \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
-    && mkdir -p /opt/php/8.1.0 \
-    && chmod -R 777 /opt/php/8.1.0 \
-    && mkdir -p /opt/php-composer/2.0.8 \
-    && chmod -R 777 /opt/php-composer/2.0.8 \
+    && mkdir -p /opt/java/17.0.2 \
+    && chmod -R 777 /opt/java/17.0.2 \
+    && mkdir -p /opt/maven/3.8.5 \
+    && chmod -R 777 /opt/maven/3.8.5 \
+    && cp -R /usr/lib/jvm/msopenjdk-17/* /opt/java/17.0.2 \
+    && cp -R /var/opt/apache-maven/* /opt/maven/3.8.5 \
    # && cp -R /usr/lib/python3.9 /opt/python/3.9.16/bin \
    # && ln -s opt/python/3.9.16/bin/python3.9 /usr/lib/python3.9 \
-    && curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /opt/php-composer/2.0.8 \
-    && echo "php-mariner" > /opt/oryx/.imagetype \
+    && echo "java-mariner" > /opt/oryx/.imagetype \
     && echo "MARINER" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 RUN tmpDir="/opt/tmp" \
@@ -54,9 +53,9 @@ ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8" \
-    PATH="/usr/local/go/bin:/opt/python/latest/bin:/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts:$PATH" \
+    PATH="/usr/local/go/bin:/opt/python/latest/bin:/opt/oryx:/opt/dotnet:/opt/java:$PATH" \
     ORYX_AI_CONNECTION_STRING="${AI_CONNECTION_STRING}" \
+    JAVA_HOME="/opt/java/17.0.2" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1"
 
 ENTRYPOINT [ "benv" ] 
- 
