@@ -221,7 +221,7 @@ steps:
     imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images-acr.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: false
-  condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
+  condition: and(succeeded(), or(eq(variables['PushBuildImages'], 'true'), eq(variables['PushBuilderImages'], 'true')), eq(variables['BuildBuildImages'], 'true'))
 
 - task: Docker@1
   displayName: 'Push runtime images to ACR'

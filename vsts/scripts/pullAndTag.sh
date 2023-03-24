@@ -85,6 +85,9 @@ if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 			elif [[ "$strippedVal" == "cli-debian-bullseye" ]];then
 				buildImageFilter="cli"
 				buildImageTagFilter="debian-bullseye"
+			elif [[ "$strippedVal" == "cli-builder-debian-bullseye" ]];then
+				buildImageFilter="cli"
+				buildImageTagFilter="builder-debian-bullseye"
 			fi
 		fi
 	done
@@ -108,6 +111,7 @@ tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-bullseye" "$bu
 tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-buster" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/cli" "builder-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/pack" "" "$buildImageFilter" "$buildImageTagFilter"
 
 

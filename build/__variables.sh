@@ -39,6 +39,7 @@ declare -r BUILD_IMAGES_DOTNET_MARINER_DOCKERFILE="$REPO_DIR/images/build/Docker
 declare -r BUILD_IMAGES_JAVA_MARINER_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/java-mariner.Dockerfile"
 declare -r BUILD_IMAGES_GOLANG_MARINER_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/golang-mariner.Dockerfile"
 #declare -r BUILD_IMAGES_HUGO_MARINER_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/hugo-mariner.Dockerfile"
+declare -r BUILD_IMAGES_CLI_BUILDER_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/cliBuilder.Dockerfile"
 declare -r BUILD_IMAGES_FULL_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/full.Dockerfile"
 declare -r BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/azureFunctions.JamStack.Dockerfile"
 declare -r BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubActions.Dockerfile"
@@ -63,6 +64,8 @@ declare -r BASE_IMAGES_ARTIFACTS_FILE_PREFIX="$ARTIFACTS_DIR/images"
 declare -r RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images"
 declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/build-images-acr.txt"
 declare -r ACR_RUNTIME_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/runtime-images-acr"
+declare -r ACR_BUILDER_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/builder-images-acr.txt"
+declare -r ACR_CAPPS_BUILDER_IMAGES_ARTIFACTS_FILE="$ARTIFACTS_DIR/images/capps-builder-images-acr.txt"
 
 declare -r PACK_IMAGE_NAME='pack'
 declare -r PACK_STACK_BASE_IMAGE_NAME="pack-stack-base"
