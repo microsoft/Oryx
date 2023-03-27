@@ -679,7 +679,7 @@ function buildGolangMarinerImage() {
 #	echo "-------------Creating HUGO-MARINER image-------------------"
 #	docker build -t $builtImageName \
 #		-f "$BUILD_IMAGES_HUGO_MARINER_DOCKERFILE"\
-		.
+#		.
 
 #	createImageNameWithReleaseTag $builtImageName
 
