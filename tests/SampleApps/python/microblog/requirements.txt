@@ -27,7 +27,7 @@ python-dateutil==2.6.1
 python-dotenv==0.7.1
 python-editor==1.0.3
 pytz==2017.2
-redis==2.10.6
+redis==4.5.3
 requests==2.18.4
 rq==0.12.0
 six==1.11.0
