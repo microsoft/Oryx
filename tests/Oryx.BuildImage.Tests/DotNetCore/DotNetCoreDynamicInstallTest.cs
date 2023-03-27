@@ -92,6 +92,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
         }
 
+        [Theory, Trait("category", "cli-builder-bullseye")]
+        [InlineData(NetCore6PreviewWebApp, "6.0")]
+        [InlineData(NetCoreApp70WebApp, "7.0")]
+        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuilderBullseye(
+            string appName,
+            string runtimeVersion)
+        {
+            BuildsApplication_ByDynamicallyInstallingSDKs(
+                appName, runtimeVersion, _imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
+        }
+
         private void BuildsApplication_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion,
