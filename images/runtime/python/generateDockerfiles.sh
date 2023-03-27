@@ -24,6 +24,7 @@ source "$PYTHON_VERSIONS_PATH"
 # Please make sure that any changes to debian flavors supported here are also reflected in build/constants.yaml
 declare -r PYTHON_BULLSEYE_VERSION_ARRAY=($PYTHON37_VERSION $PYTHON38_VERSION $PYTHON310_VERSION $PYTHON311_VERSION)
 declare -r PYTHON_BUSTER_VERSION_ARRAY=($PYTHON39_VERSION)
+declare -r PYTHON_MARINER_VERSION_ARRAY=($PYTHON39_VERSION)
 ImageDebianFlavor="$1"
 echo "python baseimage type: $ImageDebianFlavor"
 
@@ -33,6 +34,8 @@ if [ "$ImageDebianFlavor" == "bullseye" ];then
     VERSIONS_DIRECTORY=("${PYTHON_BULLSEYE_VERSION_ARRAY[@]}")
 elif [ "$ImageDebianFlavor" == "buster" ];then
     VERSIONS_DIRECTORY=("${PYTHON_BUSTER_VERSION_ARRAY[@]}")
+elif [ "$ImageDebianFlavor" == "mariner" ];then
+    VERSIONS_DIRECTORY=("${PYTHON_MARINER_VERSION_ARRAY[@]}")
 fi
 
 

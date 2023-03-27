@@ -14,7 +14,7 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN tdnf install -y nodejs
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM mcr.microsoft.com/oryx/base:%RUNTIME_BASE_IMAGE_TAG%
+FROM mcr.microsoft.com/oryx/base:node-16-20230213.3
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_CONNECTION_STRING

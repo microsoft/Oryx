@@ -17,6 +17,7 @@ declare -r RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER="%RUNTIME_BASE_IMAGE_TAG%"
 # Please make sure that any changes to debian flavors supported here are also reflected in build/constants.yaml
 declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE18_VERSION)
 declare -r NODE_BUSTER_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
+declare -r NODE_MARINER_VERSION_ARRAY=($NODE16_VERSION)
 
 ImageDebianFlavor="$1"
 echo "node baseimage type: $ImageDebianFlavor"
@@ -27,12 +28,15 @@ if [ "$ImageDebianFlavor" == "bullseye" ];then
     VERSIONS_DIRECTORY=("${NODE_BULLSEYE_VERSION_ARRAY[@]}")
 elif [ "$ImageDebianFlavor" == "buster" ];then
     VERSIONS_DIRECTORY=("${NODE_BUSTER_VERSION_ARRAY[@]}")
+elif [ "$ImageDebianFlavor" == "mariner" ];then
+    VERSIONS_DIRECTORY=("${NODE_MARINER_VERSION_ARRAY[@]}")
 fi
-
+echo "Dir here $DIR"
 cd $DIR
 
 for NODE_VERSION_DIRECTORY  in "${VERSIONS_DIRECTORY[@]}"
 do
+    echo "Entered here"
 	IFS='.' read -ra SPLIT_VERSION <<< "$NODE_VERSION_DIRECTORY"
 	VERSION_DIRECTORY="${SPLIT_VERSION[0]}"
 
