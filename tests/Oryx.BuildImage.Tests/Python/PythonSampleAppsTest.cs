@@ -1639,24 +1639,31 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact]
-        private void DisablePipUpgradeFlag( )
+        [Theory]
+        [InlineData("true")]
+        [InlineData("false")]
+        private void DisablePipUpgradeFlag(string pipUpgradeFlag)
         {
             // Arrange
+            
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} -p packagedir={PackagesDirectory}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .ToString();
-
+            var pipUpgradeCommand = "";
+            if (pipUpgradeFlag == "false") {
+                pipUpgradeCommand = "--upgrade";
+            }
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = Settings.LtsVersionsBuildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("ORYX_DISABLE_PIP_UPGRADE", "false") },
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("ORYX_DISABLE_PIP_UPGRADE", pipUpgradeFlag) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -1667,7 +1674,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    string expectedOutput = "--upgrade | ts $TS_FMT";
+                    string expectedOutput = "$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target=\"" + PackagesDirectory + "\" " + pipUpgradeCommand + " | ts $TS_FMT";
                     Assert.Contains(expectedOutput, result.StdOut);
                 },
                 result.GetDebugInfo());
