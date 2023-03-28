@@ -186,5 +186,61 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.Contains("Creating universal package wheel", text);
             Assert.Contains("setup.py sdist --formats=gztar,zip,tar bdist_wheel --universal", text);
         }
+
+        [Fact]
+        public void GeneratedSnippet_DisablePipUpgradeFlag_IfPipUpgradeFlag_IsEmpty()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null, 
+                compressedVirtualEnvFileName: null,
+                runPythonPackageCommand: true,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: null,
+                pythonPackageWheelProperty: "universal",
+                pipUpgradeFlag: string.Empty);
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            string extectedString = "$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target=\"" + snippetProps.PackagesDirectory + "\"  | ts $TS_FMT";
+            Assert.Contains(extectedString, text);
+        }
+
+        [Fact]
+        public void GeneratedSnippet_EnablePipUpgradeFlag()
+        {
+            // Arrange
+            var snippetProps = new PythonBashBuildSnippetProperties(
+                virtualEnvironmentName: null,
+                virtualEnvironmentModule: null,
+                virtualEnvironmentParameters: null,
+                packagesDirectory: "packages_dir",
+                enableCollectStatic: false,
+                compressVirtualEnvCommand: null,
+                compressedVirtualEnvFileName: null,
+                runPythonPackageCommand: true,
+                pythonBuildCommandsFileName: FilePaths.BuildCommandsFileName,
+                pythonVersion: null,
+                pythonPackageWheelProperty: "universal",
+                pipUpgradeFlag: "--upgrade");
+
+            // Act
+            var text = TemplateHelper.Render(TemplateHelper.TemplateResource.PythonSnippet, snippetProps);
+
+            // Assert
+            Assert.NotEmpty(text);
+            Assert.NotNull(text);
+            string extectedString = "$python -m pip install --cache-dir $PIP_CACHE_DIR --prefer-binary -r $REQUIREMENTS_TXT_FILE --target=\"" + snippetProps.PackagesDirectory + "\" --upgrade | ts $TS_FMT";
+            Assert.Contains(extectedString, text);
+        }
     }
 }
