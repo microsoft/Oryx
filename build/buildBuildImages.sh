@@ -256,10 +256,11 @@ function buildJamStackImage() {
 	# turn inherited by this image.
 	echo
 	echo "-------------Creating AzureFunctions JamStack image-------------------"
-	docker build -t $builtImageName \
+	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
 		--build-arg PARENT_DEBIAN_FLAVOR=$parentImageTag \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 	
 	createImageNameWithReleaseTag $builtImageName

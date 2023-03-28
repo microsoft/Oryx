@@ -52,7 +52,8 @@ RUN chmod +x /tmp/build.sh
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -ex \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
-    && ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR
+    && ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR\
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 RUN set -ex \
  && cd /opt/python/ \

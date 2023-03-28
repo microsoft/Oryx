@@ -14,7 +14,10 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     LC_ALL="C.UTF-8"
 
 ARG IMAGES_DIR="/opt/tmp/images"
-RUN oryx prep --skip-detection --platforms-and-versions nodejs=14 --debug \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -ex \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && oryx prep --skip-detection --platforms-and-versions nodejs=14 --debug \
     && echo "$DEBIAN_FLAVOR" \
     && . /tmp/build/__goVersions.sh \
     && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
@@ -22,7 +25,8 @@ RUN oryx prep --skip-detection --platforms-and-versions nodejs=14 --debug \
     && mkdir -p /usr/local \
     && gzip -d $downloadedFileName \
     && tar -xf "go${GO_VERSION}.linux-amd64.tar" -C /usr/local \
-    && rm -rf $downloadedFileName
+    && rm -rf $downloadedFileName\
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 RUN set -ex \
     # Install Python SDKs
@@ -57,4 +61,5 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && ln -s $PYTHON38_VERSION latest \
     && ln -s $PYTHON38_VERSION stable \
     && echo "jamstack" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
