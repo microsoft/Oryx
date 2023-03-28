@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetLtsVersionsBuildImage());
         }
 
-        [Fact, Trait("category", "cli")]
+        [Fact, Trait("category", "cli-stretch")]
         public void GeneratesScript_AndBuildGolangAppWithDynamicInstall_Cli()
         {
             GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository));
@@ -51,7 +51,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "cli-buster")]
         public void GeneratesScript_AndBuildGolangAppWithDynamicInstall_CliBuster()
         {
-            GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+            GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
+        }
+
+        [Fact, Trait("category", "cli-bullseye")]
+        public void GeneratesScript_AndBuildGolangAppWithDynamicInstall_CliBullseye()
+        {
+            GeneratesScript_AndBuildGolangAppWithDynamicInstall(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
         }
 
         private void GeneratesScript_AndBuildGolangAppWithDynamicInstall(string imageName)

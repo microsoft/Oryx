@@ -9,13 +9,13 @@ GEM
     method_source (1.0.0)
     mini_mime (1.1.2)
     multi_xml (0.6.0)
-    mustermann (1.1.1)
+    mustermann (2.0.2)
       ruby2_keywords (~> 0.0.1)
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    rack (2.2.3)
-    rack-protection (2.2.0)
+    rack (2.2.6.3)
+    rack-protection (2.2.3)
       rack
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
@@ -33,12 +33,12 @@ GEM
       rspec-support (~> 3.10.0)
     rspec-support (3.10.0)
     ruby2_keywords (0.0.5)
-    sinatra (2.2.0)
-      mustermann (~> 1.0)
+    sinatra (2.2.3)
+      mustermann (~> 2.0)
       rack (~> 2.2)
-      rack-protection (= 2.2.0)
+      rack-protection (= 2.2.3)
       tilt (~> 2.0)
-    tilt (2.0.10)
+    tilt (2.0.11)
 
 PLATFORMS
   ruby

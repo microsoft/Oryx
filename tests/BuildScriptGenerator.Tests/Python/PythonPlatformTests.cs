@@ -363,7 +363,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 detectedVersion: detectedVersion,
                 defaultVersion: detectedDefaultVersion,
                 pythonScriptGeneratorOptions: options,
-                supportedVersions: new[] { detectedVersion, detectedDefaultVersion, envVarDefaultVersion }.Where(x => !x.IsNullOrEmpty()).ToArray());
+                supportedVersions: new[] { detectedVersion, detectedDefaultVersion, envVarDefaultVersion }.Where(x => !string.IsNullOrEmpty(x)).ToArray());
 
             // Act
             var result = platform.Detect(context);
@@ -381,14 +381,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         {
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             pythonScriptGeneratorOptions = pythonScriptGeneratorOptions ?? new PythonScriptGeneratorOptions();
-
             return new PythonPlatform(
                 Options.Create(commonOptions),
                 Options.Create(pythonScriptGeneratorOptions),
                 pythonVersionProvider,
                 NullLogger<PythonPlatform>.Instance,
                 detector: null,
-                platformInstaller);
+                platformInstaller,
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private PythonPlatform CreatePlatform(
@@ -405,14 +405,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 defaultVersion: defaultVersion);
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             pythonScriptGeneratorOptions = pythonScriptGeneratorOptions ?? new PythonScriptGeneratorOptions();
-            var detector = new TestPythonPlatformDetector(detectedVersion: detectedVersion);
+            var detector = new TestPythonPlatformDetector(detectedVersion: detectedVersion);  
             return new PythonPlatform(
                 Options.Create(commonOptions),
                 Options.Create(pythonScriptGeneratorOptions),
                 versionProvider,
                 NullLogger<PythonPlatform>.Instance,
                 detector,
-                new PythonPlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance));
+                new PythonPlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)

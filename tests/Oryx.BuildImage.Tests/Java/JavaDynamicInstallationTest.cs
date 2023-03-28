@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetGitHubActionsBuildImage());
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [MemberData(nameof(VersionsData))]
         public void BuildsMavenArcheTypeSampleWithDynamicInstallationCli(string version)
         {
@@ -54,7 +54,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [MemberData(nameof(VersionsData))]
         public void BuildsMavenArcheTypeSampleWithDynamicInstallationCliBuster(string version)
         {
-            BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+            BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [MemberData(nameof(VersionsData))]
+        public void BuildsMavenArcheTypeSampleWithDynamicInstallationCliBullseye(string version)
+        {
+            BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+        }
+
+        [Theory, Trait("category", "cli-builder-bullseye")]
+        [MemberData(nameof(VersionsData))]
+        public void BuildsMavenArcheTypeSampleWithDynamicInstallationCliBuilderBullseye(string version)
+        {
+            BuildsMavenArcheTypeSampleWithDynamicInstallation(version, _imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
         }
 
         private void BuildsMavenArcheTypeSampleWithDynamicInstallation(string version, string imageName)

@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -38,10 +39,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
             // Arrange
             const string script1 = "abcdefg";
             const string script2 = "hijklmn";
-            var scriptProps = new BaseBashBuildScriptProperties()
+            var scriptProps = new BaseBashBuildScriptProperties
             {
                 PreBuildCommand = script1,
-                PostBuildCommand = script2
+                PostBuildCommand = script2,
             };
 
             // Act

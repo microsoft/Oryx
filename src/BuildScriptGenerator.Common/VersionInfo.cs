@@ -18,14 +18,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 
         public string DisplayVersion { get; }
 
-        public SemVer.Version SemanticVersion { get; }
+        public SemanticVersioning.Version SemanticVersion { get; }
 
         public int CompareTo(VersionInfo other)
         {
             return this.SemanticVersion.CompareTo(other.SemanticVersion);
         }
 
-        private static SemVer.Version ToSemanticVersion(string displayVersion)
+        private static SemanticVersioning.Version ToSemanticVersion(string displayVersion)
         {
             var semanticVersionStr = displayVersion;
 
@@ -34,14 +34,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             // Throws ArgumentException if SemVer library found invalid version format.
             if (displayVersion.Contains('-') || !displayVersion.Any(c => char.IsLetter(c)))
             {
-                return new SemVer.Version(semanticVersionStr);
+                return new SemanticVersioning.Version(semanticVersionStr);
             }
 
             // The display version is an invalid preview version
             var index = displayVersion.Length;
             index = displayVersion.ToList().FindIndex(c => char.IsLetter(c));
             semanticVersionStr = displayVersion.Insert(index, "-");
-            return new SemVer.Version(semanticVersionStr);
+            return new SemanticVersioning.Version(semanticVersionStr);
         }
     }
 }

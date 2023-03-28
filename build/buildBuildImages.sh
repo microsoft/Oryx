@@ -22,11 +22,11 @@ declare BUILD_SIGNED=""
 # SIGNTYPE is set to 'real' on the Oryx-CI build definition itself (not in yaml file)
 if [ "$SIGNTYPE" == "real" ] || [ "$SIGNTYPE" == "Real" ]
 then
-	# "SignType" will be real only for builds by scheduled and/or manual builds  of ORYX-CI
+	# "SignType" will be real only for builds by scheduled and/or manual builds of ORYX-CI
 	BUILD_SIGNED="true"
 else
 	# locally we need to fake "binaries" directory to get a successful "copybuildscriptbinaries" build stage
-    mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/binaries
+	mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/binaries
 fi
 
 # NOTE: We are using only one label here and put all information in it 
@@ -209,7 +209,7 @@ function buildGitHubActionsImage() {
 	echo
 	echo "-------------Creating build image for GitHub Actions-------------------"
 	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
@@ -237,15 +237,15 @@ function buildGitHubActionsImage() {
 function buildJamStackImage() {
 	local debianFlavor=$1
 	local devImageTag=azfunc-jamstack
-	local parentImageTag=github
+	local parentImageTag=cli
 	local builtImageName="$ACR_AZURE_FUNCTIONS_JAMSTACK_IMAGE_NAME"
 
-	buildGitHubActionsImage $debianFlavor
+	buildCliImage $debianFlavor
 
 	if [ -z "$debianFlavor" ]; then
 		debianFlavor="stretch"
 	fi
-	parentImageTag=actions-debian-$debianFlavor
+	parentImageTag=debian-$debianFlavor
 	devImageTag=$devImageTag-debian-$debianFlavor
 	echo "dev image tag: "$devImageTag
 	builtImageName=$builtImageName-debian-$debianFlavor
@@ -301,7 +301,7 @@ function buildLtsVersionsImage() {
 	echo
 	echo "-------------Creating lts versions build image-------------------"
 	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$ltsBuildImageDockerFile" \
@@ -378,7 +378,7 @@ function buildVsoImage() {
 		BUILD_IMAGE=$BUILD_IMAGES_VSO_FOCAL_DOCKERFILE
 		local builtImageName="$ACR_BUILD_VSO_FOCAL_IMAGE_NAME"
 		local tagName="vso-ubuntu-focal"
-	elif  [ "$debianFlavor" == "bullseye" ]; then
+	elif [ "$debianFlavor" == "bullseye" ]; then
 		BUILD_IMAGE=$BUILD_IMAGES_VSO_BULLSEYE_DOCKERFILE
 		local builtImageName="$ACR_BUILD_VSO_BULLSEYE_IMAGE_NAME"
 		local tagName="vso-debian-bullseye"
@@ -392,7 +392,7 @@ function buildVsoImage() {
 	echo "-------------Creating VSO $debianFlavor build image-------------------"
 	
 	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGE" \
@@ -421,9 +421,10 @@ function buildCliImage() {
 
 	if [ -z "$debianFlavor" ] || [ $debianFlavor == "stretch" ] ; then
 		debianFlavor="stretch"
+		#Change buildImage name to fix validation pipeline
 		builtImageName="$builtImageName:debian-$debianFlavor"
 	else
-		builtImageName="$builtImageName-$debianFlavor:debian-$debianFlavor"
+		builtImageName="$builtImageName:debian-$debianFlavor"
 		devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO-$debianFlavor"
 	fi
 	echo "dev image tag: "$devImageTag
@@ -432,7 +433,7 @@ function buildCliImage() {
 	echo
 	echo "-------------Creating CLI image-------------------"
 	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
@@ -447,6 +448,41 @@ function buildCliImage() {
 	docker history $builtImageName
 
 	docker tag $builtImageName "$devImageRepo:$devImageTag"
+}
+
+function buildCliBuilderImage() {
+	buildBuildScriptGeneratorImage
+	local osType=$1
+	local osFlavor=$2
+	local builtImageRepo="$ACR_CLI_BUILD_IMAGE_REPO"
+	local devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO"
+
+	if [ -z "$osType" && -z "$osFlavor" ]; then
+		osType="debian"
+		osFlavor="bullseye"
+	fi
+	imageTag="builder-$osType-$osFlavor"
+	devImageName="$devImageRepo:$imageTag"
+	builtImageName="$builtImageRepo:$imageTag"
+
+	echo
+	echo "-------------Creating CLI Builder image-------------------"
+	docker build -t $builtImageName \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
+		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
+		--build-arg DEBIAN_FLAVOR=$osFlavor \
+		--label com.microsoft.oryx="$labelContent" \
+		-f "$BUILD_IMAGES_CLI_BUILDER_DOCKERFILE" \
+		.
+
+	createImageNameWithReleaseTag $builtImageName
+
+	echo
+	echo "$builtImageName image history"
+	docker history $builtImageName
+
+	echo "Tagging '$builtImageName' with dev name '$devImageName'"
+	docker tag $builtImageName $devImageName
 }
 
 function buildFullImage() {
@@ -467,7 +503,7 @@ function buildFullImage() {
 	echo
 	echo "-------------Creating full image-------------------"
 	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
-		--build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
@@ -508,7 +544,9 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildVsoImage "focal"
 	buildVsoImage "bullseye"
 	buildCliImage "buster"
+	buildCliImage "bullseye"
 	buildCliImage
+	buildCliBuilderImage "debian" "bullseye"
 	buildBuildPackImage
 	buildFullImage "buster"
 	buildFullImage "bullseye"
@@ -549,13 +587,21 @@ elif [ "$imageTypeToBuild" == "vso-bullseye" ]; then
 elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 	buildCliImage "buster"
+	buildCliImage "bullseye"
+	buildCliBuilderImage "debian" "bullseye"
+elif [ "$imageTypeToBuild" == "cli-stretch" ]; then
+	buildCliImage
 elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
+elif [ "$imageTypeToBuild" == "cli-bullseye" ]; then
+	buildCliImage "bullseye"
+elif [ "$imageTypeToBuild" == "cli-builder-bullseye" ]; then
+	buildCliBuilderImage "debian" "bullseye"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then
 	buildBuildPackImage
 else
 	echo "Error: Invalid value for '--type' switch. Valid values are: \
-githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, buildpack"
+githubactions, jamstack, ltsversions, latest, full, vso-focal, cli, cli-builder-bullseye, buildpack"
 	exit 1
 fi
 

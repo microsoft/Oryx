@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuilds(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
         }
 
-        [Fact, Trait("category", "cli")]
+        [Fact, Trait("category", "cli-stretch")]
         public void PipelineTestInvocationCli()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -54,8 +54,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationCliBuster()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
         }
+
+        [Fact, Trait("category", "cli-bullseye")]
+        public void PipelineTestInvocationCliBullseye()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+        }
+
 
         private void GeneratesScript_AndBuilds(string buildImageName)
         {

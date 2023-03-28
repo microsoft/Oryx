@@ -40,6 +40,19 @@ RUN apt-get update \
         sqlite3 \
         libsqlite3-dev \
         software-properties-common \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+        python3-dev \
+        libffi-dev \
+        gdb \
+        lcov \
+        pkg-config \
+        libgdbm-dev \
+        liblzma-dev \
+        libreadline6-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && apt-get update \
@@ -57,7 +70,7 @@ COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tm
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
  
 FROM main AS final
-ARG AI_KEY
+ARG AI_CONNECTION_STRING
 ARG SDK_STORAGE_BASE_URL_VALUE
 
 # add an environment variable to determine debian_flavor
@@ -284,7 +297,7 @@ ENV NUGET_XMLDOC_MODE="skip" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_PREFER_USER_INSTALLED_SDKS=true \
-    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
+    ORYX_AI_CONNECTION_STRING="${AI_CONNECTION_STRING}" \
     PYTHONIOENCODING="UTF-8" \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \

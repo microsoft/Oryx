@@ -161,7 +161,7 @@ for dockerFile in $dockerFiles; do
     # https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md#secret
     DOCKER_BUILDKIT=1 docker build -f $dockerFile \
         -t $localImageTagName \
-        --build-arg AI_KEY=$APPLICATION_INSIGHTS_INSTRUMENTATION_KEY \
+        --build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
         --build-arg SDK_STORAGE_ENV_NAME=$SDK_STORAGE_BASE_URL_KEY_NAME \
         --build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \

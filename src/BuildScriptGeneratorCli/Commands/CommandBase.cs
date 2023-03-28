@@ -9,12 +9,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using McMaster.Extensions.CommandLineUtils;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
@@ -38,6 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             console.CancelKeyPress += this.Console_CancelKeyPress;
 
             ILogger<CommandBase> logger = null;
+            TelemetryClient telemetryClient = null;
 
             try
             {
@@ -48,6 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
 
                 logger = this.serviceProvider?.GetRequiredService<ILogger<CommandBase>>();
+                telemetryClient = this.serviceProvider?.GetRequiredService<TelemetryClient>();
                 logger?.LogInformation("Oryx command line: {cmdLine}", Environment.CommandLine);
 
                 var envSettings = this.serviceProvider?.GetRequiredService<CliEnvironmentSettings>();
@@ -68,7 +72,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                             { "gitHubActionBuildImagePullDurationSeconds", gitHubActionBuildImagePullDurationSeconds },
                         };
 
-                        logger.LogEvent("GitHubActionsBuildImagePullDurationLog", buildEventProps);
+                        telemetryClient.LogEvent("GitHubActionsBuildImagePullDurationLog", buildEventProps);
                     }
                 }
 
@@ -82,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.WriteLine("Debug mode enabled");
                 }
 
-                using (var timedEvent = logger?.LogTimedEvent(this.GetType().Name))
+                using (var timedEvent = telemetryClient?.LogTimedEvent(this.GetType().Name))
                 {
                     var options = this.serviceProvider.GetRequiredService<IOptions<BuildScriptGeneratorOptions>>().Value;
                     var exitCode = this.Execute(this.serviceProvider, console);
@@ -107,6 +111,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
             finally
             {
+                telemetryClient?.Flush();
                 this.DisposeServiceProvider();
             }
         }
@@ -183,6 +188,64 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return null;
         }
 
+        protected string ResolveOsType(BuildScriptGeneratorOptions options, IConsole console)
+        {
+            // For debian flavor, we first check for existence of an environment variable
+            // which contains the os type. If this does not exist, parse the
+            // FilePaths.OsTypeFileName file for the correct flavor
+            if (string.IsNullOrWhiteSpace(options.DebianFlavor))
+            {
+                var parsedOsType = ParseOsTypeFile();
+                if (parsedOsType != null)
+                {
+                    if (this.DebugMode)
+                    {
+                        console.WriteLine(
+                            $"Warning: DEBIAN_FLAVOR environment variable not found. " +
+                            $"Falling back to debian flavor in the {FilePaths.OsTypeFileName} file.");
+                    }
+
+                    return parsedOsType;
+                }
+
+                // If we cannot resolve the debian flavor, error out as we will not be able to determine
+                // the correct SDKs to pull
+                var errorMessage = $"Error: Image debian flavor not found in DEBIAN_FLAVOR environment variable or the " +
+                    $"{Path.Join("/opt", "oryx", FilePaths.OsTypeFileName)} file. Exiting...";
+                throw new InvalidUsageException(errorMessage);
+            }
+
+            return options.DebianFlavor;
+        }
+
+        protected string ResolveImageType(BuildScriptGeneratorOptions options, IConsole console)
+        {
+            // try to parse image type from file
+            // unlike os type, do not fail if image type not found, as it is only used for
+            // telemetry purposes
+            if (string.IsNullOrWhiteSpace(options.ImageType))
+            {
+                var parsedImageType = ParseImageTypeFile();
+                if (parsedImageType != null)
+                {
+                    options.ImageType = parsedImageType;
+                    if (this.DebugMode)
+                    {
+                        console.WriteLine($"Parsed image type from file '{FilePaths.ImageTypeFileName}': {options.ImageType}");
+                    }
+                }
+                else
+                {
+                    if (this.DebugMode)
+                    {
+                        console.WriteLine($"Warning: '{FilePaths.ImageTypeFileName}' file not found.");
+                    }
+                }
+            }
+
+            return options.ImageType;
+        }
+
         private void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             this.DisposeServiceProvider();
@@ -195,7 +258,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 disposable.Dispose();
             }
 
-            // Sends queued messages to Application Insights
+            // Sends queued messages
             NLog.LogManager.Flush(LoggingConstants.FlushTimeout);
             NLog.LogManager.Shutdown();
         }

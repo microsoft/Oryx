@@ -69,6 +69,7 @@ buildPython() {
 			# Continue adding the version metadata with the name of Version
 			# which is what our legacy CLI will use
 			sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
+			cp "$pythonPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.txt"
 	else
 			pythonSdkFileName=python-$debianFlavor-$version.tar.gz
 			metadataFile="$targetDir/python-$debianFlavor-$version-metadata.txt"

@@ -70,8 +70,8 @@ RUN set -ex \
 ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ARG AI_CONNECTION_STRING
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 #Bake in client certificate path into image to avoid downloading it
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 

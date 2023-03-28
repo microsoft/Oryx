@@ -62,26 +62,27 @@ run.sh, by default in the same folder as the compiled artifact.
 
 ## Support for Build Configuration File
 
-You can provide some extra build related information in an appsvc.yaml in your content
-root directory. The build configuration supports 2 sections
-1. pre-build
-2. post-build
+The App Service YAML file (`appsvc.yaml`) is used to specify the build and run commands for your Web Apps, thus
+overriding any defaults provided by the App Service Build Service. App Service expects this file to be in the root
+directory of your project.
 
-This is how a sample appsvc.yaml looks like
+### Format
 
-```bash
+There are ordered keys for `pre-build`, `post-build`, and `run`. The commands/scripts referenced by these keys are
+executed in-order. If a key is missing, it will be skipped and the next key will be processed. An optional `version` key
+specifies the version of the `appsvc.yaml` file, if new versions are introduced in the future.
+
+```yaml
 version: 1
 
-pre-build: | 
-    apt install curl
-  
-post-build: | 
-    python manage.py makemigrations 
+pre-build: apt-get install jq
+
+post-build: |
+    python manage.py makemigrations
     python manage.py migrate
+
+run: gunicorn myapp.app --workers 5
 ```
-
-Oryx will read the yaml and run the commands provided for pre-build and post-build.
-
 
 ## Build and run an app
 
@@ -118,14 +119,14 @@ docker run --detach --rm \
     1. ![Build Solutionpng](doc/buildServer/buildSolution.png)
 1. Create image with oryx and platform binaries
     1. `time build/buildBuildImages.sh -t ltsversion`
-1. Run docker to port map, volume mount a directory, specify the image with `oryx build`, and invoke BuildServer 
+1. Run docker to port map, volume mount a directory, specify the image with `oryx build`, and invoke BuildServer
     1. ```bash
         docker run -it -p 8086:80 \
         -v C:\Repo\Oryx\tests\SampleApps\:/tmp/SampleApps \
         -e "ASPNETCORE_URLS=http://+80" \
         oryxdevmcr.azurecr.io/public/oryx/build:lts-versions \
         /opt/buildscriptgen/BuildServer
-        ``` 
+        ```
         ![Start](doc/buildServer/start.png)
 1. Invoke build
     1.  ![Post](doc/buildServer/post.png)
@@ -199,5 +200,5 @@ more information see the [Code of Conduct FAQ][cocfaq]. Contact
 
 ## Disable Data Collection
 
-To prevent Oryx command line tools from collecting any data, set the environment variable 
+To prevent Oryx command line tools from collecting any data, set the environment variable
 `ORYX_DISABLE_TELEMETRY` to `true`.

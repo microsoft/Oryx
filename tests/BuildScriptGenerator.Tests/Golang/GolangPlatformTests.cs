@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -148,7 +149,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Golang
                 versionProvider,
                 NullLogger<TestGolangPlatform>.Instance,
                 detector,
-                golangInstaller);
+                golangInstaller, 
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private BuildScriptGeneratorContext CreateContext(ISourceRepo sourceRepo = null)
@@ -169,14 +171,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Golang
                 IGolangVersionProvider goVersionProvider,
                 ILogger<GolangPlatform> logger,
                 IGolangPlatformDetector detector,
-                GolangPlatformInstaller golangInstaller)
+                GolangPlatformInstaller golangInstaller,
+                TelemetryClient telemetryClient)
                 : base(
                       golangScriptGeneratorOptions,
                       commonOptions,
                       goVersionProvider,
                       logger,
                       detector,
-                      golangInstaller)
+                      golangInstaller,
+                      telemetryClient)
             {
             }
         }

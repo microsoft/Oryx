@@ -39,12 +39,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 return Enumerable.Empty<string>();
             }
 
-            var versions = new List<SemVer.Version>();
+            var versions = new List<SemanticVersioning.Version>();
             foreach (var versionDir in versionDirectories)
             {
                 try
                 {
-                    var version = new SemVer.Version(versionDir.Name);
+                    var version = new SemanticVersioning.Version(versionDir.Name);
                     versions.Add(version);
                 }
                 catch (ArgumentException)

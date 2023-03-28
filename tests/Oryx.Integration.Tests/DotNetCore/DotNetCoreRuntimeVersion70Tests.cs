@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 sampleApp,
                 _output,
                 new DockerVolume[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(OsTypes.DebianBuster),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster),
                 "/bin/sh",
                 new[]
                 {

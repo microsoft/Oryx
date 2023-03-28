@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [InlineData(ImageTestHelperConstants.CliRepository)]
         public void PipelineTestInvocationCli(string imageTag)
         {
@@ -66,8 +66,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli-buster")]
-        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterTag)]
         public void PipelineTestInvocationCliBuster(string imageTag)
+        {
+            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
+            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
+        public void PipelineTestInvocationCliBullseye(string imageTag)
         {
             GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
             JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
@@ -707,7 +716,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
-                $"--platform-version {PythonVersions.Python36Version}")
+                $"--platform-version {PythonVersions.Python37Version}")
                 .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
@@ -728,10 +737,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python36Version}/bin/python3",
+                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
                         result.StdOut);
                     Assert.Contains(
-                       $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python36Version}\"",
+                       $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python37Version}\"",
                        result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1503,7 +1512,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    var semVer = new SemVer.Version(version);
+                    var semVer = new SemanticVersioning.Version(version);
                     var virtualEnvSuffix = $"{semVer.Major}.{semVer.Minor}";
                     Assert.Matches($"Pre-build script: /opt/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
                     Assert.Matches($"Pre-build script: /opt/python/{version}/bin/pip", result.StdOut);
@@ -1632,7 +1641,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         private string GetDefaultVirtualEnvName(string version)
         {
-            var ver = new SemVer.Version(version);
+            var ver = new SemanticVersioning.Version(version);
             return $"pythonenv{ver.Major}.{ver.Minor}";
         }
     }
