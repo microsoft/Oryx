@@ -188,7 +188,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
 
         [Fact]
-        public void GeneratedSnippet_DisablePipUpgradeFlag_IfPipUpgradeFlag_IsNull()
+        public void GeneratedSnippet_DisablePipUpgradeFlag_IfPipUpgradeFlag_IsEmpty()
         {
             // Arrange
             var snippetProps = new PythonBashBuildSnippetProperties(

@@ -1645,7 +1645,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private void DisablePipUpgradeFlag(string pipUpgradeFlag)
         {
             // Arrange
-            
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
