@@ -1,4 +1,5 @@
-FROM mcr.microsoft.com/cbl-mariner/base/nodejs:16
+ARG DEBIAN_FLAVOR
+FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-${DEBIAN_FLAVOR}
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
@@ -20,7 +21,7 @@ ENV NODE_VERSION ${NODE16_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 
 ARG IMAGES_DIR=/tmp/oryx/images
-RUN tdnf install nodejs
+RUN ${IMAGES_DIR}/installPlatform.sh nodejs $NODE_VERSION --dir /usr/local --links false \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN curl -L https://npmjs.org/install.sh | npm_install=6.14.15 sh
 RUN ${IMAGES_DIR}/runtime/node/installDependencies.sh
