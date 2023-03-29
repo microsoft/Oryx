@@ -52,6 +52,7 @@ declare -r BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_FOCAL_DOCKERFILE="$REPO_DIR
 declare -r BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_BUSTER_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubRunners.BuildPackDepsBuster.Dockerfile"
 declare -r BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_BULLSEYE_DOCKERFILE="$REPO_DIR/images/build/Dockerfiles/gitHubRunners.BuildPackDepsBullseye.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_DOCKERFILE_PATH="$RUNTIME_IMAGES_SRC_DIR/commonbase/Dockerfile"
+declare -r RUNTIME_MARINER_BASE_IMAGE_DOCKERFILE_PATH="$RUNTIME_IMAGES_SRC_DIR/commonbase/marinerBase.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_NAME="oryx-run-base"
 declare -r RUNTIME_BUSTER_BASE_IMAGE_NAME="oryx-run-base-buster"
 declare -r RUNTIME_BULLSEYE_BASE_IMAGE_NAME="oryx-run-base-bullseye"

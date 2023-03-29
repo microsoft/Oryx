@@ -98,9 +98,9 @@ docker build \
 
 docker build \
     --pull \
-    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -f "$RUNTIME_MARINER_BASE_IMAGE_DOCKERFILE_PATH" \
     -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-mariner" \
-    --build-arg DEBIAN_FLAVOR=bullseye \
+    --build-arg DEBIAN_FLAVOR=mariner \
     $REPO_DIR
 
 docker build \

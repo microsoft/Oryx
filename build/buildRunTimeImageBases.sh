@@ -16,6 +16,7 @@ source $REPO_DIR/build/__stagingRuntimeConstants.sh
 
 declare -r NODE_BUSTER_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
 declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE18_VERSION)
+declare -r NODE_MARINER_VERSION_ARRAY=($NODE16_VERSION)
 
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
@@ -62,6 +63,13 @@ docker build \
     -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-bullseye" \
     $REPO_DIR
 
+docker build \
+    --pull \
+    --build-arg DEBIAN_FLAVOR=mariner \
+    -f "$RUNTIME_MARINER_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-mariner" \
+    $REPO_DIR
+    
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"
 labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
@@ -74,17 +82,29 @@ dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name $dockerFileName -o -
 busterNodeDockerFiles=()
 
 if [ "$runtimeSubDir" == "node" ]; then
-    docker build \
+
+    if [ "$runtimeImageDebianFlavor" == "mariner" ]; then
+       docker build \
+        --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
+        -f "$REPO_DIR/images/runtime/commonbase/nodeRunTimeBaseMariner.Dockerfile" \
+        -t "oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-$runtimeImageDebianFlavor" \
+        $REPO_DIR
+    else
+       docker build \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
         -f "$REPO_DIR/images/runtime/commonbase/nodeRuntimeBase.Dockerfile" \
         -t "oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-$runtimeImageDebianFlavor" \
         $REPO_DIR
+    fi
 
+      
     NODE_VERSION_ARRAY=()
     if  [ "$runtimeImageDebianFlavor" == "buster" ]; then
         NODE_VERSION_ARRAY=(${NODE_BUSTER_VERSION_ARRAY[@]})
     elif [ "$runtimeImageDebianFlavor" == "bullseye" ];then
         NODE_VERSION_ARRAY=("${NODE_BULLSEYE_VERSION_ARRAY[@]}")
+    elif [ "$runtimeImageDebianFlavor" == "mariner" ];then
+        NODE_VERSION_ARRAY=("${NODE_MARINER_VERSION_ARRAY[@]}")
     fi
 
     for NODE_VERSION  in "${NODE_VERSION_ARRAY[@]}"
