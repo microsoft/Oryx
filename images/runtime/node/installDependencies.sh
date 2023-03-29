@@ -55,4 +55,3 @@ fi
 # so we need to make sure it is available in our images.
 # Updated to 1.8.3 that doesn't emit json payload in stdout which is causing issues to customers in ant-88
 npm install -g applicationinsights@$NODE_APP_INSIGHTS_SDK_VERSION -loglevel silent
-npm install -g yarn
