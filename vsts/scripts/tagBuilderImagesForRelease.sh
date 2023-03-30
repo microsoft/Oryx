@@ -46,6 +46,7 @@ function tagBuilderImage() {
 
 tagBuilderImage "$ACR_PUBLIC_PREFIX/builder:$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "latest" "$RELEASE_TAG_NAME"
 tagBuilderImage "$ACR_PUBLIC_PREFIX/builder:capps-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "capps" "capps-$RELEASE_TAG_NAME"
+tagBuilderImage "$ACR_PUBLIC_PREFIX/builder:buildpack-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "buildpack" "buildpack-$RELEASE_TAG_NAME"
 tagBuilderImage "$ACR_PUBLIC_PREFIX/builder:stack-base-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "stack-base" "stack-base-$RELEASE_TAG_NAME"
 tagBuilderImage "$ACR_PUBLIC_PREFIX/builder:stack-build-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "stack-build" "stack-build-$RELEASE_TAG_NAME"
 tagBuilderImage "$ACR_PUBLIC_PREFIX/builder:stack-run-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "stack-run" "stack-run-$RELEASE_TAG_NAME"
