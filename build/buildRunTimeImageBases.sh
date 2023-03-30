@@ -44,7 +44,7 @@ then
 fi
 
 echo
-echo "Building the common base image wih bullseye and buster flavor '$RUNTIME_BASE_IMAGE_NAME'..."
+echo "Building the common base image wih bullseye, buster and mariner flavor '$RUNTIME_BASE_IMAGE_NAME'..."
 echo
 # Build the common base image first, so other images that depend on it get the latest version.
 # We don't retrieve this image from a repository but rather build locally to make sure we get
@@ -157,8 +157,14 @@ for dockerFile in $dockerFiles; do
         if [[ "$dockerFile" == *"staging"* ]]; then
             continue
         fi
-        # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
-        localImageTagName="$BASE_IMAGES_PUBLIC_REPO:$platformName-$platformVersion"
+
+        if [ $runtimeImageDebianFlavor == "mariner" ]; then
+            # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
+            localImageTagName="$BASE_IMAGES_PUBLIC_REPO:$platformName-mariner-$platformVersion"
+        else
+             # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
+            localImageTagName="$BASE_IMAGES_PUBLIC_REPO:$platformName-$platformVersion"
+        fi
     fi
 
     echo

@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-fips-cbl-mariner2.0 as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -13,7 +13,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM mcr.microsoft.com/oryx/base:%RUNTIME_BASE_IMAGE_TAG%
+FROM oryxdevmcr.azurecr.io/public/oryx/base:%RUNTIME_BASE_IMAGE_TAG%
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_CONNECTION_STRING
@@ -30,9 +30,8 @@ COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/st
 COPY src/startupscriptgenerator/src/node/wrapper/node /opt/node-wrapper/
 RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && chmod a+x /opt/node-wrapper/node \
-    && apt-get update \
-    && apt-get upgrade --assume-yes \
-    && rm -rf /var/lib/apt/lists/*
+    && tdnf update \
+    && tdnf upgrade -y 
 
 ENV LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
