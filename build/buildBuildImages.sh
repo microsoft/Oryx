@@ -340,8 +340,9 @@ function buildLatestImages() {
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
-	docker build -t $builtImageName \
+	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		-f "$BUILD_IMAGES_DOCKERFILE" \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName

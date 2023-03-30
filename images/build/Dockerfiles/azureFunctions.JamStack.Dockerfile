@@ -13,21 +13,6 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8"
 
-ARG IMAGES_DIR="/opt/tmp/images"
-RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -ex \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
-    && oryx prep --skip-detection --platforms-and-versions nodejs=14 --debug \
-    && echo "$DEBIAN_FLAVOR" \
-    && . /tmp/build/__goVersions.sh \
-    && downloadedFileName="go${GO_VERSION}.linux-amd64.tar.gz" \
-    && ${IMAGES_DIR}/retry.sh "curl -SLsO https://golang.org/dl/$downloadedFileName" \
-    && mkdir -p /usr/local \
-    && gzip -d $downloadedFileName \
-    && tar -xf "go${GO_VERSION}.linux-amd64.tar" -C /usr/local \
-    && rm -rf $downloadedFileName\
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
-
 RUN set -ex \
     # Install Python SDKs
     # Upgrade system python
@@ -72,37 +57,42 @@ RUN set -ex \
         libedit-dev \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
-    && mkdir -p /opt/oryx
+    && mkdir -p /opt/oryx \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
+
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG BUILD_DIR="/opt/tmp/build"
 
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -ex \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
- && yarnCacheFolder="/usr/local/share/yarn-cache" \
- && mkdir -p $yarnCacheFolder \
- && chmod 777 $yarnCacheFolder \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && if [ "${DEBIAN_FLAVOR}" == "bullseye" || "${DEBIAN_FLAVOR}" == "buster" ]; then ${IMAGES_DIR}/installPlatform.sh nodejs ${NODE16_VERSION}; fi \
- && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
- && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
- && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
- && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
- && mkdir -p /opt/yarn \
- && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
- && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
- && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+    && yarnCacheFolder="/usr/local/share/yarn-cache" \
+    && mkdir -p $yarnCacheFolder \
+    && chmod 777 $yarnCacheFolder \
+    && . ${BUILD_DIR}/__nodeVersions.sh \
+    && if [ "${DEBIAN_FLAVOR}" == "bullseye" || "${DEBIAN_FLAVOR}" == "buster" ]; then ${IMAGES_DIR}/installPlatform.sh nodejs ${NODE16_VERSION}; fi \
+    && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
+    && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
+    && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
+    && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+    && mkdir -p /opt/yarn \
+    && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
+    && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
+    && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 RUN set -ex \
- && . ${BUILD_DIR}/__nodeVersions.sh \
- && ln -s $YARN_VERSION /opt/yarn/stable \
- && ln -s $YARN_VERSION /opt/yarn/latest \
- && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
- && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
+    && . ${BUILD_DIR}/__nodeVersions.sh \
+    && ln -s $YARN_VERSION /opt/yarn/stable \
+    && ln -s $YARN_VERSION /opt/yarn/latest \
+    && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
+    && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
 RUN set -ex \
- && mkdir -p /links \
- && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
+    && mkdir -p /links \
+    && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
   
-RUN set -ex \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -ex \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     # Install Python SDKs
     # Upgrade system python
     && PYTHONIOENCODING="UTF-8" \
