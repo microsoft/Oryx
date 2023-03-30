@@ -18,6 +18,7 @@ RUN tdnf update -y \
       #  libgdiplus \
          # Required for mysqlclient
         mariadb \
+        python \ 
        # mysql \
     && npm install yarn -g \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
