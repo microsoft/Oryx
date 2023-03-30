@@ -215,7 +215,10 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     DYNAMIC_INSTALL_ROOT_DIR="/opt"
 
 # Now adding remaining of VSO platform features
-RUN buildDir="/opt/tmp/build" \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -ex \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -269,7 +272,8 @@ RUN buildDir="/opt/tmp/build" \
     && pecl version \
     && pecl install -f libsodium \
     && echo "vso-debian-bullseye" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 # install few more tools for VSO
 RUN gem install bundler rake --backtrace
