@@ -25,6 +25,7 @@ declare -r DOTNET_VERSION_PLACEHOLDER="%DOTNET_VERSION%"
 # Please make sure that any changes to debian flavors supported here are also reflected in build/constants.yaml
 declare -r NETCORE_BUSTER_VERSION_ARRAY=($NET_CORE_APP_30 $NET_CORE_APP_31 $NET_CORE_APP_50 $NET_CORE_APP_60 $NET_CORE_APP_70)
 declare -r NETCORE_BULLSEYE_VERSION_ARRAY=()
+declare -r NETCORE_MARINER_VERSION_ARRAY=($NET_CORE_APP_70)
 
 cd $DIR
 
@@ -34,6 +35,8 @@ if [ "$ImageDebianFlavor" == "buster" ];then
 	VERSIONS_DIRECTORY=("${NETCORE_BUSTER_VERSION_ARRAY[@]}")
 elif [ "$ImageDebianFlavor" == "bullseye" ];then
 	VERSIONS_DIRECTORY=("${NETCORE_BULLSEYE_VERSION_ARRAY[@]}")
+elif [ "$ImageDebianFlavor" == "mariner" ];then
+    VERSIONS_DIRECTORY=("${NETCORE_MARINER_VERSION_ARRAY[@]}")
 fi
 
 for VERSION_DIRECTORY in "${VERSIONS_DIRECTORY[@]}"
