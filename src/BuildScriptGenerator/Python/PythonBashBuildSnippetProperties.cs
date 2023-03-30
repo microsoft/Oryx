@@ -3,8 +3,6 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace Microsoft.Oryx.BuildScriptGenerator.Python
 {
     /// <summary>
@@ -24,7 +22,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             string pythonVersion,
             string pythonBuildCommandsFileName = null,
             string pythonPackageWheelProperty = null,
-            string customRequirementsTxtPath = null)
+            string customRequirementsTxtPath = null,
+            string pipUpgradeFlag = null)
         {
             this.VirtualEnvironmentName = virtualEnvironmentName;
             this.VirtualEnvironmentModule = virtualEnvironmentModule;
@@ -38,6 +37,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.PythonBuildCommandsFileName = pythonBuildCommandsFileName;
             this.PythonVersion = pythonVersion;
             this.CustomRequirementsTxtPath = customRequirementsTxtPath;
+            this.PipUpgradeFlag = pipUpgradeFlag;
         }
 
         public string VirtualEnvironmentName { get; set; }
@@ -69,5 +69,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         public string PythonPackageWheelProperty { get; set; }
 
         public string CustomRequirementsTxtPath { get; set; }
+
+        public string PipUpgradeFlag { get; set; }
     }
 }
