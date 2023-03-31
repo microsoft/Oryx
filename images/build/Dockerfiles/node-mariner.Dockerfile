@@ -19,6 +19,7 @@ RUN tdnf update -y \
          # Required for mysqlclient
         mariadb \
         python \ 
+        which \
        # mysql \
     && npm install yarn -g \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
