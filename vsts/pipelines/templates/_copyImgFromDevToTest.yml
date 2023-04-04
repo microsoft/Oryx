@@ -165,20 +165,20 @@ steps:
 
 - ${{ each image in parameters.dotnet }}:
   - script: |
-      docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
-      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker pull "${{ parameters.acrDevContainerName }}/dotnetcore:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/dotnetcore:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Pull and Retag dotnet Images'
 
 - ${{ each image in parameters.node }}:
   - script: |
-      docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
-      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker pull "${{ parameters.acrDevContainerName }}/node:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/node:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Pull and Retag Node Images'
 
 - ${{ each image in parameters.python }}:
   - script: |
-      docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
-      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker pull "${{ parameters.acrDevContainerName }}/python:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/python:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Pull and Retag Python Images'
 
 - task: Docker@1
@@ -222,17 +222,17 @@ steps:
 
 - ${{ each image in parameters.dotnet }}:
   - script: |
-      docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker push "${{ parameters.acrTestContainerName }}/dotnetcore:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Push dotnet Images to Test ACR'
 
 - ${{ each image in parameters.node }}:
   - script: |
-      docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker push "${{ parameters.acrTestContainerName }}/node:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Push Node Images to Test ACR'
 
 - ${{ each image in parameters.python }}:
   - script: |
-      docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+      docker push "${{ parameters.acrTestContainerName }}/python:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Push Python Images to Test ACR'
 
 - task: Docker@1
