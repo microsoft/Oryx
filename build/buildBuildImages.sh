@@ -468,12 +468,13 @@ function buildCliBuilderImage() {
 
 	echo
 	echo "-------------Creating CLI Builder image-------------------"
-	docker build -t $builtImageName \
+	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$osFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_BUILDER_DOCKERFILE" \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
