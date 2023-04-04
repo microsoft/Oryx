@@ -70,6 +70,56 @@ parameters:
       - name: 'github-actions-stretch'
         sourceTag: 'github-actions-debian-stretch-Oryx-Nightly'
         destinationTag: 'github-actions-debian-stretch'
+  - name: dotnet
+    type: object
+    default:
+      - name: '3.0-debian-buster'
+        sourceTag: '3.0-debian-buster-Oryx-Nightly'
+        destinationTag: '3.0-debian-buster'
+      - name: '3.1-debian-buster'
+        sourceTag: '3.1-debian-buster-Oryx-Nightly'
+        destinationTag: '3.1-debian-buster'
+      - name: '5.0-debian-buster'
+        sourceTag: '5.0-debian-buster-Oryx-Nightly'
+        destinationTag: '5.0-debian-buster'
+      - name: '6.0-debian-buster'
+        sourceTag: '6.0-debian-buster-Oryx-Nightly'
+        destinationTag: '6.0-debian-buster'
+      - name: '7.0-debian-buster'
+        sourceTag: '7.0-debian-buster-Oryx-Nightly'
+        destinationTag: '7.0-debian-buster'
+  - name: node
+    type: object
+    default:
+      - name: '18-debian-bullseye'
+        sourceTag: '18-debian-bullseye-Oryx-Nightly'
+        destinationTag: '18-debian-bullseye'
+      - name: '16-debian-buster'
+        sourceTag: '16-debian-buster-Oryx-Nightly'
+        destinationTag: '16-debian-buster'
+      - name: '14-debian-buster'
+        sourceTag: '14-debian-buster-Oryx-Nightly'
+        destinationTag: '14-debian-buster'
+  - name: python
+    type: object
+    default:
+      - name: '3.7-debian-bullseye'
+        sourceTag: '3.7-debian-bullseye-Oryx-Nightly'
+        destinationTag: '3.7-debian-bullseye'
+      - name: '3.8-debian-bullseye'
+        sourceTag: '3.8-debian-bullseye-Oryx-Nightly'
+        destinationTag: '3.8-debian-bullseye'
+      - name: '3.9-debian-buster'
+        sourceTag: '3.9-debian-buster-Oryx-Nightly'
+        destinationTag: '3.9-debian-buster'
+      - name: '3.10-debian-bullseye'
+        sourceTag: '3.10-debian-bullseye-Oryx-Nightly'
+        destinationTag: '3.10-debian-bullseye'
+      - name: '3.11-debian-bullseye'
+        sourceTag: '3.11-debian-bullseye-Oryx-Nightly'
+        destinationTag: '3.11-debian-bullseye'
+    
+
 
 steps:
 
@@ -113,6 +163,24 @@ steps:
       docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Pull and Retag Github Action Images'
 
+- ${{ each image in parameters.dotnet }}:
+  - script: |
+      docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+    displayName: 'Pull and Retag dotnet Images'
+
+- ${{ each image in parameters.node }}:
+  - script: |
+      docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+    displayName: 'Pull and Retag Node Images'
+
+- ${{ each image in parameters.python }}:
+  - script: |
+      docker pull "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}"
+      docker tag "${{ parameters.acrDevContainerName }}/build:${{ image.sourceTag }}.${{ parameters.nightlyTag }}" "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+    displayName: 'Pull and Retag Python Images'
+
 - task: Docker@1
   displayName: Dev Container registry logout
   inputs:
@@ -151,6 +219,21 @@ steps:
   - script: |
       docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
     displayName: 'Push Github Action Images to Test ACR'
+
+- ${{ each image in parameters.dotnet }}:
+  - script: |
+      docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+    displayName: 'Push dotnet Images to Test ACR'
+
+- ${{ each image in parameters.node }}:
+  - script: |
+      docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+    displayName: 'Push Node Images to Test ACR'
+
+- ${{ each image in parameters.python }}:
+  - script: |
+      docker push "${{ parameters.acrTestContainerName }}/build:${{ image.destinationTag }}.${{ parameters.nightlyTag }}"
+    displayName: 'Push Python Images to Test ACR'
 
 - task: Docker@1
   displayName: Test Container registry logout
