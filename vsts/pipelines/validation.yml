@@ -48,9 +48,8 @@ resources:
   fetchDepth: 15
 
 variables:
-- group: Oryx
-- name: Packaging.EnableSBOMSigning
-  value: true
+  group: Oryx
+  Packaging.EnableSBOMSigning: true
 
 jobs:
 - job: Job_Security
@@ -68,6 +67,8 @@ jobs:
       name: AzurePipelines-EO
       demands:
         - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    variables:
+    - group: Oryx
     timeoutInMinutes: 480
     steps:
     - script: |
