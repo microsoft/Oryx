@@ -5,6 +5,8 @@
 
 using System;
 using System.Text;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using JetBrains.Annotations;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Common
@@ -167,10 +169,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public ShellScriptBuilder AddDefaultTestEnvironmentVariables()
         {
             var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
+            var sdkStorageUrl = testStorageAccountUrl == null ? testStorageAccountUrl : testStorageAccountUrl;
 
-            return testStorageAccountUrl != null
-                ? this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, testStorageAccountUrl)
-                : this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, SdkStorageConstants.DevSdkStorageBaseUrl);
+            this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, sdkStorageUrl);
+
+            if (sdkStorageUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
+            {
+                string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) != null
+                    ? Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey)
+                    : this.GetKeyvaultSecretValue(SdkStorageConstants.OryxKeyVaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
+
+                this.SetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken);
+            }
+
+            return this;
         }
 
         public override string ToString()
@@ -189,6 +201,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             this.scriptBuilder.Append(content);
             this.contentPresent = true;
             return this;
+        }
+
+        private string GetKeyvaultSecretValue(string keyvaultName, string secretName)
+        {
+            var client = new SecretClient(new Uri(keyvaultName), new DefaultAzureCredential());
+            KeyVaultSecret secret = client.GetSecret(secretName);
+            return secret.Value;
         }
     }
 }
