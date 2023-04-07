@@ -21,6 +21,7 @@ ENV NODE_VERSION ${NODE16_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 
 ARG IMAGES_DIR=/tmp/oryx/images
+ARG BUILD_DIR=/tmp/oryx/build
 RUN ${IMAGES_DIR}/installPlatform.sh nodejs $NODE_VERSION --dir /usr/local --links false \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN . ${BUILD_DIR}/__nodeVersions.sh \
