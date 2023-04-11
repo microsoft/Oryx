@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Php81TarSha256 = "ef270156291d90a80ce83d68eee812f301cf5e48836a0ff6fd2931913f8e25c5";
         public const string Php80Version = "8.0.28";
         public const string Php80Keys = "1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F";
-        public const string Php80TarSha256 = "7432184eae01e4e8e39f03f80e8ec0ca2c8bfebc56e9a7b983541ca8805df22f";
+        public const string Php80TarSha256 = "5e07278a1f315a67d36a676c01343ca2d4da5ec5bdb15d018e4248b3012bc0cd";
         public const string Php74Version = "7.4.33";
         public const string Php74Keys = "42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312";
         public const string Php74TarSha256 = "924846abf93bc613815c55dd3f5809377813ac62a9ec4eb3778675b82a27b927";
