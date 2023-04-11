@@ -4,34 +4,84 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Determine whether Oryx can be applied as a buildpack to an app in the current " +
-        "working directory.")]
     internal class BuildpackDetectCommand : CommandBase
     {
         public const string Name = "buildpack-detect";
+        public const string Description =
+            "Determine whether Oryx can be applied as a buildpack to an app in the current " +
+            "working directory.";
 
         // CodeDetectFail @ https://github.com/buildpack/lifecycle/blob/master/detector.go
         public const int DetectorFailCode = 100;
 
-        [Argument(0, Description = "The source directory.")]
+        public BuildpackDetectCommand()
+        {
+        }
+
+        public BuildpackDetectCommand(BuildpackDetectCommandProperty input)
+        {
+            this.PlatformDir = input.PlatformDir;
+            this.SourceDir = input.SourceDir;
+            this.PlanPath = input.PlanPath;
+            this.LogFilePath = input.LogPath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string SourceDir { get; set; }
 
-        [Option("--platform-dir <dir>", CommandOptionType.SingleValue, Description = "Platform directory path.")]
         public string PlatformDir { get; set; }
 
-        [Option("--plan-path <path>", CommandOptionType.SingleValue, Description = "Build plan TOML path.")]
         public string PlanPath { get; set; }
+
+        public static Command Export(IConsole console)
+        {
+            var sourceDirArgument = new Argument<string>(
+                name: OptionArgumentTemplates.SourceDir,
+                description: OptionArgumentTemplates.SourceDirDescription,
+                getDefaultValue: () => Directory.GetCurrentDirectory());
+            var platformDirOption = new Option<string>(OptionArgumentTemplates.PlatformDir, OptionArgumentTemplates.BuildpackDetectPlatformDirDescription);
+            var planPathOption = new Option<string>(OptionArgumentTemplates.PlanPath, OptionArgumentTemplates.PlanPathDescription);
+            var logFilePathOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
+
+            var command = new Command(Name, Description)
+            {
+                sourceDirArgument,
+                platformDirOption,
+                planPathOption,
+                logFilePathOption,
+                debugOption,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var buildpackDetectCommand = new BuildpackDetectCommand(prop);
+                    return Task.FromResult(buildpackDetectCommand.OnExecute(console));
+                },
+                new BuildpackDetectCommandBinder(
+                    sourceDir: sourceDirArgument,
+                    platformDir: platformDirOption,
+                    planPath: planPathOption,
+                    logPath: logFilePathOption,
+                    debugMode: debugOption));
+
+            return command;
+        }
 
         internal override bool IsValidInput(IServiceProvider serviceProvider, IConsole console)
         {
