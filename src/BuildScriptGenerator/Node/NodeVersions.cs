@@ -6,7 +6,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 {
     public static class NodeVersions
     {
-        public const string NodeRuntimeBaseTag = "20230213.3";
+        public const string NodeRuntimeBaseTag = "20230407.4";
         public const string YarnVersion = "1.22.15";
         public const string YarnMinorVersion = "1.17";
         public const string YarnMajorVersion = "1";
@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string Node18Version = "18.14.0";
         public const string NodeAppInsightsSdkVersion = "1.8.7";
         public const string Pm2Version = "4.5.6";
-        public const string NpmVersion = "6.14.15";
+        public const string NpmVersion = "9.6.4";
         public static readonly Dictionary<string, string> RuntimeVersions = new Dictionary<string, string> { { "14", "debian-buster" }, { "16", "debian-buster" }, { "18", "debian-bullseye" }, { "dynamic", "debian-buster" } };
     }
 }
