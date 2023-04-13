@@ -110,8 +110,8 @@
     final-stretch-dot-net-70-sdk-version: 7.0.100
     final-stretch-dot-net-core-app-70-run-time-version: 7.0.0
     final-stretch-aspnet-core-app-70-run-time-version: 7.0.0
-    final-stretch-node14-version: 14.19.1
-    final-stretch-node16-version: 16.14.2
+    final-stretch-node14-version: 14.21.3
+    final-stretch-node16-version: 16.20.0
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
