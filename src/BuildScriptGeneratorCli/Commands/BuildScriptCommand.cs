@@ -4,30 +4,111 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.CommandLine;
+using System.CommandLine.IO;
+using System.Data;
 using System.IO;
 using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Generate build script to standard output.")]
     internal class BuildScriptCommand : BuildCommandBase
     {
         public const string Name = "build-script";
+        public const string Description = "Generate build script to standard output.";
 
-        [Option(
-            "--output",
-            CommandOptionType.SingleValue,
-            Description = "The path that the build script will be written to. " +
-                          "If not specified, the result will be written to STDOUT.")]
+        public BuildScriptCommand()
+        {
+        }
+
+        public BuildScriptCommand(BuildScriptCommandProperty input)
+        {
+            this.OutputPath = input.OutputPath;
+            this.SourceDir = input.SourceDir;
+            this.PlatformName = input.Platform;
+            this.PlatformVersion = input.PlatformVersion;
+            this.ShouldPackage = input.ShouldPackage;
+            this.OsRequirements = input.OsRequirements;
+            this.AppType = input.AppType;
+            this.BuildCommandsFileName = input.BuildCommandFile;
+            this.CompressDestinationDir = input.CompressDestinationDir;
+            this.Properties = input.Property;
+            this.DynamicInstallRootDir = input.DynamicInstallRootDir;
+            this.LogFilePath = input.LogPath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string OutputPath { get; set; }
+
+        public static Command Export(IConsole console)
+        {
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
+            var sourceDirArgument = new Argument<string>(
+                name: OptionArgumentTemplates.SourceDir,
+                description: OptionArgumentTemplates.SourceDirDescription,
+                getDefaultValue: () => Directory.GetCurrentDirectory());
+            var platformOption = new Option<string>(OptionArgumentTemplates.Platform, OptionArgumentTemplates.PlatformDescription);
+            var platformVersionOption = new Option<string>(OptionArgumentTemplates.PlatformVersion, OptionArgumentTemplates.PlatformVersionDescription);
+            var packageOption = new Option<bool>(OptionArgumentTemplates.Package, OptionArgumentTemplates.PackageDescription);
+            var osReqOption = new Option<string>(OptionArgumentTemplates.OsRequirements, OptionArgumentTemplates.OsRequirementsDescription);
+            var appTypeOption = new Option<string>(OptionArgumentTemplates.AppType, OptionArgumentTemplates.AppTypeDescription);
+            var buildCommandFileNameOption = new Option<string>(OptionArgumentTemplates.BuildCommandsFileName, OptionArgumentTemplates.BuildCommandsFileNameDescription);
+            var compressDestDirOption = new Option<bool>(OptionArgumentTemplates.CompressDestinationDir, OptionArgumentTemplates.CompressDestinationDirDescription);
+            var propertyOption = new Option<string[]>(OptionArgumentTemplates.Property, OptionArgumentTemplates.PropertyDescription);
+            var dynamicInstallRootDirOption = new Option<string>(OptionArgumentTemplates.DynamicInstallRootDir, OptionArgumentTemplates.DynamicInstallRootDirDescription);
+            var buildScriptOutputOption = new Option<string>(
+                aliases: OptionArgumentTemplates.Output,
+                description: OptionArgumentTemplates.BuildScriptOutputDescription);
+
+            var command = new Command(Name, Description)
+            {
+                logOption,
+                debugOption,
+                sourceDirArgument,
+                platformOption,
+                platformVersionOption,
+                packageOption,
+                osReqOption,
+                appTypeOption,
+                buildCommandFileNameOption,
+                compressDestDirOption,
+                propertyOption,
+                dynamicInstallRootDirOption,
+                buildScriptOutputOption,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var buildScriptCommand = new BuildScriptCommand(prop);
+                    return Task.FromResult(buildScriptCommand.OnExecute(console));
+                },
+                new BuildScriptCommandBinder(
+                    outputPath: buildScriptOutputOption,
+                    sourceDir: sourceDirArgument,
+                    platform: platformOption,
+                    platformVersion: platformVersionOption,
+                    package: packageOption,
+                    osRequirements: osReqOption,
+                    appType: appTypeOption,
+                    buildCommandFile: buildCommandFileNameOption,
+                    compressDestinationDir: compressDestDirOption,
+                    property: propertyOption,
+                    dynamicInstallRootDir: dynamicInstallRootDirOption,
+                    logPath: logOption,
+                    debugMode: debugOption));
+            return command;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {

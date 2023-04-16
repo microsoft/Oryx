@@ -27,7 +27,7 @@ env:
   PYTHON_BLOCKED_VERSIONS_ARRAY: ${{ vars.PYTHON_BLOCKED_VERSIONS_ARRAY }}
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3

@@ -5,77 +5,118 @@
 
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Generates a dockerfile to build and run an app.")]
     internal class DockerfileCommand : CommandBase
     {
         public const string Name = "dockerfile";
+        public const string Description = "Generates a dockerfile to build and run an app.";
 
         private readonly string[] supportedRuntimePlatforms = { "dotnetcore", "node", "php", "python", "ruby" };
 
-        [Argument(0, Description = "The source directory. If no value is provided, the current directory is used.")]
-        [DirectoryExists]
+        public DockerfileCommand()
+        {
+        }
+
+        public DockerfileCommand(DockerfileCommandProperty input)
+        {
+            this.SourceDir = input.SourceDir;
+            this.BuildImage = input.BuildImage;
+            this.PlatformName = input.Platform;
+            this.PlatformVersion = input.PlatformVersion;
+            this.RuntimePlatformName = input.RuntimePlatform;
+            this.RuntimePlatformVersion = input.RuntimePlatformVersion;
+            this.BindPort = input.BindPort;
+            this.OutputPath = input.Output;
+            this.LogFilePath = input.LogPath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string SourceDir { get; set; }
 
-        [Option(
-            "--build-image <build-image>",
-            CommandOptionType.SingleValue,
-            Description = "The mcr.microsoft.com/oryx build image to use in the dockerfile, provided in the format '<image>:<tag>'." +
-                          "If no value is provided, the 'cli:stable' Oryx image will be used.")]
         public string BuildImage { get; set; }
 
-        [Option(
-            OptionTemplates.Platform,
-            CommandOptionType.SingleValue,
-            Description = "The name of the programming platform used in the provided source directory.")]
         public string PlatformName { get; set; }
 
-        [Option(
-            OptionTemplates.PlatformVersion,
-            CommandOptionType.SingleValue,
-            Description = "The version of the programming platform used in the provided source directory.")]
         public string PlatformVersion { get; set; }
 
-        [Option(
-            OptionTemplates.RuntimePlatform,
-            CommandOptionType.SingleValue,
-            Description = "The runtime platform to use in the Dockerfile. If not provided, the value for --platform will " +
-                          "be used, otherwise the runtime platform will be auto-detected.")]
         public string RuntimePlatformName { get; set; }
 
-        [Option(
-            OptionTemplates.RuntimePlatformVersion,
-            CommandOptionType.SingleValue,
-            Description = "The version of the runtime to use in the Dockerfile. If not provided, an attempt will be made to " +
-                          "determine the runtime version to use based on the detected platform version, otherwise the 'dynamic' " +
-                          "runtime image will be used.")]
         public string RuntimePlatformVersion { get; set; }
 
-        [Option(
-            "--bind-port <port>",
-            CommandOptionType.SingleValue,
-            Description = "The port where the application will bind to in the runtime image. If not provided, the default port will " +
-                          "vary based on the platform used; Python uses 80, all other platforms used 8080.")]
         public string BindPort { get; set; }
 
-        [Option(
-            "--output",
-            CommandOptionType.SingleValue,
-            Description = "The path that the dockerfile will be written to. " +
-                          "If not specified, the contents of the dockerfile will be written to STDOUT.")]
         public string OutputPath { get; set; }
+
+        public static Command Export(IConsole console)
+        {
+            var sourceDirArgument = new Argument<string>(
+                name: OptionArgumentTemplates.SourceDir,
+                description: OptionArgumentTemplates.DockerfileSourceDirDescription,
+                getDefaultValue: () => Directory.GetCurrentDirectory());
+            var buildImageOption = new Option<string>(
+                name: OptionArgumentTemplates.DockerfileBuildImage,
+                description: OptionArgumentTemplates.DockerfileBuildImageDescription);
+            var platformOption = new Option<string>(OptionArgumentTemplates.Platform, OptionArgumentTemplates.PlatformDescription);
+            var platformVersionOption = new Option<string>(OptionArgumentTemplates.PlatformVersion, OptionArgumentTemplates.PlatformVersionDescription);
+            var runtimePlatformOption = new Option<string>(OptionArgumentTemplates.RuntimePlatform, OptionArgumentTemplates.RuntimePlatformDescription);
+            var runtimePlatformVersionOption = new Option<string>(OptionArgumentTemplates.RuntimePlatformVersion, OptionArgumentTemplates.RuntimePlatformVersionDescription);
+            var bindPortOption = new Option<string>(
+                name: OptionArgumentTemplates.DockerfileBindPort,
+                description: OptionArgumentTemplates.DockerfileBindPortDescription);
+            var outputOption = new Option<string>(
+                aliases: OptionArgumentTemplates.Output,
+                description: OptionArgumentTemplates.DockerfileOutputDescription);
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
+
+            var command = new Command(Name, Description)
+            {
+                sourceDirArgument,
+                buildImageOption,
+                platformOption,
+                platformVersionOption,
+                runtimePlatformOption,
+                runtimePlatformVersionOption,
+                bindPortOption,
+                outputOption,
+                logOption,
+                debugOption,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var dockerfileCommand = new DockerfileCommand(prop);
+                    return Task.FromResult(dockerfileCommand.OnExecute(console));
+                },
+                new DockerfileCommandBinder(
+                    sourceDir: sourceDirArgument,
+                    buildImage: buildImageOption,
+                    platform: platformOption,
+                    platformVersion: platformVersionOption,
+                    runtimePlatform: runtimePlatformOption,
+                    runtimePlatformVersion: runtimePlatformVersionOption,
+                    bindPort: bindPortOption,
+                    output: outputOption,
+                    logPath: logOption,
+                    debugMode: debugOption));
+            return command;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {

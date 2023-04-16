@@ -3,7 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using McMaster.Extensions.CommandLineUtils;
+using System.CommandLine;
+using System.CommandLine.IO;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {

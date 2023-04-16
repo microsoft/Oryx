@@ -1,9 +1,9 @@
-// --------------------------------------------------------------------------------------------
+﻿// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using McMaster.Extensions.CommandLineUtils;
+using System.CommandLine;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
@@ -11,29 +11,13 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
     public class ProgramTest
     {
         [Fact]
-        public void OnExecute_ShowsHelp_AndExits_WithSuccessExitCode()
+        public void OnExecute_ShowsInfo_WhenInfoOptionIsUsed()
         {
             // Arrange
-            var program = new Program();
             var testConsole = new TestConsole();
 
             // Act
-            var exitCode = program.OnExecute(new CommandLineApplication(testConsole), testConsole);
-
-            // Assert
-            Assert.Equal(0, exitCode);
-            Assert.Contains("Usage:", testConsole.StdOutput);
-        }
-
-        [Fact]
-        public void OnExecute_ShowsVersion_WhenVersionOptionIsUsed()
-        {
-            // Arrange
-            var program = new Program { Version = true };
-            var testConsole = new TestConsole();
-
-            // Act
-            var exitCode = program.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            int exitCode = Program.OnExecute(console: testConsole, setInfo: true);
 
             // Assert
             Assert.Equal(0, exitCode);

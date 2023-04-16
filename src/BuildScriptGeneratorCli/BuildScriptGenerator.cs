@@ -5,7 +5,8 @@
 
 using System;
 using System.Collections.Generic;
-using McMaster.Extensions.CommandLineUtils;
+using System.CommandLine;
+using System.CommandLine.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

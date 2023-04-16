@@ -4,9 +4,11 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
+using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,22 +17,66 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Execute an arbitrary command in the default shell, in an environment " +
-        "with the best-matching platform tool versions.")]
     internal class ExecCommand : CommandBase
     {
         public const string Name = "exec";
+        public const string Description =
+            "Execute an arbitrary command in the default shell, in an environment " +
+            "with the best-matching platform tool versions.";
 
-        [Option("-s|--src <dir>", CommandOptionType.SingleValue, Description = "Source directory.")]
-        [DirectoryExists]
+        public ExecCommand()
+        {
+        }
+
+        public ExecCommand(ExecCommandProperty input)
+        {
+            this.SourceDir = input.SourceDir;
+            this.Command = input.Command;
+            this.DebugMode = input.DebugMode;
+            this.LogFilePath = input.LogPath;
+        }
+
         public string SourceDir { get; set; }
 
-        [Argument(1, Description = "The command to execute in an app-specific environment.")]
         public string Command { get; set; }
+
+        public static Command Export(IConsole console)
+        {
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
+            var execSourceDirOption = new Option<string>(
+                aliases: OptionArgumentTemplates.Source,
+                description: OptionArgumentTemplates.ExecSourceDescription);
+            var commandArgument = new Argument<string>("command", "The command to execute in an app-specific environment.");
+
+            var command = new Command(
+                name: Name,
+                description: Description)
+            {
+                logOption,
+                debugOption,
+                execSourceDirOption,
+                commandArgument,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var execCommand = new ExecCommand(prop);
+                    return Task.FromResult(execCommand.OnExecute(console));
+                },
+                new ExecCommandBinder(
+                    execSourceDir: execSourceDirOption,
+                    command: commandArgument,
+                    logPath: logOption,
+                    debugMode: debugOption));
+            return command;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
@@ -101,9 +147,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     console.WriteLine("---");
                 }
 
-                console.WriteLine();
+                console.WriteLine(string.Empty);
                 console.WriteLine("Executing generated script...");
-                console.WriteLine();
+                console.WriteLine(string.Empty);
 
                 exitCode = ProcessHelper.RunProcess(
                     shellPath,
@@ -120,7 +166,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     {
                         if (args.Data != null)
                         {
-                            console.Error.WriteLine(args.Data);
+                            console.WriteErrorLine(args.Data);
                         }
                     },
                     waitTimeForExit: null);
