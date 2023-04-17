@@ -297,7 +297,7 @@
       directory: build
       file-name-prefix: __
     - type: csharp
-      directory: src/BuildScriptGenerator/Node\
+      directory: src/BuildScriptGenerator/Node
       namespace: Microsoft.Oryx.BuildScriptGenerator.Node
 - name: sdk-storage-constants
   constants:
