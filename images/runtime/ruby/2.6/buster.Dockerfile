@@ -22,9 +22,9 @@ ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -ex \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
-    ${IMAGES_DIR}/installPlatform.sh ruby $RUBY_VERSION --dir /opt/ruby/$RUBY_VERSION --links false\
+    && ${IMAGES_DIR}/installPlatform.sh ruby $RUBY_VERSION --dir /opt/ruby/$RUBY_VERSION --links false \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
-    
+
 RUN set -ex \
  && cd /opt/ruby/ \
  && ln -s 2.6.6 2.6 \

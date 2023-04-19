@@ -343,7 +343,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expected = "/opt/oryx:";
             var script = new ShellScriptBuilder()
                 .AddDefaultTestEnvironmentVariables()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand("echo \"$ORYX_PATHS\"")
                 .ToString();
 
