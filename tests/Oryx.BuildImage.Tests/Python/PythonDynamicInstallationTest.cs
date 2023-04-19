@@ -432,6 +432,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var packagesDir = ".python_packages/lib/python3.7/site-packages";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
                 $"--platform-version {version} -p packagedir={packagesDir}")

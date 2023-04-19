@@ -26,6 +26,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
+               .AddDefaultTestEnvironmentVariables()
                .AddCommand("mkdir /tmp/app")
                .AddCommand("oryx build /tmp/app -o /tmp/out")
                .ToString();
@@ -52,6 +53,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
+               .AddDefaultTestEnvironmentVariables()
                .AddCommand("mkdir /tmp/app")
                .AddCommand($"oryx build /tmp/app -o /tmp/out --platform {DotNetCoreConstants.PlatformName} --platform-version 0.0")
                .ToString();
@@ -102,6 +104,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appPath = "/tmp";
             var cmd = "node --version";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
                 .ToString();
 
@@ -189,6 +192,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedPhpVersion = PhpVersions.Php72Version;
 
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}",
                     "'{\"engines\": {\"node\": \"" + expectedNodeVersion + "\"}}'")
                 .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}",
@@ -226,6 +230,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var cmd = $"exit {expectedExitCode}";
 
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
                 .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'")
                 .ToString();
@@ -255,6 +260,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var repositoryName = "build";
             var tagName = ImageTestHelperConstants.LtsVersionsStretch;
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
                 .AddCommand($"oryx dockerfile {appPath} --platform {platformName} --platform-version {platformVersion}")
                 .ToString();

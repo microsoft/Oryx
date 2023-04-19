@@ -365,9 +365,9 @@ namespace Oryx.Integration.Tests
             return defaultVersion;
         }
 
-        private string GetKeyvaultSecretValue(string keyvaultName, string secretName)
+        private string GetKeyvaultSecretValue(string keyvaultUri, string secretName)
         {
-            var client = new SecretClient(new Uri(keyvaultName), new DefaultAzureCredential());
+            var client = new SecretClient(new Uri(keyvaultUri), new DefaultAzureCredential());
             KeyVaultSecret secret = client.GetSecret(secretName);
             return secret.Value;
         }

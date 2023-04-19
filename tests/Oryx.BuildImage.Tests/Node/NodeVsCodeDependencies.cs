@@ -69,6 +69,7 @@ namespace Microsoft.Oryx.BuildImage.Tests.Node
             }
 
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
             // Fetch source code
                 .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir}")
                 .AddCommand($"cd {pkgSrcDir} && git checkout {commitId}")

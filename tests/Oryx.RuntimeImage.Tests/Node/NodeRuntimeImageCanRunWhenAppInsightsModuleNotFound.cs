@@ -43,6 +43,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             int containerDebugPort = 8080;
 
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"export {aiConnectionString}={TestConstants.AppInsightsConnectionString}")
                 .AddCommand($"export {aIEnabled}=TRUE")
                 .AddCommand($"cd {appDir}")
@@ -91,6 +92,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             int containerDebugPort = 8080;
 
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"export {aIEnabled}=disabled")
                 .AddCommand($"cd {appDir}")
                 .AddCommand("npm install")
@@ -140,6 +142,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var AppInsightsStartUpLegacyPayLoadMessage = "Application Insights was started with setupString";
 
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"export {aIEnabled}=Enabled")
                 .AddCommand($"export {connectionStringEnv}=alkajsldkajd")
                 .AddCommand($"cd {appDir}")
@@ -193,6 +196,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
 
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"export {agentExtensionVersionEnv}={agentExtensionVersionEnvValue}")
                 .AddCommand($"export {connectionStringEnv}=alkajsldkajd")
                 .AddCommand($"cd {appDir}")

@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-            var oryxSdkStorageAccountAccessToken = string.IsNullOrEmpty(this.commonOptions.OryxSdkStorageAccountAccessToken) ? Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) : this.commonOptions.OryxSdkStorageAccountAccessToken;
+            var oryxSdkStorageAccountAccessToken = this.commonOptions.OryxSdkStorageAccountAccessToken;
             var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient, oryxSdkStorageAccountAccessToken);
             var supportedVersions = new List<string>();
 

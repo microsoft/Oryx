@@ -56,6 +56,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange & Act
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand("npm root --quiet -g")
                 .ToString();
 
@@ -85,6 +86,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             const int exitCodeSentinel = 222;
             var appPath = "/tmp/app";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .CreateDirectory(appPath)
                 .CreateFile(appPath + "/entry.sh", $"exit {exitCodeSentinel}")
                 .AddCommand("oryx create-script -userStartupCommand entry.sh -appPath " + appPath)

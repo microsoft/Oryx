@@ -77,6 +77,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("HUGO_VERSION", hugoVersion)
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")

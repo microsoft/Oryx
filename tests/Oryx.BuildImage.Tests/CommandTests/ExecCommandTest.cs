@@ -34,6 +34,7 @@ namespace Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var subDir = Guid.NewGuid();
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("NODE_VERSION", nodeVersion)
                 .AddCommand($"oryx exec -s {appDir} '$node --version'")
                 .AddDirectoryExistsCheck($"{Constants.TemporaryInstallationDirectoryRoot}/nodejs/{nodeVersion}")
@@ -72,6 +73,7 @@ namespace Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var subDir = Guid.NewGuid();
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo 'NODE_VERSION=\"{nodeVersion}\"' > {appDir}/build.env")
                 .AddCommand($"oryx exec -s {appDir} '$node --version'")
                 .AddDirectoryExistsCheck($"{Constants.TemporaryInstallationDirectoryRoot}/nodejs/{nodeVersion}")

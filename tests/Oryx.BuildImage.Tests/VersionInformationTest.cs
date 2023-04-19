@@ -211,6 +211,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .Source($"benv dotnet={expectedSdkVersion}")
                 .AddCommand("dotnet --version")
                 .ToString();
@@ -317,6 +318,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .Source($"benv node={specifiedVersion}")
                 .AddCommand("node --version")
                 .ToString();
@@ -351,6 +353,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .Source($"benv node={nodeVersion}")
                 .AddCommand("npm --version")
                 .ToString();
@@ -380,6 +383,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var nodeVersion = NodeVersions.Node12Version;
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .Source($"benv node={nodeVersion}")
                 .AddCommand("npm --version")
                 .ToString();
@@ -412,6 +416,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .Source($"benv python={specifiedVersion}")
                 .AddCommand("python --version")
                 .ToString();
@@ -445,6 +450,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .Source($"benv python={specifiedVersion}")
                 .AddCommand("python2 --version")
                 .ToString();
@@ -483,6 +489,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .Source($"benv python={specifiedVersion}")
                 .AddCommand("python --version")
                 .ToString();
@@ -519,6 +526,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore30SdkVersion;
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 //.SetEnvironmentVariable("ENABLE_DYNAMIC_INSTALL", "true")
                 .SetEnvironmentVariable(environmentVariableName, FinalStretchVersions.FinalStretchDotNetCore31SdkVersion)
                 .Source($"benv {argumentName}={DotNetCoreSdkVersions.DotNetCore30SdkVersion}")
@@ -551,6 +559,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedOutput = DotNetCoreSdkVersions.DotNetCore30SdkVersion;
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .Source($"benv dotnet={FinalStretchVersions.FinalStretchDotNetCore31SdkVersion}")
                 .Source($"benv dotnet_version={DotNetCoreSdkVersions.DotNetCore30SdkVersion}")
                 // benv should update the PATH environment in such a way that we should version 1
@@ -618,6 +627,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedOutput = $"PHP {expectedVersion} (cli) ";
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .Source($"benv php={specifiedVersion}")
                 .AddCommand("php --version")
                 .ToString();
@@ -648,6 +658,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var expectedDotNetVersion = DotNetCoreSdkVersions.DotNetCore30SdkVersion;
             var expectedPythonVersion = Python36VersionInfo;
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .Source($"benv dotnet={DotNetCoreSdkVersions.DotNetCore30SdkVersion} python=3.6")
                 .AddCommand("dotnet --version")
                 .AddCommand("python --version")
@@ -679,6 +690,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedDotNetVersion = FinalStretchVersions.FinalStretchDotNetCore31SdkVersion;
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .Source("benv dotnet_foo=1")
                 .AddCommand("dotnet --version")
                 .ToString();

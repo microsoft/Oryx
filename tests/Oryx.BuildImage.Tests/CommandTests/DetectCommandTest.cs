@@ -32,6 +32,7 @@ namespace Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var subDir = Guid.NewGuid();
             var script = new ShellScriptBuilder()
+                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx detect {appDir} -o json")
                 .ToString();
 
