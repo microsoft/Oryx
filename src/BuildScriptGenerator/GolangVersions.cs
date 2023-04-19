@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Golang17TarSha256 = "6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d";
         public const string Golang18Version = "1.18.10";
         public const string Golang18TarSha256 = "5e05400e4c79ef5394424c0eff5b9141cb782da25f64f79d54c98af0a37f8d49";
-        public const string Golang19Version = "1.19.5";
-        public const string Golang19TarSha256 = "36519702ae2fd573c9869461990ae550c8c0d955cd28d2827a6b159fda81ff95";
+        public const string Golang19Version = "1.19.7";
+        public const string Golang19TarSha256 = "7a75720c9b066ae1750f6bcc7052aba70fa3813f4223199ee2a2315fd3eb533d";
     }
 }
