@@ -276,7 +276,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.2")]
         [InlineData("8.1")]
         [InlineData("8.0")]
-        [InlineData("7.4")]
         public void SqlSrv_IsInstalled(string imageTag)
         {
             // Arrange & Act
