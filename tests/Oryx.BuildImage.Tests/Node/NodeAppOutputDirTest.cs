@@ -41,7 +41,6 @@ namespace Oryx.BuildImage.Tests.Node
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(

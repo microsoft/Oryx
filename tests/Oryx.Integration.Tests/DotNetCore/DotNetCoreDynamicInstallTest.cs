@@ -42,7 +42,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} -o {appOutputDir}")
                .ToString();
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)

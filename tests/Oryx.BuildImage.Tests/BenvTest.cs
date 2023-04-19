@@ -93,7 +93,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"which {executableName}")
                 .ToString();
 
@@ -136,7 +135,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"which {executableName}")
                 .ToString();
 
@@ -170,7 +168,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var userInstalledExecutable = $"/usr/local/bin/{executableName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddLinkDoesNotExistCheck(userInstalledExecutable)
                 .AddFileDoesNotExistCheck(userInstalledExecutable)
                 .AddCommand($"echo > {userInstalledExecutable}")
@@ -200,7 +197,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"which {executableName}")
                 .ToString();
 
@@ -225,7 +221,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var userInstalledDotNet = "/usr/local/bin/dotnet";
             var oryxInstalledNode = "/opt/nodejs/";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo > {userInstalledDotNet}")
                 .AddCommand($"chmod +x {userInstalledDotNet}")
                 .AddCommand("which dotnet")
@@ -255,7 +250,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var userInstalledDotNet = "/usr/local/bin/dotnet";
             var nodeSetupByBenv = "/opt/nodejs/";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo > {userInstalledDotNet}")
                 .AddCommand($"chmod +x {userInstalledDotNet}")
                 // The following should add a path in such a way that user installed dotnet does not get affected,
@@ -288,7 +282,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var serveNodeModulePathPrefix = "/opt/nodejs/";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand("npm install -g serve > /dev/null 2>&1")
                 .AddCommand("which serve")
                 .ToString();
@@ -315,7 +308,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var pythonPacakageExecutablePathPrefix = "/opt/python/";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand("pip install pylint > /dev/null 2>&1")
                 .AddCommand("which pylint")
                 .ToString();
@@ -342,7 +334,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expected = "/opt/oryx:";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand("echo \"$ORYX_PATHS\"")
                 .ToString();
 
@@ -381,7 +372,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"which {executableName}")
                 .ToString();
 
@@ -405,7 +395,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedContent = "JAVA_HOME=/opt/java/lts";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand("printenv")
                 .ToString();
 
@@ -429,7 +418,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Arrange
             var expectedPath = $"/opt/dotnet/2.2/dotnet";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"source benv dotnet=2.2")
                 .AddCommand("which dotnet")
                 .ToString();

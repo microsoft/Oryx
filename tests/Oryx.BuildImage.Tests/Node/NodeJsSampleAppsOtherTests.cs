@@ -82,7 +82,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
@@ -116,7 +115,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/webfrontend-output";
             var subDir = Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 // Add a test sub-directory with a file
                 .CreateDirectory($"{appDir}/{subDir}")
                 .CreateFile($"{appDir}/{subDir}/file1.txt", "file1.txt")
@@ -152,7 +150,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appDir}/output")
                 .AddDirectoryExistsCheck($"{appDir}/output/node_modules")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
@@ -184,7 +181,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 // Pre-populate the output directory with content
                 .CreateDirectory(appOutputDir)
                 .CreateFile($"{appOutputDir}/hi.txt", "hi")
@@ -235,7 +231,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             //        app4
 
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .CreateDirectory($"{appDir}/app2/app3/app4")
                 .CreateFile($"{appDir}/1.log", "hello1")
                 .CreateFile($"{appDir}/app2/2.log", "hello2")
@@ -320,7 +315,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = "/app";
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .CreateDirectory(appDir)
                 .CreateFile($"{appDir}/server.js", serverJsWithErrors)
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
@@ -354,7 +348,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddFileExistsCheck(osTypeFile)
@@ -392,7 +385,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var generatedScript = "/tmp/build.sh";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddScriptCommand($"{appDir} > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
@@ -428,7 +420,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var generatedScript = "/tmp/build.sh";
             var tempDir = "/tmp/" + Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddScriptCommand($"{appDir} --platform {NodeConstants.PlatformName} --platform-version 8.2.1 > {generatedScript}")
                 .SetExecutePermissionOnFile(generatedScript)
                 .CreateDirectory(tempDir)
@@ -463,7 +454,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var intermediateDir = "/tmp/app-intermediate";
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i {intermediateDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
@@ -493,7 +483,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir}")
                 .AddDirectoryExistsCheck($"{appDir}/node_modules")
                 .ToString();
@@ -585,7 +574,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} --platform {NodeConstants.PlatformName} --platform-version 8")
                 .ToString();
 
@@ -623,7 +611,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} -p compress_node_modules=tar-gz")
                 .AddFileExistsCheck($"{appOutputDir}/node_modules.tar.gz")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
@@ -694,7 +681,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileDoesNotExistCheck($"{appOutputDir}/node_modules.zip")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
@@ -726,7 +712,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(_hostSamplesDir, "nodejs", "node-nested-nodemodules"));
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=another-directory")
                 .AddFileExistsCheck($"{appDir}/another-directory/kudu-bug-0.0.0.tgz")
                 .ToString();
@@ -757,7 +742,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(_hostSamplesDir, "nodejs", "monorepo-lerna-yarn"));
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(
                     SettingsKeys.EnableNodeMonorepoBuild,
                     true.ToString())
@@ -793,7 +777,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} -p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
@@ -829,7 +812,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} -p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/node_modules")
@@ -874,7 +856,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} -p {NodePlatform.PruneDevDependenciesPropertyKey}=true")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
@@ -920,7 +901,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"-p {NodePlatform.PruneDevDependenciesPropertyKey}=false")
@@ -956,7 +936,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, "make")
                 .AddCommand($"oryx build {appDir}")
                 // 'make' command will simply generate an index.html by using reveal.js template.
@@ -990,7 +969,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "nodejs", appName));
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.CustomBuildCommand, $"./customBuildScript.sh")
                 .AddCommand($"oryx build {appDir} -i /tmp/int")
                 .AddFileExistsCheck($"{appDir}/index.html")
@@ -1024,7 +1002,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/nextjs-yarn2-example";
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"cd {appDir}")
                 .AddCommand($"yarn set version berry")
                 .AddCommand($"yarn plugin import workspace-tools@2.2.0")
@@ -1059,7 +1036,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/nextjs-yarn2-example";
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx build {appDir} -o {appOutputDir}")
                 .ToString();
 
@@ -1090,7 +1066,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/webfrontend-output";
             var subDir = Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(
                 SettingsKeys.CustomRunBuildCommand,
                 $"echo > /tmp/foo.txt")
@@ -1130,7 +1105,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/appdynamics")
@@ -1171,7 +1145,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .ToString();
@@ -1212,7 +1185,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/vuepress-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} -p {NodePlatform.PruneDevDependenciesPropertyKey}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/vuepress")
@@ -1244,7 +1216,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/" + SampleAppName + "-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo RandomText >> {appDir}/Program.cs") // triggers a failure
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --package --property package_directory='oryxteststring'")

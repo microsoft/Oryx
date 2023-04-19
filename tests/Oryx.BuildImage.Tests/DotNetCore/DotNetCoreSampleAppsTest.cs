@@ -89,7 +89,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 1.1.13")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck(manifestFile)
@@ -134,7 +133,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp11WebApp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -170,7 +168,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/aspnetcore10-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1.22")
                 .AddFileExistsCheck($"{appOutputDir}/app.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -208,7 +205,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp21WebApp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1.22")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
@@ -242,7 +238,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp22WebApp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.2.8")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
@@ -276,7 +271,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp30WebApp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 3.0.3")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .ToString();
@@ -311,7 +305,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
                 $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion}")
@@ -349,7 +342,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo RandomText >> {appDir}/Program.cs") // triggers a failure
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
@@ -389,7 +381,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/Net5MvcApp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
                 $"--platform-version 5.0.0")
@@ -424,7 +415,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform dotnet " +
                 $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion}")
@@ -487,7 +477,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version 2.1.22")
@@ -557,7 +546,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var tempOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {tempOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1")
                 .AddFileExistsCheck($"{tempOutputDir}/pre-{fileName}")
                 .AddFileExistsCheck($"{tempOutputDir}/post-{fileName}")
@@ -599,7 +587,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var tempOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {tempOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1")
                 .ToString();
 
@@ -634,7 +621,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/NetCoreApp21WebApp-output";
             var extraFile = $"{Guid.NewGuid().ToString("N")}.txt";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .CreateDirectory($"{appOutputDir}")
                 .AddCommand($"echo > {appOutputDir}/{extraFile}")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
@@ -671,7 +657,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/NetCoreApp21WebApp-output";
             var intermediateDir = "/tmp/int";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"rm -rf {appDir}/bin")
                 .AddBuildCommand($"{appDir} -i {intermediateDir} -o {appOutputDir}")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/bin")
@@ -709,7 +694,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/MultiWebAppRepo-output";
             var intermediateDir = "/tmp/int";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(EnvironmentSettingsKeys.Project, "src/WebApp1/WebApp1.csproj")
                 .AddCommand($"rm -rf {projectDir}/bin")
                 .AddBuildCommand($"{appDir} -i {intermediateDir} -o {appOutputDir}")
@@ -746,7 +730,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/AzureFunctionsHttpTriggerApp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1.22")
                 .AddFileExistsCheck($"{appOutputDir}/bin/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -785,7 +768,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
                 $"--platform-version 5.0.0")
@@ -827,7 +809,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} " +
                 $"--platform dotnet --platform-version 3.1.8")
@@ -868,7 +849,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir}/MessageFunction -o {appOutputDir} --apptype functions --platform dotnet " +
                 $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion}")
@@ -910,7 +890,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/netcore6-preview-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir}/ -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -950,7 +929,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = "/tmp/app1";
             var flattenedDotNetInstallDir = "/opt/dotnet/all";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"mkdir -p {appDir} && cd {appDir}")
                 .AddCommand($"dotnet new globaljson --sdk-version {sdkversion}")
                 .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH")
@@ -987,7 +965,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appDir}/output --platform dotnet --platform-version 3.1.8")
                 .AddFileExistsCheck($"{appDir}/output/{appName}.dll")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
@@ -1024,7 +1001,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // the output structure is like what we expect.
             var platformNameAndVersion = "--platform dotnet --platform-version 3.1.8";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appDir}/output {platformNameAndVersion}")
                 .AddBuildCommand($"{appDir} -o {appDir}/output {platformNameAndVersion}")
                 .AddBuildCommand($"{appDir} -o {appDir}/output {platformNameAndVersion}")
@@ -1095,7 +1071,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/dotnetcore-functions-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
@@ -1134,7 +1109,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/dotnetcore-functions-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
@@ -1173,7 +1147,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/isolatedapp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")

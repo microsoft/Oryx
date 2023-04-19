@@ -94,7 +94,6 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
             }
 
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
             // Fetch source code
                 .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir}")
                 .AddCommand("export ENABLE_DYNAMIC_INSTALL=true")
@@ -170,7 +169,6 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
             }
 
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
             // Fetch source code
                 .AddCommand($"mkdir -p {pkgSrcDir} && git clone {gitRepoUrl} {pkgSrcDir} --recursive")
                 .AddCommand("export ENABLE_DYNAMIC_INSTALL=true")
@@ -215,7 +213,6 @@ namespace Microsoft.Oryx.BuildImage.Tests.Python
         public void InstalledPypiFromArtifactFeeds(string imageTag)
         {
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand("export ENABLE_DYNAMIC_INSTALL=true")
                 .AddCommand($"twine --version")
                 .ToString();

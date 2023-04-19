@@ -54,7 +54,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -117,7 +116,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -168,7 +166,6 @@ namespace Microsoft.Oryx.Integration.Tests
                 $"--platform {NodeConstants.PlatformName} --platform-version {nodeVersion}")
                 .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)

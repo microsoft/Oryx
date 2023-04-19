@@ -30,7 +30,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -p virtualenv_name=venv")
                 .AddDirectoryExistsCheck($"{appOutputDir}/venv")
                 .ToString();
@@ -63,7 +62,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/venv")
                 // Following command makes sure that this package 'matplotlib' is present
@@ -100,7 +98,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} -p virtualenv_name=venv")
                 .AddDirectoryExistsCheck($"{appOutputDir}/venv")
                 .ToString();
@@ -133,7 +130,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/venv")
                 // Following command makes sure that this package 'matplotlib' is present
@@ -170,7 +166,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/venv")
                 // Following command makes sure that this package 'matplotlib' is present
@@ -207,7 +202,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/venv")
                 // Following command makes sure that this package 'matplotlib' is present
@@ -245,7 +239,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app1-output";
             var commandListFile = $"{appOutputDir}/{FilePaths.BuildCommandsFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{commandListFile}")
                 .AddStringExistsInFileCheck("PlatformWithVersion=", $"{commandListFile}")

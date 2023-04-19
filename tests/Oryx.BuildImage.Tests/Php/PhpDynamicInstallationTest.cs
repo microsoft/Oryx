@@ -177,7 +177,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("PHP_COMPOSER_VERSION", phpComposerVersion)
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
@@ -216,7 +215,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var expectedDynamicInstallRootDir = "/foo/bar";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion} " +
                 $"--dynamic-install-root-dir {expectedDynamicInstallRootDir}")
@@ -256,7 +254,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("PHP_COMPOSER_VERSION", composerVersion)
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {version}")
@@ -299,7 +296,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("PHP_COMPOSER_VERSION", composerVersion)
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {version}")

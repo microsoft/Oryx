@@ -124,7 +124,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var portConfig = @"sed -i -e 's!\${APACHE_PORT}!" + containerPort + "!g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf";
             var documentRootConfig = @"sed -i -e 's!\${APACHE_DOCUMENT_ROOT}!/var/www/php-x/!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf /etc/apache2/sites-available/*.conf";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand("mkdir -p /var/www/php-x")
                 .AddCommand("echo '' > /var/www/php-x/error.log")
                 .AddCommand("echo '' > /var/www/php-x/access.log")

@@ -34,7 +34,6 @@ namespace Oryx.BuildImage.Tests
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx prep -s {appDir}")
                 .ToString();
 
@@ -68,7 +67,6 @@ namespace Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var subDir = Guid.NewGuid();
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("NODE_VERSION", nodeVersion)
                 .AddCommand($"oryx prep -s {appDir}")
                 .AddDirectoryExistsCheck($"{Constants.TemporaryInstallationDirectoryRoot}/nodejs/{nodeVersion}")
@@ -103,7 +101,6 @@ namespace Oryx.BuildImage.Tests
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo 'NODE_VERSION=\"{nodeVersion}\"' > {appDir}/build.env")
                 .AddCommand($"oryx prep -s {appDir}")
                 .AddDirectoryExistsCheck(
@@ -138,7 +135,6 @@ namespace Oryx.BuildImage.Tests
             var nodeVersion = "4.4.7";
             var pythonVersion = "3.7.7";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx prep --skip-detection --platforms-and-versions " +
                 $"'{NodeConstants.PlatformName}={nodeVersion}, {PythonConstants.PlatformName}={pythonVersion}'")
@@ -173,7 +169,6 @@ namespace Oryx.BuildImage.Tests
             var pythonVersion = "3.7.7";
             var versionsFile = "/tmp/versions.txt";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo 'nodejs={nodeVersion}' >> {versionsFile}")
                 .AddCommand($"echo >> {versionsFile}")
                 .AddCommand($"echo '#A comment' >> {versionsFile}")
@@ -211,7 +206,6 @@ namespace Oryx.BuildImage.Tests
             var expectedText =
                 $"Node path is: {customDynamicInstallRootDir}/{NodeConstants.PlatformName}/{nodeVersion}/bin";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("DYNAMIC_INSTALL_ROOT_DIR", customDynamicInstallRootDir)
                 .AddCommand(
                 $"oryx prep --skip-detection --platforms-and-versions " +
@@ -249,7 +243,6 @@ namespace Oryx.BuildImage.Tests
             var expectedText =
                 $"Node path is: {customDynamicInstallRootDir}/{NodeConstants.PlatformName}/{nodeVersion}/bin";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(BuildScriptGeneratorCli.SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable("DYNAMIC_INSTALL_ROOT_DIR", customDynamicInstallRootDir)
                 .AddCommand(

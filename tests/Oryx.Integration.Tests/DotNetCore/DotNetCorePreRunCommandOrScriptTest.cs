@@ -46,7 +46,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // split run script to test pre-run command before running the app.
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName,
                     $"\"touch {appOutputDir}/_test_file.txt\ntouch {appOutputDir}/_test_file_2.txt\"")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
@@ -115,7 +114,6 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // split run script to test pre-run command and then run the app
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"")
                 .AddCommand($"touch {preRunScriptPath}")
                 .AddFileExistsCheck(preRunScriptPath)

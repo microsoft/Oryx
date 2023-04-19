@@ -33,6 +33,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             {
                 this.commandSeparator = cmdSeparator;
             }
+
+            this.AddDefaultTestEnvironmentVariables();
         }
 
         public ShellScriptBuilder AddShebang([NotNull] string interpreterPath)
