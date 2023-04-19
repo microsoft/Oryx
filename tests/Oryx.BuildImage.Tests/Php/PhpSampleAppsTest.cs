@@ -161,7 +161,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"rm {appDir}/composer.json")
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .AddFileExistsCheck(osTypeFile)

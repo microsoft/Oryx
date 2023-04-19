@@ -26,7 +26,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand("mkdir /tmp/app")
                .AddCommand("oryx build /tmp/app -o /tmp/out")
                .ToString();
@@ -53,7 +52,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand("mkdir /tmp/app")
                .AddCommand($"oryx build /tmp/app -o /tmp/out --platform {DotNetCoreConstants.PlatformName} --platform-version 0.0")
                .ToString();
@@ -193,7 +191,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     "'{\"engines\": {\"node\": \"" + expectedNodeVersion + "\"}}'")
                 .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}",
                     "'{\"require\": {\"php\": \"" + expectedPhpVersion + "\"}}'")
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
                 .ToString();
 
