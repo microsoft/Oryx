@@ -78,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 
         public ShellScriptBuilder SetEnvironmentVariable(string name, string value)
         {
-            return this.Append($"export {name}={value}");
+            return this.Append($"export {name}='{value}'");
         }
 
         public ShellScriptBuilder CreateDirectory(string directory)
