@@ -8,7 +8,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string SdkStorageBaseUrlKeyName = "ORYX_SDK_STORAGE_BASE_URL";
         public const string TestingSdkStorageUrlKeyName = "ORYX_TEST_SDK_STORAGE_URL";
         public const string PrivateStagingStorageSasTokenKey = "ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN";
-        public const string OryxKeyVaultUri = "https://oryx.vault.azure.net";
+        public const string OryxKeyvaultUri = "https://oryx.vault.azure.net";
         public const string StagingStorageSasTokenKeyvaultSecretName = "ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN";
         public const string PrivateStagingSdkStorageBaseUrl = "https://oryxsdksstaging.blob.core.windows.net";
         public const string DevSdkStorageBaseUrl = "https://oryxsdksdev.blob.core.windows.net";

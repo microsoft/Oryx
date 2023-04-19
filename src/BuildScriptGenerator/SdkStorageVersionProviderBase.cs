@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-            var oryxSdkStorageAccountAccessToken = this.commonOptions.OryxSdkStorageAccountAccessToken;
+            var oryxSdkStorageAccountAccessToken = string.IsNullOrEmpty(this.commonOptions.OryxSdkStorageAccountAccessToken) ? Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) : this.commonOptions.OryxSdkStorageAccountAccessToken;
             var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient, oryxSdkStorageAccountAccessToken);
             var supportedVersions = new List<string>();
 
@@ -149,13 +149,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var platformBinariesStorageBaseUrl = this.commonOptions.OryxSdkStorageBaseUrl;
 
-            this.logger.LogDebug("Using the Sdk storage url {sdkStorageUrl}.", platformBinariesStorageBaseUrl);
-
             if (string.IsNullOrEmpty(platformBinariesStorageBaseUrl))
             {
-                throw new InvalidOperationException(
-                    $"Environment variable '{SdkStorageConstants.SdkStorageBaseUrlKeyName}' is required.");
+                platformBinariesStorageBaseUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
+
+                // platformBinariesStorageBaseUrl = SdkStorageConstants.PrivateStagingSdkStorageBaseUrl;
             }
+
+            this.logger.LogDebug("Using the Sdk storage url {sdkStorageUrl}.", platformBinariesStorageBaseUrl);
 
             platformBinariesStorageBaseUrl = platformBinariesStorageBaseUrl.TrimEnd('/');
             return platformBinariesStorageBaseUrl;

@@ -51,7 +51,7 @@ namespace Oryx.Integration.Tests
             {
                 _stagingStorageAccountAccessToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) != null
                     ? Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey)
-                    : this.GetKeyvaultSecretValue(SdkStorageConstants.OryxKeyVaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);                
+                    : this.GetKeyvaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);                
             }
         }
 
@@ -266,7 +266,7 @@ namespace Oryx.Integration.Tests
                     || string.Equals(debianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
                 ? SdkStorageConstants.DefaultVersionFileName
                 : $"{SdkStorageConstants.DefaultVersionFilePrefix}.{debianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
-            var defaultVersionUrl = $"{_storageUrl}/{platformName}/{defaultFile}";
+            var defaultVersionUrl = $"{_storageUrl}/{platformName}/{defaultFile}{_stagingStorageAccountAccessToken}";
             var defaultVersionContent = _httpClient.GetStringAsync(defaultVersionUrl).Result;
 
             string defaultVersion = null;
