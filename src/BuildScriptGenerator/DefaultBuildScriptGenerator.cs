@@ -328,7 +328,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 this.cliOptions.CompressDestinationDir.ToString().ToLower();
 
             // Process the appsvc.yaml file
-            this.ProcessAppsvcYamlFile(context);
+            this.ProcessAppSvcYamlFile(context);
 
             // Process the oryx-config.yaml file
             var extensibleConfiguration = this.ProcessExtensibleConfigurationFile(context);
@@ -389,7 +389,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         /// <param name="context"><see cref="BuildScriptGeneratorContext"/> object containing information regarding
         /// the user's provided source repository.</param>
-        private void ProcessAppsvcYamlFile(BuildScriptGeneratorContext context)
+        private void ProcessAppSvcYamlFile(BuildScriptGeneratorContext context)
         {
             // Workaround for bug in TestSourceRepo class in validation tests
             // Should be using context.SourceRepo.FileExists
@@ -465,15 +465,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 ExtensibleConfigurationFile config = null;
                 try
                 {
-                    var properties = new ExtensibleConfigurationProperties
-                    {
-                        DebianFlavor = this.cliOptions.DebianFlavor,
-                        DynamicInstallRootDir = this.cliOptions.DynamicInstallRootDir,
-                        OryxSdkStorageAccountAccessToken = this.cliOptions.OryxSdkStorageAccountAccessToken,
-                        OryxSdkStorageBaseUrl = this.cliOptions.OryxSdkStorageBaseUrl,
-                    };
                     config = ExtensibleConfigurationFile.Create(context.SourceRepo.ReadFile(FilePaths.ExtensibleConfigurationFileName));
-                    return config.GetBuildScriptSnippet(properties);
+                    return config.GetBuildScriptSnippet();
                 }
                 catch (Exception ex)
                 {
@@ -485,6 +478,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                         this.writer.WriteLine(warningMessage);
                     }
                 }
+            }
+            else
+            {
+                this.logger.LogDebug($"No {FilePaths.ExtensibleConfigurationFileName} found");
             }
 
             return string.Empty;

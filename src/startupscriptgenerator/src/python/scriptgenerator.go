@@ -91,7 +91,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	appDebugModule := "" // Command to run under a debugger in case debugging mode was requested
 
 	extensibleCommands := common.ParseExtensibleConfigFile(filepath.Join(gen.AppPath, consts.ExtensibleConfigurationFileName))
-	if extensibleCommands!= "" {
+	if extensibleCommands != "" {
 		logger.LogInformation("Found extensible configuration file to be used in the generated run script")
 		scriptBuilder.WriteString(extensibleCommands)
 	}

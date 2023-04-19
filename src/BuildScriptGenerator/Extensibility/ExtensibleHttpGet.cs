@@ -34,10 +34,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Extensibility
         /// <summary>
         /// Gets a build script snippet for the current HTTP GET request.
         /// </summary>
-        /// <param name="properties">The <see cref="ExtensibleConfigurationProperties"/> containing properties used by
-        /// the extensibility model.</param>
         /// <returns>A build script snippet for the current HTTP GET request.</returns>
-        public string GetBuildScriptSnippet(ExtensibleConfigurationProperties properties)
+        public string GetBuildScriptSnippet()
         {
             if (string.IsNullOrEmpty(this.Url))
             {

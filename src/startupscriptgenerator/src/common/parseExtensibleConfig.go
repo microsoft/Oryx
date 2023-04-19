@@ -6,6 +6,7 @@
 package common
 
 import (
+    "fmt"
     "os"
     "strings"
     "gopkg.in/yaml.v3"
@@ -27,6 +28,7 @@ func ParseExtensibleConfigFile(sourcePath string) string {
     commands := ""
     fileContent, err := os.ReadFile(sourcePath)
     if err != nil {
+        fmt.Println("Error when reading extensible config file: " + err)
         return ""
     }
 
@@ -34,6 +36,7 @@ func ParseExtensibleConfigFile(sourcePath string) string {
     yamlErr := yaml.Unmarshal(fileContent, &configFile)
 
     if yamlErr != nil {
+        fmt.Println("Error when parsing extensible config file: " + yamlErr)
         return ""
     }
 

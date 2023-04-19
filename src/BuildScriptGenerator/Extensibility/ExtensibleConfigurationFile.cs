@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Extensibility
         /// <summary>
         /// Gets or sets the environment variables to be set during the build process.
         /// </summary>
-        [YamlMember(Alias = "env", ApplyNamingConventions =false)]
+        [YamlMember(Alias = "env", ApplyNamingConventions = false)]
         public ExtensibleEnvironmentVariable[] EnvironmentVariables { get; set; }
 
         /// <summary>
@@ -64,10 +64,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Extensibility
         /// <summary>
         /// Generates the build script snippet for the current extensible configuration file.
         /// </summary>
-        /// <param name="properties">The <see cref="ExtensibleConfigurationProperties"/> containing properties used by
-        /// the extensibility model.</param>
         /// <returns>A build script snippet for the current extensible configuration file.</returns>
-        public string GetBuildScriptSnippet(ExtensibleConfigurationProperties properties)
+        public string GetBuildScriptSnippet()
         {
             var result = new StringBuilder();
             if (this.EnvironmentVariables?.Any() == true)
@@ -85,7 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Extensibility
             {
                 foreach (var prebuildStep in this.PreBuild)
                 {
-                    var prebuildStepSnippet = prebuildStep.GetBuildScriptSnippet(properties);
+                    var prebuildStepSnippet = prebuildStep.GetBuildScriptSnippet();
                     result.AppendLine(prebuildStepSnippet);
                     result.AppendLine();
                 }

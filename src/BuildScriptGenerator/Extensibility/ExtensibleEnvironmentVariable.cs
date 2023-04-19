@@ -27,20 +27,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Extensibility
         /// <returns>A build script snippet for the current environment variable.</returns>
         public string GetBuildScriptSnippet()
         {
-            if (string.IsNullOrEmpty(this.Name))
+            if (string.IsNullOrEmpty(this.Name) || string.IsNullOrEmpty(this.Value))
             {
                 return string.Empty;
             }
 
-            var result = $"export {this.Name}";
-            if (!string.IsNullOrEmpty(this.Value))
-            {
-                // Escape double quotes in the provided value
-                var escapedValue = this.Value.Replace("\"", "\\\"");
-                result = $"{result}=\"{escapedValue}\"";
-            }
-
-            return result;
+            // Escape double quotes in the provided value
+            var escapedValue = this.Value.Replace("\"", "\\\"");
+            return $"export {this.Name}=\"{escapedValue}\"";
         }
     }
 }

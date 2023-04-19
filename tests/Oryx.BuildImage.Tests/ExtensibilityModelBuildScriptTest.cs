@@ -203,6 +203,7 @@ pre-build:
       file-name: 'samplefile'
       headers:
         - 'header1'
+        - 'header2'
 ";
 
             var volume = CreateWebFrontEndVolume();
@@ -233,7 +234,7 @@ pre-build:
                     {
                         Assert.True(result.IsSuccess);
                         Assert.Contains(
-                            $"curl -o samplefile -H header1 testurl",
+                            $"curl -o samplefile -H header1 -H header2 testurl",
                             result.StdOut);
                     },
                     result.GetDebugInfo());
@@ -303,6 +304,79 @@ pre-build:
                             result.StdOut);
                         Assert.Contains(
                             $"curl -o samplefile -H header1 testurl",
+                            result.StdOut);
+                    },
+                    result.GetDebugInfo());
+            }
+            finally
+            {
+                DeleteTempDirectory();
+            }
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        public void BuildScriptGenerated_WithExtensibilityModel_WithMultiplePrebuildSteps_Succeeds()
+        {
+            // Arrange
+            var configContent = @"
+base-os: debian
+pre-build: 
+  - description: 'Test description 1'
+    scripts:
+      - 'echo ""Hello, world!""'
+      - 'echo ""Hello, foobar!""'
+    http-get:
+      url: 'testurl'
+      file-name: 'samplefile'
+      headers:
+        - 'header1'
+  - description: 'Test description 2'
+    scripts:
+      - 'echo ""Hello, world 2!""'
+      - 'echo ""Hello, foobar 2!""'
+";
+
+            var volume = CreateWebFrontEndVolume();
+            CreateTempDirectory();
+            try
+            {
+                CreateExtensibilityConfigFile(configContent);
+                var tempDirVolume = CreateTempDirectoryVolume();
+                var appDir = volume.ContainerDir;
+                var tempDir = tempDirVolume.ContainerDir;
+                var script = new ShellScriptBuilder()
+                    .AddCommand($"cp {tempDir}/{FilePaths.ExtensibleConfigurationFileName} {appDir}")
+                    .AddCommand($"oryx build-script {appDir}")
+                    .ToString();
+
+                // Act
+                var result = _dockerCli.Run(new DockerRunArguments
+                {
+                    ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                    Volumes = new List<DockerVolume> { volume, tempDirVolume },
+                    CommandToExecuteOnRun = "/bin/bash",
+                    CommandArguments = new[] { "-c", script }
+                });
+
+                // Assert
+                RunAsserts(
+                    () =>
+                    {
+                        Assert.True(result.IsSuccess);
+                        Assert.Contains(
+                            $"echo \"Hello, world!\"",
+                            result.StdOut);
+                        Assert.Contains(
+                            $"echo \"Hello, foobar!\"",
+                            result.StdOut);
+                        Assert.Contains(
+                            $"curl -o samplefile -H header1 testurl",
+                            result.StdOut);
+                        Assert.Contains(
+                            $"echo \"Hello, world 2!\"",
+                            result.StdOut);
+                        Assert.Contains(
+                            $"echo \"Hello, foobar 2!\"",
                             result.StdOut);
                     },
                     result.GetDebugInfo());

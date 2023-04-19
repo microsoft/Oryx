@@ -35,10 +35,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Extensibility
         /// <summary>
         /// Generates a build script snippet for the current pre-build step.
         /// </summary>
-        /// <param name="properties">The <see cref="ExtensibleConfigurationProperties"/> containing properties used by
-        /// the extensibility model.</param>
         /// <returns>A build script snippet for the current pre-build step.</returns>
-        public string GetBuildScriptSnippet(ExtensibleConfigurationProperties properties)
+        public string GetBuildScriptSnippet()
         {
             var result = new StringBuilder();
 
@@ -63,7 +61,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Extensibility
             // Process http-get field
             if (this.HttpGet != null)
             {
-                var httpGetScript = this.HttpGet.GetBuildScriptSnippet(properties);
+                var httpGetScript = this.HttpGet.GetBuildScriptSnippet();
                 result.AppendLine(httpGetScript);
                 result.AppendLine();
             }

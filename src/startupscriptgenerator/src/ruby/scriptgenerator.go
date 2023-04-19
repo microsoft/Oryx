@@ -60,7 +60,7 @@ func (gen *RubyStartupScriptGenerator) GenerateEntrypointScript() string {
 	}
 
 	extensibleCommands := common.ParseExtensibleConfigFile(filepath.Join(gen.SourcePath, consts.ExtensibleConfigurationFileName))
-	if extensibleCommands!= "" {
+	if extensibleCommands != "" {
 		logger.LogInformation("Found extensible configuration file to be used in the generated run script")
 		scriptBuilder.WriteString(extensibleCommands)
 	}
