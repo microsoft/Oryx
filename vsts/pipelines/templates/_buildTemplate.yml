@@ -129,6 +129,7 @@ steps:
   displayName: 'Test build images'
   env:
     ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
+    AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
   inputs:
     scriptPath: ./build/testBuildImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME) ${{ parameters.imageType }}
@@ -138,6 +139,7 @@ steps:
   displayName: 'Test runtime images'
   env:
     ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
+    AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
