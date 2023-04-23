@@ -104,6 +104,8 @@ jobs:
     name: AzurePipelines-EO
     demands:
       - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+  variables:
+  - group: Oryx
   timeoutInMinutes: 480
   steps:
   - script: |

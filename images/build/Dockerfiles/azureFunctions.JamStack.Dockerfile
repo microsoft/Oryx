@@ -11,7 +11,8 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     PYTHONIOENCODING="UTF-8" \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
-    LC_ALL="C.UTF-8"
+    LC_ALL="C.UTF-8" \
+    ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/python/latest/bin:/opt/yarn/stable/bin"
 
 RUN set -ex \
     # Install Python SDKs
