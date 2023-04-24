@@ -78,9 +78,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             return this.Append($"oryx build-script {argumentsString}");
         }
 
-        public ShellScriptBuilder SetEnvironmentVariable(string name, string value)
+        public ShellScriptBuilder SetEnvironmentVariable(string name, string value, bool isVariableSubstitutionNeeded = false)
         {
-            return this.Append($"export {name}='{value}'");
+            if (isVariableSubstitutionNeeded)
+            {
+                // linux does not allow variable substitution in a single quoted string.
+                // So, if we need to do variable substitution it has to be inside a double quoted string.
+                // e.g. to add a new path in an existing env variable, variable substitution is required.
+                return this.Append($"export {name}={value}");
+            }
+            else
+            {
+                return this.Append($"export {name}='{value}'");
+            }
         }
 
         public ShellScriptBuilder CreateDirectory(string directory)

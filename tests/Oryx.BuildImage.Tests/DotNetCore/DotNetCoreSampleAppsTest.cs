@@ -931,7 +931,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir} && cd {appDir}")
                 .AddCommand($"dotnet new globaljson --sdk-version {sdkversion}")
-                .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH")
+                .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH", true)
                 .AddCommand("dotnet --version")
                 .AddCommand("which dotnet")
                 .ToString();
