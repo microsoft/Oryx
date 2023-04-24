@@ -19,9 +19,9 @@ stages:
           ignoreDirectories: '$(Build.SourcesDirectory)/tests'
       
       - task: UseDotNet@2
-        displayName: 'Use .NET Core sdk 3.1.x'
+        displayName: 'Use .NET Core sdk 7.x'
         inputs:
-          version: 3.1.x
+          version: 7.x
 
       - task: ShellScript@2
         displayName: '(Dry run) Publish SDKs from dev to prod storage account'
@@ -53,9 +53,9 @@ stages:
                 ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
             - task: UseDotNet@2
-              displayName: 'Use .NET Core sdk 3.1.x'
+              displayName: 'Use .NET Core sdk 7.x'
               inputs:
-                version: 3.1.x
+                version: 7.x
 
             - task: ShellScript@2
               displayName: 'Publish SDKs from dev to prod storage account'
