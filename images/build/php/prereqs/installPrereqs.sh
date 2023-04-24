@@ -33,7 +33,7 @@ apt-get update \
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 ##<argon2>##
-sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
+# sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
 { \
 	echo 'Package: *';
 	echo 'Pin: release n=buster';
