@@ -1,5 +1,14 @@
 FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-stretch AS main
 
+ENV DEBIAN_FLAVOR="stretch"
+
+# stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror
+RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
+        sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
+        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
+        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
+    fi
+
 # Install basic build tools
 # Configure locale (required for Python)
 # NOTE: Do NOT move it from here as it could have global implications
