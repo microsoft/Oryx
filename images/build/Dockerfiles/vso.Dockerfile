@@ -13,6 +13,13 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     DYNAMIC_INSTALL_ROOT_DIR="/opt" \
     DEBIAN_FLAVOR="stretch"
 
+# stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror
+RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
+        sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
+        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
+        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
+    fi
+
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 
 RUN buildDir="/opt/tmp/build" \
