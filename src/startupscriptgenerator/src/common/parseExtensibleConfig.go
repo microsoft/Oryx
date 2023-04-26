@@ -28,7 +28,7 @@ func ParseExtensibleConfigFile(sourcePath string) string {
     commands := ""
     fileContent, err := os.ReadFile(sourcePath)
     if err != nil {
-        fmt.Println("Error when reading extensible config file: " + err)
+        fmt.Println("Error when reading extensible config file")
         return ""
     }
 
@@ -36,7 +36,7 @@ func ParseExtensibleConfigFile(sourcePath string) string {
     yamlErr := yaml.Unmarshal(fileContent, &configFile)
 
     if yamlErr != nil {
-        fmt.Println("Error when parsing extensible config file: " + yamlErr)
+        fmt.Println("Error when parsing extensible config file")
         return ""
     }
 
