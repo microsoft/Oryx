@@ -1,6 +1,6 @@
 FROM oryxdevmcr.azurecr.io/private/oryx/php-8.2
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.2.4
+ENV PHP_VERSION 8.2.5
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
