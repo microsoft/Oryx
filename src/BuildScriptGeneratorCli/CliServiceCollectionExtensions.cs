@@ -3,7 +3,8 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using McMaster.Extensions.CommandLineUtils;
+using System.CommandLine;
+using System.CommandLine.IO;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
@@ -15,7 +16,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public static IServiceCollection AddCliServices(this IServiceCollection services, IConsole console = null)
         {
             services.AddOptionsServices();
-            services.AddSingleton<IConsole, PhysicalConsole>();
+            services.AddSingleton<IConsole, SystemConsole>();
             services.AddSingleton<CliEnvironmentSettings>();
             return console == null ?
                 services.AddSingleton<IStandardOutputWriter, DefaultStandardOutputWriter>() :

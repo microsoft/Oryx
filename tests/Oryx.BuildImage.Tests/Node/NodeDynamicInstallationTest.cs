@@ -28,9 +28,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add("14.19.1", imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add("16.14.2", imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add("12.22.12", imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add(FinalStretchVersions.FinalStretchNode14Version, imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add(FinalStretchVersions.FinalStretchNode16Version, imageTestHelper.GetGitHubActionsBuildImage());
                 return data;
             }
         }
@@ -41,9 +41,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliImage());
-                data.Add("14.19.1", imageTestHelper.GetCliImage());
-                data.Add("16.14.2", imageTestHelper.GetCliImage());
+                data.Add("12.22.12", imageTestHelper.GetCliImage());
+                data.Add(FinalStretchVersions.FinalStretchNode14Version, imageTestHelper.GetCliImage());
+                data.Add(FinalStretchVersions.FinalStretchNode16Version, imageTestHelper.GetCliImage());
                 return data;
             }
         }

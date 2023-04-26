@@ -14,6 +14,13 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     LC_ALL="C.UTF-8" \
     ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/python/latest/bin:/opt/yarn/stable/bin"
 
+# stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror
+RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
+        sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
+        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
+        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
+    fi
+
 RUN set -ex \
     # Install Python SDKs
     # Upgrade system python

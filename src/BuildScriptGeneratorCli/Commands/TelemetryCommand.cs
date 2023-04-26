@@ -5,28 +5,73 @@
 
 using System;
 using System.Collections.Generic;
-using McMaster.Extensions.CommandLineUtils;
+using System.CommandLine;
+using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "[INTERNAL ONLY COMMAND]", ShowInHelpText = false)]
     internal class TelemetryCommand : CommandBase
     {
         public const string Name = "telemetry";
+        public const string Description = "[INTERNAL ONLY COMMAND]";
 
-        [Option(OptionTemplates.EventName, CommandOptionType.SingleValue, ShowInHelpText = false)]
+        public TelemetryCommand()
+        {
+        }
+
+        public TelemetryCommand(TelemetryCommandProperty input)
+        {
+            this.EventName = input.EventName;
+            this.ProcessingTime = input.ProcessingTime;
+            this.Properties = input.Properties;
+            this.LogFilePath = input.LogPath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string EventName { get; set; }
 
-        [Option(OptionTemplates.ProcessingTime, CommandOptionType.SingleValue, ShowInHelpText = false)]
         public double ProcessingTime { get; set; }
 
-        [Option(OptionTemplates.Property, CommandOptionType.MultipleValue, ShowInHelpText = false)]
         public string[] Properties { get; set; }
+
+        public static Command Export(IConsole console)
+        {
+            var eventNameOption = new Option<string>(name: OptionArgumentTemplates.EventName);
+            var processingTimeOption = new Option<double>(name: OptionArgumentTemplates.ProcessingTime);
+            var propertyOption = new Option<string[]>(aliases: OptionArgumentTemplates.Property);
+            var logFile = new Option<string>(name: OptionArgumentTemplates.Log);
+            var debugOption = new Option<bool>(name: OptionArgumentTemplates.Debug);
+
+            var command = new Command(Name, Description)
+            {
+                eventNameOption,
+                processingTimeOption,
+                propertyOption,
+                logFile,
+                debugOption,
+            };
+            command.IsHidden = true;
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var telemetryCommand = new TelemetryCommand(prop);
+                    return Task.FromResult(telemetryCommand.OnExecute(console));
+                },
+                new TelemetryCommandBinder(
+                    eventName: eventNameOption,
+                    processingTime: processingTimeOption,
+                    properties: propertyOption,
+                    logPath: logFile,
+                    debugMode: debugOption));
+            return command;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {

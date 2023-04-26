@@ -43,9 +43,9 @@
     dot-net-core-31-sdk-version: 3.1.426
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.408
-    dot-net-60-sdk-version: 6.0.407
+    dot-net-60-sdk-version: 6.0.408
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.202
+    dot-net-70-sdk-version: 7.0.203
     runtime-versions:
       3.0: debian-buster
       3.1: debian-buster
@@ -62,7 +62,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20230315.1
+    dot-net-core-runtime-base-tag: 20230412.1
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
@@ -84,14 +84,14 @@
     net-core-app-50-sha: a9c4784930a977abbc42aff1337dda06ec588c1ec4769a59f9fcab4d5df4fc9efe65f8e61e5433db078f67a94ea2dfe870c32c482a50d4c16283ffacacff4261
     aspnet-core-app-50: 5.0.17
     aspnet-core-app-50-sha: d8e87804e9e86273c6512785bd5a6f0e834ff3f4bbebc11c4fcdf16ab4fdfabd0d981a756955267c1aa9bbeec596de3728ce9b2e6415d2d80daef0d999a5df6d
-    net-core-app-60: 6.0.15
-    net-core-app-60-sha: 681928ab5050da89302518445f4e7e00738530b3941434fad363724ad5b1f9bcdc52717332613d2e33733ebf835eb550628e87cebba1a12ffb4f881c8e767749
-    aspnet-core-app-60: 6.0.15
-    aspnet-core-app-60-sha: db41bbd6ffb061402acee12f498f41fe5987d355c9004091ff63010303cc9ea969ab233986dc11556bc6def5194883f50fdf216e1c50b26bb60cacd4f2ecd98a
-    net-core-app-70: 7.0.4
-    net-core-app-70-sha: 23e6aa3714410d794bd25af781046757003e3326cb8b13dc256649011815038893718b44ec2162767c7da76f1e16b170656d5726e7c01e99b9577682ecfe281e
-    aspnet-core-app-70: 7.0.4
-    aspnet-core-app-70-sha: b0d2896928c003abf79c539c1c6be13ad560a34d8fdbe9438d916a977aa59e648d0737b57aafb25fda1c3de7c95997eccbea28ae04e4131ebfcd18c36940bcb4
+    net-core-app-60: 6.0.16
+    net-core-app-60-sha: c8891b791a51e7d2c3164470dfd2af2ce59af3c26404e84075277e307df7dcd1e3ccf1a1a3c2655fe2eea8a30f8349b7adbbe5de4cedfee52da06729a505d8f5
+    aspnet-core-app-60: 6.0.16
+    aspnet-core-app-60-sha: 62f25ed054868155b351b98fdd04c27aebd913d92844430a002da1346e77a8e86e61833f7b81bdc3d733ff2ae60a21d66533cdd7003b2fee47b8d0e8746ad504
+    net-core-app-70: 7.0.5
+    net-core-app-70-sha: 68014bdbf55bf455f59549c7d9d61ccc051e09fe74a975ca6b46d3269278d77c9cd167ba05760aef8ab413df4212f4f5cebdd1533779b49caf517eb4ec50cce5
+    aspnet-core-app-70: 7.0.5
+    aspnet-core-app-70-sha: 859d48d0f29e014d56e89161d8001f75b3b0b03ee04f86641066570cfbe267b06798232500a86fd7bc31edf022097278dfeb496874778fead4476863aa994928
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -110,8 +110,8 @@
     final-stretch-dot-net-70-sdk-version: 7.0.100
     final-stretch-dot-net-core-app-70-run-time-version: 7.0.0
     final-stretch-aspnet-core-app-70-run-time-version: 7.0.0
-    final-stretch-node14-version: 14.19.1
-    final-stretch-node16-version: 16.14.2
+    final-stretch-node14-version: 14.21.3
+    final-stretch-node16-version: 16.20.0
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -127,8 +127,8 @@
     golang17-tar-sha256: 6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d
     golang18-version: 1.18.10
     golang18-tar-sha256: 5e05400e4c79ef5394424c0eff5b9141cb782da25f64f79d54c98af0a37f8d49
-    golang19-version: 1.19.5
-    golang19-tar-sha256: 36519702ae2fd573c9869461990ae550c8c0d955cd28d2827a6b159fda81ff95
+    golang19-version: 1.19.7
+    golang19-tar-sha256: 7a75720c9b066ae1750f6bcc7052aba70fa3813f4223199ee2a2315fd3eb533d
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -163,8 +163,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20230221.3
-    php-fpm-runtime-base-tag: 20230221.1
+    php-runtime-base-tag: 20230416.1
+    php-fpm-runtime-base-tag: 20230416.1
     composer-version: 2.0.8
     composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
     composer1-9-version: 1.9.3
@@ -172,15 +172,15 @@
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
-    php82-version: 8.2.2
+    php82-version: 8.2.4
     php82-keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php82-tar-sha256: bdc4aa38e652bac86039601840bae01c0c3653972eaa6f9f93d5f71953a7ee33
-    php81-version: 8.1.15
+    php82-tar-sha256: bc7bf4ca7ed0dd17647e3ea870b6f062fcb56b243bfdef3f59ff7f94e96176a8
+    php81-version: 8.1.17
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php81-tar-sha256: cd450fb4ee50488c5bf5f08851f514e5a1cac18c9512234d9e16c3a1d35781a6
-    php80-version: 8.0.27
+    php81-tar-sha256: b5c48f95b8e1d8624dd05fc2eab7be13277f9a203ccba97bdca5a1a0fb4a1460
+    php80-version: 8.0.28
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: f942cbfe2f7bacbb8039fb79bbec41c76ea779ac5c8157f21e1e0c1b28a5fc3a
+    php80-tar-sha256: 5e07278a1f315a67d36a676c01343ca2d4da5ec5bdb15d018e4248b3012bc0cd
     php74-version: 7.4.33
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
     php74-tar-sha256: 924846abf93bc613815c55dd3f5809377813ac62a9ec4eb3778675b82a27b927
@@ -273,20 +273,20 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20230213.3
+    node-runtime-base-tag: 20230416.1
     yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
     node6-version: 6.17.1
     node8-version: 8.17.0
     node10-version: 10.23.0
-    node12-version: 12.22.11
-    node14-version: 14.21.2
-    node16-version: 16.19.0
-    node18-version: 18.14.0
+    node12-version: 12.22.12
+    node14-version: 14.21.3
+    node16-version: 16.20.0
+    node18-version: 18.15.0
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
-    npm-version: 6.14.15
+    npm-version: 9.6.4
     runtime-versions:
       14: debian-buster
       16: debian-buster
