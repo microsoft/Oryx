@@ -163,8 +163,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20230416.1
-    php-fpm-runtime-base-tag: 20230416.1
+    php-runtime-base-tag: 20230426.1
+    php-fpm-runtime-base-tag: 20230426.1
     composer-version: 2.0.8
     composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
     composer1-9-version: 1.9.3
@@ -172,12 +172,12 @@
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
-    php82-version: 8.2.4
+    php82-version: 8.2.5
     php82-keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php82-tar-sha256: bc7bf4ca7ed0dd17647e3ea870b6f062fcb56b243bfdef3f59ff7f94e96176a8
-    php81-version: 8.1.17
+    php82-tar-sha256: 800738c359b7f1e67e40c22713d2d90276bc85ba1c21b43d99edd43c254c5f76
+    php81-version: 8.1.18
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php81-tar-sha256: b5c48f95b8e1d8624dd05fc2eab7be13277f9a203ccba97bdca5a1a0fb4a1460
+    php81-tar-sha256: f3553370f8ba42729a9ce75eed17a2111d32433a43b615694f6a571b8bad0e39
     php80-version: 8.0.28
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
     php80-tar-sha256: 5e07278a1f315a67d36a676c01343ca2d4da5ec5bdb15d018e4248b3012bc0cd
@@ -273,7 +273,7 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20230416.1
+    node-runtime-base-tag: 20230426.2
     yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
@@ -283,7 +283,7 @@
     node12-version: 12.22.12
     node14-version: 14.21.3
     node16-version: 16.20.0
-    node18-version: 18.15.0
+    node18-version: 18.16.0
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 9.6.4
