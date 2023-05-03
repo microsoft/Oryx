@@ -19,10 +19,6 @@ source $REPO_DIR/build/__stagingRuntimeConstants.sh
 PARAMS=""
 while (( "$#" )); do
   case "$1" in
-    -token|--sas-token)
-      stagingPrivateStorageSasToken=$2
-      shift 2
-      ;;
     -s|--sdk-storage-account-url)
       sdkStorageAccountUrl=$2
       shift 2
@@ -47,10 +43,10 @@ eval set -- "$PARAMS"
 if [ -z "$sdkStorageAccountUrl" ]; then
   sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
 fi
-if [ -z "$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" ]; then
-    echo "Setting environment variable 'ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN' to the value that is passed from the CLI."
-    export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=$stagingPrivateStorageSasToken
-fi
+
+# checking and retrieving token for the `oryxsdksstaging` account.
+retrieveSastokenFromKeyvault $sdkStorageAccountUrl
+
 echo
 echo "SDK storage account url set to: $sdkStorageAccountUrl"
 

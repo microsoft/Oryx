@@ -37,10 +37,6 @@ labelContent="git_commit=$GIT_COMMIT, build_number=$BUILD_NUMBER, release_tag_na
 PARAMS=""
 while (( "$#" )); do
   case "$1" in
-    -token|--sas-token)
-      stagingPrivateStorageSasToken=$2
-      shift 2
-      ;;
     -t|--type)
       imageTypeToBuild=$2
       shift 2
@@ -72,10 +68,10 @@ echo "Image type to build is set to: $imageTypeToBuild"
 if [ -z "$sdkStorageAccountUrl" ]; then
 	sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
 fi
-if [ $sdkStorageAccountUrl == $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ] && [ -z "$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" ]; then
-    echo "Setting environment variable 'ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN' to the value that is passed from the CLI."
-    export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=$stagingPrivateStorageSasToken
-fi
+
+# checking and retrieving token for the `oryxsdksstaging` account.
+retrieveSastokenFromKeyvault $sdkStorageAccountUrl
+
 echo
 echo "SDK storage account url set to: $sdkStorageAccountUrl"
 

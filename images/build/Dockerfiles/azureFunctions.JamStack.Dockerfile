@@ -65,8 +65,7 @@ RUN set -ex \
         libedit-dev \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
-    && mkdir -p /opt/oryx \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
+    && mkdir -p /opt/oryx
 
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG BUILD_DIR="/opt/tmp/build"

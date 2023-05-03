@@ -30,7 +30,7 @@ stages:
           ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
           PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
         inputs:
-          scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh
+          scriptPath: ./vsts/scripts/publishSdksFromStagingToProdStorageAccount.sh
           args: True # dry run
 
   - stage: PublishSDKsToProduction
@@ -65,7 +65,7 @@ stages:
                 ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
                 PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
               inputs:
-                scriptPath: ./vsts/scripts/publishSdksFromDevToProdStorageAccount.sh
+                scriptPath: ./vsts/scripts/publishSdksFromStagingToProdStorageAccount.sh
                 args: False # no dry run
 
             - task: ShellScript@2
