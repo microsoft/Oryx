@@ -84,54 +84,25 @@ function shouldStageRuntimeVersion()
 	platformName="$1"
 	platformRuntimeVersion="$2"
 
-	case $platformName in
-	'dotnet'|'dotnetcore')
-		if [[ " ${DOTNETCORE_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
-			return 0
-		fi
-		;;
-	'python')
-		if [[ " ${PYTHON_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
-			return 0
-		fi
-		;;
-	'node')
-		if [[ " ${NODE_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
-			return 0
-		fi
-		;;
-	'java')
-		if [[ " ${JAVA_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
-			return 0
-		fi
-		;;
-	'php')
-		if [[ " ${PHP_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
-			return 0
-		fi
-		;;
-	'hugo')
-		if [[ " ${HUGO_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
-			return 0
-		fi
-		;;
-	'ruby')
-		if [[ " ${RUBY_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
-			return 0
-		fi
-		;;
-	'golang')
-		if [[ " ${GOLANG_STAGING_RUNTIME_VERSIONS[*]} " =~ " ${platformRuntimeVersion} " ]]; then
-			return 0
-		fi
-		;;
-	*) 
-		echo "Platform '$platformName' does not support staging."
-		;;
-	esac
-	return 1
-}
+	declare -A PLATFORM_RUNTIME_VERSIONS=(
+		['dotnet']="${DOTNETCORE_STAGING_RUNTIME_VERSIONS[*]}"
+		['dotnetcore']="${DOTNETCORE_STAGING_RUNTIME_VERSIONS[*]}"
+		['python']="${PYTHON_STAGING_RUNTIME_VERSIONS[*]}"
+		['node']="${NODE_STAGING_RUNTIME_VERSIONS[*]}"
+		['java']="${JAVA_STAGING_RUNTIME_VERSIONS[*]}"
+		['php']="${PHP_STAGING_RUNTIME_VERSIONS[*]}"
+		['hugo']="${HUGO_STAGING_RUNTIME_VERSIONS[*]}"
+		['ruby']="${RUBY_STAGING_RUNTIME_VERSIONS[*]}"
+		['golang']="${GOLANG_STAGING_RUNTIME_VERSIONS[*]}"
+	)
 
+	if [[ " ${PLATFORM_RUNTIME_VERSIONS[$platformName]} " =~ " ${platformRuntimeVersion} " ]]; then
+		return 0
+	else
+		echo "Platform '$platformName' does not support staging."
+		return 1
+	fi
+}
 
 function retrieveSastokenFromKeyvault()
 {	

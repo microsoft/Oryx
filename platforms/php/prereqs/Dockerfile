@@ -12,7 +12,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
         && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
         && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
     fi
-    
+
 RUN chmod +x /tmp/*.sh && chmod +x /php/*.sh
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
     apt-get update \
