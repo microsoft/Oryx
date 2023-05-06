@@ -112,7 +112,7 @@ function retrieveSastokenFromKeyvault()
 	if [ $sdkStorageAccountUrl == $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ] && [ -z "$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" ]; then
 	
 		echo "Retrieving token from the Keyvault and setting it to the environment variable 'ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN'"
-		stagingPrivateStorageSasToken=$(az keyvault secret show --name "ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN" --vault-name "oryx" --query "value")
+		stagingPrivateStorageSasToken=$(az keyvault secret show --name "ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN" --vault-name "oryx" --query value -o tsv)
 	
     	export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=$stagingPrivateStorageSasToken
 	fi
