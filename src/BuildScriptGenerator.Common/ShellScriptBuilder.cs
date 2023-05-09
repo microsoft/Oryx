@@ -203,7 +203,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             return this.scriptBuilder.ToString();
         }
 
-
+        protected string GetKeyvaultSecretValue(string keyvaultUri, string secretName)
+        {
+            var client = new SecretClient(new Uri(keyvaultUri), new DefaultAzureCredential());
+            var sasToken = client.GetSecret(secretName).Value.Value;
+            return sasToken;
+        }
 
         private ShellScriptBuilder Append(string content)
         {
