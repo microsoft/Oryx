@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         /// Initializes a new instance of the <see cref="ShellScriptBuilder"/> class.
         /// Builds bash script commands in a single line. Note that this does not add the '#!/bin/bash'.
         /// </summary>
-        public ShellScriptBuilder(string cmdSeparator = null)
+        public ShellScriptBuilder(string cmdSeparator = null, bool addDefaultTestEnvironmentVariables = true)
         {
             this.scriptBuilder = new StringBuilder();
 
@@ -34,7 +34,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
                 this.commandSeparator = cmdSeparator;
             }
 
-            this.AddDefaultTestEnvironmentVariables();
+            if (addDefaultTestEnvironmentVariables)
+            {
+                this.AddDefaultTestEnvironmentVariables();
+            }
         }
 
         public ShellScriptBuilder AddShebang([NotNull] string interpreterPath)
@@ -200,6 +203,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             return this.scriptBuilder.ToString();
         }
 
+
+
         private ShellScriptBuilder Append(string content)
         {
             // NOTE: do not use AppendLine as this script must be in one line
@@ -211,13 +216,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             this.scriptBuilder.Append(content);
             this.contentPresent = true;
             return this;
-        }
-
-        private string GetKeyvaultSecretValue(string keyvaultUri, string secretName)
-        {
-            var client = new SecretClient(new Uri(keyvaultUri), new DefaultAzureCredential());
-            var sasToken = client.GetSecret(secretName).Value.Value;
-            return sasToken;
         }
     }
 }

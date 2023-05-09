@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Integration.Tests.Fixtures;
 using Microsoft.Oryx.Tests.Common;
@@ -59,6 +61,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
 
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";
+            List<EnvironmentVariable> envVariableList = getEnvironmentVariableList();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
@@ -66,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 buildImageName,
                 "oryx", new[] { "build", appDir, "--platform", platformName, "--platform-version", platformVersion },
                 runtimeImageName,
-                _dbFixture.GetCredentialsAsEnvVars(),
+                envVariableList,
                 containerPort,
                 link,
                 "/bin/sh", new[] { "-c", script },
@@ -81,6 +84,25 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
+        private List<EnvironmentVariable> getEnvironmentVariableList()
+        {
+            List<EnvironmentVariable> envVariableList = _dbFixture.GetCredentialsAsEnvVars();
+            var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
+            var sdkStorageUrl = string.IsNullOrEmpty(testStorageAccountUrl) ? SdkStorageConstants.PrivateStagingSdkStorageBaseUrl : testStorageAccountUrl;
+            
+            envVariableList.Add(new EnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, sdkStorageUrl));
+
+            if (sdkStorageUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
+            {
+                string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) != null
+                  ? Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey)
+                   : this.GetKeyvaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
+                envVariableList.Add(new EnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken));
+            }
+            
+            return envVariableList;
+        }
+
         protected void RunAsserts(Action action, string message)
         {
             try
@@ -92,6 +114,13 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output.WriteLine(message);
                 throw;
             }
+        }
+
+        protected string GetKeyvaultSecretValue(string keyvaultUri, string secretName)
+        {
+            var client = new SecretClient(new Uri(keyvaultUri), new DefaultAzureCredential());
+            var sasToken = client.GetSecret(secretName).Value.Value;
+            return sasToken;
         }
     }
 }
