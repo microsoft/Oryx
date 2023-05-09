@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Integration.Tests.Fixtures;
 using Microsoft.Oryx.Tests.Common;
@@ -52,6 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
+            List<EnvironmentVariable> buildEnvVariableList = getEnvironmentVariableList();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
@@ -61,7 +64,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 "oryx",
                 new[] { "build", appDir, "--platform", "nodejs", "--platform-version", "14" },
                 _imageHelper.GetRuntimeImage("node", "14"),
-                SqlServerDbTestHelper.GetEnvironmentVariables(),
+                buildEnvVariableList,
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -78,6 +81,31 @@ namespace Microsoft.Oryx.Integration.Tests
                         ignoreLineEndingDifferences: true,
                         ignoreWhiteSpaceDifferences: true);
                 });
+        }
+
+        protected string GetKeyvaultSecretValue(string keyvaultUri, string secretName)
+        {
+            var client = new SecretClient(new Uri(keyvaultUri), new DefaultAzureCredential());
+            var sasToken = client.GetSecret(secretName).Value.Value;
+            return sasToken;
+        }
+        private List<EnvironmentVariable> getEnvironmentVariableList()
+        {
+            List<EnvironmentVariable> envVariableList = SqlServerDbTestHelper.GetEnvironmentVariables();
+            var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
+            var sdkStorageUrl = string.IsNullOrEmpty(testStorageAccountUrl) ? SdkStorageConstants.PrivateStagingSdkStorageBaseUrl : testStorageAccountUrl;
+
+            envVariableList.Add(new EnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, sdkStorageUrl));
+
+            if (sdkStorageUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
+            {
+                string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) != null
+                  ? Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey)
+                   : this.GetKeyvaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
+                envVariableList.Add(new EnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken));
+            }
+
+            return envVariableList;
         }
 
     }

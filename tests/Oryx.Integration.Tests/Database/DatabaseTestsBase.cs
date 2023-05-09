@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
 
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";
-            List<EnvironmentVariable> envVariableList = getEnvironmentVariableList();
+            List<EnvironmentVariable> buildEnvVariableList = getEnvironmentVariableList();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 buildImageName,
                 "oryx", new[] { "build", appDir, "--platform", platformName, "--platform-version", platformVersion },
                 runtimeImageName,
-                envVariableList,
+                buildEnvVariableList,
                 containerPort,
                 link,
                 "/bin/sh", new[] { "-c", script },
