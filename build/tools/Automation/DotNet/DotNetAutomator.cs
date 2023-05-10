@@ -82,6 +82,15 @@ namespace Microsoft.Oryx.Automation.DotNet
             }
         }
 
+        /// <summary>
+        /// Retrieves a list of new .NET versions from the .NET release website,
+        /// and filters the list based on specified criteria.
+        /// The resulting list includes SDK versions, .NET Core runtime versions,
+        /// and ASP.NET Core runtime versions, and is sorted by semantic version number.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation.
+        /// The task result contains a list of DotNetVersion objects representing the new
+        /// .NET versions that meet the specified criteria.</returns>
         public async Task<List<DotNetVersion>> GetNewDotNetVersionsAsync()
         {
             List<DotNetVersion> dotNetVersions = new List<DotNetVersion>();
@@ -118,7 +127,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                 }
             }
 
-            return dotNetVersions.OrderBy(v => v.Version).ToList();
+            return dotNetVersions.OrderBy(v => new Version(v.Version)).ToList();
         }
 
         private async Task<List<ReleaseNote>> GetReleasesIndexAsync()
