@@ -107,7 +107,7 @@ namespace Microsoft.Oryx.Automation.Python
                 }
             }
 
-            return pythonVersions.OrderBy(v => new Version(v.Version)).ToList();
+            return pythonVersions.Order().ToList();
         }
 
         private void UpdateOryxConstantsForNewVersions(

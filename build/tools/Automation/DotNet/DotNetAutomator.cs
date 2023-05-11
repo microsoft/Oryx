@@ -127,7 +127,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                 }
             }
 
-            return dotNetVersions.OrderBy(v => new Version(v.Version)).ToList();
+            return dotNetVersions.Order().ToList();
         }
 
         private async Task<List<ReleaseNote>> GetReleasesIndexAsync()
