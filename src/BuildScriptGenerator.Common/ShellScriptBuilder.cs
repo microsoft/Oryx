@@ -184,14 +184,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public ShellScriptBuilder AddDefaultTestEnvironmentVariables()
         {
             var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
-            var sdkStorageUrl = string.IsNullOrEmpty(testStorageAccountUrl) ? SdkStorageConstants.PrivateStagingSdkStorageBaseUrl : testStorageAccountUrl;
 
-            this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, sdkStorageUrl);
-            if (sdkStorageUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
+            if (string.IsNullOrEmpty(testStorageAccountUrl))
             {
-                 string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) != null
-                   ? Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey)
-                    : this.GetKeyvaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
+                testStorageAccountUrl = SdkStorageConstants.PrivateStagingSdkStorageBaseUrl;
+            }
+
+            this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, testStorageAccountUrl);
+            if (testStorageAccountUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
+            {
+                 string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) ??
+                    this.GetKeyvaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
                  this.SetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken);
             }
 

@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.3
-# the above line allows this dockerfile to use the secrets fucntionality
+# the above line allows this dockerfile to use the secrets functionality
 ARG DEBIAN_FLAVOR
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen

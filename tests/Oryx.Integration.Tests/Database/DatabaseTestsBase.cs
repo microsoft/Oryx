@@ -61,7 +61,7 @@ namespace Microsoft.Oryx.Integration.Tests
             }
 
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";
-            List<EnvironmentVariable> buildEnvVariableList = getEnvironmentVariableList();
+            List<EnvironmentVariable> buildEnvVariableList = GetEnvironmentVariableList();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
@@ -84,7 +84,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        private List<EnvironmentVariable> getEnvironmentVariableList()
+        private List<EnvironmentVariable> GetEnvironmentVariableList()
         {
             List<EnvironmentVariable> envVariableList = _dbFixture.GetCredentialsAsEnvVars();
             var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
@@ -94,9 +94,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
             if (sdkStorageUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
             {
-                string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) != null
-                  ? Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey)
-                   : this.GetKeyvaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
+                string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) ??
+                   this.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
                 envVariableList.Add(new EnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken));
             }
             
@@ -116,9 +115,9 @@ namespace Microsoft.Oryx.Integration.Tests
             }
         }
 
-        protected string GetKeyvaultSecretValue(string keyvaultUri, string secretName)
+        protected string GetKeyVaultSecretValue(string keyVaultUri, string secretName)
         {
-            var client = new SecretClient(new Uri(keyvaultUri), new DefaultAzureCredential());
+            var client = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
             var sasToken = client.GetSecret(secretName).Value.Value;
             return sasToken;
         }
