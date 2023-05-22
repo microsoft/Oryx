@@ -151,11 +151,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (string.IsNullOrEmpty(platformBinariesStorageBaseUrl))
             {
-                platformBinariesStorageBaseUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
+                 throw new InvalidOperationException(
+                    $"Environment variable '{SdkStorageConstants.SdkStorageBaseUrlKeyName}' is required.");
             }
 
             this.logger.LogDebug("Using the Sdk storage url {sdkStorageUrl}.", platformBinariesStorageBaseUrl);
-
             platformBinariesStorageBaseUrl = platformBinariesStorageBaseUrl.TrimEnd('/');
             return platformBinariesStorageBaseUrl;
         }

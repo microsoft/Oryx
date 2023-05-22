@@ -178,7 +178,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         /// <summary>
         /// Append a command to the shell script that sets the ORYX_SDK_STORAGE_BASE_URL to the value
         /// of ORYX_TEST_SDK_STORAGE_URL if ORYX_TEST_SDK_STORAGE_URL exists in the environment that is executing this code.
-        /// Otherwise, use the Oryx staging private dev sdk storage account for testing.
+        /// Otherwise, use the Oryx staging sdk storage account for testing.
         /// This allows us to change the storage account that tests use without regenerating any images.
         /// </summary>
         public ShellScriptBuilder AddDefaultTestEnvironmentVariables()
@@ -194,7 +194,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             if (testStorageAccountUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
             {
                  string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) ??
-                    this.GetKeyvaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
+                    this.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
                  this.SetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken);
             }
 
@@ -206,9 +206,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             return this.scriptBuilder.ToString();
         }
 
-        protected string GetKeyvaultSecretValue(string keyvaultUri, string secretName)
+        protected string GetKeyVaultSecretValue(string keyVaultUri, string secretName)
         {
-            var client = new SecretClient(new Uri(keyvaultUri), new DefaultAzureCredential());
+            var client = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
             var sasToken = client.GetSecret(secretName).Value.Value;
             return sasToken;
         }
