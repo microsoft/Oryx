@@ -158,6 +158,7 @@ for dockerFile in $dockerFiles; do
         --build-arg NODE18_VERSION=$NODE18_VERSION \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
         --secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
+        --secret id=dotnet_storage_account_token_id,env=DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN \
         $labels \
         .
 
