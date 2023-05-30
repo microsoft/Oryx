@@ -15,7 +15,9 @@ if [ -z "$sdkStorageAccountUrl" ]; then
     sdkStorageAccountUrl=$PRIVATE_STAGING_SDK_STORAGE_BASE_URL
 fi
 if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
+    set +x
     sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
+    set -x
 fi
 echo
 echo "Installing .NET Core SDK $DOTNET_SDK_VER from $sdkStorageAccountUrl ..."
@@ -35,7 +37,9 @@ else
     fileName="dotnet-$debianFlavor-$DOTNET_SDK_VER.tar.gz"
 fi
 
+set +x
 downloadFileAndVerifyChecksum dotnet $DOTNET_SDK_VER $fileName $sdkStorageAccountUrl $sasToken
+set -x
 
 globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
 

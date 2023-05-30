@@ -71,7 +71,7 @@ ARG IMAGES_DIR="/opt/tmp/images"
 ARG BUILD_DIR="/opt/tmp/build"
 
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -ex \
+    set -e \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && yarnCacheFolder="/usr/local/share/yarn-cache" \
     && mkdir -p $yarnCacheFolder \
@@ -98,7 +98,7 @@ RUN set -ex \
     && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
   
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -ex \
+    set -e \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     # Install Python SDKs
     # Upgrade system python

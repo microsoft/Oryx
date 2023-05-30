@@ -23,7 +23,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -ex \
+    set -e \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \

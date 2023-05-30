@@ -90,7 +90,7 @@ COPY --from=intermediate /opt /opt
 # because we want to avoid duplication (which is always error-prone)
 
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -ex \
+    set -e \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
@@ -216,7 +216,7 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
 
 # Now adding remaining of VSO platform features
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -ex \
+    set -e \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \

@@ -35,7 +35,7 @@ COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 # https://github.com/docker-library/python/issues/147
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -ex \
+    set -e \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && tmpDir="/opt/tmp" \
     && buildDir="$tmpDir/build" \

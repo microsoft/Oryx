@@ -39,7 +39,7 @@ LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -ex \
+    set -e \
     && echo $USER_DOTNET_AI_VERSION \ 
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \

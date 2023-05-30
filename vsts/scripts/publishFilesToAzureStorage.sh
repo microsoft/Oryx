@@ -74,6 +74,7 @@ uploadFiles() {
 
 storageAccountUrl="https://$storageAccountName.blob.core.windows.net"
 sasToken=""
+set +x
 
 # case insensitive matching because both secrets and urls are case insensitive
 shopt -s nocasematch
@@ -93,6 +94,7 @@ else
 	exit 1
 fi
 shopt -u nocasematch
+set -x
 
 platforms=("nodejs" "python" "dotnet" "php" "php-composer" "ruby" "java" "maven" "golang")
 for platform in "${platforms[@]}"

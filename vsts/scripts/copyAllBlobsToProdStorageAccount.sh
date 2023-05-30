@@ -27,6 +27,7 @@ function blobContainerExistsInProd() {
 }
 
 function copyBlobContainerToProd() {
+    set +x
     local platformName="$1"
 
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName; then
@@ -59,6 +60,7 @@ function copyBlobContainerToProd() {
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName$PROD_STORAGE_SAS_TOKEN" --overwrite false --recursive --dry-run
         fi
     fi
+    set -x
 }
 
 if [ ! -f "$azCopyDir/azcopy" ]; then
@@ -83,7 +85,9 @@ elif [ "$1" = $DEV_SDK_STORAGE_BASE_URL ]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
 elif [ "$1" = $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ]; then
     sourceSdk=$PRIVATE_STAGING_SDK_STORAGE_BASE_URL
+    set +x
     sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
+    set -x
 else
 	echo "Error: $1 is an invalid source storage account url."
 	exit 1

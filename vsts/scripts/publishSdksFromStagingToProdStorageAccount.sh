@@ -34,6 +34,7 @@ function blobExistsInProd() {
 }
 
 function copyBlob() {
+    set +x
     local platformName="$1"
     local blobName="$2"
     local isDefaultVersionFile="$3"
@@ -66,6 +67,7 @@ function copyBlob() {
                 "$PROD_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --dry-run
         fi
     fi
+    set -x
 }
 
 function copyPlatformBlobsToProd() {
