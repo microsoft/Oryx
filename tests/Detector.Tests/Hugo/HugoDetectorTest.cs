@@ -5,6 +5,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Oryx.Detector.Hugo;
 using Microsoft.Oryx.Tests.Common;
@@ -22,8 +23,8 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         }
 
         [Theory]
-        [InlineData(HugoConstants.TomlFileName)]
-        [InlineData(HugoConstants.ConfigFolderName, HugoConstants.TomlFileName)]
+        [InlineData("config.toml")]
+        [InlineData(HugoConstants.ConfigFolderName, "config.toml")]
         public void IsHugoApp_ReturnsTrue_ForAppWithConfigTomlFile(params string[] subPaths)
         {
             // Arrange
@@ -63,7 +64,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         {
             // Arrange
             var appDir = CreateAppDir();
-            WriteFile($"{configurationKeyName}=\"test\"", appDir, HugoConstants.TomlFileName);
+            WriteFile($"{configurationKeyName}=\"test\"", appDir, HugoConstants.TomlFileNames.First());
             var detector = GetDetector();
             var context = GetContext(appDir);
 
@@ -78,8 +79,8 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         }
 
         [Theory]
-        [InlineData(HugoConstants.JsonFileName)]
-        [InlineData(HugoConstants.ConfigFolderName, HugoConstants.JsonFileName)]
+        [InlineData("config.json")]
+        [InlineData(HugoConstants.ConfigFolderName, "config.json")]
         public void IsHugoApp_ReturnsTrue_ForAppWithConfigJsonFile(params string[] subPaths)
         {
             // Arrange
@@ -104,7 +105,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         {
             // Arrange
             var appDir = CreateAppDir();
-            WriteFile($"{{ \"{configurationKeyName}\" : \"test\" }}", appDir, HugoConstants.JsonFileName);
+            WriteFile($"{{ \"{configurationKeyName}\" : \"test\" }}", appDir, HugoConstants.JsonFileNames.First());
             var detector = GetDetector();
             var context = GetContext(appDir);
 
@@ -119,8 +120,8 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         }
 
         [Theory]
-        [InlineData(HugoConstants.YamlFileName)]
-        [InlineData(HugoConstants.ConfigFolderName, HugoConstants.YamlFileName)]
+        [InlineData("config.yaml")]
+        [InlineData(HugoConstants.ConfigFolderName, "config.yaml")]
         public void IsHugoApp_ReturnsTrue_ForAppWithConfigYamlFile(params string[] subPaths)
         {
             // Arrange
@@ -140,8 +141,8 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         }
 
         [Theory]
-        [InlineData(HugoConstants.YmlFileName)]
-        [InlineData(HugoConstants.ConfigFolderName, HugoConstants.YmlFileName)]
+        [InlineData("config.yml")]
+        [InlineData(HugoConstants.ConfigFolderName, "config.yml")]
         public void IsHugoApp_ReturnsTrue_ForAppWithConfigYmlFile(params string[] subPaths)
         {
             // Arrange
@@ -166,7 +167,7 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         {
             // Arrange
             var appDir = CreateAppDir();
-            WriteFile($"{configurationKeyName}: test", appDir, HugoConstants.YamlFileName);
+            WriteFile($"{configurationKeyName}: test", appDir, HugoConstants.YamlFileNames.First());
             var detector = GetDetector();
             var context = GetContext(appDir);
 
@@ -181,9 +182,9 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         }
 
         [Theory]
-        [InlineData("invalid text", HugoConstants.TomlFileName)]
-        [InlineData("{", HugoConstants.JsonFileName)]
-        [InlineData("\"invalid text", HugoConstants.YamlFileName)]
+        [InlineData("invalid text", "config.toml")]
+        [InlineData("{", "config.json")]
+        [InlineData("\"invalid text", "config.yaml")]
         public void Detect_ReturnsNull_AndDoesNotThrow_ForInvalidConfigurationFiles(
             string fileContent,
             params string[] subPaths)

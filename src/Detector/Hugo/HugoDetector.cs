@@ -65,41 +65,41 @@ namespace Microsoft.Oryx.Detector.Hugo
             // https://gohugo.io/getting-started/configuration/#all-configuration-settings
             appDirectory = string.Empty;
 
-            // Search for config.toml
-            foreach (string tomlFileName in HugoConstants.TomlFileName)
+            // Search for supported .toml file
+            foreach (string tomlFileName in HugoConstants.TomlFileNames)
             {
                 if (sourceRepo.FileExists(tomlFileName)
-                && this.IsHugoTomlFile(sourceRepo, tomlFileName))
+                    && this.IsHugoTomlFile(sourceRepo, tomlFileName))
                 {
                     return true;
                 }
             }
 
-            // Search for config.yml
-            foreach (string ymlFileName in HugoConstants.YmlFileName)
+            // Search for supported .yml file
+            foreach (string ymlFileName in HugoConstants.YmlFileNames)
             {
                 if (sourceRepo.FileExists(ymlFileName)
-                && this.IsHugoYamlFile(sourceRepo, ymlFileName))
+                    && this.IsHugoYamlFile(sourceRepo, ymlFileName))
                 {
                     return true;
                 }
             }
 
-            // Search for config.yaml
-            foreach (string yamlFileName in HugoConstants.YamlFileName)
+            // Search for supported .yaml file
+            foreach (string yamlFileName in HugoConstants.YamlFileNames)
             {
                 if (sourceRepo.FileExists(yamlFileName)
-                && this.IsHugoYamlFile(sourceRepo, yamlFileName))
+                    && this.IsHugoYamlFile(sourceRepo, yamlFileName))
                 {
                     return true;
                 }
             }
 
-            // Search for config.json
-            foreach (string jsonFileName in HugoConstants.JsonFileName)
+            // Search for supported .json file
+            foreach (string jsonFileName in HugoConstants.JsonFileNames)
             {
                 if (sourceRepo.FileExists(jsonFileName)
-                && this.IsHugoYamlFile(sourceRepo, jsonFileName))
+                    && this.IsHugoJsonFile(sourceRepo, jsonFileName))
                 {
                     return true;
                 }
@@ -167,25 +167,22 @@ namespace Microsoft.Oryx.Detector.Hugo
         private bool IsHugoTomlFile(ISourceRepo sourceRepo, params string[] subPaths)
         {
             TomlTable tomlTable = null;
-            foreach (string subPath in subPaths)
+            var relativeFilePath = Path.Combine(subPaths);
+
+            try
             {
-                var relativeFilePath = Path.Combine(subPaths);
+                tomlTable = ParserHelper.ParseTomlFile(sourceRepo, relativeFilePath);
+            }
+            catch (FailedToParseFileException ex)
+            {
+                this.logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath.Hash()}'.");
+                return false;
+            }
 
-                try
-                {
-                    tomlTable = ParserHelper.ParseTomlFile(sourceRepo, relativeFilePath);
-                }
-                catch (FailedToParseFileException ex)
-                {
-                    this.logger.LogError(ex, $"An error occurred when trying to parse file '{relativeFilePath.Hash()}'.");
-                    return false;
-                }
-
-                if (tomlTable.Keys
-                    .Any(k => HugoConfigurationKeys.Contains(k, StringComparer.OrdinalIgnoreCase)))
-                {
-                    return true;
-                }
+            if (tomlTable.Keys
+                .Any(k => HugoConfigurationKeys.Contains(k, StringComparer.OrdinalIgnoreCase)))
+            {
+                return true;
             }
 
             return false;
