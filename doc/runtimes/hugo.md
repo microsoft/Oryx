@@ -16,6 +16,8 @@ The Hugo toolset is run when one of following conditions met:
 2. Recursively look up config directory: `config/**/*.yaml`, `config/**/*.toml`,
    `config/**/*.yml` or `config/**/*.json` configuration files in sub-directories.
 
+**Note**: Starting from [Hugo version `0.110.0`](https://gohugo.io/getting-started/configuration/#hugotoml-vs-configtoml), configuration file name has changed from `config.toml` etc. to `hugo.toml` etc. Please note the old naming convention is still supported.
+
 # Build
 
 The following process is applied for each build:
@@ -26,7 +28,7 @@ The following process is applied for each build:
 # Version support
 
 The Hugo project defines this [release schedule][]. Oryx supports all actively supported
-releases (v0.96.0).
+releases (v0.112.5).
 
 We will update the `patch` version of a release at least once every 3 months,
 replacing the previous `patch` version for that release.
