@@ -12,7 +12,7 @@ details on components and configuration of build images.
 
 The Hugo toolset is run when one of following conditions met:
 
-1. `config.yaml`, `config.toml`, `config.yml`, `config.json` or `hugo.*` equivalent configuration files in root of repo.
+1. `config/hugo.yaml`, `config/hugo.toml`, `config/hugo.yml` or `config/hugo.json` configuration files in root of repo.
 2. Recursively look up config directory: `config/**/*.yaml`, `config/**/*.toml`,
    `config/**/*.yml` or `config/**/*.json` configuration files in sub-directories.
 
