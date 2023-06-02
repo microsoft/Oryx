@@ -42,6 +42,26 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             Assert.Null(result.PlatformVersion);
         }
 
+        [Theory]
+        [InlineData("hugo.toml")]
+        [InlineData(HugoConstants.ConfigFolderName, "hugo.toml")]
+        public void IsHugoApp_ReturnsTrue_ForAppWithNewConfigTomlFile(params string[] subPaths)
+        {
+            // Arrange
+            var appDir = CreateAppDir();
+            WriteFile("archetypeDir=\"test\"", appDir, subPaths);
+            var detector = GetDetector();
+            var context = GetContext(appDir);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Null(result.PlatformVersion);
+        }
+
         public static TheoryData<string> ConfigurationKeyNameData
         {
             get
@@ -62,20 +82,26 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         [MemberData(nameof(ConfigurationKeyNameData))]
         public void IsHugoApp_ReturnsTrue_ForAllSupportedConfigurationKeys_InTomlFile(string configurationKeyName)
         {
-            // Arrange
-            var appDir = CreateAppDir();
-            WriteFile($"{configurationKeyName}=\"test\"", appDir, HugoConstants.TomlFileNames.First());
-            var detector = GetDetector();
-            var context = GetContext(appDir);
+            foreach (string configFileName in HugoConstants.TomlFileNames)
+            {
+                // Arrange
+                var appDir = CreateAppDir();
+                WriteFile($"{configurationKeyName}=\"test\"", appDir, configFileName); // config.toml
+                var detector = GetDetector();
+                var context = GetContext(appDir);
 
-            // Act
-            var result = detector.Detect(context);
+                // Act
+                var result = detector.Detect(context);
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(HugoConstants.PlatformName, result.Platform);
-            Assert.Equal(string.Empty, result.AppDirectory);
-            Assert.Null(result.PlatformVersion);
+                // Assert
+                Assert.NotNull(result);
+                Assert.Equal(HugoConstants.PlatformName, result.Platform);
+                Assert.Equal(string.Empty, result.AppDirectory);
+                Assert.Null(result.PlatformVersion);
+
+                // Prepare next iteration
+                File.Delete(Path.Combine(appDir, configFileName));
+            }
         }
 
         [Theory]
@@ -100,12 +126,13 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         }
 
         [Theory]
-        [MemberData(nameof(ConfigurationKeyNameData))]
-        public void IsHugoApp_ReturnsTrue_ForAllSupportedConfigurationKeys_InJsonFile(string configurationKeyName)
+        [InlineData("hugo.json")]
+        [InlineData(HugoConstants.ConfigFolderName, "hugo.json")]
+        public void IsHugoApp_ReturnsTrue_ForAppWithNewConfigJsonFile(params string[] subPaths)
         {
             // Arrange
             var appDir = CreateAppDir();
-            WriteFile($"{{ \"{configurationKeyName}\" : \"test\" }}", appDir, HugoConstants.JsonFileNames.First());
+            WriteFile("{ \"archetypeDir\" : \"test\" }", appDir, subPaths);
             var detector = GetDetector();
             var context = GetContext(appDir);
 
@@ -120,9 +147,56 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         }
 
         [Theory]
+        [MemberData(nameof(ConfigurationKeyNameData))]
+        public void IsHugoApp_ReturnsTrue_ForAllSupportedConfigurationKeys_InJsonFile(string configurationKeyName)
+        {
+            foreach (string configFileName in HugoConstants.JsonFileNames)
+            {
+                // Arrange
+                var appDir = CreateAppDir();
+                WriteFile($"{{ \"{configurationKeyName}\" : \"test\" }}", appDir, configFileName);
+                var detector = GetDetector();
+                var context = GetContext(appDir);
+
+                // Act
+                var result = detector.Detect(context);
+
+                // Assert
+                Assert.NotNull(result);
+                Assert.Equal(HugoConstants.PlatformName, result.Platform);
+                Assert.Equal(string.Empty, result.AppDirectory);
+                Assert.Null(result.PlatformVersion);
+
+                // Prepare next iteration
+                File.Delete(Path.Combine(appDir, configFileName));
+            }
+        }
+
+        [Theory]
         [InlineData("config.yaml")]
         [InlineData(HugoConstants.ConfigFolderName, "config.yaml")]
         public void IsHugoApp_ReturnsTrue_ForAppWithConfigYamlFile(params string[] subPaths)
+        {
+            // Arrange
+            var appDir = CreateAppDir();
+            WriteFile("archetypeDir: test", appDir, subPaths);
+            var detector = GetDetector();
+            var context = GetContext(appDir);
+
+            // Act
+            var result = detector.Detect(context);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(HugoConstants.PlatformName, result.Platform);
+            Assert.Equal(string.Empty, result.AppDirectory);
+            Assert.Null(result.PlatformVersion);
+        }
+
+        [Theory]
+        [InlineData("hugo.yaml")]
+        [InlineData(HugoConstants.ConfigFolderName, "hugo.yaml")]
+        public void IsHugoApp_ReturnsTrue_ForAppWithNewConfigYamlFile(params string[] subPaths)
         {
             // Arrange
             var appDir = CreateAppDir();
@@ -162,12 +236,13 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
         }
 
         [Theory]
-        [MemberData(nameof(ConfigurationKeyNameData))]
-        public void IsHugoApp_ReturnsTrue_ForAllSupportedConfigurationKeys_InYamlFile(string configurationKeyName)
+        [InlineData("hugo.yml")]
+        [InlineData(HugoConstants.ConfigFolderName, "hugo.yml")]
+        public void IsHugoApp_ReturnsTrue_ForAppWithNewConfigYmlFile(params string[] subPaths)
         {
             // Arrange
             var appDir = CreateAppDir();
-            WriteFile($"{configurationKeyName}: test", appDir, HugoConstants.YamlFileNames.First());
+            WriteFile("archetypeDir: test", appDir, subPaths);
             var detector = GetDetector();
             var context = GetContext(appDir);
 
@@ -179,6 +254,32 @@ namespace Microsoft.Oryx.Detector.Tests.Hugo
             Assert.Equal(HugoConstants.PlatformName, result.Platform);
             Assert.Equal(string.Empty, result.AppDirectory);
             Assert.Null(result.PlatformVersion);
+        }
+
+        [Theory]
+        [MemberData(nameof(ConfigurationKeyNameData))]
+        public void IsHugoApp_ReturnsTrue_ForAllSupportedConfigurationKeys_InYamlFile(string configurationKeyName)
+        {
+            foreach (string configFileName in HugoConstants.YamlFileNames)
+            {
+                // Arrange
+                var appDir = CreateAppDir();
+                WriteFile($"{configurationKeyName}: test", appDir, configFileName); // config.yaml
+                var detector = GetDetector();
+                var context = GetContext(appDir);
+
+                // Act
+                var result = detector.Detect(context);
+
+                // Assert
+                Assert.NotNull(result);
+                Assert.Equal(HugoConstants.PlatformName, result.Platform);
+                Assert.Equal(string.Empty, result.AppDirectory);
+                Assert.Null(result.PlatformVersion);
+
+                // Prepare next iteration
+                File.Delete(Path.Combine(appDir, configFileName));
+            }
         }
 
         [Theory]
