@@ -12,7 +12,8 @@ details on components and configuration of build images.
 
 The Hugo toolset is run when one of following conditions met:
 
-1. `config.yaml`, `config.toml`, `config.yml` or `config.json` configuration files in root of repo.
+1. Any supported `config.*` files at the root of repo: `config.toml`, `config.yaml`, `config.yml` or `config.json`.
+2. Any supported `hugo.*` files at the root of repo: `hugo.toml`, `hugo.yaml`, `hugo.yml` or `hugo.json`.
 2. Recursively look up config directory: `config/**/*.yaml`, `config/**/*.toml`,
    `config/**/*.yml` or `config/**/*.json` configuration files in sub-directories.
 
@@ -26,7 +27,7 @@ The following process is applied for each build:
 # Version support
 
 The Hugo project defines this [release schedule][]. Oryx supports all actively supported
-releases (v0.96.0).
+releases (v0.112.5).
 
 We will update the `patch` version of a release at least once every 3 months,
 replacing the previous `patch` version for that release.
