@@ -20,7 +20,7 @@ RUN echo "deb [signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] \
 RUN echo -e "Package: *\nPin: origin nginx.org\nPin: release o=nginx\nPin-Priority: 900\n" \
     | tee /etc/apt/preferences.d/99nginx
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends nginx
+RUN apt-get install -y --no-install-recommends nginx-core nginx-common nginx nginx-full
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
