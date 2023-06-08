@@ -2,3 +2,5 @@ Dockerfile
 buster.Dockerfile
 base.Dockerfile
 base.Buster.Dockerfile
+bullseye.Dockerfile
+base.bullseye.Dockerfile
