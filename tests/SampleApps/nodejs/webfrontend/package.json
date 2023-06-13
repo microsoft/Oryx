@@ -2,11 +2,11 @@
   "name": "webfrontend",
   "version": "0.1.0",
   "devDependencies": {
-    "nodemon": "^1.14.7"
+    "nodemon": "^2.0.22"
   },
   "dependencies": {
     "express": "^4.16.2",
-    "request": "2.83.0"
+    "request": "2.88.2"
   },
   "main": "server.js",
   "scripts": {

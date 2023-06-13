@@ -12,14 +12,15 @@
     "version": ""
   },
   "dependencies": {
-    "hexo": "^4.0.0",
+    "hexo": "^7.0.0-rc1",
     "hexo-generator-archive": "^1.0.0",
     "hexo-generator-category": "^1.0.0",
     "hexo-generator-index": "^1.0.0",
     "hexo-generator-tag": "^1.0.0",
-    "hexo-renderer-ejs": "^1.0.0",
+    "hexo-renderer-ejs": "^2.0.0",
+    "hexo-renderer-marked": "^6.1.0",
     "hexo-renderer-stylus": "^1.1.0",
-    "hexo-renderer-marked": "^2.0.0",
-    "hexo-server": "^1.0.0"
+    "hexo-server": "^1.0.0",
+    "nunjucks": "3.2.4"
   }
 }

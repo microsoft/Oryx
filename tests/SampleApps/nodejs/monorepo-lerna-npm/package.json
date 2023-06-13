@@ -16,6 +16,6 @@
   },
   "homepage": "https://github.com/dezkareid/lerna-monorepo-post#readme",
   "devDependencies": {
-    "lerna": "^3.21.0"
+    "lerna": "^7.0.0"
   }
 }

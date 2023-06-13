@@ -22,17 +22,17 @@ namespace Microsoft.Oryx.Integration.Tests
 
         public const int PortInContainer = 4200;
 
-        // Official Node.js version that is supported by Angular CLI 14.0+ is 16.10 or greater
-        [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
+        // Official Node.js version that is supported by Angular CLI 16.0+ is 16.13 or greater
+        [Theory(Skip = "Temporarily skipping Angular 16 tests: Work item 1565890")]
         [Trait("build-image", "debian-stretch")]
         [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_UsingCompressedNodeModulesAsync(string nodeVersion)
+        public async Task CanBuildAndRunAngular16_WithDevAndProdDependencies_UsingCompressedNodeModulesAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var appName = "angular14app";
+            var appName = "angular16app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
@@ -67,17 +67,17 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Angular14App", data);
+                    Assert.Contains("Angular16App", data);
                 });
         }
 
-        [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
+        [Theory(Skip = "Temporarily skipping Angular 16 tests: Work item 1565890")]
         [Trait("build-image", "debian-stretch")]
         [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRun_Angular14App_WithoutCompressedNodeModulesAsync(string nodeVersion)
+        public async Task CanBuildAndRun_Angular16App_WithoutCompressedNodeModulesAsync(string nodeVersion)
         {
             // Arrange
-            var appName = "angular14app";
+            var appName = "angular16app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -112,17 +112,17 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Angular14app", data);
+                    Assert.Contains("Angular16app", data);
                 });
         }
 
-        [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
+        [Theory(Skip = "Temporarily skipping Angular 16 tests: Work item 1565890")]
         [Trait("build-image", "debian-stretch")]
         [InlineData("16"), Trait("category", "node-16")]
         public async Task CanBuildAndRun_Angular14App_NodeModules_SymLink_Exists_InRoot_WithoutCompressionAsync(string nodeVersion)
         {
             // Arrange
-            var appName = "angular14app";
+            var appName = "angular16app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -159,7 +159,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Angular14app", data);
+                    Assert.Contains("Angular16app", data);
                 });
             // This is to test a situation where an appservice user is restarting
             // the app multiple times without deploying/pushing code changes
@@ -179,22 +179,22 @@ namespace Microsoft.Oryx.Integration.Tests
                     assertAction: async (hostPort) =>
                     {
                         var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                        Assert.Contains("Angular14app", data);
+                        Assert.Contains("Angular16app", data);
                     },
                     dockerCli: new DockerCli());
             }
         }
 
-        [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
+        [Theory(Skip = "Temporarily skipping Angular 16 tests: Work item 1565890")]
         [Trait("build-image", "debian-stretch")]
         [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
+        public async Task CanBuildAndRunAngular16_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var appName = "angular14app";
+            var appName = "angular16app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
@@ -229,7 +229,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Angular14app", data);
+                    Assert.Contains("Angular16app", data);
                 });
             // This is to test a situation where an appservice user is restarting
             // the app multiple times without deploying/pushing code changes
@@ -255,23 +255,23 @@ namespace Microsoft.Oryx.Integration.Tests
                     assertAction: async (hostPort) =>
                     {
                         var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                        Assert.Contains("Angular14app", data);
+                        Assert.Contains("Angular16app", data);
                     },
                     dockerCli: new DockerCli());
             }
         }
 
-        [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
+        [Theory(Skip = "Temporarily skipping Angular 16 tests: Work item 1565890")]
         [Trait("build-image", "debian-stretch")]
         [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
+        public async Task CanBuildAndRunAngular16_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
         {
             // Arrange
             string compressFormat = "tar-gz";
             int count = 0;
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
-            var appName = "angular14app";
+            var appName = "angular16app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var runAppScript = new ShellScriptBuilder()
@@ -307,7 +307,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Angular14app", data);
+                    Assert.Contains("Angular16app", data);
                 });
             // This is to test a situation where an appservice user is restarting
             // the app multiple times without deploying/pushing code changes
@@ -334,7 +334,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     assertAction: async (hostPort) =>
                     {
                         var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                        Assert.Contains("Angular14app", data);
+                        Assert.Contains("Angular16app", data);
                     },
                     dockerCli: new DockerCli());
             }

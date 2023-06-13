@@ -1,0 +1,38 @@
+{
+  "name": "angular16app",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "16.0.5",
+    "@angular/common": "16.0.5",
+    "@angular/compiler": "16.0.5",
+    "@angular/core": "16.0.5",
+    "@angular/forms": "16.0.5",
+    "@angular/platform-browser": "16.0.5",
+    "@angular/platform-browser-dynamic": "16.0.5",
+    "@angular/router": "16.0.5",
+    "rxjs": "7.8.1",
+    "tslib": "2.5.3",
+    "zone.js": "0.13.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "16.0.5",
+    "@angular/cli": "16.0.5",
+    "@angular/compiler-cli": "16.0.5",
+    "@types/jasmine": "4.3.2",
+    "jasmine-core": "4.6.0",
+    "karma": "6.4.2",
+    "karma-chrome-launcher": "3.2.0",
+    "karma-coverage": "2.2.0",
+    "karma-jasmine": "5.1.0",
+    "karma-jasmine-html-reporter": "2.1.0",
+    "typescript": "5.0.4"
+  }
+}
