@@ -81,7 +81,7 @@ setoptconf==0.2.0
 six==1.12.0
 smmap2==2.0.5
 snowballstemmer==1.2.1
-sqlparse==0.2.4
+sqlparse==0.4.4
 stevedore==1.30.0
 tablib==0.11.5
 toml==0.10.0

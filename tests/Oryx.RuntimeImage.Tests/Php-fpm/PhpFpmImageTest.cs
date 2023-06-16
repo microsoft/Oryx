@@ -178,7 +178,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.2-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.0-fpm")]
-        [InlineData("7.4-fpm")]
         public void SqlSrv_IsInstalled(string imageTag)
         {
             // Arrange & Act

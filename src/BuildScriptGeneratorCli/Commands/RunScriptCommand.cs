@@ -4,47 +4,85 @@
 // --------------------------------------------------------------------------------------------
 
 using System;
+using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
-using McMaster.Extensions.CommandLineUtils;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(
-        Name,
-        Description = "Generate startup script for an app.",
-        UnrecognizedArgumentHandling = UnrecognizedArgumentHandling.StopParsingAndCollect,
-        AllowArgumentSeparator = true)]
     internal class RunScriptCommand : CommandBase
     {
         public const string Name = "run-script";
+        public const string Description = "Generate startup script for an app.";
 
-        [Argument(0, Description = "The application directory.")]
-        [DirectoryExists]
+        public RunScriptCommand()
+        {
+        }
+
+        public RunScriptCommand(RunScriptCommandProperty input)
+        {
+            this.AppDir = input.AppDir;
+            this.PlatformName = input.PlatformName;
+            this.PlatformVersion = input.PlatformVersion;
+            this.OutputPath = input.Output;
+            this.RemainingArgs = input.RemainingArgs;
+            this.LogFilePath = input.LogPath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string AppDir { get; set; } = ".";
 
-        [Option(
-            OptionTemplates.Platform,
-            CommandOptionType.SingleValue,
-            Description = "The name of the programming platform, e.g. 'nodejs'.")]
         public string PlatformName { get; set; }
 
-        [Option(
-            OptionTemplates.PlatformVersion,
-            CommandOptionType.SingleValue,
-            Description = "The version of the platform to run the application on, e.g. '10' for nodejs.")]
         public string PlatformVersion { get; set; }
 
-        [Option(
-            "--output",
-            CommandOptionType.SingleValue,
-            Description = "[Optional] Path to which the script will be written. If not specified, will default to STDOUT.")]
         public string OutputPath { get; set; }
 
         public string[] RemainingArgs { get; }
+
+        public static Command Export(IConsole console)
+        {
+            var appDirArgument = new Argument<string>(
+                name: OptionArgumentTemplates.AppDir,
+                description: OptionArgumentTemplates.AppDirDescription,
+                getDefaultValue: () => Directory.GetCurrentDirectory());
+            var platformNameOption = new Option<string>(OptionArgumentTemplates.Platform, OptionArgumentTemplates.RunScriptPlatformDescription);
+            var platformVersionOption = new Option<string>(OptionArgumentTemplates.PlatformVersion, OptionArgumentTemplates.RunScriptPlatformVersionDescription);
+            var outputOption = new Option<string>(OptionArgumentTemplates.Output, OptionArgumentTemplates.RunScriptOutputDescription);
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
+
+            var command = new Command(Name, Description)
+            {
+                appDirArgument,
+                platformNameOption,
+                platformVersionOption,
+                outputOption,
+                logOption,
+                debugOption,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var runScriptCommand = new RunScriptCommand(prop);
+                    return Task.FromResult(runScriptCommand.OnExecute(console));
+                },
+                new RunScriptCommandBinder(
+                    appDir: appDirArgument,
+                    platformName: platformNameOption,
+                    platformVersion: platformVersionOption,
+                    output: outputOption,
+                    logPath: logOption,
+                    debugMode: debugOption));
+            return command;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {

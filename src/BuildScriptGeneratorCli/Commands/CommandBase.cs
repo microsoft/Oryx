@@ -5,10 +5,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.IO;
 using System.IO;
 using System.Linq;
 using System.Text;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,21 +26,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
     {
         private IServiceProvider serviceProvider;
 
-        [Option(
-            "--log-file <file>",
-            CommandOptionType.SingleValue,
-            Description = "The file to which the log will be written.")]
         public string LogFilePath { get; set; }
 
-        [Option("--debug", Description = "Print stack traces for exceptions.")]
         public bool DebugMode { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1801:Review unused parameters", Justification = "All arguments are necessary for OnExecute call, even if not used.")]
-        public int OnExecute(CommandLineApplication app, IConsole console)
+        public int OnExecute(IConsole console)
         {
-            console.CancelKeyPress += this.Console_CancelKeyPress;
-
             ILogger<CommandBase> logger = null;
+            Console.CancelKeyPress += this.Console_CancelKeyPress;
             TelemetryClient telemetryClient = null;
 
             try
@@ -83,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
                 if (this.DebugMode)
                 {
-                    console.WriteLine("Debug mode enabled");
+                    Console.WriteLine("Debug mode enabled");
                 }
 
                 using (var timedEvent = telemetryClient?.LogTimedEvent(this.GetType().Name))

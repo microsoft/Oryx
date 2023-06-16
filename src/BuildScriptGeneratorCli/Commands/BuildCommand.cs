@@ -5,11 +5,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.IO;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,14 +20,15 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Build an app.")]
     internal class BuildCommand : BuildCommandBase
     {
         public const string Name = "build";
+        public const string Description = "Build an app.";
 
         // Beginning and ending markers for build script output spans that should be time measured
         private readonly TextSpan[] measurableStdOutSpans =
@@ -43,17 +46,42 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         private bool languageVersionWasSet;
         private bool languageWasSet;
 
-        [Option(
-            "-i|--intermediate-dir <dir>",
-            CommandOptionType.SingleValue,
-            Description = "The path to a temporary directory to be used by this tool.")]
+        public BuildCommand()
+        {
+        }
+
+        public BuildCommand(BuildCommandProperty input)
+        {
+            this.IntermediateDir = input.IntermediateDir;
+            this.DestinationDir = input.DestinationDir;
+            this.ManifestDir = input.ManifestDir;
+            this.SourceDir = input.SourceDir;
+            this.PlatformName = input.Platform;
+            this.PlatformVersion = input.PlatformVersion;
+            this.ShouldPackage = input.ShouldPackage;
+            this.OsRequirements = input.OsRequirements;
+            this.AppType = input.AppType;
+            this.BuildCommandsFileName = input.BuildCommandFile;
+            this.CompressDestinationDir = input.CompressDestinationDir;
+            this.Properties = input.Property;
+            this.DynamicInstallRootDir = input.DynamicInstallRootDir;
+            this.LogFilePath = input.LogPath;
+            this.DebugMode = input.DebugMode;
+
+            // Handling obselete options
+            if (input.LanguageVersionWasSet)
+            {
+                this.LanguageVersion = input.LanguageVersion;
+            }
+
+            if (input.LanguageWasSet)
+            {
+                this.LanguageName = input.LanguageName;
+            }
+        }
+
         public string IntermediateDir { get; set; }
 
-        [Option(
-            OptionTemplates.Language,
-            CommandOptionType.SingleValue,
-            Description = "The name of the programming platform used in the provided source directory.",
-            ShowInHelpText = false)]
         public string LanguageName
         {
             get => this.PlatformName;
@@ -64,11 +92,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
         }
 
-        [Option(
-            OptionTemplates.LanguageVersion,
-            CommandOptionType.SingleValue,
-            Description = "The version of the programming platform used in the provided source directory.",
-            ShowInHelpText = false)]
         public string LanguageVersion
         {
             get => this.PlatformVersion;
@@ -79,17 +102,93 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
         }
 
-        [Option(
-            "-o|--output <dir>",
-            CommandOptionType.SingleValue,
-            Description = "The destination directory.")]
         public string DestinationDir { get; set; }
 
-        [Option(
-            OptionTemplates.ManifestDir,
-            CommandOptionType.SingleValue,
-            Description = "The path to a directory into which the build manifest file should be written.")]
         public string ManifestDir { get; set; }
+
+        public static Command Export(IConsole console)
+        {
+            var logOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
+            var sourceDirArgument = new Argument<string>(
+                name: OptionArgumentTemplates.SourceDir,
+                description: OptionArgumentTemplates.SourceDirDescription,
+                getDefaultValue: () => Directory.GetCurrentDirectory());
+            var platformOption = new Option<string>(OptionArgumentTemplates.Platform, OptionArgumentTemplates.PlatformDescription);
+            var platformVersionOption = new Option<string>(OptionArgumentTemplates.PlatformVersion, OptionArgumentTemplates.PlatformVersionDescription);
+            var packageOption = new Option<bool>(OptionArgumentTemplates.Package, OptionArgumentTemplates.PackageDescription);
+            var osReqOption = new Option<string>(OptionArgumentTemplates.OsRequirements, OptionArgumentTemplates.OsRequirementsDescription);
+            var appTypeOption = new Option<string>(OptionArgumentTemplates.AppType, OptionArgumentTemplates.AppTypeDescription);
+            var buildCommandFileNameOption = new Option<string>(OptionArgumentTemplates.BuildCommandsFileName, OptionArgumentTemplates.BuildCommandsFileNameDescription);
+            var compressDestDirOption = new Option<bool>(OptionArgumentTemplates.CompressDestinationDir, OptionArgumentTemplates.CompressDestinationDirDescription);
+            var propertyOption = new Option<string[]>(OptionArgumentTemplates.Property, OptionArgumentTemplates.PropertyDescription);
+            var dynamicInstallRootDirOption = new Option<string>(OptionArgumentTemplates.DynamicInstallRootDir, OptionArgumentTemplates.DynamicInstallRootDirDescription);
+
+            // Hiding Language Option because it is obselete
+            var languageOption = new Option<string>(OptionArgumentTemplates.Language, OptionArgumentTemplates.LanguageDescription);
+            languageOption.IsHidden = true;
+
+            // LanguageVer Option is obselete
+            var languageVerOption = new Option<string>(OptionArgumentTemplates.LanguageVersion, OptionArgumentTemplates.LanguageVersionDescription);
+            languageVerOption.IsHidden = true;
+
+            var intermediateDirOption = new Option<string>(OptionArgumentTemplates.IntermediateDir, OptionArgumentTemplates.IntermediateDirDescription);
+
+            // destinationDirOption is "--output" in CLI
+            // destinationDir matches with its property name
+            var destinationDirOption = new Option<string>(aliases: OptionArgumentTemplates.Output, OptionArgumentTemplates.OutputDescription);
+
+            var manifestDirOption = new Option<string>(OptionArgumentTemplates.ManifestDir, OptionArgumentTemplates.ManifestDirDescription);
+
+            var command = new Command(Name, Description)
+            {
+                sourceDirArgument,
+                intermediateDirOption,
+                destinationDirOption,
+                manifestDirOption,
+                platformOption,
+                platformVersionOption,
+                packageOption,
+                osReqOption,
+                appTypeOption,
+                buildCommandFileNameOption,
+                compressDestDirOption,
+                propertyOption,
+                dynamicInstallRootDirOption,
+                languageOption,
+                languageVerOption,
+                logOption,
+                debugOption,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    // InvocationContext provided in SetHandler
+                    var buildCommand = new BuildCommand(prop);
+                    var returnCode = buildCommand.OnExecute(console);
+                    return Task.FromResult(returnCode);
+                },
+                new BuildCommandBinder(
+                    languageName: languageOption,
+                    languageVersion: languageVerOption,
+                    intermediateDir: intermediateDirOption,
+                    destinationDir: destinationDirOption,
+                    manifestDir: manifestDirOption,
+                    sourceDir: sourceDirArgument,
+                    platform: platformOption,
+                    platformVersion: platformVersionOption,
+                    package: packageOption,
+                    osRequirements: osReqOption,
+                    appType: appTypeOption,
+                    buildCommandFile: buildCommandFileNameOption,
+                    compressDestinationDir: compressDestDirOption,
+                    property: propertyOption,
+                    dynamicInstallRootDir: dynamicInstallRootDirOption,
+                    logPath: logOption,
+                    debugMode: debugOption));
+            return command;
+        }
 
         public static string BuildOperationName(IEnvironment env)
         {
@@ -275,7 +374,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             int exitCode;
             using (var timedEvent = telemetryClient.LogTimedEvent("RunBuildScript", buildEventProps))
             {
-                console.WriteLine();
+                console.WriteLine(string.Empty);
                 exitCode = serviceProvider.GetRequiredService<IScriptExecutor>().ExecuteScript(
                     buildScriptPath,
                     new[]

@@ -1,0 +1,28 @@
+parameters:
+  - name: nightlyTagName
+    displayName: The tag of image built by nightly pipeline
+  - name: containerRegistryName
+    displayName: Container registry name for pushing built image
+    type: string
+    default: oryxtestmcr.azurecr.io
+
+resources:
+- repo: self
+  fetchDepth: 15
+
+variables:
+  group: Oryx
+  Packaging.EnableSBOMSigning: true
+
+stages:
+  - stage: Copy
+    displayName: Copy Stage
+    
+    jobs:
+    - job: Start_Copy
+      steps:
+      - template: templates/_copyImgFromDevToTest.yml
+        parameters:
+          nightlyTag: ${{ parameters.nightlyTagName }}    
+
+trigger: none

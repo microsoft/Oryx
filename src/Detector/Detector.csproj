@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>Microsoft.Oryx.Detector</AssemblyName>
     <RootNamespace>Microsoft.Oryx.Detector</RootNamespace>
@@ -33,7 +33,7 @@
   <ItemGroup>
     <_PackageFiles Include="$(OutputPath)\Microsoft.Oryx.Common.dll">
       <BuildAction>None</BuildAction>
-      <PackagePath>lib\netstandard2.0\</PackagePath>
+      <PackagePath>lib\net7.0\</PackagePath>
     </_PackageFiles>
   </ItemGroup>
 
@@ -55,7 +55,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.32" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="SemanticVersioning" Version="2.0.2" />
     <PackageReference Include="xunit" Version="2.4.2" />

@@ -70,6 +70,14 @@ namespace Microsoft.Oryx.Automation.Python
             }
         }
 
+        /// <summary>
+        /// Retrieves a list of new Python versions from the Python release website,
+        /// and filters the list based on specified criteria.
+        /// The resulting list is sorted by semantic version number.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation.
+        /// The task result contains a list of PythonVersion
+        /// objects representing the new Python versions that meet the specified criteria.</returns>
         public async Task<List<PythonVersion>> GetNewPythonVersionsAsync()
         {
             var response = await this.httpService.GetDataAsync(PythonConstants.PythonReleaseUrl);
@@ -99,7 +107,7 @@ namespace Microsoft.Oryx.Automation.Python
                 }
             }
 
-            return pythonVersions;
+            return pythonVersions.Order().ToList();
         }
 
         private void UpdateOryxConstantsForNewVersions(

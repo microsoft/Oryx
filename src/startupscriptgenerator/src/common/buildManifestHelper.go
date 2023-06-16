@@ -46,7 +46,7 @@ func GetBuildManifest(manifestDir *string, fullAppPath string) BuildManifest {
 		fmt.Printf("Found build manifest file at '%s'. Deserializing it...\n", manifestFileFullPath)
 		_buildManifest = deserializeBuildManifest(manifestFileFullPath)
 	} else {
-		fmt.Printf("Cound not find build manifest file at '%s'\n", manifestFileFullPath)
+		fmt.Printf("Could not find build manifest file at '%s'\n", manifestFileFullPath)
 	}
 
 	_hasResult = true

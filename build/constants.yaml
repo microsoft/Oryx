@@ -43,9 +43,9 @@
     dot-net-core-31-sdk-version: 3.1.426
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.408
-    dot-net-60-sdk-version: 6.0.407
+    dot-net-60-sdk-version: 6.0.410
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.202
+    dot-net-70-sdk-version: 7.0.304
     runtime-versions:
       3.0: debian-buster
       3.1: debian-buster
@@ -62,7 +62,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20230315.1
+    dot-net-core-runtime-base-tag: 20230614.1
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
@@ -84,14 +84,14 @@
     net-core-app-50-sha: a9c4784930a977abbc42aff1337dda06ec588c1ec4769a59f9fcab4d5df4fc9efe65f8e61e5433db078f67a94ea2dfe870c32c482a50d4c16283ffacacff4261
     aspnet-core-app-50: 5.0.17
     aspnet-core-app-50-sha: d8e87804e9e86273c6512785bd5a6f0e834ff3f4bbebc11c4fcdf16ab4fdfabd0d981a756955267c1aa9bbeec596de3728ce9b2e6415d2d80daef0d999a5df6d
-    net-core-app-60: 6.0.15
-    net-core-app-60-sha: 681928ab5050da89302518445f4e7e00738530b3941434fad363724ad5b1f9bcdc52717332613d2e33733ebf835eb550628e87cebba1a12ffb4f881c8e767749
-    aspnet-core-app-60: 6.0.15
-    aspnet-core-app-60-sha: db41bbd6ffb061402acee12f498f41fe5987d355c9004091ff63010303cc9ea969ab233986dc11556bc6def5194883f50fdf216e1c50b26bb60cacd4f2ecd98a
-    net-core-app-70: 7.0.4
-    net-core-app-70-sha: 23e6aa3714410d794bd25af781046757003e3326cb8b13dc256649011815038893718b44ec2162767c7da76f1e16b170656d5726e7c01e99b9577682ecfe281e
-    aspnet-core-app-70: 7.0.4
-    aspnet-core-app-70-sha: b0d2896928c003abf79c539c1c6be13ad560a34d8fdbe9438d916a977aa59e648d0737b57aafb25fda1c3de7c95997eccbea28ae04e4131ebfcd18c36940bcb4
+    net-core-app-60: 6.0.18
+    net-core-app-60-sha: bcfc88238f901c14d203a33eff036106fcbcfc40de7e3717f61434dffd86b5444c176dec5beeddcf80e7193f77bf793ab1e2284c91d54b93931a4668ba77c634
+    aspnet-core-app-60: 6.0.18
+    aspnet-core-app-60-sha: 8adbd7c6f303d69410c34ebc4a8df0afb340c6283ee18ca5e213ad502c8df15ef4db35023a5f9ef88a20ec41c733ec5006ad80dc4d31df5c32e5665f7f8b0563
+    net-core-app-70: 7.0.7
+    net-core-app-70-sha: 02c4949f2edd4c0e63286443e11f961ee2cbd173eda93b5ba192e7c95dcefe74754222f3986d00f71b213271c184d5c12796a4345d19936a38c45293ac76dd94
+    aspnet-core-app-70: 7.0.7
+    aspnet-core-app-70-sha: e56ee9bc458214bce461e9688e5229ba5b69046ec38a27bfdb2b5413d4b41500cca40152d182793c2768318719d97980b62ae9724de75d6d02874c25e938374d
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -107,11 +107,11 @@
     final-stretch-dot-net-60-sdk-version: 6.0.301
     final-stretch-dot-net-core-app-60-run-time-version: 6.0.6
     final-stretch-aspnet-core-app-60-run-time-version: 6.0.6
-    final-stretch-dot-net-70-sdk-version: 7.0.100
-    final-stretch-dot-net-core-app-70-run-time-version: 7.0.0
-    final-stretch-aspnet-core-app-70-run-time-version: 7.0.0
-    final-stretch-node14-version: 14.19.1
-    final-stretch-node16-version: 16.14.2
+    final-stretch-dot-net-70-sdk-version: 7.0.302
+    final-stretch-dot-net-core-app-70-run-time-version: 7.0.5
+    final-stretch-aspnet-core-app-70-run-time-version: 7.0.5
+    final-stretch-node14-version: 14.21.3
+    final-stretch-node16-version: 16.20.0
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -127,8 +127,8 @@
     golang17-tar-sha256: 6bf89fc4f5ad763871cf7eac80a2d594492de7a818303283f1366a7f6a30372d
     golang18-version: 1.18.10
     golang18-tar-sha256: 5e05400e4c79ef5394424c0eff5b9141cb782da25f64f79d54c98af0a37f8d49
-    golang19-version: 1.19.5
-    golang19-tar-sha256: 36519702ae2fd573c9869461990ae550c8c0d955cd28d2827a6b159fda81ff95
+    golang19-version: 1.19.7
+    golang19-tar-sha256: 7a75720c9b066ae1750f6bcc7052aba70fa3813f4223199ee2a2315fd3eb533d
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -163,8 +163,8 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20230221.3
-    php-fpm-runtime-base-tag: 20230221.1
+    php-runtime-base-tag: 20230609.1
+    php-fpm-runtime-base-tag: 20230609.2
     composer-version: 2.0.8
     composer-setup-sha384: 55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae
     composer1-9-version: 1.9.3
@@ -172,15 +172,15 @@
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
-    php82-version: 8.2.2
+    php82-version: 8.2.7
     php82-keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php82-tar-sha256: bdc4aa38e652bac86039601840bae01c0c3653972eaa6f9f93d5f71953a7ee33
-    php81-version: 8.1.15
+    php82-tar-sha256: 4b9fb3dcd7184fe7582d7e44544ec7c5153852a2528de3b6754791258ffbdfa0
+    php81-version: 8.1.20
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php81-tar-sha256: cd450fb4ee50488c5bf5f08851f514e5a1cac18c9512234d9e16c3a1d35781a6
-    php80-version: 8.0.27
+    php81-tar-sha256: 4c9973f599e93ed5e8ce2b45ce1d41bb8fb54ce642824fd23e56b52fd75029a6
+    php80-version: 8.0.28
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: f942cbfe2f7bacbb8039fb79bbec41c76ea779ac5c8157f21e1e0c1b28a5fc3a
+    php80-tar-sha256: 5e07278a1f315a67d36a676c01343ca2d4da5ec5bdb15d018e4248b3012bc0cd
     php74-version: 7.4.33
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
     php74-tar-sha256: 924846abf93bc613815c55dd3f5809377813ac62a9ec4eb3778675b82a27b927
@@ -273,20 +273,20 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20230213.3
+    node-runtime-base-tag: 20230426.2
     yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
     node6-version: 6.17.1
     node8-version: 8.17.0
     node10-version: 10.23.0
-    node12-version: 12.22.11
-    node14-version: 14.21.2
-    node16-version: 16.19.0
-    node18-version: 18.14.0
+    node12-version: 12.22.12
+    node14-version: 14.21.3
+    node16-version: 16.20.0
+    node18-version: 18.16.0
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
-    npm-version: 6.14.15
+    npm-version: 9.6.4
     runtime-versions:
       14: debian-buster
       16: debian-buster
@@ -346,15 +346,23 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: hugo-constants
   constants:
-    version: 0.96.0
+    version: 0.112.5
     platform-name: hugo
     installed-hugo-versions-dir: /opt/hugo
     installation-url-format: https://github.com/gohugoio/hugo/releases/download/v#VERSION#/#TAR_FILE#
     tar-file-name-format: hugo_extended_#VERSION#_Linux-64bit.tar.gz
-    toml-file-name: config.toml
-    yaml-file-name: config.yaml
-    yml-file-name: config.yml
-    json-file-name: config.json
+    toml-file-names:
+      - config.toml
+      - hugo.toml
+    yaml-file-names:
+      - config.yaml
+      - hugo.yaml
+    yml-file-names:
+      - config.yml
+      - hugo.yml
+    json-file-names:
+      - config.json
+      - hugo.json
     config-folder-name: config
   outputs:
     - type: csharp
