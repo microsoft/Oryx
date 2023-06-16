@@ -125,6 +125,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             buildProperties[ManifestFilePropertyKeys.PhpVersion] = phpPlatformDetectorResult.PlatformVersion;
 
             this.logger.LogDebug("Selected PHP version: {phpVer}", phpPlatformDetectorResult.PlatformVersion);
+
+            string nginxConfFile = this.commonOptions.NginxConfFile;
+
             bool composerFileExists = false;
 
             if (ctx.SourceRepo.FileExists(PhpConstants.ComposerFileName))
@@ -152,7 +155,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 }
             }
 
-            var props = new PhpBashBuildSnippetProperties { ComposerFileExists = composerFileExists };
+            var props = new PhpBashBuildSnippetProperties { 
+                ComposerFileExists = composerFileExists, 
+                NginxConfFile = nginxConfFile
+                };
             string snippet = TemplateHelper.Render(TemplateHelper.TemplateResource.PhpBuildSnippet, props, this.logger, this.telemetryClient);
             return new BuildScriptSnippet { BashBuildScriptSnippet = snippet, BuildProperties = buildProperties };
         }
