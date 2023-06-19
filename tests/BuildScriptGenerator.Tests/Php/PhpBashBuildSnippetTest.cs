@@ -20,8 +20,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             // Assert
             Assert.NotEmpty(text);
             Assert.NotNull(text);
-            string extectedString = "cp " + snippetProps.NginxConfFile + " etc/nginx/nginx.conf" + System.Environment.NewLine + "service nginx reload";
-            Assert.Contains(extectedString, text);
+            string copyConfifFileExtectedString = "cp " + snippetProps.NginxConfFile + " /etc/nginx/nginx.conf";
+            Assert.Contains(copyConfifFileExtectedString, text);
+            string reloadNginxExpectedString = "service nginx reload";
+            Assert.Contains(reloadNginxExpectedString, text);
         }
     }
 }
