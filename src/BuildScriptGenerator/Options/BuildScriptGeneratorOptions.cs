@@ -93,6 +93,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public bool OryxDisablePipUpgrade { get; set; }
 
-        public string NginxConfFile { get; set;}
+        public string NginxConfFile { get; set; }
     }
 }
