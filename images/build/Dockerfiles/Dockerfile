@@ -36,7 +36,7 @@ COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 # https://github.com/docker-library/python/issues/147
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
     && tmpDir="/opt/tmp" \
     && buildDir="$tmpDir/build" \
     && imagesDir="$tmpDir/images" \
@@ -112,6 +112,5 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && cd /opt/php \
     && ln -s 5.6 5 \
     && echo "full" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
