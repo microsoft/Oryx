@@ -1,6 +1,6 @@
-FROM oryxdevmcr.azurecr.io/private/oryx/%PHP_BASE_IMAGE_TAG%
+FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-8.2
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION %PHP_VERSION%
+ENV PHP_VERSION 8.2.5
 
 # An environment variable for oryx run-script to know the origin of php image so that
 # start-up command can be determined while creating run script
