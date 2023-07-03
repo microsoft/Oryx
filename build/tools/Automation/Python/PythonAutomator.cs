@@ -50,17 +50,13 @@ namespace Microsoft.Oryx.Automation.Python
             this.pythonMinReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMinReleaseVersionEnvVar);
             this.pythonMaxReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMaxReleaseVersionEnvVar);
             var blockedVersions = Environment.GetEnvironmentVariable(PythonConstants.PythonBlockedVersionsEnvVar);
-            Console.WriteLine("BLOCKED VERSIONS");
-            Console.WriteLine(blockedVersions);
 
             if (!string.IsNullOrEmpty(blockedVersions))
             {
                 var versionStrings = blockedVersions.Split(',');
                 foreach (var versionString in versionStrings)
                 {
-                    var trimmedVersion = versionString.Trim();
-                    Console.WriteLine($"versionString {trimmedVersion}");
-                    this.pythonBlockedVersions.Add(trimmedVersion);
+                    this.pythonBlockedVersions.Add(versionString.Trim());
                 }
             }
 
