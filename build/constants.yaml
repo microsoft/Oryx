@@ -440,9 +440,9 @@
     dotnetcore-staging-runtime-versions:
     - 
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: shell
-      directory: build
-      file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+  - type: shell
+    directory: build
+    file-name-prefix: __
