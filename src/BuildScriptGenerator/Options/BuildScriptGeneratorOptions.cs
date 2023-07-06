@@ -92,7 +92,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string ImageType { get; set; }
 
         public bool OryxDisablePipUpgrade { get; set; }
-
-        public string NginxConfFile { get; set; }
     }
 }

@@ -11,7 +11,5 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
     public class PhpBashBuildSnippetProperties
     {
         public bool ComposerFileExists { get; set; }
-
-        public string NginxConfFile { get; set; }
     }
 }

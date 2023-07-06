@@ -13,8 +13,3 @@ php $composer install --ignore-platform-reqs --no-interaction
 echo "No 'composer.json' file found; not running 'composer install'."
 {{ end }}
 
-{{ if NginxConfFile | IsNotBlank }}
-echo "Using the custom NGINX configuration from {{ NginxConfFile }} and followed by the `service nginx reload` command."
-cp {{ NginxConfFile }} /etc/nginx/nginx.conf
-service nginx reload
-{{ end }}

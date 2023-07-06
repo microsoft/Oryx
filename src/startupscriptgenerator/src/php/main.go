@@ -48,6 +48,7 @@ func main() {
 		configuration.FpmStartServers = viperConfig.GetString(consts.PhpFpmStartServersEnvVarName)
 		configuration.FpmMinSpareServers = viperConfig.GetString(consts.PhpFpmMinSpareServersEnvVarName)
 		configuration.FpmMaxSpareServers = viperConfig.GetString(consts.PhpFpmMaxSpareServersEnvVarName)
+		configuration.NginxConfFile = viperConfig.GetString(consts.NginxConfFile)
 
 		entrypointGenerator := PhpStartupScriptGenerator{
 			SourcePath:    fullAppPath,
