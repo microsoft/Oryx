@@ -282,8 +282,8 @@
     node10-version: 10.23.0
     node12-version: 12.22.12
     node14-version: 14.21.3
-    node16-version: 16.20.0
-    node18-version: 18.16.0
+    node16-version: 16.20.1
+    node18-version: 18.16.1
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 9.6.4
