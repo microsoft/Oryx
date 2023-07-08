@@ -25,7 +25,7 @@ ARG BUILD_DIR=/tmp/oryx/build
 RUN ${IMAGES_DIR}/installPlatform.sh nodejs $NODE_VERSION --dir /usr/local --links false \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN . ${BUILD_DIR}/__nodeVersions.sh \
-    && curl -L https://npmjs.org/install.sh | npm_install=${NPM_VERSION} sh
+    && npm install -g npm@${NPM_VERSION}
 RUN ${IMAGES_DIR}/runtime/node/installDependencies.sh
 RUN rm -rf /tmp/oryx
 
