@@ -46,10 +46,10 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	gen.SetFpmConfiguration(&scriptBuilder)
 	scriptBuilder.WriteString("   export NGINX_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
 	scriptBuilder.WriteString("   service nginx start\n")
-	gen.AddCustomizedNginxConfigurationToScript(&scriptBuilder)
 	scriptBuilder.WriteString("else\n")
 	scriptBuilder.WriteString("   export APACHE_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
 	scriptBuilder.WriteString("fi\n\n")
+	gen.AddCustomizedNginxConfigurationToScript(&scriptBuilder)
 
 	startupCommand := gen.StartupCmd
 	if startupCommand == "" {

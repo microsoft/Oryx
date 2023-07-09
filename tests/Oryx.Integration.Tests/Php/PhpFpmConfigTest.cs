@@ -94,11 +94,13 @@ namespace Microsoft.Oryx.Integration.Tests
                .ToString();
 
             var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddCommand("cat run.sh")
-                .AddStringExistsInFileCheck(nginxCustomCommand1, $"run.sh")
-                .AddStringExistsInFileCheck(nginxCustomCommand2, $"run.sh")
-                .AddCommand("./run.sh")
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
+                .AddCommand("mkdir -p /home/site/wwwroot")
+                .AddCommand($"cp -rf {appOutputDir}/* /home/site/wwwroot")
+                .AddCommand("cat " + RunScriptPath)
+                .AddStringExistsInFileCheck(nginxCustomCommand1, RunScriptPath)
+                .AddStringExistsInFileCheck(nginxCustomCommand2, RunScriptPath)
+                .AddCommand(RunScriptPath)
                 .ToString();
             var phpimageVersion = string.Concat(phpVersion, "-", "fpm");
             // Act & Assert success conditions
@@ -120,7 +122,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     async (hostPort) =>
                     {
                         var output = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                        Assert.Contains("Hello World", output);
+                        Assert.Contains("test is successful", output);
                     });
         }
 
