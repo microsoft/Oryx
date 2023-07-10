@@ -127,7 +127,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var cmd = "node --version";
             var expectedBashPath = FilePaths.Bash;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
                 .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
                 .ToString();
@@ -157,7 +156,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var absScriptPath = $"{appPath}/{repoScriptPath}";
 
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .CreateFile($"{appPath}/{NodeConstants.PackageJsonFileName}", "{}")
                 .CreateFile(absScriptPath, "node --version")
                 .SetExecutePermissionOnFile(absScriptPath)
@@ -193,7 +191,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     "'{\"engines\": {\"node\": \"" + expectedNodeVersion + "\"}}'")
                 .CreateFile($"{appPath}/{PhpConstants.ComposerFileName}",
                     "'{\"require\": {\"php\": \"" + expectedPhpVersion + "\"}}'")
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx exec --debug --src {appPath} '{cmd}'") // '--debug' prints the resulting script
                 .ToString();
 

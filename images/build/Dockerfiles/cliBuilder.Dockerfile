@@ -10,8 +10,8 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 # stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror
 RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
         sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
-        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
-        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
+        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.kernel.org\/debian-archive\/debian-security stretch/g' /etc/apt/sources.list \
+        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.kernel.org\/debian-archive\/debian stretch/g' /etc/apt/sources.list ; \
     fi
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
@@ -137,7 +137,10 @@ RUN set -ex \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python 3.8 to use in some .NET and node applications
-RUN tmpDir="/opt/tmp" \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
@@ -156,6 +159,7 @@ RUN tmpDir="/opt/tmp" \
     && cd /opt/python \
     && ln -s $PYTHON38_VERSION 3.8 \
     && ln -s $PYTHON38_VERSION latest \
-    && ln -s $PYTHON38_VERSION stable
+    && ln -s $PYTHON38_VERSION stable \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 ENTRYPOINT [ "benv" ]

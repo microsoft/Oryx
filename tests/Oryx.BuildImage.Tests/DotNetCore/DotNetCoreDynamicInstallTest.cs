@@ -115,7 +115,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
@@ -178,7 +177,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var buildCmd = $"{appDir} -i /tmp/int -o {appOutputDir}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(buildCmd)
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(sentinelFile)
@@ -235,7 +233,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} --log-file log.txt")
@@ -299,7 +296,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
@@ -360,7 +356,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
@@ -459,7 +454,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} --dynamic-install-root-dir {expectedDynamicInstallRootDir}")
                 .AddDirectoryExistsCheck(
@@ -511,7 +505,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var preInstalledSdkLink = $"/home/codespace/.dotnet/sdk";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddDirectoryExistsCheck($"/home/codespace/.dotnet/")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNet60SdkVersion}")
@@ -661,7 +654,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
@@ -725,7 +717,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
@@ -806,7 +797,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(removeImageTypeFile
                     ? $"rm /opt/oryx/{FilePaths.ImageTypeFileName}"
                     : "echo 'do not remove image type file'")

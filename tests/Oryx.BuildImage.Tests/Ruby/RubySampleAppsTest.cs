@@ -79,7 +79,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
 
@@ -111,7 +110,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"cd {appDir}")
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .ToString();
@@ -145,7 +143,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} ")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -178,7 +175,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("CUSTOM_BUILD_COMMAND", "touch example.txt")
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} ")

@@ -39,7 +39,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var OryxAppInsightsAttachString2 = "export DOTNET_STARTUP_HOOKS=";
 
             var buildImageScript = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
@@ -92,7 +91,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")

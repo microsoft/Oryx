@@ -125,14 +125,12 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand(GetSnippetToCleanUpExistingInstallation())
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx setupEnv -appPath {appOutputDir}")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -166,14 +164,12 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand(GetSnippetToCleanUpExistingInstallation())
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -206,14 +202,12 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand(GetSnippetToCleanUpExistingInstallation())
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
@@ -254,14 +248,12 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand(GetSnippetToCleanUpExistingInstallation())
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx setupEnv -appPath {appOutputDir}")
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
@@ -305,7 +297,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var packagesDir = ".python_packages/lib/python3.7/site-packages";
             var compressDestination = compressDestinationDir ? "--compress-destination-dir" : string.Empty;
             var buildScript = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion} " +
@@ -313,7 +304,6 @@ namespace Microsoft.Oryx.Integration.Tests
                .AddDirectoryExistsCheck($"{appOutputDir}/{packagesDir}")
                .ToString();
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
