@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 failureOutputText);
         }
 
-        [Fact]
+        [Fact, Trait("category", "php-8.0")]
         public async Task PhpFpmNginxCustomizationTestAsync()
         {
             // Arrange
