@@ -9,7 +9,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string PhpRuntimeBaseTag = "20230630.1";
         public const string PhpFpmRuntimeBaseTag = "20230630.1";
         public const string ComposerVersion = "2.0.8";
-        public const string ComposerSetupSha384 = "55ce33d7678c5a611085589f1f3ddf8b3c52d662cd01d4ba75c0ee0459970c2200a51f492d557530c71c15d8dba01eae";
+        public const string ComposerSetupSha384 = "e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02";
         public const string Composer19Version = "1.9.3";
         public const string Composer110Version = "1.10.19";
         public const string Composer20Version = "2.0.8";
