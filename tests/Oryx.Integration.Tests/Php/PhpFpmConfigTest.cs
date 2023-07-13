@@ -84,7 +84,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var phpVersion = "8.0";
-            var nginxDummyCustomConfigFile = appDir + "/NGINX_DUMMY_CUSTOM_CONFIG_FILE.txt";
+            var nginxDummyCustomConfigFile = appDir + "/NGINX_DUMMY_CUSTOM_CONFIG_FILE.conf";
             var nginxCustomCommand1 = "cp " + nginxDummyCustomConfigFile + " /etc/nginx/nginx.conf";
             var nginxCustomCommand2 = "service nginx reload";
 
