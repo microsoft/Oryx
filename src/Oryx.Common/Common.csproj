@@ -19,7 +19,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
-    <PackageReference Include="runtime.unix.System.Private.Uri" Version="4.3.2" />
     <PackageReference Include="System.Private.Uri" Version="4.3.2" />
     <PackageReference Include="Tomlyn" Version="0.16.2" />
     <PackageReference Include="YamlDotNet" Version="12.3.1" />
