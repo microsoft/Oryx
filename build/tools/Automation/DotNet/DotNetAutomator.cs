@@ -58,8 +58,22 @@ namespace Microsoft.Oryx.Automation.DotNet
                 this.oryxSdkStorageBaseUrl = Constants.OryxSdkStorageBaseUrl;
             }
 
-            this.oryxDotNetSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(
-                this.oryxSdkStorageBaseUrl + DotNetConstants.DotNetSuffixUrl);
+            string sdkVersionsUrl = this.oryxSdkStorageBaseUrl + DotNetConstants.DotNetSuffixUrl;
+
+            // A SAS token is required for the staging account.
+            if (this.oryxSdkStorageBaseUrl == Constants.OryxSdkStagingStorageBaseUrl)
+            {
+                string sasToken = Environment.GetEnvironmentVariable(Constants.OryxSdkStagingPrivateSasTokenEnvVar);
+                if (string.IsNullOrEmpty(sasToken))
+                {
+                    throw new ArgumentException($"The environment variable {Constants.OryxSdkStagingPrivateSasTokenEnvVar} " +
+                        $"must be provided in order to access {Constants.OryxSdkStagingStorageBaseUrl}");
+                }
+
+                sdkVersionsUrl += "&" + sasToken;
+            }
+
+            this.oryxDotNetSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(sdkVersionsUrl);
             this.dotNetMinReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMinReleaseVersionEnvVar);
             this.dotNetMaxReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMaxReleaseVersionEnvVar);
             var blockedVersions = Environment.GetEnvironmentVariable(

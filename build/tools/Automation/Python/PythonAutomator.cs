@@ -26,6 +26,7 @@ namespace Microsoft.Oryx.Automation.Python
         private string pythonMinReleaseVersion;
         private string pythonMaxReleaseVersion;
         private List<string> pythonBlockedVersions = new List<string>();
+        private HashSet<string> oryxPythonSdkVersions;
 
         public PythonAutomator(
             IHttpService httpService,
@@ -47,6 +48,22 @@ namespace Microsoft.Oryx.Automation.Python
                 this.oryxSdkStorageBaseUrl = Constants.OryxSdkStorageBaseUrl;
             }
 
+            string sdkVersionsUrl = this.oryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl;
+
+            // A SAS token is required for the staging account.
+            if (this.oryxSdkStorageBaseUrl == Constants.OryxSdkStagingStorageBaseUrl)
+            {
+                string sasToken = Environment.GetEnvironmentVariable(Constants.OryxSdkStagingPrivateSasTokenEnvVar);
+                if (string.IsNullOrEmpty(sasToken))
+                {
+                    throw new ArgumentException($"The environment variable {Constants.OryxSdkStagingPrivateSasTokenEnvVar} " +
+                        $"must be provided in order to access {Constants.OryxSdkStagingStorageBaseUrl}");
+                }
+
+                sdkVersionsUrl += "&" + sasToken;
+            }
+
+            this.oryxPythonSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(sdkVersionsUrl);
             this.pythonMinReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMinReleaseVersionEnvVar);
             this.pythonMaxReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMaxReleaseVersionEnvVar);
             var blockedVersions = Environment.GetEnvironmentVariable(PythonConstants.PythonBlockedVersionsEnvVar);
@@ -84,9 +101,6 @@ namespace Microsoft.Oryx.Automation.Python
             var response = await this.httpService.GetDataAsync(PythonConstants.PythonReleaseUrl);
             var releases = JsonConvert.DeserializeObject<List<Release>>(response);
 
-            HashSet<string> oryxSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(
-                this.oryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl);
-
             var pythonVersions = new List<PythonVersion>();
             foreach (var release in releases)
             {
@@ -98,7 +112,7 @@ namespace Microsoft.Oryx.Automation.Python
                         minVersion: this.pythonMinReleaseVersion,
                         maxVersion: this.pythonMaxReleaseVersion,
                         this.pythonBlockedVersions) &&
-                    !oryxSdkVersions.Contains(newVersion))
+                    !this.oryxPythonSdkVersions.Contains(newVersion))
                 {
                     pythonVersions.Add(new PythonVersion
                     {
