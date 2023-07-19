@@ -47,7 +47,7 @@ The following process is applied for each build.
    (`npm install` or `yarn install`) that Oryx originally included.
 3. Run custom run build command if specified by `RUN_BUILD_COMMAND`. This will not skip package install commands.
 4. Run `npm install`, which includes npm `preinstall` and `postinstall` scripts and also installs devDependencies.
-   The `--unsafe-perm` flag is added to the NPM install command, as well as the `--production` flag if some production
+   The `--production` flag is added to the NPM install command if some production
    dependencies are detected in the `package.json` file and if the
    [`PRUNE_DEV_DEPENDENCIES`](https://github.com/microsoft/Oryx/blob/main/doc/configuration.md) setting is set.
 5. Run `npm run build` if a `build` script is specified in your `package.json`.
