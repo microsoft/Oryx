@@ -28,9 +28,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add("14.19.1", imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add("16.14.2", imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add("12.22.12", imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add(FinalStretchVersions.FinalStretchNode14Version, imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add(FinalStretchVersions.FinalStretchNode16Version, imageTestHelper.GetGitHubActionsBuildImage());
                 return data;
             }
         }
@@ -41,9 +41,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliImage());
-                data.Add("14.19.1", imageTestHelper.GetCliImage());
-                data.Add("16.14.2", imageTestHelper.GetCliImage());
+                data.Add("12.22.12", imageTestHelper.GetCliImage());
+                data.Add(FinalStretchVersions.FinalStretchNode14Version, imageTestHelper.GetCliImage());
+                data.Add(FinalStretchVersions.FinalStretchNode16Version, imageTestHelper.GetCliImage());
                 return data;
             }
         }
@@ -54,12 +54,39 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
-                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
-                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
+                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
+                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
                 return data;
             }
         }
+
+        public static TheoryData<string, string> ImageNameDataCliBullseye
+        {
+            get
+            {
+                var data = new TheoryData<string, string>();
+                var imageTestHelper = new ImageTestHelper();
+                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+                return data;
+            }
+        }
+
+        public static TheoryData<string, string> ImageNameDataCliBuilderBullseye
+        {
+            get
+            {
+                var data = new TheoryData<string, string>();
+                var imageTestHelper = new ImageTestHelper();
+                data.Add("12.22.11", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
+                data.Add("14.19.1", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
+                data.Add("16.14.2", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
+                return data;
+            }
+        }
+
 
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-stretch")]
@@ -69,7 +96,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [Trait("build-image", "cli-debian-stretch")]
         [MemberData(nameof(ImageNameDataCli))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCli(string version, string buildImageName)
@@ -85,6 +112,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }
 
+        [Theory, Trait("category", "cli-bullseye")]
+        [Trait("build-image", "cli-debian-bullseye")]
+        [MemberData(nameof(ImageNameDataCliBullseye))]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBullseye(string version, string buildImageName)
+        {
+            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
+        }
+
+        [Theory, Trait("category", "cli-builder-bullseye")]
+        [MemberData(nameof(ImageNameDataCliBuilderBullseye))]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBuilderBullseye(string version, string buildImageName)
+        {
+            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
+        }
+
         private void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(string version, string buildImageName)
         {
             // Arrange
@@ -94,7 +136,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version} --debug")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
@@ -131,7 +172,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/webfrontend-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.NodeDefaultVersion, defaultVersion)
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --debug")
                 .AddCommand($"cat {manifestFile}")
@@ -168,7 +208,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
@@ -208,7 +247,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var buildCmd = $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {NodeConstants.PlatformName} --platform-version {version}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(buildCmd)
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
@@ -253,7 +291,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 $"--platform {NodeConstants.PlatformName} --platform-version {version} " +
                 $"--dynamic-install-root-dir {expectedDynamicInstallRootDir}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(buildCmd)
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck(
@@ -291,7 +328,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version} --debug")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
@@ -341,7 +377,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version} --debug")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
@@ -379,7 +414,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/webfrontend-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version} --debug")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
                 .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")

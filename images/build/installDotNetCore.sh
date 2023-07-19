@@ -10,10 +10,15 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $CURRENT_DIR/../__common.sh
 
 sdkStorageAccountUrl="$ORYX_SDK_STORAGE_BASE_URL"
+sasToken=""
 if [ -z "$sdkStorageAccountUrl" ]; then
-    sdkStorageAccountUrl=$DEV_SDK_STORAGE_BASE_URL
+    sdkStorageAccountUrl=$PRIVATE_STAGING_SDK_STORAGE_BASE_URL
 fi
-
+if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
+    set +x
+    sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
+    set -x
+fi
 echo
 echo "Installing .NET Core SDK $DOTNET_SDK_VER from $sdkStorageAccountUrl ..."
 echo
@@ -32,7 +37,9 @@ else
     fileName="dotnet-$debianFlavor-$DOTNET_SDK_VER.tar.gz"
 fi
 
-downloadFileAndVerifyChecksum dotnet $DOTNET_SDK_VER $fileName $sdkStorageAccountUrl
+set +x
+downloadFileAndVerifyChecksum dotnet $DOTNET_SDK_VER $fileName $sdkStorageAccountUrl $sasToken
+set -x
 
 globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
 
@@ -63,17 +70,3 @@ then
     rm -rf warmup
 fi
 
-if [ "$INSTALL_TOOLS" == "true" ]; then
-    toolsDir="$SDK_DIR/$DOTNET_SDK_VER/tools"
-    mkdir -p "$toolsDir"
-    dotnet tool install --tool-path "$toolsDir" dotnet-sos
-    chmod +x "$toolsDir/dotnet-sos"
-    dotnet tool install --tool-path "$toolsDir" dotnet-trace
-    chmod +x "$toolsDir/dotnet-trace"
-    dotnet tool install --tool-path "$toolsDir" dotnet-dump
-    chmod +x "$toolsDir/dotnet-dump"
-    dotnet tool install --tool-path "$toolsDir" dotnet-counters
-    chmod +x "$toolsDir/dotnet-counters"
-    dotnet tool install --tool-path "$toolsDir" dotnet-monitor --version 6.*
-    chmod +x "$toolsDir/dotnet-monitor"
-fi

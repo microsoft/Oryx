@@ -7,9 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
@@ -75,12 +77,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         /// </summary>
         internal const string UniversalWheel = "universal";
 
+        /// <summary>
+        /// The pip upgrade command
+        /// </summary>
+        internal const string PipUpgradeFlag = "--upgrade";
+
         private readonly BuildScriptGeneratorOptions commonOptions;
         private readonly PythonScriptGeneratorOptions pythonScriptGeneratorOptions;
         private readonly IPythonVersionProvider versionProvider;
         private readonly ILogger<PythonPlatform> logger;
         private readonly IPythonPlatformDetector detector;
         private readonly PythonPlatformInstaller platformInstaller;
+        private readonly TelemetryClient telemetryClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PythonPlatform"/> class.
@@ -97,7 +105,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             IPythonVersionProvider versionProvider,
             ILogger<PythonPlatform> logger,
             IPythonPlatformDetector detector,
-            PythonPlatformInstaller platformInstaller)
+            PythonPlatformInstaller platformInstaller,
+            TelemetryClient telemetryClient)
         {
             this.commonOptions = commonOptions.Value;
             this.pythonScriptGeneratorOptions = pythonScriptGeneratorOptions.Value;
@@ -105,6 +114,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             this.logger = logger;
             this.detector = detector;
             this.platformInstaller = platformInstaller;
+            this.telemetryClient = telemetryClient;
         }
 
         /// <inheritdoc/>
@@ -175,6 +185,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 Path.Combine(context.SourceRepo.RootPath, pythonBuildCommandsFile) :
                 Path.Combine(this.commonOptions.ManifestDir, pythonBuildCommandsFile);
             manifestFileProperties[nameof(pythonBuildCommandsFile)] = pythonBuildCommandsFile;
+
+            // If OryxDisablePipUpgrade is true then we do not upgrade pip hence is set to the empty string.
+            var pipUpgrade = this.commonOptions.OryxDisablePipUpgrade ? string.Empty : PipUpgradeFlag;
 
             if (!isPythonPackageCommandEnabled && !string.IsNullOrWhiteSpace(pythonPackageWheelType))
             {
@@ -270,12 +283,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
                 pythonVersion: pythonVersion,
                 pythonBuildCommandsFileName: pythonBuildCommandsFile,
                 pythonPackageWheelProperty: pythonPackageWheelType,
-                customRequirementsTxtPath: customRequirementsTxtPath);
+                customRequirementsTxtPath: customRequirementsTxtPath,
+                pipUpgradeFlag: pipUpgrade);
 
             string script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonSnippet,
                 scriptProps,
-                this.logger);
+                this.logger,
+                this.telemetryClient);
 
             return new BuildScriptSnippet()
             {
@@ -579,7 +594,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             var script = TemplateHelper.Render(
                 TemplateHelper.TemplateResource.PythonJupyterNotebookSnippet,
                 scriptProperties,
-                this.logger);
+                this.logger,
+                this.telemetryClient);
 
             return new BuildScriptSnippet
             {
@@ -618,7 +634,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 var deps = repo.ReadAllLines(requirementsTxtPath)
                     .Where(line => !line.TrimStart().StartsWith("#"));
-                this.logger.LogDependencies(PythonConstants.PlatformName, pythonVersion, deps);
+                this.telemetryClient.LogDependencies(PythonConstants.PlatformName, pythonVersion, deps);
             }
             catch (Exception exc)
             {

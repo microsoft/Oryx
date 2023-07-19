@@ -7,9 +7,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
@@ -20,9 +22,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultDockerfileGenerator : IDockerfileGenerator
     {
+        private const string DefaultCliImageTag = "debian-buster-stable";
         private const string DynamicRuntimeImageTag = "dynamic";
 
-        private readonly Dictionary<string, List<string>> supportedRuntimeVersions = new Dictionary<string, List<string>>()
+        private readonly Dictionary<string, Dictionary<string, string>> supportedRuntimeVersions = new Dictionary<string, Dictionary<string, string>>()
         {
             { "dotnetcore", DotNetCoreSdkVersions.RuntimeVersions },
             { "node", NodeVersions.RuntimeVersions },
@@ -34,24 +37,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly ICompatiblePlatformDetector platformDetector;
         private readonly ILogger<DefaultDockerfileGenerator> logger;
         private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly TelemetryClient telemetryClient;
 
         public DefaultDockerfileGenerator(
             ICompatiblePlatformDetector platformDetector,
             ILogger<DefaultDockerfileGenerator> logger,
-            IOptions<BuildScriptGeneratorOptions> commonOptions)
+            IOptions<BuildScriptGeneratorOptions> commonOptions,
+            TelemetryClient telemetryClient)
         {
             this.platformDetector = platformDetector;
             this.logger = logger;
             this.commonOptions = commonOptions.Value;
+            this.telemetryClient = telemetryClient;
         }
 
         public string GenerateDockerfile(DockerfileContext ctx)
         {
-            using (var timedEvent = this.logger.LogTimedEvent("GenerateDockerfile"))
+            using (var timedEvent = this.telemetryClient.LogTimedEvent("GenerateDockerfile"))
             {
                 var createScriptArguments = new Dictionary<string, string>();
                 var dockerfileBuildImageName = "cli";
-                var dockerfileBuildImageTag = "stable";
+                var dockerfileBuildImageTag = DefaultCliImageTag;
 
                 if (!string.IsNullOrEmpty(this.commonOptions.BuildImage))
                 {
@@ -102,17 +108,33 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     }
 
                     // If the runtime platform version wasn't previously provided, see if we can detect one from the current detected platform.
-                    // Note: we first need to ensure that the current detected platform is the same as the runtime platform name previously set or pvodied.
+                    // Note: we first need to ensure that the current detected platform is the same as the runtime platform name previously set or provided.
                     if (!string.IsNullOrEmpty(dockerfileRuntimeImage) && dockerfileRuntimeImage.Equals(detectedRuntimeName, StringComparison.OrdinalIgnoreCase) &&
                          string.IsNullOrEmpty(dockerfileRuntimeImageTag))
                     {
-                        dockerfileRuntimeImageTag = this.ConvertToRuntimeVersion(dockerfileRuntimeImage, platformDetectorResult.PlatformVersion);
+                        // Only try to get the runtime tag if the provided/detected platform has supported runtime images.
+                        if (this.supportedRuntimeVersions.ContainsKey(dockerfileRuntimeImage))
+                        {
+                            dockerfileRuntimeImageTag = this.ConvertToRuntimeVersion(dockerfileRuntimeImage, platformDetectorResult.PlatformVersion);
+                        }
                     }
 
                     // If the runtime image has been set manually or by the platform detection result, stop searching.
                     if (!string.IsNullOrEmpty(dockerfileRuntimeImage))
                     {
                         break;
+                    }
+                }
+
+                // If the user didn't provided a custom build image, attempt to update the build image tag to
+                // accurately reflect the OS flavor used by the provided/found for the runtime image.
+                if (string.IsNullOrEmpty(this.commonOptions.BuildImage) && this.supportedRuntimeVersions.ContainsKey(dockerfileRuntimeImage))
+                {
+                    var runtimeDictionary = this.supportedRuntimeVersions[dockerfileRuntimeImage];
+                    if (runtimeDictionary.ContainsKey(dockerfileRuntimeImageTag))
+                    {
+                        var osFlavor = runtimeDictionary[dockerfileRuntimeImageTag];
+                        dockerfileBuildImageTag = $"{osFlavor}-stable";
                     }
                 }
 
@@ -128,10 +150,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     CreateScriptArguments = formattedCreateScriptArguments,
                 };
 
+                this.ValidateDockerfileImages(properties);
+
                 var generatedDockerfile = TemplateHelper.Render(
                     TemplateHelper.TemplateResource.Dockerfile,
                     properties,
-                    this.logger);
+                    this.logger,
+                    this.telemetryClient);
 
                 // Remove the Container Registry Analysis snippet, if it exists in the template.
                 var pattern = "# DisableDockerDetector \".*?\"\n";
@@ -171,7 +196,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
-        /// When looking for a satifying runtime version, format it so that tags '8' and '8.1' are treated as
+        /// When looking for a satisfying runtime version, format it so that tags '8' and '8.1' are treated as
         /// '8.99999.99999' and '8.1.99999', respectively. This allows the tags to be treated as the "maximum
         /// version within the provided major or minor version that Oryx supports" during version comparison.
         /// </summary>
@@ -183,7 +208,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
 
         /// <summary>
-        /// When looking for a satifying runtime version, format it so that tags '8' and '8.1' are treated as
+        /// When looking for a satisfying runtime version, format it so that tags '8' and '8.1' are treated as
         /// '8.99999.99999' and '8.1.99999', respectively. This allows the tags to be treated as the "maximum
         /// version within the provided major or minor version that Oryx supports" during version comparison.
         /// </summary>
@@ -214,9 +239,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <returns>The converted platform runtime image version.</returns>
         private string ConvertToRuntimeVersion(string platformName, string platformVersion)
         {
-            if (!string.IsNullOrEmpty(platformName))
+            if (!string.IsNullOrEmpty(platformName) && this.supportedRuntimeVersions.ContainsKey(platformName))
             {
-                var runtimeVersions = this.supportedRuntimeVersions[platformName];
+                var runtimeVersions = this.supportedRuntimeVersions[platformName].Keys
+                    .Where(v => !string.Equals(v, DynamicRuntimeImageTag, StringComparison.OrdinalIgnoreCase));
                 if (runtimeVersions == null || !runtimeVersions.Any())
                 {
                     return DynamicRuntimeImageTag;
@@ -254,6 +280,48 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private IDictionary<IProgrammingPlatform, PlatformDetectorResult> GetCompatiblePlatforms(DockerfileContext ctx)
         {
             return this.platformDetector.GetCompatiblePlatforms(ctx);
+        }
+
+        private void ValidateDockerfileImages(DockerfileProperties dockerfileProperties)
+        {
+            if (string.IsNullOrEmpty(dockerfileProperties.BuildImageName))
+            {
+                this.LogAndThrowInvalidDockerfileImageException(
+                    "Provided build image name parsed from the provided --build-image argument is empty. " +
+                    "Please provide a valid value for --build-image, or remove the argument to use the default " +
+                    "'cli:stable' build image from mcr.microsoft.com/oryx.");
+            }
+
+            if (string.IsNullOrEmpty(dockerfileProperties.BuildImageTag))
+            {
+                this.LogAndThrowInvalidDockerfileImageException(
+                    "Provided build image tag parsed from the provided --build-image argument is empty. " +
+                    "Please provide a valid value for --build-image, or remove the argument to use the default " +
+                    "'cli:stable' build image from mcr.microsoft.com/oryx.");
+            }
+
+            if (string.IsNullOrEmpty(dockerfileProperties.RuntimeImageName))
+            {
+                this.LogAndThrowInvalidDockerfileImageException(
+                    "Either the value provided to the --runtime-platform argument is empty, or the platform " +
+                    "discovered by Oryx does not have any available or supported runtime images. Please view the following " +
+                    "document for more information on runtimes supported by Oryx: https://aka.ms/oryx-runtime-images");
+            }
+
+            if (string.IsNullOrEmpty(dockerfileProperties.RuntimeImageTag))
+            {
+                this.LogAndThrowInvalidDockerfileImageException(
+                    "Either the value provided to the --runtime-platform-version argument is empty, or the version " +
+                    "discovered by Oryx is not available or supported for the given platform. Please view the following " +
+                    "document for more information on runtime versions supported by Oryx: https://aka.ms/oryx-runtime-images");
+            }
+        }
+
+        private void LogAndThrowInvalidDockerfileImageException(string message)
+        {
+            var exc = new InvalidDockerfileImageException(message);
+            this.logger.LogError(exc, message);
+            throw exc;
         }
     }
 }

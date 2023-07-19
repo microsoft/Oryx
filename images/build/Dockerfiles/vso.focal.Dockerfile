@@ -41,6 +41,19 @@ RUN apt-get update \
         sqlite3 \
         libsqlite3-dev \
         software-properties-common \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+        python3-dev \
+        libffi-dev \
+        gdb \
+        lcov \
+        pkg-config \
+        libgdbm-dev \
+        liblzma-dev \
+        libreadline6-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && apt-get update \
@@ -63,7 +76,7 @@ COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tm
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
  
 FROM main AS final
-ARG AI_KEY
+ARG AI_CONNECTION_STRING
 ARG SDK_STORAGE_BASE_URL_VALUE
 
 # add an environment variable to determine debian_flavor
@@ -81,7 +94,9 @@ COPY --from=intermediate /opt /opt
 # Even though this adds a new docker layer we are doing this 
 # because we want to avoid duplication (which is always error-prone)
 
-RUN set -ex \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
@@ -188,7 +203,8 @@ RUN set -ex \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && rm -f /etc/apt/sources.list.d/buster.list
+    && rm -f /etc/apt/sources.list.d/buster.list \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts::/opt/java/lts/bin:/opt/maven/lts/bin:/opt/ruby/lts/bin"
 
@@ -201,7 +217,10 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     DYNAMIC_INSTALL_ROOT_DIR="/opt"
 
 # Now adding remaining of VSO platform features
-RUN buildDir="/opt/tmp/build" \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -254,7 +273,8 @@ RUN buildDir="/opt/tmp/build" \
     && php go-pear.phar \
     && pecl install -f libsodium \
     && echo "vso-focal" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype\
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 # install few more tools for VSO
 RUN gem install bundler rake ruby-debug-ide debase jekyll
@@ -280,7 +300,7 @@ ENV NUGET_XMLDOC_MODE="skip" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_PREFER_USER_INSTALLED_SDKS=true \
-    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
+    ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING} \
     PYTHONIOENCODING="UTF-8" \
     LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \

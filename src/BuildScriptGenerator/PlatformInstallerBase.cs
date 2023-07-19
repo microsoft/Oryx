@@ -46,14 +46,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendAptGetInstallPackages(
                 "make",
                 "unzip",
-                "build-essential",
                 "libpq-dev",
                 "moreutils",
                 "python3-pip",
                 "swig",
-                "tk-dev",
                 "unixodbc-dev",
-                "uuid-dev");
+                "build-essential", // Adding additional python 3 packages to support all optional python modules: https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+                "gdb",
+                "lcov",
+                "pkg-config",
+                "libbz2-dev",
+                "libffi-dev",
+                "libgdbm-dev",
+                "liblzma-dev",
+                "libncurses5-dev",
+                "libreadline6-dev",
+                "libsqlite3-dev",
+                "libssl-dev",
+                "lzma",
+                "lzma-dev",
+                "tk-dev",
+                "uuid-dev",
+                "zlib1g-dev");
 
             // Install Python 3.8
             stringBuilder.AppendLine("tmpDir=\"/opt/tmp\"");
@@ -72,6 +86,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendLine("ln -s $PYTHON38_VERSION 3.8");
             stringBuilder.AppendLine("ln -s $PYTHON38_VERSION latest");
             stringBuilder.AppendLine("ln -s $PYTHON38_VERSION stable");
+        }
+
+        public static void InstallGolangToolingAndLanguage(StringBuilder stringBuilder)
+        {
+            stringBuilder.AppendLine("echo 'Installing golang tooling and language...'");
+            stringBuilder.AppendLine("BUILD_DIR=\"/opt/tmp/build\"");
+            stringBuilder.AppendLine("IMAGES_DIR=\"/opt/tmp/images\"");
+            stringBuilder.AppendLine(". ${BUILD_DIR}/__goVersions.sh");
+            stringBuilder.AppendLine("echo \"${GO_VERSION}\"");
+            stringBuilder.AppendLine("downloadedFileName=\"go${GO_VERSION}.linux-amd64.tar.gz\"");
+            stringBuilder.AppendLine("echo \"${downloadedFileName}\"");
+            stringBuilder.AppendLine("${IMAGES_DIR}/retry.sh \"curl -SLsO https://golang.org/dl/$downloadedFileName\"");
+            stringBuilder.AppendLine("mkdir -p /usr/local");
+            stringBuilder.AppendLine("gzip -d $downloadedFileName");
+            stringBuilder.AppendLine("tar -xf \"go${GO_VERSION}.linux-amd64.tar\" -C /usr/local");
+            stringBuilder.AppendLine("rm -rf $downloadedFileName");
         }
 
         public virtual void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
@@ -97,7 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var snippet = new StringBuilder();
             snippet
                 .AppendLine()
-                .AppendLine($"if grep -q cli \"/opt/oryx/.imagetype\"; then")
+                .AppendLine($"if grep -q -e '^cli$' \"/opt/oryx/.imagetype\" -e '^jamstack$' \"/opt/oryx/.imagetype\"; then")
                 .AppendCommonSkeletonDepenendenciesInstallation()
                 .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
                 .AppendLine("fi")
@@ -114,7 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo \"Detected image debian flavor: $DEBIAN_FLAVOR.\"")
                 .AppendLine($"if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")
                 .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("else")
                 .AppendLine(

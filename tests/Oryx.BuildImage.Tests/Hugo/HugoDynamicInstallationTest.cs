@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetGitHubActionsBuildImage());
         }
 
-        [Fact, Trait("category", "cli")]
+        [Fact, Trait("category", "cli-stretch")]
         public void PipelineTestInvocationCli()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -47,7 +47,21 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationCliBuster()
         {
             var imageTestHelper = new ImageTestHelper();
-            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository));
+            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
+        }
+
+        [Fact, Trait("category", "cli-bullseye")]
+        public void PipelineTestInvocationCliBullseye()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
+        }
+
+        [Fact, Trait("category", "cli-builder-bullseye")]
+        public void PipelineTestInvocationCliBuilderBullseye()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
         }
 
         private void InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(string imageName)
@@ -103,7 +117,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var buildCmd = $"{appDir} --platform {HugoConstants.PlatformName} --platform-version {hugoVersion} -o {appOutputDir}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(buildCmd)
                 .AddFileExistsCheck(sentinelFile)
@@ -115,7 +128,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -145,7 +158,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("HUGO_VERSION", hugoVersion)
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
@@ -188,7 +200,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("HUGO_VERSION", hugoVersion)
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} " +
@@ -224,13 +235,25 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var expectedText = GoVersions.GoVersion;
+            var appName = SampleAppName;
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddCommand("go version")
+                .AddBuildCommand(
+                $"{appDir} -o {appOutputDir}")
                 .ToString();
 
             // Act
-            var image = _imageHelper.GetAzureFunctionsJamStackBuildImage();
-            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
+            var imageName = _imageHelper.GetAzureFunctionsJamStackBuildImage();
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = imageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
             // Assert
             RunAsserts(

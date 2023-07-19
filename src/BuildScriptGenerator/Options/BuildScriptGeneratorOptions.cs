@@ -90,5 +90,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string CallerId { get; set; }
 
         public string ImageType { get; set; }
+
+        public bool OryxDisablePipUpgrade { get; set; }
     }
 }

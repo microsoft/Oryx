@@ -8,7 +8,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     using System.Collections.Generic;
     using System.IO;
     using JetBrains.Annotations;
+    using Microsoft.ApplicationInsights;
     using Microsoft.Extensions.Logging;
+    using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
     using Scriban;
     using Scriban.Runtime;
 
@@ -16,7 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private static readonly MemberRenamerDelegate NoOpRenamer = member => member.Name;
 
-        public static string Render(TemplateResource templateResource, [CanBeNull] object model, ILogger logger = null)
+        public static string Render(TemplateResource templateResource, [CanBeNull] object model, ILogger logger = null, TelemetryClient telemetryClient = null)
         {
             var assembly = typeof(IBuildScriptGenerator).Assembly;
             using (var stream = assembly.GetManifestResourceStream(templateResource.Name))
@@ -30,7 +32,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
 
                 using (TextReader tplReader = new StreamReader(stream))
-                using (logger?.LogTimedEvent(
+                using (telemetryClient?.LogTimedEvent(
                     "RenderTemplate",
                     new Dictionary<string, string> { { "templateName", templateResource.Name } }))
                 {

@@ -3,31 +3,53 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
+using System.CommandLine;
+using System.CommandLine.IO;
 using System.Linq;
 using System.Reflection;
-using McMaster.Extensions.CommandLineUtils;
+using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command("oryx", Description = "Generates and runs build scripts for multiple platforms.")]
-    [Subcommand(typeof(BuildCommand))]
-    [Subcommand(typeof(PlatformsCommand))]
-    [Subcommand(typeof(BuildScriptCommand))]
-    [Subcommand(typeof(RunScriptCommand))]
-    [Subcommand(typeof(ExecCommand))]
-    [Subcommand(typeof(DetectCommand))]
-    [Subcommand(typeof(BuildpackDetectCommand))]
-    [Subcommand(typeof(BuildpackBuildCommand))]
-    [Subcommand(typeof(DockerfileCommand))]
-    [Subcommand(typeof(PrepareEnvironmentCommand))]
     internal class Program
     {
         public const string GitCommit = "GitCommit";
         public const string ReleaseTagName = "RELEASE_TAG_NAME";
 
-        [Option(CommandOptionType.NoValue, Description = "Print version information.")]
-        public bool Version { get; set; }
+        internal static async Task<int> Main(string[] args)
+        {
+            var console = new SystemConsole();
+            var rootCommand = new RootCommand();
+            rootCommand.Name = "oryx";
+            rootCommand.Description = "Generates and runs build scripts for multiple platforms.";
+
+            var infoOption = new Option<bool>(aliases: new[] { "-i", "--info" }, "Print more detailed version information.");
+            rootCommand.AddCommand(BuildCommand.Export(console));
+            rootCommand.AddCommand(BuildScriptCommand.Export(console));
+            rootCommand.AddCommand(BuildpackBuildCommand.Export(console));
+            rootCommand.AddCommand(BuildpackDetectCommand.Export(console));
+            rootCommand.AddCommand(DetectCommand.Export(console));
+            rootCommand.AddCommand(DockerfileCommand.Export(console));
+            rootCommand.AddCommand(ExecCommand.Export(console));
+            rootCommand.AddCommand(PlatformsCommand.Export(console));
+            rootCommand.AddCommand(PrepareEnvironmentCommand.Export(console));
+            rootCommand.AddCommand(RunScriptCommand.Export(console));
+            rootCommand.AddCommand(TelemetryCommand.Export(console));
+            rootCommand.AddOption(infoOption);
+
+            rootCommand.SetHandler(
+                (infoSetter) =>
+            {
+                var returnCode = OnExecute(console, infoSetter);
+                return Task.FromResult(returnCode);
+            },
+                infoOption);
+
+            // rootCommand.AddGlobalOption(versionOption);
+            return await rootCommand.InvokeAsync(args, console);
+        }
 
         internal static string GetVersion()
         {
@@ -54,23 +76,17 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             return null;
         }
 
-        internal int OnExecute(CommandLineApplication app, IConsole console)
+        internal static int OnExecute(IConsole console, bool setInfo)
         {
-            if (this.Version)
+            if (setInfo)
             {
                 var version = GetVersion();
                 var commit = GetMetadataValue(GitCommit);
                 var releaseTagName = GetMetadataValue(ReleaseTagName);
                 console.WriteLine($"Version: {version}, Commit: {commit}, ReleaseTagName: {releaseTagName}");
-
-                return ProcessConstants.ExitSuccess;
             }
-
-            app.ShowHelp();
 
             return ProcessConstants.ExitSuccess;
         }
-
-        private static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
     }
 }

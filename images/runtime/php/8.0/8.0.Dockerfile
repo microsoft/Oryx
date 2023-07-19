@@ -14,7 +14,7 @@ RUN set -eux \
 	&& curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
 	&& curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list \
 	&& apt-get update \
-	&& ACCEPT_EULA=Y apt-get install -y msodbcsql17 msodbcsql18 unixodbc-dev
+	&& ACCEPT_EULA=Y apt-get install -y msodbcsql17 msodbcsql18=18.1.2.1-1 odbcinst1debian2=2.3.7 odbcinst=2.3.7 unixodbc=2.3.7 unixodbc-dev=2.3.7
 
 ENV PHP_INI_DIR /usr/local/etc/php
 RUN set -eux; \
@@ -101,9 +101,9 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
 ENV GPG_KEYS 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F 2C16C765DBE54A088130F1BC4B9B5F600B55F3B4
 
-ENV PHP_VERSION 8.0.25
-ENV PHP_URL="https://www.php.net/get/php-8.0.25.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-8.0.25.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="a291b71d0498707fc5514eb5b9513e88f0f1d4890bcdefd67282ded8a2bfb941" PHP_MD5=""
+ENV PHP_VERSION 8.0.29
+ENV PHP_URL="https://www.php.net/get/php-8.0.29.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-8.0.29.tar.xz.asc/from/this/mirror"
+ENV PHP_SHA256="14db2fbf26c07d0eb2c9fab25dbde7e27726a3e88452cca671f0896bbb683ca9" PHP_MD5=""
 
 RUN set -eux; \
 	\

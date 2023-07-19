@@ -10,8 +10,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class LoggingConstants
     {
-        public const string ApplicationInsightsInstrumentationKeyEnvironmentVariableName
-            = "ORYX_AI_INSTRUMENTATION_KEY";
+        public const string ApplicationInsightsConnectionStringKeyEnvironmentVariableName
+            = "ORYX_AI_CONNECTION_STRING";
 
         public const string OryxDisableTelemetryEnvironmentVariableName
             = "ORYX_DISABLE_TELEMETRY";

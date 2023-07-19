@@ -5,11 +5,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.EnvironmentVariables;
 using Microsoft.Extensions.Configuration.Ini;
@@ -212,7 +212,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var testConsole = new TestConsole();
 
             // Act
-            var exitCode = buildCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            var exitCode = buildCommand.OnExecute(testConsole);
 
             // Assert
             Assert.Equal(0, exitCode);

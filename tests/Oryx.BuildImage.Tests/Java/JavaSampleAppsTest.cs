@@ -33,7 +33,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [InlineData(ImageTestHelperConstants.CliRepository)]
         public void JavaSampleAppsTestsCli(string imageTag)
         {
@@ -44,8 +44,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli-buster")]
-        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterTag)]
         public void JavaSampleAppsTestsCliBuster(string imageTag)
+        {
+            BuildsMavenArcheTypeSample(imageTag);
+            BuildsMavenJ2EESample(imageTag);
+            BuildsMavenSimpleJavaApp(imageTag);
+            BuildsSpringBootSampleApp(imageTag);
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
+        public void JavaSampleAppsTestsCliBullseye(string imageTag)
         {
             BuildsMavenArcheTypeSample(imageTag);
             BuildsMavenJ2EESample(imageTag);
@@ -61,7 +71,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/target/classes/microsoft/oryx/App.class")
                 .ToString();
@@ -93,7 +102,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/ejbs/target/classes/META-INF/ejb-jar.xml")
                 .ToString();
@@ -125,7 +133,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/target/classes/microsoft/oryx/App.class")
                 .ToString();
@@ -157,7 +164,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/target/classes/com/example/demo/DemoApplication.class")
                 .ToString();

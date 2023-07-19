@@ -37,12 +37,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
             var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
-            var aIKey = ExtVarNames.UserAppInsightsKeyEnv;
+            var aiConnectionString
+                = ExtVarNames.UserAppInsightsConnectionStringEnv;
             var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             int containerDebugPort = 8080;
 
             var script = new ShellScriptBuilder()
-                .AddCommand($"export {aIKey}=asdas")
+                .AddCommand($"export {aiConnectionString}={TestConstants.AppInsightsConnectionString}")
                 .AddCommand($"export {aIEnabled}=TRUE")
                 .AddCommand($"cd {appDir}")
                 .AddCommand("npm install")

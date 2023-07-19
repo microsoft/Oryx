@@ -1,6 +1,3 @@
-# syntax=docker/dockerfile:1.3
-# the above line allows this dockerfile to use the secrets fucntionality
-
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS tools-install

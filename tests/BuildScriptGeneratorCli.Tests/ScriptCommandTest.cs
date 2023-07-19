@@ -5,7 +5,7 @@
 
 using System;
 using System.IO;
-using McMaster.Extensions.CommandLineUtils;
+using System.CommandLine;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             var testConsole = new TestConsole();
 
             // Act
-            var exitCode = scriptCommand.OnExecute(new CommandLineApplication(testConsole), testConsole);
+            var exitCode = scriptCommand.OnExecute(testConsole);
 
             // Assert
             Assert.NotEqual(0, exitCode);

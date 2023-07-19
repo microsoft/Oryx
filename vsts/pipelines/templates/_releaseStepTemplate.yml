@@ -107,10 +107,17 @@ steps:
     scriptPath: ./vsts/scripts/tagCliImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 3.1.x'
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Pull and create release tags for Builder images'
   inputs:
-    version: 3.1.x
+    type: FilePath
+    scriptPath: ./vsts/scripts/tagBuilderImagesForRelease.sh
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 7.x'
+  inputs:
+    version: 7.x
 
 - task: ShellScript@2
   displayName: 'Test runtime images for pme staging registry'
@@ -154,6 +161,14 @@ steps:
     type: FilePath
     scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
     args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-cli-images-mcr.txt'
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+  displayName: 'Push builder images to PME staging ACR'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
+    args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-builder-images-mcr.txt'
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0

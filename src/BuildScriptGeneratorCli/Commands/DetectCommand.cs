@@ -6,38 +6,83 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.IO;
 using System.Data;
 using System.IO;
 using System.Linq;
-using McMaster.Extensions.CommandLineUtils;
+using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
+using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
+using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.Detector;
 using Newtonsoft.Json;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
-    [Command(Name, Description = "Detect all platforms and versions in the given app source directory.")]
     internal class DetectCommand : CommandBase
     {
         public const string Name = "detect";
+        public const string Description = "Detect all platforms and versions in the given app source directory.";
 
-        [Argument(0, Description = "The source directory. If no value is provided, the current directory is used.")]
-        [DirectoryExists]
+        public DetectCommand()
+        {
+        }
+
+        public DetectCommand(DetectCommandProperty input)
+        {
+            this.SourceDir = input.SourceDir;
+            this.OutputFormat = input.OutputFormat;
+            this.LogFilePath = input.LogPath;
+            this.DebugMode = input.DebugMode;
+        }
+
         public string SourceDir { get; set; }
 
-        [Option(
-            "-o|--output",
-            CommandOptionType.SingleValue,
-            Description = "Output the detected platform data in chosen format. " +
-            "Example: json, table. " +
-            "If not set, by default output will print out as a table. ")]
         public string OutputFormat { get; set; }
+
+        public static Command Export(IConsole console)
+        {
+            var sourceDirArgument = new Argument<string>(
+                name: OptionArgumentTemplates.SourceDir,
+                description: OptionArgumentTemplates.DetectSourceDirDescription,
+                getDefaultValue: () => Directory.GetCurrentDirectory());
+            var outputFormatOption = new Option<string>(
+                aliases: OptionArgumentTemplates.Output,
+                description: OptionArgumentTemplates.DetectOutputDescription);
+            var logFilePathOption = new Option<string>(OptionArgumentTemplates.Log, OptionArgumentTemplates.LogDescription);
+            var debugOption = new Option<bool>(OptionArgumentTemplates.Debug, OptionArgumentTemplates.DebugDescription);
+
+            var command = new Command(Name, Description)
+            {
+                sourceDirArgument,
+                outputFormatOption,
+                logFilePathOption,
+                debugOption,
+            };
+
+            command.SetHandler(
+                (prop) =>
+                {
+                    var detectCommand = new DetectCommand(prop);
+                    return Task.FromResult(detectCommand.OnExecute(console));
+                },
+                new DetectCommandBinder(
+                    sourceDir: sourceDirArgument,
+                    outputFormat: outputFormatOption,
+                    logPath: logFilePathOption,
+                    debugMode: debugOption));
+
+            return command;
+        }
 
         internal override int Execute(IServiceProvider serviceProvider, IConsole console)
         {
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
+            var telemetryClient = serviceProvider.GetRequiredService<TelemetryClient>();
             var logger = loggerFactory.CreateLogger<DetectCommand>();
             var sourceRepo = new LocalSourceRepo(this.SourceDir, loggerFactory);
             var ctx = new DetectorContext
@@ -47,7 +92,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
 
             var detector = serviceProvider.GetRequiredService<IDetector>();
             var detectedPlatformResults = detector.GetAllDetectedPlatforms(ctx);
-            using (var timedEvent = logger.LogTimedEvent("DetectCommand"))
+            using (var timedEvent = telemetryClient.LogTimedEvent("DetectCommand"))
             {
                 if (detectedPlatformResults == null || !detectedPlatformResults.Any())
                 {

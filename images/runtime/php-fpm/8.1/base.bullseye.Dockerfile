@@ -1,6 +1,6 @@
 FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-8.1
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.1.12
+ENV PHP_VERSION 8.1.18
 
 # An environment variable for oryx run-script to know the origin of php image so that
 # start-up command can be determined while creating run script
@@ -26,14 +26,16 @@ RUN nginx -t
 ENV NGINX_PORT 8080
 
 # Install common PHP extensions
-RUN apt-get update \
+# TEMPORARY: Holding odbc related packages from upgrading.
+RUN apt-mark hold msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
+    && apt-get update \
     && apt-get upgrade -y \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
     && ln -s /usr/lib/x86_64-linux-gnu/liblber.so /usr/lib/liblber.so \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.* ]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.*  || $PHP_VERSION == 8.2.* ]]; then \
 		apt-get update \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends apache2-dev \
@@ -96,7 +98,7 @@ RUN set -eux; \
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.* ]]; then \
+    if [[ $PHP_VERSION == 8.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \

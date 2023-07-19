@@ -38,7 +38,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
@@ -53,7 +52,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 sampleApp,
                 _output,
                 new DockerVolume[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(OsTypes.DebianBuster),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster),
                 "/bin/sh",
                 new[]
                 {

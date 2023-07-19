@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
+using System.Linq;
 using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Tests.Common
@@ -46,9 +47,10 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _buildRepository = ImageTestHelperConstants.BuildRepository;
         private const string _packRepository = ImageTestHelperConstants.PackRepository;
         private const string _cliRepository = ImageTestHelperConstants.CliRepository;
-        private const string _cliBusterRepository = ImageTestHelperConstants.CliBusterRepository;
         private const string _cliStretchTag = ImageTestHelperConstants.CliStretchTag;
         private const string _cliBusterTag = ImageTestHelperConstants.CliBusterTag;
+        private const string _cliBullseyeTag = ImageTestHelperConstants.CliBullseyeTag;
+        private const string _cliBuilderBullseyeTag = ImageTestHelperConstants.CliBuilderBullseyeTag;
         private const string _latestTag = ImageTestHelperConstants.LatestStretchTag;
         private const string _ltsVersionsStretch = ImageTestHelperConstants.LtsVersionsStretch;
         private const string _ltsVersionsBuster = ImageTestHelperConstants.LtsVersionsBuster;
@@ -245,9 +247,17 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetCliImage(_cliRepository);
             }
-            else if (string.Equals(tag, _cliBusterRepository))
+            else if (string.Equals(tag, _cliBusterTag))
             {
-                return GetCliImage(_cliBusterRepository);
+                return GetCliImage(_cliBusterTag);
+            }
+            else if(string.Equals(tag, _cliBullseyeTag))
+            {
+                return GetCliImage(_cliBullseyeTag);
+            }
+            else if(string.Equals(tag, _cliBuilderBullseyeTag))
+            {
+                return GetCliBuilderImage(_cliBuilderBullseyeTag);
             }
             else if (string.Equals(tag, _fullStretch))
             {
@@ -388,12 +398,33 @@ namespace Microsoft.Oryx.Tests.Common
         public string GetCliImage(string debianFlavor = null)
         {
             if (!string.IsNullOrEmpty(debianFlavor)
-                && string.Equals(debianFlavor.ToLower(), _cliBusterRepository))
+                && string.Equals(debianFlavor.ToLower(), _cliBusterTag))
             {
-                return $"{_repoPrefix}/{_cliBusterRepository}:{_cliBusterTag}{_tagSuffix}";
+                return $"{_repoPrefix}/{_cliRepository}:{_cliBusterTag}{_tagSuffix}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _cliBullseyeTag))
+            {
+                return $"{_repoPrefix}/{_cliRepository}:{_cliBullseyeTag}{_tagSuffix}";
             }
 
             return $"{_repoPrefix}/{_cliRepository}:{_cliStretchTag}{_tagSuffix}";
+        }
+
+        /// <summary>
+        /// Constructs a 'cli' image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the
+        /// base set by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment
+        /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
+        /// </summary>
+        /// <returns>A 'cli builder' image that can be pulled for testing.</returns>
+        public string GetCliBuilderImage(string imageTagPrefix = null)
+        {
+            if (!string.IsNullOrEmpty(imageTagPrefix)
+                && string.Equals(imageTagPrefix.ToLower(), _cliBuilderBullseyeTag))
+            {
+                return $"{_repoPrefix}/{_cliRepository}:{_cliBuilderBullseyeTag}{_tagSuffix}";
+            }
+
+            throw new ArgumentException($"Could not find cli builder image with image tag prefix '{imageTagPrefix}'.");
         }
 
         private string GetTestTag()
@@ -431,61 +462,25 @@ namespace Microsoft.Oryx.Tests.Common
         {
             {
                 DotNetCoreConstants.RuntimePlatformName,
-                new Dictionary<string, string>
-                {
-                    { "3.0", "debian-buster" },
-                    { "3.1", "debian-bullseye" },
-                    { "5.0", "debian-buster" },
-                    { "6.0", "debian-buster" },
-                    { "7.0", "debian-buster" },
-                    { "dynamic", "debian-buster" },
-                }
+                DotNetCoreSdkVersions.RuntimeVersions
             },
             {
                 NodeConstants.NodeToolName,
-                new Dictionary<string, string>
-                {
-                    { "14", "debian-buster" },
-                    { "16", "debian-buster" },
-                    { "18", "debian-bullseye" },
-                    { "dynamic", "debian-buster" },
-                }
+                NodeVersions.RuntimeVersions
             },
             {
                 PhpConstants.PlatformName,
-                new Dictionary<string, string>
-                {
-                    { "7.4", "debian-buster" },
-                    { "8.0", "debian-buster" },
-                    { "8.1", "debian-bullseye" },
-                    { "8.2", "debian-bullseye" },
-                    { "7.4-fpm", "debian-buster" },
-                    { "8.0-fpm", "debian-buster" },
-                    { "8.1-fpm", "debian-bullseye" },
-                    { "8.2-fpm", "debian-bullseye" },
-                }
+                PhpVersions.RuntimeVersions
+                    .Union(PhpVersions.FpmRuntimeVersions)
+                    .ToDictionary(x => x.Key, x => x.Value)
             },
             {
                 PythonConstants.PlatformName,
-                new Dictionary<string, string>
-                {
-                    { "3.7", "debian-bullseye" },
-                    { "3.8", "debian-bullseye" },
-                    { "3.9", "debian-buster" },
-                    { "3.10", "debian-bullseye" },
-                    { "3.11", "debian-bullseye" },
-                    { "dynamic", "debian-buster" },
-                }
+                PythonVersions.RuntimeVersions
             },
             {
                 RubyConstants.PlatformName,
-                new Dictionary<string, string>
-                {
-                    { "2.5", "debian-buster" },
-                    { "2.6", "debian-buster" },
-                    { "2.7", "debian-buster" },
-                    { "dynamic", "debian-buster" },
-                }
+                RubyVersions.RuntimeVersions
             },
         };
     }
@@ -516,9 +511,10 @@ namespace Microsoft.Oryx.Tests.Common
         public const string BuildRepository = "build";
         public const string PackRepository = "pack";
         public const string CliRepository = "cli";
-        public const string CliBusterRepository = "cli-buster";
         public const string CliStretchTag = "debian-stretch";
         public const string CliBusterTag = "debian-buster";
+        public const string CliBullseyeTag = "debian-bullseye";
+        public const string CliBuilderBullseyeTag = "builder-debian-bullseye";
         public const string LatestStretchTag = "debian-stretch";
         public const string LtsVersionsStretch = "lts-versions-debian-stretch";
         public const string LtsVersionsBuster = "lts-versions-debian-buster";

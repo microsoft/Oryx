@@ -32,6 +32,19 @@ RUN apt-get update \
         libproj-dev \
         gdal-bin \
         libgdal-dev \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+        python3-dev \
+        libffi-dev \
+        gdb \
+        lcov \
+        pkg-config \
+        libgdbm-dev \
+        liblzma-dev \
+        libreadline6-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/* \
     && pip install pip --upgrade \
     && pip3 install pip --upgrade \
@@ -46,7 +59,7 @@ COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tm
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
  
 FROM main AS final
-ARG AI_KEY
+ARG AI_CONNECTION_STRING
 ARG SDK_STORAGE_BASE_URL_VALUE
 
 COPY --from=intermediate /opt /opt
@@ -70,11 +83,13 @@ ENV LANG="C.UTF-8" \
     NUGET_PACKAGES="/var/nuget" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}" \
     ENABLE_DYNAMIC_INSTALL="true" \
-    ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY} \
+    ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING} \
     PYTHONIOENCODING="UTF-8" \
     DEBIAN_FLAVOR="buster"
 
-RUN set -ex \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
@@ -184,7 +199,8 @@ RUN set -ex \
     # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
     && ${imagesDir}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083" \
     && update-ca-certificates \
-    && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
+    && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 
 ENTRYPOINT [ "benv" ]

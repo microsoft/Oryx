@@ -47,9 +47,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python310Version);
             //Pyodbc package not yet supported for python 3.11 versions: https://pyreadiness.org/3.11/
             //GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python311Version);
+
+            GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python310Version);
+            GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python311Version);
         }
 
-        [Fact, Trait("category", "cli")]
+        [Fact, Trait("category", "cli-stretch")]
         public void PipelineTestInvocationCli()
         {
             var imageTestHelper = new ImageTestHelper();
@@ -61,7 +64,24 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationCliBuster()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), "3.9.0", "/opt");
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), "3.9.0", "/opt");
+        }
+
+        [Fact, Trait("category", "cli-bullseye")]
+        public void PipelineTestInvocationCliBullseye()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), "3.9.0", "/opt");
+        }
+
+        [Fact, Trait("category", "cli-builder-bullseye")]
+        public void PipelineTestInvocationCliBuilderBullseye()
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildsPython_FlaskApp(
+                imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PythonVersions.Python39Version, "/opt");
+            GeneratesScript_AndBuildsPython_FlaskApp(
+                imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PythonVersions.Python310Version, "/opt");
         }
 
         private void GeneratesScript_AndBuildsPython_FlaskApp(
@@ -79,7 +99,48 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
+                .AddCommand(GetSnippetToCleanUpExistingInstallation())
+                .AddBuildCommand(
+                $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = imageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(
+                        $"Python Version: {installationDir}/bin/python3",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        private void GeneratesScript_AndBuildsPython_DjangoRegexApp(
+            string imageName,
+            string version,
+            string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
+        {
+            // Please note:
+            // This test method has at least 1 wrapper function that pases the imageName parameter.
+
+            // Arrange
+            var installationDir = $"{installationRoot}/python/{version}";
+            var appName = "django-regex-example-app";
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
@@ -122,7 +183,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
@@ -162,7 +222,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
@@ -203,7 +262,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {previewVersion} " +
                 $"-o {appOutputDir}")
@@ -246,7 +304,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var buildCmd = $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} " +
                 $"-o {appOutputDir}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(buildCmd)
                 .AddFileExistsCheck(sentinelFile)
@@ -287,7 +344,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
                 .ToString();
@@ -325,7 +381,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var expectedDynamicInstallRootDir = "/foo/bar";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}" +
                 $" --dynamic-install-root-dir {expectedDynamicInstallRootDir}")
@@ -438,7 +493,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
@@ -495,7 +549,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")

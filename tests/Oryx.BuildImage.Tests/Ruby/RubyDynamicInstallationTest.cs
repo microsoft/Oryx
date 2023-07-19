@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 RubyVersions.Ruby31Version, imageTestHelper.GetGitHubActionsBuildImage());
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [InlineData(ImageTestHelperConstants.CliRepository)]
         public void PipelineTestInvocationCli(string imageTag)
         {
@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "cli-buster")]
-        [InlineData(ImageTestHelperConstants.CliBusterRepository)]
+        [InlineData(ImageTestHelperConstants.CliBusterTag)]
         public void PipelineTestInvocationCliBuster(string imageTag)
         {
             var imageTestHelper = new ImageTestHelper();
@@ -61,6 +61,28 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 RubyVersions.Ruby30Version, imageTestHelper.GetCliImage(imageTag));
             GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
                 RubyVersions.Ruby31Version, imageTestHelper.GetCliImage(imageTag));
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
+        public void PipelineTestInvocationCliBullseye(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby30Version, imageTestHelper.GetCliImage(imageTag));
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby31Version, imageTestHelper.GetCliImage(imageTag));
+        }
+
+        [Theory, Trait("category", "cli-builder-bullseye")]
+        [InlineData(ImageTestHelperConstants.CliBuilderBullseyeTag)]
+        public void PipelineTestInvocationCliBuilderBullseye(string imageTag)
+        {
+            var imageTestHelper = new ImageTestHelper();
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby30Version, imageTestHelper.GetCliBuilderImage(imageTag));
+            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
+                RubyVersions.Ruby31Version, imageTestHelper.GetCliBuilderImage(imageTag));
         }
 
         private void GeneratesScript_AndBuildSinatraAppWithDynamicInstall(string version, string buildImageName)
@@ -74,7 +96,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} --platform {RubyConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
                 .ToString();
 

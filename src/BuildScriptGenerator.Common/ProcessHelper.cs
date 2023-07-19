@@ -133,7 +133,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
                 }
             }
 
+#pragma warning disable CA1416 // Validate platform compatibility
             var hasStarted = process.Start();
+#pragma warning restore CA1416 // Validate platform compatibility
             if (!hasStarted)
             {
                 throw new InvalidOperationException(

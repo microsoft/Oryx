@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.Detector.DotNetCore
             // Support .NET moniker aliases
             // Ex: "472" => "4.72"
             //     "48" => "4.8"
-            if (targetFramework.IndexOf('.') == -1)
+            if (!targetFramework.Contains('.'))
             {
                 targetFramework = targetFramework.Insert(1, ".");
             }

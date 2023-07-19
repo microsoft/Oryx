@@ -19,7 +19,12 @@ ARG DEBIAN_FLAVOR
 ENV RUBY_VERSION 2.7.7
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
 
-RUN ${IMAGES_DIR}/installPlatform.sh ruby $RUBY_VERSION --dir /opt/ruby/$RUBY_VERSION --links false
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && ${IMAGES_DIR}/installPlatform.sh ruby $RUBY_VERSION --dir /opt/ruby/$RUBY_VERSION --links false \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
+
 RUN set -ex \
  && cd /opt/ruby/ \
  && ln -s 2.7.7 2.7 \
@@ -28,8 +33,8 @@ RUN set -ex \
 ENV PATH="/opt/ruby/2/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ARG AI_CONNECTION_STRING
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 
 # Oryx++ Builder variables
 ENV CNB_STACK_ID="oryx.stacks.skeleton"

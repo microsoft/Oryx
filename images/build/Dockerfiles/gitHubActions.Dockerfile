@@ -2,6 +2,14 @@ ARG DEBIAN_FLAVOR
 FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-${DEBIAN_FLAVOR} AS main
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
+
+# stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror
+RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
+        sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
+        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
+        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
+    fi
+
 # Install basic build tools
 RUN apt-get update \
     && apt-get upgrade -y \
@@ -33,6 +41,19 @@ RUN apt-get update \
         # For .NET Core 1.1
         libuuid1 \
         libunwind8 \
+        # Adding additional python packages to support all optional python modules:
+        # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+        python3-dev \
+        libffi-dev \
+        gdb \
+        lcov \
+        pkg-config \
+        libgdbm-dev \
+        liblzma-dev \
+        libreadline6-dev \
+        lzma \
+        lzma-dev \
+        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
@@ -96,7 +117,7 @@ RUN set -ex \
 FROM main AS final
 ARG SDK_STORAGE_BASE_URL_VALUE
 ARG IMAGES_DIR="/opt/tmp/images"
-ARG AI_KEY
+ARG AI_CONNECTION_STRING
 
 COPY --from=intermediate /opt /opt
 
@@ -164,7 +185,7 @@ ENV LANG="C.UTF-8" \
     NUGET_XMLDOC_MODE="skip" \
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE="1" \
     NUGET_PACKAGES="/var/nuget" \
-    ORYX_AI_INSTRUMENTATION_KEY="${AI_KEY}" \
+    ORYX_AI_CONNECTION_STRING="${AI_CONNECTION_STRING}" \
     ENABLE_DYNAMIC_INSTALL="true" \
     ORYX_SDK_STORAGE_BASE_URL="${SDK_STORAGE_BASE_URL_VALUE}"
 

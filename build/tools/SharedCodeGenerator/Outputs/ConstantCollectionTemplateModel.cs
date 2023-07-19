@@ -20,5 +20,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
         public Dictionary<string, string> StringConstants { get; set; }
 
         public Dictionary<string, string> ListConstants { get; set; }
+
+        public Dictionary<string, string> DictionaryConstants { get; set; }
     }
 }

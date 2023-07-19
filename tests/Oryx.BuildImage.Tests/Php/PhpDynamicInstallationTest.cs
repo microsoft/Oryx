@@ -75,19 +75,60 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string, string>();
                 var imageHelper = new ImageTestHelper();
-                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.ComposerVersion);
-                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.ComposerVersion);
-                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.ComposerVersion);
-                data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.ComposerVersion);
 
                 // test latest php-composer version
-                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.Composer23Version);
-                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.Composer23Version);
-                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.Composer23Version);
-                data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterRepository), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.Composer23Version);
                 return data;
             }
         }
+
+        public static TheoryData<string, string, string> VersionAndImageNameDataCliBullseye
+        {
+            get
+            {
+                var data = new TheoryData<string, string, string>();
+                var imageHelper = new ImageTestHelper();
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.ComposerVersion);
+
+                // test latest php-composer version
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer23Version);
+                return data;
+            }
+        }
+        
+        public static TheoryData<string, string, string> VersionAndImageNameDataCliBuilderBullseye
+        {
+            get
+            {
+                var data = new TheoryData<string, string, string>();
+                var imageHelper = new ImageTestHelper();
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.ComposerVersion);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.ComposerVersion);
+
+                // test latest php-composer version
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer23Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer23Version);
+                return data;
+            }
+        }
+
 
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(VersionAndImageNameData))]
@@ -96,7 +137,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion);
         }
 
-        [Theory, Trait("category", "cli")]
+        [Theory, Trait("category", "cli-stretch")]
         [MemberData(nameof(VersionAndImageNameDataCli))]
         public void BuildsAppByInstallingSdkDynamicallyCli(string phpVersion, string imageName, string phpComposerVersion)
         {
@@ -106,6 +147,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "cli-buster")]
         [MemberData(nameof(VersionAndImageNameDataCliBuster))]
         public void BuildsAppByInstallingSdkDynamicallyCliBuster(string phpVersion, string imageName, string phpComposerVersion)
+        {
+            BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion, "/opt/php");
+        }
+
+        [Theory, Trait("category", "cli-bullseye")]
+        [MemberData(nameof(VersionAndImageNameDataCliBullseye))]
+        public void BuildsAppByInstallingSdkDynamicallyCliBullseye(string phpVersion, string imageName, string phpComposerVersion)
+        {
+            BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion, "/opt/php");
+        }
+
+        [Theory, Trait("category", "cli-builder-bullseye")]
+        [MemberData(nameof(VersionAndImageNameDataCliBuilderBullseye))]
+        public void BuildsAppByInstallingSdkDynamicallyCliBuilderBullseye(string phpVersion, string imageName, string phpComposerVersion)
         {
             BuildsAppByInstallingSdkDynamically(phpVersion, imageName, phpComposerVersion, "/opt/php");
         }
@@ -122,7 +177,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("PHP_COMPOSER_VERSION", phpComposerVersion)
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
@@ -161,7 +215,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var expectedDynamicInstallRootDir = "/foo/bar";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion} " +
                 $"--dynamic-install-root-dir {expectedDynamicInstallRootDir}")
@@ -201,7 +254,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("PHP_COMPOSER_VERSION", composerVersion)
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {version}")
@@ -244,7 +296,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable("PHP_COMPOSER_VERSION", composerVersion)
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {version}")
