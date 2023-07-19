@@ -84,6 +84,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Build build images'
+  env:
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/buildBuildImages.sh
     args: -t ${{ parameters.imageType }} -s $(storageAccountUrl)
@@ -91,6 +93,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Build Buster runtime images'
+  env:
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
     args: -s $(storageAccountUrl) buster
@@ -98,6 +102,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Build Bullseye runtime images'
+  env:
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
     args: -s $(storageAccountUrl) bullseye 
@@ -123,6 +129,7 @@ steps:
   displayName: 'Test build images'
   env:
     ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/testBuildImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME) ${{ parameters.imageType }}
@@ -132,6 +139,7 @@ steps:
   displayName: 'Test runtime images'
   env:
     ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
@@ -169,6 +177,7 @@ steps:
     SQLSERVER_DATABASE_USERNAME: $(SQLSERVER-DATABASE-USERNAME)
     SQLSERVER_DATABASE_PASSWORD: $(SQLSERVER-DATABASE-PASSWORD)
     ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: CopyFiles@2

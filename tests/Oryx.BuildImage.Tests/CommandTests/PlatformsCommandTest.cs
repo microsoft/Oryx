@@ -30,7 +30,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             // Arrange
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 // get in json format so that it can be deserialized and verified
                 .AddCommand("oryx platforms --json")
                 .ToString();

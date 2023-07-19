@@ -39,17 +39,15 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int --platform nodejs --platform-version {nodeVersion} -o {appOutputDir}")
                 .ToString();
 
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName,
-                    $"\"touch {appOutputDir}/_test_file.txt\ntouch {appOutputDir}/_test_file_2.txt\"")
+                    $"\"touch {appOutputDir}/_test_file.txt\ntouch {appOutputDir}/_test_file_2.txt\"", true)
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
                 .AddCommand($"LINENUMBER=\"$(grep -n '# End of pre-run' {RunScriptPath} | cut -f1 -d:)\"")
                 .AddCommand($"eval \"head -n +${{LINENUMBER}} {RunScriptPath} > {RunScriptPreRunPath}\"")
@@ -107,7 +105,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform nodejs --platform-version {nodeVersion}")
@@ -115,9 +112,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"", true)
                 .AddCommand($"touch {preRunScriptPath}")
                 .AddFileExistsCheck(preRunScriptPath)
                 .AddCommand($"echo \"touch {appOutputDir}/_test_file.txt\" > {preRunScriptPath}")

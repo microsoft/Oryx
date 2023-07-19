@@ -147,30 +147,21 @@ for dockerFile in $dockerFiles; do
     cd $REPO_DIR
 
     echo
-    if shouldStageRuntimeVersion $platformName $platformVersion ; then
-        # pass in env var as a secret, which is mounted during a single run command of the build
-        # https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md#secret
-        DOCKER_BUILDKIT=1 docker build -f $dockerFile \
-            -t $localImageTagName \
-            --build-arg CACHEBUST=$(date +%s) \
-            --build-arg NODE14_VERSION=$NODE14_VERSION \
-            --build-arg NODE16_VERSION=$NODE16_VERSION \
-            --build-arg NODE18_VERSION=$NODE18_VERSION \
-            --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
-            --secret id=dotnet_storage_account_token_id,env=DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN \
-            $labels \
-            .
-    else
-        docker build -f $dockerFile \
-            -t $localImageTagName \
-            --build-arg CACHEBUST=$(date +%s) \
-            --build-arg NODE14_VERSION=$NODE14_VERSION \
-            --build-arg NODE16_VERSION=$NODE16_VERSION \
-            --build-arg NODE18_VERSION=$NODE18_VERSION \
-            --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
-            $labels \
-            .
-    fi
+
+    # pass in env var as a secret, which is mounted during a single run command of the build
+    # https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md#secret
+    DOCKER_BUILDKIT=1 docker build -f $dockerFile \
+        -t $localImageTagName \
+        --build-arg CACHEBUST=$(date +%s) \
+        --build-arg NODE14_VERSION=$NODE14_VERSION \
+        --build-arg NODE16_VERSION=$NODE16_VERSION \
+        --build-arg NODE18_VERSION=$NODE18_VERSION \
+        --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
+        --secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
+        --secret id=dotnet_storage_account_token_id,env=DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN \
+        $labels \
+        .
+
 
     # Retag build image with build numbers as ACR tags
     if [ "$AGENT_BUILD" == "true" ]

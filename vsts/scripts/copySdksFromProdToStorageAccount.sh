@@ -27,6 +27,7 @@ function blobContainerExistsInDestination() {
 }
 
 function copyBlobContainerFromProdToDestination() {
+    set +x
     local platformName="$1"
 
     if [ $overwrite == "True" ] ; then
@@ -59,6 +60,7 @@ function copyBlobContainerFromProdToDestination() {
                 "$destinationSdkUrl/$platformName$sasToken" --overwrite false --recursive --dry-run
         fi
     fi
+    set -x
 }
 
 if [ ! -f "$azCopyDir/azcopy" ]; then
@@ -74,6 +76,7 @@ fi
 
 destinationSdkUrl="https://$1.blob.core.windows.net"
 sasToken=""
+set +x 
 
 # case insensitive matching because both secrets and urls are case insensitive
 shopt -s nocasematch
@@ -81,6 +84,8 @@ if [[ "$destinationSdkUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
 elif [[ "$destinationSdkUrl" == $DEV_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
+elif [[ "$destinationSdkUrl" == $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ]]; then
+    sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
 elif [[ "$destinationSdkUrl" == $PROD_BACKUP_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$PROD_BACKUP_STORAGE_SAS_TOKEN
 # check if the personal sas token has been found in the oryx key vault
@@ -91,6 +96,7 @@ else
 	exit 1
 fi
 shopt -u nocasematch
+set -x
 
 dryRun=$2
 if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then
