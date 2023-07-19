@@ -42,7 +42,6 @@ jobs:
           declare -A platformNamesAsInBasePipeline
           platformNamesAsInBasePipeline=( ["dotnet"]="DotNetCore" ["python"]="Python" )
           echo "PLATFORM_NAME_CAMEL_CASE=${platformNamesAsInBasePipeline[${{ inputs.platformName }}]}" >> $GITHUB_ENV
-          printenv
 
       - name: Run SDK Automation
         run: |
