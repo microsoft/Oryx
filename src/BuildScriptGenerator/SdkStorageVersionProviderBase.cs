@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -150,14 +149,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var platformBinariesStorageBaseUrl = this.commonOptions.OryxSdkStorageBaseUrl;
 
-            this.logger.LogDebug("Using the Sdk storage url {sdkStorageUrl}.", platformBinariesStorageBaseUrl);
-
             if (string.IsNullOrEmpty(platformBinariesStorageBaseUrl))
             {
-                throw new InvalidOperationException(
+                 throw new InvalidOperationException(
                     $"Environment variable '{SdkStorageConstants.SdkStorageBaseUrlKeyName}' is required.");
             }
 
+            this.logger.LogDebug("Using the Sdk storage url {sdkStorageUrl}.", platformBinariesStorageBaseUrl);
             platformBinariesStorageBaseUrl = platformBinariesStorageBaseUrl.TrimEnd('/');
             return platformBinariesStorageBaseUrl;
         }

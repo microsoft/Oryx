@@ -16,8 +16,8 @@ source $REPO_DIR/build/__sdkStorageConstants.sh
 
 if [ -z "$ORYX_TEST_SDK_STORAGE_URL" ]; then
     echo
-    echo "Setting environment variable 'ORYX_TEST_SDK_STORAGE_URL' to default value '$DEV_SDK_STORAGE_BASE_URL' for build image tests."
-    export ORYX_TEST_SDK_STORAGE_URL="$DEV_SDK_STORAGE_BASE_URL"
+    echo "Setting environment variable 'ORYX_TEST_SDK_STORAGE_URL' to default value '$PRIVATE_STAGING_SDK_STORAGE_BASE_URL' for build image tests."
+    export ORYX_TEST_SDK_STORAGE_URL="$PRIVATE_STAGING_SDK_STORAGE_BASE_URL"
 fi
 
 if [ "$1" = "skipBuildingImages" ]

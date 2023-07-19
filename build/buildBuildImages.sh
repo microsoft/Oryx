@@ -36,28 +36,28 @@ labelContent="git_commit=$GIT_COMMIT, build_number=$BUILD_NUMBER, release_tag_na
 # https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
 PARAMS=""
 while (( "$#" )); do
-	case "$1" in
-		-t|--type)
-		imageTypeToBuild=$2
-		shift 2
-		;;
-		-s|--sdk-storage-account-url)
-		sdkStorageAccountUrl=$2
-		shift 2
-		;;
-		--) # end argument parsing
-		shift
-		break
-		;;
-		-*|--*=) # unsupported flags
-		echo "Error: Unsupported flag $1" >&2
-		exit 1
-		;;
-		*) # preserve positional arguments
-		PARAMS="$PARAMS $1"
-		shift
-		;;
-	esac
+  case "$1" in
+    -t|--type)
+      imageTypeToBuild=$2
+      shift 2
+      ;;
+    -s|--sdk-storage-account-url)
+      sdkStorageAccountUrl=$2
+      shift 2
+      ;;
+    --) # end argument parsing
+      shift
+      break
+      ;;
+    -*|--*=) # unsupported flags
+      echo "Error: Unsupported flag $1" >&2
+      exit 1
+      ;;
+    *) # preserve positional arguments
+      PARAMS="$PARAMS $1"
+      shift
+      ;;
+  esac
 done
 # set positional arguments in their proper place
 eval set -- "$PARAMS"
@@ -68,6 +68,9 @@ echo "Image type to build is set to: $imageTypeToBuild"
 if [ -z "$sdkStorageAccountUrl" ]; then
 	sdkStorageAccountUrl=$PROD_SDK_CDN_STORAGE_BASE_URL
 fi
+
+# checking and retrieving token for the `oryxsdksstaging` account.
+retrieveSastokenFromKeyvault $sdkStorageAccountUrl
 
 echo
 echo "SDK storage account url set to: $sdkStorageAccountUrl"
@@ -201,12 +204,13 @@ function buildGitHubActionsImage() {
 	
 	echo
 	echo "-------------Creating build image for GitHub Actions-------------------"
-	docker build -t $builtImageName \
+	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_GITHUB_ACTIONS_DOCKERFILE" \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -248,10 +252,11 @@ function buildJamStackImage() {
 	# turn inherited by this image.
 	echo
 	echo "-------------Creating AzureFunctions JamStack image-------------------"
-	docker build -t $builtImageName \
+	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		-f "$BUILD_IMAGES_AZ_FUNCS_JAMSTACK_DOCKERFILE" \
 		--build-arg PARENT_DEBIAN_FLAVOR=$parentImageTag \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 	
 	createImageNameWithReleaseTag $builtImageName
@@ -291,11 +296,12 @@ function buildLtsVersionsImage() {
 
 	echo
 	echo "-------------Creating lts versions build image-------------------"
-	docker build -t $builtImageName \
+	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$ltsBuildImageDockerFile" \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -330,8 +336,9 @@ function buildLatestImages() {
 	# NOTE: do not pass in label as it is inherited from base image
 	# Also do not pass in build-args as they are used in base image for creating environment variables which are in
 	# turn inherited by this image.
-	docker build -t $builtImageName \
+	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		-f "$BUILD_IMAGES_DOCKERFILE" \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -381,11 +388,12 @@ function buildVsoImage() {
 	echo
 	echo "-------------Creating VSO $debianFlavor build image-------------------"
 	
-	docker build -t $builtImageName \
+	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGE" \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -421,12 +429,13 @@ function buildCliImage() {
 
 	echo
 	echo "-------------Creating CLI image-------------------"
-	docker build -t $builtImageName \
+	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_DOCKERFILE" \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -455,12 +464,13 @@ function buildCliBuilderImage() {
 
 	echo
 	echo "-------------Creating CLI Builder image-------------------"
-	docker build -t $builtImageName \
+	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$osFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_CLI_BUILDER_DOCKERFILE" \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName
@@ -490,12 +500,13 @@ function buildFullImage() {
 
 	echo
 	echo "-------------Creating full image-------------------"
-	docker build -t $builtImageName \
+	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--label com.microsoft.oryx="$labelContent" \
 		-f "$BUILD_IMAGES_FULL_DOCKERFILE" \
+		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
 
 	createImageNameWithReleaseTag $builtImageName

@@ -74,6 +74,7 @@ uploadFiles() {
 
 storageAccountUrl="https://$storageAccountName.blob.core.windows.net"
 sasToken=""
+set +x
 
 # case insensitive matching because both secrets and urls are case insensitive
 shopt -s nocasematch
@@ -81,6 +82,8 @@ if [[ "$storageAccountUrl" == $SANDBOX_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$SANDBOX_STORAGE_SAS_TOKEN
 elif [[ "$storageAccountUrl" == $DEV_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$DEV_STORAGE_SAS_TOKEN
+elif [[ "$storageAccountUrl" == $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ]]; then
+    sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
 elif [[ "$storageAccountUrl" == $PRIVATE_SDK_STORAGE_BASE_URL ]]; then
     sasToken=$PRIVATE_STORAGE_SAS_TOKEN
 # check if the personal sas token has been found in the oryx key vault
@@ -91,6 +94,7 @@ else
 	exit 1
 fi
 shopt -u nocasematch
+set -x
 
 platforms=("nodejs" "python" "dotnet" "php" "php-composer" "ruby" "java" "maven" "golang")
 for platform in "${platforms[@]}"
