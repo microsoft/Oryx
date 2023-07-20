@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact(Skip = "Temporarily skipping test as it is failing to retrieve the sas-token for the staging environment"), Trait("category", "latest")]
         public void BuildImage_CanExec_SingleCommand()
         {
             // Arrange
@@ -176,7 +176,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact(Skip = "Temporarily skipping test as it is failing to retrieve the sas-token for the staging environment"), Trait("category", "latest")]
         public void BuildImage_CanExec_MultipleCommands_WithOlderToolVersions()
         {
             // Arrange
@@ -214,7 +214,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact(Skip = "Temporarily skipping test as it is failing to retrieve the sas-token for the staging environment"), Trait("category", "latest")]
         public void BuildImage_Exec_PropagatesFailures()
         {
             // Arrange

@@ -18,7 +18,13 @@ blobExists() {
 	local blobName="$2"
 	local sdkStorageAccountUrl="$3"
 	local exitCode=1
-	curl -I $sdkStorageAccountUrl/$containerName/$blobName 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
+	sasToken=""
+	if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
+		set +x
+		sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
+		set -x
+	fi
+	curl -I $sdkStorageAccountUrl/$containerName/$blobName$sasToken 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
 	grep "HTTP/1.1 200 OK" /tmp/curlOut.txt &> /dev/null
 	exitCode=$?
 	rm -f /tmp/curlOut.txt

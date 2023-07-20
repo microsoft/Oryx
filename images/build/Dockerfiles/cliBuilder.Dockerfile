@@ -159,6 +159,5 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && cd /opt/python \
     && ln -s $PYTHON38_VERSION 3.8 \
     && ln -s $PYTHON38_VERSION latest \
-    && ln -s $PYTHON38_VERSION stable
 
 ENTRYPOINT [ "benv" ]
