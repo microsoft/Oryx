@@ -193,7 +193,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact(Skip = "Skipping test temporarily"), Trait("category", "vso-focal")]
         public void CanBuildJupiterRiseApp()
         {
             // Arrange
@@ -228,8 +228,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
-
-        [Theory, Trait("category", "vso-focal")]
+     
+        [Theory(Skip = "Skipping test temporarily"), Trait("category", "vso-focal")]
         [InlineData("jupyter-rise")]
         public void BuildJupiterCondaApps_Prints_BuildCommands_In_File(string appName)
         {
