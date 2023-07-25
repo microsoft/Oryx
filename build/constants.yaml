@@ -25,6 +25,7 @@
     python-gunicorn-config-path-env-var-name: PYTHON_USE_GUNICORN_CONFIG_FROM_PATH
     python-gunicorn-custom-worker-num: PYTHON_GUNICORN_CUSTOM_WORKER_NUM
     python-gunicorn-custom-thread-num: PYTHON_GUNICORN_CUSTOM_THREAD_NUM
+    nginx-conf-file: NGINX_CONF_FILE
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator.Common

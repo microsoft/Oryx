@@ -73,6 +73,59 @@ namespace Microsoft.Oryx.Integration.Tests
                 failureOutputText);
         }
 
+        [Fact, Trait("category", "php-8.0")]
+        public async Task PhpFpmNginxCustomizationTestAsync()
+        {
+            // Arrange
+            var appName = "php-fpm-config";
+            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var phpVersion = "8.0";
+            var nginxDummyCustomConfigFile = appDir + "/NGINX_DUMMY_CUSTOM_CONFIG_FILE.conf";
+            var nginxCustomCommand1 = "cp " + nginxDummyCustomConfigFile + " /etc/nginx/nginx.conf";
+            var nginxCustomCommand2 = "service nginx reload";
+
+            var buildScript = new ShellScriptBuilder()
+               .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+               $"--platform php --platform-version {phpVersion}")
+               .ToString();
+
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
+                .AddCommand("mkdir -p /home/site/wwwroot")
+                .AddCommand($"cp -rf {appOutputDir}/* /home/site/wwwroot")
+                .AddCommand("cat " + RunScriptPath)
+                .AddStringExistsInFileCheck(nginxCustomCommand1, RunScriptPath)
+                .AddStringExistsInFileCheck(nginxCustomCommand2, RunScriptPath)
+                .AddCommand(RunScriptPath)
+                .ToString();
+            var phpimageVersion = string.Concat(phpVersion, "-", "fpm");
+            // Act & Assert success conditions
+                await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                    appName,
+                    _output,
+                    new[] { volume, appOutputDirVolume },
+                    Settings.BuildImageName,
+                    "/bin/sh",
+                    new[] { "-c", buildScript },
+                    _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                    new List<EnvironmentVariable>()
+                    {
+                    new EnvironmentVariable(ExtVarNames.NginxConfFile, nginxDummyCustomConfigFile)
+                    },
+                    ContainerPort,
+                    "/bin/sh",
+                    new[] { "-c", runScript },
+                    async (hostPort) =>
+                    {
+                        var output = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                        Assert.Contains("Hello World!", output);
+                    });
+        }
+
         private async Task PhpFpmConfigTestAsync(
             string phpVersion, 
             string fpmMaxChildren, string expectedFpmMaxChildren,
