@@ -28,4 +28,11 @@
     <ProjectReference Include="..\Oryx.Common\Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Update="SmartAnalyzers.CSharpExtensions.Annotations" Version="4.2.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
 </Project>
