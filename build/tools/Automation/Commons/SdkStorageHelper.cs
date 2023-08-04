@@ -1,4 +1,8 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+using System;
 using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Automation.Commons
@@ -46,17 +50,9 @@ namespace Microsoft.Oryx.Automation.Commons
         /// <returns>The list of extracted blocked versions.</returns>
         public static List<string> ExtractBlockedVersions(string blockedVersions)
         {
-            List<string> result = new List<string>();
-            if (!string.IsNullOrEmpty(blockedVersions))
-            {
-                var versionStrings = blockedVersions.Split(',');
-                foreach (var versionString in versionStrings)
-                {
-                    result.Add(versionString.Trim());
-                }
-            }
-
-            return result;
+            return string.IsNullOrEmpty(blockedVersions) ?
+                new List<string>() :
+                blockedVersions.Split(',').Select(v => v.Trim()).ToList();
         }
     }
 }
