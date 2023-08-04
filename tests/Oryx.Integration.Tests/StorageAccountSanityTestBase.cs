@@ -51,7 +51,7 @@ namespace Oryx.Integration.Tests
             {
                 _stagingStorageAccountAccessToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) != null
                     ? Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey)
-                    : this.GetKeyvaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);                
+                    : KeyVaultHelper.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);                
             }
         }
 
@@ -363,13 +363,6 @@ namespace Oryx.Integration.Tests
             }
 
             return defaultVersion;
-        }
-
-        private string GetKeyvaultSecretValue(string keyvaultUri, string secretName)
-        {
-            var client = new SecretClient(new Uri(keyvaultUri), new DefaultAzureCredential());
-            KeyVaultSecret secret = client.GetSecret(secretName);
-            return secret.Value;
         }
     }
 }
