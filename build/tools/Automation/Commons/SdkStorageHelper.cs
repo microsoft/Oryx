@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Microsoft.Oryx.Automation.Commons
