@@ -15,6 +15,7 @@ ADD build ${BUILD_DIR}
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         # .NET Core dependencies
+        openssl \
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
