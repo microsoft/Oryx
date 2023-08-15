@@ -58,6 +58,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="SemanticVersioning" Version="2.0.2" />
+    <PackageReference Include="System.Private.Uri" Version="4.3.2" />
     <PackageReference Include="xunit" Version="2.4.2" />
   </ItemGroup>
 

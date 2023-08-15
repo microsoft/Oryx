@@ -123,7 +123,8 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 	scriptBuilder.WriteString("if [ ! -z \"$PORT2\" ]; then" + "\n")
 	scriptBuilder.WriteString("		export Kestrel__Endpoints__Http2__Url=http://*:$PORT2\n")
 	scriptBuilder.WriteString("		export Kestrel__Endpoints__Http2__Protocols=Http2\n")
-	scriptBuilder.WriteString("		export Kestrel__Endpoints__Http1__Url=http://*:$PORT\n\n")
+	scriptBuilder.WriteString("		export Kestrel__Endpoints__Http1__Url=http://*:$PORT\n")
+	scriptBuilder.WriteString("		export Kestrel__Endpoints__Http1__Protocols=Http1\n\n")
 	scriptBuilder.WriteString("fi")
 	scriptBuilder.WriteString("\n\n")
 
