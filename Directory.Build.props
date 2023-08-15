@@ -10,7 +10,6 @@ See https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?v
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)src\CommonFiles\Oryx.ruleset</CodeAnalysisRuleSet>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors> <!-- Allow marking things as Obsolete without breaking the build -->
-    <_SkipUpgradeNetAnalyzersNuGetWarning>true</_SkipUpgradeNetAnalyzersNuGetWarning>
   </PropertyGroup>
 
   <ItemGroup>
