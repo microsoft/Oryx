@@ -46,8 +46,10 @@ The following process is applied for each build.
 2. Run custom build command if specified by `CUSTOM_BUILD_COMMAND`. This will skip running any package install commands 
    (`npm install` or `yarn install`) that Oryx originally included.
 3. Run custom run build command if specified by `RUN_BUILD_COMMAND`. This will not skip package install commands.
-4. Run `npm install` without any flags, which includes npm `preinstall` and
-   `postinstall` scripts and also installs devDependencies.
+4. Run `npm install`, which includes npm `preinstall` and `postinstall` scripts and also installs devDependencies.
+   The `--production` flag is added to the NPM install command if some production
+   dependencies are detected in the `package.json` file and if the
+   [`PRUNE_DEV_DEPENDENCIES`](https://github.com/microsoft/Oryx/blob/main/doc/configuration.md) setting is set.
 5. Run `npm run build` if a `build` script is specified in your `package.json`.
 6. Run `npm run build:azure` if a `build:azure` script is specified in your `package.json`.
 7. Run custom command or script if specified by `POST_BUILD_COMMAND` or `POST_BUILD_SCRIPT_PATH`.
