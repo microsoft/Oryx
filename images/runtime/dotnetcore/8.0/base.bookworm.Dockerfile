@@ -43,7 +43,7 @@ RUN set -ex \
     && apt-get remove ca-certificates -y \
     && apt-get purge ca-certificates -y \
     && apt-get update \
-    && apt-get install -f ca-certificates=20200601~deb10u2 -y --no-install-recommends \
+    && apt-get install -f ca-certificates=20210119 -y --no-install-recommends \
     && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
     && curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Runtime/$NET_CORE_APP_80/dotnet-runtime-$NET_CORE_APP_80-linux-x64.tar.gz \
     && echo "$NET_CORE_APP_80_SHA dotnet.tar.gz" | sha512sum -c - \
