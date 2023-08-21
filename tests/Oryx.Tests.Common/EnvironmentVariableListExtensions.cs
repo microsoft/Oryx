@@ -1,4 +1,9 @@
-﻿using Microsoft.Oryx.BuildScriptGenerator.Common;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Oryx.Tests.Common
 {
-    public static class StorageAccountEnvVariableForDb
+    public static class EnvironmentVariableListExtensions
     {
-        public static List<EnvironmentVariable> AddStorageAccountEnvironmentVariables(List<EnvironmentVariable> envVarList)
+        public static ICollection<EnvironmentVariable> AddTestStorageAccountEnvironmentVariables(this ICollection<EnvironmentVariable> envVarList)
         {
             var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
             var sdkStorageUrl = string.IsNullOrEmpty(testStorageAccountUrl) ? SdkStorageConstants.PrivateStagingSdkStorageBaseUrl : testStorageAccountUrl;

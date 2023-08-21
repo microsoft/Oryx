@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
             List<EnvironmentVariable> buildEnvVariableList = SqlServerDbTestHelper.GetEnvironmentVariables();
-            StorageAccountEnvVariableForDb.AddStorageAccountEnvironmentVariables(buildEnvVariableList);
+            buildEnvVariableList.AddTestStorageAccountEnvironmentVariables();
             
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,

@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";
             List<EnvironmentVariable> buildEnvVariableList = _dbFixture.GetCredentialsAsEnvVars();
-            StorageAccountEnvVariableForDb.AddStorageAccountEnvironmentVariables(buildEnvVariableList);
+            buildEnvVariableList.AddTestStorageAccountEnvironmentVariables();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
