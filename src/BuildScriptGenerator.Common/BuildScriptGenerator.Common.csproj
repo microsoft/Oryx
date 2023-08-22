@@ -27,5 +27,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Oryx.Common\Common.csproj" />
   </ItemGroup>
-
+  
 </Project>
