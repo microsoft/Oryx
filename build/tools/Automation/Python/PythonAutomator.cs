@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Oryx.Automation.Commons;
 using Microsoft.Oryx.Automation.Models;
 using Microsoft.Oryx.Automation.Python.Models;
 using Microsoft.Oryx.Automation.Services;
@@ -22,7 +23,6 @@ namespace Microsoft.Oryx.Automation.Python
         private readonly IVersionService versionService;
         private readonly IFileService fileService;
         private readonly IYamlFileService yamlFileService;
-        private string oryxSdkStorageBaseUrl;
         private string pythonMinReleaseVersion;
         private string pythonMaxReleaseVersion;
         private List<string> pythonBlockedVersions = new List<string>();
@@ -42,49 +42,22 @@ namespace Microsoft.Oryx.Automation.Python
 
         public async Task RunAsync()
         {
-            this.oryxSdkStorageBaseUrl = Environment.GetEnvironmentVariable(Constants.OryxSdkStorageBaseUrlEnvVar);
-            if (string.IsNullOrEmpty(this.oryxSdkStorageBaseUrl))
-            {
-                this.oryxSdkStorageBaseUrl = Constants.OryxSdkStorageBaseUrl;
-            }
-
-            string sdkVersionsUrl = this.oryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl;
-
-            // A SAS token is required for the staging account.
-            if (this.oryxSdkStorageBaseUrl == Constants.OryxSdkStagingStorageBaseUrl)
-            {
-                string sasToken = Environment.GetEnvironmentVariable(Constants.OryxSdkStagingPrivateSasTokenEnvVar);
-                if (string.IsNullOrEmpty(sasToken))
-                {
-                    throw new ArgumentException($"The environment variable {Constants.OryxSdkStagingPrivateSasTokenEnvVar} " +
-                        $"must be provided in order to access {Constants.OryxSdkStagingStorageBaseUrl}");
-                }
-
-                sdkVersionsUrl += "&" + sasToken;
-            }
-
+            string oryxSdkStorageBaseUrl = Environment.GetEnvironmentVariable(Constants.OryxSdkStorageBaseUrlEnvVar);
+            string sdkVersionsUrl = SdkStorageHelper.GetSdkStorageUrl(oryxSdkStorageBaseUrl, PythonConstants.PythonSuffixUrl);
             this.oryxPythonSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(sdkVersionsUrl);
             this.pythonMinReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMinReleaseVersionEnvVar);
             this.pythonMaxReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMaxReleaseVersionEnvVar);
             var blockedVersions = Environment.GetEnvironmentVariable(PythonConstants.PythonBlockedVersionsEnvVar);
+            this.pythonBlockedVersions = SdkStorageHelper.ExtractBlockedVersions(blockedVersions);
 
-            if (!string.IsNullOrEmpty(blockedVersions))
-            {
-                var versionStrings = blockedVersions.Split(',');
-                foreach (var versionString in versionStrings)
-                {
-                    this.pythonBlockedVersions.Add(versionString.Trim());
-                }
-            }
-
-            List<PythonVersion> pythonVersions = await this.GetNewPythonVersionsAsync();
-            if (pythonVersions.Count > 0)
+            List<PythonVersion> newPythonVersions = await this.GetNewPythonVersionsAsync();
+            if (newPythonVersions.Count > 0)
             {
                 string constantsYamlSubPath = Path.Combine("build", Constants.ConstantsYaml);
                 List<ConstantsYamlFile> yamlConstantsObjs =
                     await this.yamlFileService.ReadConstantsYamlFileAsync(constantsYamlSubPath);
 
-                this.UpdateOryxConstantsForNewVersions(pythonVersions, yamlConstantsObjs);
+                this.UpdateOryxConstantsForNewVersions(newPythonVersions, yamlConstantsObjs);
             }
         }
 

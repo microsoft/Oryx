@@ -53,6 +53,9 @@ if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
     set +x 
     sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
     set -x
+    if [ -z "$sasToken" ]; then
+      echo "sasToken cannot be empty for $sdkStorageAccountUrl."
+    fi
 fi
 if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
   # Use default sdk file name
