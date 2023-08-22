@@ -1,12 +1,12 @@
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
-FROM mcr.microsoft.com/dotnet/sdk:8.0-preview AS tools-install
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS tools-install
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 8.0.0-preview.7.23402.4
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 8.*
 
 FROM mcr.microsoft.com/mirror/docker/library/debian:bullseye-slim
 ARG BUILD_DIR=/tmp/oryx/build
