@@ -62,7 +62,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu72 \
-            libcurl4 \
+            libcurl8 \
             libssl3 \
             libyaml-dev \
             libxml2 \
