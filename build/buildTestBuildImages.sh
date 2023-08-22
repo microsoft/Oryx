@@ -160,11 +160,11 @@ if [ -z "$buildImageTagFilter" ] || [ "$buildImageTagFilter" == "github-actions-
     echo
     echo
 
-    echo "Building image that uses bullseye based GitHub Action as a base and has all required environment variables..."
+    echo "Building image that uses bookworm based GitHub Action as a base and has all required environment variables..."
     docker build \
-        -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-bullseye-base-withenv" \
-        --build-arg PARENT_IMAGE_BASE=github-actions-debian-bullseye \
-        --build-arg DEBIAN_FLAVOR=bullseye \
+        -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-bookworm-base-withenv" \
+        --build-arg PARENT_IMAGE_BASE=github-actions-debian-bookworm \
+        --build-arg DEBIAN_FLAVOR=bookworm \
         -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_WITHENV_BUILDIMAGE_DOCKERFILE" \
         .
 
