@@ -18,8 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         /// </summary>
         /// <param name="keyVaultUri">Uri of the KeyVault. For Oryx it is: https://oryx.vault.azure.net</param>
         /// <param name="secretName">Name of the secret in KeyVault</param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
+        /// <returns>the retrieved sasToken</returns>
         public static string GetKeyVaultSecretValue(string keyVaultUri, string secretName)
         {
             var client = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
