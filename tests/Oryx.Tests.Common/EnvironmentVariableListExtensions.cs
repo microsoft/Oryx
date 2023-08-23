@@ -14,6 +14,13 @@ namespace Microsoft.Oryx.Tests.Common
 {
     public static class EnvironmentVariableListExtensions
     {
+        /// <summary>
+        /// This method adds environment variables for the staging storage to a collection. 
+        /// It adds the URL of the staging storage and the sasToken to access the storage.
+        /// The method returns the collection with the newly added environment variables.
+        /// </summary>
+        /// <param name="envVarList"> A Collection of EnvironmentVariable objects. The storage environment variables are be added here</param>
+        /// <returns></returns>
         public static ICollection<EnvironmentVariable> AddTestStorageAccountEnvironmentVariables(this ICollection<EnvironmentVariable> envVarList)
         {
             var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
