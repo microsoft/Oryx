@@ -263,6 +263,7 @@
 - name: os-types
   constants:
     debian-stretch: stretch
+    debian-bookworm: bookworm
     debian-bullseye: bullseye
     debian-buster: buster
     ubuntu-focal-scm: focal-scm
