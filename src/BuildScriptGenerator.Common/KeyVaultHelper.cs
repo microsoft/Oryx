@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
     public static class KeyVaultHelper
     {
         /// <summary>
-        /// This method retrieves a secret from KeyVault given the KeyVaultUri and SecretName. 
+        /// This method retrieves a secret from KeyVault given the KeyVaultUri and SecretName.
         /// If it fails to retrieve the token then throws an exception.
         /// </summary>
         /// <param name="keyVaultUri">Uri of the KeyVault. For Oryx it is: https://oryx.vault.azure.net</param>
