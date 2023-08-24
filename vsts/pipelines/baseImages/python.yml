@@ -1,12 +1,15 @@
 variables:
-    ascName: oryx-automation-service-principal
-    acrName: oryxdevmcr.azurecr.io
-    skipComponentGovernanceDetection: true
-    Packaging.EnableSBOMSigning: true
+- group: Oryx
+- name: ascName
+  value: oryx-automation-service-principal
+- name: acrName
+  value: oryxdevmcr.azurecr.io
+- name: skipComponentGovernanceDetection
+  value: true
+- name: Packaging.EnableSBOMSigning
+  value: true
   
 jobs:
-variables:
-  - group: Oryx
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
     displayName: Build python runtime bullseye base images
