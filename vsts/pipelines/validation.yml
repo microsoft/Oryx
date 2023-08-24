@@ -66,7 +66,7 @@ jobs:
     pool:
       name: AzurePipelines-EO
       demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+        - ImageOverride -equals AzurePipelinesUbuntu22.04compliant
     variables:
     - group: Oryx
     timeoutInMinutes: 480
@@ -92,7 +92,7 @@ jobs:
   pool:
     name: AzurePipelines-EO
     demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      - ImageOverride -equals AzurePipelinesUbuntu22.04compliant
   timeoutInMinutes: 480
   steps:
   - template: templates/_builderTemplate.yml
@@ -103,7 +103,7 @@ jobs:
   pool:
     name: AzurePipelines-EO
     demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      - ImageOverride -equals AzurePipelinesUbuntu22.04compliant
   variables:
   - group: Oryx
   timeoutInMinutes: 480
