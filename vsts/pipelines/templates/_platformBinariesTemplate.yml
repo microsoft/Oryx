@@ -1,5 +1,5 @@
 variables:
-- group: Oryx
+  - group: Oryx
 
 parameters:
     platformName: ''
