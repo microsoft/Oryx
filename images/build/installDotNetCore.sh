@@ -24,9 +24,9 @@ if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
     set -x
     
     if [ $isSasTokenEmpty -eq 0 ]; then
-      echo "sasToken cannot be empty for $sdkStorageAccountUrl."
+        echo "sasToken cannot be empty for $sdkStorageAccountUrl."
     else
-        echo "sasToken is valid for $sdkStorageAccountUrl."
+        echo "sasToken is empty for $sdkStorageAccountUrl."
     fi
 fi
 echo
