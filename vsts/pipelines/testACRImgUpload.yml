@@ -11,8 +11,9 @@ resources:
   fetchDepth: 15
 
 variables:
-  group: Oryx
-  Packaging.EnableSBOMSigning: true
+- group: Oryx
+- name: Packaging.EnableSBOMSigning
+  value: true
 
 stages:
   - stage: Copy

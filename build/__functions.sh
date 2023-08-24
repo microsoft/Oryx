@@ -116,5 +116,10 @@ function retrieveSastokenFromKeyvault()
 	
     	export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=$stagingPrivateStorageSasToken
 	fi
+	if [[ $sdkStorageAccountUrl == ?* ]]; then
+		echo "A valid sasToken is retrieved."
+	else
+		echo "SasToken is not valid. Please retrieve the valid sasToken to work with the https://oryxsdksstaging.blob.core.windows.net environment."
+	fi
 	set -x
 }

@@ -49,8 +49,9 @@ resources:
 - repo: self
 
 variables:
-  group: Oryx
-  Packaging.EnableSBOMSigning: true
+- group: Oryx
+- name: Packaging.EnableSBOMSigning
+  value: true
 
 stages:
   - stage: CreateReleaseTag
@@ -204,16 +205,5 @@ stages:
     - template: templates/_integrationJobTemplate.yml
       parameters:
           storageAccountUrl: ${{ parameters.storageAccountUrl }}
-
-  - stage: Release
-    displayName: Release Stage
-    dependsOn: Build
-    condition: >
-      and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'),
-      startsWith(variables['Build.SourceBranch'],'refs/heads/patch/'),
-      startsWith(variables['Build.SourceBranch'],'refs/heads/exp/')))
-
-    jobs:
-    - template: templates/_releaseJobTemplate.yml
 
 trigger: none
