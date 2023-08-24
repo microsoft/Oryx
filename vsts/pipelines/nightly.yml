@@ -58,7 +58,7 @@ stages:
       pool:
         name: AzurePipelines-EO
         demands:
-          - ImageOverride -equals AzurePipelinesUbuntu22.04compliant
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       variables:
         skipComponentGovernanceDetection: true
       steps:
@@ -97,7 +97,7 @@ stages:
           pool:
             name: AzurePipelines-EO
             demands:
-              - ImageOverride -equals AzurePipelinesUbuntu23.04compliant
+              - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
           timeoutInMinutes: 480
           steps:
           - script: |
@@ -123,7 +123,7 @@ stages:
       pool:
         name: AzurePipelines-EO
         demands:
-          - ImageOverride -equals AzurePipelinesUbuntu22.04compliant
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       timeoutInMinutes: 480
       steps:
       - template: templates/_builderTemplate.yml
@@ -135,7 +135,7 @@ stages:
       pool:
         name: AzurePipelines-EO
         demands:
-          - ImageOverride -equals AzurePipelinesUbuntu22.04compliant
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
       # Building runtime images can take a long time due to our PHP images
       timeoutInMinutes: 480
       steps:
