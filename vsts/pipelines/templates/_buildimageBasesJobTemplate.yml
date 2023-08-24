@@ -1,6 +1,3 @@
-variables:
-  - group: Oryx
-
 parameters:
   displayName: ''
   imageDir: ''
@@ -8,6 +5,9 @@ parameters:
   scriptPath: ''
   artifactsFileName: ''
   jobName: ''
+
+variables:
+  - group: Oryx
 
 jobs:
 - job: ${{ parameters.jobName }}

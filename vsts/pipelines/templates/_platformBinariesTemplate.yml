@@ -1,11 +1,11 @@
-variables:
-  - group: Oryx
-
 parameters:
     platformName: ''
     debianFlavor: ''
     destinationSdkStorageAccountName: ''
-  
+
+variables:
+  - group: Oryx
+
 steps:
 - checkout: self
   clean: true

@@ -1,8 +1,8 @@
-variables:
-  - group: Oryx
-
 parameters:
   destinationSdkStorageAccountName: 'oryxsdksstaging'
+
+variables:
+  - group: Oryx
 
 steps:
 

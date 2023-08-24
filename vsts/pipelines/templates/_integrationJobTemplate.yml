@@ -1,10 +1,10 @@
-variables:
-  - group: Oryx
-
 parameters:
   - name: storageAccountUrl
     type: string
     default: https://oryxsdksstaging.blob.core.windows.net
+
+variables:
+  - group: Oryx
 
 jobs:
 # Python integration tests
