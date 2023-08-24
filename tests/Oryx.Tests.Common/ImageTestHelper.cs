@@ -35,6 +35,7 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _gitHubActionsStretch = ImageTestHelperConstants.GitHubActionsStretch;
         private const string _gitHubActionsBuster = ImageTestHelperConstants.GitHubActionsBuster;
         private const string _gitHubActionsBullseye = ImageTestHelperConstants.GitHubActionsBullseye;
+        private const string _gitHubActionsBookworm = ImageTestHelperConstants.GitHubActionsBookworm;
         private const string _gitHubActionsStretchBase = ImageTestHelperConstants.GitHubActionsStretchBase;
         private const string _gitHubActionsBusterBase = ImageTestHelperConstants.GitHubActionsBusterBase;
         private const string _gitHubActionsBullseyeBase = ImageTestHelperConstants.GitHubActionsBullseyeBase;
@@ -316,6 +317,10 @@ namespace Microsoft.Oryx.Tests.Common
             if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBuster))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBuster}{_tagSuffix}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBookworm))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBookworm}{_tagSuffix}";
             }
             else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseye))
             {
