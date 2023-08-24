@@ -106,9 +106,9 @@ function shouldStageRuntimeVersion()
 
 function retrieveSastokenFromKeyvault()
 {	
-	set +x
 	sdkStorageAccountUrl="$1"
 
+	echo "The value of the sasToken variable 'ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN' passed from the pipeline is: $ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN"
 	if [ $sdkStorageAccountUrl == $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ] && [ -z "$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" ]; then
 	
 		echo "Retrieving token from the Keyvault and setting it to the environment variable 'ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN'"
@@ -116,5 +116,4 @@ function retrieveSastokenFromKeyvault()
 	
     	export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=$stagingPrivateStorageSasToken
 	fi
-	set -x
 }

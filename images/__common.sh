@@ -7,7 +7,7 @@ __CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
 source $__CURRENT_DIR/__sdkStorageConstants.sh
 
 function downloadFileAndVerifyChecksum() {
-    set +x
+
     local platformName="$1"
     local version="$2"
     local downloadedFileName="$3"
@@ -37,5 +37,5 @@ function downloadFileAndVerifyChecksum() {
         checksumcode="sha256sum"
     fi
     echo "$checksumValue $downloadedFileName" | $checksumcode -c -
-    set -x
+
 }
