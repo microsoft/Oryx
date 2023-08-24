@@ -3,6 +3,7 @@ variables:
     acrName: oryxdevmcr.azurecr.io
     skipComponentGovernanceDetection: true
     Packaging.EnableSBOMSigning: true
+    group: Oryx
 
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
