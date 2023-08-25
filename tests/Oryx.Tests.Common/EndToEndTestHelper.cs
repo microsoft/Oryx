@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -418,13 +419,13 @@ namespace Microsoft.Oryx.Tests.Common
                 {
                     var stdOut = getPortMappingResult.StdOut?.Trim().ReplaceNewLine();
                     Console.WriteLine("stdOut: " + stdOut);
-                    var portMapping = stdOut?.Split(":::");
+                    var portMapping = stdOut?.Split(":");
                     Console.WriteLine("portMapping: " + portMapping);
                     Assert.NotNull(portMapping);
                     Assert.True(
-                        (portMapping.Length == 2),
+                        (portMapping.Length > 1),
                         "Did not get the port mapping in expected format. StdOut: " + getPortMappingResult.StdOut);
-                    var hostPort = Convert.ToInt32(portMapping[1]);
+                    var hostPort = Convert.ToInt32(portMapping.Last());
                     return hostPort;
                 }
                 else if (getPortMappingResult.StdErr.Contains("No such container") || (getPortMappingResult.HasExited && getPortMappingResult.ExitCode != 0))
