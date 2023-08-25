@@ -92,6 +92,7 @@ COPY --from=intermediate /opt /opt
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -e \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && echo $ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \

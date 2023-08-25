@@ -106,7 +106,7 @@ function shouldStageRuntimeVersion()
 
 function retrieveSastokenFromKeyvault()
 {	
-	set +x
+	
 	sdkStorageAccountUrl="$1"
 
 	if [ $sdkStorageAccountUrl == $PRIVATE_STAGING_SDK_STORAGE_BASE_URL ] && [ -z "$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" ]; then
@@ -121,5 +121,5 @@ function retrieveSastokenFromKeyvault()
 	else
 		echo "SasToken is not valid. Please retrieve the valid sasToken to work with the https://oryxsdksstaging.blob.core.windows.net environment."
 	fi
-	set -x
+	
 }
