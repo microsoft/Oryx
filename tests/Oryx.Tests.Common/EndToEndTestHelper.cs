@@ -417,7 +417,11 @@ namespace Microsoft.Oryx.Tests.Common
                 if (getPortMappingResult.ExitCode == 0)
                 {
                     var stdOut = getPortMappingResult.StdOut?.Trim().ReplaceNewLine();
+                    Console.WriteLine("stdOut");
+                    Console.WriteLine(stdOut);
                     var portMapping = stdOut?.Split(":");
+                    Console.WriteLine("portMapping");
+                    Console.WriteLine(portMapping);
                     Assert.NotNull(portMapping);
                     Assert.True(
                         (portMapping.Length == 2),
