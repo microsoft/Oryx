@@ -412,16 +412,14 @@ namespace Microsoft.Oryx.Tests.Common
                 await Task.Delay(DelayBetweenRetries);
 
                 // Example output from `docker port <container-name> <container-port>`:
-                // "0.0.0.0:32774"
+                // "0.0.0.0:32785:::32785"
                 var getPortMappingResult = dockerCli.GetPortMapping(containerName, portInContainer);
                 if (getPortMappingResult.ExitCode == 0)
                 {
                     var stdOut = getPortMappingResult.StdOut?.Trim().ReplaceNewLine();
-                    Console.WriteLine("stdOut");
-                    Console.WriteLine(stdOut);
-                    var portMapping = stdOut?.Split(":");
-                    Console.WriteLine("portMapping");
-                    Console.WriteLine(portMapping);
+                    Console.WriteLine("stdOut: " + stdOut);
+                    var portMapping = stdOut?.Split(":::");
+                    Console.WriteLine("portMapping: " + portMapping);
                     Assert.NotNull(portMapping);
                     Assert.True(
                         (portMapping.Length == 2),
