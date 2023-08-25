@@ -46,7 +46,7 @@ fi
 retrieveSastokenFromKeyvault $PRIVATE_STAGING_SDK_STORAGE_BASE_URL
 
 echo
-echo "Building the common base image wih bullseye and buster flavor '$RUNTIME_BASE_IMAGE_NAME'..."
+echo "Building the common base image wih bullseye, buster, and bookworm flavor '$RUNTIME_BASE_IMAGE_NAME'..."
 echo
 # Build the common base image first, so other images that depend on it get the latest version.
 # We don't retrieve this image from a repository but rather build locally to make sure we get
@@ -63,6 +63,13 @@ docker build \
     --build-arg DEBIAN_FLAVOR=bullseye \
     -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
     -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-bullseye" \
+    $REPO_DIR
+
+docker build \
+    --pull \
+    --build-arg DEBIAN_FLAVOR=bookworm \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-bookworm" \
     $REPO_DIR
 
 labels="--label com.microsoft.oryx.git-commit=$GIT_COMMIT"

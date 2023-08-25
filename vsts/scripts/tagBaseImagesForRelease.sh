@@ -96,6 +96,7 @@ then
   echo $imageName
   retagImageWithStagingRepository dotnetcore-runtimeimage-bases-buster.txt $imageName buster
   retagImageWithStagingRepository dotnetcore-runtimeimage-bases-bullseye.txt $imageName bullseye
+  retagImageWithStagingRepository dotnetcore-runtimeimage-bases-bookworm.txt $imageName bookworm
 elif [ "$imageName" == "ruby" ]
 then
   echo ""

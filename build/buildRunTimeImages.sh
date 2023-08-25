@@ -107,6 +107,13 @@ docker build \
     --build-arg DEBIAN_FLAVOR=bullseye \
     $REPO_DIR
 
+docker build \
+    --pull \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-bookworm" \
+    --build-arg DEBIAN_FLAVOR=bookworm \
+    $REPO_DIR
+
 execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
 
 # The common base image is built separately, so we ignore it
