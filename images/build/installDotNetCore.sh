@@ -47,9 +47,7 @@ else
     fileName="dotnet-$debianFlavor-$DOTNET_SDK_VER.tar.gz"
 fi
 
-set +x
 downloadFileAndVerifyChecksum dotnet $DOTNET_SDK_VER $fileName $sdkStorageAccountUrl $sasToken
-set -x
 
 globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
 
