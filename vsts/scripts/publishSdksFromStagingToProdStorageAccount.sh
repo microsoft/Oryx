@@ -99,24 +99,28 @@ function copyPlatformBlobsToProdForDebianFlavor() {
     else
         binaryPrefix="$platformName-$debianFlavor"
     fi
-    defaultFile="defaultVersion.$debianFlavor.txt"
-    copyBlob "$platformName" "$defaultFile"
 
-    # Here '3' is a file descriptor which is specifically used to read the versions file.
-    # This is used since 'azcopy' command seems to also be using the standard file descriptor for stdin '0'
-    # which causes some issues when trying to loop through the lines of the file.
-    while IFS= read -u 3 -r line || [[ -n $line ]]
-	do
-        # Ignore whitespace and comments
-        if [ -z "$line" ] || [[ $line = \#* ]] ; then
-            continue
-        fi
+    # Check if platformName is not "dotnet" and debianFlavor is "bookworm"
+    if [ "$platformName" != "dotnet" ] && [ "$debianFlavor" == "bookworm" ]; then
+        # Do not copy blobs
+        echo "Copying blobs for platformName=$platformName and debianFlavor=$debianFlavor is not allowed."
+    else
+        defaultFile="defaultVersion.$debianFlavor.txt"
+        copyBlob "$platformName" "$defaultFile"
+        
+        # Rest of the code...
+        while IFS= read -u 3 -r line || [[ -n $line ]]
+        do
+            # Ignore whitespace and comments
+            if [ -z "$line" ] || [[ $line = \#* ]] ; then
+                continue
+            fi
 
-        IFS=',' read -ra LINE_INFO <<< "$line"
-        version=$(echo -e "${LINE_INFO[0]}" | sed -e 's/^[[:space:]]*//')
-        copyBlob "$platformName" "$binaryPrefix-$version.tar.gz"
-	done 3< "$versionsFile"
-
+            IFS=',' read -ra LINE_INFO <<< "$line"
+            version=$(echo -e "${LINE_INFO[0]}" | sed -e 's/^[[:space:]]*//')
+            copyBlob "$platformName" "$binaryPrefix-$version.tar.gz"
+        done 3< "$versionsFile"
+    fi
 }
 
 if [ ! -f "$azCopyDir/azcopy" ]; then
