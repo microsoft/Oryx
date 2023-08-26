@@ -2,6 +2,11 @@
 
 ## dotnet
 
+### bookworm
+
+- 8.0.100-preview.6.23330.14
+- 8.0.100-preview.7.23376.3
+
 ### bullseye
 
 - 3.1.404

@@ -75,6 +75,7 @@ function copyPlatformBlobsToProd() {
     copyPlatformBlobsToProdForDebianFlavor "$platformName" "stretch"
     copyPlatformBlobsToProdForDebianFlavor "$platformName" "buster"
     copyPlatformBlobsToProdForDebianFlavor "$platformName" "bullseye"
+    copyPlatformBlobsToProdForDebianFlavor "$platformName" "bookworm"
     copyPlatformBlobsToProdForDebianFlavor "$platformName" "focal-scm"
 }
 
