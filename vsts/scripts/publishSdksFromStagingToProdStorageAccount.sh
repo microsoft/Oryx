@@ -115,12 +115,12 @@ function copyPlatformBlobsToProdForDebianFlavor() {
         defaultFile="defaultVersion.$debianFlavor.txt"
         copyBlob "$platformName" "$defaultFile"
         
-        # Rest of the code...
+        # Here '3' is a file descriptor which is specifically used to read the versions file.
+        # This is used since 'azcopy' command seems to also be using the standard file descriptor for stdin '0'
+        # which causes some issues when trying to loop through the lines of the file.
         while IFS= read -u 3 -r line || [[ -n $line ]]
         do
-            # Here '3' is a file descriptor which is specifically used to read the versions file.
-            # This is used since 'azcopy' command seems to also be using the standard file descriptor for stdin '0'
-            # which causes some issues when trying to loop through the lines of the file.
+            # Ignore whitespace and comments
             if [ -z "$line" ] || [[ $line = \#* ]] ; then
                 continue
             fi
