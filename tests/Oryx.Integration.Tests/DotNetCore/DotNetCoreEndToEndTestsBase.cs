@@ -24,6 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
         protected const string NetCoreApp60MvcApp = "NetCore6PreviewMvcApp";
         protected const string NetCoreApp70MvcApp = "NetCore7PreviewMvcApp";
         protected const string NetCoreApp70WebApp = "NetCore7WebApp";
+        protected const string NetCoreApp80MvcApp = "NetCore8PreviewMvcApp";
         protected const string DefaultWebApp = "DefaultWebApp";
         protected const string NetCoreApp21MultiProjectApp = "NetCoreApp21MultiProjectApp";
         protected const string DefaultStartupFilePath = "./run.sh";
