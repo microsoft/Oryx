@@ -13,10 +13,10 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-14-stretch-1")]
+    [Trait("category", "node-16-nuxt")]
     public class NodeNuxtJsAppTest : NodeEndToEndTestsBase
     {
-        public const string AppName = "helloworld-nuxtjs";
+        public const string AppName = "hackernews-nuxtjs";
         public const int ContainerAppPort = 3000;
 
         public NodeNuxtJsAppTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}");
-                    Assert.Contains("Welcome!", data);
+                    Assert.Contains("Nuxt HN | News", data);
                 });
         }
 
@@ -116,7 +116,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}");
-                    Assert.Contains("Welcome!", data);
+                    Assert.Contains("Nuxt HN | News", data);
                 });
         }
     }
