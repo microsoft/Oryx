@@ -10,7 +10,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
 #   dotnet-monitor --version 8.*
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 8.0.0-preview.7.23402
 
-FROM mcr.microsoft.com/mirror/docker/library/debian:bullseye-slim
+FROM mcr.microsoft.com/mirror/docker/library/debian:bookworm-slim
 ARG BUILD_DIR=/tmp/oryx/build
 ADD build ${BUILD_DIR}
 
@@ -20,8 +20,8 @@ RUN apt-get update \
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
-        libicu67 \
-        libssl1.1 \
+        libicu72 \
+        libssl3 \
         libstdc++6 \
         zlib1g \
         lldb \
@@ -45,7 +45,7 @@ RUN set -ex \
     && apt-get remove ca-certificates -y \
     && apt-get purge ca-certificates -y \
     && apt-get update \
-    && apt-get install -f ca-certificates=20210119 -y --no-install-recommends \
+    && apt-get install -f ca-certificates -y --no-install-recommends \
     && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
     && curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Runtime/$NET_CORE_APP_80/dotnet-runtime-$NET_CORE_APP_80-linux-x64.tar.gz \
     && echo "$NET_CORE_APP_80_SHA dotnet.tar.gz" | sha512sum -c - \
