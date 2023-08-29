@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [Trait("build-image", "github-actions-debian-buster")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
         [InlineData(NetCoreApp80MvcApp, "Welcome to ASP.NET Core 8 MVC!")]
         public async Task CanBuildAndRun_NetCore80AppAsync(string sampleApp, string webpageMessage)
         {
@@ -51,7 +51,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 sampleApp,
                 _output,
                 new DockerVolume[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
                 "/bin/sh",
                 new[]
                 {
