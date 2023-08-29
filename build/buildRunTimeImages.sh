@@ -114,7 +114,7 @@ docker build \
     --build-arg DEBIAN_FLAVOR=bookworm \
     $REPO_DIR
 
-execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
+# execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
 
 # The common base image is built separately, so we ignore it
 dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name "$runtimeImageDebianFlavor.Dockerfile" ! -path "$RUNTIME_IMAGES_SRC_DIR/commonbase/*" \) )
