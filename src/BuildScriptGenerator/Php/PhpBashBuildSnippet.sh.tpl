@@ -12,3 +12,4 @@ php $composer install --ignore-platform-reqs --no-interaction
 {{ else }}
 echo "No 'composer.json' file found; not running 'composer install'."
 {{ end }}
+

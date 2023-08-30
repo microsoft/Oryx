@@ -96,7 +96,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} --platform {RubyConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
                 .ToString();
 

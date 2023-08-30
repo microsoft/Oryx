@@ -12,6 +12,7 @@ using Microsoft.Oryx.Automation.Python.Models;
 using Microsoft.Oryx.Automation.Services;
 using Newtonsoft.Json;
 using Oryx.Microsoft.Automation.Python;
+using Version = System.Version;
 
 namespace Microsoft.Oryx.Automation.Python
 {
@@ -24,7 +25,8 @@ namespace Microsoft.Oryx.Automation.Python
         private string oryxSdkStorageBaseUrl;
         private string pythonMinReleaseVersion;
         private string pythonMaxReleaseVersion;
-        private List<string> pythonBlockedVersions = null;
+        private List<string> pythonBlockedVersions = new List<string>();
+        private HashSet<string> oryxPythonSdkVersions;
 
         public PythonAutomator(
             IHttpService httpService,
@@ -46,10 +48,26 @@ namespace Microsoft.Oryx.Automation.Python
                 this.oryxSdkStorageBaseUrl = Constants.OryxSdkStorageBaseUrl;
             }
 
+            string sdkVersionsUrl = this.oryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl;
+
+            // A SAS token is required for the staging account.
+            if (this.oryxSdkStorageBaseUrl == Constants.OryxSdkStagingStorageBaseUrl)
+            {
+                string sasToken = Environment.GetEnvironmentVariable(Constants.OryxSdkStagingPrivateSasTokenEnvVar);
+                if (string.IsNullOrEmpty(sasToken))
+                {
+                    throw new ArgumentException($"The environment variable {Constants.OryxSdkStagingPrivateSasTokenEnvVar} " +
+                        $"must be provided in order to access {Constants.OryxSdkStagingStorageBaseUrl}");
+                }
+
+                sdkVersionsUrl += "&" + sasToken;
+            }
+
+            this.oryxPythonSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(sdkVersionsUrl);
             this.pythonMinReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMinReleaseVersionEnvVar);
             this.pythonMaxReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMaxReleaseVersionEnvVar);
-            var blockedVersions = Environment.GetEnvironmentVariable(
-                PythonConstants.PythonBlockedVersionsEnvVar);
+            var blockedVersions = Environment.GetEnvironmentVariable(PythonConstants.PythonBlockedVersionsEnvVar);
+
             if (!string.IsNullOrEmpty(blockedVersions))
             {
                 var versionStrings = blockedVersions.Split(',');
@@ -83,9 +101,6 @@ namespace Microsoft.Oryx.Automation.Python
             var response = await this.httpService.GetDataAsync(PythonConstants.PythonReleaseUrl);
             var releases = JsonConvert.DeserializeObject<List<Release>>(response);
 
-            HashSet<string> oryxSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(
-                this.oryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl);
-
             var pythonVersions = new List<PythonVersion>();
             foreach (var release in releases)
             {
@@ -97,7 +112,7 @@ namespace Microsoft.Oryx.Automation.Python
                         minVersion: this.pythonMinReleaseVersion,
                         maxVersion: this.pythonMaxReleaseVersion,
                         this.pythonBlockedVersions) &&
-                    !oryxSdkVersions.Contains(newVersion))
+                    !this.oryxPythonSdkVersions.Contains(newVersion))
                 {
                     pythonVersions.Add(new PythonVersion
                     {
@@ -135,14 +150,13 @@ namespace Microsoft.Oryx.Automation.Python
 
         private string GetGpgKeyForVersion(string version)
         {
-            // Split the version string into major and minor parts
-            string[] parts = version.Split('.');
-            if (parts.Length < 2)
+            Version v;
+            if (!Version.TryParse(version, out v))
             {
                 throw new ArgumentException("Invalid version format");
             }
 
-            string majorMinor = string.Join(".", parts.Take(2));
+            string majorMinor = $"{v.Major}.{v.Minor}";
 
             // Look up the GPG key in the dictionary
             if (PythonConstants.VersionGpgKeys.TryGetValue(majorMinor, out string gpgKey))
