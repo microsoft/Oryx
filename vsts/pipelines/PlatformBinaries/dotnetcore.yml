@@ -10,6 +10,19 @@ parameters:
 stages:
 - stage: Build
   jobs:
+  - job: DotNetCore_Bookworm
+    timeoutInMinutes: 250
+    pool:
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'dotnet'
+        debianFlavor: 'bookworm'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
+  
   - job: DotNetCore_Bullseye
     timeoutInMinutes: 250
     pool:

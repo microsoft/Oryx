@@ -72,17 +72,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="BaseBashBuildScript.sh.tpl" WithCulture="false"/>
-    <EmbeddedResource Include="Dockerfile.oryx.tpl" WithCulture="false"/>
-    <EmbeddedResource Include="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" WithCulture="false"/>
-    <EmbeddedResource Include="Java\JavaBashBuildSnippet.sh.tpl" WithCulture="false"/>
-    <EmbeddedResource Include="Node\NodeBashBuildSnippet.sh.tpl" WithCulture="false"/>
-    <EmbeddedResource Include="Hugo\HugoBashBuildSnippet.sh.tpl" WithCulture="false"/>
-    <EmbeddedResource Include="Php\PhpBashBuildSnippet.sh.tpl" WithCulture="false"/>
-    <EmbeddedResource Include="Golang\GolangBashBuildSnippet.sh.tpl" WithCulture="false"/>
-    <EmbeddedResource Include="Python\JupyterNotebookBashBuildSnippet.sh.tpl" WithCulture="false"/>
-    <EmbeddedResource Include="Python\PythonBashBuildSnippet.sh.tpl" WithCulture="false"/>
-    <EmbeddedResource Include="Ruby\RubyBashBuildSnippet.sh.tpl" WithCulture="false"/>
+    <EmbeddedResource Include="BaseBashBuildScript.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Dockerfile.oryx.tpl" WithCulture="false" />
+    <EmbeddedResource Include="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Java\JavaBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Node\NodeBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Hugo\HugoBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Php\PhpBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Golang\GolangBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Python\JupyterNotebookBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Python\PythonBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Ruby\RubyBashBuildSnippet.sh.tpl" WithCulture="false" />
   </ItemGroup>
 
   <ItemGroup>

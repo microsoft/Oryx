@@ -35,12 +35,15 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _gitHubActionsStretch = ImageTestHelperConstants.GitHubActionsStretch;
         private const string _gitHubActionsBuster = ImageTestHelperConstants.GitHubActionsBuster;
         private const string _gitHubActionsBullseye = ImageTestHelperConstants.GitHubActionsBullseye;
+        private const string _gitHubActionsBookworm = ImageTestHelperConstants.GitHubActionsBookworm;
         private const string _gitHubActionsStretchBase = ImageTestHelperConstants.GitHubActionsStretchBase;
         private const string _gitHubActionsBusterBase = ImageTestHelperConstants.GitHubActionsBusterBase;
         private const string _gitHubActionsBullseyeBase = ImageTestHelperConstants.GitHubActionsBullseyeBase;
+        private const string _gitHubActionsBookwormBase = ImageTestHelperConstants.GitHubActionsBookwormBase;
         private const string _gitHubActionsStretchBaseWithEnv = ImageTestHelperConstants.GitHubActionsStretchBaseWithEnv;
         private const string _gitHubActionsBusterBaseWithEnv = ImageTestHelperConstants.GitHubActionsBusterBaseWithEnv;
         private const string _gitHubActionsBullseyeBaseWithEnv = ImageTestHelperConstants.GitHubActionsBullseyeBaseWithEnv;
+        private const string _gitHubActionsBookwormBaseWithEnv = ImageTestHelperConstants.GitHubActionsBookwormBaseWithEnv;
         private const string _vso = ImageTestHelperConstants.Vso;
         private const string _vsoUbuntu = ImageTestHelperConstants.VsoFocal;
         private const string _vsoBullseye = ImageTestHelperConstants.VsoBullseye;
@@ -315,6 +318,10 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBuster}{_tagSuffix}";
             }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBookworm))
+            {
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBookworm}{_tagSuffix}";
+            }
             else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseye))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
@@ -327,7 +334,11 @@ namespace Microsoft.Oryx.Tests.Common
 
         public string GetGitHubActionsAsBaseBuildImage(string debianFlavor = null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBusterBase))
+            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBookwormBase))
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBookwormBase}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBusterBase))
             {
                 return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBusterBase}";
             }
@@ -343,7 +354,11 @@ namespace Microsoft.Oryx.Tests.Common
 
         public string GetGitHubActionsAsBaseWithEnvBuildImage(string debianFlavor = null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBusterBaseWithEnv))
+            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBookwormBaseWithEnv))
+            {
+                return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBookwormBaseWithEnv}";
+            }
+            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBusterBaseWithEnv))
             {
                 return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBusterBaseWithEnv}";
             }
@@ -499,12 +514,15 @@ namespace Microsoft.Oryx.Tests.Common
         public const string GitHubActionsStretch = "github-actions-debian-stretch";
         public const string GitHubActionsBuster = "github-actions-debian-buster";
         public const string GitHubActionsBullseye = "github-actions-debian-bullseye";
+        public const string GitHubActionsBookworm = "github-actions-debian-bookworm";
         public const string GitHubActionsStretchBase = "github-actions-debian-stretch-base";
         public const string GitHubActionsBusterBase = "github-actions-debian-buster-base";
         public const string GitHubActionsBullseyeBase = "github-actions-debian-bullseye-base";
+        public const string GitHubActionsBookwormBase = "github-actions-debian-bookworm-base";
         public const string GitHubActionsStretchBaseWithEnv = "github-actions-debian-stretch-base-withenv";
         public const string GitHubActionsBusterBaseWithEnv = "github-actions-debian-buster-base-withenv";
         public const string GitHubActionsBullseyeBaseWithEnv = "github-actions-debian-bullseye-base-withenv";
+        public const string GitHubActionsBookwormBaseWithEnv = "github-actions-debian-bookworm-base-withenv";
         public const string Vso = "vso";
         public const string VsoFocal = "vso-ubuntu-focal";
         public const string VsoBullseye = "vso-debian-bullseye";

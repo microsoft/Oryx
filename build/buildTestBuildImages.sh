@@ -138,6 +138,39 @@ if [ -z "$buildImageTagFilter" ] || [ "$buildImageTagFilter" == "github-actions-
     echo
 fi
 
+# Build GitHub Actions bookworm build image and helper build images
+if [ -z "$buildImageTagFilter" ] || [ "$buildImageTagFilter" == "github-actions-debian-bookworm" ];then
+    echo "Building bookworm based GitHub Action image for tests..."
+    docker build \
+        -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-bookworm" \
+        --build-arg PARENT_IMAGE_BASE=github-actions-debian-bookworm \
+        -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
+        .
+
+    echo
+    echo
+
+    echo "Building image that uses bookworm based GitHub Action as a base but doesn't have all required environment variables..."
+    docker build \
+        -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-bookworm-base" \
+        --build-arg PARENT_IMAGE_BASE=github-actions-debian-bookworm \
+        -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_BUILDIMAGE_DOCKERFILE" \
+        .
+
+    echo
+    echo
+
+    echo "Building image that uses bookworm based GitHub Action as a base and has all required environment variables..."
+    docker build \
+        -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-bookworm-base-withenv" \
+        --build-arg PARENT_IMAGE_BASE=github-actions-debian-bookworm \
+        --build-arg DEBIAN_FLAVOR=bookworm \
+        -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_WITHENV_BUILDIMAGE_DOCKERFILE" \
+        .
+
+    echo
+fi
+
 # Build latest stretch build image
 if [ -z "$buildImageTagFilter" ] || [ "$buildImageTagFilter" == "debian-stretch" ];then
     echo "Building stretch based full build image for tests..."
