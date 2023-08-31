@@ -9,7 +9,9 @@ baseImageDebianFlavor="$1"
 
 PHP_VERSION_ARRAY=("${VERSION_ARRAY[@]}")
 
-if [ "$baseImageDebianFlavor" == "bullseye" ];then
+if [ "$baseImageDebianFlavor" == "bookworm" ];then
+    PHP_VERSION_ARRAY=("${VERSION_ARRAY_BOOKWORM[@]}")
+elif [ "$baseImageDebianFlavor" == "bullseye" ];then
     PHP_VERSION_ARRAY=("${VERSION_ARRAY_BULLSEYE[@]}")
 elif [ "$baseImageDebianFlavor" == "buster" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")

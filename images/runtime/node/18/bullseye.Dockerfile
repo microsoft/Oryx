@@ -13,11 +13,11 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM mcr.microsoft.com/oryx/base:node-18-20221112.1
+FROM mcr.microsoft.com/oryx/base:node-18-debian-bullseye-20230707.2
 
 # Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ARG AI_CONNECTION_STRING
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 #Bake in client certificate path into image to avoid downloading it
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 # Oryx++ Builder variables

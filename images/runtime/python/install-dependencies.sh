@@ -34,7 +34,9 @@ apt-get update \
 export ACCEPT_EULA=Y \
     && curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 
-if [ "$debianFlavor" == "bullseye" ]; then \
+if [ "$debianFlavor" == "bookworm" ]; then \
+    curl https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list
+elif [ "$debianFlavor" == "bullseye" ]; then \
     curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
 elif [ "$debianFlavor" == "buster" ]; then \
     curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
