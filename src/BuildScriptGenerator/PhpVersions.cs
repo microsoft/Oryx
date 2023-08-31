@@ -6,8 +6,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class PhpVersions
     {
-        public const string PhpRuntimeBaseTag = "20230713.2";
-        public const string PhpFpmRuntimeBaseTag = "20230720.2";
+        public const string PhpRuntimeBaseTag = "20230831.3";
+        public const string PhpFpmRuntimeBaseTag = "20230831.3";
         public const string ComposerVersion = "2.0.8";
         public const string ComposerSetupSha384 = "e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02";
         public const string Composer19Version = "1.9.3";
@@ -15,15 +15,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Composer20Version = "2.0.8";
         public const string Composer22Version = "2.2.9";
         public const string Composer23Version = "2.3.4";
-        public const string Php82Version = "8.2.8";
+        public const string Php82Version = "8.2.9";
         public const string Php82Keys = "1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544";
-        public const string Php82TarSha256 = "cfe1055fbcd486de7d3312da6146949aae577365808790af6018205567609801";
-        public const string Php81Version = "8.1.21";
+        public const string Php82TarSha256 = "1e6cb77f997613864ab3127fbfc6a8c7fdaa89a95e8ed6167617b913b4de4765";
+        public const string Php81Version = "8.1.22";
         public const string Php81Keys = "528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544";
-        public const string Php81TarSha256 = "e634a00b0c6a8cd39e840e9fb30b5227b820b7a9ace95b7b001053c1411c4821";
-        public const string Php80Version = "8.0.29";
+        public const string Php81TarSha256 = "9ea4f4cfe775cb5866c057323d6b320f3a6e0adb1be41a068ff7bfec6f83e71d";
+        public const string Php80Version = "8.0.30";
         public const string Php80Keys = "1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F";
-        public const string Php80TarSha256 = "14db2fbf26c07d0eb2c9fab25dbde7e27726a3e88452cca671f0896bbb683ca9";
+        public const string Php80TarSha256 = "216ab305737a5d392107112d618a755dc5df42058226f1670e9db90e77d777d9";
         public const string Php74Version = "7.4.33";
         public const string Php74Keys = "42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312";
         public const string Php74TarSha256 = "924846abf93bc613815c55dd3f5809377813ac62a9ec4eb3778675b82a27b927";
