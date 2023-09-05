@@ -1,4 +1,4 @@
-FROM oryxdevmcr.azurecr.io/private/oryx/php-8.0
+FROM oryxdevmcr.azurecr.io/private/oryx/php-8.0-buster
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 8.0.30
 

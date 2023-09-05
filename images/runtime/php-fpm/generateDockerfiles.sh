@@ -20,7 +20,9 @@ ImageDebianFlavor="$1"
 
 PHP_VERSION_ARRAY=()
 
-if [ "$ImageDebianFlavor" == "bullseye" ];then
+if [ "$ImageDebianFlavor" == "bookworm" ];then
+	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BOOKWORM[@]}")
+elif [ "$ImageDebianFlavor" == "bullseye" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BULLSEYE[@]}")
 elif [ "$ImageDebianFlavor" == "buster" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")
@@ -31,7 +33,7 @@ do
 	IFS='.' read -ra SPLIT_VERSION <<< "$PHP_VERSION"
 	VERSION_DIRECTORY="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
 
-	PHP_IMAGE_TAG="php-fpm-$VERSION_DIRECTORY"
+	PHP_IMAGE_TAG="php-fpm-$VERSION_DIRECTORY-$ImageDebianFlavor"
 	echo "Generating Dockerfile with tag '$PHP_IMAGE_TAG' in directory '$VERSION_DIRECTORY'..."
 
 	mkdir -p "$DIR/$VERSION_DIRECTORY/"
