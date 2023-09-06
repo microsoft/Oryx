@@ -4,7 +4,6 @@
 // --------------------------------------------------------------------------------------------
 
 using Microsoft.Oryx.BuildScriptGenerator.Node;
-using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -21,12 +20,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public void NodeImage_Contains_RequiredPrograms(string nodeTag)
+        public void NodeImage_Contains_RequiredPrograms(string version, string osType)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
+                ImageId = _imageHelper.GetRuntimeImage("node", version, osType),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[]
                 {
@@ -40,13 +39,14 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("14")]
-        public void Node14Image_Contains_PM2(string nodeTag)
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        public void Node14Image_Contains_PM2(string version, string osType)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
+                ImageId = _imageHelper.GetRuntimeImage("node", version, osType),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[]
                 {
@@ -61,13 +61,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public void NodeImage_Contains_ApplicationInsights(string nodeTag)
+        public void NodeImage_Contains_ApplicationInsights(string version, string osType)
         {
             // Arrange & Act
             var expectedAppInsightsVersion = string.Concat("applicationinsights@", NodeVersions.NodeAppInsightsSdkVersion);
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
+                ImageId = _imageHelper.GetRuntimeImage("node", version, osType),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[]
                 {
@@ -91,12 +91,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public void NodeImages_Contains_Correct_NPM_Version(string nodeTag)
+        public void NodeImages_Contains_Correct_NPM_Version(string version, string osType)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
+                ImageId = _imageHelper.GetRuntimeImage("node", version, osType),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[]
                 {

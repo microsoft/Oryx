@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task PipelineTestInvocationsPhp82Async()
         {
             string phpVersion82 = "8.2";
-            await CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion82);
+            await CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion82, ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
         [Fact, Trait("category", "php-8.1")]
@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task PipelineTestInvocationsPhp81Async()
         {
             string phpVersion81 = "8.1";
-            await CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion81);
+            await CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion81, ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
         [Fact, Trait("category", "php-8.0")]
@@ -47,7 +47,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task PipelineTestInvocationsPhp80Async()
         {
             string phpVersion80 = "8.0";
-            await CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion80);
+            await CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion80, ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -56,11 +56,11 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             await Task.WhenAll(
-                PhpWithWordPress51Async(phpVersion74),
-                CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion74));
+                PhpWithWordPress51Async(phpVersion74, ImageTestHelperConstants.OsTypeDebianBullseye),
+                CanBuildAndRun_Wordpress_SampleAppAsync(phpVersion74, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
-        private async Task PhpWithWordPress51Async(string phpVersion)
+        private async Task PhpWithWordPress51Async(string phpVersion, string osType)
         {
             // Arrange
             string hostDir = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
@@ -96,7 +96,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -106,7 +106,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        private async Task CanBuildAndRun_Wordpress_SampleAppAsync(string phpVersion)
+        private async Task CanBuildAndRun_Wordpress_SampleAppAsync(string phpVersion, string osType)
         {
             // Arrange
             var appName = "wordpress-example";
@@ -142,7 +142,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>

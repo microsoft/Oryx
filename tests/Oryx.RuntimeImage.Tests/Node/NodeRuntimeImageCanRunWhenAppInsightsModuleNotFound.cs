@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [MemberData(
            nameof(TestValueGenerator.GetNodeVersions),
            MemberType = typeof(TestValueGenerator))]
-        public async Task GeneratesScript_CanRun_AppInsightsModule_NotFoundAsync(string nodeVersion)
+        public async Task GeneratesScript_CanRun_AppInsightsModule_NotFoundAsync(string nodeVersion, string osType)
         {
             // This test is for the following scenario:
             // When we find no application insight dependency in package.json, but env variables  for
@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
+            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion, osType);
             var aiConnectionString
                 = ExtVarNames.UserAppInsightsConnectionStringEnv;
             var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [MemberData(
            nameof(TestValueGenerator.GetNodeVersions),
            MemberType = typeof(TestValueGenerator))]
-        public async Task GeneratesScript_CanRun_With_AppInsights_Env_Variables_NotConfigured_Async(string nodeVersion)
+        public async Task GeneratesScript_CanRun_With_AppInsights_Env_Variables_NotConfigured_Async(string nodeVersion, string osType)
         {
             // This test is for the following scenario:
             // When we find no application insight dependency in package.json and env variables for
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
+            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion, osType);
             var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             int containerDebugPort = 8080;
 
@@ -102,7 +102,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -122,7 +122,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [MemberData(
            nameof(TestValueGenerator.GetNodeVersions),
            MemberType = typeof(TestValueGenerator))]
-        public async Task GeneratesScript_CanRun_With_New_AppInsights_Env_Variable_Set_Async(string nodeVersion)
+        public async Task GeneratesScript_CanRun_With_New_AppInsights_Env_Variable_Set_Async(string nodeVersion, string osType)
         {
             // This test is for the following scenario:
             // When we find the user has set env variable "APPLICATIONINSIGHTS_CONNECTION_STRING" application insight dependency in package.json and env variables for
@@ -133,7 +133,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
+            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion, osType);
             var aIEnabled = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             var connectionStringEnv = ExtVarNames.UserAppInsightsConnectionStringEnv;
             int containerDebugPort = 8080;
@@ -153,7 +153,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -170,10 +170,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("14", "")]
-        [InlineData("14", "disabled")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBuster, "")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBullseye, "")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBuster, "disabled")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBullseye, "disabled")]
         public async Task GeneratesScript_Doesnot_Add_Oryx_AppInsights_Logic_With_IPA_Configuration_Async(
             string nodeVersion,
+            string osType,
             string agentExtensionVersionEnvValue)
         {
             // This test is for the following scenario:
@@ -185,7 +188,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
-            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion);
+            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion, osType);
             //agentextension version will be set to '~3' or '' or 'disabled'
             var agentExtensionVersionEnv = ExtVarNames.UserAppInsightsAgentExtensionVersion;
             var connectionStringEnv = ExtVarNames.UserAppInsightsConnectionStringEnv;
@@ -204,7 +207,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,

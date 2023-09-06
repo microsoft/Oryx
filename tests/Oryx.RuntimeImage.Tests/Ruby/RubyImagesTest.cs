@@ -35,7 +35,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("ruby", "dynamic"),
+                ImageId = _imageHelper.GetRuntimeImage("ruby", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { "version" }
             });
@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("ruby", "dynamic"),
+                ImageId = _imageHelper.GetRuntimeImage("ruby", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[] { "-c", script }
             });
@@ -79,16 +79,19 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("2.5", "ruby " + RubyVersions.Ruby25Version)]
-        [InlineData("2.6", "ruby " + RubyVersions.Ruby26Version)]
-        [InlineData("2.7", "ruby " + RubyVersions.Ruby27Version)]
+        [InlineData("2.5", ImageTestHelperConstants.OsTypeDebianBuster, "ruby " + RubyVersions.Ruby25Version)]
+        [InlineData("2.5", ImageTestHelperConstants.OsTypeDebianBullseye, "ruby " + RubyVersions.Ruby25Version)]
+        [InlineData("2.6", ImageTestHelperConstants.OsTypeDebianBuster, "ruby " + RubyVersions.Ruby26Version)]
+        [InlineData("2.6", ImageTestHelperConstants.OsTypeDebianBullseye, "ruby " + RubyVersions.Ruby26Version)]
+        [InlineData("2.7", ImageTestHelperConstants.OsTypeDebianBuster, "ruby " + RubyVersions.Ruby27Version)]
+        [InlineData("2.7", ImageTestHelperConstants.OsTypeDebianBullseye, "ruby " + RubyVersions.Ruby27Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
-        public void RubyVersionMatchesImageName(string rubyVersion, string expectedOutput)
+        public void RubyVersionMatchesImageName(string rubyVersion, string osType, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("ruby", rubyVersion),
+                ImageId = _imageHelper.GetRuntimeImage("ruby", rubyVersion, osType),
                 CommandToExecuteOnRun = "ruby",
                 CommandArguments = new[] { "--version" }
             });

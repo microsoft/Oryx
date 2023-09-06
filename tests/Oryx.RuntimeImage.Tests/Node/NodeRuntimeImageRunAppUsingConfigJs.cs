@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
-        public async Task RunNodeAppUsingConfigJsAsync(string nodeVersion)
+        public async Task RunNodeAppUsingConfigJsAsync(string nodeVersion, string osType)
         {
 
             var appName = "express-config-js";
@@ -41,7 +41,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,

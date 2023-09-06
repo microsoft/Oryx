@@ -116,7 +116,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await Task.FromResult(true);
         }
 
-        private async Task CanBuildAndRunPythonAppAsync(string pythonVersion, string debianFlavor = null)
+        private async Task CanBuildAndRunPythonAppAsync(string pythonVersion, string osType, string buildImageTag = null)
         {
             // Arrange
             var appName = "flask-app";
@@ -140,9 +140,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(debianFlavor),
+                _imageHelper.GetGitHubActionsBuildImage(buildImageTag),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -180,7 +180,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(debianFlavor),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", "dynamic"),
+                _imageHelper.GetRuntimeImage("python", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -193,7 +193,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
         private async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
             string pythonVersion,
-            string debianFlavor = null)
+            string osType,
+            string buildImageTag = null)
         {
             // Arrange
             var appName = "django-app";
@@ -216,9 +217,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(debianFlavor),
+                _imageHelper.GetGitHubActionsBuildImage(buildImageTag),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -265,7 +266,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(debianFlavor),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", "dynamic"),
+                _imageHelper.GetRuntimeImage("python", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -285,10 +286,13 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        private async Task CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(bool compressDestinationDir, string debianFlavor = null)
+        private async Task CanBuildAndRunPythonAppWhenUsingPackageDirSwitchAsync(
+            bool compressDestinationDir,
+            string buildImageTag = null)
         {
             // Arrange
             var pythonVersion = "3.7";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -312,9 +316,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(debianFlavor),
+                _imageHelper.GetGitHubActionsBuildImage(buildImageTag),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },

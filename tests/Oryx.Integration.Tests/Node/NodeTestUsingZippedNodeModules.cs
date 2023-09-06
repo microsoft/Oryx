@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "debian-stretch")]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
 
-        public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModulesAsync(string nodeVersion)
+        public async Task CanBuildAndRunNodeApp_Using_TarGz_zippedNodeModulesAsync(string nodeVersion, string osType)
         {
             // Arrange
             var compressFormat = "tar-gz";
@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -72,8 +72,9 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [Trait("category", "node-14-stretch-2")]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("14")]
-        public async Task Node_CreateReactAppSample_zippedNodeModulesAsync(string nodeVersion)
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        public async Task Node_CreateReactAppSample_zippedNodeModulesAsync(string nodeVersion, string osType)
         {
             // Arrange
             // Use a separate volume for output due to rsync errors
@@ -98,7 +99,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume },
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },
@@ -117,6 +118,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             // Use a separate volume for output due to rsync errors
             var nodeVersion = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "webfrontend";
@@ -139,7 +141,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume },
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },
@@ -160,6 +162,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             // Use a separate volume for output due to rsync errors
             var nodeVersion = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "node-nested-nodemodules";
@@ -187,7 +190,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume }, Settings.LtsVersionsBuildImageName,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },

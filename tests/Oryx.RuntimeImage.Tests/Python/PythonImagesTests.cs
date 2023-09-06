@@ -19,12 +19,16 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
-        [InlineData("3.7")]
-        [InlineData("3.8")]
-        [InlineData("3.9")]
-        [InlineData("3.10")]
-        [InlineData("3.11")]
-        public void PythonRuntimeImage_Contains_VersionAndCommit_Information(string version)
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        [InlineData("3.8", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.8", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        [InlineData("3.9", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.9", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        [InlineData("3.10", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.10", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        [InlineData("3.11", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        public void PythonRuntimeImage_Contains_VersionAndCommit_Information(string version, string osType)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
             // so we should check agent_os environment variable to know if the build is happening in azure devops agent
@@ -40,7 +44,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("python", version),
+                ImageId = _imageHelper.GetRuntimeImage("python", version, osType),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { "version" }
             });
@@ -59,19 +63,23 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("3.7")]
-        [InlineData("3.8")]
-        [InlineData("3.9")]
-        [InlineData("3.10")]
-        [InlineData("3.11")]
-        public void JamSpell_CanBe_InstalledInTheRunTimeImage(string version)
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        [InlineData("3.8", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.8", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        [InlineData("3.9", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.9", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        [InlineData("3.10", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.10", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        [InlineData("3.11", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        public void JamSpell_CanBe_InstalledInTheRunTimeImage(string version, string osType)
         {
             // Arrange
             var expectedPackage = "jamspell";
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("python", version),
+                ImageId = _imageHelper.GetRuntimeImage("python", version, osType),
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", $"wget -O - https://pypi.org/simple/ | grep -i {expectedPackage}" }
             });
@@ -88,18 +96,22 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("3.7", "Python " + PythonVersions.Python37Version)]
-        [InlineData("3.8", "Python " + PythonVersions.Python38Version)]
-        [InlineData("3.9", "Python " + PythonVersions.Python39Version)]
-        [InlineData("3.10", "Python " + PythonVersions.Python310Version)]
-        [InlineData("3.11", "Python " + PythonVersions.Python311Version)]
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBuster, "Python " + PythonVersions.Python37Version)]
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBullseye, "Python " + PythonVersions.Python37Version)]
+        [InlineData("3.8", ImageTestHelperConstants.OsTypeDebianBuster, "Python " + PythonVersions.Python38Version)]
+        [InlineData("3.8", ImageTestHelperConstants.OsTypeDebianBullseye, "Python " + PythonVersions.Python38Version)]
+        [InlineData("3.9", ImageTestHelperConstants.OsTypeDebianBuster, "Python " + PythonVersions.Python39Version)]
+        [InlineData("3.9", ImageTestHelperConstants.OsTypeDebianBullseye, "Python " + PythonVersions.Python39Version)]
+        [InlineData("3.10", ImageTestHelperConstants.OsTypeDebianBuster, "Python " + PythonVersions.Python310Version)]
+        [InlineData("3.10", ImageTestHelperConstants.OsTypeDebianBullseye, "Python " + PythonVersions.Python310Version)]
+        [InlineData("3.11", ImageTestHelperConstants.OsTypeDebianBullseye, "Python " + PythonVersions.Python311Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
-        public void PythonVersionMatchesImageName(string pythonVersion, string expectedOutput)
+        public void PythonVersionMatchesImageName(string pythonVersion, string osType, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("python", pythonVersion),
+                ImageId = _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 CommandToExecuteOnRun = "python",
                 CommandArguments = new[] { "--version" }
             });
@@ -131,7 +143,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("python", "3.7"),
+                ImageId = _imageHelper.GetRuntimeImage("python", "3.7", ImageTestHelperConstants.OsTypeDebianBullseye),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[] { "-c", script }
             });

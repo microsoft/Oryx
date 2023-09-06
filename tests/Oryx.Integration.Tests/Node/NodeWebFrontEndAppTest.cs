@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [Trait("build-image", "debian-stretch")]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRun_NodeWebFrontEndAppAsync(string nodeVersion)
+        public async Task CanBuildAndRun_NodeWebFrontEndAppAsync(string nodeVersion, string osType)
         {
             // Arrange
             var appName = "webfrontend";
@@ -50,7 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -73,6 +73,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var nodeVersion = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -98,7 +99,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -119,6 +120,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var nodeVersion = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -146,7 +148,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]

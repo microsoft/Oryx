@@ -25,8 +25,9 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("3.7")]
-        public async Task CanBuildAndRunPythonAppAsync(string pythonVersion)
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        public async Task CanBuildAndRunPythonAppAsync(string pythonVersion, string osType)
         {
             // Arrange
             var appName = "django-app";
@@ -48,7 +49,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 new[] { volume, appOutputDirVolume },
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -73,6 +74,8 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunPythonApp_UsingPython37_AndVirtualEnvAsync()
         {
             // Arrange
+            var version = "3.7";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "django-app";
             var virtualEnvName = "antenv";
             var volume = CreateAppVolume(appName);
@@ -82,7 +85,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var buildScript = new ShellScriptBuilder()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-                $"-p virtualenv_name={virtualEnvName} --platform {PythonConstants.PlatformName} --platform-version 3.7")
+                $"-p virtualenv_name={virtualEnvName} --platform {PythonConstants.PlatformName} --platform-version {version}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
@@ -99,7 +102,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", version, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -132,6 +135,8 @@ namespace Microsoft.Oryx.Integration.Tests
             string expectedCompressFileNameExtension)
         {
             // Arrange
+            var version = "3.7";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "django-app";
             var virtualEnvName = "antenv";
             var volume = CreateAppVolume(appName);
@@ -140,7 +145,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version 3.7" +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {version}" +
                 $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv={compressOption}")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvName}")
                 .AddFileExistsCheck($"{appOutputDir}/{virtualEnvName}.{expectedCompressFileNameExtension}")
@@ -160,7 +165,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", version, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -189,6 +194,8 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRunPythonApp_UsingCustomManifestFileLocationAsync()
         {
             // Arrange
+            var version = "3.7";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "django-app";
             var virtualEnvName = "antenv";
             var volume = CreateAppVolume(appName);
@@ -201,7 +208,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var manifestDir = manifestDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version 3.7" +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {version}" +
                 $" --manifest-dir {manifestDir} " +
                 $" -p virtualenv_name={virtualEnvName} -p compress_virtualenv=tar-gz")
                 .AddDirectoryDoesNotExistCheck($"{appOutputDir}/{virtualEnvName}")
@@ -223,7 +230,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", version, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -252,6 +259,8 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_DjangoApp_DoingCollectStaticByDefaultAsync()
         {
             // Arrange
+            var version = "3.7";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -259,7 +268,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-               $"--platform {PythonConstants.PlatformName} --platform-version 3.7")
+               $"--platform {PythonConstants.PlatformName} --platform-version {version}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
@@ -276,7 +285,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", version, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -305,6 +314,8 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_DjangoPython37App_UsingVirtualEnvAsync()
         {
             // Arrange
+            var version = "3.7";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -314,7 +325,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             var buildScript = new ShellScriptBuilder()
                 .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version 3.7 " +
+                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} --platform {PythonConstants.PlatformName} --platform-version {version} " +
                 $"-p virtualenv_name={virtualEnvName}")
                 .ToString();
 
@@ -333,7 +344,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", version, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -368,6 +379,8 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var pythonVersion = "3.7";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
+
             // Simulating a typical intermediate directory structure used by AppService in a build container
             // We expect the compressed output to be extracted under the same directory structure inside the runtime
             // container too.
@@ -389,7 +402,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },

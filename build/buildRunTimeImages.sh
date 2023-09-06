@@ -281,10 +281,10 @@ for dockerFile in $dockerFiles; do
 
     if shouldStageRuntimeVersion $platformName $platformVersion ; then
         # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/staging/oryx/{platformName}:{platformVersion}-{osType}
-        localImageTagName="$ACR_STAGING_PREFIX/$platformName:$platformVersion-$runtimeImageDebianFlavor"
+        localImageTagName="$ACR_STAGING_PREFIX/$platformName:$platformVersion-debian-$runtimeImageDebianFlavor"
     else
         # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}-{osType}
-        localImageTagName="$ACR_PUBLIC_PREFIX/$platformName:$platformVersion-$runtimeImageDebianFlavor"
+        localImageTagName="$ACR_PUBLIC_PREFIX/$platformName:$platformVersion-debian-$runtimeImageDebianFlavor"
     fi
 
     echo
@@ -319,10 +319,10 @@ for dockerFile in $dockerFiles; do
     if [ "$FULL_RUNTIME_TAG_VERSION" != "$platformVersion" ]; then
         if shouldStageRuntimeVersion $platformName $platformVersion ; then
             # Set $altLocalImageTagName to the following format: oryxdevmcr.azurecr.io/staging/oryx/{platformName}:{fullPlatformVersion}-{osType}
-            altLocalImageTagName="$ACR_STAGING_PREFIX/$platformName:$FULL_RUNTIME_TAG_VERSION-$runtimeImageDebianFlavor"
+            altLocalImageTagName="$ACR_STAGING_PREFIX/$platformName:$FULL_RUNTIME_TAG_VERSION-debian-$runtimeImageDebianFlavor"
         else
             # Set $altLocalImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{fullPlatformVersion}-{osType}
-            altLocalImageTagName="$ACR_PUBLIC_PREFIX/$platformName:$FULL_RUNTIME_TAG_VERSION-$runtimeImageDebianFlavor"
+            altLocalImageTagName="$ACR_PUBLIC_PREFIX/$platformName:$FULL_RUNTIME_TAG_VERSION-debian-$runtimeImageDebianFlavor"
         fi
 
         echo

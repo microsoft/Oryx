@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using Microsoft.Oryx.Tests.Common;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -24,14 +25,15 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "debian-stretch")]
         public async Task Php74AppAsync()
         {
-            await PhpAppAsync("7.4");
+            await PhpAppAsync("7.4", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
-        private async Task PhpAppAsync(string phpVersion)
+        private async Task PhpAppAsync(string phpVersion, string osType)
         {
             await RunTestAsync(
                 "php",
                 phpVersion,
+                osType,
                 Path.Combine(HostSamplesDir, "php", "pgsql-example"),
                 8080,
                 specifyBindPortFlag: false);

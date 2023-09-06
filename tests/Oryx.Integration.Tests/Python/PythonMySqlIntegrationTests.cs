@@ -27,7 +27,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("mysql-mysqlclient-sample")]
         public async Task Python37App_MySqlDB_UsingPyMySql_UsingLatestStretchBuildImageAsync(string sampleAppName)
         {
-            await PythonApp_MySqlDB_UsingPyMySqlAsync("3.7", sampleAppName, ImageTestHelperConstants.LatestStretchTag);
+            await PythonApp_MySqlDB_UsingPyMySqlAsync("3.7", ImageTestHelperConstants.OsTypeDebianBullseye, sampleAppName, ImageTestHelperConstants.LatestStretchTag);
         }
 
         [Theory(Skip = "Bug #1410367")]
@@ -38,7 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("mysql-mysqlclient-sample")]
         public async Task Python37App_MySqlDB_UsingPyMySql_UsingGitHubActionsBullseyeBuildImageAsync(string sampleAppName)
         {
-            await PythonApp_MySqlDB_UsingPyMySqlAsync("3.7", sampleAppName, ImageTestHelperConstants.GitHubActionsBullseye);
+            await PythonApp_MySqlDB_UsingPyMySqlAsync("3.7", ImageTestHelperConstants.OsTypeDebianBullseye, sampleAppName, ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Theory(Skip = "Bug #1410367")]
@@ -49,17 +49,19 @@ namespace Microsoft.Oryx.Integration.Tests
         [InlineData("mysql-mysqlclient-sample")]
         public async Task Python39App_MySqlDB_UsingPyMySql_UsingGitHubActionsBusterBuildImageAsync(string sampleAppName)
         {
-            await PythonApp_MySqlDB_UsingPyMySqlAsync("3.9", sampleAppName, ImageTestHelperConstants.GitHubActionsBuster);
+            await PythonApp_MySqlDB_UsingPyMySqlAsync("3.9", ImageTestHelperConstants.OsTypeDebianBullseye, sampleAppName, ImageTestHelperConstants.GitHubActionsBuster);
         }
 
         private async Task PythonApp_MySqlDB_UsingPyMySqlAsync(
             string pythonVersion,
+            string osType,
             string sampleAppName,
             string imageTag)
         {
             await RunTestAsync(
                 "python",
                 pythonVersion,
+                osType,
                 Path.Combine(HostSamplesDir, "python", sampleAppName),
                 buildImageName: _imageHelper.GetBuildImage(imageTag));
         }

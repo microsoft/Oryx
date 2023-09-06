@@ -31,8 +31,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion82 = "8.2";
             await Task.WhenAll(
-                ExifExampleAsync(phpVersion82),
-                PhpFpmExifExampleAsync(phpVersion82));
+                ExifExampleAsync(phpVersion82, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmExifExampleAsync(phpVersion82, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
         [Fact, Trait("category", "php-8.1")]
@@ -41,8 +41,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion81 = "8.1";
             await Task.WhenAll(
-                ExifExampleAsync(phpVersion81),
-                PhpFpmExifExampleAsync(phpVersion81));
+                ExifExampleAsync(phpVersion81, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmExifExampleAsync(phpVersion81, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
         [Fact, Trait("category", "php-8.0")]
@@ -51,8 +51,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion80 = "8.0";
             await Task.WhenAll(
-                ExifExampleAsync(phpVersion80),
-                PhpFpmExifExampleAsync(phpVersion80));
+                ExifExampleAsync(phpVersion80, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmExifExampleAsync(phpVersion80, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -61,11 +61,11 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             await Task.WhenAll(
-                ExifExampleAsync(phpVersion74),
-                PhpFpmExifExampleAsync(phpVersion74));
+                ExifExampleAsync(phpVersion74, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmExifExampleAsync(phpVersion74, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
-        private async Task ExifExampleAsync(string phpVersion)
+        private async Task ExifExampleAsync(string phpVersion, string osType)
         {
             // Arrange
             var appName = "exif-example";
@@ -87,7 +87,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -98,7 +98,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        private async Task PhpFpmExifExampleAsync(string phpVersion)
+        private async Task PhpFpmExifExampleAsync(string phpVersion, string osType)
         {
             // Arrange
             var appName = "exif-example";
@@ -123,7 +123,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                _imageHelper.GetRuntimeImage("php", phpimageVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>

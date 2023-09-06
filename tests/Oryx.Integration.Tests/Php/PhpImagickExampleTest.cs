@@ -29,8 +29,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             await Task.WhenAll(
-                ImagickExampleAsync(phpVersion74),
-                PhpFpmImagickExampleAsync(phpVersion74));
+                ImagickExampleAsync(phpVersion74, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmImagickExampleAsync(phpVersion74, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
         [Fact, Trait("category", "php-8.0")]
@@ -39,7 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion80 = "8.0";
             await Task.WhenAll(
-                ImagickExampleAsync(phpVersion80));
+                ImagickExampleAsync(phpVersion80, ImageTestHelperConstants.OsTypeDebianBullseye));
             //Temporarily skipping PhpFpmImagickExampleAsync(phpVersion80)
         }
 
@@ -49,7 +49,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion81 = "8.1";
             await Task.WhenAll(
-                ImagickExampleAsync(phpVersion81));
+                ImagickExampleAsync(phpVersion81, ImageTestHelperConstants.OsTypeDebianBullseye));
             //Temporarily skipping PhpFpmImagickExampleAsync(phpVersion81)
         }
 
@@ -59,11 +59,11 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion82 = "8.2";
             await Task.WhenAll(
-                ImagickExampleAsync(phpVersion82));
+                ImagickExampleAsync(phpVersion82, ImageTestHelperConstants.OsTypeDebianBullseye));
             //Temporarily skipping PhpFpmImagickExampleAsync(phpVersion81)
         }
 
-        private async Task ImagickExampleAsync(string phpVersion)
+        private async Task ImagickExampleAsync(string phpVersion, string osType)
         {
             // Arrange
             var appName = "imagick-example";
@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -95,7 +95,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        private async Task PhpFpmImagickExampleAsync(string phpVersion)
+        private async Task PhpFpmImagickExampleAsync(string phpVersion, string osType)
         {
             // Arrange
             var appName = "imagick-example";
@@ -121,7 +121,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                _imageHelper.GetRuntimeImage("php", phpimageVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>

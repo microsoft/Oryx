@@ -68,7 +68,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -130,7 +130,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -179,7 +179,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "18"),
+                _imageHelper.GetRuntimeImage("node", "18", ImageTestHelperConstants.OsTypeDebianBullseye),
                 ContainerPort,
                 "/bin/sh",
                 new[]

@@ -2,6 +2,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+
 using System.Threading.Tasks;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
@@ -25,6 +26,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var pythonVersion = "3.7";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "http-server-py";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -58,7 +60,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[]

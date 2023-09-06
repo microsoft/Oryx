@@ -3,13 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -58,7 +55,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "8.0"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "8.0", ImageTestHelperConstants.OsTypeDebianBookworm),
                 ContainerPort,
                 "/bin/sh",
                 new[]

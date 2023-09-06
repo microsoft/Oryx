@@ -23,12 +23,15 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("14", "~2", ExtVarNames.UserAppInsightsConnectionStringEnv, TestConstants.AppInsightsConnectionString)]
-        [InlineData("14", "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBuster, "~2", ExtVarNames.UserAppInsightsConnectionStringEnv, TestConstants.AppInsightsConnectionString)]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBuster, "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBullseye, "~2", ExtVarNames.UserAppInsightsConnectionStringEnv, TestConstants.AppInsightsConnectionString)]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBullseye, "enabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
         //Without pre-IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~2'
         // and that will enable oryx's appInsight attach logic
         public async Task CanBuildAndRun_App_With_AgentExtension_And_InstrumentKey_Or_ConnectionStringAsync(
             string nodeVersion,
+            string osType,
             string agentExtensionVersionEnvValue,
             string appInsightKeyOrConnectionString,
             string envVarValue)
@@ -67,7 +70,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 new List<EnvironmentVariable> { new EnvironmentVariable(aiConnectionString, envVarValue), new EnvironmentVariable(aIEnabled, "~2") },
                 ContainerPort,
                 "/bin/sh",
@@ -85,13 +88,17 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("14", "~3", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
-        [InlineData("14", "", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
-        [InlineData("14", "disabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBuster, "~3", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBuster, "", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBuster, "disabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBullseye, "~3", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBullseye, "", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBullseye, "disabled", ExtVarNames.UserAppInsightsConnectionStringEnv, "InstrumentationKey=value1;key2=value2;key3=value3")]
         //With New IPA bits of appInsights, UserAppInsightsExtensionVersion value will be '~3'
         // and that will disable oryx's appInsight attach logic
         public async Task CanBuildAndRun_NodeApp_AppInsights_With_NewIPA_ConfigurationAsync(
-            string nodeVersion, 
+            string nodeVersion,
+            string osType,
             string agentExtensionVersionEnvValue,
             string appInsightKeyOrConnectionString,
             string envVarValue)
@@ -130,7 +137,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 new List<EnvironmentVariable> { new EnvironmentVariable(aiConnectionString, envVarValue), new EnvironmentVariable(aIEnabled, "~2") },
                 ContainerPort,
                 "/bin/sh",

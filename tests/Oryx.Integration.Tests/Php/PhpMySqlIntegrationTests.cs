@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "debian-stretch")]
         public async Task Php74App_UsingMysqli_WithLatestStretchBuildImageAsync()
         {
-            await PhpApp_UsingMysqliAsync("7.4", ImageTestHelperConstants.LatestStretchTag);
+            await PhpApp_UsingMysqliAsync("7.4", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.LatestStretchTag);
         }
 
         [Fact]
@@ -32,18 +32,19 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task Php74App_UsingMysqli_WithGitHubActionsBusterBuildImageAsync()
         {
-            await PhpApp_UsingMysqliAsync("7.4", ImageTestHelperConstants.GitHubActionsBuster);
+            await PhpApp_UsingMysqliAsync("7.4", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        private async Task PhpApp_UsingMysqliAsync(string phpVersion, string imageTag)
+        private async Task PhpApp_UsingMysqliAsync(string phpVersion, string osType, string buildImageTag)
         {
             await RunTestAsync(
                 "php",
                 phpVersion,
+                osType,
                 Path.Combine(HostSamplesDir, "php", "mysqli-example"),
                 8080,
                 specifyBindPortFlag: false,
-                buildImageName: _imageHelper.GetBuildImage(imageTag));
+                buildImageName: _imageHelper.GetBuildImage(buildImageTag));
         }
     }
 }

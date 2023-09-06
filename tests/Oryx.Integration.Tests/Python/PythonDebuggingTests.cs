@@ -25,8 +25,9 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [Trait("category", "python-3.7")]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("3.7", 5637)] // Test with a non-default port as well
-        public async Task CanBuildAndDebugFlaskAppAsync(string pythonVersion, int? debugPort = null)
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBuster, 5637)] // Test with a non-default port as well
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBullseye, 5637)] // Test with a non-default port as well
+        public async Task CanBuildAndDebugFlaskAppAsync(string pythonVersion, string osType, int? debugPort = null)
         {
             // Arrange
             var appName = "flask-app";
@@ -50,7 +51,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 new[] { appVolume, appOutputDirVolume },
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 debugPort.GetValueOrDefault(DefaultDebuggerPort),
                 "/bin/bash", new[] { "-c", runScript },
                 async (ptvsdHostPort) =>
@@ -68,8 +69,9 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [Trait("category", "python-3.7")]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("3.7", 5637)] // Test with a non-default port as well
-        public async Task CanBuildAndDebugFlaskAppWithDebugPyAsync(string pythonVersion, int? debugPort = null)
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBuster, 5637)] // Test with a non-default port as well
+        [InlineData("3.7", ImageTestHelperConstants.OsTypeDebianBullseye, 5637)] // Test with a non-default port as well
+        public async Task CanBuildAndDebugFlaskAppWithDebugPyAsync(string pythonVersion, string osType, int? debugPort = null)
         {
             // Arrange
             var appName = "flask-app";
@@ -93,7 +95,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 new[] { appVolume, appOutputDirVolume },
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 debugPort.GetValueOrDefault(DefaultDebuggerPort),
                 "/bin/bash", new[] { "-c", runScript },
                 async (debugPyHostPort) =>

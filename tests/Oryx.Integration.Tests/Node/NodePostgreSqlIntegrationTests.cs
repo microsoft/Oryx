@@ -34,13 +34,14 @@ namespace Microsoft.Oryx.Integration.Tests
             await NodeApp_PostgreSqlDBAsync(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        private async Task NodeApp_PostgreSqlDBAsync(string imageTag)
+        private async Task NodeApp_PostgreSqlDBAsync(string buildImageTag)
         {
             await RunTestAsync(
                 "nodejs",
                 "14",
+                ImageTestHelperConstants.OsTypeDebianBullseye,
                 Path.Combine(HostSamplesDir, "nodejs", "node-postgres"),
-                buildImageName: _imageHelper.GetBuildImage(imageTag));
+                buildImageName: _imageHelper.GetBuildImage(buildImageTag));
         }
     }
 }

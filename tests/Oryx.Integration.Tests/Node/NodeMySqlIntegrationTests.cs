@@ -34,13 +34,14 @@ namespace Microsoft.Oryx.Integration.Tests
             await NodeApp_MySqlDBAsync(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        private async Task NodeApp_MySqlDBAsync(string imageTag)
+        private async Task NodeApp_MySqlDBAsync(string buildImageTag)
         {
             await RunTestAsync(
                 "nodejs",
                 "14",
+                ImageTestHelperConstants.OsTypeDebianBullseye,
                 Path.Combine(HostSamplesDir, "nodejs", "node-mysql"),
-                buildImageName: _imageHelper.GetBuildImage(imageTag));
+                buildImageName: _imageHelper.GetBuildImage(buildImageTag));
         }
 
     }
