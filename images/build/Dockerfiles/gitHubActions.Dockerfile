@@ -58,7 +58,16 @@ RUN apt-get update \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
 
-RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
+RUN if [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu72 \
+            libcurl4 \
+            libssl3 \
+            libyaml-dev \
+            libxml2 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu67 \
@@ -127,7 +136,7 @@ RUN ${IMAGES_DIR}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.cr
     && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
 
 # Install PHP pre-reqs	# Install PHP pre-reqs
-RUN if [ "${DEBIAN_FLAVOR}" = "buster" ] || [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
+RUN if [ "${DEBIAN_FLAVOR}" = "buster" ] || [ "${DEBIAN_FLAVOR}" = "bullseye" ] || [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
     apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
