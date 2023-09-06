@@ -16,6 +16,7 @@ if [ -z "$sdkStorageAccountUrl" ]; then
 fi
 if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
     set +x
+    isSasTokenEmpty=1 
     sasToken="$(cat $ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH)"
     if [ -z "$sasToken" ]; then
       isSasTokenEmpty=0
