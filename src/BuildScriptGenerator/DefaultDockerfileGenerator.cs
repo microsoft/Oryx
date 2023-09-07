@@ -132,8 +132,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 if (string.IsNullOrEmpty(this.commonOptions.BuildImage) && this.supportedRuntimeVersions.ContainsKey(dockerfileRuntimeImage))
                 {
                     var runtimeDictionary = this.supportedRuntimeVersions[dockerfileRuntimeImage];
-                    if (runtimeDictionary.Contains(dockerfileRuntimeImageTag))
+                    var fullRuntimeTag = runtimeDictionary.FirstOrDefault(x => dockerfileRuntimeImageTag == x ||
+                                                                               dockerfileRuntimeImageTag == ParseRuntimeImageTag(x).Version);
+                    if (fullRuntimeTag != null)
                     {
+                        dockerfileRuntimeImageTag = fullRuntimeTag;
                         var osType = ParseRuntimeImageTag(dockerfileRuntimeImageTag).OsType;
                         if (string.IsNullOrEmpty(osType))
                         {
