@@ -12,6 +12,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Microsoft.Oryx.BuildImage.Tests
 {
@@ -25,7 +26,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             get
             {
-                // test default php-composer version
+                // Test default PHP composer version
                 var data = new TheoryData<string, string, string>();
                 data.Add(
                     PhpVersions.Php73Version, 
@@ -39,7 +40,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(PhpVersions.Php81Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php82Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.ComposerVersion);
 
-                // test latest php-composer version
+                // Test PHP composer version 2.3.x
                 data.Add(
                     PhpVersions.Php73Version,
                     ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage(),
@@ -49,6 +50,39 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php81Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php82Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer23Version);
+
+                // Test PHP composer version 2.4.x
+                data.Add(
+                    PhpVersions.Php73Version,
+                    ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage(),
+                    PhpVersions.Composer24Version
+                );
+                data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage(), PhpVersions.Composer24Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer24Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer24Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer24Version);
+
+                // Test PHP composer version 2.5.x
+                data.Add(
+                    PhpVersions.Php73Version,
+                    ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage(),
+                    PhpVersions.Composer25Version
+                );
+                data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage(), PhpVersions.Composer25Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer25Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer25Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer25Version);
+
+                // Test PHP composer version 2.6.x
+                data.Add(
+                    PhpVersions.Php73Version,
+                    ImageTestHelper.WithRestrictedPermissions().GetGitHubActionsBuildImage(),
+                    PhpVersions.Composer26Version
+                );
+                data.Add(PhpVersions.Php74Version, imageHelper.GetGitHubActionsBuildImage(), PhpVersions.Composer26Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer26Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer26Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PhpVersions.Composer26Version);
                 return data;
             }
         }
@@ -59,12 +93,26 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string, string>();
                 var imageHelper = new ImageTestHelper();
+
+                // Test default PHP composer version
                 data.Add(PhpVersions.Php73Version, imageHelper.GetCliImage(),PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(), PhpVersions.ComposerVersion);
 
-                // test latest php-composer version
+                // Test PHP composer version 2.3.x
                 data.Add(PhpVersions.Php73Version, imageHelper.GetCliImage(), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(), PhpVersions.Composer23Version);
+
+                // Test PHP composer version 2.4.x
+                data.Add(PhpVersions.Php73Version, imageHelper.GetCliImage(), PhpVersions.Composer24Version);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(), PhpVersions.Composer24Version);
+
+                // Test PHP composer version 2.5.x
+                data.Add(PhpVersions.Php73Version, imageHelper.GetCliImage(), PhpVersions.Composer25Version);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(), PhpVersions.Composer25Version);
+
+                // Test PHP composer version 2.6.x
+                data.Add(PhpVersions.Php73Version, imageHelper.GetCliImage(), PhpVersions.Composer26Version);
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(), PhpVersions.Composer26Version);
                 return data;
             }
         }
@@ -75,12 +123,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string, string>();
                 var imageHelper = new ImageTestHelper();
+
+                // Test default PHP composer version
                 data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.ComposerVersion);
 
-                // test latest php-composer version
+                // Test PHP composer version 2.3.x
                 data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), PhpVersions.Composer23Version);
@@ -95,16 +145,36 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string, string>();
                 var imageHelper = new ImageTestHelper();
+
+                // Test default PHP composer version
                 data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.ComposerVersion);
 
-                // test latest php-composer version
+                // Test PHP composer version 2.3.x
                 data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer23Version);
+
+                // Test PHP composer version 2.4.x
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer24Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer24Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer24Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer24Version);
+
+                // Test PHP composer version 2.5.x
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer25Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer25Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer25Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer25Version);
+
+                // Test PHP composer version 2.6.x
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer26Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer26Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer26Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), PhpVersions.Composer26Version);
                 return data;
             }
         }
@@ -115,16 +185,36 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string, string>();
                 var imageHelper = new ImageTestHelper();
+
+                // Test default PHP composer version
                 data.Add(PhpVersions.Php74Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php80Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php81Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.ComposerVersion);
                 data.Add(PhpVersions.Php82Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.ComposerVersion);
 
-                // test latest php-composer version
+                // Test PHP composer version 2.3.x
                 data.Add(PhpVersions.Php74Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php80Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php81Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer23Version);
                 data.Add(PhpVersions.Php82Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer23Version);
+
+                // Test PHP composer version 2.4.x
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer24Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer24Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer24Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer24Version);
+
+                // Test PHP composer version 2.5.x
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer25Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer25Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer25Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer25Version);
+
+                // Test PHP composer version 2.6.x
+                data.Add(PhpVersions.Php74Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer26Version);
+                data.Add(PhpVersions.Php80Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer26Version);
+                data.Add(PhpVersions.Php81Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer26Version);
+                data.Add(PhpVersions.Php82Version, imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PhpVersions.Composer26Version);
                 return data;
             }
         }

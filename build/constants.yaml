@@ -177,8 +177,11 @@
     composer1-9-version: 1.9.3
     composer1-10-version: 1.10.19
     composer2-0-version: 2.0.8
-    composer2-2-version: 2.2.9
-    composer2-3-version: 2.3.4
+    composer2-2-version: 2.2.21
+    composer2-3-version: 2.3.10
+    composer2-4-version: 2.4.4
+    composer2-5-version: 2.5.8
+    composer2-6-version: 2.6.2
     php82-version: 8.2.9
     php82-keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
     php82-tar-sha256: 1e6cb77f997613864ab3127fbfc6a8c7fdaa89a95e8ed6167617b913b4de4765
