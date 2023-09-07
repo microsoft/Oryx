@@ -173,6 +173,7 @@
     composer2-0-version: 2.0.8
     composer2-2-version: 2.2.9
     composer2-3-version: 2.3.4
+    nginx-version: 1.24.0
     php82-version: 8.2.8
     php82-keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
     php82-tar-sha256: cfe1055fbcd486de7d3312da6146949aae577365808790af6018205567609801
