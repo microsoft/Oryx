@@ -45,7 +45,7 @@ if [ -z "$sdkStorageAccountUrl" ]; then
 fi
 
 # checking and retrieving token for the `oryxsdksstaging` account.
-retrieveSastokenFromKeyvault $sdkStorageAccountUrl
+retrieveSastokenFromKeyVault $sdkStorageAccountUrl
 
 echo
 echo "SDK storage account url set to: $sdkStorageAccountUrl"

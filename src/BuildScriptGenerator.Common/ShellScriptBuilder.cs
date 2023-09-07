@@ -194,7 +194,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             if (testStorageAccountUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
             {
                  string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) ??
-                    this.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
+                    KeyVaultHelper.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
                  this.SetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken);
             }
 
@@ -204,13 +204,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public override string ToString()
         {
             return this.scriptBuilder.ToString();
-        }
-
-        protected string GetKeyVaultSecretValue(string keyVaultUri, string secretName)
-        {
-            var client = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
-            var sasToken = client.GetSecret(secretName).Value.Value;
-            return sasToken;
         }
 
         private ShellScriptBuilder Append(string content)

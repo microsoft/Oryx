@@ -54,8 +54,9 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-            List<EnvironmentVariable> buildEnvVariableList = GetEnvironmentVariableList();
-
+            List<EnvironmentVariable> buildEnvVariableList = SqlServerDbTestHelper.GetEnvironmentVariables();
+            buildEnvVariableList.AddTestStorageAccountEnvironmentVariables();
+            
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
@@ -82,31 +83,5 @@ namespace Microsoft.Oryx.Integration.Tests
                         ignoreWhiteSpaceDifferences: true);
                 });
         }
-
-        protected string GetKeyVaultSecretValue(string keyVaultUri, string secretName)
-        {
-            var client = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
-            var sasToken = client.GetSecret(secretName).Value.Value;
-            return sasToken;
-        }
-        
-        private List<EnvironmentVariable> GetEnvironmentVariableList()
-        {
-            List<EnvironmentVariable> envVariableList = SqlServerDbTestHelper.GetEnvironmentVariables();
-            var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
-            var sdkStorageUrl = string.IsNullOrEmpty(testStorageAccountUrl) ? SdkStorageConstants.PrivateStagingSdkStorageBaseUrl : testStorageAccountUrl;
-
-            envVariableList.Add(new EnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, sdkStorageUrl));
-
-            if (sdkStorageUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
-            {
-                string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) ?? 
-                    this.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
-                envVariableList.Add(new EnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken));
-            }
-
-            return envVariableList;
-        }
-
     }
 }
