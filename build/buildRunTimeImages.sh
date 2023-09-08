@@ -349,15 +349,16 @@ for dockerFile in $dockerFiles; do
         fi
 
         # Tag the image to follow a similar format to .../python:3.8-debian-bullseye-Oryx-CI.20230828.1
-        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-debian-$runtimeImageDebianFlavor-$uniqueTag"
+        acrRuntimeImageUniqueTag="$acrRuntimeImageTagNameRepo-debian-$runtimeImageDebianFlavor-$uniqueTag"
+        docker tag "$localImageTagName" "$acrRuntimeImageUniqueTag"
 
         # add new content
         echo
         echo "Updating runtime image artifacts file with build number..."
-        echo "$acrRuntimeImageTagNameRepo-$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
+        echo "$acrRuntimeImageUniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
     else
         devBoxRuntimeImageTagNameRepo="$DEVBOX_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result"
-        docker tag "$localImageTagName" "$devBoxRuntimeImageTagNameRepo"
+        docker tag "$localImageTagName" "$devBoxRuntimeImageTagNameRepo-debian-$runtimeImageDebianFlavor"
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR

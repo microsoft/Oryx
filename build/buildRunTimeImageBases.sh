@@ -96,7 +96,7 @@ if [ "$runtimeSubDir" == "node" ]; then
     elif [ "$runtimeImageDebianFlavor" == "bullseye" ];then
         NODE_VERSION_ARRAY=("${NODE_BULLSEYE_VERSION_ARRAY[@]}")
     elif [ "$runtimeImageDebianFlavor" == "buster" ]; then
-        NODE_VERSION_ARRAY=(${NODE_BUSTER_VERSION_ARRAY[@]})
+        NODE_VERSION_ARRAY=("${NODE_BUSTER_VERSION_ARRAY[@]}")
     fi
 
     for NODE_VERSION  in "${NODE_VERSION_ARRAY[@]}"
