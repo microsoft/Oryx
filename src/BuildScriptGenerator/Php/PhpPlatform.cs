@@ -313,7 +313,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             // Install PHP Composer
             if (string.IsNullOrEmpty(phpComposerVersion))
             {
-                phpComposerVersion = PhpVersions.ComposerVersion;
+                phpComposerVersion = PhpVersions.ComposerDefaultVersion;
             }
 
             if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
@@ -391,7 +391,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 }
 
                 // Fallback to default version detection
-                return PhpVersions.ComposerVersion;
+                return PhpVersions.ComposerDefaultVersion;
             }
         }
 
