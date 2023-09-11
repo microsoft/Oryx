@@ -86,7 +86,10 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython310App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
         {
-            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync("3.10", ImageTestHelperConstants.GitHubActionsBullseye);
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
+                "3.10",
+                ImageTestHelperConstants.OsTypeDebianBullseye,
+                ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Fact]
@@ -94,7 +97,10 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython311App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
         {
-            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync("3.11", ImageTestHelperConstants.GitHubActionsBullseye);
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
+                "3.11",
+                ImageTestHelperConstants.OsTypeDebianBullseye, 
+                ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Fact]
