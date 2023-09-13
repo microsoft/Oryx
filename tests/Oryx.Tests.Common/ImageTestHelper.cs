@@ -154,8 +154,9 @@ namespace Microsoft.Oryx.Tests.Common
         /// </summary>
         /// <param name="platformName">The platform to pull the runtime image from.</param>
         /// <param name="platformVersion">The version of the platform to pull the runtime image from.</param>
+        /// <param name="osType">The OS type of the runtime image to use.</param>
         /// <returns>A runtime image that can be pulled for testing.</returns>
-        public string GetRuntimeImage(string platformName, string platformVersion)
+        public string GetRuntimeImage(string platformName, string platformVersion, string osType)
         {
             var runtimeRepoPrefix = _repoPrefix;
 
@@ -170,9 +171,19 @@ namespace Microsoft.Oryx.Tests.Common
                     break;
             }
 
+            var runtimeImageTag = $"{platformVersion}-{osType}";
             if (PlatformVersionToOsType.TryGetValue(platformName, out var versionToOsType)
-                && versionToOsType.TryGetValue(platformVersion, out var osType))
+                && versionToOsType.Contains(runtimeImageTag))
             {
+                return $"{runtimeRepoPrefix}/{platformName}:{platformVersion}-{osType}{_tagSuffix}";
+            }
+
+            if (PlatformVersionToOsType.TryGetValue(platformName, out versionToOsType)
+                && versionToOsType.Any(v => v.StartsWith(platformVersion)))
+            {
+                osType = versionToOsType
+                    .First(v => v.StartsWith(platformVersion))
+                    .Substring(platformVersion.Length + 1);
                 return $"{runtimeRepoPrefix}/{platformName}:{platformVersion}-{osType}{_tagSuffix}";
             }
 
@@ -295,14 +306,14 @@ namespace Microsoft.Oryx.Tests.Common
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
         /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
-        public string GetAzureFunctionsJamStackBuildImage(string debianFlavor = null)
+        public string GetAzureFunctionsJamStackBuildImage(string buildImageTag = null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor)
-                && string.Equals(debianFlavor.ToLower(), _azureFunctionsJamStackBuster))
+            if (!string.IsNullOrEmpty(buildImageTag)
+                && string.Equals(buildImageTag.ToLower(), _azureFunctionsJamStackBuster))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBuster}{_tagSuffix}";
             }
-            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _azureFunctionsJamStackBullseye))
+            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _azureFunctionsJamStackBullseye))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBullseye}{_tagSuffix}";
             }
@@ -312,17 +323,17 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
-        public string GetGitHubActionsBuildImage(string debianFlavor = null)
+        public string GetGitHubActionsBuildImage(string buildImageTag = null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBuster))
+            if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBuster))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBuster}{_tagSuffix}";
             }
-            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBookworm))
+            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBookworm))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBookworm}{_tagSuffix}";
             }
-            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseye))
+            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBullseye))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
             }
@@ -332,17 +343,17 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
-        public string GetGitHubActionsAsBaseBuildImage(string debianFlavor = null)
+        public string GetGitHubActionsAsBaseBuildImage(string buildImageTag = null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBookwormBase))
+            if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBookwormBase))
             {
                 return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBookwormBase}";
             }
-            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBusterBase))
+            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBusterBase))
             {
                 return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBusterBase}";
             }
-            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseyeBase))
+            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBullseyeBase))
             {
                 return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBullseyeBase}";
             }
@@ -352,17 +363,17 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
-        public string GetGitHubActionsAsBaseWithEnvBuildImage(string debianFlavor = null)
+        public string GetGitHubActionsAsBaseWithEnvBuildImage(string buildImageTag = null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBookwormBaseWithEnv))
+            if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBookwormBaseWithEnv))
             {
                 return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBookwormBaseWithEnv}";
             }
-            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBusterBaseWithEnv))
+            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBusterBaseWithEnv))
             {
                 return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBusterBaseWithEnv}";
             }
-            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _gitHubActionsBullseyeBaseWithEnv))
+            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBullseyeBaseWithEnv))
             {
                 return $"{_restrictedPermissionsImageRepoPrefix}/{_buildRepository}:{_gitHubActionsBullseyeBaseWithEnv}";
             }
@@ -372,20 +383,20 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
-        public string GetVsoBuildImage(string debianFlavor = null)
+        public string GetVsoBuildImage(string buildImageTag = null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor)
-                && string.Equals(debianFlavor.ToLower(), _vsoBullseye))
+            if (!string.IsNullOrEmpty(buildImageTag)
+                && string.Equals(buildImageTag.ToLower(), _vsoBullseye))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_vsoBullseye}{_tagSuffix}";
             }
             return $"{_repoPrefix}/{_buildRepository}:{_vsoUbuntu}{_tagSuffix}";
         }
 
-        public string GetLtsVersionsBuildImage(string debianFlavor = null)
+        public string GetLtsVersionsBuildImage(string buildImageTag = null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor)
-                && string.Equals(debianFlavor.ToLower(), _ltsVersionsBuster))
+            if (!string.IsNullOrEmpty(buildImageTag)
+                && string.Equals(buildImageTag.ToLower(), _ltsVersionsBuster))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_ltsVersionsBuster}{_tagSuffix}";
             }
@@ -410,14 +421,14 @@ namespace Microsoft.Oryx.Tests.Common
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
         /// <returns>A 'cli' image that can be pulled for testing.</returns>
-        public string GetCliImage(string debianFlavor = null)
+        public string GetCliImage(string buildImageTag = null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor)
-                && string.Equals(debianFlavor.ToLower(), _cliBusterTag))
+            if (!string.IsNullOrEmpty(buildImageTag)
+                && string.Equals(buildImageTag.ToLower(), _cliBusterTag))
             {
                 return $"{_repoPrefix}/{_cliRepository}:{_cliBusterTag}{_tagSuffix}";
             }
-            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _cliBullseyeTag))
+            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _cliBullseyeTag))
             {
                 return $"{_repoPrefix}/{_cliRepository}:{_cliBullseyeTag}{_tagSuffix}";
             }
@@ -457,13 +468,13 @@ namespace Microsoft.Oryx.Tests.Common
             return $"{_latestTag}-{_tagSuffix}";
         }
 
-        private string GetFullBuildImage(string debianFlavor = null)
+        private string GetFullBuildImage(string buildImageTag = null)
         {
-            if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _fullBuster))
+            if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _fullBuster))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_fullBuster}{_tagSuffix}";
             }
-            else if (!string.IsNullOrEmpty(debianFlavor) && string.Equals(debianFlavor.ToLower(), _fullBullseye))
+            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _fullBullseye))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_fullBullseye}{_tagSuffix}";
             }
@@ -473,7 +484,7 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
-        private Dictionary<string, Dictionary<string, string>> PlatformVersionToOsType = new Dictionary<string, Dictionary<string, string>>
+        private Dictionary<string, List<string>> PlatformVersionToOsType = new Dictionary<string, List<string>>
         {
             {
                 DotNetCoreConstants.RuntimePlatformName,
@@ -486,8 +497,8 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 PhpConstants.PlatformName,
                 PhpVersions.RuntimeVersions
-                    .Union(PhpVersions.FpmRuntimeVersions)
-                    .ToDictionary(x => x.Key, x => x.Value)
+                .Concat(PhpVersions.FpmRuntimeVersions)
+                .ToList()
             },
             {
                 PythonConstants.PlatformName,
@@ -507,6 +518,11 @@ namespace Microsoft.Oryx.Tests.Common
         public const string DefaultRepoPrefix = "oryxdevmcr.azurecr.io/public/oryx";
         public const string DefaultStagingRepoPrefix = "oryxdevmcr.azurecr.io/staging/oryx";
         public const string RestrictedPermissionsImageRepoPrefix = "oryxtests";
+
+        public const string OsTypeDebianStretch = "debian-stretch";
+        public const string OsTypeDebianBuster = "debian-buster";
+        public const string OsTypeDebianBullseye = "debian-bullseye";
+        public const string OsTypeDebianBookworm = "debian-bookworm";
 
         public const string AzureFunctionsJamStackStretch = "azfunc-jamstack-debian-stretch";
         public const string AzureFunctionsJamStackBuster = "azfunc-jamstack-debian-buster";

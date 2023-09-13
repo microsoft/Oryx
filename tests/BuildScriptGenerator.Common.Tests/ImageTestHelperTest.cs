@@ -34,15 +34,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
             // Arrange
             var platformName = "test";
             var platformVersion = "1.0";
+            var osType = ImageTestHelperConstants.OsTypeDebianBookworm;
             var imageBaseValue = "oryxtest";
             var tagSuffixValue = string.Empty;
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion, osType);
 
             // Assert
-            var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}";
+            var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}-{osType}";
             Assert.Equal(expectedImage, runtimeImage);
         }
 
@@ -52,15 +53,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
             // Arrange
             var platformName = "test";
             var platformVersion = "1.0";
+            var osType = ImageTestHelperConstants.OsTypeDebianBookworm;
             var imageBaseValue = string.Empty;
             var tagSuffixValue = "-buildNumber";
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion, osType);
 
             // Assert
-            var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}{tagSuffixValue}";
+            var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}-{osType}{tagSuffixValue}";
             Assert.Equal(expectedImage, runtimeImage);
         }
 
@@ -70,15 +72,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
             // Arrange
             var platformName = "test";
             var platformVersion = "1.0";
+            var osType = ImageTestHelperConstants.OsTypeDebianBookworm;
             var imageBaseValue = string.Empty;
             var tagSuffixValue = string.Empty;
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion, osType);
 
             // Assert
-            var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}";
+            var expectedImage = $"{_defaultImageBase}/{platformName}:{platformVersion}-{osType}";
             Assert.Equal(expectedImage, runtimeImage);
         }
 
@@ -88,15 +91,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common.Tests
             // Arrange
             var platformName = "test";
             var platformVersion = "1.0";
+            var osType = ImageTestHelperConstants.OsTypeDebianBookworm;
             var imageBaseValue = "oryxtest";
             var tagSuffixValue = "-buildNumber";
             var imageHelper = new ImageTestHelper(_output, imageBaseValue, tagSuffixValue);
 
             // Act
-            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion);
+            var runtimeImage = imageHelper.GetRuntimeImage(platformName, platformVersion, osType);
 
             // Assert
-            var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}{tagSuffixValue}";
+            var expectedImage = $"{imageBaseValue}/{platformName}:{platformVersion}-{osType}{tagSuffixValue}";
             Assert.Equal(expectedImage, runtimeImage);
         }
 

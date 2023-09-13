@@ -22,8 +22,9 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [Trait("category", "python-3.8")]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("3.8")]
-        public async Task CanBuildAndRunPythonApp_UsingCustomStartUpScriptAsync(string pythonVersion)
+        [InlineData("3.8", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.8", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        public async Task CanBuildAndRunPythonApp_UsingCustomStartUpScriptAsync(string pythonVersion, string osType)
         {
             // Arrange
             var appName = "http-server-py";
@@ -56,7 +57,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -74,8 +75,9 @@ namespace Microsoft.Oryx.Integration.Tests
         [Theory]
         [Trait("category", "python-3.8")]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("3.8")]
-        public async Task CanBuildAndRunPythonApp_UsingCustomStartUpCommandAsync(string pythonVersion)
+        [InlineData("3.8", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.8", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        public async Task CanBuildAndRunPythonApp_UsingCustomStartUpCommandAsync(string pythonVersion, string osType)
         {
             // Arrange
             var appName = "http-server-py";
@@ -107,7 +109,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[]

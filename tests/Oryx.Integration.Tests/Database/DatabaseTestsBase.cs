@@ -38,6 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests
         protected async Task RunTestAsync(
             string platformName,
             string platformVersion,
+            string osType,
             string samplePath,
             int containerPort = 8000,
             bool specifyBindPortFlag = true,
@@ -54,10 +55,10 @@ namespace Microsoft.Oryx.Integration.Tests
             var script = scriptBuilder.AddCommand(entrypointScript)
                 .ToString();
 
-            var runtimeImageName = _imageHelper.GetRuntimeImage(platformName, platformVersion);
+            var runtimeImageName = _imageHelper.GetRuntimeImage(platformName, platformVersion, osType);
             if (string.Equals(platformName, "nodejs", StringComparison.OrdinalIgnoreCase))
             {
-                runtimeImageName = _imageHelper.GetRuntimeImage("node", platformVersion);
+                runtimeImageName = _imageHelper.GetRuntimeImage("node", platformVersion, osType);
             }
 
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";

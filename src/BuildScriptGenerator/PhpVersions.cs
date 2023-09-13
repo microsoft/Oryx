@@ -6,8 +6,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class PhpVersions
     {
-        public const string PhpRuntimeBaseTag = "20230831.3";
-        public const string PhpFpmRuntimeBaseTag = "20230831.3";
+        public const string PhpRuntimeBaseTag = "20230905.2";
+        public const string PhpFpmRuntimeBaseTag = "20230905.2";
         public const string ComposerDefaultVersion = "2.0.8";
         public const string ComposerSetupSha384 = "e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02";
         public const string Composer19Version = "1.9.3";
@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Php56Version = "5.6.40";
         public const string Php56Keys = "0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3";
         public const string Php56TarSha256 = "1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c";
-        public static readonly Dictionary<string, string> RuntimeVersions = new Dictionary<string, string> { { "7.4", "debian-buster" }, { "8.0", "debian-buster" }, { "8.1", "debian-bullseye" }, { "8.2", "debian-bullseye" } };
-        public static readonly Dictionary<string, string> FpmRuntimeVersions = new Dictionary<string, string> { { "7.4-fpm", "debian-buster" }, { "8.0-fpm", "debian-buster" }, { "8.1-fpm", "debian-bullseye" }, { "8.2-fpm", "debian-bullseye" } };
+        public static readonly List<string> RuntimeVersions = new List<string> { "7.4-debian-bullseye", "7.4-debian-buster", "8.0-debian-bullseye", "8.0-debian-buster", "8.1-debian-bullseye", "8.1-debian-buster", "8.2-debian-bullseye", "8.2-debian-buster" };
+        public static readonly List<string> FpmRuntimeVersions = new List<string> { "7.4-fpm-debian-bullseye", "7.4-fpm-debian-buster", "8.0-fpm-debian-bullseye", "8.0-fpm-debian-buster", "8.1-fpm-debian-bullseye", "8.1-fpm-debian-buster", "8.2-fpm-debian-bullseye", "8.2-fpm-debian-buster" };
     }
 }

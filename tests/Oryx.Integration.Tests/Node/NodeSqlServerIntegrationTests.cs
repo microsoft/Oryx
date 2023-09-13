@@ -43,9 +43,11 @@ namespace Microsoft.Oryx.Integration.Tests
             await Run_NodeApp_MicrosoftSqlServerDBAsync(ImageTestHelperConstants.LatestStretchTag);
         }
 
-        private async Task Run_NodeApp_MicrosoftSqlServerDBAsync(string imageTag)
+        private async Task Run_NodeApp_MicrosoftSqlServerDBAsync(string buildImageTag)
         {
             // Arrange
+            var version = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "node-mssql";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
@@ -61,10 +63,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new List<DockerVolume> { volume },
-                _imageHelper.GetBuildImage(imageTag),
+                _imageHelper.GetBuildImage(buildImageTag),
                 "oryx",
-                new[] { "build", appDir, "--platform", "nodejs", "--platform-version", "14" },
-                _imageHelper.GetRuntimeImage("node", "14"),
+                new[] { "build", appDir, "--platform", "nodejs", "--platform-version", version },
+                _imageHelper.GetRuntimeImage("node", version, osType),
                 buildEnvVariableList,
                 ContainerPort,
                 "/bin/bash",
