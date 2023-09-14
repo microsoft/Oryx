@@ -200,7 +200,8 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && cp -f $imagesDir/build/logger.sh /opt/oryx/logger \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
-    && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx
+    && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
+    && rm -f /etc/apt/sources.list.d/buster.list
 
 ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts::/opt/java/lts/bin:/opt/maven/lts/bin:/opt/ruby/lts/bin"
 
@@ -269,7 +270,8 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && php go-pear.phar \
     && pecl version \
     && pecl install -f libsodium \
-    && echo "vso-debian-bullseye" > /opt/oryx/.imagetype
+    && echo "vso-debian-bullseye" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
     
 # install few more tools for VSO
 RUN gem install bundler rake --backtrace

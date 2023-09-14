@@ -75,4 +75,5 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && cd /opt/maven \
     && ln -s $MAVEN_VERSION lts \
     && rm -rf /opt/tmp \
-    && echo "vso" > /opt/oryx/.imagetype
+    && echo "vso" > /opt/oryx/.imagetype \
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype 
