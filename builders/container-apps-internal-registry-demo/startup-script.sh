@@ -20,8 +20,11 @@ tar -xzf "$COMPRESSED_APP_LOCATION"
 # public cert should be in this env var
 ca_pem_decoded=$(printf "%s" "$REGISTRY_HTTP_TLS_CERTIFICATE" | base64 -d)
 echo "$ca_pem_decoded" >> /usr/local/share/ca-certificates/internalregistry.crt
+cd /usr/local/share/ca-certificates/
+awk 'BEGIN {c=0;} /BEGIN CERT/{c++} { print > "cert." c ".crt"}' < /usr/local/share/ca-certificates/internalregistry.crt
 update-ca-certificates
 
+cd $CNB_APP_DIR
 token=$(printf "%s" "$REGISTRY_AUTH_USERNAME:$REGISTRY_AUTH_PASSWORD" | base64)
 acr_access_string="Basic $token"
 export CNB_REGISTRY_AUTH='{"'$ACR_RESOURCE_NAME'":"'$acr_access_string'"}'
