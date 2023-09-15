@@ -43,7 +43,7 @@ then
 fi
 
 # checking and retrieving token for the `oryxsdksstaging` account.
-retrieveSastokenFromKeyvault $PRIVATE_STAGING_SDK_STORAGE_BASE_URL
+retrieveSastokenFromKeyVault $PRIVATE_STAGING_SDK_STORAGE_BASE_URL
 
 echo
 echo "Building the common base image wih bullseye, buster, and bookworm flavor '$RUNTIME_BASE_IMAGE_NAME'..."
