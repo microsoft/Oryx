@@ -17,6 +17,8 @@ parameters:
         buildTag: 'github-actions-debian-buster'
       - category: '16'
         buildTag: 'debian-stretch'
+      - category: '16-nuxt'
+        buildTag: 'debian-stretch'
       - category: '18'
         buildTag: 'github-actions-debian-bullseye'
 

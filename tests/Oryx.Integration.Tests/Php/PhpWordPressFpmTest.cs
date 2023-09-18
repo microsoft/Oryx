@@ -30,31 +30,31 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "debian-stretch")]
         public async Task PipelineTestInvocationsPhp82Async()
         {
-            await PhpFpmWithWordPress56Async("8.2-fpm");
+            await PhpFpmWithWordPress56Async("8.2-fpm", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
         [Fact, Trait("category", "php-8.1")]
         [Trait("build-image", "debian-stretch")]
         public async Task PipelineTestInvocationsPhp81Async()
         {
-            await PhpFpmWithWordPress56Async("8.1-fpm");
+            await PhpFpmWithWordPress56Async("8.1-fpm", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
         [Fact, Trait("category", "php-8.0")]
         [Trait("build-image", "debian-stretch")]
         public async Task PipelineTestInvocationsPhp80Async()
         {
-            await PhpFpmWithWordPress56Async("8.0-fpm");
+            await PhpFpmWithWordPress56Async("8.0-fpm", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
         [Fact, Trait("category", "php-7.4")]
         [Trait("build-image", "debian-stretch")]
         public async Task PipelineTestInvocationsPhp74Async()
         {
-            await PhpFpmWithWordPress56Async("7.4-fpm");
+            await PhpFpmWithWordPress56Async("7.4-fpm", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
-        private async Task PhpFpmWithWordPress56Async(string phpVersion)
+        private async Task PhpFpmWithWordPress56Async(string phpVersion, string osType)
         {
             // Arrange
             string hostDir = Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N"));
@@ -93,7 +93,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
