@@ -222,15 +222,6 @@
       - 8.1-debian-buster
       - 8.2-debian-bullseye
       - 8.2-debian-buster
-    fpm-runtime-versions:
-      - 7.4-fpm-debian-bullseye
-      - 7.4-fpm-debian-buster
-      - 8.0-fpm-debian-bullseye
-      - 8.0-fpm-debian-buster
-      - 8.1-fpm-debian-bullseye
-      - 8.1-fpm-debian-buster
-      - 8.2-fpm-debian-bullseye
-      - 8.2-fpm-debian-buster
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator

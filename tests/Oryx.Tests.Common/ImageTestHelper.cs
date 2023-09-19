@@ -495,12 +495,6 @@ namespace Microsoft.Oryx.Tests.Common
                 NodeVersions.RuntimeVersions
             },
             {
-                PhpConstants.PlatformName,
-                PhpVersions.RuntimeVersions
-                .Concat(PhpVersions.FpmRuntimeVersions)
-                .ToList()
-            },
-            {
                 PythonConstants.PlatformName,
                 PythonVersions.RuntimeVersions
             },

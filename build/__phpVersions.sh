@@ -36,4 +36,3 @@ PHP70_TAR_SHA256='ab8c5be6e32b1f8d032909dedaaaa4bbb1a209e519abb01a52ce3914f9a13d
 PHP56_VERSION='5.6.40'
 PHP56_KEYS='0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3'
 PHP56_TAR_SHA256='1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c'
-FPM_RUNTIME_VERSIONS=("7.4-fpm-debian-bullseye" "7.4-fpm-debian-buster" "8.0-fpm-debian-bullseye" "8.0-fpm-debian-buster" "8.1-fpm-debian-bullseye" "8.1-fpm-debian-buster" "8.2-fpm-debian-bullseye" "8.2-fpm-debian-buster")
