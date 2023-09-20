@@ -1,6 +1,10 @@
 FROM oryxdevmcr.azurecr.io/private/oryx/%PHP_BASE_IMAGE_TAG%
 SHELL ["/bin/bash", "-c"]
+ARG DEBIAN_FLAVOR
+ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
 ENV PHP_VERSION %PHP_VERSION%
+ENV NGINX_BUSTER_VERSION="1.22.0-1~buster"
+ENV NGINX_BULLSEYE_VERSION="1.24.0-1~bullseye"
 
 # An environment variable for oryx run-script to know the origin of php image so that
 # start-up command can be determined while creating run script
@@ -12,9 +16,22 @@ ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 # - https://www.linuxcapable.com/how-to-install-latest-nginx-mainline-or-stable-on-debian-11/
 RUN apt-get update
 RUN apt install curl nano -y
-RUN curl -sSL https://packages.sury.org/nginx/README.txt | bash -x
-RUN apt-get update
-RUN yes '' | apt-get install nginx-core nginx-common nginx nginx-full -y
+# Install dependencies
+RUN apt-get install -y curl gnupg2 ca-certificates lsb-release
+# Add Nginx's GPG key
+RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | apt-key add -
+# Add the Nginx repository
+RUN echo "deb http://nginx.org/packages/debian `lsb_release -cs` nginx" | tee /etc/apt/sources.list.d/nginx.list
+RUN apt update
+RUN set -eux; \
+    if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+        apt install -y nginx=${NGINX_BUSTER_VERSION}; \
+    elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \ 
+        apt install -y nginx=${NGINX_BULLSEYE_VERSION}; \
+    else \
+        apt install -y nginx; \
+    fi
+
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
