@@ -23,9 +23,11 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "github-actions-debian-stretch")]
-        [InlineData("3.1", NetCoreApp31MvcApp, "Welcome to ASP.NET Core MVC!")]
+        [InlineData("3.1", ImageTestHelperConstants.OsTypeDebianBuster, NetCoreApp31MvcApp, "Welcome to ASP.NET Core MVC!")]
+        [InlineData("3.1", ImageTestHelperConstants.OsTypeDebianBullseye, NetCoreApp31MvcApp, "Welcome to ASP.NET Core MVC!")]
         public async Task CanBuildAndRun_NetCore31WebAppAsync(
             string runtimeVersion,
+            string osType,
             string appName,
             string expectedResponseContent)
         {
@@ -57,7 +59,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", runtimeVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", runtimeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -109,7 +111,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "dynamic"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 ContainerPort,
                 "/bin/sh",
                 new[]

@@ -10,5 +10,5 @@ RUN set -eux && . /php/__phpVersions.sh && \
     export phpbin="/opt/php/$PHP73_VERSION/bin/php" && \
     $phpbin -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
     $phpbin -r "if (hash_file('sha384', 'composer-setup.php') === '$COMPOSER_SETUP_SHA384') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" && \
-    $phpbin composer-setup.php --version=$COMPOSER_VERSION --install-dir=/opt/php-composer && \
+    $phpbin composer-setup.php --version=$COMPOSER_DEFAULT_VERSION --install-dir=/opt/php-composer && \
     $phpbin -r "unlink('composer-setup.php');"
