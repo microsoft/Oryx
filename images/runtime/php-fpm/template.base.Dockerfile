@@ -17,20 +17,20 @@ ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
 RUN apt-get update
 RUN apt install curl nano -y
 # Install dependencies
-RUN apt-get install -y curl gnupg2 ca-certificates lsb-release
-# Add Nginx's GPG key
-RUN curl -fsSL https://nginx.org/keys/nginx_signing.key | apt-key add -
-# Add the Nginx repository
-RUN echo "deb http://nginx.org/packages/debian `lsb_release -cs` nginx" | tee /etc/apt/sources.list.d/nginx.list
-RUN apt update
-RUN set -eux; \
-    if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
-        apt install -y nginx=${NGINX_BUSTER_VERSION}; \
-    elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \ 
-        apt install -y nginx=${NGINX_BULLSEYE_VERSION}; \
-    else \
-        apt install -y nginx; \
-    fi
+RUN apt-get install -y curl gnupg2 ca-certificates lsb-release \
+    # Add Nginx's GPG key
+    && curl -fsSL https://nginx.org/keys/nginx_signing.key | apt-key add - \
+    # Add the Nginx repository
+    && echo "deb http://nginx.org/packages/debian `lsb_release -cs` nginx" | tee /etc/apt/sources.list.d/nginx.list \
+    && apt update \
+    && set -eux; \
+        if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
+            apt install -y nginx=${NGINX_BUSTER_VERSION}; \
+        elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \ 
+            apt install -y nginx=${NGINX_BULLSEYE_VERSION}; \
+        else \
+            apt install -y nginx; \
+        fi
 
 RUN ls -l /etc/nginx
 COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
