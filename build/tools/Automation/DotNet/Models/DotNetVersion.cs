@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 using System;
+using NuGet.Versioning;
 
 namespace Microsoft.Oryx.Automation.DotNet.Models
 {
@@ -35,8 +36,8 @@ namespace Microsoft.Oryx.Automation.DotNet.Models
                 return 1;
             }
 
-            var thisVersion = new Version(this.Version);
-            var objVersion = new Version(objDotNetVersion.Version);
+            var thisVersion = SemanticVersion.Parse(this.Version);
+            var objVersion = SemanticVersion.Parse(objDotNetVersion.Version);
             return thisVersion.CompareTo(objVersion);
         }
     }

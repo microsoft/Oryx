@@ -25,6 +25,8 @@ namespace Microsoft.Oryx.Automation.Services.Tests
         [InlineData("1.2.3", null, null, new[] { "1.2.2" }, true)]
         [InlineData("1.2.3", null, null, new[] { "1.2.4" }, true)]
         [InlineData("1.2.3", null, null, new[] { "1.2.2", "1.2.4" }, true)]
+        [InlineData("7.0.0-rc.1.23419.4", null, null, null, false)]
+        [InlineData("8.0.0-rc.1.23419.4", null, null, null, true)]
         public void IsVersionWithinRange_ReturnsExpectedResult(
             string version, string minVersion, string maxVersion, string[] blockedVersions, bool expectedResult)
         {
