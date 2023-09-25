@@ -5,7 +5,11 @@ COPY . ./
 WORKDIR /app/
 RUN dotnet publish -c Release -o published_app
 
+<<<<<<< Updated upstream
 FROM nginx:1.24.0 AS build
+=======
+FROM mcr.microsoft.com/mirror/docker/library/nginx:1.24 AS build
+>>>>>>> Stashed changes
 WORKDIR /src
 RUN apt-get update && apt-get install -y git wget build-essential libssl-dev libpcre3-dev zlib1g-dev libbrotli-dev 
 RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') \
@@ -18,7 +22,11 @@ RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') \
 WORKDIR nginx-1.24.0
 RUN	make modules
 
+<<<<<<< Updated upstream
 FROM nginx:1.24.0 as final
+=======
+FROM mcr.microsoft.com/mirror/docker/library/nginx:1.24 as final
+>>>>>>> Stashed changes
 
 COPY --from=build /src/nginx-1.24.0/objs/ngx_http_brotli_filter_module.so /usr/lib/nginx/modules/
 COPY --from=build /src/nginx-1.24.0/objs/ngx_http_brotli_static_module.so /usr/lib/nginx/modules/
