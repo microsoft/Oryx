@@ -17,6 +17,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Ruby25TarSha256 = "0391b2ffad3133e274469f9953ebfd0c9f7c186238968cbdeeb0651aa02a4d6d";
         public const string Ruby30Version = "3.0.5";
         public const string Ruby30TarSha256 = "cf7cb5ba2030fe36596a40980cdecfd79a0337d35860876dc2b10a38675bddde";
-        public static readonly Dictionary<string, string> RuntimeVersions = new Dictionary<string, string> { { "2.5", "debian-buster" }, { "2.6", "debian-buster" }, { "2.7", "debian-buster" }, { "dynamic", "debian-buster" } };
+        public static readonly List<string> RuntimeVersions = new List<string> { "2.5-debian-bullseye", "2.5-debian-buster", "2.6-debian-bullseye", "2.6-debian-buster", "2.7-debian-bullseye", "2.7-debian-buster", "dynamic-debian-buster" };
     }
 }

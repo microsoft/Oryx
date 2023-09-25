@@ -62,8 +62,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("php", "5.6", "5.6", "debian-buster-stable", "5.6")]
         [InlineData("php", "7.3", "7.3", "debian-buster-stable", "7.3")]
         [InlineData("python", "2.7", "2.7", "debian-buster-stable", "2.7")]
-        [InlineData("python", "3.7", "3.7", "debian-bullseye-stable", "3.7")]
-        [InlineData("python", "3.8", "3.8", "debian-bullseye-stable", "3.8")]
+        [InlineData("python", "3.7", "3.7", "debian-bullseye-stable", "3.7-debian-bullseye")]
+        [InlineData("python", "3.8", "3.8", "debian-bullseye-stable", "3.8-debian-bullseye")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatformAndVersion(
             string platformName,
             string detectedPlatformVersion,
@@ -112,23 +112,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         /// <param name="detectedPlatformVersion">The platform version that is "detected".</param>
         /// <param name="expectedRuntimeImageTag">The expected runtime tag of the Dockerfile produced.</param>
         [Theory]
-        [InlineData("dotnet", "5.0", "debian-buster-stable", "5.0")]
-        [InlineData("dotnet", "6.0", "debian-buster-stable", "6.0")]
-        [InlineData("dotnet", "7.0", "debian-buster-stable", "7.0")]
-        [InlineData("nodejs", "14", "debian-buster-stable", "14")]
-        [InlineData("nodejs", "16", "debian-buster-stable", "16")]
-        [InlineData("nodejs", "18", "debian-bullseye-stable", "18")]
-        [InlineData("nodejs", "~14", "debian-buster-stable", "14")] // Test semver spec
-        [InlineData("nodejs", "~18", "debian-bullseye-stable", "18")] // Test semver spec 
-        [InlineData("nodejs", "<16", "debian-buster-stable", "14")] // Test semver
-        [InlineData("php", "7.4", "debian-buster-stable", "7.4")]
-        [InlineData("php", "8.0", "debian-buster-stable", "8.0")]
-        [InlineData("php", "8.2", "debian-bullseye-stable", "8.2")]
-        [InlineData("python", "3.9", "debian-buster-stable", "3.9")]
-        [InlineData("python", "3.10", "debian-bullseye-stable", "3.10")]
-        [InlineData("python", "3.11", "debian-bullseye-stable", "3.11")]
-        [InlineData("python", "3.6", "debian-bullseye-stable", "3.11")] // 3.6.x not currently a runtime, use latest
-        [InlineData("python", "3.8.1", "debian-bullseye-stable", "3.8")]
+        [InlineData("dotnet", "5.0", "debian-buster-stable", "5.0-debian-buster")]
+        [InlineData("dotnet", "6.0", "debian-bullseye-stable", "6.0-debian-bullseye")]
+        [InlineData("dotnet", "7.0", "debian-bullseye-stable", "7.0-debian-bullseye")]
+        [InlineData("nodejs", "14", "debian-bullseye-stable", "14-debian-bullseye")]
+        [InlineData("nodejs", "16", "debian-bullseye-stable", "16-debian-bullseye")]
+        [InlineData("nodejs", "18", "debian-bullseye-stable", "18-debian-bullseye")]
+        [InlineData("nodejs", "~14", "debian-bullseye-stable", "14-debian-bullseye")] // Test semver spec
+        [InlineData("nodejs", "~18", "debian-bullseye-stable", "18-debian-bullseye")] // Test semver spec 
+        [InlineData("nodejs", "<16", "debian-bullseye-stable", "14-debian-bullseye")] // Test semver
+        [InlineData("php", "7.4", "debian-bullseye-stable", "7.4-debian-bullseye")]
+        [InlineData("php", "8.0", "debian-bullseye-stable", "8.0-debian-bullseye")]
+        [InlineData("php", "8.2", "debian-bullseye-stable", "8.2-debian-bullseye")]
+        [InlineData("python", "3.9", "debian-bullseye-stable", "3.9-debian-bullseye")]
+        [InlineData("python", "3.10", "debian-bullseye-stable", "3.10-debian-bullseye")]
+        [InlineData("python", "3.11", "debian-bullseye-stable", "3.11-debian-bullseye")]
+        [InlineData("python", "3.6", "debian-buster-stable", "dynamic-debian-buster")] // 3.6.x not currently a runtime, use dynamic
+        [InlineData("python", "3.8.1", "debian-bullseye-stable", "3.8-debian-bullseye")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatform(
             string platformName,
             string detectedPlatformVersion,
@@ -173,23 +173,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         /// <param name="detectedPlatformVersion">The platform version that is "detected".</param>
         /// <param name="expectedRuntimeImageTag">The expected runtime tag of the Dockerfile produced.</param>
         [Theory]
-        [InlineData("dotnet", "5.0.17", "debian-buster-stable", "5.0")]
-        [InlineData("dotnet", "6.0", "debian-buster-stable", "6.0")]
-        [InlineData("dotnet", "7.0", "debian-buster-stable", "7.0")]
-        [InlineData("nodejs", "14", "debian-buster-stable", "14")]
-        [InlineData("nodejs", "16", "debian-buster-stable", "16")]
-        [InlineData("nodejs", "18", "debian-bullseye-stable", "18")]
-        [InlineData("nodejs", "~14", "debian-buster-stable", "14")] // Test semver spec
-        [InlineData("nodejs", "~18", "debian-bullseye-stable", "18")] // Test semver spec 
-        [InlineData("nodejs", "<16", "debian-buster-stable", "14")] // Test semver
-        [InlineData("php", "7.4", "debian-buster-stable", "7.4")]
-        [InlineData("php", "8.0", "debian-buster-stable", "8.0")]
-        [InlineData("php", "8.2", "debian-bullseye-stable", "8.2")]
-        [InlineData("python", "3.9", "debian-buster-stable", "3.9")]
-        [InlineData("python", "3.10", "debian-bullseye-stable", "3.10")]
-        [InlineData("python", "3.11", "debian-bullseye-stable", "3.11")]
-        [InlineData("python", "3.6", "debian-bullseye-stable", "3.11")] // 3.6.x not currently a runtime, use latest
-        [InlineData("python", "3.8.1", "debian-bullseye-stable", "3.8")]
+        [InlineData("dotnet", "5.0.17", "debian-buster-stable", "5.0-debian-buster")]
+        [InlineData("dotnet", "6.0", "debian-bullseye-stable", "6.0-debian-bullseye")]
+        [InlineData("dotnet", "7.0", "debian-bullseye-stable", "7.0-debian-bullseye")]
+        [InlineData("nodejs", "14", "debian-bullseye-stable", "14-debian-bullseye")]
+        [InlineData("nodejs", "16", "debian-bullseye-stable", "16-debian-bullseye")]
+        [InlineData("nodejs", "18", "debian-bullseye-stable", "18-debian-bullseye")]
+        [InlineData("nodejs", "~14", "debian-bullseye-stable", "14-debian-bullseye")] // Test semver spec
+        [InlineData("nodejs", "~18", "debian-bullseye-stable", "18-debian-bullseye")] // Test semver spec 
+        [InlineData("nodejs", "<16", "debian-bullseye-stable", "14-debian-bullseye")] // Test semver
+        [InlineData("php", "7.4", "debian-bullseye-stable", "7.4-debian-bullseye")]
+        [InlineData("php", "8.0", "debian-bullseye-stable", "8.0-debian-bullseye")]
+        [InlineData("php", "8.2", "debian-bullseye-stable", "8.2-debian-bullseye")]
+        [InlineData("python", "3.9", "debian-bullseye-stable", "3.9-debian-bullseye")]
+        [InlineData("python", "3.10", "debian-bullseye-stable", "3.10-debian-bullseye")]
+        [InlineData("python", "3.11", "debian-bullseye-stable", "3.11-debian-bullseye")]
+        [InlineData("python", "3.6", "debian-buster-stable", "dynamic-debian-buster")] // 3.6.x not currently a runtime, use dynamic
+        [InlineData("python", "3.8.1", "debian-bullseye-stable", "3.8-debian-bullseye")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForNoProvidedPlatform(
             string platformName,
             string detectedPlatformVersion,

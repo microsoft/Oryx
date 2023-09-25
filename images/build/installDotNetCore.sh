@@ -16,10 +16,17 @@ if [ -z "$sdkStorageAccountUrl" ]; then
 fi
 if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
     set +x
+    isSasTokenEmpty=1 
     sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
-    set -x
     if [ -z "$sasToken" ]; then
-      echo "sasToken cannot be empty for $sdkStorageAccountUrl."
+      isSasTokenEmpty=0
+    fi
+    set -x
+    
+    if [ $isSasTokenEmpty -eq 0 ]; then
+        echo "sasToken cannot be empty for $sdkStorageAccountUrl."
+    else
+        echo "sasToken is empty for $sdkStorageAccountUrl."
     fi
 fi
 echo

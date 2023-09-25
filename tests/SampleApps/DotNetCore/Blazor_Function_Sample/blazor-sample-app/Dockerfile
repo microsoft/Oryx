@@ -7,7 +7,7 @@ RUN dotnet publish -c Release -o published_app
 
 FROM mcr.microsoft.com/mirror/docker/library/nginx:1.21 AS build
 WORKDIR /src
-RUN apt-get update && apt-get install -y git wget build-essential libssl-dev libpcre3-dev zlib1g-dev
+RUN apt-get update && apt-get install -y git wget build-essential libssl-dev libpcre3-dev zlib1g-dev libbrotli-dev 
 RUN CONFARGS=$(nginx -V 2>&1 | sed -n -e 's/^.*arguments: //p') \
     git clone https://github.com/google/ngx_brotli.git && \
     cd ngx_brotli && git submodule update --init && cd .. && \

@@ -47,13 +47,18 @@
     dot-net-60-sdk-version: 6.0.412
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
     dot-net-70-sdk-version: 7.0.306
+    dot-net-80-sdk-version: 8.0.100-preview.7.23376.3
     runtime-versions:
-      3.0: debian-buster
-      3.1: debian-buster
-      5.0: debian-buster
-      6.0: debian-buster
-      7.0: debian-buster
-      dynamic: debian-buster
+      - 3.0-debian-buster
+      - 3.1-debian-bullseye
+      - 3.1-debian-buster
+      - 5.0-debian-buster
+      - 6.0-debian-bullseye
+      - 6.0-debian-buster
+      - 7.0-debian-bullseye
+      - 7.0-debian-buster
+      - 8.0-debian-bookworm
+      - dynamic-debian-buster
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -63,7 +68,7 @@
       file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20230721.1
+    dot-net-core-runtime-base-tag: 20230921.1
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
@@ -93,6 +98,10 @@
     net-core-app-70-sha: 09552e5ae6ac014dadf17545ff0a30ab32921075a31fb33e7be148c13078e30d097f592ffa1b8d306563aaa3f6302e40c5c0ba815c1473bbd5d72e3bef55d91e
     aspnet-core-app-70: 7.0.9
     aspnet-core-app-70-sha: aabf4fa5ca726dc52774e5d644800ef7477815b22a982b7a2752dec6569186aabca93d5386e195e7ead377144601a786ae6a5d76ff28435bdabfad495cfe554b
+    net-core-app-80: 8.0.0-preview.7.23375.6
+    net-core-app-80-sha: bfd8491550178b86a7a72fe06bdc82f0dd66771d5b60d7e4e1133cdde29f84bd57857d846722e027bd209db087123b2d12b2e23590d77991052269fa265814e1
+    aspnet-core-app-80: 8.0.0-preview.7.23375.9
+    aspnet-core-app-80-sha: b8c8a5cd579a8ee1e082363a73a05a745499365445f784e6ff87547f9acdbe8b7ba525140ef10555bc2802c13af131c2d568ec6af020bd0dd2fdf82d4c258442
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator/DotNetCore
@@ -139,7 +148,7 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-runtime-base-tag: 20230316.1
+    python-runtime-base-tag: 20230901.1
     pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
@@ -149,12 +158,16 @@
     python310-version: 3.10.8
     python311-version: 3.11.0
     runtime-versions:
-      3.7: debian-bullseye
-      3.8: debian-bullseye
-      3.9: debian-buster
-      3.10: debian-bullseye
-      3.11: debian-bullseye
-      dynamic: debian-buster
+      - 3.7-debian-bullseye
+      - 3.7-debian-buster
+      - 3.8-debian-bullseye
+      - 3.8-debian-buster
+      - 3.9-debian-bullseye
+      - 3.9-debian-buster
+      - 3.10-debian-bullseye
+      - 3.10-debian-buster
+      - 3.11-debian-bullseye
+      - dynamic-debian-buster
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -164,24 +177,27 @@
       file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20230713.2
-    php-fpm-runtime-base-tag: 20230720.2
-    composer-version: 2.0.8
+    php-runtime-base-tag: 20230905.2
+    php-fpm-runtime-base-tag: 20230905.2
+    composer-default-version: 2.0.8
     composer-setup-sha384: e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02
     composer1-9-version: 1.9.3
     composer1-10-version: 1.10.19
     composer2-0-version: 2.0.8
-    composer2-2-version: 2.2.9
-    composer2-3-version: 2.3.4
-    php82-version: 8.2.8
+    composer2-2-version: 2.2.21
+    composer2-3-version: 2.3.10
+    composer2-4-version: 2.4.4
+    composer2-5-version: 2.5.8
+    composer2-6-version: 2.6.2
+    php82-version: 8.2.9
     php82-keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php82-tar-sha256: cfe1055fbcd486de7d3312da6146949aae577365808790af6018205567609801
-    php81-version: 8.1.21
+    php82-tar-sha256: 1e6cb77f997613864ab3127fbfc6a8c7fdaa89a95e8ed6167617b913b4de4765
+    php81-version: 8.1.22
     php81-keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
-    php81-tar-sha256: e634a00b0c6a8cd39e840e9fb30b5227b820b7a9ace95b7b001053c1411c4821
-    php80-version: 8.0.29
+    php81-tar-sha256: 9ea4f4cfe775cb5866c057323d6b320f3a6e0adb1be41a068ff7bfec6f83e71d
+    php80-version: 8.0.30
     php80-keys: 1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F
-    php80-tar-sha256: 14db2fbf26c07d0eb2c9fab25dbde7e27726a3e88452cca671f0896bbb683ca9
+    php80-tar-sha256: 216ab305737a5d392107112d618a755dc5df42058226f1670e9db90e77d777d9
     php74-version: 7.4.33
     php74-keys: 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
     php74-tar-sha256: 924846abf93bc613815c55dd3f5809377813ac62a9ec4eb3778675b82a27b927
@@ -198,15 +214,23 @@
     php56-keys: 0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
     php56-tar-sha256: 1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c
     runtime-versions:
-      7.4: debian-buster
-      8.0: debian-buster
-      8.1: debian-bullseye
-      8.2: debian-bullseye
+      - 7.4-debian-bullseye
+      - 7.4-debian-buster
+      - 8.0-debian-bullseye
+      - 8.0-debian-buster
+      - 8.1-debian-bullseye
+      - 8.1-debian-buster
+      - 8.2-debian-bullseye
+      - 8.2-debian-buster
     fpm-runtime-versions:
-      7.4-fpm: debian-buster
-      8.0-fpm: debian-buster
-      8.1-fpm: debian-bullseye
-      8.2-fpm: debian-bullseye
+      - 7.4-fpm-debian-bullseye
+      - 7.4-fpm-debian-buster
+      - 8.0-fpm-debian-bullseye
+      - 8.0-fpm-debian-buster
+      - 8.1-fpm-debian-bullseye
+      - 8.1-fpm-debian-buster
+      - 8.2-fpm-debian-bullseye
+      - 8.2-fpm-debian-buster
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -228,10 +252,13 @@
     ruby30-version: 3.0.5
     ruby30-tar-sha256: cf7cb5ba2030fe36596a40980cdecfd79a0337d35860876dc2b10a38675bddde
     runtime-versions:
-      2.5: debian-buster
-      2.6: debian-buster
-      2.7: debian-buster
-      dynamic: debian-buster
+      - 2.5-debian-bullseye
+      - 2.5-debian-buster
+      - 2.6-debian-bullseye
+      - 2.6-debian-buster
+      - 2.7-debian-bullseye
+      - 2.7-debian-buster
+      - dynamic-debian-buster
   outputs:
     - type: csharp
       directory: src/BuildScriptGenerator
@@ -263,6 +290,7 @@
 - name: os-types
   constants:
     debian-stretch: stretch
+    debian-bookworm: bookworm
     debian-bullseye: bullseye
     debian-buster: buster
     ubuntu-focal-scm: focal-scm
@@ -274,7 +302,7 @@
       directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20230707.2
+    node-runtime-base-tag: 20230901.2
     yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
@@ -283,16 +311,18 @@
     node10-version: 10.23.0
     node12-version: 12.22.12
     node14-version: 14.21.3
-    node16-version: 16.20.1
-    node18-version: 18.16.1
+    node16-version: 16.20.2
+    node18-version: 18.17.1
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 9.6.4
     runtime-versions:
-      14: debian-buster
-      16: debian-buster
-      18: debian-bullseye
-      dynamic: debian-buster
+      - 14-debian-bullseye
+      - 14-debian-buster
+      - 16-debian-bullseye
+      - 16-debian-buster
+      - 18-debian-bullseye
+      - dynamic-debian-buster
   outputs:
     - type: shell
       directory: build

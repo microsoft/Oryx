@@ -30,8 +30,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion82 = "8.2";
             await Task.WhenAll(
-                GreetingsAppTestAsync(phpVersion82),
-                PhpFpmGreetingsAppTestAsync(phpVersion82));
+                GreetingsAppTestAsync(phpVersion82, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmGreetingsAppTestAsync(phpVersion82, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
         [Fact, Trait("category", "php-8.1")]
@@ -40,8 +40,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion81 = "8.1";
             await Task.WhenAll(
-                GreetingsAppTestAsync(phpVersion81),
-                PhpFpmGreetingsAppTestAsync(phpVersion81));
+                GreetingsAppTestAsync(phpVersion81, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmGreetingsAppTestAsync(phpVersion81, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
         [Fact, Trait("category", "php-8.0")]
@@ -50,8 +50,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion80 = "8.0";
             await Task.WhenAll(
-                GreetingsAppTestAsync(phpVersion80),
-                PhpFpmGreetingsAppTestAsync(phpVersion80));
+                GreetingsAppTestAsync(phpVersion80, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmGreetingsAppTestAsync(phpVersion80, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -60,11 +60,11 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             await Task.WhenAll(
-                GreetingsAppTestAsync(phpVersion74),
-                PhpFpmGreetingsAppTestAsync(phpVersion74));
+                GreetingsAppTestAsync(phpVersion74, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmGreetingsAppTestAsync(phpVersion74, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
-        private async Task GreetingsAppTestAsync(string phpVersion)
+        private async Task GreetingsAppTestAsync(string phpVersion, string osType)
         {
             // Arrange
             var appName = "greetings";
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        private async Task PhpFpmGreetingsAppTestAsync(string phpVersion)
+        private async Task PhpFpmGreetingsAppTestAsync(string phpVersion, string osType)
         {
             // Arrange
             var appName = "greetings";
@@ -123,7 +123,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                _imageHelper.GetRuntimeImage("php", phpimageVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>

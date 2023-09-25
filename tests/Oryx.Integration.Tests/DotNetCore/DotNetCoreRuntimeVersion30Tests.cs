@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var dotnetcoreVersion = "3.0";
+            var osType = ImageTestHelperConstants.OsTypeDebianBuster;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30WebApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -53,7 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -74,6 +75,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var dotnetcoreVersion = "3.0";
+            var osType = ImageTestHelperConstants.OsTypeDebianBuster;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -99,7 +101,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -131,7 +133,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                _imageHelper.GetRuntimeImage("dotnetcore", "3.0"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "3.0", ImageTestHelperConstants.OsTypeDebianBuster),
                 _output,
                 new List<DockerVolume>() { volume },
                 environmentVariables: null,
@@ -157,6 +159,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var dotnetcoreVersion = "3.0";
+            var osType = ImageTestHelperConstants.OsTypeDebianBuster;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp30WebApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -185,7 +188,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -207,6 +210,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "NetCoreApp30WebAppWithExplicitAssemblyName";
             var dotnetcoreVersion = "3.0";
+            var osType = ImageTestHelperConstants.OsTypeDebianBuster;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -232,7 +236,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]

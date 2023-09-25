@@ -10,7 +10,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 {
     public class PhpComposerOnDiskVersionProvider : IPhpComposerVersionProvider
     {
-        private const string DefaultOnDiskVersion = PhpVersions.ComposerVersion;
+        private const string DefaultOnDiskVersion = PhpVersions.ComposerDefaultVersion;
         private readonly ILogger<PhpComposerOnDiskVersionProvider> logger;
 
         public PhpComposerOnDiskVersionProvider(ILogger<PhpComposerOnDiskVersionProvider> logger)

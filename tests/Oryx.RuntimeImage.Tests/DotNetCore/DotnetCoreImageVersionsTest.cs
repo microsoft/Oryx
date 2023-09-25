@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, ImageTestHelperConstants.OsTypeDebianBullseye),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { "version" }
             });
@@ -77,7 +77,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, ImageTestHelperConstants.OsTypeDebianBuster),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { "version" }
             });
@@ -97,18 +97,21 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("3.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30)]
-        [InlineData("3.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
-        [InlineData("5.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp50)]
-        [InlineData("6.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
-        [InlineData("7.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp70)]
+        [InlineData("3.0", ImageTestHelperConstants.OsTypeDebianBuster, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30)]
+        [InlineData("3.1", ImageTestHelperConstants.OsTypeDebianBuster, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
+        [InlineData("3.1", ImageTestHelperConstants.OsTypeDebianBullseye, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
+        [InlineData("5.0", ImageTestHelperConstants.OsTypeDebianBuster, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp50)]
+        [InlineData("6.0", ImageTestHelperConstants.OsTypeDebianBuster, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
+        [InlineData("6.0", ImageTestHelperConstants.OsTypeDebianBullseye, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
+        [InlineData("7.0", ImageTestHelperConstants.OsTypeDebianBuster, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp70)]
+        [InlineData("7.0", ImageTestHelperConstants.OsTypeDebianBullseye, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp70)]
         [Trait(TestConstants.Category, TestConstants.Release)]
-        public void RuntimeImage_HasExecptedDotNetVersion(string version, string expectedOutput)
+        public void RuntimeImage_HasExecptedDotNetVersion(string version, string osType, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, osType),
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--info" }
             });

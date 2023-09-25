@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", "3.7", ImageTestHelperConstants.OsTypeDebianBullseye),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { volume, appOutputDirVolume },
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", "3.7", ImageTestHelperConstants.OsTypeDebianBullseye),
                 ContainerPort,
                 "/bin/bash",
                 new[]
