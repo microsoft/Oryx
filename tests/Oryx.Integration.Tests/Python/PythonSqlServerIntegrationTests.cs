@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task Python37App_MicrosoftSqlServerDB_WithGitHubActionsBullseyeBuildImageAsync()
         {
-            await PythonApp_MicrosoftSqlServerDBAsync("3.7", ImageTestHelperConstants.GitHubActionsBullseye);
+            await PythonApp_MicrosoftSqlServerDBAsync("3.7", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Fact(Skip = "Bug #1274414")]
@@ -37,10 +37,10 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "debian-stretch")]
         public async Task Python37App_MicrosoftSqlServerDB_WithLatestStretchBuildImageAsync()
         {
-            await PythonApp_MicrosoftSqlServerDBAsync("3.7", ImageTestHelperConstants.LatestStretchTag);
+            await PythonApp_MicrosoftSqlServerDBAsync("3.7", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.LatestStretchTag);
         }
 
-        private async Task PythonApp_MicrosoftSqlServerDBAsync(string pythonVersion, string imageTag)
+        private async Task PythonApp_MicrosoftSqlServerDBAsync(string pythonVersion, string osType, string buildImageTag)
         {
             // Arrange
             var appName = "mssqlserver-sample";
@@ -56,10 +56,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new List<DockerVolume> { volume },
-                _imageHelper.GetBuildImage(imageTag),
+                _imageHelper.GetBuildImage(buildImageTag),
                 "oryx",
                 new[] { "build", appDir, "--platform", "python", "--platform-version", pythonVersion },
-                _imageHelper.GetRuntimeImage("python", pythonVersion),
+                _imageHelper.GetRuntimeImage("python", pythonVersion, osType),
                 SqlServerDbTestHelper.GetEnvironmentVariables(),
                 ContainerPort,
                 "/bin/bash",
