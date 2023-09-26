@@ -31,7 +31,7 @@ steps:
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 7.x'
   inputs:
-    version: 7.x
+    version: 7.0.306
 
 - task: ShellScript@2
   displayName: 'Test Dev storage account'
