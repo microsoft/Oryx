@@ -58,6 +58,7 @@ PYTHON\_ENABLE\_GUNICORN\_MULTIWORKERS| Enable Gunicorn multi worker multi threa
 PYTHON\_GUNICORN\_CUSTOM\_WORKER\_NUM| Only works when `PYTHON\_ENABLE\_GUNICORN\_MULTIWORKERS` is set to `true`. Specify Gunicorn multi worker number. If not set, default is (2 * CPU core num) + 1| `(2 * CPU core num) + 1`, `1`    | "2"
 PYTHON\_GUNICORN\_CUSTOM\_THREAD\_NUM| Only works when `PYTHON\_ENABLE\_GUNICORN\_MULTIWORKERS` is set to `true`. Specify Gunicorn multi thread number. If not set, default is single thread. | ""    | "4"
 ORYX\_DISABLE\_PIP\_UPGRADE  | Remove the --upgrade flag from the pip install command when targeting a specific package installation directory. | `false` | `true`, `false`
+NGINX\_CONF\_FILE            | Specify a customized configuration file to modify nginx.conf file        | ""      | "newconfigfile.conf"
 
 Setting name for Php apps    | Description                                                    | Default | Example
 -----------------------------|----------------------------------------------------------------|---------|----------------

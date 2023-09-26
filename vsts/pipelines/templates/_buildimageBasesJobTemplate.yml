@@ -26,6 +26,7 @@ jobs:
       scriptPath: ${{ parameters.scriptPath }}
       args: ${{ parameters.imageDir }} ${{ parameters.imageDebianFlavor }}
     env:
+      ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
       DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN: $(DotnetPrivateStorageAccountAccessToken)
 
   - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
