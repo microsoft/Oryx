@@ -3,13 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -38,7 +35,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
@@ -60,7 +56,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "7.0"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "7.0", ImageTestHelperConstants.OsTypeDebianBullseye),
                 ContainerPort,
                 "/bin/sh",
                 new[]

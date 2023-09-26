@@ -5,6 +5,8 @@
 
 using System;
 using System.Text;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using JetBrains.Annotations;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Common
@@ -23,13 +25,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         /// Initializes a new instance of the <see cref="ShellScriptBuilder"/> class.
         /// Builds bash script commands in a single line. Note that this does not add the '#!/bin/bash'.
         /// </summary>
-        public ShellScriptBuilder(string cmdSeparator = null)
+        public ShellScriptBuilder(string cmdSeparator = null, bool addDefaultTestEnvironmentVariables = true)
         {
             this.scriptBuilder = new StringBuilder();
 
             if (cmdSeparator != null)
             {
                 this.commandSeparator = cmdSeparator;
+            }
+
+            if (addDefaultTestEnvironmentVariables)
+            {
+                this.AddDefaultTestEnvironmentVariables();
             }
         }
 
@@ -74,9 +81,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
             return this.Append($"oryx build-script {argumentsString}");
         }
 
-        public ShellScriptBuilder SetEnvironmentVariable(string name, string value)
+        public ShellScriptBuilder SetEnvironmentVariable(string name, string value, bool isVariableSubstitutionNeeded = false)
         {
-            return this.Append($"export {name}={value}");
+            if (isVariableSubstitutionNeeded)
+            {
+                // linux does not allow variable substitution in a single quoted string.
+                // So, if we need to do variable substitution it has to be inside a double quoted string.
+                // e.g. to add a new path in an existing env variable, variable substitution is required.
+                return this.Append($"export {name}={value}");
+            }
+            else
+            {
+                return this.Append($"export {name}='{value}'");
+            }
         }
 
         public ShellScriptBuilder CreateDirectory(string directory)
@@ -161,16 +178,27 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         /// <summary>
         /// Append a command to the shell script that sets the ORYX_SDK_STORAGE_BASE_URL to the value
         /// of ORYX_TEST_SDK_STORAGE_URL if ORYX_TEST_SDK_STORAGE_URL exists in the environment that is executing this code.
-        /// Otherwise, use the Oryx dev sdk storage account for testing.
+        /// Otherwise, use the Oryx staging sdk storage account for testing.
         /// This allows us to change the storage account that tests use without regenerating any images.
         /// </summary>
         public ShellScriptBuilder AddDefaultTestEnvironmentVariables()
         {
             var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
 
-            return testStorageAccountUrl != null
-                ? this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, testStorageAccountUrl)
-                : this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, SdkStorageConstants.DevSdkStorageBaseUrl);
+            if (string.IsNullOrEmpty(testStorageAccountUrl))
+            {
+                testStorageAccountUrl = SdkStorageConstants.PrivateStagingSdkStorageBaseUrl;
+            }
+
+            this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, testStorageAccountUrl);
+            if (testStorageAccountUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
+            {
+                 string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) ??
+                    KeyVaultHelper.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
+                 this.SetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken);
+            }
+
+            return this;
         }
 
         public override string ToString()

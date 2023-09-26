@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Oryx.Automation.Commons;
 using Microsoft.Oryx.Automation.DotNet.Models;
 using Microsoft.Oryx.Automation.Models;
 using Microsoft.Oryx.Automation.Services;
@@ -32,7 +33,6 @@ namespace Microsoft.Oryx.Automation.DotNet
         private readonly IVersionService versionService;
         private readonly IFileService fileService;
         private readonly IYamlFileService yamlFileService;
-        private string oryxSdkStorageBaseUrl;
         private string dotNetMinReleaseVersion;
         private string dotNetMaxReleaseVersion;
         private List<string> dotNetBlockedVersions = new List<string>();
@@ -52,26 +52,13 @@ namespace Microsoft.Oryx.Automation.DotNet
 
         public async Task RunAsync()
         {
-            this.oryxSdkStorageBaseUrl = Environment.GetEnvironmentVariable(Constants.OryxSdkStorageBaseUrlEnvVar);
-            if (string.IsNullOrEmpty(this.oryxSdkStorageBaseUrl))
-            {
-                this.oryxSdkStorageBaseUrl = Constants.OryxSdkStorageBaseUrl;
-            }
-
-            this.oryxDotNetSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(
-                this.oryxSdkStorageBaseUrl + DotNetConstants.DotNetSuffixUrl);
+            string oryxSdkStorageBaseUrl = Environment.GetEnvironmentVariable(Constants.OryxSdkStorageBaseUrlEnvVar);
+            string sdkVersionsUrl = SdkStorageHelper.GetSdkStorageUrl(oryxSdkStorageBaseUrl, DotNetConstants.DotNetSuffixUrl);
+            this.oryxDotNetSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(sdkVersionsUrl);
             this.dotNetMinReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMinReleaseVersionEnvVar);
             this.dotNetMaxReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMaxReleaseVersionEnvVar);
-            var blockedVersions = Environment.GetEnvironmentVariable(
-                DotNetConstants.DotNetBlockedVersionsEnvVar);
-            if (!string.IsNullOrEmpty(blockedVersions))
-            {
-                var versionStrings = blockedVersions.Split(',');
-                foreach (var versionString in versionStrings)
-                {
-                    this.dotNetBlockedVersions.Add(versionString.Trim());
-                }
-            }
+            string blockedVersions = Environment.GetEnvironmentVariable(DotNetConstants.DotNetBlockedVersionsEnvVar);
+            this.dotNetBlockedVersions = SdkStorageHelper.ExtractBlockedVersions(blockedVersions);
 
             List<DotNetVersion> newDotNetVersions = await this.GetNewDotNetVersionsAsync();
             if (newDotNetVersions.Count > 0)
@@ -82,6 +69,15 @@ namespace Microsoft.Oryx.Automation.DotNet
             }
         }
 
+        /// <summary>
+        /// Retrieves a list of new .NET versions from the .NET release website,
+        /// and filters the list based on specified criteria.
+        /// The resulting list includes SDK versions, .NET Core runtime versions,
+        /// and ASP.NET Core runtime versions, and is sorted by semantic version number.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation.
+        /// The task result contains a list of DotNetVersion objects representing the new
+        /// .NET versions that meet the specified criteria.</returns>
         public async Task<List<DotNetVersion>> GetNewDotNetVersionsAsync()
         {
             List<DotNetVersion> dotNetVersions = new List<DotNetVersion>();
@@ -118,7 +114,7 @@ namespace Microsoft.Oryx.Automation.DotNet
                 }
             }
 
-            return dotNetVersions.OrderBy(v => v.Version).ToList();
+            return dotNetVersions.Order().ToList();
         }
 
         private async Task<List<ReleaseNote>> GetReleasesIndexAsync()

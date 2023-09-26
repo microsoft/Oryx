@@ -152,7 +152,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 }
             }
 
-            var props = new PhpBashBuildSnippetProperties { ComposerFileExists = composerFileExists };
+            var props = new PhpBashBuildSnippetProperties
+            {
+                ComposerFileExists = composerFileExists,
+            };
             string snippet = TemplateHelper.Render(TemplateHelper.TemplateResource.PhpBuildSnippet, props, this.logger, this.telemetryClient);
             return new BuildScriptSnippet { BashBuildScriptSnippet = snippet, BuildProperties = buildProperties };
         }
@@ -310,7 +313,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             // Install PHP Composer
             if (string.IsNullOrEmpty(phpComposerVersion))
             {
-                phpComposerVersion = PhpVersions.ComposerVersion;
+                phpComposerVersion = PhpVersions.ComposerDefaultVersion;
             }
 
             if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
@@ -388,7 +391,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                 }
 
                 // Fallback to default version detection
-                return PhpVersions.ComposerVersion;
+                return PhpVersions.ComposerDefaultVersion;
             }
         }
 

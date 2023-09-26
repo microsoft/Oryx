@@ -34,7 +34,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
@@ -72,7 +71,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
 
@@ -124,7 +122,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
 
@@ -164,7 +161,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
                 .AddCommand($"rm {appDir}/composer.json")
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .AddFileExistsCheck(osTypeFile)
@@ -203,7 +199,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
                 .ToString();
 

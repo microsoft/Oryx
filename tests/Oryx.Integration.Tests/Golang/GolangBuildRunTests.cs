@@ -79,7 +79,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var imageTestHelper = new ImageTestHelper();
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " + 
                 $"--platform {GolangConstants.PlatformName} --platform-version {golangVersion}")
