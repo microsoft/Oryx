@@ -7,7 +7,6 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Php;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -36,20 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 
         public override void InstallPlatformSpecificSkeletonDependencies(StringBuilder stringBuilder)
         {
-            stringBuilder.AppendLine($"echo 'Installing {DotNetCoreConstants.PlatformName} specific dependencies...'");
-
-            // .NET Core dependencies (this is universal for all versions of .NET Core)
-            stringBuilder.AppendAptGetInstallPackages(
-                "libc6",
-                "libgcc1",
-                "libgssapi-krb5-2",
-                "libstdc++6",
-                "zlib1g",
-                "libuuid1",
-                "libunwind8");
-            stringBuilder.AppendLine("if grep -q cli \"/opt/oryx/.imagetype\"; then");
-            InstallPythonToolingAndLanguage(stringBuilder);
-            stringBuilder.AppendLine("fi");
+            // Do nothing for builder image (packages are installed via APT buildpack)
         }
     }
 }

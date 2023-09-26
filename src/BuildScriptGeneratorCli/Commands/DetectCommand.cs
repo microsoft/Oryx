@@ -35,12 +35,15 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public DetectCommand(DetectCommandProperty input)
         {
             this.SourceDir = input.SourceDir;
+            this.Platform = input.Platform;
             this.OutputFormat = input.OutputFormat;
             this.LogFilePath = input.LogPath;
             this.DebugMode = input.DebugMode;
         }
 
         public string SourceDir { get; set; }
+
+        public string Platform { get; set; }
 
         public string OutputFormat { get; set; }
 
@@ -50,6 +53,9 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 name: OptionArgumentTemplates.SourceDir,
                 description: OptionArgumentTemplates.DetectSourceDirDescription,
                 getDefaultValue: () => Directory.GetCurrentDirectory());
+            var platformOption = new Option<string>(
+                name: OptionArgumentTemplates.Platform,
+                description: OptionArgumentTemplates.PlatformDescription);
             var outputFormatOption = new Option<string>(
                 aliases: OptionArgumentTemplates.Output,
                 description: OptionArgumentTemplates.DetectOutputDescription);
@@ -59,6 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             var command = new Command(Name, Description)
             {
                 sourceDirArgument,
+                platformOption,
                 outputFormatOption,
                 logFilePathOption,
                 debugOption,
@@ -72,6 +79,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 },
                 new DetectCommandBinder(
                     sourceDir: sourceDirArgument,
+                    platform: platformOption,
                     outputFormat: outputFormatOption,
                     logPath: logFilePathOption,
                     debugMode: debugOption));
@@ -91,9 +99,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             };
 
             var detector = serviceProvider.GetRequiredService<IDetector>();
-            var detectedPlatformResults = detector.GetAllDetectedPlatforms(ctx);
+
             using (var timedEvent = telemetryClient.LogTimedEvent("DetectCommand"))
             {
+                // Try to only detect a single platform, if one was provided
+                if (!string.IsNullOrEmpty(this.Platform))
+                {
+                    var detectedPlatformResult = detector.GetDetectedPlatform(ctx, this.Platform);
+                    PrintJsonResult(detectedPlatformResult, console);
+                    return ProcessConstants.ExitSuccess;
+                }
+
+                var detectedPlatformResults = detector.GetAllDetectedPlatforms(ctx);
+
                 if (detectedPlatformResults == null || !detectedPlatformResults.Any())
                 {
                     logger?.LogError($"No platforms and versions detected from source directory: '{this.SourceDir}'");
@@ -138,6 +156,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 return false;
             }
 
+            var validPlatforms = new List<string> { "dotnet", "node", "python", "java", "php", "go", "ruby" };
+            if (!string.IsNullOrEmpty(this.Platform) && !validPlatforms.Contains(this.Platform.ToLower()))
+            {
+                logger?.LogError($"Unsupported platform provided. Supported platforms are {string.Join(", ", validPlatforms)}");
+                console.WriteErrorLine($"Unsupported platform provided. Supported platforms are {string.Join(", ", validPlatforms)}");
+                return false;
+            }
+
             return true;
         }
 
@@ -179,6 +205,19 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             }
 
             console.WriteLine(defs.ToString());
+        }
+
+        private static void PrintJsonResult(PlatformDetectorResult detectedPlatformResult, IConsole console)
+        {
+            if (detectedPlatformResult == null)
+            {
+                console.WriteLine("{}");
+                return;
+            }
+
+            detectedPlatformResult.PlatformVersion = detectedPlatformResult.PlatformVersion ?? string.Empty;
+
+            console.WriteLine(JsonConvert.SerializeObject(detectedPlatformResult, Formatting.Indented));
         }
 
         private static void PrintJsonResult(IEnumerable<PlatformDetectorResult> detectedPlatformResults, IConsole console)

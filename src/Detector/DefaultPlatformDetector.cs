@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Oryx.Detector
@@ -50,6 +51,27 @@ namespace Microsoft.Oryx.Detector
             }
 
             return detectedPlatforms;
+        }
+
+        /// <inheritdoc />
+        public PlatformDetectorResult GetDetectedPlatform(DetectorContext context, string platform)
+        {
+            var platformDetector = this.platformDetectors.FirstOrDefault(d => d.GetType().Name.ToLower().Contains(platform));
+
+            if (platformDetector == null)
+            {
+                this.logger.LogError($"Unable to find detector for platform '{platform}'");
+                return null;
+            }
+
+            this.logger.LogDebug($"Detecting platform using '{platform}'...");
+
+            if (this.IsDetectedPlatform(context, platformDetector, out PlatformDetectorResult result))
+            {
+                return result;
+            }
+
+            return null;
         }
 
         private bool IsDetectedPlatform(

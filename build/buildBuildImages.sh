@@ -29,7 +29,7 @@ else
 	mkdir -p $BUILD_IMAGES_BUILD_CONTEXT_DIR/binaries
 fi
 
-# NOTE: We are using only one label here and put all information in it 
+# NOTE: We are using only one label here and put all information in it
 # in order to limit the number of layers that are created
 labelContent="git_commit=$GIT_COMMIT, build_number=$BUILD_NUMBER, release_tag_name=$RELEASE_TAG_NAME"
 
@@ -125,7 +125,7 @@ function createImageNameWithReleaseTag() {
 }
 
 function buildGitHubRunnersUbuntuBaseImage() {
-	
+
 	echo
 	echo "----Building the image which uses GitHub runners' buildpackdeps-focal-scm specific digest----------"
 	docker build -t "oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-focal" \
@@ -150,7 +150,7 @@ function buildGitHubRunnersBookwormBaseImage() {
 }
 
 function buildGitHubRunnersBusterBaseImage() {
-	
+
 	echo
 	echo "----Building the image which uses GitHub runners' buildpackdeps-buster-scm specific digest----------"
 	docker build -t "oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-buster" \
@@ -210,7 +210,7 @@ function buildGitHubActionsImage() {
 	echo "built image name: "$builtImageName
 
 	buildBuildScriptGeneratorImage
-	
+
 	echo
 	echo "-------------Creating build image for GitHub Actions-------------------"
 	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
@@ -231,7 +231,7 @@ function buildGitHubActionsImage() {
 
 
 	docker tag $builtImageName $DEVBOX_BUILD_IMAGES_REPO:$devImageTag
-	
+
 	docker build \
 		-t "$ORYXTESTS_BUILDIMAGE_REPO:$devImageTag" \
 		--build-arg PARENT_IMAGE_BASE=$devImageTag \
@@ -267,7 +267,7 @@ function buildJamStackImage() {
 		--build-arg DEBIAN_FLAVOR=$debianFlavor \
 		--secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
 		.
-	
+
 	createImageNameWithReleaseTag $builtImageName
 
 	echo
@@ -325,7 +325,7 @@ function buildLtsVersionsImage() {
 	echo
 	echo "Building a base image for tests..."
 	# Do not write this image tag to the artifacts file as we do not intend to push it
-	
+
 	docker build -t $testImageName \
 		--build-arg PARENT_IMAGE_BASE=$devImageTag \
 		-f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
@@ -396,7 +396,7 @@ function buildVsoImage() {
 	BuildAndTagStage "$BUILD_IMAGE" intermediate
 	echo
 	echo "-------------Creating VSO $debianFlavor build image-------------------"
-	
+
 	DOCKER_BUILDKIT=1 docker build -t $builtImageName \
 		--build-arg AI_CONNECTION_STRING=$APPLICATION_INSIGHTS_CONNECTION_STRING \
 		--build-arg SDK_STORAGE_BASE_URL_VALUE=$sdkStorageAccountUrl \
@@ -419,7 +419,7 @@ function buildVsoImage() {
 
 function buildCliImage() {
 	buildBuildScriptGeneratorImage
-	
+
 	local debianFlavor=$1
 	local devImageRepo="$DEVBOX_CLI_BUILD_IMAGE_REPO"
 	local devImageTag="debian-$debianFlavor"
@@ -494,7 +494,7 @@ function buildCliBuilderImage() {
 
 function buildFullImage() {
 	buildBuildScriptGeneratorImage
-	
+
 	local debianFlavor=$1
 	local devImageTag=full
 	local builtImageName="$ACR_BUILD_FULL_IMAGE_NAME"
@@ -547,12 +547,13 @@ if [ -z "$imageTypeToBuild" ]; then
 	buildJamStackImage "buster"
 	buildJamStackImage
 	buildLtsVersionsImage "buster"
-	buildLtsVersionsImage	
+	buildLtsVersionsImage
 	buildLatestImages
 	buildVsoImage "focal"
 	buildVsoImage "bullseye"
 	buildCliImage "buster"
 	buildCliImage "bullseye"
+	buildCliImage "bookworm"
 	buildCliImage
 	buildCliBuilderImage "debian" "bullseye"
 	buildBuildPackImage
@@ -599,6 +600,7 @@ elif [ "$imageTypeToBuild" == "cli" ]; then
 	buildCliImage
 	buildCliImage "buster"
 	buildCliImage "bullseye"
+	buildCliImage "bookworm"
 	buildCliBuilderImage "debian" "bullseye"
 elif [ "$imageTypeToBuild" == "cli-stretch" ]; then
 	buildCliImage
@@ -606,6 +608,8 @@ elif [ "$imageTypeToBuild" == "cli-buster" ]; then
 	buildCliImage "buster"
 elif [ "$imageTypeToBuild" == "cli-bullseye" ]; then
 	buildCliImage "bullseye"
+elif [ "$imageTypeToBuild" == "cli-bookworm" ]; then
+	buildCliImage "bookworm"
 elif [ "$imageTypeToBuild" == "cli-builder-bullseye" ]; then
 	buildCliBuilderImage "debian" "bullseye"
 elif [ "$imageTypeToBuild" == "buildpack" ]; then

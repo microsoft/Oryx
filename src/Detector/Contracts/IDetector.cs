@@ -18,5 +18,13 @@ namespace Microsoft.Oryx.Detector
         /// <param name="context">The <see cref="DetectorContext"/>.</param>
         /// <returns>A list of platform detection results containing useful information, such as platform name, platform version, etc.</returns>
         IEnumerable<PlatformDetectorResult> GetAllDetectedPlatforms(DetectorContext context);
+
+        /// <summary>
+        /// Tries to get the platform detection result for the given platform.
+        /// </summary>
+        /// <param name="context">The <see cref="DetectorContext"/>.</param>
+        /// <param name="platform">The platform to detect within the app.</param>
+        /// <returns>A <see cref="PlatformDetectorResult"/> for the detected result.</returns>
+        PlatformDetectorResult GetDetectedPlatform(DetectorContext context, string platform);
     }
 }

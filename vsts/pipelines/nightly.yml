@@ -37,6 +37,9 @@ parameters:
         key: CliBullseye
         value: cli-bullseye
       -
+        key: CliBookworm
+        value: cli-bookworm
+      -
         key: CliBuilderBullseye
         value: cli-builder-bullseye
       -

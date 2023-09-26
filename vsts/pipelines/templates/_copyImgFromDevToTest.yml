@@ -28,6 +28,9 @@ parameters:
       - name: 'cli-bullseye'
         sourceTag: 'debian-bullseye-Oryx-Nightly'
         destinationTag: 'debian-bullseye'
+      - name: 'cli-bookworm'
+        sourceTag: 'debian-bookworm-Oryx-Nightly'
+        destinationTag: 'debian-bookworm'
       - name: 'cli-stretch'
         sourceTag: 'debian-stretch-Oryx-Nightly'
         destinationTag: 'debian-stretch'
@@ -121,7 +124,7 @@ parameters:
       - name: '3.11-debian-bullseye'
         sourceTag: '3.11-debian-bullseye-Oryx-Nightly'
         destinationTag: '3.11-debian-bullseye'
-    
+
 
 
 steps:

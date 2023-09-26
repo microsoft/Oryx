@@ -341,15 +341,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             string runtimeVersion,
             Dictionary<string, string> versionMap)
         {
-            if (this.commonOptions.EnableDynamicInstall
-                && context.SourceRepo.FileExists(DotNetCoreConstants.GlobalJsonFileName))
+            var availableSdks = versionMap.Values;
+            if (this.commonOptions.EnableDynamicInstall)
             {
-                var availableSdks = versionMap.Values;
-                var globalJsonSdkVersion = this.globalJsonSdkResolver.GetSatisfyingSdkVersion(
-                    context.SourceRepo,
-                    runtimeVersion,
-                    availableSdks);
-                return globalJsonSdkVersion;
+                // If a global.json file was found, return the value of the 'sdk.version' nested field
+                if (context.SourceRepo.FileExists(DotNetCoreConstants.GlobalJsonFileName))
+                {
+                    var globalJsonSdkVersion = this.globalJsonSdkResolver.GetSatisfyingSdkVersion(
+                        context.SourceRepo,
+                        runtimeVersion,
+                        availableSdks);
+                    return globalJsonSdkVersion;
+                }
+
+                // Return the max satisfying version from the storage account
+                if (SemanticVersionResolver.IsValidVersion(runtimeVersion))
+                {
+                    return SemanticVersionResolver.GetMaxSatisfyingVersion($"~{runtimeVersion}", availableSdks);
+                }
             }
 
             return versionMap[runtimeVersion];
@@ -434,25 +443,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // Fallback to default version detection
             var defaultVersion = this.versionProvider.GetDefaultRuntimeVersion();
             return defaultVersion;
-        }
-
-        private bool TryGetExplicitVersion(out string explicitVersion)
-        {
-            explicitVersion = null;
-
-            var platformName = this.commonOptions.PlatformName;
-            if (platformName.EqualsIgnoreCase(DotNetCoreConstants.PlatformName))
-            {
-                if (string.IsNullOrWhiteSpace(this.dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion))
-                {
-                    return false;
-                }
-
-                explicitVersion = this.dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion;
-                return true;
-            }
-
-            return false;
         }
     }
 }

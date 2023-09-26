@@ -33,8 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// </summary>
         public static void InstallCommonSkeletonDependencies(StringBuilder stringBuilder)
         {
-            stringBuilder.AppendLine("echo 'Installing common platform dependencies...'");
-            stringBuilder.AppendAptGetInstallPackages("git");
+            // Do nothing for builder image (packages are installed via APT buildpack)
         }
 
         public static void InstallPythonToolingAndLanguage(StringBuilder stringBuilder)
@@ -127,10 +126,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var snippet = new StringBuilder();
             snippet
                 .AppendLine()
-                .AppendLine($"if grep -q -e '^cli$' \"/opt/oryx/.imagetype\" -e '^jamstack$' \"/opt/oryx/.imagetype\"; then")
-                .AppendCommonSkeletonDepenendenciesInstallation()
-                .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
-                .AppendLine("fi")
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")
                 .AppendLine("echo")
                 .AppendLine(
@@ -180,50 +175,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo")
                 .AppendLine("oryxImageDetectorFile=\"/opt/oryx/.imagetype\"")
                 .AppendLine("oryxOsDetectorFile=\"/opt/oryx/.ostype\"")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"jamstack\" \"$oryxImageDetectorFile\"; then")
-                .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
-                .AppendLine($"PATH=/opt/dotnet/{version}/dotnet:$PATH")
-                .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"dotnet\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
-                .AppendLine("echo \"image detector file exists, platform is dotnet..\"")
-                .AppendLine($"source /opt/tmp/build/createSymlinksForDotnet.sh")
-                .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"nodejs\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
-                .AppendLine("echo \"image detector file exists, platform is nodejs..\"")
-                .AppendLine($"mkdir -p /home/codespace/nvm")
-                .AppendLine($"ln -sfn /opt/nodejs/{version} /home/codespace/nvm/current")
-                .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"php\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
-                .AppendLine("echo \"image detector file exists, platform is php..\"")
-                .AppendLine($"mkdir -p /home/codespace/.php")
-                .AppendLine($"ln -sfn /opt/php/{version} /home/codespace/.php/current")
-                .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"python\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
-                .AppendLine("   echo \"image detector file exists, platform is python..\"")
-                .AppendLine($"  [ -d \"/opt/python/$VERSION\" ] && echo /opt/python/{version}/lib >> /etc/ld.so.conf.d/python.conf")
-                .AppendLine($"  ldconfig")
-                .AppendLine($"  mkdir -p /home/codespace/.python")
-                .AppendLine($"  ln -sfn /opt/python/{version} /home/codespace/.python/current")
-                .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"java\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
-                .AppendLine("echo \"image detector file exists, platform is java..\"")
-                .AppendLine($"mkdir -p /home/codespace/java")
-                .AppendLine($"ln -sfn /opt/java/{version} /home/codespace/java/current")
-                .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ \"$platformName\" = \"ruby\" ] && grep -q \"vso-\" \"$oryxImageDetectorFile\"; then")
-                .AppendLine("echo \"image detector file exists, platform is ruby..\"")
-                .AppendLine($"mkdir -p /home/codespace/.ruby")
-                .AppendLine($"ln -sfn /opt/ruby/{version} /home/codespace/.ruby/current")
-                .AppendLine("fi")
-                .AppendLine($"if [ -f \"$oryxImageDetectorFile\" ] && [ -f \"$oryxOsDetectorFile\" ] && [ \"$platformName\" = \"python\" ] && grep -q \"githubactions\" \"$oryxImageDetectorFile\" && grep -q \"BULLSEYE\" \"$oryxOsDetectorFile\"; then")
-                .AppendLine($"  echo \"image detector file exists, platform is python..\"")
-                .AppendLine($"  echo \"OS detector file exists, OS is bullseye..\"")
-                .AppendLine($"  if [ '{version}' == 3.7* ] || [ '{version}' == 3.8* ]; then")
-                .AppendLine($"    curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb")
-                .AppendLine($"    dpkg -i libffi6_3.2.1-9_amd64.deb")
-                .AppendLine($"    rm libffi6_3.2.1-9_amd64.deb")
-                .AppendLine($"  fi")
-                .AppendLine("fi")
 
                 // Write out a sentinel file to indicate download and extraction was successful
                 .AppendLine($"echo > {Path.Combine(versionDirInTemp, SdkStorageConstants.SdkDownloadSentinelFileName)}");

@@ -42,11 +42,11 @@ function tagBuildImageForIntegrationTest() {
 
 	echo
 	echo "Tagging the source image with tag $newtag ..."
-	
+
 	docker tag "$buildImage" "$newtag" | sed 's/^/     /'
 	echo
 	echo -------------------------------------------------------------------------------
-  
+
 }
 
 buildImageFilter=""
@@ -85,6 +85,9 @@ if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 			elif [[ "$strippedVal" == "cli-debian-bullseye" ]];then
 				buildImageFilter="cli"
 				buildImageTagFilter="debian-bullseye"
+			elif [[ "$strippedVal" == "cli-debian-bookworm" ]];then
+				buildImageFilter="cli"
+				buildImageTagFilter="debian-bookworm"
 			elif [[ "$strippedVal" == "cli-builder-debian-bullseye" ]];then
 				buildImageFilter="cli"
 				buildImageTagFilter="builder-debian-bullseye"
@@ -112,6 +115,7 @@ tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-bullseye" "$bu
 tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-buster" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
+tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-bookworm" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/cli" "builder-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/pack" "" "$buildImageFilter" "$buildImageTagFilter"
 
@@ -125,7 +129,7 @@ if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 		echo "Runtime image filter is set for $platformFilter with version $platformVersionFilter"
 
 		while read sourceImage; do
-  		# Always use specific build number based tag and then use the same tag 
+  		# Always use specific build number based tag and then use the same tag
 		# to create a version tag and push it
   			if [[ "$sourceImage" != *:latest ]]; then
 				if [[ "$sourceImage" == *"$platformFilter:$platformVersionFilter"* ]]; then

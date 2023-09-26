@@ -23,6 +23,7 @@ fi
 cliImage="$sourceImageRepo/cli:debian-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 cliBusterImage="$sourceImageRepo/cli:debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 cliBullseyeImage="$sourceImageRepo/cli:debian-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
+cliBookwormImage="$sourceImageRepo/cli:debian-bookworm-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
 echo "Pulling CLI image '$cliImage'..."
 docker pull "$cliImage"
 
@@ -43,6 +44,13 @@ docker pull "$cliBullseyeImage"
 echo "Retagging CLI bullseye image for $prodPmeImageRepo with 'debian-bullseye-$RELEASE_TAG_NAME'..."
 echo "$prodPmeImageRepo/cli:debian-bullseye-$RELEASE_TAG_NAME">>"$outPmeFile"
 docker tag "$cliBullseyeImage" "$prodPmeImageRepo/cli:debian-bullseye-$RELEASE_TAG_NAME"
+
+echo "Pulling CLI bookworm image '$cliBookwormImage'"
+docker pull "$cliBookwormImage"
+
+echo "Retagging CLI bookworm image for $prodPmeImageRepo with 'debian-bookworm-$RELEASE_TAG_NAME'..."
+echo "$prodPmeImageRepo/cli:debian-bookworm-$RELEASE_TAG_NAME">>"$outPmeFile"
+docker tag "$cliBookwormImage" "$prodPmeImageRepo/cli:debian-bookworm-$RELEASE_TAG_NAME"
 
 # CLI Builder images
 devCliBuilderBullseyeImage="$sourceImageRepo/cli:builder-debian-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME"
@@ -67,6 +75,9 @@ if [ "$sourceBranchName" == "main" ]; then
 
     docker tag "$cliBullseyeImage" "$prodPmeImageRepo/cli:debian-bullseye-stable"
     echo "$prodPmeImageRepo/cli:debian-bullseye-stable">>"$outPmeFile"
+
+    docker tag "$cliBookwormImage" "$prodPmeImageRepo/cli:debian-bookworm-stable"
+    echo "$prodPmeImageRepo/cli:debian-bookworm-stable">>"$outPmeFile"
 
     docker tag "$devCliBuilderBullseyeImage" "$prodPmeImageRepo/cli:$builderProdStableTag"
     echo "$prodPmeImageRepo/cli:$builderProdStableTag">>"$outPmeFile"

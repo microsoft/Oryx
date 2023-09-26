@@ -37,12 +37,21 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
             libcurl4 \
             libssl1.1 \
         && rm -rf /var/lib/apt/lists/* ; \
-    elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \ 
+    elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
         apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu67 \
             libcurl4 \
             libssl1.1 \
+            libyaml-dev \
+            libxml2 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    elif [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu72 \
+            libcurl4 \
+            libssl3 \
             libyaml-dev \
             libxml2 \
         && rm -rf /var/lib/apt/lists/* ; \
@@ -58,7 +67,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-# .NET Core dependencies for running Oryx
+    # .NET Core dependencies for running Oryx
         libc6 \
         libgcc1 \
         libgssapi-krb5-2 \
@@ -66,8 +75,10 @@ RUN apt-get update \
         zlib1g \
         rsync \
         libgdiplus \
-         # Required for mysqlclient
+    # Required for mysqlclient
         default-libmysqlclient-dev \
+    # Required for timestamp library (ts)
+        moreutils \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \
