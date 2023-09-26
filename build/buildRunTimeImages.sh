@@ -15,6 +15,140 @@ source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__sdkStorageConstants.sh
 source $REPO_DIR/build/__stagingRuntimeConstants.sh
 
+# Load platform versions for runtimes
+source $REPO_DIR/build/__dotNetCoreRunTimeVersions.sh
+source $REPO_DIR/build/__nodeVersions.sh
+source $REPO_DIR/build/__phpVersions.sh
+source $REPO_DIR/build/__pythonVersions.sh
+source $REPO_DIR/build/__rubyVersions.sh
+
+# Get the specific platform version used for each runtime image to assist with future patching
+# e.g., for dotnetcore:7.0-debian-buster, we would retrieve 7.0.10 from the __dotNetCoreRunTimeVersions.sh file
+function getRuntimeTagVersion()
+{
+    if [ -z $1 ]
+    then
+        echo "Runtime platform name was not provided"
+        return 1
+    fi
+
+    if [ -z $2 ]
+    then
+        echo "Runtime platform version was not provided"
+        return 1
+    fi
+
+    PLATFORM_NAME=$1
+    PLATFORM_VERSION=$2
+
+    if [ "$PLATFORM_NAME" == "dotnetcore" ]
+    then
+        case $PLATFORM_VERSION in
+
+            8.0)
+                FULL_RUNTIME_TAG_VERSION=$NET_CORE_APP_80
+                ;;
+            7.0)
+                FULL_RUNTIME_TAG_VERSION=$NET_CORE_APP_70
+                ;;
+            6.0)
+                FULL_RUNTIME_TAG_VERSION=$NET_CORE_APP_60
+                ;;
+            5.0)
+                FULL_RUNTIME_TAG_VERSION=$NET_CORE_APP_50
+                ;;
+            3.1)
+                FULL_RUNTIME_TAG_VERSION=$NET_CORE_APP_31
+                ;;
+            3.0)
+                FULL_RUNTIME_TAG_VERSION=$NET_CORE_APP_30
+                ;;
+            *)
+                FULL_RUNTIME_TAG_VERSION=$PLATFORM_VERSION
+                ;;
+        esac
+    elif [ "$PLATFORM_NAME" == "node" ]
+    then
+        case $PLATFORM_VERSION in
+
+            18)
+                FULL_RUNTIME_TAG_VERSION=$NODE18_VERSION
+                ;;
+            16)
+                FULL_RUNTIME_TAG_VERSION=$NODE16_VERSION
+                ;;
+            14)
+                FULL_RUNTIME_TAG_VERSION=$NODE14_VERSION
+                ;;
+            *)
+                FULL_RUNTIME_TAG_VERSION=$PLATFORM_VERSION
+                ;;
+        esac
+    elif [ "$PLATFORM_NAME" == "php" ]
+    then
+        case $PLATFORM_VERSION in
+            8.2)
+                FULL_RUNTIME_TAG_VERSION=$PHP82_VERSION
+                ;;
+            8.1)
+                FULL_RUNTIME_TAG_VERSION=$PHP81_VERSION
+                ;;
+            8.0)
+                FULL_RUNTIME_TAG_VERSION=$PHP80_VERSION
+                ;;
+            7.4)
+                FULL_RUNTIME_TAG_VERSION=$PHP80_VERSION
+                ;;
+            *)
+                FULL_RUNTIME_TAG_VERSION=$PLATFORM_VERSION
+                ;;
+        esac
+    elif [ "$PLATFORM_NAME" == "python" ]
+    then
+        case $PLATFORM_VERSION in
+            3.11)
+                FULL_RUNTIME_TAG_VERSION=$PYTHON311_VERSION
+                ;;
+            3.10)
+                FULL_RUNTIME_TAG_VERSION=$PYTHON310_VERSION
+                ;;
+            3.9)
+                FULL_RUNTIME_TAG_VERSION=$PYTHON39_VERSION
+                ;;
+            3.8)
+                FULL_RUNTIME_TAG_VERSION=$PYTHON38_VERSION
+                ;;
+            3.7)
+                FULL_RUNTIME_TAG_VERSION=$PYTHON37_VERSION
+                ;;
+            *)
+                FULL_RUNTIME_TAG_VERSION=$PLATFORM_VERSION
+                ;;
+        esac
+    elif [ "$PLATFORM_NAME" == "ruby" ]
+    then
+        case $PLATFORM_VERSION in
+            2.7)
+                FULL_RUNTIME_TAG_VERSION=$RUBY27_VERSION
+                ;;
+            2.6)
+                FULL_RUNTIME_TAG_VERSION=$RUBY26_VERSION
+                ;;
+            2.5)
+                FULL_RUNTIME_TAG_VERSION=$RUBY25_VERSION
+                ;;
+            *)
+                FULL_RUNTIME_TAG_VERSION=$PLATFORM_VERSION
+                ;;
+        esac
+    else
+        echo "Unable to retrieve version from the provided runtime platform name '$PLATFORM_NAME'"
+        return 1
+    fi
+
+    return 0
+}
+
 # https://medium.com/@Drew_Stokes/bash-argument-parsing-54f3b81a6a8f
 PARAMS=""
 while (( "$#" )); do
@@ -45,7 +179,7 @@ if [ -z "$sdkStorageAccountUrl" ]; then
 fi
 
 # checking and retrieving token for the `oryxsdksstaging` account.
-retrieveSastokenFromKeyvault $sdkStorageAccountUrl
+retrieveSastokenFromKeyVault $sdkStorageAccountUrl
 
 echo
 echo "SDK storage account url set to: $sdkStorageAccountUrl"
@@ -54,7 +188,7 @@ runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
 runtimeImageDebianFlavor="buster"
 
-if [ $# -eq 2 ] 
+if [ $# -eq 2 ]
 then
     echo "Locally building runtime '$runtimeSubDir'"
     runtimeSubDir="$1"
@@ -107,6 +241,13 @@ docker build \
     --build-arg DEBIAN_FLAVOR=bullseye \
     $REPO_DIR
 
+docker build \
+    --pull \
+    -f "$RUNTIME_BASE_IMAGE_DOCKERFILE_PATH" \
+    -t "oryxdevmcr.azurecr.io/private/oryx/$RUNTIME_BASE_IMAGE_NAME-bookworm" \
+    --build-arg DEBIAN_FLAVOR=bookworm \
+    $REPO_DIR
+
 execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
 
 # The common base image is built separately, so we ignore it
@@ -135,24 +276,24 @@ for dockerFile in $dockerFiles; do
     platformName="${PARTS[0]}"
     platformVersion="${PARTS[1]}"
 
-    # Set $getTagName_result to the following format: {platformName}:{platformVersion}-{osType}
-    getTagName $dockerFileDir debian-$runtimeImageDebianFlavor
+    # Get the full platform version for an alternative tag (used for patching)
+    getRuntimeTagVersion $platformName $platformVersion
 
     if shouldStageRuntimeVersion $platformName $platformVersion ; then
         # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/staging/oryx/{platformName}:{platformVersion}-{osType}
-        localImageTagName="$ACR_STAGING_PREFIX/$getTagName_result"
+        localImageTagName="$ACR_STAGING_PREFIX/$platformName:$platformVersion-debian-$runtimeImageDebianFlavor"
     else
         # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{platformVersion}-{osType}
-        localImageTagName="$ACR_PUBLIC_PREFIX/$getTagName_result"
+        localImageTagName="$ACR_PUBLIC_PREFIX/$platformName:$platformVersion-debian-$runtimeImageDebianFlavor"
     fi
 
     echo
     echo "Building image '$localImageTagName' for Dockerfile located at '$dockerFile'..."
 
     cd $REPO_DIR
-    
+
     echo
-    
+
     # pass in env var as a secret, which is mounted during a single run command of the build
     # https://github.com/docker/buildx/blob/master/docs/reference/buildx_build.md#secret
     DOCKER_BUILDKIT=1 docker build -f $dockerFile \
@@ -174,6 +315,22 @@ for dockerFile in $dockerFiles; do
 
     echo "$localImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
 
+    # Retag to include the full runtime platform version found (for patching)
+    if [ "$FULL_RUNTIME_TAG_VERSION" != "$platformVersion" ]; then
+        if shouldStageRuntimeVersion $platformName $platformVersion ; then
+            # Set $altLocalImageTagName to the following format: oryxdevmcr.azurecr.io/staging/oryx/{platformName}:{fullPlatformVersion}-{osType}
+            altLocalImageTagName="$ACR_STAGING_PREFIX/$platformName:$FULL_RUNTIME_TAG_VERSION-debian-$runtimeImageDebianFlavor"
+        else
+            # Set $altLocalImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/{platformName}:{fullPlatformVersion}-{osType}
+            altLocalImageTagName="$ACR_PUBLIC_PREFIX/$platformName:$FULL_RUNTIME_TAG_VERSION-debian-$runtimeImageDebianFlavor"
+        fi
+
+        echo
+        echo "Tagging image '$localImageTagName' with alternative tag '$altLocalImageTagName' to include full platform version..."
+        docker tag "$localImageTagName" "$altLocalImageTagName"
+        echo "$altLocalImageTagName" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
+    fi
+
     # Retag image with build number (for images built in buildAgent)
     if [ "$AGENT_BUILD" == "true" ]
     then
@@ -191,16 +348,17 @@ for dockerFile in $dockerFiles; do
             acrRuntimeImageTagNameRepo="$ACR_PUBLIC_PREFIX/$getTagName_result"
         fi
 
-        # Tag the image to follow a similar format to .../python:3.7-Oryx-CI.20191028.1
-        docker tag "$localImageTagName" "$acrRuntimeImageTagNameRepo-$uniqueTag"
+        # Tag the image to follow a similar format to .../python:3.8-debian-bullseye-Oryx-CI.20230828.1
+        acrRuntimeImageUniqueTag="$acrRuntimeImageTagNameRepo-debian-$runtimeImageDebianFlavor-$uniqueTag"
+        docker tag "$localImageTagName" "$acrRuntimeImageUniqueTag"
 
         # add new content
         echo
         echo "Updating runtime image artifacts file with build number..."
-        echo "$acrRuntimeImageTagNameRepo-$uniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
+        echo "$acrRuntimeImageUniqueTag" >> $ACR_RUNTIME_IMAGES_ARTIFACTS_FILE.$runtimeImageDebianFlavor.txt
     else
         devBoxRuntimeImageTagNameRepo="$DEVBOX_RUNTIME_IMAGES_REPO_PREFIX/$getTagName_result"
-        docker tag "$localImageTagName" "$devBoxRuntimeImageTagNameRepo"
+        docker tag "$localImageTagName" "$devBoxRuntimeImageTagNameRepo-debian-$runtimeImageDebianFlavor"
     fi
 
     cd $RUNTIME_IMAGES_SRC_DIR
