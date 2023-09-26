@@ -2,7 +2,7 @@ parameters:
   - name: storageAccountUrl
     displayName: SDK storage account URL for testing
     type: string
-    default: https://oryxsdksdev.blob.core.windows.net
+    default: https://oryxsdksstaging.blob.core.windows.net
   - name: buildImages
     type: object
     default:
@@ -67,6 +67,8 @@ jobs:
       name: AzurePipelines-EO
       demands:
         - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    variables:
+    - group: Oryx
     timeoutInMinutes: 480
     steps:
     - script: |
@@ -102,6 +104,8 @@ jobs:
     name: AzurePipelines-EO
     demands:
       - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+  variables:
+  - group: Oryx
   timeoutInMinutes: 480
   steps:
   - script: |

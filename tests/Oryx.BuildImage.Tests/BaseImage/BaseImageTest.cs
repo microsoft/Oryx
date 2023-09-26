@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
     public class BaseImageTest : SampleAppsTestBase
     {
         protected const string NetCoreApp31MvcApp = "NetCoreApp31.MvcApp";
+        protected const string NetCore8PreviewMvcApp = "NetCore8PreviewMvcApp";
 
         public BaseImageTest(ITestOutputHelper output) : base(output)
         {
@@ -45,19 +46,26 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     imageHelper.GetGitHubActionsAsBaseBuildImage(),
                     "stretch");
 
-                //buster
+                // buster
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
                     imageHelper.GetGitHubActionsAsBaseBuildImage(ImageTestHelperConstants.GitHubActionsBusterBase),
                     "buster");
 
-                //bullseye
+                // bullseye
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
                     imageHelper.GetGitHubActionsAsBaseBuildImage(ImageTestHelperConstants.GitHubActionsBullseyeBase),
                     "bullseye");
+
+                // bookworm
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp80,
+                    NetCore8PreviewMvcApp,
+                    imageHelper.GetGitHubActionsAsBaseBuildImage(ImageTestHelperConstants.GitHubActionsBookwormBase),
+                    "bookworm");
 
                 return data;
             }
@@ -82,7 +90,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} --debug")
@@ -160,7 +167,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} --debug")
@@ -205,7 +211,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(ExtVarNames.DebianFlavor, string.Empty) // remove debian flavor env var
                 .AddCommand($"rm /opt/oryx/{FilePaths.OsTypeFileName}") // remove os type file
                 .AddBuildCommand(

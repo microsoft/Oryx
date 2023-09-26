@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Integration.Tests.Fixtures;
 using Microsoft.Oryx.Tests.Common;
@@ -41,9 +43,11 @@ namespace Microsoft.Oryx.Integration.Tests
             await Run_NodeApp_MicrosoftSqlServerDBAsync(ImageTestHelperConstants.LatestStretchTag);
         }
 
-        private async Task Run_NodeApp_MicrosoftSqlServerDBAsync(string imageTag)
+        private async Task Run_NodeApp_MicrosoftSqlServerDBAsync(string buildImageTag)
         {
             // Arrange
+            var version = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "node-mssql";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
@@ -52,16 +56,18 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-
+            List<EnvironmentVariable> buildEnvVariableList = SqlServerDbTestHelper.GetEnvironmentVariables();
+            buildEnvVariableList.AddTestStorageAccountEnvironmentVariables();
+            
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
                 new List<DockerVolume> { volume },
-                _imageHelper.GetBuildImage(imageTag),
+                _imageHelper.GetBuildImage(buildImageTag),
                 "oryx",
-                new[] { "build", appDir, "--platform", "nodejs", "--platform-version", "14" },
-                _imageHelper.GetRuntimeImage("node", "14"),
-                SqlServerDbTestHelper.GetEnvironmentVariables(),
+                new[] { "build", appDir, "--platform", "nodejs", "--platform-version", version },
+                _imageHelper.GetRuntimeImage("node", version, osType),
+                buildEnvVariableList,
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -79,6 +85,5 @@ namespace Microsoft.Oryx.Integration.Tests
                         ignoreWhiteSpaceDifferences: true);
                 });
         }
-
     }
 }

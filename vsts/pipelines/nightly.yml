@@ -2,44 +2,44 @@ parameters:
   - name: storageAccountUrl
     displayName: SDK storage account URL for testing
     type: string
-    default: https://oryxsdksdev.blob.core.windows.net
+    default: https://oryxsdksstaging.blob.core.windows.net
   - name: buildImages
     type: object
     default:
-      - 
+      -
         key: Latest
         value: latest
-      - 
+      -
         key: LtsVersions
         value: ltsversions
-      - 
+      -
         key: Jamstack
         value: jamstack
-      - 
+      -
         key: GithubActions
         value: githubactions
-      - 
+      -
         key: VsoFocal
         value: vso-focal
-      - 
+      -
         key: VsoBullseye
         value: vso-bullseye
-      - 
+      -
         key: Full
         value: full
-      - 
+      -
         key: Cli
         value: cli-stretch
-      - 
+      -
         key: CliBuster
         value: cli-buster
-      - 
+      -
         key: CliBullseye
         value: cli-bullseye
-      - 
+      -
         key: CliBuilderBullseye
         value: cli-builder-bullseye
-      - 
+      -
         key: Buildpack
         value: buildpack
 
@@ -89,7 +89,7 @@ stages:
         vmImage: windows-2022
       steps:
       - template: templates/_securityChecks.yml
-      
+
       # Job loop for BuildImages
     - ${{ each buildImage in parameters.buildImages }}:
         - job: Job_BuildImage_${{ buildImage.key }}

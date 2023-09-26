@@ -56,7 +56,7 @@ namespace Microsoft.Oryx.Integration.Tests.Fixtures
         {
             const string sqlFile = "/tmp/mysql_setup.sql";
             var sqlQuery = GetSampleDataInsertionSql();
-            var dbSetupScript = new ShellScriptBuilder()
+            var dbSetupScript = new ShellScriptBuilder(addDefaultTestEnvironmentVariables : false)
                 .CreateFile(sqlFile, $"\"{sqlQuery}\"")
                 // No space after the '-p' on purpose:
                 // https://dev.mysql.com/doc/refman/5.7/en/connecting.html#option_general_password

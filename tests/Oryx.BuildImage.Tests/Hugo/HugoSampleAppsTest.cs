@@ -166,5 +166,39 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
+
+        [Fact,Trait("category", "githubactions")]
+        public void CanBuildHugoAppWithNewHugoConfigName()
+        {
+            // Hugo changed naming convention from config.toml etc. to hugo.toml etc.
+            // This test is just a safety check making sure new config name is recognized and app can built correctly
+
+            // Arrange
+            var volume = CreateSampleAppVolume("hugo-sample-new-config-name");
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/app-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform hugo")
+                .AddFileExistsCheck($"{appOutputDir}/public/index.xml")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains("Using Hugo version:", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
     }
 }

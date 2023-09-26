@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [SkippableTheory]
         [MemberData(nameof(TestValueGenerator.GetNodeVersions), MemberType = typeof(TestValueGenerator))]
-        public void NodeImage_Contains_VersionAndCommit_Information(string version)
+        public void NodeImage_Contains_VersionAndCommit_Information(string version, string osType)
         {
             // We can't always rely on git commit ID as env variable in case build context is not correctly passed
             // so we should check agent_os environment variable to know if the build is happening in azure devops agent
@@ -36,7 +36,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", version),
+                ImageId = _imageHelper.GetRuntimeImage("node", version, osType),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { "version" }
             });
