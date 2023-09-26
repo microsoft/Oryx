@@ -20,18 +20,20 @@ ImageDebianFlavor="$1"
 
 PHP_VERSION_ARRAY=()
 
-if [ "$ImageDebianFlavor" == "buster" ];then
-	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")
+if [ "$ImageDebianFlavor" == "bookworm" ];then
+	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BOOKWORM[@]}")
 elif [ "$ImageDebianFlavor" == "bullseye" ];then
 	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BULLSEYE[@]}")
-fi 
+elif [ "$ImageDebianFlavor" == "buster" ];then
+	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")
+fi
 
 for PHP_VERSION in "${PHP_VERSION_ARRAY[@]}"
 do
 	IFS='.' read -ra SPLIT_VERSION <<< "$PHP_VERSION"
 	VERSION_DIRECTORY="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
 
-	PHP_IMAGE_TAG="php-$VERSION_DIRECTORY"
+	PHP_IMAGE_TAG="php-$VERSION_DIRECTORY-$ImageDebianFlavor"
 	echo "Generating Dockerfile with tag '$PHP_IMAGE_TAG' in directory '$VERSION_DIRECTORY'..."
 
 	mkdir -p "$DIR/$VERSION_DIRECTORY/"
@@ -44,6 +46,6 @@ do
 	sed -i "s|$IMAGE_TAG_PLACEHOLDER|$PHP_IMAGE_TAG|g" "$TARGET_DOCKERFILE_BASE"
 	sed -i "s|$PHP_VERSION_PLACEHOLDER|$PHP_VERSION|g" "$TARGET_DOCKERFILE_BASE"
 
-	RUNTIME_BASE_IMAGE_TAG="php-$VERSION_DIRECTORY-$PHP_RUNTIME_BASE_TAG"
+	RUNTIME_BASE_IMAGE_TAG="php-$VERSION_DIRECTORY-debian-$ImageDebianFlavor-$PHP_RUNTIME_BASE_TAG"
 	sed -i "s|$RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER|$RUNTIME_BASE_IMAGE_TAG|g" "$TARGET_DOCKERFILE"
 done
