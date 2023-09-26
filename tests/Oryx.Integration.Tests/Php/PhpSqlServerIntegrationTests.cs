@@ -29,7 +29,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "debian-stretch")]
         public async Task Php74App_UsingPdo_WithLatestStretchBuildImageAsync()
         {
-            await PhpApp_UsingPdoAsync("7.4", ImageTestHelperConstants.LatestStretchTag);
+            await PhpApp_UsingPdoAsync("7.4", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.LatestStretchTag);
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task Php74App_UsingPdo_WithGitHubActionsBusterBuildImageAsync()
         {
-            await PhpApp_UsingPdoAsync("7.4", ImageTestHelperConstants.GitHubActionsBuster);
+            await PhpApp_UsingPdoAsync("7.4", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBuster);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "debian-stretch")]
         public async Task Php80App_UsingPdo_WithLatestStretchBuildImageAsync()
         {
-            await PhpApp_UsingPdoAsync("8.0", ImageTestHelperConstants.LatestStretchTag);
+            await PhpApp_UsingPdoAsync("8.0", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.LatestStretchTag);
         }
 
         [Fact]
@@ -53,10 +53,10 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task Php80App_UsingPdo_WithGitHubActionsBusterBuildImageAsync()
         {
-            await PhpApp_UsingPdoAsync("8.0", ImageTestHelperConstants.GitHubActionsBuster);
+            await PhpApp_UsingPdoAsync("8.0", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        private async Task PhpApp_UsingPdoAsync(string phpVersion, string imageTag)
+        private async Task PhpApp_UsingPdoAsync(string phpVersion, string osType, string buildImageTag)
         {
             // Arrange
             var appName = "sqlsrv-example";
@@ -72,10 +72,10 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new List<DockerVolume> { volume },
-                _imageHelper.GetBuildImage(imageTag),
+                _imageHelper.GetBuildImage(buildImageTag),
                 "oryx",
                 new[] { "build", appDir, "--platform", "php", "--platform-version", phpVersion },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 SqlServerDbTestHelper.GetEnvironmentVariables(),
                 ContainerPort,
                 "/bin/bash",
