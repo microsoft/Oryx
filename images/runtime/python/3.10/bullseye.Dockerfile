@@ -49,7 +49,11 @@ RUN true
 RUN chmod +x /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/build.sh
 
-RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 RUN set -ex \
  && cd /opt/python/ \
@@ -66,8 +70,8 @@ RUN set -ex \
 ENV PATH="/opt/python/3/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ARG AI_CONNECTION_STRING
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 #Bake in client certificate path into image to avoid downloading it
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 

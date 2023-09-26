@@ -24,8 +24,8 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "debian-stretch")]
         public async Task RunPython37ShapelyAppTests()
         {
-            await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.7");
-            await CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync("3.7");
+            await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.7", ImageTestHelperConstants.OsTypeDebianBullseye);
+            await CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync("3.7", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
         [Fact]
@@ -33,8 +33,8 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "debian-stretch")]
         public async Task RunPython38ShapelyAppTests()
         {
-            await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.8");
-            await CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync("3.8");
+            await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.8", ImageTestHelperConstants.OsTypeDebianBullseye);
+            await CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync("3.8", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
         [Fact]
@@ -42,11 +42,11 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "debian-stretch")]
         public async Task RunPython39ShapelyAppTests()
         {
-            await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.9");
-            await CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync("3.9");
+            await CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync("3.9", ImageTestHelperConstants.OsTypeDebianBullseye);
+            await CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync("3.9", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
-        private async Task CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync(string pythonVersion)
+        private async Task CanBuildAndRun_ShapelyFlaskApp_UsingVirtualEnvAsync(string pythonVersion, string osType)
         {
             // Arrange
             var appName = "shapely-flask-app";
@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-            var imageVersion = _imageHelper.GetRuntimeImage("python", pythonVersion);
+            var imageVersion = _imageHelper.GetRuntimeImage("python", pythonVersion, osType);
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
@@ -89,7 +89,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
-        private async Task CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync(string pythonVersion)
+        private async Task CanBuildAndRun_ShapelyFlaskApp_PackageDirAsync(string pythonVersion, string osType)
         {
             // Arrange
             const string packageDir = "orx_packages";
@@ -107,7 +107,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-            var imageVersion = _imageHelper.GetRuntimeImage("python", pythonVersion);
+            var imageVersion = _imageHelper.GetRuntimeImage("python", pythonVersion, osType);
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,

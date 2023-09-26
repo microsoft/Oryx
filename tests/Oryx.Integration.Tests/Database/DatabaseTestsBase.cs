@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Integration.Tests.Fixtures;
 using Microsoft.Oryx.Tests.Common;
@@ -36,6 +38,7 @@ namespace Microsoft.Oryx.Integration.Tests
         protected async Task RunTestAsync(
             string platformName,
             string platformVersion,
+            string osType,
             string samplePath,
             int containerPort = 8000,
             bool specifyBindPortFlag = true,
@@ -52,13 +55,15 @@ namespace Microsoft.Oryx.Integration.Tests
             var script = scriptBuilder.AddCommand(entrypointScript)
                 .ToString();
 
-            var runtimeImageName = _imageHelper.GetRuntimeImage(platformName, platformVersion);
+            var runtimeImageName = _imageHelper.GetRuntimeImage(platformName, platformVersion, osType);
             if (string.Equals(platformName, "nodejs", StringComparison.OrdinalIgnoreCase))
             {
-                runtimeImageName = _imageHelper.GetRuntimeImage("node", platformVersion);
+                runtimeImageName = _imageHelper.GetRuntimeImage("node", platformVersion, osType);
             }
 
             string link = $"{_dbFixture.DbServerContainerName}:{Constants.InternalDbLinkName}";
+            List<EnvironmentVariable> buildEnvVariableList = _dbFixture.GetCredentialsAsEnvVars();
+            buildEnvVariableList.AddTestStorageAccountEnvironmentVariables();
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 _output,
@@ -66,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 buildImageName,
                 "oryx", new[] { "build", appDir, "--platform", platformName, "--platform-version", platformVersion },
                 runtimeImageName,
-                _dbFixture.GetCredentialsAsEnvVars(),
+                buildEnvVariableList,
                 containerPort,
                 link,
                 "/bin/sh", new[] { "-c", script },

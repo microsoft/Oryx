@@ -36,12 +36,13 @@ jobs:
       - task: UseDotNet@2
         displayName: 'Use .NET Core sdk 7.x'
         inputs:
-          version: 7.x
+          version: 7.0.306
 
       - task: ShellScript@2
         displayName: 'Copy SDKs from the prod storage account to a destination storage account'
         env:
           DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
+          ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
           SANDBOX_STORAGE_SAS_TOKEN: $(SANDBOX-STORAGE-SAS-TOKEN)
           PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
           PROD_BACKUP_STORAGE_SAS_TOKEN: $(PROD-BACKUP-STORAGE-SAS-TOKEN)

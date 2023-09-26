@@ -27,31 +27,31 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp82Async()
         {
-            await CanBuildAndRunAppAsync("8.2");
+            await CanBuildAndRunAppAsync("8.2", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
         [Fact, Trait("category", "php-8.1")]
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp81Async()
         {   
-            await CanBuildAndRunAppAsync("8.1");
+            await CanBuildAndRunAppAsync("8.1", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
         [Fact, Trait("category", "php-8.0")]
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp80Async()
         {   
-            await CanBuildAndRunAppAsync("8.0");
+            await CanBuildAndRunAppAsync("8.0", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
         [Fact, Trait("category", "php-7.4")]
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp74Async()
         {
-            await CanBuildAndRunAppAsync("7.4");
+            await CanBuildAndRunAppAsync("7.4", ImageTestHelperConstants.OsTypeDebianBullseye);
         }
 
-        private async Task CanBuildAndRunAppAsync(string phpVersion)
+        private async Task CanBuildAndRunAppAsync(string phpVersion, string osType)
         {
             // Arrange
             var exifImageTypePng = "3";
@@ -62,7 +62,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
@@ -79,7 +78,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster),
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>

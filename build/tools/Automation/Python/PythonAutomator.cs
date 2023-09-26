@@ -7,11 +7,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Oryx.Automation.Commons;
 using Microsoft.Oryx.Automation.Models;
 using Microsoft.Oryx.Automation.Python.Models;
 using Microsoft.Oryx.Automation.Services;
 using Newtonsoft.Json;
 using Oryx.Microsoft.Automation.Python;
+using Version = System.Version;
 
 namespace Microsoft.Oryx.Automation.Python
 {
@@ -21,10 +23,10 @@ namespace Microsoft.Oryx.Automation.Python
         private readonly IVersionService versionService;
         private readonly IFileService fileService;
         private readonly IYamlFileService yamlFileService;
-        private string oryxSdkStorageBaseUrl;
         private string pythonMinReleaseVersion;
         private string pythonMaxReleaseVersion;
-        private List<string> pythonBlockedVersions = null;
+        private List<string> pythonBlockedVersions = new List<string>();
+        private HashSet<string> oryxPythonSdkVersions;
 
         public PythonAutomator(
             IHttpService httpService,
@@ -40,43 +42,37 @@ namespace Microsoft.Oryx.Automation.Python
 
         public async Task RunAsync()
         {
-            this.oryxSdkStorageBaseUrl = Environment.GetEnvironmentVariable(Constants.OryxSdkStorageBaseUrlEnvVar);
-            if (string.IsNullOrEmpty(this.oryxSdkStorageBaseUrl))
-            {
-                this.oryxSdkStorageBaseUrl = Constants.OryxSdkStorageBaseUrl;
-            }
-
+            string oryxSdkStorageBaseUrl = Environment.GetEnvironmentVariable(Constants.OryxSdkStorageBaseUrlEnvVar);
+            string sdkVersionsUrl = SdkStorageHelper.GetSdkStorageUrl(oryxSdkStorageBaseUrl, PythonConstants.PythonSuffixUrl);
+            this.oryxPythonSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(sdkVersionsUrl);
             this.pythonMinReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMinReleaseVersionEnvVar);
             this.pythonMaxReleaseVersion = Environment.GetEnvironmentVariable(PythonConstants.PythonMaxReleaseVersionEnvVar);
-            var blockedVersions = Environment.GetEnvironmentVariable(
-                PythonConstants.PythonBlockedVersionsEnvVar);
-            if (!string.IsNullOrEmpty(blockedVersions))
-            {
-                var versionStrings = blockedVersions.Split(',');
-                foreach (var versionString in versionStrings)
-                {
-                    this.pythonBlockedVersions.Add(versionString.Trim());
-                }
-            }
+            var blockedVersions = Environment.GetEnvironmentVariable(PythonConstants.PythonBlockedVersionsEnvVar);
+            this.pythonBlockedVersions = SdkStorageHelper.ExtractBlockedVersions(blockedVersions);
 
-            List<PythonVersion> pythonVersions = await this.GetNewPythonVersionsAsync();
-            if (pythonVersions.Count > 0)
+            List<PythonVersion> newPythonVersions = await this.GetNewPythonVersionsAsync();
+            if (newPythonVersions.Count > 0)
             {
                 string constantsYamlSubPath = Path.Combine("build", Constants.ConstantsYaml);
                 List<ConstantsYamlFile> yamlConstantsObjs =
                     await this.yamlFileService.ReadConstantsYamlFileAsync(constantsYamlSubPath);
 
-                this.UpdateOryxConstantsForNewVersions(pythonVersions, yamlConstantsObjs);
+                this.UpdateOryxConstantsForNewVersions(newPythonVersions, yamlConstantsObjs);
             }
         }
 
+        /// <summary>
+        /// Retrieves a list of new Python versions from the Python release website,
+        /// and filters the list based on specified criteria.
+        /// The resulting list is sorted by semantic version number.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation.
+        /// The task result contains a list of PythonVersion
+        /// objects representing the new Python versions that meet the specified criteria.</returns>
         public async Task<List<PythonVersion>> GetNewPythonVersionsAsync()
         {
             var response = await this.httpService.GetDataAsync(PythonConstants.PythonReleaseUrl);
             var releases = JsonConvert.DeserializeObject<List<Release>>(response);
-
-            HashSet<string> oryxSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(
-                this.oryxSdkStorageBaseUrl + PythonConstants.PythonSuffixUrl);
 
             var pythonVersions = new List<PythonVersion>();
             foreach (var release in releases)
@@ -89,7 +85,7 @@ namespace Microsoft.Oryx.Automation.Python
                         minVersion: this.pythonMinReleaseVersion,
                         maxVersion: this.pythonMaxReleaseVersion,
                         this.pythonBlockedVersions) &&
-                    !oryxSdkVersions.Contains(newVersion))
+                    !this.oryxPythonSdkVersions.Contains(newVersion))
                 {
                     pythonVersions.Add(new PythonVersion
                     {
@@ -99,7 +95,7 @@ namespace Microsoft.Oryx.Automation.Python
                 }
             }
 
-            return pythonVersions;
+            return pythonVersions.Order().ToList();
         }
 
         private void UpdateOryxConstantsForNewVersions(
@@ -127,14 +123,13 @@ namespace Microsoft.Oryx.Automation.Python
 
         private string GetGpgKeyForVersion(string version)
         {
-            // Split the version string into major and minor parts
-            string[] parts = version.Split('.');
-            if (parts.Length < 2)
+            Version v;
+            if (!Version.TryParse(version, out v))
             {
                 throw new ArgumentException("Invalid version format");
             }
 
-            string majorMinor = string.Join(".", parts.Take(2));
+            string majorMinor = $"{v.Major}.{v.Minor}";
 
             // Look up the GPG key in the dictionary
             if (PythonConstants.VersionGpgKeys.TryGetValue(majorMinor, out string gpgKey))

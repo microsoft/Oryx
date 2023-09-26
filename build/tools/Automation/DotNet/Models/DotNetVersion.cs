@@ -2,10 +2,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
+using System;
+
 namespace Microsoft.Oryx.Automation.DotNet.Models
 {
     // </Summary>
-    public class DotNetVersion
+    public class DotNetVersion : IComparable
     {
         /// <Summary>
         /// The version of the platfom.
@@ -24,5 +26,18 @@ namespace Microsoft.Oryx.Automation.DotNet.Models
         /// Example: sdk, aspnetcore, netcore, etc.
         /// </Summary>
         public string VersionType { get; set; } = string.Empty;
+
+        public int CompareTo(object obj)
+        {
+            var objDotNetVersion = obj as DotNetVersion;
+            if (objDotNetVersion == null)
+            {
+                return 1;
+            }
+
+            var thisVersion = new Version(this.Version);
+            var objVersion = new Version(objDotNetVersion.Version);
+            return thisVersion.CompareTo(objVersion);
+        }
     }
 }
