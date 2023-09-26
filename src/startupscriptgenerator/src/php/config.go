@@ -6,10 +6,11 @@
 package main
 
 type Configuration struct {
-	PhpOrigin     string
-	PreRunCommand string
-	FpmMaxChildren string
-	FpmStartServers string
+	PhpOrigin          string
+	PreRunCommand      string
+	FpmMaxChildren     string
+	FpmStartServers    string
 	FpmMinSpareServers string
 	FpmMaxSpareServers string
+	NginxConfFile      string
 }

@@ -77,7 +77,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -148,7 +148,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -169,6 +169,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var nodeVersion = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -200,7 +201,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]

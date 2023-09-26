@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
-using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Php;
 using Xunit;
 
@@ -128,10 +127,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             PhpScriptGeneratorOptions phpScriptGeneratorOptions)
         {
             var phpVersionProvider = new TestPhpVersionProvider(
-                supportedPhpVersions: new[] { "7.2.15", Common.PhpVersions.Php73Version });
+                supportedPhpVersions: new[] { "7.2.15", PhpVersions.Php73Version });
 
             var phpComposerVersionProvider = new TestPhpComposerVersionProvider(
-                supportedPhpComposerVersions: new[] { "7.2.15", Common.PhpVersions.ComposerVersion });
+                supportedPhpComposerVersions: new[] { "7.2.15", PhpVersions.ComposerDefaultVersion });
 
             phpScriptGeneratorOptions = phpScriptGeneratorOptions ?? new PhpScriptGeneratorOptions();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();    
@@ -183,7 +182,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             {
                 return PlatformVersionInfo.CreateOnDiskVersionInfo(
                     _supportedPhpComposerVersions,
-                    PhpVersions.ComposerVersion);
+                    PhpVersions.ComposerDefaultVersion);
             }
         }
     }
