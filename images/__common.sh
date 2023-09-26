@@ -7,17 +7,19 @@ __CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
 source $__CURRENT_DIR/__sdkStorageConstants.sh
 
 function downloadFileAndVerifyChecksum() {
+    set +x
     local platformName="$1"
     local version="$2"
     local downloadedFileName="$3"
     local downloadableFileName="$3"
     local sdkStorageAccountUrl="$4"
+    local sasToken="$5"
     local headersFile="/tmp/headers.txt"
 
     echo "Downloading $platformName version '$version' from '$sdkStorageAccountUrl'..."
     request="curl 
         -D $headersFile 
-        -SL $sdkStorageAccountUrl/$platformName/$downloadableFileName 
+        -SL $sdkStorageAccountUrl/$platformName/$downloadableFileName$sasToken
         --output $downloadedFileName"
     $__CURRENT_DIR/retry.sh "$request"
     # Use all lowercase letters to find the header and it's value
@@ -35,4 +37,5 @@ function downloadFileAndVerifyChecksum() {
         checksumcode="sha256sum"
     fi
     echo "$checksumValue $downloadedFileName" | $checksumcode -c -
+    set -x
 }

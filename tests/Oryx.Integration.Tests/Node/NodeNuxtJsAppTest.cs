@@ -13,10 +13,10 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.Integration.Tests
 {
-    [Trait("category", "node-14-stretch-1")]
+    [Trait("category", "node-16-nuxt")]
     public class NodeNuxtJsAppTest : NodeEndToEndTestsBase
     {
-        public const string AppName = "helloworld-nuxtjs";
+        public const string AppName = "hackernews-nuxtjs";
         public const int ContainerAppPort = 3000;
 
         public NodeNuxtJsAppTest(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture)
@@ -30,6 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var nodeVersion = "16";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var volume = CreateAppVolume(AppName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -56,7 +57,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerAppPort,
                 "/bin/sh",
                 new[]
@@ -67,7 +68,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}");
-                    Assert.Contains("Welcome!", data);
+                    Assert.Contains("Nuxt HN | News", data);
                 });
         }
 
@@ -77,6 +78,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var nodeVersion = "16";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             string compressFormat = "zip";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -105,7 +107,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerAppPort,
                 "/bin/sh",
                 new[]
@@ -116,7 +118,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 async (hostPort) =>
                 {
                     var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}");
-                    Assert.Contains("Welcome!", data);
+                    Assert.Contains("Nuxt HN | News", data);
                 });
         }
     }

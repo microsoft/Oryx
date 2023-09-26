@@ -7,21 +7,23 @@ source "$CURRENT_DIR/__versions.sh"
 baseImage="oryxdevmcr.azurecr.io/private/oryx/php-run-base"
 baseImageDebianFlavor="$1"
 
+PHP_VERSION_ARRAY=()
+
+if [ "$baseImageDebianFlavor" == "bookworm" ];then
+    PHP_VERSION_ARRAY=("${VERSION_ARRAY_BOOKWORM[@]}")
+elif [ "$baseImageDebianFlavor" == "bullseye" ];then
+    PHP_VERSION_ARRAY=("${VERSION_ARRAY_BULLSEYE[@]}")
+elif [ "$baseImageDebianFlavor" == "buster" ];then
+    PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")
+fi
+
 echo
-echo "Building '$1' based image '$baseImage'..."
+echo "Building '$baseImageDebianFlavor' based image '$baseImage'..."
 docker build \
     -t $baseImage-$baseImageDebianFlavor \
     --build-arg DEBIAN_FLAVOR=$baseImageDebianFlavor \
     -f "$CURRENT_DIR/runbase.Dockerfile" \
     .
-
-PHP_VERSION_ARRAY=()
-
-if [ "$baseImageDebianFlavor" == "buster" ];then
-	PHP_VERSION_ARRAY=("${VERSION_ARRAY_BUSTER[@]}")
-elif [ "$baseImageDebianFlavor" == "bullseye" ];then
-    PHP_VERSION_ARRAY=("${VERSION_ARRAY_BULLSEYE[@]}")
-fi
 
 echo "*****************"
 echo "PHP_VERSION_ARRAY"
@@ -30,18 +32,18 @@ echo "*****************"
 
 for PHP_VERSION in "${PHP_VERSION_ARRAY[@]}"
 do
-	IFS='.' read -ra SPLIT_VERSION <<< "$PHP_VERSION"
-	VERSION_DIRECTORY="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
+    IFS='.' read -ra SPLIT_VERSION <<< "$PHP_VERSION"
+    VERSION_DIRECTORY="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
 
-	PHP_IMAGE_NAME="oryxdevmcr.azurecr.io/private/oryx/php-$VERSION_DIRECTORY"
+    PHP_IMAGE_NAME="oryxdevmcr.azurecr.io/private/oryx/php-$VERSION_DIRECTORY-$baseImageDebianFlavor"
     cd "$CURRENT_DIR/$VERSION_DIRECTORY/"
 
     echo
     echo "Building '$baseImageDebianFlavor' based php image '$PHP_IMAGE_NAME'..."
     echo
-	docker build \
+    docker build \
         -t $PHP_IMAGE_NAME \
         --build-arg DEBIAN_FLAVOR=$baseImageDebianFlavor \
-        -f "$VERSION_DIRECTORY.Dockerfile" \
+        -f "$VERSION_DIRECTORY.$baseImageDebianFlavor.Dockerfile" \
         .
 done

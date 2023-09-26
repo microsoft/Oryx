@@ -5,7 +5,7 @@ parameters:
 - name: destinationStorageAccountName
   displayName: Destination Storage Account Name
   type: string
-  default: oryxsdksdev
+  default: oryxsdksstaging
 
 stages:
 - stage: Build
