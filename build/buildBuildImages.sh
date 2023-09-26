@@ -70,7 +70,7 @@ if [ -z "$sdkStorageAccountUrl" ]; then
 fi
 
 # checking and retrieving token for the `oryxsdksstaging` account.
-retrieveSastokenFromKeyvault $sdkStorageAccountUrl
+retrieveSastokenFromKeyVault $sdkStorageAccountUrl
 
 echo
 echo "SDK storage account url set to: $sdkStorageAccountUrl"
@@ -141,6 +141,14 @@ function buildGitHubRunnersBullseyeBaseImage() {
 		.
 }
 
+function buildGitHubRunnersBookwormBaseImage() {
+	echo
+	echo "----Building the image which uses GitHub runners' buildpackdeps-bookworm-scm specific digest----------"
+	docker build -t "oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-bookworm" \
+		-f "$BUILD_IMAGES_GITHUB_RUNNERS_BUILDPACKDEPS_BOOKWORM_DOCKERFILE" \
+		.
+}
+
 function buildGitHubRunnersBusterBaseImage() {
 	
 	echo
@@ -163,6 +171,7 @@ function buildTemporaryFilesImage() {
 	buildGitHubRunnersBusterBaseImage
 	buildGitHubRunnersUbuntuBaseImage
 	buildGitHubRunnersBullseyeBaseImage
+	buildGitHubRunnersBookwormBaseImage
 
 	# Create the following image so that it's contents can be copied to the rest of the images below
 	echo
@@ -530,6 +539,7 @@ function buildBuildPackImage() {
 }
 
 if [ -z "$imageTypeToBuild" ]; then
+	buildGitHubActionsImage "bookworm"
 	buildGitHubActionsImage "bullseye"
 	buildGitHubActionsImage "buster"
 	buildGitHubActionsImage
@@ -552,6 +562,9 @@ elif [ "$imageTypeToBuild" == "githubactions" ]; then
 	buildGitHubActionsImage
 	buildGitHubActionsImage "buster"
 	buildGitHubActionsImage "bullseye"
+	buildGitHubActionsImage "bookworm"
+elif [ "$imageTypeToBuild" == "githubactions-bookworm" ]; then
+	buildGitHubActionsImage "bookworm"
 elif [ "$imageTypeToBuild" == "githubactions-buster" ]; then
 	buildGitHubActionsImage "buster"
 elif [ "$imageTypeToBuild" == "githubactions-bullseye" ]; then
