@@ -305,7 +305,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
                 $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion}")
@@ -343,7 +342,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/NetCoreApp31MvcApp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo RandomText >> {appDir}/Program.cs") // triggers a failure
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
@@ -383,7 +381,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/Net5MvcApp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
                 $"--platform-version 5.0.0")
@@ -418,7 +415,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform dotnet " +
                 $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion}")
@@ -481,7 +477,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version 2.1.22")
@@ -773,7 +768,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform dotnet " +
                 $"--platform-version 5.0.0")
@@ -855,7 +849,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir}/MessageFunction -o {appOutputDir} --apptype functions --platform dotnet " +
                 $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion}")
@@ -938,7 +931,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddCommand($"mkdir -p {appDir} && cd {appDir}")
                 .AddCommand($"dotnet new globaljson --sdk-version {sdkversion}")
-                .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH")
+                .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH", true)
                 .AddCommand("dotnet --version")
                 .AddCommand("which dotnet")
                 .ToString();
@@ -1154,7 +1147,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/isolatedapp-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")

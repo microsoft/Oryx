@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var dotnetcoreVersion = "3.1";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp31MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -53,7 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -74,6 +75,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var dotnetcoreVersion = "3.1";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp31MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -101,7 +103,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -123,6 +125,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "ImageResizingWebApp";
             var version = "3.1";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -149,7 +152,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", version),
+                _imageHelper.GetRuntimeImage("dotnetcore", version, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -170,6 +173,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var dotnetcoreVersion = "3.1";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", NetCoreApp31MvcApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -177,7 +181,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var expectedFileInOutputDir = Guid.NewGuid().ToString("N");
             var buildImageScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int --platform {DotNetCoreConstants.PlatformName} " +
                 $"--platform-version {dotnetcoreVersion} -o {appOutputDir}")
@@ -203,7 +206,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion),
+                _imageHelper.GetRuntimeImage("dotnetcore", dotnetcoreVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]

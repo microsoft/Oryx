@@ -10,10 +10,25 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 source $CURRENT_DIR/../__common.sh
 
 sdkStorageAccountUrl="$ORYX_SDK_STORAGE_BASE_URL"
+sasToken=""
 if [ -z "$sdkStorageAccountUrl" ]; then
-    sdkStorageAccountUrl=$DEV_SDK_STORAGE_BASE_URL
+    sdkStorageAccountUrl=$PRIVATE_STAGING_SDK_STORAGE_BASE_URL
 fi
-
+if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
+    set +x
+    isSasTokenEmpty=1 
+    sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
+    if [ -z "$sasToken" ]; then
+      isSasTokenEmpty=0
+    fi
+    set -x
+    
+    if [ $isSasTokenEmpty -eq 0 ]; then
+        echo "sasToken cannot be empty for $sdkStorageAccountUrl."
+    else
+        echo "sasToken is empty for $sdkStorageAccountUrl."
+    fi
+fi
 echo
 echo "Installing .NET Core SDK $DOTNET_SDK_VER from $sdkStorageAccountUrl ..."
 echo
@@ -32,7 +47,9 @@ else
     fileName="dotnet-$debianFlavor-$DOTNET_SDK_VER.tar.gz"
 fi
 
-downloadFileAndVerifyChecksum dotnet $DOTNET_SDK_VER $fileName $sdkStorageAccountUrl
+set +x
+downloadFileAndVerifyChecksum dotnet $DOTNET_SDK_VER $fileName $sdkStorageAccountUrl $sasToken
+set -x
 
 globalJsonContent="{\"sdk\":{\"version\":\"$DOTNET_SDK_VER\"}}"
 

@@ -17,6 +17,8 @@ using Microsoft.Oryx.Integration.Tests;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 
 namespace Oryx.Integration.Tests
 {
@@ -27,7 +29,7 @@ namespace Oryx.Integration.Tests
 
         private readonly string _storageUrl;
         private readonly string _repoRootDir;
-        private readonly string _sdkStorageAccountAccessToken;
+        private readonly string _stagingStorageAccountAccessToken;
 
         private readonly string[] _debianFlavors = 
         {
@@ -38,13 +40,19 @@ namespace Oryx.Integration.Tests
             string storageUrl,
             ITestOutputHelper output,
             TestTempDirTestFixture testTempDirTestFixture,
-            RepoRootDirTestFixture repoRootDirTestFixture,
-            string token)
+            RepoRootDirTestFixture repoRootDirTestFixture)
             : base(output, testTempDirTestFixture)
         {
             _storageUrl = storageUrl;
             _repoRootDir = repoRootDirTestFixture.RepoRootDirPath;
-            _sdkStorageAccountAccessToken = token;
+            _stagingStorageAccountAccessToken = string.Empty;
+
+            if (storageUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
+            {
+                _stagingStorageAccountAccessToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) != null
+                    ? Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey)
+                    : KeyVaultHelper.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);                
+            }
         }
 
         [Fact]
@@ -178,7 +186,7 @@ namespace Oryx.Integration.Tests
         {
             // Act
             var error = Assert.Throws<AggregateException>(() => 
-                ListBlobsHelper.GetAllBlobs(_fakeStorageUrl, "dotnet", _httpClient, _sdkStorageAccountAccessToken));
+                ListBlobsHelper.GetAllBlobs(_fakeStorageUrl, "dotnet", _httpClient, _stagingStorageAccountAccessToken));
 
             // Assert
             Assert.Contains(Microsoft.Oryx.BuildScriptGenerator.Constants.NetworkConfigurationHelpText, error.Message);
@@ -215,7 +223,7 @@ namespace Oryx.Integration.Tests
 
         private XDocument GetMetadata(string platformName)
         {
-            return ListBlobsHelper.GetAllBlobs(_storageUrl, platformName, _httpClient, _sdkStorageAccountAccessToken);
+            return ListBlobsHelper.GetAllBlobs(_storageUrl, platformName, _httpClient, _stagingStorageAccountAccessToken);
         }
 
         private List<string> GetVersionsFromContainer(string debianFlavor, string platformName)
@@ -258,7 +266,7 @@ namespace Oryx.Integration.Tests
                     || string.Equals(debianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
                 ? SdkStorageConstants.DefaultVersionFileName
                 : $"{SdkStorageConstants.DefaultVersionFilePrefix}.{debianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
-            var defaultVersionUrl = $"{_storageUrl}/{platformName}/{defaultFile}";
+            var defaultVersionUrl = $"{_storageUrl}/{platformName}/{defaultFile}{_stagingStorageAccountAccessToken}";
             var defaultVersionContent = _httpClient.GetStringAsync(defaultVersionUrl).Result;
 
             string defaultVersion = null;

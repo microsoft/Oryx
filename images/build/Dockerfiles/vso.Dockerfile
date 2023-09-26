@@ -22,7 +22,10 @@ RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 
-RUN buildDir="/opt/tmp/build" \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \
     # Install .NET Core SDKS
     && nugetPacakgesDir="/var/nuget" \
@@ -73,4 +76,5 @@ RUN buildDir="/opt/tmp/build" \
     && ln -s $MAVEN_VERSION lts \
     && rm -rf /opt/tmp \
     && echo "vso" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""

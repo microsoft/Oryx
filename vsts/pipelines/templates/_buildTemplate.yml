@@ -42,7 +42,7 @@ steps:
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 7.x'
   inputs:
-    version: 7.x
+    version: 7.0.306
 
 - script: |
     dotnet --version && dotnet msbuild -version && echo
@@ -84,6 +84,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Build build images'
+  env:
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/buildBuildImages.sh
     args: -t ${{ parameters.imageType }} -s $(storageAccountUrl)
@@ -91,6 +93,8 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Build Buster runtime images'
+  env:
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
     args: -s $(storageAccountUrl) buster
@@ -98,9 +102,20 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Build Bullseye runtime images'
+  env:
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
     args: -s $(storageAccountUrl) bullseye 
+  condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
+
+- task: ShellScript@2
+  displayName: 'Build Bookworm runtime images'
+  env:
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
+  inputs:
+    scriptPath: ./build/buildRunTimeImages.sh
+    args: -s $(storageAccountUrl) bookworm 
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - script: |
@@ -109,20 +124,21 @@ steps:
 
 - script: |
     docker -v
-    echo "Installing stable version of Docker CE................"
+    echo "Installing Docker CE version 24.0.5................"
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt update
-    sudo apt-get install docker-ce=5:20.10.5~3-0~ubuntu-focal docker-ce-cli=5:20.10.5~3-0~ubuntu-focal containerd.io
+    sudo apt-get install docker-ce=5:24.0.5~3-0~ubuntu-focal docker-ce-cli=5:24.0.5~3-0~ubuntu-focal containerd.io
     echo "After installing ................"
     docker -v
-  displayName: 'Install Docker 20.10.5'
+  displayName: 'Install Docker 24.0.5'
   condition: true
 
 - task: ShellScript@2
   displayName: 'Test build images'
   env:
     ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/testBuildImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME) ${{ parameters.imageType }}
@@ -132,6 +148,7 @@ steps:
   displayName: 'Test runtime images'
   env:
     ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
@@ -169,6 +186,7 @@ steps:
     SQLSERVER_DATABASE_USERNAME: $(SQLSERVER-DATABASE-USERNAME)
     SQLSERVER_DATABASE_PASSWORD: $(SQLSERVER-DATABASE-PASSWORD)
     ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: CopyFiles@2
@@ -198,9 +216,10 @@ steps:
       AdditionalComponentDetectorArgs: '--DirectoryExclusionList **/SampleApps/**'
 
 - script: |
-    echo "Merging bullseye, buster based runtime image tags in one single file"
+    echo "Merging bookworm, bullseye, buster based runtime image tags in one single file"
     cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.buster.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
     cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.bullseye.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
+    cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.bookworm.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
   displayName: 'Merge runtime image tags in one single file'
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 

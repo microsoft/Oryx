@@ -4,7 +4,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
     public static class DotNetCoreRunTimeVersions
     {
-        public const string DotNetCoreRuntimeBaseTag = "20230614.1";
+        public const string DotNetCoreRuntimeBaseTag = "20230921.1";
         public const string NetCoreApp10 = "1.0.16";
         public const string NetCoreApp11 = "1.1.13";
         public const string NetCoreApp20 = "2.0.9";
@@ -26,13 +26,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string NetCoreApp50Sha = "a9c4784930a977abbc42aff1337dda06ec588c1ec4769a59f9fcab4d5df4fc9efe65f8e61e5433db078f67a94ea2dfe870c32c482a50d4c16283ffacacff4261";
         public const string AspnetCoreApp50 = "5.0.17";
         public const string AspnetCoreApp50Sha = "d8e87804e9e86273c6512785bd5a6f0e834ff3f4bbebc11c4fcdf16ab4fdfabd0d981a756955267c1aa9bbeec596de3728ce9b2e6415d2d80daef0d999a5df6d";
-        public const string NetCoreApp60 = "6.0.18";
-        public const string NetCoreApp60Sha = "bcfc88238f901c14d203a33eff036106fcbcfc40de7e3717f61434dffd86b5444c176dec5beeddcf80e7193f77bf793ab1e2284c91d54b93931a4668ba77c634";
-        public const string AspnetCoreApp60 = "6.0.18";
-        public const string AspnetCoreApp60Sha = "8adbd7c6f303d69410c34ebc4a8df0afb340c6283ee18ca5e213ad502c8df15ef4db35023a5f9ef88a20ec41c733ec5006ad80dc4d31df5c32e5665f7f8b0563";
-        public const string NetCoreApp70 = "7.0.7";
-        public const string NetCoreApp70Sha = "02c4949f2edd4c0e63286443e11f961ee2cbd173eda93b5ba192e7c95dcefe74754222f3986d00f71b213271c184d5c12796a4345d19936a38c45293ac76dd94";
-        public const string AspnetCoreApp70 = "7.0.7";
-        public const string AspnetCoreApp70Sha = "e56ee9bc458214bce461e9688e5229ba5b69046ec38a27bfdb2b5413d4b41500cca40152d182793c2768318719d97980b62ae9724de75d6d02874c25e938374d";
+        public const string NetCoreApp60 = "6.0.20";
+        public const string NetCoreApp60Sha = "3688d7170a59015c36d6a5532db67bc22eff66b3eb0a7fc28e1f425791e27a5f467bc7dc593d7f455d72d08c7d27bfcc92b3c8bd30ec3c7c583a8aa82b5afbac";
+        public const string AspnetCoreApp60 = "6.0.20";
+        public const string AspnetCoreApp60Sha = "891bad6a52a7bcd5afa2a784fe68044d282f6d53fedab4bde6dff8d7d2138a484e947f7a6be156094324b37e9d7e07e87a67622bcf2ea197c2924389edd1d185";
+        public const string NetCoreApp70 = "7.0.9";
+        public const string NetCoreApp70Sha = "09552e5ae6ac014dadf17545ff0a30ab32921075a31fb33e7be148c13078e30d097f592ffa1b8d306563aaa3f6302e40c5c0ba815c1473bbd5d72e3bef55d91e";
+        public const string AspnetCoreApp70 = "7.0.9";
+        public const string AspnetCoreApp70Sha = "aabf4fa5ca726dc52774e5d644800ef7477815b22a982b7a2752dec6569186aabca93d5386e195e7ead377144601a786ae6a5d76ff28435bdabfad495cfe554b";
+        public const string NetCoreApp80 = "8.0.0-preview.7.23375.6";
+        public const string NetCoreApp80Sha = "bfd8491550178b86a7a72fe06bdc82f0dd66771d5b60d7e4e1133cdde29f84bd57857d846722e027bd209db087123b2d12b2e23590d77991052269fa265814e1";
+        public const string AspnetCoreApp80 = "8.0.0-preview.7.23375.9";
+        public const string AspnetCoreApp80Sha = "b8c8a5cd579a8ee1e082363a73a05a745499365445f784e6ff87547f9acdbe8b7ba525140ef10555bc2802c13af131c2d568ec6af020bd0dd2fdf82d4c258442";
     }
 }

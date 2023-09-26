@@ -49,6 +49,7 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("else\n")
 	scriptBuilder.WriteString("   export APACHE_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
 	scriptBuilder.WriteString("fi\n\n")
+	gen.AddCustomizedNginxConfigurationToScript(&scriptBuilder)
 
 	startupCommand := gen.StartupCmd
 	if startupCommand == "" {
@@ -79,5 +80,12 @@ func (gen *PhpStartupScriptGenerator) SetFpmConfiguration(scriptBuilder *strings
 func AddFpmConfigurationToScript(scriptBuilder *strings.Builder, envVarValue string, fpmSettingName string) {
 	if envVarValue != "" {
 		scriptBuilder.WriteString("   sed -i \"s/" + fpmSettingName + " = .*/" + fpmSettingName + " = " + envVarValue + "/g\" " + consts.PhpFpmConfigurationFile + "\n")
+	}
+}
+
+func (gen *PhpStartupScriptGenerator) AddCustomizedNginxConfigurationToScript(scriptBuilder *strings.Builder) {
+	if gen.Configuration.NginxConfFile != "" {
+		scriptBuilder.WriteString("cp " + gen.Configuration.NginxConfFile + " /etc/nginx/nginx.conf \n")
+		scriptBuilder.WriteString("service nginx reload \n")
 	}
 }

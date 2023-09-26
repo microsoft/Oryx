@@ -79,7 +79,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} --platform {JavaConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/target/classes/microsoft/oryx/App.class")
                 .ToString();
@@ -116,7 +115,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.JavaDefaultVersion, envVarDefaultVersion)
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/target/classes/microsoft/oryx/App.class")
