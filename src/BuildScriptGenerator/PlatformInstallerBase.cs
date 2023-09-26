@@ -144,7 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine("echo \"Detected image debian flavor: $DEBIAN_FLAVOR.\"")
                 .AppendLine($"if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")
                 .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
+                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN\" " +
                 $"--output {tarFile} >/dev/null 2>&1")
                 .AppendLine("else")
                 .AppendLine(

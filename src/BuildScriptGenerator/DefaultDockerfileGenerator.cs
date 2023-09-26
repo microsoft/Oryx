@@ -22,10 +22,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 {
     internal class DefaultDockerfileGenerator : IDockerfileGenerator
     {
+        private const string DefaultOsType = "debian-buster";
         private const string DefaultCliImageTag = "debian-buster-stable";
         private const string DynamicRuntimeImageTag = "dynamic";
 
-        private readonly Dictionary<string, Dictionary<string, string>> supportedRuntimeVersions = new Dictionary<string, Dictionary<string, string>>()
+        private readonly Dictionary<string, List<string>> supportedRuntimeVersions = new Dictionary<string, List<string>>()
         {
             { "dotnetcore", DotNetCoreSdkVersions.RuntimeVersions },
             { "node", NodeVersions.RuntimeVersions },
@@ -131,10 +132,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 if (string.IsNullOrEmpty(this.commonOptions.BuildImage) && this.supportedRuntimeVersions.ContainsKey(dockerfileRuntimeImage))
                 {
                     var runtimeDictionary = this.supportedRuntimeVersions[dockerfileRuntimeImage];
-                    if (runtimeDictionary.ContainsKey(dockerfileRuntimeImageTag))
+                    var fullRuntimeTag = runtimeDictionary.FirstOrDefault(x => dockerfileRuntimeImageTag == x ||
+                                                                               dockerfileRuntimeImageTag == ParseRuntimeImageTag(x).Version);
+                    if (fullRuntimeTag != null)
                     {
-                        var osFlavor = runtimeDictionary[dockerfileRuntimeImageTag];
-                        dockerfileBuildImageTag = $"{osFlavor}-stable";
+                        dockerfileRuntimeImageTag = fullRuntimeTag;
+                        var osType = ParseRuntimeImageTag(dockerfileRuntimeImageTag).OsType;
+                        if (string.IsNullOrEmpty(osType))
+                        {
+                            osType = DefaultOsType;
+                        }
+
+                        dockerfileBuildImageTag = $"{osType}-stable";
                     }
                 }
 
@@ -216,7 +225,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         /// <returns>A tuple containing the original runtime version and its formatted version.</returns>
         private static (string OriginalRuntimeVersion, string FormattedRuntimeVersion) FormatRuntimeVersion(string runtimeVersion)
         {
-            var formattedVersion = runtimeVersion;
+            var formattedVersion = ParseRuntimeImageTag(runtimeVersion).Version;
             var segments = runtimeVersion.Split('.');
             for (int i = 0; i < 3 - segments.Length; i++)
             {
@@ -224,6 +233,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             }
 
             return (runtimeVersion, formattedVersion);
+        }
+
+        /// <summary>
+        /// Parses the version from the provided runtime image tag, assuming that the tag is in the format
+        /// {version}-{osType}. For example, 18-debian-bullseye and 8.0-debian-bookworm would return 18 and 8.0, respectively.
+        /// </summary>
+        /// <param name="runtimeImageTag">The runtime image tag to parse the version from. For example, 18-debian-bullseye.</param>
+        /// <returns>The version used in the runtime image tag.</returns>
+        private static (string Version, string OsType) ParseRuntimeImageTag(string runtimeImageTag)
+        {
+            var split = runtimeImageTag.Split('-');
+            if (split.Length < 2)
+            {
+                return (split[0], string.Empty);
+            }
+
+            return (split[0], runtimeImageTag.Substring(split[0].Length + 1));
         }
 
         /// <summary>
@@ -241,7 +267,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             if (!string.IsNullOrEmpty(platformName) && this.supportedRuntimeVersions.ContainsKey(platformName))
             {
-                var runtimeVersions = this.supportedRuntimeVersions[platformName].Keys
+                var runtimeVersions = this.supportedRuntimeVersions[platformName]
                     .Where(v => !string.Equals(v, DynamicRuntimeImageTag, StringComparison.OrdinalIgnoreCase));
                 if (runtimeVersions == null || !runtimeVersions.Any())
                 {
