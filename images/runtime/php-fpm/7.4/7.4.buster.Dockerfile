@@ -3,7 +3,7 @@ ARG DEBIAN_FLAVOR
 FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-run-base-${DEBIAN_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 
-# do NOT merge this content with above line because the 
+# do NOT merge this content with above line because the
 # above line is shared across all php images
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
@@ -14,7 +14,7 @@ RUN set -eux \
 		gnupg2 \
 		apt-transport-https \
 	&& curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-	&& curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+	&& curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list \
 	&& apt-get update \
 	&& ACCEPT_EULA=Y apt-get install -y msodbcsql17 msodbcsql18=18.1.2.1-1 odbcinst1debian2=2.3.7 odbcinst=2.3.7 unixodbc=2.3.7 unixodbc-dev=2.3.7
 
@@ -42,11 +42,12 @@ ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
 ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
-ENV GPG_KEYS 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544 E60913E4DF209907D8E30D96659A97C9CF2A795A
+ENV GPG_KEYS 42670A7FE4D0441C8E4632349E4FDC074A4EF02D 5A52880781F755608BF815FC910DEB46F53EA312
 
-ENV PHP_VERSION 8.2.8
-ENV PHP_URL="https://www.php.net/get/php-8.2.8.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-8.2.8.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="cfe1055fbcd486de7d3312da6146949aae577365808790af6018205567609801" PHP_MD5=""
+
+ENV PHP_VERSION 7.4.33
+ENV PHP_URL="https://www.php.net/get/php-7.4.33.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-7.4.33.tar.xz.asc/from/this/mirror"
+ENV PHP_SHA256="924846abf93bc613815c55dd3f5809377813ac62a9ec4eb3778675b82a27b927" PHP_MD5=""
 
 RUN set -eux; \
 	\
@@ -84,7 +85,7 @@ COPY docker-php-source /usr/local/bin/
 
 RUN set -eux; \
 	\
-	
+
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
@@ -153,7 +154,7 @@ RUN set -eux; \
 		--with-pear \
 		\
 # bundled pcre does not support JIT on s390x
-# https://manpages.debian.org/stretch/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
+# https://manpages.debian.org/bullseye/libpcre3-dev/pcrejit.3.en.html#AVAILABILITY_OF_JIT_SUPPORT
 		$(test "$gnuArch" = 's390x-linux-gnu' && echo '--without-pcre-jit') \
 		--with-libdir="lib/$debMultiarch" \
 		\
