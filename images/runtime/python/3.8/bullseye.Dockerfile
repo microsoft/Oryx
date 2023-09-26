@@ -33,7 +33,7 @@ ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-ENV PYTHON_VERSION 3.8.15
+ENV PYTHON_VERSION 3.8.16
 RUN true
 COPY build/__pythonVersions.sh ${BUILD_DIR}
 RUN true
