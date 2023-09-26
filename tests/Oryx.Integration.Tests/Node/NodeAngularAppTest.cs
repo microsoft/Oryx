@@ -25,8 +25,11 @@ namespace Microsoft.Oryx.Integration.Tests
         // Official Node.js version that is supported by Angular CLI 14.0+ is 16.10 or greater
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_UsingCompressedNodeModulesAsync(string nodeVersion)
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBuster), Trait("category", "node-16")]
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBullseye), Trait("category", "node-16")]
+        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_UsingCompressedNodeModulesAsync(
+            string nodeVersion,
+            string osType)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -56,7 +59,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 PortInContainer,
                 "/bin/sh",
                 new[]
@@ -73,8 +76,11 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRun_Angular14App_WithoutCompressedNodeModulesAsync(string nodeVersion)
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBuster), Trait("category", "node-16")]
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBullseye), Trait("category", "node-16")]
+        public async Task CanBuildAndRun_Angular14App_WithoutCompressedNodeModulesAsync(
+            string nodeVersion,
+            string osType)
         {
             // Arrange
             var appName = "angular14app";
@@ -101,7 +107,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 PortInContainer,
                 "/bin/sh",
                 new[]
@@ -118,8 +124,11 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRun_Angular14App_NodeModules_SymLink_Exists_InRoot_WithoutCompressionAsync(string nodeVersion)
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBuster), Trait("category", "node-16")]
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBullseye), Trait("category", "node-16")]
+        public async Task CanBuildAndRun_Angular14App_NodeModules_SymLink_Exists_InRoot_WithoutCompressionAsync(
+            string nodeVersion,
+            string osType)
         {
             // Arrange
             var appName = "angular14app";
@@ -148,7 +157,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 PortInContainer,
                 "/bin/sh",
                 new[]
@@ -168,7 +177,7 @@ namespace Microsoft.Oryx.Integration.Tests
             for (int i = 0; i < 3; i++)
             {
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                     output: _output,
                     volumes: new List<DockerVolume> { volume, appOutputDirVolume },
                     environmentVariables: null,
@@ -187,8 +196,11 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBuster), Trait("category", "node-16")]
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBullseye), Trait("category", "node-16")]
+        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_Dir_Exists_InAppDir_UsingCompressionAsync(
+            string nodeVersion,
+            string osType)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -218,7 +230,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 PortInContainer,
                 "/bin/sh",
                 new[]
@@ -244,7 +256,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: null,
@@ -263,8 +275,11 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory(Skip = "Temporarily skipping Angular 14 tests: Work item 1565890")]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("16"), Trait("category", "node-16")]
-        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompressionAsync(string nodeVersion)
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBuster), Trait("category", "node-16")]
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBullseye), Trait("category", "node-16")]
+        public async Task CanBuildAndRunAngular14_WithDevAndProdDependencies_NodeModules_SymLink_Exists_InAppDir_UsingCompressionAsync(
+            string nodeVersion,
+            string osType)
         {
             // Arrange
             string compressFormat = "tar-gz";
@@ -296,7 +311,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 PortInContainer,
                 "/bin/sh",
                 new[]
@@ -323,7 +338,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddFileExistsCheck($"{appOutputDir}/{count}.txt")
                 .ToString();
                 await EndToEndTestHelper.RunAndAssertAppAsync(
-                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
+                    imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                     output: _output,
                     volumes: new List<DockerVolume> { appOutputDirVolume, volume },
                     environmentVariables: null,

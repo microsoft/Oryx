@@ -17,10 +17,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("3.1")]
-        [InlineData("5.0")]
-        [InlineData("7.0")]
-        public void GDIPlusLibrary_IsPresentInTheImage(string version)
+        [InlineData("3.1", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.1", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        [InlineData("5.0", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("7.0", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("7.0", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        public void GDIPlusLibrary_IsPresentInTheImage(string version, string osType)
         {
             // Arrange
             var expectedLibrary = "libgdiplus";
@@ -28,7 +30,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, osType),
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", $"ldconfig -p | grep {expectedLibrary}" },
             });
@@ -45,16 +47,19 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("3.1")]
-        [InlineData("5.0")]
-        [InlineData("6.0")]
-        [InlineData("7.0")]
-        public void DotnetMonitorTool_IsPresentInTheImage(string version)
+        [InlineData("3.1", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("3.1", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        [InlineData("5.0", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("6.0", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("6.0", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        [InlineData("7.0", ImageTestHelperConstants.OsTypeDebianBuster)]
+        [InlineData("7.0", ImageTestHelperConstants.OsTypeDebianBullseye)]
+        public void DotnetMonitorTool_IsPresentInTheImage(string version, string osType)
         {
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version),
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, osType),
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", $"ls opt/dotnetcore-tools/" },
             });

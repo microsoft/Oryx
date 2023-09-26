@@ -21,8 +21,9 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("build-image", "debian-stretch")]
-        [InlineData("14"), Trait("category", "node-14-stretch-3")]
-        public async Task Test_NodeSassExampleAsync(string nodeVersion)
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBuster), Trait("category", "node-14-stretch-3")]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBullseye), Trait("category", "node-14-stretch-3")]
+        public async Task Test_NodeSassExampleAsync(string nodeVersion, string osType)
         {
             // Arrange
             var appName = "node-sass-example";
@@ -49,7 +50,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
