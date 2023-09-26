@@ -33,7 +33,7 @@ ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-ENV PYTHON_VERSION 3.8.15
+ENV PYTHON_VERSION 3.8.16
 RUN true
 COPY build/__pythonVersions.sh ${BUILD_DIR}
 RUN true
@@ -49,11 +49,15 @@ RUN true
 RUN chmod +x /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/build.sh
 
-RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 RUN set -ex \
  && cd /opt/python/ \
- && ln -s 3.8.15 3.8 \
+ && ln -s 3.8.16 3.8 \
  && ln -s 3.8 3 \
  && echo /opt/python/3/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
@@ -66,8 +70,8 @@ RUN set -ex \
 ENV PATH="/opt/python/3/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ARG AI_CONNECTION_STRING
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 #Bake in client certificate path into image to avoid downloading it
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 

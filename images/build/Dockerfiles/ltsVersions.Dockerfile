@@ -99,7 +99,9 @@ ENV LANG="C.UTF-8" \
     PYTHONIOENCODING="UTF-8" \
     DEBIAN_FLAVOR="stretch"
 
-RUN set -ex \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
@@ -189,7 +191,7 @@ RUN set -ex \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
     && $imagesDir/installPlatform.sh php $PHP73_VERSION \
-    && $imagesDir/installPlatform.sh php-composer $COMPOSER_VERSION \
+    && $imagesDir/installPlatform.sh php-composer $COMPOSER_DEFAULT_VERSION \
     && cd /opt/php \
     && ln -s 7.3 7 \
     && ln -s 7 lts \
@@ -212,6 +214,7 @@ RUN set -ex \
     # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
     && ${imagesDir}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083" \
     && update-ca-certificates \
-    && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
+    && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}" \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 ENTRYPOINT [ "benv" ]

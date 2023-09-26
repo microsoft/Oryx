@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [MemberData(
            nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
            MemberType = typeof(TestValueGenerator))]
-        public async Task CanBuildAndRunNodeApp_WithDebuggerAsync(string nodeVersion)
+        public async Task CanBuildAndRunNodeApp_WithDebuggerAsync(string nodeVersion, string osType)
         {
             // Arrange
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]

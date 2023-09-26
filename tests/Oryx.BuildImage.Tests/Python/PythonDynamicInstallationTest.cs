@@ -99,7 +99,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
@@ -142,7 +141,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
@@ -185,7 +183,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
@@ -225,7 +222,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
@@ -266,7 +262,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {previewVersion} " +
                 $"-o {appOutputDir}")
@@ -309,7 +304,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var buildCmd = $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} " +
                 $"-o {appOutputDir}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(buildCmd)
                 .AddFileExistsCheck(sentinelFile)
@@ -350,7 +344,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var script = new ShellScriptBuilder()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
                 .ToString();
@@ -388,7 +381,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var expectedDynamicInstallRootDir = "/foo/bar";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}" +
                 $" --dynamic-install-root-dir {expectedDynamicInstallRootDir}")
@@ -501,7 +493,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")
@@ -558,7 +549,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app-output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(GetSnippetToCleanUpExistingInstallation())
                 .AddBuildCommand(
                 $"{appDir} --platform {PythonConstants.PlatformName} --platform-version {version} -o {appOutputDir}")

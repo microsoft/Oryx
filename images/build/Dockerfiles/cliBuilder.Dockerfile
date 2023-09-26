@@ -137,7 +137,10 @@ RUN set -ex \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python 3.8 to use in some .NET and node applications
-RUN tmpDir="/opt/tmp" \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
@@ -156,6 +159,7 @@ RUN tmpDir="/opt/tmp" \
     && cd /opt/python \
     && ln -s $PYTHON38_VERSION 3.8 \
     && ln -s $PYTHON38_VERSION latest \
-    && ln -s $PYTHON38_VERSION stable
+    && ln -s $PYTHON38_VERSION stable \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 ENTRYPOINT [ "benv" ]
