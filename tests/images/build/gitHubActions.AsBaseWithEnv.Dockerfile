@@ -20,7 +20,7 @@ ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR} \
     NUGET_PACKAGES=/var/nuget \
     NUGET_XMLDOC_MODE=skip \
     ORIGINAL_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-    ORYX_SDK_STORAGE_BASE_URL=https://oryxsdksdev.blob.core.windows.net \
+    ORYX_SDK_STORAGE_BASE_URL=https://oryxsdksstaging.blob.core.windows.net \
     PATH=$ORYX_PATHS:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.dotnet/tools:/opt/nodejs/9/bin \
     PYTHONIOENCODING=UTF-8
 

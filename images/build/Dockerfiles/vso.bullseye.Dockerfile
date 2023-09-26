@@ -89,7 +89,9 @@ COPY --from=intermediate /opt /opt
 # Even though this adds a new docker layer we are doing this 
 # because we want to avoid duplication (which is always error-prone)
 
-RUN set -ex \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
@@ -199,7 +201,8 @@ RUN set -ex \
     && mkdir -p /usr/local/share/pip-cache/lib \
     && chmod -R 777 /usr/local/share/pip-cache \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
-    && rm -f /etc/apt/sources.list.d/buster.list
+    && rm -f /etc/apt/sources.list.d/buster.list \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts::/opt/java/lts/bin:/opt/maven/lts/bin:/opt/ruby/lts/bin"
 
@@ -212,7 +215,10 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     DYNAMIC_INSTALL_ROOT_DIR="/opt"
 
 # Now adding remaining of VSO platform features
-RUN buildDir="/opt/tmp/build" \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -266,7 +272,8 @@ RUN buildDir="/opt/tmp/build" \
     && pecl version \
     && pecl install -f libsodium \
     && echo "vso-debian-bullseye" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
 
 # install few more tools for VSO
 RUN gem install bundler rake --backtrace

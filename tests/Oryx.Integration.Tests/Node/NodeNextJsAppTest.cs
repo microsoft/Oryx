@@ -29,6 +29,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var nodeVersion = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var volume = CreateAppVolume(AppName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
@@ -53,7 +54,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerAppPort,
                 "/bin/sh",
                 new[]
@@ -74,6 +75,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var nodeVersion = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             string compressFormat = "tar-gz";
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
@@ -100,7 +102,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerAppPort,
                 "/bin/sh",
                 new[]

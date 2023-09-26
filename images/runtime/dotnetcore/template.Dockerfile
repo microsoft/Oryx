@@ -1,6 +1,8 @@
+# syntax=docker/dockerfile:1.3
+# the above line allows this dockerfile to use the secrets functionality
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.19-${DEBIAN_FLAVOR} as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -36,11 +38,14 @@ ENV CNB_STACK_ID="oryx.stacks.skeleton"
 LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
-RUN echo $USER_DOTNET_AI_VERSION && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
+RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
+    set -e \
+    && echo $USER_DOTNET_AI_VERSION \ 
+    && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get install unzip -y \ 
     && apt-get upgrade --assume-yes \
     && mkdir -p /DotNetCoreAgent \
-    && curl -o /DotNetCoreAgent/appinsights.zip "https://oryxsdksdev.blob.core.windows.net/appinsights-agent/DotNetCoreAgent.$USER_DOTNET_AI_VERSION.zip" \
+    && curl -o /DotNetCoreAgent/appinsights.zip "https://oryxsdksstaging.blob.core.windows.net/appinsights-agent/DotNetCoreAgent.$USER_DOTNET_AI_VERSION.zip$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && cd DotNetCoreAgent \
     && unzip appinsights.zip && rm appinsights.zip

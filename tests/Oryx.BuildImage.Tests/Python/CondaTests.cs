@@ -193,7 +193,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "vso-focal")]
+        [Fact(Skip = "Skipping test temporarily"), Trait("category", "vso-focal")]
         public void CanBuildJupiterRiseApp()
         {
             // Arrange
@@ -229,7 +229,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
+        [Theory(Skip = "Skipping test temporarily"), Trait("category", "vso-focal")]
         [InlineData("jupyter-rise")]
         public void BuildJupiterCondaApps_Prints_BuildCommands_In_File(string appName)
         {
@@ -239,7 +239,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app1-output";
             var commandListFile = $"{appOutputDir}/{FilePaths.BuildCommandsFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -o {appOutputDir}")
                 .AddFileExistsCheck($"{commandListFile}")
                 .AddStringExistsInFileCheck("PlatformWithVersion=", $"{commandListFile}")

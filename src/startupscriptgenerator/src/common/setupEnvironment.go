@@ -43,6 +43,14 @@ func GetSetupScript(platformName string, version string, installationDir string)
 		panic("Environment variable " + consts.SdkStorageBaseUrlKeyName + " is required.")
 	}
 
+	sasToken := ""
+	if sdkStorageBaseUrl == consts.PrivateStagingSdkStorageBaseUrl {
+		sasToken = os.Getenv(consts.PrivateStagingStorageSasTokenKey)
+		if sdkStorageBaseUrl == "" {
+			panic("Environment variable " + consts.PrivateStagingStorageSasTokenKey + " is required.")
+		}
+	}
+
 	tarFile := fmt.Sprintf("%s.tar.gz", version)
 	debianFlavor := os.Getenv(consts.DebianFlavor)
 	scriptBuilder := strings.Builder{}
@@ -55,20 +63,22 @@ func GetSetupScript(platformName string, version string, installationDir string)
 	scriptBuilder.WriteString(fmt.Sprintf("cd %s\n", installationDir))
 	if debianFlavor == "" || debianFlavor == consts.DebianStretch {
 		scriptBuilder.WriteString(
-			fmt.Sprintf("curl -D headers.txt -SL \"%s/%s/%s-%s.tar.gz\" --output %s\n",
+			fmt.Sprintf("curl -D headers.txt -SL \"%s/%s/%s-%s.tar.gz%s\" --output %s\n",
 				sdkStorageBaseUrl,
 				platformName,
 				platformName,
 				version,
+				sasToken,
 				tarFile))
 	} else {
 		scriptBuilder.WriteString(
-			fmt.Sprintf("curl -D headers.txt -SL \"%s/%s/%s-%s-%s.tar.gz\" --output %s\n",
+			fmt.Sprintf("curl -D headers.txt -SL \"%s/%s/%s-%s-%s.tar.gz%s\" --output %s\n",
 				sdkStorageBaseUrl,
 				platformName,
 				platformName,
 				debianFlavor,
 				version,
+				sasToken,
 				tarFile))
 	}
 	// Search for header ignoring case

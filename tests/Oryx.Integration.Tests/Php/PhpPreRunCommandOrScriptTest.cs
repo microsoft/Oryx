@@ -29,6 +29,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var phpVersion = "7.4";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "twig-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
@@ -48,7 +49,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"'echo > {preRunCmdGeneratedFileName}'")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"'echo > {preRunCmdGeneratedFileName}'", true)
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath}")
                 .AddCommand($"cat {RunScriptPath}")
                 .AddCommand(RunScriptPath)
@@ -58,7 +59,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -76,6 +77,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var phpVersion = "7.4";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "twig-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
@@ -109,7 +111,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -127,6 +129,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var phpVersion = "7.4";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "twig-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
@@ -162,7 +165,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -182,6 +185,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var phpVersion = "7.4";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "twig-example";
             var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
@@ -208,7 +212,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>

@@ -22,17 +22,19 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("14", NodeVersions.Node14Version)]
-        [InlineData("16", NodeVersions.Node16Version)]
-        [InlineData("18", NodeVersions.Node18Version)]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBuster, NodeVersions.Node14Version)]
+        [InlineData("14", ImageTestHelperConstants.OsTypeDebianBullseye, NodeVersions.Node14Version)]
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBuster, NodeVersions.Node16Version)]
+        [InlineData("16", ImageTestHelperConstants.OsTypeDebianBullseye, NodeVersions.Node16Version)]
+        [InlineData("18", ImageTestHelperConstants.OsTypeDebianBullseye, NodeVersions.Node18Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
-        public void NodeVersionMatchesImageName(string nodeTag, string nodeVersion)
+        public void NodeVersionMatchesImageName(string version, string osType, string nodeVersion)
         {
             // Arrange & Act
             var expectedNodeVersion = "v" + nodeVersion;
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", nodeTag),
+                ImageId = _imageHelper.GetRuntimeImage("node", version, osType),
                 CommandToExecuteOnRun = "node",
                 CommandArguments = new[] { "--version" }
             });
@@ -52,7 +54,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [MemberData(
             nameof(TestValueGenerator.GetNodeVersions),
             MemberType = typeof(TestValueGenerator))]
-        public void HasExpected_Global_Node_Module_Path(string nodeVersion)
+        public void HasExpected_Global_Node_Module_Path(string nodeVersion, string osType)
         {
             // Arrange & Act
             var script = new ShellScriptBuilder()
@@ -61,7 +63,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", nodeVersion),
+                ImageId = _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
             });
@@ -94,7 +96,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", "14"),
+                ImageId = _imageHelper.GetRuntimeImage("node", "14", ImageTestHelperConstants.OsTypeDebianBullseye),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[] { "-c", script }
             });
@@ -107,7 +109,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [MemberData(
             nameof(TestValueGenerator.GetNodeVersions_SupportDebugging),
             MemberType = typeof(TestValueGenerator))]
-        public async Task RunNodeAppUsingProcessJson_withDebuggingAsync(string nodeVersion)
+        public async Task RunNodeAppUsingProcessJson_withDebuggingAsync(string nodeVersion, string osType)
         {
             var appName = "express-process-json";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
@@ -124,7 +126,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,

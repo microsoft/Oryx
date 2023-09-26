@@ -25,15 +25,15 @@ See https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?v
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SmartAnalyzers.CSharpExtensions.Annotations" Version="3.11.0">
+    <PackageReference Include="SmartAnalyzers.CSharpExtensions.Annotations" Version="4.2.8">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.Compilers" Version="4.4.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis.Compilers" Version="4.6.0" >
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="4.4.0">
+    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="4.6.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

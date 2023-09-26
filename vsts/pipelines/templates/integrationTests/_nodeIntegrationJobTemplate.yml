@@ -1,7 +1,7 @@
 parameters:
   - name: storageAccountUrl
     type: string
-    default: https://oryxsdksdev.blob.core.windows.net
+    default: https://oryxsdksstaging.blob.core.windows.net
   - name: testMappings
     type: object
     default:
@@ -16,6 +16,8 @@ parameters:
       - category: '14-gh-buster'
         buildTag: 'github-actions-debian-buster'
       - category: '16'
+        buildTag: 'debian-stretch'
+      - category: '16-nuxt'
         buildTag: 'debian-stretch'
       - category: '18'
         buildTag: 'github-actions-debian-bullseye'

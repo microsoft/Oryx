@@ -5,7 +5,6 @@
 
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -31,6 +30,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var runtimeVersion = "3.1";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = NetCoreApp31MvcApp;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
@@ -38,7 +38,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildImageScript = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int " +
                 $"--platform dotnet --platform-version {runtimeVersion} -o {appOutputDir}")
@@ -46,9 +45,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // split run script to test pre-run command before running the app.
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName,
-                    $"\"touch {appOutputDir}/_test_file.txt\ntouch {appOutputDir}/_test_file_2.txt\"")
+                    $"\"touch {appOutputDir}/_test_file.txt\ntouch {appOutputDir}/_test_file_2.txt\"", true)
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
                 .AddCommand($"LINENUMBER=\"$(grep -n '# End of pre-run' {RunScriptPath} | cut -f1 -d:)\"")
                 .AddCommand($"eval \"head -n +${{LINENUMBER}} {RunScriptPath} > {RunScriptPreRunPath}\"")
@@ -78,7 +76,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "3.1"),
+                _imageHelper.GetRuntimeImage("dotnetcore", runtimeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -99,6 +97,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var runtimeVersion = "3.1";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = NetCoreApp31MvcApp;
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
@@ -107,7 +106,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildImageScript = new ShellScriptBuilder()
-               .AddDefaultTestEnvironmentVariables()
                .AddCommand(
                 $"oryx build {appDir} -i /tmp/int --platform dotnet " +
                 $"--platform-version {runtimeVersion} -o {appOutputDir}")
@@ -115,8 +113,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // split run script to test pre-run command and then run the app
             var runtimeImageScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"", true)
                 .AddCommand($"touch {preRunScriptPath}")
                 .AddFileExistsCheck(preRunScriptPath)
                 .AddCommand($"echo \"touch {appOutputDir}/_test_file.txt\" > {preRunScriptPath}")
@@ -153,7 +150,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "3.1"),
+                _imageHelper.GetRuntimeImage("dotnetcore", runtimeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
