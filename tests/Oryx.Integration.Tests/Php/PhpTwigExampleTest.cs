@@ -29,8 +29,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion82 = "8.2";
             await Task.WhenAll(
-                TwigExampleAsync(phpVersion82),
-                PhpFpmTwigExampleAsync(phpVersion82));
+                TwigExampleAsync(phpVersion82, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmTwigExampleAsync(phpVersion82, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
         [Fact, Trait("category", "php-8.1")]
@@ -39,8 +39,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion81 = "8.1";
             await Task.WhenAll(
-                TwigExampleAsync(phpVersion81),
-                PhpFpmTwigExampleAsync(phpVersion81));
+                TwigExampleAsync(phpVersion81, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmTwigExampleAsync(phpVersion81, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
         [Fact, Trait("category", "php-8.0")]
@@ -49,8 +49,8 @@ namespace Microsoft.Oryx.Integration.Tests
         {   
             string phpVersion80 = "8.0";
             await Task.WhenAll(
-                TwigExampleAsync(phpVersion80),
-                PhpFpmTwigExampleAsync(phpVersion80));
+                TwigExampleAsync(phpVersion80, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmTwigExampleAsync(phpVersion80, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
         [Fact, Trait("category", "php-7.4")]
@@ -59,12 +59,12 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             string phpVersion74 = "7.4";
             await Task.WhenAll(
-                TwigExampleAsync(phpVersion74),
-                PhpFpmTwigExampleAsync(phpVersion74));
+                TwigExampleAsync(phpVersion74, ImageTestHelperConstants.OsTypeDebianBullseye),
+                PhpFpmTwigExampleAsync(phpVersion74, ImageTestHelperConstants.OsTypeDebianBullseye));
         }
 
         // Twig does not support PHP < 7
-        private async Task TwigExampleAsync(string phpVersion)
+        private async Task TwigExampleAsync(string phpVersion, string osType)
         {
             // Arrange
             var appName = "twig-example";
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpVersion),
+                _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         // Twig does not support PHP < 7
-        private async Task PhpFpmTwigExampleAsync(string phpVersion)
+        private async Task PhpFpmTwigExampleAsync(string phpVersion, string osType)
         {
             // Arrange
             var appName = "twig-example";
@@ -123,7 +123,7 @@ namespace Microsoft.Oryx.Integration.Tests
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName, _output, new[] { volume, appOutputDirVolume },
                 "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                _imageHelper.GetRuntimeImage("php", phpimageVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>

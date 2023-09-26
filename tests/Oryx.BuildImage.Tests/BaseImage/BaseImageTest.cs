@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
     public class BaseImageTest : SampleAppsTestBase
     {
         protected const string NetCoreApp31MvcApp = "NetCoreApp31.MvcApp";
+        protected const string NetCore8PreviewMvcApp = "NetCore8PreviewMvcApp";
 
         public BaseImageTest(ITestOutputHelper output) : base(output)
         {
@@ -45,19 +46,26 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     imageHelper.GetGitHubActionsAsBaseBuildImage(),
                     "stretch");
 
-                //buster
+                // buster
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
                     imageHelper.GetGitHubActionsAsBaseBuildImage(ImageTestHelperConstants.GitHubActionsBusterBase),
                     "buster");
 
-                //bullseye
+                // bullseye
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp31,
                     NetCoreApp31MvcApp,
                     imageHelper.GetGitHubActionsAsBaseBuildImage(ImageTestHelperConstants.GitHubActionsBullseyeBase),
                     "bullseye");
+
+                // bookworm
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp80,
+                    NetCore8PreviewMvcApp,
+                    imageHelper.GetGitHubActionsAsBaseBuildImage(ImageTestHelperConstants.GitHubActionsBookwormBase),
+                    "bookworm");
 
                 return data;
             }
