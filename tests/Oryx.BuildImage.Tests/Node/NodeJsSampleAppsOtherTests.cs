@@ -574,7 +574,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} --platform {NodeConstants.PlatformName} --platform-version 8")
                 .ToString();
 
@@ -713,7 +712,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(_hostSamplesDir, "nodejs", "node-nested-nodemodules"));
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} --package -p {NodePlatform.PackageDirectoryPropertyKey}=another-directory")
                 .AddFileExistsCheck($"{appDir}/another-directory/kudu-bug-0.0.0.tgz")
                 .ToString();
@@ -744,7 +742,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 Path.Combine(_hostSamplesDir, "nodejs", "monorepo-lerna-yarn"));
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(
                     SettingsKeys.EnableNodeMonorepoBuild,
                     true.ToString())
@@ -1219,7 +1216,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/" + SampleAppName + "-output";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand($"echo RandomText >> {appDir}/Program.cs") // triggers a failure
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --package --property package_directory='oryxteststring'")

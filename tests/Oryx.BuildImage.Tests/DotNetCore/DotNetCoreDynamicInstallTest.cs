@@ -28,6 +28,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         protected const string NetCoreApp50MvcApp = "NetCoreApp50MvcApp";
         protected const string NetCore6PreviewWebApp = "NetCore6PreviewWebApp";
         protected const string NetCore7PreviewMvcApp = "NetCore7PreviewMvcApp";
+        protected const string NetCore8PreviewMvcApp = "NetCore8PreviewMvcApp";
         protected const string NetCoreApp70WebApp = "NetCore7WebApp";
         protected const string DefaultWebApp = "DefaultWebApp";
 
@@ -115,7 +116,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
@@ -178,7 +178,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var buildCmd = $"{appDir} -i /tmp/int -o {appOutputDir}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(buildCmd)
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(sentinelFile)
@@ -235,7 +234,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion} --log-file log.txt")
@@ -299,7 +297,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
@@ -360,7 +357,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
                 .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
                 .AddFileExistsCheck(manifestFile)
@@ -459,7 +455,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} --dynamic-install-root-dir {expectedDynamicInstallRootDir}")
                 .AddDirectoryExistsCheck(
@@ -511,7 +506,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var osTypeFile = $"{appOutputDir}/{FilePaths.OsTypeFileName}";
             var preInstalledSdkLink = $"/home/codespace/.dotnet/sdk";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddDirectoryExistsCheck($"/home/codespace/.dotnet/")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNetCore31SdkVersion}")
                 .AddLinkExistsCheck($"{preInstalledSdkLink}/{DotNetCoreSdkVersions.DotNet60SdkVersion}")
@@ -565,31 +559,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
                 // stretch
                 data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp11,
-                    DotNetCoreSdkVersions.DotNetCore11SdkVersion,
-                    NetCoreApp11WebApp,
-                    imageHelper.GetGitHubActionsBuildImage());
-                data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp22,
-                    DotNetCoreSdkVersions.DotNetCore22SdkVersion,
-                    NetCoreApp22WebApp,
-                    imageHelper.GetGitHubActionsBuildImage());
-                data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp30,
-                    DotNetCoreSdkVersions.DotNetCore30SdkVersion,
-                    NetCoreApp30WebApp,
-                    imageHelper.GetGitHubActionsBuildImage());
-                data.Add(
-                    FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion,
-                    FinalStretchVersions.FinalStretchDotNetCore31SdkVersion,
-                    NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsBuildImage());
-                data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp50,
-                    DotNetCoreSdkVersions.DotNet50SdkVersion,
-                    NetCoreApp50MvcApp,
-                    imageHelper.GetGitHubActionsBuildImage());
-                data.Add(
                     FinalStretchVersions.FinalStretchDotNetCoreApp60RunTimeVersion,
                     FinalStretchVersions.FinalStretchDotNet60SdkVersion,
                     NetCore6PreviewWebApp,
@@ -600,22 +569,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     NetCore7PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage());
 
-                //buster
-                data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp21,
-                    DotNetCoreSdkVersions.DotNetCore21SdkVersion,
-                    NetCoreApp21WebApp,
-                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
-                data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp31,
-                    DotNetCoreSdkVersions.DotNetCore31SdkVersion,
-                    NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
-                data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp50,
-                    DotNetCoreSdkVersions.DotNet50SdkVersion,
-                    NetCoreApp50MvcApp,
-                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
+                // buster
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp60,
                     DotNetCoreSdkVersions.DotNet60SdkVersion,
@@ -627,12 +581,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     NetCore7PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
 
-                //bullseye
-                data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp31,
-                    DotNetCoreSdkVersions.DotNetCore31SdkVersion,
-                    NetCoreApp31MvcApp,
-                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
+                // bullseye
                 data.Add(
                     DotNetCoreRunTimeVersions.NetCoreApp60,
                     DotNetCoreSdkVersions.DotNet60SdkVersion,
@@ -643,7 +592,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     DotNetCoreSdkVersions.DotNet70SdkVersion,
                     NetCore7PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
-                
+
+                // bookworm
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp80,
+                    DotNetCoreSdkVersions.DotNet80SdkVersion,
+                    NetCore8PreviewMvcApp,
+                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
+
                 return data;
             }
         }
@@ -661,7 +617,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
@@ -725,7 +680,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
@@ -806,7 +760,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/output";
             var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
             var script = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(removeImageTypeFile
                     ? $"rm /opt/oryx/{FilePaths.ImageTypeFileName}"
                     : "echo 'do not remove image type file'")

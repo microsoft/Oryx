@@ -39,17 +39,15 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int --platform nodejs --platform-version {nodeVersion} -o {appOutputDir}")
                 .ToString();
 
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
                 .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName,
-                    $"\"touch {appOutputDir}/_test_file.txt\ntouch {appOutputDir}/_test_file_2.txt\"")
+                    $"\"touch {appOutputDir}/_test_file.txt\ntouch {appOutputDir}/_test_file_2.txt\"", true)
                 .AddCommand($"oryx create-script -appPath {appOutputDir} -output {RunScriptPath} -bindPort {ContainerPort}")
                 .AddCommand($"LINENUMBER=\"$(grep -n '# End of pre-run' {RunScriptPath} | cut -f1 -d:)\"")
                 .AddCommand($"eval \"head -n +${{LINENUMBER}} {RunScriptPath} > {RunScriptPreRunPath}\"")
@@ -79,7 +77,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -107,7 +105,6 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var preRunScriptPath = $"{appOutputDir}/prerunscript.sh";
             var buildScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .AddCommand(
                 $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform nodejs --platform-version {nodeVersion}")
@@ -115,9 +112,8 @@ namespace Microsoft.Oryx.Integration.Tests
 
             // split run script to test pre-run command or script and then run the app
             var runScript = new ShellScriptBuilder()
-                .AddDefaultTestEnvironmentVariables()
                 .SetEnvironmentVariable(SettingsKeys.EnableDynamicInstall, true.ToString())
-                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"")
+                .SetEnvironmentVariable(FilePaths.PreRunCommandEnvVarName, $"\"touch '{appOutputDir}/_test_file_2.txt' && {preRunScriptPath}\"", true)
                 .AddCommand($"touch {preRunScriptPath}")
                 .AddFileExistsCheck(preRunScriptPath)
                 .AddCommand($"echo \"touch {appOutputDir}/_test_file.txt\" > {preRunScriptPath}")
@@ -152,7 +148,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "dynamic"),
+                _imageHelper.GetRuntimeImage("node", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -173,6 +169,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var nodeVersion = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -204,7 +201,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]

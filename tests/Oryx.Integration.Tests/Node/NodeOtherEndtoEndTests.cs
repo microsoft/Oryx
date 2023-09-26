@@ -39,6 +39,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var manifestDirVolume = DockerVolume.CreateMirror(manifestDirPath);
             var manifestDir = manifestDirVolume.ContainerDir;
             var nodeVersion = NodeVersion;
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -64,7 +65,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -90,6 +91,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = NodeVersion;
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -117,7 +119,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -144,6 +146,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirPath = Directory.CreateDirectory(Path.Combine(_tempRootDir, Guid.NewGuid().ToString("N")))
                 .FullName;
             var nodeVersion = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var appName = "node-nested-nodemodules";
@@ -171,7 +174,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new List<DockerVolume> { appOutputDirVolume, volume }, Settings.LtsVersionsBuildImageName,
                 "/bin/bash",
                 new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[] { "-c", runAppScript },
@@ -193,6 +196,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = NodeVersion;
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -219,7 +223,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -245,6 +249,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = DockerVolume.CreateMirror(appOutputDirPath);
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var nodeVersion = NodeVersion;
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -271,7 +276,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -293,6 +298,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var nodeVersion = NodeVersion;
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -315,7 +321,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -341,6 +347,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // NOTE: this version does not have PM2 installed and so if PM2 was used in the startup script this test
             // will fail.
             var nodeVersion = NodeVersion;
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -365,7 +372,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -387,6 +394,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var nodeVersion = NodeVersion;
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "webfrontend";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -409,7 +417,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -432,6 +440,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "webfrontend-yarnlock";
             var nodeVersion = NodeVersion;
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var startupFilePath = "/tmp/startup.sh";
@@ -448,7 +457,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 volume,
                  "/bin/sh", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh", new[] { "-c", runScript },
                 async (hostPort) =>
@@ -466,6 +475,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "NodeAndTypeScriptHelloWorld";
             var nodeVersion = NodeVersion;
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -486,7 +496,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -509,6 +519,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "lab2-appservice";
             var nodeVersion = NodeVersion;
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -529,7 +540,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -552,6 +563,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "soundcloud-ngrx";
             var nodeVersion = "8.11";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -572,7 +584,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -597,6 +609,7 @@ namespace Microsoft.Oryx.Integration.Tests
             // Arrange
             var appName = "create-react-app-sample";
             var nodeVersion = NodeVersion;
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
@@ -617,7 +630,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", nodeVersion),
+                _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -789,7 +802,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "14"),
+                _imageHelper.GetRuntimeImage("node", NodeVersion, ImageTestHelperConstants.OsTypeDebianBullseye),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -831,7 +844,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("node", "14"),
+                _imageHelper.GetRuntimeImage("node", NodeVersion, ImageTestHelperConstants.OsTypeDebianBullseye),
                 ContainerPort,
                 "/bin/sh",
                 new[]

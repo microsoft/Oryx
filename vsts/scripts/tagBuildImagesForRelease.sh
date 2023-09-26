@@ -55,6 +55,7 @@ tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:azfunc-jamstack-debian-bu
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-debian-stretch-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-debian-stretch" "github-actions-debian-stretch-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-debian-buster" "github-actions-debian-buster-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-debian-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-debian-bullseye" "github-actions-debian-bullseye-$RELEASE_TAG_NAME"
+tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:github-actions-debian-bookworm-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "github-actions-debian-bookworm" "github-actions-debian-bookworm-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-ubuntu-focal-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso-ubuntu-focal" "vso-ubuntu-focal-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:vso-debian-bullseye-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "vso-debian-bullseye" "vso-debian-bullseye-$RELEASE_TAG_NAME"
 tagBuildImage "oryxdevmcr.azurecr.io/public/oryx/build:full-debian-buster-$BUILD_DEFINITIONNAME.$RELEASE_TAG_NAME" "full-debian-buster" "full-debian-buster-$RELEASE_TAG_NAME"

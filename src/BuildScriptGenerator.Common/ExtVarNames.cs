@@ -29,5 +29,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string PythonGunicornConfigPathEnvVarName = "PYTHON_USE_GUNICORN_CONFIG_FROM_PATH";
         public const string PythonGunicornCustomWorkerNum = "PYTHON_GUNICORN_CUSTOM_WORKER_NUM";
         public const string PythonGunicornCustomThreadNum = "PYTHON_GUNICORN_CUSTOM_THREAD_NUM";
+        public const string NginxConfFile = "NGINX_CONF_FILE";
     }
 }
