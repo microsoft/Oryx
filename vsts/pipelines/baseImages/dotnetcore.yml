@@ -1,8 +1,13 @@
 variables:
-    ascName: oryx-automation-service-principal
-    acrName: oryxdevmcr.azurecr.io
-    skipComponentGovernanceDetection: true
-    Packaging.EnableSBOMSigning: true
+- group: Oryx
+- name: ascName
+  value: oryx-automation-service-principal
+- name: acrName
+  value: oryxdevmcr.azurecr.io
+- name: skipComponentGovernanceDetection
+  value: true
+- name: Packaging.EnableSBOMSigning
+  value: true
 
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
@@ -23,10 +28,20 @@ jobs:
     artifactsFileName: dotnetcore-runtimeimage-bases-bullseye.txt
     jobName: Build_DotNetCore_BaseImage_Bullseye
 
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build DotNetCore runtime bookworm base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: dotnetcore
+    imageDebianFlavor: bookworm
+    artifactsFileName: dotnetcore-runtimeimage-bases-bookworm.txt
+    jobName: Build_DotNetCore_BaseImage_Bookworm
+
 - job: Release_DotNetCoreRuntimeBaseImage
   dependsOn: 
     - Build_DotNetCore_BaseImage_Buster
     - Build_DotNetCore_BaseImage_Bullseye
+    - Build_DotNetCore_BaseImage_Bookworm
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

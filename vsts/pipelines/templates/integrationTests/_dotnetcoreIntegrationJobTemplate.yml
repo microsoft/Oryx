@@ -21,6 +21,8 @@ parameters:
         buildTag: 'github-actions-debian-stretch'
       - category: '7.0'
         buildTag: 'github-actions-debian-buster'
+      - category: '8.0'
+        buildTag: 'github-actions-debian-bookworm'
       - category: 'dynamic'
         buildTag: 'debian-stretch'
       - category: 'dynamic'
