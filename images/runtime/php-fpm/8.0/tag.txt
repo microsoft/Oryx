@@ -1,1 +1,1 @@
-php:8.0-fpm-debian-buster
+php:8.0-fpm

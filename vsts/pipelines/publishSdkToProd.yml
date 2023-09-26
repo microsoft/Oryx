@@ -21,7 +21,7 @@ stages:
       - task: UseDotNet@2
         displayName: 'Use .NET Core sdk 7.x'
         inputs:
-          version: 7.x
+          version: 7.0.306
 
       - task: ShellScript@2
         displayName: '(Dry run) Publish SDKs from dev to prod storage account'
@@ -56,7 +56,7 @@ stages:
             - task: UseDotNet@2
               displayName: 'Use .NET Core sdk 7.x'
               inputs:
-                version: 7.x
+                version: 7.0.306
 
             - task: ShellScript@2
               displayName: 'Publish SDKs from dev to prod storage account'

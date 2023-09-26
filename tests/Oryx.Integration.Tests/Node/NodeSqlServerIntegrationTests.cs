@@ -43,9 +43,11 @@ namespace Microsoft.Oryx.Integration.Tests
             await Run_NodeApp_MicrosoftSqlServerDBAsync(ImageTestHelperConstants.LatestStretchTag);
         }
 
-        private async Task Run_NodeApp_MicrosoftSqlServerDBAsync(string imageTag)
+        private async Task Run_NodeApp_MicrosoftSqlServerDBAsync(string buildImageTag)
         {
             // Arrange
+            var version = "14";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "node-mssql";
             var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
             var volume = DockerVolume.CreateMirror(hostDir);
@@ -54,16 +56,17 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand($"oryx create-script -appPath {appDir} -bindPort {ContainerPort}")
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
-            List<EnvironmentVariable> buildEnvVariableList = GetEnvironmentVariableList();
-
+            List<EnvironmentVariable> buildEnvVariableList = SqlServerDbTestHelper.GetEnvironmentVariables();
+            buildEnvVariableList.AddTestStorageAccountEnvironmentVariables();
+            
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
                 _output,
                 new List<DockerVolume> { volume },
-                _imageHelper.GetBuildImage(imageTag),
+                _imageHelper.GetBuildImage(buildImageTag),
                 "oryx",
-                new[] { "build", appDir, "--platform", "nodejs", "--platform-version", "14" },
-                _imageHelper.GetRuntimeImage("node", "14"),
+                new[] { "build", appDir, "--platform", "nodejs", "--platform-version", version },
+                _imageHelper.GetRuntimeImage("node", version, osType),
                 buildEnvVariableList,
                 ContainerPort,
                 "/bin/bash",
@@ -82,31 +85,5 @@ namespace Microsoft.Oryx.Integration.Tests
                         ignoreWhiteSpaceDifferences: true);
                 });
         }
-
-        protected string GetKeyVaultSecretValue(string keyVaultUri, string secretName)
-        {
-            var client = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
-            var sasToken = client.GetSecret(secretName).Value.Value;
-            return sasToken;
-        }
-        
-        private List<EnvironmentVariable> GetEnvironmentVariableList()
-        {
-            List<EnvironmentVariable> envVariableList = SqlServerDbTestHelper.GetEnvironmentVariables();
-            var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
-            var sdkStorageUrl = string.IsNullOrEmpty(testStorageAccountUrl) ? SdkStorageConstants.PrivateStagingSdkStorageBaseUrl : testStorageAccountUrl;
-
-            envVariableList.Add(new EnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, sdkStorageUrl));
-
-            if (sdkStorageUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
-            {
-                string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) ?? 
-                    this.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
-                envVariableList.Add(new EnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken));
-            }
-
-            return envVariableList;
-        }
-
     }
 }

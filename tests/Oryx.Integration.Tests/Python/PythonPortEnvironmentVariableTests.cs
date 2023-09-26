@@ -25,6 +25,8 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task PythonStartupScript_UsesPortEnvironmentVariableValueAsync()
         {
             // Arrange
+            var version = "3.7";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -32,7 +34,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-               $"--platform {PythonConstants.PlatformName} --platform-version 3.7")
+               $"--platform {PythonConstants.PlatformName} --platform-version {version}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT={ContainerPort}")
@@ -50,7 +52,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", version, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[]
@@ -80,6 +82,8 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task PythonStartupScript_UsesSuppliedBindingPort_EvenIfPortEnvironmentVariableValue_IsPresentAsync()
         {
             // Arrange
+            var version = "3.7";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -87,7 +91,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var buildScript = new ShellScriptBuilder()
                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-               $"--platform {PythonConstants.PlatformName} --platform-version 3.7")
+               $"--platform {PythonConstants.PlatformName} --platform-version {version}")
                .ToString();
             var runScript = new ShellScriptBuilder()
                 .AddCommand($"export PORT=9095")
@@ -105,7 +109,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", "3.7"),
+                _imageHelper.GetRuntimeImage("python", version, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[]

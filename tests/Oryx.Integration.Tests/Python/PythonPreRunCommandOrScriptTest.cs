@@ -73,7 +73,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", "dynamic"),
+                _imageHelper.GetRuntimeImage("python", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -138,7 +138,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", "dynamic"),
+                _imageHelper.GetRuntimeImage("python", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 ContainerPort,
                 "/bin/bash",
                 new[] { "-c", runScript },
@@ -156,6 +156,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var version = "3.8";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var appName = "flask-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -186,7 +187,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildScript
                 },
-                _imageHelper.GetRuntimeImage("python", version),
+                _imageHelper.GetRuntimeImage("python", version, osType),
                 ContainerPort,
                 "/bin/bash",
                 new[]

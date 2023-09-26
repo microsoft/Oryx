@@ -16,7 +16,7 @@ on:
         description: 'The platform name should be all lowercase'
 
 env:
-  MAX_RETRIES: 10
+  MAX_RETRIES: 15
   TIMEOUT_SECONDS: 900
   ORYX_SDK_STORAGE_BASE_URL: ${{ vars.ORYX_SDK_STORAGE_BASE_URL }}
   DOTNET_MIN_RELEASE_VERSION: ${{ vars.DOTNET_MIN_RELEASE_VERSION }}
@@ -25,6 +25,7 @@ env:
   PYTHON_MIN_RELEASE_VERSION: ${{ vars.PYTHON_MIN_RELEASE_VERSION }}
   PYTHON_MAX_RELEASE_VERSION: ${{ vars.PYTHON_MAX_RELEASE_VERSION }}
   PYTHON_BLOCKED_VERSIONS_ARRAY: ${{ vars.PYTHON_BLOCKED_VERSIONS_ARRAY }}
+  ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: ${{ secrets.ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -41,7 +42,6 @@ jobs:
           declare -A platformNamesAsInBasePipeline
           platformNamesAsInBasePipeline=( ["dotnet"]="DotNetCore" ["python"]="Python" )
           echo "PLATFORM_NAME_CAMEL_CASE=${platformNamesAsInBasePipeline[${{ inputs.platformName }}]}" >> $GITHUB_ENV
-          printenv
 
       - name: Run SDK Automation
         run: |
