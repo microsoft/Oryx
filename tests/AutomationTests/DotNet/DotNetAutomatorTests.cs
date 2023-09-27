@@ -49,7 +49,6 @@ namespace Microsoft.Oryx.Automation.DotNet.Tests
         {
             // Arrange
             var versionService = new VersionService();
-            var dotNetAutomator = new DotNetAutomator(this.httpService, versionService, this.fileService, this.yamlFileService);
             var expected = new List<DotNetVersion>()
             {
                 new DotNetVersion()
@@ -150,6 +149,8 @@ namespace Microsoft.Oryx.Automation.DotNet.Tests
     ]
 }";
             Mock.Get(this.httpService).Setup(x => x.GetDataAsync("https://mock-test-url/dotnet/release-metadata/8.0/releases.json")).ReturnsAsync(DotnetEightPreReleaseReleaseJsonMock);
+            var dotNetAutomator = new DotNetAutomator(this.httpService, versionService, this.fileService, this.yamlFileService);
+
             // Act
             await dotNetAutomator.InitializeFieldsAsync();
             var actual = await dotNetAutomator.GetNewDotNetVersionsAsync();

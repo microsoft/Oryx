@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.Automation.Services
         public bool IsVersionWithinRange(string version, string minVersion = null, string maxVersion = null, List<string> blockedVersions = null)
         {
             // Try to parse the version string into a SemanticVersion object and ignores pre-releases that are not dotnet 8
+            // Block pre release once stabled. Workitem: https://devdiv.visualstudio.com/DevDiv/_workitems/edit/1891562
             if (!SemanticVersion.TryParse(version, out var semanticVersion) ||
                 (semanticVersion.IsPrerelease && (semanticVersion.Major != 8)))
             {
