@@ -119,5 +119,4 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && ln -s $PYTHON38_VERSION latest \
     && ln -s $PYTHON38_VERSION stable \
     && echo "jamstack" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
