@@ -53,7 +53,7 @@ namespace Microsoft.Oryx.SharedCodeGenerator.Outputs
             if (this.collection.ListConstants?.Any() ?? false)
             {
                 // exclude runtime versions constants lists, as they will just overwrite each other in shell
-                foreach (var constant in this.collection.ListConstants.Where(c => !c.Key.Equals("runtime-versions")))
+                foreach (var constant in this.collection.ListConstants.Where(c => !c.Key.Equals("runtime-versions") && !c.Key.Equals("fpm-runtime-versions")))
                 {
                     string name = constant.Key.Replace(ConstantCollection.NameSeparator[0], '_').ToUpper();
                     var value = constant.Value.Count != 0
