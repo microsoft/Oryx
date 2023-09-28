@@ -52,13 +52,7 @@ namespace Microsoft.Oryx.Automation.DotNet
 
         public async Task RunAsync()
         {
-            string oryxSdkStorageBaseUrl = Environment.GetEnvironmentVariable(Constants.OryxSdkStorageBaseUrlEnvVar);
-            string sdkVersionsUrl = SdkStorageHelper.GetSdkStorageUrl(oryxSdkStorageBaseUrl, DotNetConstants.DotNetSuffixUrl);
-            this.oryxDotNetSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(sdkVersionsUrl);
-            this.dotNetMinReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMinReleaseVersionEnvVar);
-            this.dotNetMaxReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMaxReleaseVersionEnvVar);
-            string blockedVersions = Environment.GetEnvironmentVariable(DotNetConstants.DotNetBlockedVersionsEnvVar);
-            this.dotNetBlockedVersions = SdkStorageHelper.ExtractBlockedVersions(blockedVersions);
+            await this.InitializeFieldsAsync();
 
             List<DotNetVersion> newDotNetVersions = await this.GetNewDotNetVersionsAsync();
             if (newDotNetVersions.Count > 0)
@@ -67,6 +61,17 @@ namespace Microsoft.Oryx.Automation.DotNet
                 List<ConstantsYamlFile> yamlConstantsObjs = await this.yamlFileService.ReadConstantsYamlFileAsync(constantsYamlSubPath);
                 this.UpdateOryxConstantsForNewVersions(newDotNetVersions, yamlConstantsObjs);
             }
+        }
+
+        public async Task InitializeFieldsAsync()
+        {
+            string oryxSdkStorageBaseUrl = Environment.GetEnvironmentVariable(Constants.OryxSdkStorageBaseUrlEnvVar);
+            string sdkVersionsUrl = SdkStorageHelper.GetSdkStorageUrl(oryxSdkStorageBaseUrl, DotNetConstants.DotNetSuffixUrl);
+            this.oryxDotNetSdkVersions = await this.httpService.GetOryxSdkVersionsAsync(sdkVersionsUrl);
+            this.dotNetMinReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMinReleaseVersionEnvVar);
+            this.dotNetMaxReleaseVersion = Environment.GetEnvironmentVariable(DotNetConstants.DotNetMaxReleaseVersionEnvVar);
+            string blockedVersions = Environment.GetEnvironmentVariable(DotNetConstants.DotNetBlockedVersionsEnvVar);
+            this.dotNetBlockedVersions = SdkStorageHelper.ExtractBlockedVersions(blockedVersions);
         }
 
         /// <summary>
