@@ -79,7 +79,7 @@ jobs:
         with:
           branch: automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
           title: New ${{ env.PLATFORM_NAME_CAMEL_CASE }} Sdks ${{ env.RELEASE_DATE }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TEMP }}
 
       
       - if: ${{ env.CANCEL_WORKFLOW == 0 }}
