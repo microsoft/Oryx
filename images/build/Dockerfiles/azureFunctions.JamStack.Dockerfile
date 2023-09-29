@@ -17,8 +17,8 @@ ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
 # stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror
 RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
         sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
-        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
-        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
+        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.kernel.org\/debian-archive\/debian-security stretch/g' /etc/apt/sources.list \
+        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.kernel.org\/debian-archive\/debian stretch/g' /etc/apt/sources.list ; \
     fi
 
 RUN set -ex \
@@ -72,7 +72,7 @@ ARG BUILD_DIR="/opt/tmp/build"
 
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
     && yarnCacheFolder="/usr/local/share/yarn-cache" \
     && mkdir -p $yarnCacheFolder \
     && chmod 777 $yarnCacheFolder \
@@ -85,8 +85,7 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && mkdir -p /opt/yarn \
     && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
     && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
-    && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
+    && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
 RUN set -ex \
     && . ${BUILD_DIR}/__nodeVersions.sh \
     && ln -s $YARN_VERSION /opt/yarn/stable \
@@ -99,7 +98,7 @@ RUN set -ex \
   
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
     # Install Python SDKs
     # Upgrade system python
     && PYTHONIOENCODING="UTF-8" \
@@ -120,5 +119,4 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && ln -s $PYTHON38_VERSION latest \
     && ln -s $PYTHON38_VERSION stable \
     && echo "jamstack" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
