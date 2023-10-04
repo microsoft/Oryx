@@ -47,7 +47,12 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
             libxml2 \
         && rm -rf /var/lib/apt/lists/* ; \
     elif [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
-        apt-get update \
+        # Need to create missing sources.list file for builder case
+        cat > /etc/apt/sources.list \
+        && echo "deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware" >> /etc/apt/sources.list \
+        && echo "deb http://deb.debian.org/debian bookworm-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list \
+        && echo "deb http://deb.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list \
+        && apt-get update \
         && apt-get install -y --no-install-recommends \
             libicu72 \
             libcurl4 \
