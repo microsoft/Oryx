@@ -9,7 +9,6 @@ STAGING_STORAGE_SAS_TOKEN_KEYVAULT_SECRET_NAME='ORYX-SDK-STAGING-PRIVATE-SAS-TOK
 PRIVATE_STAGING_SDK_STORAGE_BASE_URL='https://oryxsdksstaging.blob.core.windows.net'
 DEV_SDK_STORAGE_BASE_URL='https://oryxsdksdev.blob.core.windows.net'
 SANDBOX_SDK_STORAGE_BASE_URL='https://oryxsdkssandbox.blob.core.windows.net'
-PRIVATE_SDK_STORAGE_BASE_URL='https://oryxsdksprivate.blob.core.windows.net'
 PROD_SDK_STORAGE_BASE_URL='https://oryxsdksprod.blob.core.windows.net'
 PROD_BACKUP_SDK_STORAGE_BASE_URL='https://oryxsdksprodbackup.blob.core.windows.net'
 PROD_SDK_CDN_STORAGE_BASE_URL='https://oryx-cdn.microsoft.io'

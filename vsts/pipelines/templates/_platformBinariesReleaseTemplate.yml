@@ -23,7 +23,6 @@ steps:
     ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
     SANDBOX_STORAGE_SAS_TOKEN: $(SANDBOX-STORAGE-SAS-TOKEN)
     PERSONAL_STORAGE_SAS_TOKEN: $(${{ upper(parameters.destinationSdkStorageAccountName) }}-PERSONAL-STORAGE-SAS-TOKEN)
-    PRIVATE_STORAGE_SAS_TOKEN: $(ORYX-SDK-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./vsts/scripts/publishFilesToAzureStorage.sh
     args: ${{ parameters.destinationSdkStorageAccountName }}
