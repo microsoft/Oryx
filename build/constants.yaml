@@ -473,7 +473,9 @@
 - name: staging-runtime-constants
   constants:
     dotnetcore-staging-runtime-versions:
-      -
+      - 6.0
+      - 7.0 
+      - 8.0
     python-staging-runtime-versions:
       -
     node-staging-runtime-versions:
