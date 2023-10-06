@@ -24,7 +24,7 @@ declare -r DOTNET_VERSION_PLACEHOLDER="%DOTNET_VERSION%"
 
 # Please make sure that any changes to debian flavors supported here are also reflected in build/constants.yaml
 declare -r NETCORE_BOOKWORM_VERSION_ARRAY=($NET_CORE_APP_80)
-declare -r NETCORE_BULLSEYE_VERSION_ARRAY=($NET_CORE_APP_31 $NET_CORE_APP_60 $NET_CORE_APP_70)
+declare -r NETCORE_BULLSEYE_VERSION_ARRAY=($NET_CORE_APP_31)
 declare -r NETCORE_BUSTER_VERSION_ARRAY=($NET_CORE_APP_30 $NET_CORE_APP_31 $NET_CORE_APP_50 $NET_CORE_APP_60 $NET_CORE_APP_70)
 
 cd $DIR
@@ -54,9 +54,7 @@ do
 	sed -i "s|$RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER|$RUNTIME_BASE_IMAGE_TAG|g" "$TARGET_DOCKERFILE"
 	sed -i "s|$DOTNET_VERSION_PLACEHOLDER|$VERSION_DIRECTORY|g" "$TARGET_DOCKERFILE"
 
-	# Added the [ "$ImageDebianFlavor" != "bullseye" ] condition to avoid creating bullseye images from `staging/oryx` repo.
-	# This is a temporary change only to release the dotnet 6,7,8 privately.
-	if [ shouldStageRuntimeVersion "dotnetcore" $VERSION_DIRECTORY ] && [ "$ImageDebianFlavor" != "bullseye" ] ; then
+	if shouldStageRuntimeVersion "dotnetcore" $VERSION_DIRECTORY ; then
 		sed -i "s|$BASE_IMAGE_REPO_PLACEHOLDER|$BASE_IMAGES_STAGING_REPO|g" "$TARGET_DOCKERFILE"
 	else
 		sed -i "s|$BASE_IMAGE_REPO_PLACEHOLDER|mcr.microsoft.com/oryx/base|g" "$TARGET_DOCKERFILE"

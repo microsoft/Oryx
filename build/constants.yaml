@@ -53,9 +53,7 @@
       - 3.1-debian-bullseye
       - 3.1-debian-buster
       - 5.0-debian-buster
-      - 6.0-debian-bullseye
       - 6.0-debian-buster
-      - 7.0-debian-bullseye
       - 7.0-debian-buster
       - 8.0-debian-bookworm
       - dynamic-debian-buster
