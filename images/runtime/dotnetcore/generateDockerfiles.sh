@@ -54,7 +54,9 @@ do
 	sed -i "s|$RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER|$RUNTIME_BASE_IMAGE_TAG|g" "$TARGET_DOCKERFILE"
 	sed -i "s|$DOTNET_VERSION_PLACEHOLDER|$VERSION_DIRECTORY|g" "$TARGET_DOCKERFILE"
 
-	if shouldStageRuntimeVersion "dotnetcore" $VERSION_DIRECTORY ; then
+	# Added the [ "$ImageDebianFlavor" != "bullseye" ] condition to avoid creating bullseye images from `staging/oryx` repo.
+	# This is a temporary change only to release the dotnet 6,7,8 privately.
+	if [ shouldStageRuntimeVersion "dotnetcore" $VERSION_DIRECTORY ] && [ "$ImageDebianFlavor" != "bullseye" ] ; then
 		sed -i "s|$BASE_IMAGE_REPO_PLACEHOLDER|$BASE_IMAGES_STAGING_REPO|g" "$TARGET_DOCKERFILE"
 	else
 		sed -i "s|$BASE_IMAGE_REPO_PLACEHOLDER|mcr.microsoft.com/oryx/base|g" "$TARGET_DOCKERFILE"
