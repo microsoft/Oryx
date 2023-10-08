@@ -44,10 +44,10 @@
     dot-net-core-31-sdk-version: 3.1.426
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.408
-    dot-net-60-sdk-version: 6.0.412
+    dot-net-60-sdk-version: 6.0.415
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.306
-    dot-net-80-sdk-version: 8.0.100-rc.1.23463.5
+    dot-net-70-sdk-version: 7.0.402
+    dot-net-80-sdk-version: 8.0.100-rc.2.23502.2
     runtime-versions:
       - 3.0-debian-buster
       - 3.1-debian-bullseye
