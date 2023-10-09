@@ -25,7 +25,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.9")]
         [InlineData("3.9")]
         [InlineData("3.10")]
-        public void PythonBusterRuntimeImage_Contains_VersionAndCommit_Information(string version, string osType)
+        public void PythonBusterRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
             // so we should check agent_os environment variable to know if the build is happening in azure devops agent
@@ -67,7 +67,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.9")]
         [InlineData("3.10")]
         [InlineData("3.11")]
-        public void PythonBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version, string osType)
+        public void PythonBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
             // so we should check agent_os environment variable to know if the build is happening in azure devops agent

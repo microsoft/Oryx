@@ -359,7 +359,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, ImageTestHelperConstants.OsTypeDebianBuster),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
@@ -411,7 +411,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 .ToString();
 
             await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, ImageTestHelperConstants.OsTypeDebianBullseye),
                 output: _output,
                 volumes: new List<DockerVolume> { volume },
                 environmentVariables: null,
