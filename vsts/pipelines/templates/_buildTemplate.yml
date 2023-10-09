@@ -92,31 +92,14 @@ steps:
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
 
 - task: ShellScript@2
-  displayName: 'Build Buster runtime images'
+  displayName: 'Build runtime images'
   env:
     ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/buildRunTimeImages.sh
-    args: -s $(storageAccountUrl) buster
+    args: -s $(storageAccountUrl) ${{ parameters.imageType }}
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
-- task: ShellScript@2
-  displayName: 'Build Bullseye runtime images'
-  env:
-    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
-  inputs:
-    scriptPath: ./build/buildRunTimeImages.sh
-    args: -s $(storageAccountUrl) bullseye 
-  condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
-
-- task: ShellScript@2
-  displayName: 'Build Bookworm runtime images'
-  env:
-    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
-  inputs:
-    scriptPath: ./build/buildRunTimeImages.sh
-    args: -s $(storageAccountUrl) bookworm 
-  condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - script: |
     docker images && docker system prune -f && df -h && echo
@@ -151,7 +134,7 @@ steps:
     ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   inputs:
     scriptPath: ./build/testRunTimeImages.sh
-    args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME)
+    args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME) category=runtime-${{ parameters.imageType }}
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
 
 - task: DownloadBuildArtifacts@0

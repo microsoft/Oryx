@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "latest")]
         [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
-        public void GeneratesScript_AndBuilds_Shapely_With_Python(string version, string osType)
+        public void GeneratesScript_AndBuilds_Shapely_With_Python(string version)
         {
             // Arrange
             var appName = "shapely-flask-app";
