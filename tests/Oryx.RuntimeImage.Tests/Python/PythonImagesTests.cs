@@ -107,7 +107,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.8")]
         [InlineData("3.9")]
         [InlineData("3.10")]
-        public void JamSpell_CanBe_InstalledInBusterTheRunTimeImage(string version)
+        public void JamSpell_CanBe_InstalledInBusterRunTimeImage(string version)
         {
             // Arrange
             var expectedPackage = "jamspell";
@@ -137,7 +137,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.9")]
         [InlineData("3.10")]
         [InlineData("3.11")]
-        public void JamSpell_CanBe_InstalledInBullseyeTheRunTimeImage(string version)
+        public void JamSpell_CanBe_InstalledInBullseyeRunTimeImage(string version)
         {
             // Arrange
             var expectedPackage = "jamspell";
@@ -161,34 +161,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("3.7", "Python " + PythonVersions.Python37Version)]
-        [InlineData("3.8", "Python " + PythonVersions.Python38Version)]
-        [InlineData("3.9", "Python " + PythonVersions.Python39Version)]
-        [InlineData("3.10", "Python " + PythonVersions.Python310Version)]
-        [Trait(TestConstants.Category, TestConstants.Release)]
-        public void PythonVersionMatchesBusterImageName(string pythonVersion, string expectedOutput)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("python", pythonVersion, ImageTestHelperConstants.OsTypeDebianBuster),
-                CommandToExecuteOnRun = "python",
-                CommandArguments = new[] { "--version" }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
         [Trait("category", "runtime-bullseye")]
         [InlineData("3.7", "Python " + PythonVersions.Python37Version)]
         [InlineData("3.8", "Python " + PythonVersions.Python38Version)]
@@ -230,35 +202,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = _imageHelper.GetRuntimeImage("python", pythonVersion, ImageTestHelperConstants.OsTypeDebianBuster),
-                CommandToExecuteOnRun = "python",
-                CommandArguments = new[] { "--version" }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedOutput, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
-        [Trait("category", "runtime-bullseye")]
-        [InlineData("3.7", "Python " + PythonVersions.Python37Version)]
-        [InlineData("3.8", "Python " + PythonVersions.Python38Version)]
-        [InlineData("3.9", "Python " + PythonVersions.Python39Version)]
-        [InlineData("3.10", "Python " + PythonVersions.Python310Version)]
-        [InlineData("3.11", "Python " + PythonVersions.Python311Version)]
-        [Trait(TestConstants.Category, TestConstants.Release)]
-        public void PythonVersionMatchesBullseyeImageName(string pythonVersion, string expectedOutput)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("python", pythonVersion, ImageTestHelperConstants.OsTypeDebianBullseye),
                 CommandToExecuteOnRun = "python",
                 CommandArguments = new[] { "--version" }
             });
