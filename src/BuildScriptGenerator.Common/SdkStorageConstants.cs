@@ -13,7 +13,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string PrivateStagingSdkStorageBaseUrl = "https://oryxsdksstaging.blob.core.windows.net";
         public const string DevSdkStorageBaseUrl = "https://oryxsdksdev.blob.core.windows.net";
         public const string SandboxSdkStorageBaseUrl = "https://oryxsdkssandbox.blob.core.windows.net";
-        public const string PrivateSdkStorageBaseUrl = "https://oryxsdksprivate.blob.core.windows.net";
         public const string ProdSdkStorageBaseUrl = "https://oryxsdksprod.blob.core.windows.net";
         public const string ProdBackupSdkStorageBaseUrl = "https://oryxsdksprodbackup.blob.core.windows.net";
         public const string ProdSdkCdnStorageBaseUrl = "https://oryx-cdn.microsoft.io";

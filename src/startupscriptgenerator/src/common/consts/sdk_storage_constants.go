@@ -11,7 +11,6 @@ const StagingStorageSasTokenKeyvaultSecretName string = "ORYX-SDK-STAGING-PRIVAT
 const PrivateStagingSdkStorageBaseUrl string = "https://oryxsdksstaging.blob.core.windows.net"
 const DevSdkStorageBaseUrl string = "https://oryxsdksdev.blob.core.windows.net"
 const SandboxSdkStorageBaseUrl string = "https://oryxsdkssandbox.blob.core.windows.net"
-const PrivateSdkStorageBaseUrl string = "https://oryxsdksprivate.blob.core.windows.net"
 const ProdSdkStorageBaseUrl string = "https://oryxsdksprod.blob.core.windows.net"
 const ProdBackupSdkStorageBaseUrl string = "https://oryxsdksprodbackup.blob.core.windows.net"
 const ProdSdkCdnStorageBaseUrl string = "https://oryx-cdn.microsoft.io"
