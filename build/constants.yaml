@@ -27,14 +27,14 @@
     python-gunicorn-custom-thread-num: PYTHON_GUNICORN_CUSTOM_THREAD_NUM
     nginx-conf-file: NGINX_CONF_FILE
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator.Common
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: shell
-      directory: build
-      file-name-prefix: __
-    - type: go
-      directory: src/startupscriptgenerator/src/common/consts
+  - type: csharp
+    directory: src/BuildScriptGenerator.Common
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+  - type: shell
+    directory: build
+    file-name-prefix: __
+  - type: go
+    directory: src/startupscriptgenerator/src/common/consts
 - name: dot-net-core-sdk-versions
   constants:
     dot-net-core-11-sdk-version: 1.1.14
@@ -44,28 +44,28 @@
     dot-net-core-31-sdk-version: 3.1.426
     dot-net-core-50-sdk-version: 5.0.302
     dot-net-50-sdk-version: 5.0.408
-    dot-net-60-sdk-version: 6.0.412
+    dot-net-60-sdk-version: 6.0.415
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.306
-    dot-net-80-sdk-version: 8.0.100-rc.1.23463.5
+    dot-net-70-sdk-version: 7.0.402
+    dot-net-80-sdk-version: 8.0.100-rc.2.23502.2
     runtime-versions:
-      - 3.0-debian-buster
-      - 3.1-debian-bullseye
-      - 3.1-debian-buster
-      - 5.0-debian-buster
-      - 6.0-debian-bullseye
-      - 6.0-debian-buster
-      - 7.0-debian-bullseye
-      - 7.0-debian-buster
-      - 8.0-debian-bookworm
-      - dynamic-debian-buster
+    - 3.0-debian-buster
+    - 3.1-debian-bullseye
+    - 3.1-debian-buster
+    - 5.0-debian-buster
+    - 6.0-debian-bullseye
+    - 6.0-debian-buster
+    - 7.0-debian-bullseye
+    - 7.0-debian-buster
+    - 8.0-debian-bookworm
+    - dynamic-debian-buster
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator/DotNetCore
-      namespace: Microsoft.Oryx.BuildScriptGenerator.DotNetCore
-    - type: shell
-      directory: build
-      file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator/DotNetCore
+    namespace: Microsoft.Oryx.BuildScriptGenerator.DotNetCore
+  - type: shell
+    directory: build
+    file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
     dot-net-core-runtime-base-tag: 20230930.2
@@ -90,25 +90,25 @@
     net-core-app-50-sha: a9c4784930a977abbc42aff1337dda06ec588c1ec4769a59f9fcab4d5df4fc9efe65f8e61e5433db078f67a94ea2dfe870c32c482a50d4c16283ffacacff4261
     aspnet-core-app-50: 5.0.17
     aspnet-core-app-50-sha: d8e87804e9e86273c6512785bd5a6f0e834ff3f4bbebc11c4fcdf16ab4fdfabd0d981a756955267c1aa9bbeec596de3728ce9b2e6415d2d80daef0d999a5df6d
-    net-core-app-60: 6.0.20
-    net-core-app-60-sha: 3688d7170a59015c36d6a5532db67bc22eff66b3eb0a7fc28e1f425791e27a5f467bc7dc593d7f455d72d08c7d27bfcc92b3c8bd30ec3c7c583a8aa82b5afbac
-    aspnet-core-app-60: 6.0.20
-    aspnet-core-app-60-sha: 891bad6a52a7bcd5afa2a784fe68044d282f6d53fedab4bde6dff8d7d2138a484e947f7a6be156094324b37e9d7e07e87a67622bcf2ea197c2924389edd1d185
-    net-core-app-70: 7.0.9
-    net-core-app-70-sha: 09552e5ae6ac014dadf17545ff0a30ab32921075a31fb33e7be148c13078e30d097f592ffa1b8d306563aaa3f6302e40c5c0ba815c1473bbd5d72e3bef55d91e
-    aspnet-core-app-70: 7.0.9
-    aspnet-core-app-70-sha: aabf4fa5ca726dc52774e5d644800ef7477815b22a982b7a2752dec6569186aabca93d5386e195e7ead377144601a786ae6a5d76ff28435bdabfad495cfe554b
-    net-core-app-80: 8.0.0-rc.1.23419.4
-    net-core-app-80-sha: 53938ec3aa4353cfb760d22faa850821b54a53fdd864c4969f48caa6b718ba207162b04a196e85543947acb7d3e719982edad1420b76198562051846f51b1b5c
-    aspnet-core-app-80: 8.0.0-rc.1.23421.29
-    aspnet-core-app-80-sha: d5f9e7bffbf2b48b26a317dd1d78bc866973b4a2cda448cd7a7ee64c0ffaf98fa3c4b8584d32528026674bdfd99f602f0fdac8242176815705e080df83825efa
+    net-core-app-60: 6.0.23
+    net-core-app-60-sha: 8182a852bfcd387343a589b71b0e51197b6b658e42dfa35b2e65ccc23d67677d974b00e748183ce61e9a9123e28ff43c9252d8308236c80679bfed16b6dc65af
+    aspnet-core-app-60: 6.0.23
+    aspnet-core-app-60-sha: c2f0d82fd0dbfdd56c889d435af20f3b1d55850605df892251b4679830dc5b3466c7734912b7073bfca803e5a75a59e929fb36cdc7d4978d7eb0a563da83d08d
+    net-core-app-70: 7.0.12
+    net-core-app-70-sha: 74bea25e88bd917a733a6899a3b3c9ac40c85a64f82dc0f36840714669621716afbb8fec6c3c398b1ffb522c0ed11958862cff5a4be0bf6268188cdb276bc109
+    aspnet-core-app-70: 7.0.12
+    aspnet-core-app-70-sha: 4d5ece3f1c0c74f872f42a98ebd7e448ae2ed09e9fec5f29a5ae2781ff16dc8486064eb43a3aa6e3da5cf2c52745f93319c55cf3de883f82cf8adfcd6a9746d3
+    net-core-app-80: 8.0.0-rc.2.23479.6
+    net-core-app-80-sha: f1565aa5a5a98b3ab2cd92376b0b1bcf4420b6377047bdf2324a7dd86b82f5b4776a2795395bb777a3f7d6f6f9b8dc89721c2fcf93b4c7532b42b263f9fdc828
+    aspnet-core-app-80: 8.0.0-rc.2.23480.2
+    aspnet-core-app-80-sha: 5d8d50498be52ee4c8ae83e9ca82ab947b187f27b56047cc8a09f6ca2ba6bb7532fdd30bc035d518ce636965371f2ed16c9f97398f04d836f4f67b11b5ce50a9
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator/DotNetCore
-      namespace: Microsoft.Oryx.BuildScriptGenerator.DotNetCore
-    - type: shell
-      directory: build
-      file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator/DotNetCore
+    namespace: Microsoft.Oryx.BuildScriptGenerator.DotNetCore
+  - type: shell
+    directory: build
+    file-name-prefix: __
 - name: final-stretch-versions
   constants:
     final-stretch-dot-net-core-31-sdk-version: 3.1.420
@@ -123,12 +123,12 @@
     final-stretch-node14-version: 14.21.3
     final-stretch-node16-version: 16.20.0
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: shell
-      directory: build
-      file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+  - type: shell
+    directory: build
+    file-name-prefix: __
 - name: golang-versions
   constants:
     golang16-version: 1.16.7
@@ -140,12 +140,12 @@
     golang19-version: 1.19.7
     golang19-tar-sha256: 7a75720c9b066ae1750f6bcc7052aba70fa3813f4223199ee2a2315fd3eb533d
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: shell
-      directory: build
-      file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+  - type: shell
+    directory: build
+    file-name-prefix: __
 - name: python-versions
   constants:
     python-runtime-base-tag: 20230901.1
@@ -158,23 +158,23 @@
     python310-version: 3.10.8
     python311-version: 3.11.0
     runtime-versions:
-      - 3.7-debian-bullseye
-      - 3.7-debian-buster
-      - 3.8-debian-bullseye
-      - 3.8-debian-buster
-      - 3.9-debian-bullseye
-      - 3.9-debian-buster
-      - 3.10-debian-bullseye
-      - 3.10-debian-buster
-      - 3.11-debian-bullseye
-      - dynamic-debian-buster
+    - 3.7-debian-bullseye
+    - 3.7-debian-buster
+    - 3.8-debian-bullseye
+    - 3.8-debian-buster
+    - 3.9-debian-bullseye
+    - 3.9-debian-buster
+    - 3.10-debian-bullseye
+    - 3.10-debian-buster
+    - 3.11-debian-bullseye
+    - dynamic-debian-buster
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: shell
-      directory: build
-      file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+  - type: shell
+    directory: build
+    file-name-prefix: __
 - name: php-versions
   constants:
     php-runtime-base-tag: 20230905.2
@@ -214,30 +214,30 @@
     php56-keys: 0BD78B5F97500D450838F95DFE857D9A90D90EC1 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
     php56-tar-sha256: 1369a51eee3995d7fbd1c5342e5cc917760e276d561595b6052b21ace2656d1c
     runtime-versions:
-      - 7.4-debian-bullseye
-      - 7.4-debian-buster
-      - 8.0-debian-bullseye
-      - 8.0-debian-buster
-      - 8.1-debian-bullseye
-      - 8.1-debian-buster
-      - 8.2-debian-bullseye
-      - 8.2-debian-buster
+    - 7.4-debian-bullseye
+    - 7.4-debian-buster
+    - 8.0-debian-bullseye
+    - 8.0-debian-buster
+    - 8.1-debian-bullseye
+    - 8.1-debian-buster
+    - 8.2-debian-bullseye
+    - 8.2-debian-buster
     fpm-runtime-versions:
-      - 7.4-fpm-debian-bullseye
-      - 7.4-fpm-debian-buster
-      - 8.0-fpm-debian-bullseye
-      - 8.0-fpm-debian-buster
-      - 8.1-fpm-debian-bullseye
-      - 8.1-fpm-debian-buster
-      - 8.2-fpm-debian-bullseye
-      - 8.2-fpm-debian-buster
+    - 7.4-fpm-debian-bullseye
+    - 7.4-fpm-debian-buster
+    - 8.0-fpm-debian-bullseye
+    - 8.0-fpm-debian-buster
+    - 8.1-fpm-debian-bullseye
+    - 8.1-fpm-debian-buster
+    - 8.2-fpm-debian-bullseye
+    - 8.2-fpm-debian-buster
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: shell
-      directory: build
-      file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+  - type: shell
+    directory: build
+    file-name-prefix: __
 - name: ruby-versions
   constants:
     gem-version: 3.3.21
@@ -252,20 +252,20 @@
     ruby30-version: 3.0.5
     ruby30-tar-sha256: cf7cb5ba2030fe36596a40980cdecfd79a0337d35860876dc2b10a38675bddde
     runtime-versions:
-      - 2.5-debian-bullseye
-      - 2.5-debian-buster
-      - 2.6-debian-bullseye
-      - 2.6-debian-buster
-      - 2.7-debian-bullseye
-      - 2.7-debian-buster
-      - dynamic-debian-buster
+    - 2.5-debian-bullseye
+    - 2.5-debian-buster
+    - 2.6-debian-bullseye
+    - 2.6-debian-buster
+    - 2.7-debian-bullseye
+    - 2.7-debian-buster
+    - dynamic-debian-buster
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: shell
-      directory: build
-      file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+  - type: shell
+    directory: build
+    file-name-prefix: __
 - name: file-paths
   constants:
     compressed-output-file-name: oryx_output.tar.gz
@@ -282,11 +282,11 @@
     pre-run-command-env-var-name: PRE_RUN_COMMAND
     app-svc-file-name: appsvc.yaml
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator.Common
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: go
-      directory: src/startupscriptgenerator/src/common/consts
+  - type: csharp
+    directory: src/BuildScriptGenerator.Common
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+  - type: go
+    directory: src/startupscriptgenerator/src/common/consts
 - name: os-types
   constants:
     debian-stretch: stretch
@@ -295,11 +295,11 @@
     debian-buster: buster
     ubuntu-focal-scm: focal-scm
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator.Common
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: go
-      directory: src/startupscriptgenerator/src/common/consts
+  - type: csharp
+    directory: src/BuildScriptGenerator.Common
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+  - type: go
+    directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
     node-runtime-base-tag: 20230901.2
@@ -317,19 +317,19 @@
     pm2-version: 4.5.6
     npm-version: 9.6.4
     runtime-versions:
-      - 14-debian-bullseye
-      - 14-debian-buster
-      - 16-debian-bullseye
-      - 16-debian-buster
-      - 18-debian-bullseye
-      - dynamic-debian-buster
+    - 14-debian-bullseye
+    - 14-debian-buster
+    - 16-debian-bullseye
+    - 16-debian-buster
+    - 18-debian-bullseye
+    - dynamic-debian-buster
   outputs:
-    - type: shell
-      directory: build
-      file-name-prefix: __
-    - type: csharp
-      directory: src/BuildScriptGenerator/Node
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Node
+  - type: shell
+    directory: build
+    file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator/Node
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Node
 - name: sdk-storage-constants
   constants:
     enable-dynamic-install-key: ENABLE_DYNAMIC_INSTALL
@@ -357,17 +357,17 @@
     legacy-dotnet-runtime-version-metadata-name: Runtime_version
     os-type-metadata-name: Os_type
   outputs:
-    - type: shell
-      directory: images
-      file-name-prefix: __
-    - type: shell
-      directory: build
-      file-name-prefix: __
-    - type: csharp
-      directory: src/BuildScriptGenerator.Common
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: go
-      directory: src/startupscriptgenerator/src/common/consts
+  - type: shell
+    directory: images
+    file-name-prefix: __
+  - type: shell
+    directory: build
+    file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator.Common
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+  - type: go
+    directory: src/startupscriptgenerator/src/common/consts
 - name: runtime-dynamic-installation-constants
   constants:
     node-installation-dir: /tmp/oryx/nodejs
@@ -377,8 +377,8 @@
     setup-script-location: /tmp/oryx/setupEnv.sh
     ruby-installation-root-dir: /opt/ruby
   outputs:
-    - type: go
-      directory: src/startupscriptgenerator/src/common/consts
+  - type: go
+    directory: src/startupscriptgenerator/src/common/consts
 - name: hugo-constants
   constants:
     version: 0.112.5
@@ -387,52 +387,52 @@
     installation-url-format: https://github.com/gohugoio/hugo/releases/download/v#VERSION#/#TAR_FILE#
     tar-file-name-format: hugo_extended_#VERSION#_Linux-64bit.tar.gz
     toml-file-names:
-      - config.toml
-      - hugo.toml
+    - config.toml
+    - hugo.toml
     yaml-file-names:
-      - config.yaml
-      - hugo.yaml
+    - config.yaml
+    - hugo.yaml
     yml-file-names:
-      - config.yml
-      - hugo.yml
+    - config.yml
+    - hugo.yml
     json-file-names:
-      - config.json
-      - hugo.json
+    - config.json
+    - hugo.json
     config-folder-name: config
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator/Hugo
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Hugo
-    - type: shell
-      directory: build
-      file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator/Hugo
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Hugo
+  - type: shell
+    directory: build
+    file-name-prefix: __
 - name: detector-nuget-packages-versions
   constants:
     version-prefix: 1.0.0
     version-suffix: pre-$(BUILD_BUILDNUMBER)
     version: $(VERSION_PREFIX)-$(VERSION_SUFFIX)
   outputs:
-    - type: msbuild
-      directory: build/detector
-      file-name-prefix: __
+  - type: msbuild
+    directory: build/detector
+    file-name-prefix: __
 - name: detector-nuget-packages-versions
   constants:
     version-prefix: 1.0.0
     version-suffix: '"pre-$BUILD_BUILDNUMBER"'
     version: '"$VERSION_PREFIX-$VERSION_SUFFIX"'
   outputs:
-    - type: shell
-      directory: build/detector
-      file-name-prefix: __
+  - type: shell
+    directory: build/detector
+    file-name-prefix: __
 - name: detector-nuget-packages-versions
   constants:
     version-prefix: 1.0.0
     version-suffix: '"pre-$env:BUILD_BUILDNUMBER"'
     version: '"$VERSION_PREFIX-$VERSION_SUFFIX"'
   outputs:
-    - type: powershell
-      directory: build/detector
-      file-name-prefix: __
+  - type: powershell
+    directory: build/detector
+    file-name-prefix: __
 - name: conda-constants
   constants:
     conda-version: 4.12.0-0
@@ -442,56 +442,56 @@
     default-python2-version: 2.7.15
     default-python2-conda-environment-yml-file-template-name: python2.default.envrionment.yml.template
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator/Python
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Python
-    - type: shell
-      directory: build
-      file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator/Python
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Python
+  - type: shell
+    directory: build
+    file-name-prefix: __
 - name: java-versions
   constants:
     java-version: 17.0.2
     java-version11: 11.0.14
     maven-version: 3.8.5
   outputs:
-    - type: shell
-      directory: build
-      file-name-prefix: __
-    - type: csharp
-      directory: src/BuildScriptGenerator/Java
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Java
+  - type: shell
+    directory: build
+    file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator/Java
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Java
 - name: go-versions
   constants:
     go-version: 1.15.8
   outputs:
-    - type: shell
-      directory: build
-      file-name-prefix: __
-    - type: csharp
-      directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Go
+  - type: shell
+    directory: build
+    file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Go
 - name: staging-runtime-constants
   constants:
     dotnetcore-staging-runtime-versions:
-      -
+    - 
     python-staging-runtime-versions:
-      -
+    - 
     node-staging-runtime-versions:
-      -
+    - 
     java-staging-runtime-versions:
-      -
+    - 
     php-staging-runtime-versions:
-      -
+    - 
     hugo-staging-runtime-versions:
-      -
+    - 
     ruby-staging-runtime-versions:
-      -
+    - 
     golang-staging-runtime-versions:
-      -
+    - 
   outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: shell
-      directory: build
-      file-name-prefix: __
+  - type: csharp
+    directory: src/BuildScriptGenerator
+    namespace: Microsoft.Oryx.BuildScriptGenerator.Common
+  - type: shell
+    directory: build
+    file-name-prefix: __
