@@ -75,7 +75,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
             // Arrange & Act
             var result = _dockerCli.Run(
-                _imageHelper.GetRuntimeImage("php", version,  ImageTestHelperConstants.OsTypeDebianBullseye),
+                _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBullseye),
                 "php",
                 new[] { "--version" }
             );

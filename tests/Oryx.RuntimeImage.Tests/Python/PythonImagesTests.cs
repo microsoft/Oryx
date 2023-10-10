@@ -23,7 +23,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.7")]
         [InlineData("3.8")]
         [InlineData("3.9")]
-        [InlineData("3.9")]
         [InlineData("3.10")]
         public void PythonBusterRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
@@ -64,7 +63,10 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.7")]
         [InlineData("3.8")]
         [InlineData("3.9")]
+<<<<<<< HEAD
         [InlineData("3.9")]
+=======
+>>>>>>> main
         [InlineData("3.10")]
         [InlineData("3.11")]
         public void PythonBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version)

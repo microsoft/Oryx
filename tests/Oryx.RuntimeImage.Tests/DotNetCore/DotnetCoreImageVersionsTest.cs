@@ -129,11 +129,11 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("3.1", ImageTestHelperConstants.OsTypeDebianBullseye, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
-        [InlineData("6.0", ImageTestHelperConstants.OsTypeDebianBullseye, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
-        [InlineData("7.0", ImageTestHelperConstants.OsTypeDebianBullseye, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp70)]
+        [InlineData("3.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
+        [InlineData("6.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
+        [InlineData("7.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp70)]
         [Trait(TestConstants.Category, TestConstants.Release)]
-        public void RuntimeImage_Bullseye_HasExecptedDotNetVersion(string version, string osType, string expectedOutput)
+        public void RuntimeImage_Bullseye_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
