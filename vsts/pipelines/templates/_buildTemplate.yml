@@ -199,11 +199,9 @@ steps:
       AdditionalComponentDetectorArgs: '--DirectoryExclusionList **/SampleApps/**'
 
 - script: |
-    echo "Merging bookworm, bullseye, buster based runtime image tags in one single file"
-    cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.buster.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
-    cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.bullseye.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
-    cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.bookworm.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
-  displayName: 'Merge runtime image tags in one single file'
+    echo "Writing Debian-specific runtime image tags to known file"
+    cat $(Build.ArtifactStagingDirectory)/images/runtime-images-acr.${{ parameters.imageType }}.txt >> '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
+  displayName: 'Writing Debian-specific runtime image tags to known file'
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
 
 - task: PublishTestResults@2
