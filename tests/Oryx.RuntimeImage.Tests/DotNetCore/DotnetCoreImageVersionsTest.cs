@@ -20,6 +20,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
+        [Trait("category", "runtime-bullseye")]
         [InlineData("3.1")]
         public void DotNetCoreBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
@@ -57,6 +58,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
+        [Trait("category", "runtime-buster")]
         [InlineData("3.0")]
         [InlineData("5.0")]
         [InlineData("6.0")]
@@ -97,21 +99,46 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [InlineData("3.0", ImageTestHelperConstants.OsTypeDebianBuster, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30)]
-        [InlineData("3.1", ImageTestHelperConstants.OsTypeDebianBuster, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
-        [InlineData("3.1", ImageTestHelperConstants.OsTypeDebianBullseye, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
-        [InlineData("5.0", ImageTestHelperConstants.OsTypeDebianBuster, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp50)]
-        [InlineData("6.0", ImageTestHelperConstants.OsTypeDebianBuster, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
-        [InlineData("6.0", ImageTestHelperConstants.OsTypeDebianBullseye, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
-        [InlineData("7.0", ImageTestHelperConstants.OsTypeDebianBuster, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp70)]
-        [InlineData("7.0", ImageTestHelperConstants.OsTypeDebianBullseye, "Version: " + DotNetCoreRunTimeVersions.NetCoreApp70)]
+        [Trait("category", "runtime-buster")]
+        [InlineData("3.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp30)]
+        [InlineData("3.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
+        [InlineData("5.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp50)]
+        [InlineData("6.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
+        [InlineData("7.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp70)]
         [Trait(TestConstants.Category, TestConstants.Release)]
-        public void RuntimeImage_HasExecptedDotNetVersion(string version, string osType, string expectedOutput)
+        public void RuntimeImage_Buster_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, osType),
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, ImageTestHelperConstants.OsTypeDebianBuster),
+                CommandToExecuteOnRun = "dotnet",
+                CommandArguments = new[] { "--info" }
+            });
+
+            // Assert
+            var actualOutput = string.Join("", result.StdOut.ReplaceNewLine().Where(c => !char.IsWhiteSpace(c)));
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(string.Join("", expectedOutput.Where(c => !char.IsWhiteSpace(c))), actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [Trait("category", "runtime-bullseye")]
+        [InlineData("3.1", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp31)]
+        [InlineData("6.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
+        [InlineData("7.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp70)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void RuntimeImage_Bullseye_HasExecptedDotNetVersion(string version, string expectedOutput)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, ImageTestHelperConstants.OsTypeDebianBullseye),
                 CommandToExecuteOnRun = "dotnet",
                 CommandArguments = new[] { "--info" }
             });
