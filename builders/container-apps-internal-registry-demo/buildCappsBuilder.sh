@@ -12,7 +12,7 @@ source $REPO_DIR/build/__variables.sh
 destinationFqdn="oryxprodmcr.azurecr.io"
 destinationRepo="public/oryx/builder"
 destinationTag="capps-20230208.1"
-baseBuilderImage="cormtestacr.azurecr.io/oryx/builder:debian-bullseye-20230821.1"
+baseBuilderImage="mcr.microsoft.com/oryx/builder:debian-buster-20230830.1"
 
 PARAMS=""
 while (( "$#" )); do
