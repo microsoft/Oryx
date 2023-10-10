@@ -374,7 +374,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange
-            var version = "3.6.9";
+            var version = PythonVersions.Python39Version;
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -415,7 +415,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_WithPackageDir()
         {
             // Arrange
-            var version = "3.6.9";
+            var version = PythonVersions.Python37Version;
             var appName = "flask-app";
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}" +
                 $"/python/{version}";
