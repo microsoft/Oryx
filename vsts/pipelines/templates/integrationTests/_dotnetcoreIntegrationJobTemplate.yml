@@ -35,7 +35,9 @@ jobs:
     dependsOn:
     - Job_BuildImage_Latest
     - Job_BuildImage_GithubActions
-    - Job_RuntimeImages
+    - Job_Buster_RuntimeImages
+    - Job_Bullseye_RuntimeImages
+    - Job_Bookworm_RuntimeImages
     pool:
       name: AzurePipelines-EO
       demands:

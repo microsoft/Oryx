@@ -18,6 +18,18 @@ namespace Microsoft.Oryx.Tests.Common
             ("16", ImageTestHelperConstants.OsTypeDebianBullseye)
         };
 
+        private readonly static List<(string Version, string OsType)> NodeBusterVersions = new List<(string, string)>
+        {
+            ("14", ImageTestHelperConstants.OsTypeDebianBuster),
+            ("16", ImageTestHelperConstants.OsTypeDebianBuster),
+        };
+
+        private readonly static List<(string Version, string OsType)> NodeBullseyeVersions = new List<(string, string)>
+        {
+            ("14", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("16", ImageTestHelperConstants.OsTypeDebianBullseye)
+        };
+
         private readonly static List<(string Version, string OsType)> PythonVersions = new List<(string, string)>
         {
             ("3.7", ImageTestHelperConstants.OsTypeDebianBuster),
@@ -25,6 +37,20 @@ namespace Microsoft.Oryx.Tests.Common
             ("3.8", ImageTestHelperConstants.OsTypeDebianBuster),
             ("3.8", ImageTestHelperConstants.OsTypeDebianBullseye),
             ("3.9", ImageTestHelperConstants.OsTypeDebianBuster),
+            ("3.9", ImageTestHelperConstants.OsTypeDebianBullseye)
+        };
+
+        private readonly static List<(string Version, string OsType)> PythonBusterVersions = new List<(string, string)>
+        {
+            ("3.7", ImageTestHelperConstants.OsTypeDebianBuster),
+            ("3.8", ImageTestHelperConstants.OsTypeDebianBuster),
+            ("3.9", ImageTestHelperConstants.OsTypeDebianBuster),
+        };
+
+        private readonly static List<(string Version, string OsType)> PythonBullseyeVersions = new List<(string, string)>
+        {
+            ("3.7", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("3.8", ImageTestHelperConstants.OsTypeDebianBullseye),
             ("3.9", ImageTestHelperConstants.OsTypeDebianBullseye)
         };
 
@@ -41,6 +67,28 @@ namespace Microsoft.Oryx.Tests.Common
             return versions.Select(x => new object[] { x.Version, x.OsType });
         }
 
+        public static IEnumerable<object[]> GetBusterNodeVersions_SupportDebugging()
+        {
+            var versions = new List<(string Version, string OsType)>
+            {
+                ("14", ImageTestHelperConstants.OsTypeDebianBuster),
+                ("16", ImageTestHelperConstants.OsTypeDebianBuster)
+            };
+
+            return versions.Select(x => new object[] { x.Version, x.OsType });
+        }
+
+        public static IEnumerable<object[]> GetBullseyeNodeVersions_SupportDebugging()
+        {
+            var versions = new List<(string Version, string OsType)>
+            {
+                ("14", ImageTestHelperConstants.OsTypeDebianBullseye),
+                ("16", ImageTestHelperConstants.OsTypeDebianBullseye)
+            };
+
+            return versions.Select(x => new object[] { x.Version, x.OsType });
+        }
+
         public static IEnumerable<object[]> GetNodeVersions()
         {
             foreach (var x in NodeVersions)
@@ -48,7 +96,23 @@ namespace Microsoft.Oryx.Tests.Common
                 yield return new object[] { x.Version, x.OsType };
             }
         }
-        
+
+        public static IEnumerable<object[]> GetBusterNodeVersions()
+        {
+            foreach (var x in NodeBusterVersions)
+            {
+                yield return new object[] { x.Version, ImageTestHelperConstants.OsTypeDebianBuster };
+            }
+        }
+
+        public static IEnumerable<object[]> GetBullseyeNodeVersions()
+        {
+            foreach (var x in NodeBullseyeVersions)
+            {
+                yield return new object[] { x.Version, ImageTestHelperConstants.OsTypeDebianBullseye };
+            }
+        }
+
         public static IEnumerable<object[]> GetPythonVersions()
         {
             foreach (var x in PythonVersions)
@@ -57,10 +121,38 @@ namespace Microsoft.Oryx.Tests.Common
             }
         }
 
+        public static IEnumerable<object[]> GetBusterPythonVersions()
+        {
+            foreach (var x in PythonBusterVersions)
+            {
+                yield return new object[] { x.Version, ImageTestHelperConstants.OsTypeDebianBuster };
+            }
+        }
+
+        public static IEnumerable<object[]> GetBullseyePythonVersions()
+        {
+            foreach (var x in PythonBullseyeVersions)
+            {
+                yield return new object[] { x.Version, ImageTestHelperConstants.OsTypeDebianBullseye };
+            }
+        }
+
         public static IEnumerable<object[]> GetNodeVersions_SupportPm2()
         {
             return NodeVersions
                 .Select(x => new object[] { x.Version, x.OsType });
+        }
+
+        public static IEnumerable<object[]> GetBusterNodeVersions_SupportPm2()
+        {
+            return NodeBusterVersions
+                .Select(x => new object[] { x.Version, ImageTestHelperConstants.OsTypeDebianBuster });
+        }
+
+        public static IEnumerable<object[]> GetBullseyeNodeVersions_SupportPm2()
+        {
+            return NodeBullseyeVersions
+                .Select(x => new object[] { x.Version, ImageTestHelperConstants.OsTypeDebianBullseye });
         }
     }
 }
