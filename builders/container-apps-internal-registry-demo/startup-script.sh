@@ -3,24 +3,31 @@
 set -e
 
 # Wait for the app source to be uploaded to the blob storage.
-headers = '{"Authorization":"Bearer '$MI_ACCESS_TOKEN'", "x-ms-version":"2019-02-02", "x-ms-date":"'$DATE'"}'
-file_upload_endpoint = "$FILE_UPLOAD_CONTAINER_URL/$FILE_UPLOAD_BLOB_NAME"
+formatted_date=$(date -u +"%a, %d %b %Y %H:%M:%S GMT")
+auth_header="Authorization: Bearer $MI_ACCESS_TOKEN"
+version_header="x-ms-version: 2019-12-12"
+date_header="x-ms-date: $formatted_date"
+file_upload_endpoint="$FILE_UPLOAD_CONTAINER_URL/$FILE_UPLOAD_BLOB_NAME"
+
+temp_app_source_dir="/tmp/appsource"
+temp_app_source_path="$temp_app_source_dir/$FILE_UPLOAD_BLOB_NAME"
+mkdir $temp_app_source_dir
 
 # Send request to delete the blob from the storage account on exit.
-trap 'curl -H '$headers' -X GET "'$file_upload_endpoint'"' EXIT
+# trap 'curl -H '$headers' -X GET "'$file_upload_endpoint'"' EXIT
 
-while [[ ! -f $FILE_UPLOAD_BLOB_NAME || ! "$(file $FILE_UPLOAD_BLOB_NAME)" =~ "compressed data" ]]
+while [[ ! -f "$temp_app_source_path" || ! "$(file $temp_app_source_path)" =~ "compressed data" ]]
 do
   echo "Waiting for app source to be uploaded. Please upload the app source to the endpoint specified in the Build resource's 'uploadEndpoint' property."
-  curl -H $headers -X GET "$file_upload_endpoint" -o $FILE_UPLOAD_BLOB_NAME
-  sleep 10
+  curl -H "$auth_header" -H "$version_header" -H "$date_header" -X GET "$file_upload_endpoint" -o "$temp_app_source_path" -s
+  sleep 5
 done
 
 # Extract app code to CNB_APP_DIR directory.
-echo "Found app source at '$FILE_UPLOAD_BLOB_NAME'. Extracting to $CNB_APP_DIR"
+echo "Found app source at '$temp_app_source_path'. Extracting to $CNB_APP_DIR"
 mkdir -p $CNB_APP_DIR
 cd $CNB_APP_DIR
-tar -xzf "$FILE_UPLOAD_BLOB_NAME"
+tar -xzf "$temp_app_source_path"
 
 # public cert should be in this env var
 ca_pem_decoded=$(printf "%s" "$REGISTRY_HTTP_TLS_CERTIFICATE" | base64 -d)
