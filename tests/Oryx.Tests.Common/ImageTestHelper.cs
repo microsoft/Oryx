@@ -166,7 +166,7 @@ namespace Microsoft.Oryx.Tests.Common
                 case DotNetCoreConstants.RuntimePlatformName:
                     if (StagingRuntimeConstants.DotnetcoreStagingRuntimeVersions.Contains(platformVersion))
                     {
-                        runtimeRepoPrefix.Replace(_defaultRepoPrefix, _defaultStagingRepoPrefix);
+                        runtimeRepoPrefix = runtimeRepoPrefix.Replace(_defaultRepoPrefix, _defaultStagingRepoPrefix);
                     }
                     break;
             }
