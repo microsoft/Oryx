@@ -11,14 +11,12 @@ acrPmeProdRepo="oryxprodmcr"
 sourceBranchName=$BUILD_SOURCEBRANCHNAME
 outFilePmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrPmeProdRepo-runtime-images-mcr.txt"
 sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
-debianBusterSourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.buster.txt"
-debianBullseyeSourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bullseye.txt"
-debianBookwormSourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bookworm.txt"
 
 # Consolidate the different Debian runtime image files into one to be read from
-cat $debianBusterSourceFile >> '$sourceFile'
-cat $debianBullseyeSourceFile >> '$sourceFile'
-cat $debianBookwormSourceFile >> '$sourceFile'
+for FILE in $(find $BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images -name 'runtime-images-acr.*.txt')
+do
+  (cat $FILE; echo) >> '$sourceFile'
+done
 
 if [ -f "$outFilePmeMCR" ]; then
     rm $outFilePmeMCR
@@ -54,7 +52,7 @@ while read sourceImage; do
 
     echo
     echo "Tagging the source image with tag $acrPmeSpecific..."
-    
+
     echo "$acrPmeSpecific">>"$outFilePmeMCR"
     docker tag "$sourceImage" "$acrPmeSpecific"
 
