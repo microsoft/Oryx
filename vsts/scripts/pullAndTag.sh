@@ -128,10 +128,9 @@ if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 		sourceFile="$BUILD_SOURCESDIRECTORY/temp/images/runtime-images-acr.txt"
 
 		# Consolidate the different Debian runtime image files into one to be read from
-		for FILE in $(find $BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images -name 'runtime-images-acr.*.txt')
-		do
-  			(cat $FILE; echo) >> '$sourceFile'
-		done
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.buster.txt"; echo) >> '$sourceFile'
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bullseye.txt"; echo) >> '$sourceFile'
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bookworm.txt"; echo) >> '$sourceFile'
 
 		while read sourceImage; do
   		# Always use specific build number based tag and then use the same tag
