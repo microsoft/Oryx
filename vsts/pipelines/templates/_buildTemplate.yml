@@ -148,7 +148,7 @@ steps:
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/pullAndTag.sh
-    args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt $(System.ArtifactsDirectory)/drop/images/runtime-images-acr.txt
+    args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
 - task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
@@ -224,7 +224,7 @@ steps:
     azureContainerRegistry: ${{ parameters.acrName }}
     command: 'Push an image'
     pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.txt'
+    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.${{ parameters.imageType }}.txt'
     includeLatestTag: false
     enforceDockerNamingConvention: false
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
