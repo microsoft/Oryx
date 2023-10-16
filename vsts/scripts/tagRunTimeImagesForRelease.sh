@@ -12,14 +12,19 @@ sourceBranchName=$BUILD_SOURCEBRANCHNAME
 outFilePmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrPmeProdRepo-runtime-images-mcr.txt"
 sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
 
-for FILE in $(find $BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images -name 'runtime-images-acr.*.txt')
-		do
-			(cat "$FILE"; echo) >> "$sourceFile"
-		done
+echo "Consolidating runtime image files into '$sourceFile' ..."
+
+for FILE in $(find "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images" -name "runtime-images-acr.*.txt")
+do
+  echo "Adding contents of '$FILE' to '$sourceFile'..."
+  (cat "$FILE"; echo) >> "$sourceFile"
+done
 
 if [ -f "$outFilePmeMCR" ]; then
     rm $outFilePmeMCR
 fi
+
+echo "Iterating over previously pushed images defined in new '$sourceFile' file..."
 
 while read sourceImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
