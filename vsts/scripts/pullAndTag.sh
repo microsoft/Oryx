@@ -127,10 +127,10 @@ if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 		# Note: we don't write this file to the drop folder as we don't want this file written to for every integration test job
 		sourceFile="$BUILD_SOURCESDIRECTORY/temp/images/runtime-images-acr.txt"
 
-		# Consolidate the different Debian runtime image files into one to be read from
-		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.buster.txt"; echo) >> '$sourceFile'
-		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bullseye.txt"; echo) >> '$sourceFile'
-		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bookworm.txt"; echo) >> '$sourceFile'
+		for FILE in $(find $BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images -name 'runtime-images-acr.*.txt')
+		do
+			(cat "$FILE"; echo) >> "$sourceFile"
+		done
 
 		while read sourceImage; do
   		# Always use specific build number based tag and then use the same tag
