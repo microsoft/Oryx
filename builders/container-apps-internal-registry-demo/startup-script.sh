@@ -58,7 +58,7 @@ echo "===== Executing the analyze phase ====="
 echo "======================================="
 /lifecycle/analyzer \
   -log-level debug \
-  -run-image cormtestacr.azurecr.io/oryx/builder:stack-run-debian-bullseye-20230817.1 \
+  -run-image cormtestacr.azurecr.io/oryx/builder:stack-run-debian-bullseye-20231016.1 \
   $APP_IMAGE
 
 # Execute the detect phase
@@ -78,7 +78,7 @@ echo "======================================="
 /lifecycle/restorer \
   -log-level debug \
   -cache-dir /cache \
-  -build-image cormtestacr.azurecr.io/oryx/builder:stack-build-debian-bullseye-20230817.1
+  -build-image cormtestacr.azurecr.io/oryx/builder:stack-build-debian-bullseye-20231016.1
 
 # Execute the extend phase
 echo
