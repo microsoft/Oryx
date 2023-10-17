@@ -12,13 +12,16 @@ sourceBranchName=$BUILD_SOURCEBRANCHNAME
 outFilePmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrPmeProdRepo-runtime-images-mcr.txt"
 sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
 
-echo "Consolidating runtime image files into '$sourceFile' ..."
+if [[ ! -f "$sourceFile" ]]; then
+			echo "Creating consolidated runtime image file '$sourceFile'..."
+			touch "$sourceFile"
+		fi
 
-for FILE in $(find "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images" -name "runtime-images-acr.*.txt")
-do
-  echo "Adding contents of '$FILE' to '$sourceFile'..."
-  (cat "$FILE"; echo) >> "$sourceFile"
-done
+		echo "Consolidating runtime image files into '$sourceFile'..."
+
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.buster.txt"; echo) >> "$sourceFile"
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bullseye.txt"; echo) >> "$sourceFile"
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bookworm.txt"; echo) >> "$sourceFile"
 
 if [ -f "$outFilePmeMCR" ]; then
     rm $outFilePmeMCR

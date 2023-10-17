@@ -127,13 +127,16 @@ if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 		# Note: we don't write this file to the drop folder as we don't want this file written to for every integration test job
 		sourceFile="$BUILD_SOURCESDIRECTORY/temp/images/runtime-images-acr.txt"
 
+		if [[ ! -f "$sourceFile" ]]; then
+			echo "Creating consolidated runtime image file '$sourceFile'..."
+			touch "$sourceFile"
+		fi
+
 		echo "Consolidating runtime image files into '$sourceFile'..."
 
-		for FILE in $(find "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images" -name "runtime-images-acr.*.txt")
-		do
-			echo "Adding contents of '$FILE' to '$sourceFile' ..."
-			(cat "$FILE"; echo) >> "$sourceFile"
-		done
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.buster.txt"; echo) >> "$sourceFile"
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bullseye.txt"; echo) >> "$sourceFile"
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bookworm.txt"; echo) >> "$sourceFile"
 
 		echo "Iterating over previously pushed images defined in new '$sourceFile' file..."
 
