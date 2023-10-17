@@ -29,14 +29,18 @@ mkdir -p $CNB_APP_DIR
 cd $CNB_APP_DIR
 tar -xzf "$temp_app_source_path"
 
-# Find .jar file in the directory
-jarfile=$(find "$CNB_APP_DIR" -maxdepth 1 -name "*.jar" | head -n 1)
+fileCount=$(ls | wc -l)
+if [ "$fileCount" = "1" ]; then
+  # Find .jar file in the directory
+  jarfile=$(find "$CNB_APP_DIR" -maxdepth 1 -name "*.jar" | head -n 1)
 
-# unzip it if found
-if [[ -n $jarfile ]];
-then 
-  unzip $jarfile -d $CNB_APP_DIR
-  rm $jarfile
+  # unzip it if found
+  if [[ -n $jarfile ]];
+  then 
+    echo "Unzip jar file $jarfile"
+    unzip -qq $jarfile -d $CNB_APP_DIR
+    rm $jarfile
+  fi
 fi
 
 # public cert should be in this env var
@@ -58,7 +62,7 @@ echo "===== Executing the analyze phase ====="
 echo "======================================="
 /lifecycle/analyzer \
   -log-level debug \
-  -run-image cormtestacr.azurecr.io/oryx/builder:stack-run-debian-bullseye-20231016.1 \
+  -run-image cormtestacr.azurecr.io/oryx/builder:stack-run-debian-bullseye-20230817.1 \
   $APP_IMAGE
 
 # Execute the detect phase
@@ -78,7 +82,7 @@ echo "======================================="
 /lifecycle/restorer \
   -log-level debug \
   -cache-dir /cache \
-  -build-image cormtestacr.azurecr.io/oryx/builder:stack-build-debian-bullseye-20231016.1
+  -build-image cormtestacr.azurecr.io/oryx/builder:stack-build-debian-bullseye-20230817.1
 
 # Execute the extend phase
 echo
