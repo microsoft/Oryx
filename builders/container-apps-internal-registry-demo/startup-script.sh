@@ -29,6 +29,16 @@ mkdir -p $CNB_APP_DIR
 cd $CNB_APP_DIR
 tar -xzf "$temp_app_source_path"
 
+# Find .jar file in the directory
+jarfile=$(find "$CNB_APP_DIR" -maxdepth 1 -name "*.jar" | head -n 1)
+
+# unzip it if found
+if [[ -n $jarfile ]];
+then 
+  unzip $jarfile -d $CNB_APP_DIR
+  rm $jarfile
+fi
+
 # public cert should be in this env var
 ca_pem_decoded=$(printf "%s" "$REGISTRY_HTTP_TLS_CERTIFICATE" | base64 -d)
 echo "$ca_pem_decoded" >> /usr/local/share/ca-certificates/internalregistry.crt

@@ -1,4 +1,4 @@
-ARG BASE_BUILDER_IMAGE="mcr.microsoft.com/oryx/builder:debian-buster-20230830.1"
+ARG BASE_BUILDER_IMAGE="mcr.microsoft.com/oryx/builder:debian-bullseye-20231016.1"
 FROM ${BASE_BUILDER_IMAGE}
 
 # these environment variables are generally going to be overwritten:
@@ -37,6 +37,7 @@ RUN set -eux; \
 		ca-certificates \
 		sudo \
 		curl \
+		unzip \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
