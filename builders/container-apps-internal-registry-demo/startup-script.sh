@@ -33,7 +33,7 @@ if [ "$fileCount" = "1" ]; then
 
   # unzip it if found
   if [[ -n $jarfile ]];
-  then 
+  then
     echo "Unzip file $jarfile"
     unzip -qq $jarfile -d $CNB_APP_DIR
     rm $jarfile
@@ -59,7 +59,7 @@ echo "===== Executing the analyze phase ====="
 echo "======================================="
 /lifecycle/analyzer \
   -log-level debug \
-  -run-image cormtestacr.azurecr.io/oryx/builder:stack-run-debian-bullseye-20230817.1 \
+  -run-image mcr.microsoft.com/oryx/builder:stack-run-debian-bullseye-20230926.1 \
   $APP_IMAGE
 
 # Execute the detect phase
@@ -78,8 +78,7 @@ echo "===== Executing the restore phase ====="
 echo "======================================="
 /lifecycle/restorer \
   -log-level debug \
-  -cache-dir /cache \
-  -build-image cormtestacr.azurecr.io/oryx/builder:stack-build-debian-bullseye-20230817.1
+  -build-image mcr.microsoft.com/oryx/builder:stack-build-debian-bullseye-20230926.1
 
 # Execute the extend phase
 echo
@@ -97,6 +96,5 @@ echo "===== Executing the export phase ====="
 echo "======================================"
 /lifecycle/exporter \
   -log-level debug \
-  -cache-dir /cache \
   -app $CNB_APP_DIR \
   $APP_IMAGE
