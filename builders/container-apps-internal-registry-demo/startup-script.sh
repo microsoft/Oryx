@@ -34,7 +34,7 @@ if [ "$fileCount" = "1" ]; then
   # unzip it if found
   if [[ -n $jarfile ]];
   then 
-    echo "Unzip jar file $jarfile"
+    echo "Unzip file $jarfile"
     unzip -qq $jarfile -d $CNB_APP_DIR
     rm $jarfile
   fi
