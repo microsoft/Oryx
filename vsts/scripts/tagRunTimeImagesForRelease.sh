@@ -14,6 +14,7 @@ sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
 
 if [[ ! -f "$sourceFile" ]]; then
 			echo "Creating consolidated runtime image file '$sourceFile'..."
+      mkdir -p "$BUILD_SOURCESDIRECTORY/temp/images"
 			touch "$sourceFile"
 		fi
 
