@@ -13,19 +13,19 @@ outFilePmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrPmeProdRepo-runti
 sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
 
 if [[ ! -f "$sourceFile" ]]; then
-			echo "Creating consolidated runtime image file '$sourceFile'..."
-      mkdir -p "$BUILD_SOURCESDIRECTORY/temp/images"
-			touch "$sourceFile"
-		fi
+  echo "Creating consolidated runtime image file '$sourceFile'..."
+  mkdir -p "$BUILD_SOURCESDIRECTORY/temp/images"
+  touch "$sourceFile"
+fi
 
-		echo "Consolidating runtime image files into '$sourceFile'..."
+echo "Consolidating runtime image files into '$sourceFile'..."
 
-		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.buster.txt"; echo) >> "$sourceFile"
-		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bullseye.txt"; echo) >> "$sourceFile"
-		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bookworm.txt"; echo) >> "$sourceFile"
+(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.buster.txt"; echo) >> "$sourceFile"
+(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bullseye.txt"; echo) >> "$sourceFile"
+(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bookworm.txt"; echo) >> "$sourceFile"
 
 if [ -f "$outFilePmeMCR" ]; then
-    rm $outFilePmeMCR
+  rm $outFilePmeMCR
 fi
 
 echo "Iterating over previously pushed images defined in new '$sourceFile' file..."
