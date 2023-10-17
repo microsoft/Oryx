@@ -13,9 +13,6 @@ temp_app_source_dir="/tmp/appsource"
 temp_app_source_path="$temp_app_source_dir/$FILE_UPLOAD_BLOB_NAME"
 mkdir $temp_app_source_dir
 
-# Send request to delete the blob from the storage account on exit.
-# trap 'curl -H '$headers' -X GET "'$file_upload_endpoint'"' EXIT
-
 while [[ ! -f "$temp_app_source_path" || ! "$(file $temp_app_source_path)" =~ "compressed data" ]]
 do
   echo "Waiting for app source to be uploaded. Please upload the app source to the endpoint specified in the Build resource's 'uploadEndpoint' property."
