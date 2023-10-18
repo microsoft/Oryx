@@ -571,13 +571,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
                 // buster
                 data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp60,
-                    DotNetCoreSdkVersions.DotNet60SdkVersion,
+                    "6.0.20",  // Hard-code .NET 6.0 values for buster while the latest binaries have known issues
+                    "6.0.412",
                     NetCore6PreviewWebApp,
                     imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
                 data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp70,
-                    DotNetCoreSdkVersions.DotNet70SdkVersion,
+                    "7.0.9",   // Hard-code .NET 7.0 values for buster while the latest binaries have known issues
+                    "7.0.306",
                     NetCore7PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster));
 
