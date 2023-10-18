@@ -28,15 +28,15 @@ tar -xzf "$temp_app_source_path"
 
 fileCount=$(ls | wc -l)
 if [ "$fileCount" = "1" ]; then
-  # Find .jar file in the directory
-  jarfile=$(find "$CNB_APP_DIR" -maxdepth 1 -name ".[jw]ar" | head -n 1)
+  # Find .jar/war file in the directory
+  artifact=$(find "$CNB_APP_DIR" -maxdepth 1 -name "*.[jw]ar" | head -n 1)
 
   # unzip it if found
-  if [[ -n $jarfile ]];
+  if [[ -n $artifact ]];
   then
-    echo "Unzip file $jarfile"
-    unzip -qq $jarfile -d $CNB_APP_DIR
-    rm $jarfile
+    echo "Unzip file $artifact"
+    unzip -qq $artifact -d $CNB_APP_DIR
+    rm $artifact
   fi
 fi
 
