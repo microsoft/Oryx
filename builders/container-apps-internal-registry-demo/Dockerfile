@@ -43,8 +43,6 @@ RUN set -eux; \
 
 ADD startup-script.sh /startup-script.sh
 
-COPY app.tar.gz /${COMPRESSED_APP_LOCATION}
-
 RUN chmod u+x /startup-script.sh
 
 # allow cnb user to run update-ca-certificates
