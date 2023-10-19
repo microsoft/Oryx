@@ -12,9 +12,23 @@ sourceBranchName=$BUILD_SOURCEBRANCHNAME
 outFilePmeMCR="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/$acrPmeProdRepo-runtime-images-mcr.txt"
 sourceFile="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.txt"
 
-if [ -f "$outFilePmeMCR" ]; then
-    rm $outFilePmeMCR
+if [[ ! -f "$sourceFile" ]]; then
+  echo "Creating consolidated runtime image file '$sourceFile'..."
+  mkdir -p "$BUILD_SOURCESDIRECTORY/temp/images"
+  touch "$sourceFile"
 fi
+
+echo "Consolidating runtime image files into '$sourceFile'..."
+
+(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.buster.txt"; echo) >> "$sourceFile"
+(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bullseye.txt"; echo) >> "$sourceFile"
+(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bookworm.txt"; echo) >> "$sourceFile"
+
+if [ -f "$outFilePmeMCR" ]; then
+  rm $outFilePmeMCR
+fi
+
+echo "Iterating over previously pushed images defined in new '$sourceFile' file..."
 
 while read sourceImage; do
   # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
@@ -46,7 +60,7 @@ while read sourceImage; do
 
     echo
     echo "Tagging the source image with tag $acrPmeSpecific..."
-    
+
     echo "$acrPmeSpecific">>"$outFilePmeMCR"
     docker tag "$sourceImage" "$acrPmeSpecific"
 
