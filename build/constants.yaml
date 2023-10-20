@@ -57,6 +57,7 @@
       - 6.0-debian-buster
       - 7.0-debian-bullseye
       - 7.0-debian-buster
+      - 8.0-debian-bullseye
       - 8.0-debian-bookworm
       - dynamic-debian-buster
   outputs:
