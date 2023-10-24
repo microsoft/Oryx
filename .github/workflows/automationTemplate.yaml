@@ -134,7 +134,7 @@ jobs:
           
           # run automation again to preserve constants.yaml YamlDotNet indentation
           # since YamlDoNet and yq do not share indentation spacing
-          dotnet run --project build/tools/Automation/Automation.csproj ${RELEASE_DATE} ${{ github.workspace }}
+          dotnet run --project build/tools/Automation/Automation.csproj ${{ inputs.platformName }} ${{ github.workspace }}
           
           ./build/generateConstants.sh
 
