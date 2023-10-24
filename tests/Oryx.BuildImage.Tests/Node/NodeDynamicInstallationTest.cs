@@ -403,9 +403,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-bullseye")]
+        [Trait("build-image", "github-actions-debian-bullseye-and-bookworm")]
         [InlineData("18.0.0", ImageTestHelperConstants.GitHubActionsBullseye)]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationOnBullseyeImage(string version, string buildImageName)
+        [InlineData("20.0.0", ImageTestHelperConstants.GitHubActionsBullseye)]
+        [InlineData("20.0.0", ImageTestHelperConstants.GitHubActionsBookworm)]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationOnBullseyeBookwormImage(string version, string buildImageName)
         {
             // Arrange
             var devPackageName = "nodemon";
