@@ -6,7 +6,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class PythonVersions
     {
-        public const string PythonRuntimeBaseTag = "20230901.1";
+        public const string PythonRuntimeBaseTag = "20231024.1";
         public const string PipVersion = "21.2.4";
         public const string Python27Version = "2.7.18";
         public const string Python36Version = "3.6.15";
