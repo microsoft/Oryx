@@ -165,6 +165,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.9", "Python " + PythonVersions.Python39Version)]
         [InlineData("3.10", "Python " + PythonVersions.Python310Version)]
         [InlineData("3.11", "Python " + PythonVersions.Python311Version)]
+        [InlineData("3.12", "Python " + PythonVersions.Python312Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void PythonVersionMatchesBullseyeImageName(string pythonVersion, string expectedOutput)
         {
