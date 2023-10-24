@@ -108,7 +108,7 @@ function copyPlatformBlobsToProdForDebianFlavor() {
     # - platformName=nodejs and debianFlavor=bookworm
     # - platformName=java and debianFlavor=bookworm
     # - Any platformName other than dotnet and debianFlavor=bookworm or debianFlavor=bullseye
-    if { [ "$platformName" != "dotnet" ] || ([ "$debianFlavor" != "bookworm" ] && [ "$debianFlavor" != "bullseye" ]); }; then
+    if [[ "$platformName" != "dotnet" && ( "$debianFlavor" != "bookworm" || "$debianFlavor" != "bullseye" ) ]]; then
         # Do not copy blobs
         echo "Copying blobs for platformName=$platformName and debianFlavor=$debianFlavor is not allowed."
     else
