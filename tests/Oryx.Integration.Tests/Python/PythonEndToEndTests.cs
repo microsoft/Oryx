@@ -119,7 +119,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Fact]
         [Trait("category", "python-3.12")]
         [Trait("build-image", "github-actions-debian-bullseye")]
-        public async Task CanBuildAndRun_DjangoRegex()
+        public async Task CanBuildAndRun_DjangoRegex_Python12()
         {
             // Arrange
             var version = "3.12";
