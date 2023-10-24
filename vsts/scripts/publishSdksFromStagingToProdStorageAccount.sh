@@ -104,7 +104,7 @@ function copyPlatformBlobsToProdForDebianFlavor() {
     # Allowed combinations: 
     # - platformName=dotnet and debianFlavor=bookworm or debianFlavor=bullseye
     # Not allowed combinations: 
-    # - platformName=python and debianFlavor=bookworm   
+    # - platformName=python and debianFlavor=bookworm
     # - platformName=nodejs and debianFlavor=bookworm
     # - platformName=java and debianFlavor=bookworm
     # - Any platformName other than dotnet and debianFlavor=bookworm or debianFlavor=bullseye
