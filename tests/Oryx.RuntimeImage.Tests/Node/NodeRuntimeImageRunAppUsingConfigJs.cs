@@ -96,5 +96,43 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 dockerCli: _dockerCli);
 
         }
+
+        [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [MemberData(nameof(TestValueGenerator.GetBookwormNodeVersions_SupportPm2), MemberType = typeof(TestValueGenerator))]
+        public async Task RunBookwormNodeAppUsingConfigJsAsync(string nodeVersion, string osType)
+        {
+
+            var appName = "express-config-js";
+            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+            var volume = DockerVolume.CreateMirror(hostDir);
+            var dir = volume.ContainerDir;
+            int containerPort = 80;
+
+            var runAppScript = new ShellScriptBuilder()
+                .AddCommand($"cd {dir}/app")
+                .AddCommand("npm install")
+                .AddCommand("cd ..")
+                .AddCommand($"oryx create-script -bindPort {containerPort} -usePM2")
+                .AddCommand("./run.sh")
+                .ToString();
+
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
+                output: _output,
+                volumes: new List<DockerVolume> { volume },
+                environmentVariables: null,
+                containerPort,
+                link: null,
+                runCmd: "/bin/sh",
+                runArgs: new[] { "-c", runAppScript },
+                assertAction: async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Equal("Hello World from express!", data);
+                },
+                dockerCli: _dockerCli);
+
+        }
     }
 }

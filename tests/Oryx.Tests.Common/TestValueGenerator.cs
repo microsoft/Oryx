@@ -15,7 +15,10 @@ namespace Microsoft.Oryx.Tests.Common
             ("14", ImageTestHelperConstants.OsTypeDebianBuster),
             ("14", ImageTestHelperConstants.OsTypeDebianBullseye),
             ("16", ImageTestHelperConstants.OsTypeDebianBuster),
-            ("16", ImageTestHelperConstants.OsTypeDebianBullseye)
+            ("16", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("18", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("20", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("20", ImageTestHelperConstants.OsTypeDebianBookworm)
         };
 
         private readonly static List<(string Version, string OsType)> NodeBusterVersions = new List<(string, string)>
@@ -27,7 +30,14 @@ namespace Microsoft.Oryx.Tests.Common
         private readonly static List<(string Version, string OsType)> NodeBullseyeVersions = new List<(string, string)>
         {
             ("14", ImageTestHelperConstants.OsTypeDebianBullseye),
-            ("16", ImageTestHelperConstants.OsTypeDebianBullseye)
+            ("16", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("18", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("20", ImageTestHelperConstants.OsTypeDebianBullseye)
+        };
+
+        private readonly static List<(string Version, string OsType)> NodeBookwormVersions = new List<(string, string)>
+        {
+            ("20", ImageTestHelperConstants.OsTypeDebianBullseye)
         };
 
         private readonly static List<(string Version, string OsType)> PythonVersions = new List<(string, string)>
@@ -83,7 +93,9 @@ namespace Microsoft.Oryx.Tests.Common
             var versions = new List<(string Version, string OsType)>
             {
                 ("14", ImageTestHelperConstants.OsTypeDebianBullseye),
-                ("16", ImageTestHelperConstants.OsTypeDebianBullseye)
+                ("16", ImageTestHelperConstants.OsTypeDebianBullseye),
+                ("18", ImageTestHelperConstants.OsTypeDebianBullseye),
+                ("20", ImageTestHelperConstants.OsTypeDebianBullseye)
             };
 
             return versions.Select(x => new object[] { x.Version, x.OsType });
@@ -110,6 +122,14 @@ namespace Microsoft.Oryx.Tests.Common
             foreach (var x in NodeBullseyeVersions)
             {
                 yield return new object[] { x.Version, ImageTestHelperConstants.OsTypeDebianBullseye };
+            }
+        }
+
+        public static IEnumerable<object[]> GetBookwormNodeVersions()
+        {
+            foreach (var x in NodeBookwormVersions)
+            {
+                yield return new object[] { x.Version, ImageTestHelperConstants.OsTypeDebianBookworm };
             }
         }
 
@@ -153,6 +173,12 @@ namespace Microsoft.Oryx.Tests.Common
         {
             return NodeBullseyeVersions
                 .Select(x => new object[] { x.Version, ImageTestHelperConstants.OsTypeDebianBullseye });
+        }
+
+        public static IEnumerable<object[]> GetBookwormNodeVersions_SupportPm2()
+        {
+            return NodeBookwormVersions
+                .Select(x => new object[] { x.Version, ImageTestHelperConstants.OsTypeDebianBookworm });
         }
     }
 }
