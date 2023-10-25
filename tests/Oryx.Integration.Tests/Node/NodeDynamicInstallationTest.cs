@@ -195,7 +195,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
-        [InlineData(NodeVersions.Node20Version), Trait("category", "node-20")]
+        [InlineData(NodeVersions.Node20Version), Trait("category", "node-20-bullseye")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunNode20App_UsingScriptCommand_WithBullseyeBasedImages(string nodeVersion)
         {
