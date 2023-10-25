@@ -26,7 +26,7 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -e \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
     && ${IMAGES_DIR}/installPlatform.sh nodejs $NODE_VERSION --dir /usr/local --links false \
-    && ln -s /usr/local/bin/node /usr/local/bin/nodejs \
+    && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN . ${BUILD_DIR}/__nodeVersions.sh \
     && npm install -g npm@${NPM_VERSION}
 RUN ${IMAGES_DIR}/runtime/node/installDependencies.sh
