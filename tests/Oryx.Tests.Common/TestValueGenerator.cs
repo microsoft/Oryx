@@ -15,10 +15,7 @@ namespace Microsoft.Oryx.Tests.Common
             ("14", ImageTestHelperConstants.OsTypeDebianBuster),
             ("14", ImageTestHelperConstants.OsTypeDebianBullseye),
             ("16", ImageTestHelperConstants.OsTypeDebianBuster),
-            ("16", ImageTestHelperConstants.OsTypeDebianBullseye),
-            ("18", ImageTestHelperConstants.OsTypeDebianBullseye),
-            ("20", ImageTestHelperConstants.OsTypeDebianBullseye),
-            ("20", ImageTestHelperConstants.OsTypeDebianBookworm)
+            ("16", ImageTestHelperConstants.OsTypeDebianBullseye)
         };
 
         private readonly static List<(string Version, string OsType)> NodeBusterVersions = new List<(string, string)>

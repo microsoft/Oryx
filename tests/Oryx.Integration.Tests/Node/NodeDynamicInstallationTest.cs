@@ -245,7 +245,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [InlineData(NodeVersions.Node20Version), Trait("category", "node-20")]
-        [Trait("build-image", "github-actions-debian-bullseye")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
         public async Task CanBuildAndRunNode20App_UsingScriptCommand_WithBookwormBasedImages(string nodeVersion)
         {
             // Arrange
