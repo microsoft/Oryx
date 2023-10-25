@@ -168,6 +168,7 @@
       - 3.10-debian-bullseye
       - 3.10-debian-buster
       - 3.11-debian-bullseye
+      - 3.12-debian-bullseye
       - dynamic-debian-buster
   outputs:
     - type: csharp
