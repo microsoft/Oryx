@@ -101,6 +101,7 @@ function copyPlatformBlobsToProdForDebianFlavor() {
     fi
 
     # Function to copy platform blobs to production for a specific Debian flavor
+    # Dotnet is currently the only platform supporting bookworm.
     # Allowed combinations: 
     # - platformName=dotnet and debianFlavor=bookworm
     # Not allowed combinations: 
@@ -110,7 +111,7 @@ function copyPlatformBlobsToProdForDebianFlavor() {
     # - Any platformName other than dotnet and debianFlavor=bookworm
     if [ "$platformName" != "dotnet" ] && [ "$debianFlavor" == "bookworm" ]; then
         # Do not copy blobs
-        echo "Copying blobs for platformName=$platformName and debianFlavor=$debianFlavor is not allowed."
+        echo "Copying blobs for platformName=$platformName and debianFlavor=$debianFlavor is not supported yet."
     else
         defaultFile="defaultVersion.$debianFlavor.txt"
         copyBlob "$platformName" "$defaultFile"
