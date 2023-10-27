@@ -93,7 +93,7 @@ make -j $(nproc)
 
 make install
 
-IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
+IFS = '.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
 if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "10" ]
 then
     rm -rf /usr/src/python
