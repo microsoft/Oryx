@@ -1,4 +1,4 @@
-FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-8.1
+FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-8.1-bullseye
 SHELL ["/bin/bash", "-c"]
 ENV PHP_VERSION 8.1.22
 

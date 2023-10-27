@@ -70,7 +70,9 @@ function getRuntimeTagVersion()
     elif [ "$PLATFORM_NAME" == "node" ]
     then
         case $PLATFORM_VERSION in
-
+            20)
+                FULL_RUNTIME_TAG_VERSION=$NODE20_VERSION
+                ;;
             18)
                 FULL_RUNTIME_TAG_VERSION=$NODE18_VERSION
                 ;;

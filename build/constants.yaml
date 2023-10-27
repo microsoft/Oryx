@@ -303,7 +303,7 @@
     directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20230901.2
+    node-runtime-base-tag: 20231025.7
     yarn-version: 1.22.15
     yarn-minor-version: 1.17
     yarn-major-version: 1
@@ -314,6 +314,7 @@
     node14-version: 14.21.3
     node16-version: 16.20.2
     node18-version: 18.17.1
+    node20-version: 20.9.0
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 9.6.4
@@ -323,6 +324,8 @@
     - 16-debian-bullseye
     - 16-debian-buster
     - 18-debian-bullseye
+    - 20-debian-bullseye
+    - 20-debian-bookworm
     - dynamic-debian-buster
   outputs:
   - type: shell
