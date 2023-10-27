@@ -31,6 +31,11 @@ namespace Microsoft.Oryx.Automation.Services
             {
                 foreach (string debianFlavor in Constants.DebianFlavors)
                 {
+                    if (debianFlavor == "bookworm" && platformName == "python")
+                    {
+                        continue;
+                    }
+
                     string versionsToBuildTxtAbsolutePath = Path.Combine(
                         this.oryxRootPath,
                         "platforms",
