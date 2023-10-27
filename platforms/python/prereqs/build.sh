@@ -93,7 +93,8 @@ make -j $(nproc)
 
 make install
 
-if  [ "${PYTHON_VERSION[0]}" == "3" ] && [ "${PYTHON_VERSION[1]}" -ge "10" ]
+IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
+if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "10" ]
 then
     rm -rf /usr/src/python
     find /usr/local -depth \
@@ -111,6 +112,8 @@ then
     ln -s pydoc3 pydoc
     ln -s python3 python
     ln -s python3-config python-config
+
+    PYTHON_GET_PIP_SHA256="c518250e91a70d7b20cceb15272209a4ded2a0c263ae5776f129e0d9b5674309"
 
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O get-pip.py

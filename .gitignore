@@ -292,3 +292,7 @@ src/startupscriptgenerator/src/**/__debug_bin
 src/startupscriptgenerator/src/**/run.sh
 !**/dynamic/Dockerfile
 !**/dynamic/buster.Dockerfile
+/global.json
+/.gitignore
+/.gitignore
+/.gitignore
