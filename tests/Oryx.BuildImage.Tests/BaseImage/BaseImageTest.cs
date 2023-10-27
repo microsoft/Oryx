@@ -55,8 +55,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
                 // bullseye
                 data.Add(
-                    DotNetCoreRunTimeVersions.NetCoreApp31,
-                    NetCoreApp31MvcApp,
+                    DotNetCoreRunTimeVersions.NetCoreApp80,
+                    NetCore8PreviewMvcApp,
                     imageHelper.GetGitHubActionsAsBaseBuildImage(ImageTestHelperConstants.GitHubActionsBullseyeBase),
                     "bullseye");
 
