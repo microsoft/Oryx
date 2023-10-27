@@ -75,6 +75,15 @@ ARG AI_CONNECTION_STRING
 ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 
 RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
+# Install pip
+RUN wget "https://bootstrap.pypa.io/get-pip.py" -O get-pip.py \
+    &&  python3.12 get-pip.py \
+        --trusted-host pypi.python.org \
+        --trusted-host pypi.org \
+        --trusted-host files.pythonhosted.org \
+        --disable-pip-version-check \
+        --no-cache-dir \
+        --no-warn-script-location
 RUN pip install --upgrade pip \
     && pip install gunicorn \
     && pip install debugpy \

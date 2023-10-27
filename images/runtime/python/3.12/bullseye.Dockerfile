@@ -56,7 +56,7 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
 
 RUN set -ex \
  && cd /opt/python/ \
- && ln -s 3.12.1 3.12 \
+ && ln -s 3.12.0 3.12 \
  && ln -s 3.12 3 \
  && echo /opt/python/3/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
@@ -82,7 +82,7 @@ RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN pip install --upgrade pip \
     && pip install gunicorn \
     && pip install debugpy \
-    && pip install viztracer==0.16.0 \
+    && pip install viztracer==0.15.6 \
     && pip install vizplugins==0.1.3 \
     && pip install orjson==3.8.1 \
     && if [ "3.12" = "3.7" ] || [ "3.12" = "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
