@@ -42,7 +42,7 @@ fi
 
 # public cert should be in this env var
 ca_pem_decoded=$(printf "%s" "$REGISTRY_HTTP_TLS_CERTIFICATE" | base64 -d)
-echo "$ca_pem_decoded" >> /usr/local/share/ca-certificates/internalregistry.crt
+echo "$ca_pem_decoded" > /usr/local/share/ca-certificates/internalregistry.crt
 cd /usr/local/share/ca-certificates/
 awk 'BEGIN {c=0;} /BEGIN CERT/{c++} { print > "cert." c ".crt"}' < /usr/local/share/ca-certificates/internalregistry.crt
 update-ca-certificates
