@@ -125,10 +125,11 @@ then
         --disable-pip-version-check \
         --no-cache-dir \
         --no-warn-script-location
-
+    pip --version
     rm -rf /configure* /config.* /*.txt /*.md /*.rst /*.toml /*.m4 /tmpFiles
     rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
     rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
+    pip --version
 else
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O get-pip.py
