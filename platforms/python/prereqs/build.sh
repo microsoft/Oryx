@@ -92,6 +92,7 @@ fi
 make -j $(nproc)
 
 make install
+python3 --version
 
 IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
 if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "10" ]
@@ -118,7 +119,7 @@ then
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O get-pip.py
 
-    python3 get-pip.py \
+    python$PYTHON_VERSION get-pip.py \
         --trusted-host pypi.python.org \
         --trusted-host pypi.org \
         --trusted-host files.pythonhosted.org \
