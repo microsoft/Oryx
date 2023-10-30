@@ -52,7 +52,8 @@ token=$(printf "%s" "$REGISTRY_AUTH_USERNAME:$REGISTRY_AUTH_PASSWORD" | base64)
 acr_access_string="Basic $token"
 export CNB_REGISTRY_AUTH='{"'$ACR_RESOURCE_NAME'":"'$acr_access_string'"}'
 
-echo "Initiating buildpack build with correlation id: '$CORRELATION_ID'"
+echo "Initiating buildpack build..."
+echo "Correlation id: '$CORRELATION_ID'"
 
 # Execute the analyze phase
 echo
