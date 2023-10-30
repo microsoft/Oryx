@@ -154,10 +154,10 @@
     python27-version: 2.7.18
     python36-version: 3.6.15
     python37-version: 3.7.15
-    python38-version: 3.8.16
-    python39-version: 3.9.15
-    python310-version: 3.10.8
-    python311-version: 3.11.0
+    python38-version: 3.8.18
+    python39-version: 3.9.18
+    python310-version: 3.10.13
+    python311-version: 3.11.6
     runtime-versions:
     - 3.7-debian-bullseye
     - 3.7-debian-buster
