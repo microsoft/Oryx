@@ -52,11 +52,11 @@ token=$(printf "%s" "$REGISTRY_AUTH_USERNAME:$REGISTRY_AUTH_PASSWORD" | base64)
 acr_access_string="Basic $token"
 export CNB_REGISTRY_AUTH='{"'$ACR_RESOURCE_NAME'":"'$acr_access_string'"}'
 
+echo "Initiating buildpack build with correlation id: '$CORRELATION_ID'"
+
 # Execute the analyze phase
 echo
-echo "======================================="
 echo "===== Executing the analyze phase ====="
-echo "======================================="
 /lifecycle/analyzer \
   -log-level debug \
   -run-image mcr.microsoft.com/oryx/builder:stack-run-debian-bullseye-20230926.1 \
@@ -64,36 +64,28 @@ echo "======================================="
 
 # Execute the detect phase
 echo
-echo "======================================"
 echo "===== Executing the detect phase ====="
-echo "======================================"
 /lifecycle/detector \
   -log-level debug \
   -app $CNB_APP_DIR
 
 # Execute the restore phase
 echo
-echo "======================================="
 echo "===== Executing the restore phase ====="
-echo "======================================="
 /lifecycle/restorer \
   -log-level debug \
   -build-image mcr.microsoft.com/oryx/builder:stack-build-debian-bullseye-20230926.1
 
 # Execute the extend phase
 echo
-echo "======================================"
 echo "===== Executing the extend phase ====="
-echo "======================================"
 /lifecycle/extender \
   -log-level debug \
   -app $CNB_APP_DIR
 
 # Execute the export phase
 echo
-echo "======================================"
 echo "===== Executing the export phase ====="
-echo "======================================"
 /lifecycle/exporter \
   -log-level debug \
   -app $CNB_APP_DIR \
