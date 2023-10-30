@@ -92,6 +92,7 @@ fi
 make -j $(nproc)
 
 make install
+python --version
 python3 --version
 
 IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
@@ -105,6 +106,7 @@ then
         \) -exec rm -rf '{}' + \
 
     ldconfig
+    python --version
     python3 --version
 
     # make some useful symlinks that are expected to exist
@@ -119,7 +121,7 @@ then
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O get-pip.py
 
-    python$PYTHON_VERSION get-pip.py \
+    python get-pip.py \
         --trusted-host pypi.python.org \
         --trusted-host pypi.org \
         --trusted-host files.pythonhosted.org \
