@@ -52,49 +52,91 @@ token=$(printf "%s" "$REGISTRY_AUTH_USERNAME:$REGISTRY_AUTH_PASSWORD" | base64)
 acr_access_string="Basic $token"
 export CNB_REGISTRY_AUTH='{"'$ACR_RESOURCE_NAME'":"'$acr_access_string'"}'
 
+echo "Initiating buildpack build..."
+echo "Correlation id: '$CORRELATION_ID'"
+echo 
+
+RETRY_DELAY=2
+RETRY_ATTEMPTS=5
+
 # Execute the analyze phase
 echo
-echo "======================================="
 echo "===== Executing the analyze phase ====="
-echo "======================================="
-/lifecycle/analyzer \
-  -log-level debug \
-  -run-image mcr.microsoft.com/oryx/builder:stack-run-debian-bullseye-20230926.1 \
-  $APP_IMAGE
+retryCount=0
+until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
+do
+  /lifecycle/analyzer \
+    -log-level debug \
+    -run-image mcr.microsoft.com/oryx/builder:stack-run-debian-bullseye-20230926.1 \
+    $APP_IMAGE \
+    && break
+
+  retryCount=$((retryCount+1))
+  echo "Retrying analyze attempt $retryAttempt..."
+  sleep $RETRY_DELAY
+done
 
 # Execute the detect phase
 echo
-echo "======================================"
 echo "===== Executing the detect phase ====="
-echo "======================================"
-/lifecycle/detector \
-  -log-level debug \
-  -app $CNB_APP_DIR
+retryCount=0
+until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
+do
+  /lifecycle/detector \
+    -log-level debug \
+    -app $CNB_APP_DIR \
+    && break
+
+  retryCount=$((retryCount+1))
+  echo "Retrying detect attempt $retryAttempt..."
+  sleep $RETRY_DELAY
+done
 
 # Execute the restore phase
 echo
-echo "======================================="
 echo "===== Executing the restore phase ====="
-echo "======================================="
-/lifecycle/restorer \
-  -log-level debug \
-  -build-image mcr.microsoft.com/oryx/builder:stack-build-debian-bullseye-20230926.1
+retryCount=0
+until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
+do
+  /lifecycle/restorer \
+    -log-level debug \
+    -build-image mcr.microsoft.com/oryx/builder:stack-build-debian-bullseye-20230926.1 \
+    && break
+
+  retryCount=$((retryCount+1))
+  echo "Retrying restore attempt $retryAttempt..."
+  sleep $RETRY_DELAY
+done
 
 # Execute the extend phase
 echo
-echo "======================================"
 echo "===== Executing the extend phase ====="
-echo "======================================"
-/lifecycle/extender \
-  -log-level debug \
-  -app $CNB_APP_DIR
+retryCount=0
+until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
+do
+  /lifecycle/extender \
+    -log-level debug \
+    -app $CNB_APP_DIR \
+    && break
+
+  retryCount=$((retryCount+1))
+  echo "Retrying extend attempt $retryAttempt..."
+  sleep $RETRY_DELAY
+done
 
 # Execute the export phase
 echo
-echo "======================================"
 echo "===== Executing the export phase ====="
-echo "======================================"
-/lifecycle/exporter \
-  -log-level debug \
-  -app $CNB_APP_DIR \
-  $APP_IMAGE
+retryCount=0
+until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
+do
+  /lifecycle/exporter \
+    -log-level debug \
+    -app $CNB_APP_DIR \
+    $APP_IMAGE \
+    && break
+
+  retryCount=$((retryCount+1))
+  echo "Retrying export attempt $retryAttempt..."
+  sleep $RETRY_DELAY
+done
