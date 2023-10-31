@@ -54,6 +54,7 @@ export CNB_REGISTRY_AUTH='{"'$ACR_RESOURCE_NAME'":"'$acr_access_string'"}'
 
 echo "Initiating buildpack build..."
 echo "Correlation id: '$CORRELATION_ID'"
+echo 
 
 # Execute the analyze phase
 echo
