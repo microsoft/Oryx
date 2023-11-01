@@ -611,7 +611,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(SupportedVersionAndImageNameData))]
-        public void BuildsApplication_AfterInstallingSupportedSdk(
+        public void BuildsApplication_SpecifyingRuntimeVersion_AfterInstallingSupportedSdk(
             string runtimeVersion, 
             string sdkVersion, 
             string appName,
@@ -625,6 +625,52 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = imageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, sdkVersion), result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{runtimeVersion}",
+                        result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{sdkVersion}",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory, Trait("category", "githubactions")]
+        [MemberData(nameof(SupportedVersionAndImageNameData))]
+        public void BuildsApplication_SpecifyingSdkVersion_AfterInstallingSupportedSdk(
+            string runtimeVersion,
+            string sdkVersion,
+            string appName,
+            string imageName)
+        {
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {DotNetCoreConstants.PlatformName} --platform-version {sdkVersion}")
                 .AddFileExistsCheck(manifestFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
