@@ -15,8 +15,8 @@ mkdir $temp_app_source_dir
 
 build_env_dir="/platform/env"
 
-# list all the environment variables and filter the environment variable with prefix BP_, BPL_ or ORYX_, then write them to the build env dir
-env | grep -E '^BP_|^BPL_|^ORYX_' | while read -r line; do
+# list all the environment variables and filter the environment variable with prefix BP_, BPL_, ORYX_ or CORRELATION_ID, then write them to the build env dir
+env | grep -E '^BP_|^BPL_|^ORYX_|CORRELATION_ID' | while read -r line; do
   var_name=$(echo "$line" | cut -d= -f1)
   var_value=$(echo "$line" | cut -d= -f2-)
   echo "$var_value" > "$build_env_dir/$var_name"
