@@ -14,21 +14,21 @@ source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__nodeVersions.sh
 source $REPO_DIR/build/__stagingRuntimeConstants.sh
 
+declare -r NODE_BOOKWORM_VERSION_ARRAY=($NODE20_VERSION)
+declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE20_VERSION $NODE18_VERSION $NODE16_VERSION $NODE14_VERSION)
 declare -r NODE_BUSTER_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
-declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE18_VERSION)
-
 
 runtimeImagesSourceDir="$RUNTIME_IMAGES_SRC_DIR"
 runtimeSubDir=""
 runtimeImageDebianFlavor="buster"
 
-if [ $# -eq 2 ] 
+if [ $# -eq 2 ]
 then
     echo "Locally building runtime '$runtimeSubDir'"
     runtimeSubDir="$1"
     runtimeImageDebianFlavor="$2"
 elif [ $# -eq 1 ]
-then 
+then
     echo "CI Agent building runtime '$runtimeSubDir'"
     runtimeImageDebianFlavor="$1"
 fi
@@ -43,7 +43,7 @@ then
 fi
 
 # checking and retrieving token for the `oryxsdksstaging` account.
-retrieveSastokenFromKeyvault $PRIVATE_STAGING_SDK_STORAGE_BASE_URL
+retrieveSastokenFromKeyVault $PRIVATE_STAGING_SDK_STORAGE_BASE_URL
 
 echo
 echo "Building the common base image wih bullseye, buster, and bookworm flavor '$RUNTIME_BASE_IMAGE_NAME'..."
@@ -81,7 +81,7 @@ dockerFileName="base.$runtimeImageDebianFlavor.Dockerfile"
 stagingDockerFileName="base.$runtimeImageDebianFlavor.staging.Dockerfile"
 dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name $dockerFileName -o -name $stagingDockerFileName \))
 
-busterNodeDockerFiles=()
+nodeDockerfiles=()
 
 if [ "$runtimeSubDir" == "node" ]; then
     docker build \
@@ -91,10 +91,12 @@ if [ "$runtimeSubDir" == "node" ]; then
         $REPO_DIR
 
     NODE_VERSION_ARRAY=()
-    if  [ "$runtimeImageDebianFlavor" == "buster" ]; then
-        NODE_VERSION_ARRAY=(${NODE_BUSTER_VERSION_ARRAY[@]})
+    if [ "$runtimeImageDebianFlavor" == "bookworm" ];then
+        NODE_VERSION_ARRAY=("${NODE_BOOKWORM_VERSION_ARRAY[@]}")
     elif [ "$runtimeImageDebianFlavor" == "bullseye" ];then
         NODE_VERSION_ARRAY=("${NODE_BULLSEYE_VERSION_ARRAY[@]}")
+    elif [ "$runtimeImageDebianFlavor" == "buster" ]; then
+        NODE_VERSION_ARRAY=("${NODE_BUSTER_VERSION_ARRAY[@]}")
     fi
 
     for NODE_VERSION  in "${NODE_VERSION_ARRAY[@]}"
@@ -102,9 +104,9 @@ if [ "$runtimeSubDir" == "node" ]; then
         IFS='.' read -ra SPLIT_VERSION <<< "$NODE_VERSION"
         VERSION_DIRECTORY="${SPLIT_VERSION[0]}"
         eachFile=$runtimeImagesSourceDir/$VERSION_DIRECTORY/$dockerFileName
-        busterNodeDockerFiles+=( "$eachFile" )
+        nodeDockerfiles+=( "$eachFile" )
     done
-    dockerFiles="${busterNodeDockerFiles[@]}"
+    dockerFiles="${nodeDockerfiles[@]}"
 fi
 
 # Write the list of images that were built to artifacts folder
@@ -140,15 +142,15 @@ for dockerFile in $dockerFiles; do
         if [[ "$dockerFile" != *"staging"* ]]; then
             continue
         fi
-        # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/staging/oryx/base:{platformName}-{platformVersion}
-        localImageTagName="$BASE_IMAGES_STAGING_REPO:$platformName-$platformVersion"
+        # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/staging/oryx/base:{platformName}-{platformVersion}-{osType}
+        localImageTagName="$BASE_IMAGES_STAGING_REPO:$platformName-$platformVersion-debian-$runtimeImageDebianFlavor"
     else
         # skip the base.{ostype}.staging.Dockerfile if this version should not be staged
         if [[ "$dockerFile" == *"staging"* ]]; then
             continue
         fi
-        # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}
-        localImageTagName="$BASE_IMAGES_PUBLIC_REPO:$platformName-$platformVersion"
+        # Set $localImageTagName to the following format: oryxdevmcr.azurecr.io/public/oryx/base:{platformName}-{platformVersion}-{osType}
+        localImageTagName="$BASE_IMAGES_PUBLIC_REPO:$platformName-$platformVersion-debian-$runtimeImageDebianFlavor"
     fi
 
     echo
@@ -166,6 +168,7 @@ for dockerFile in $dockerFiles; do
         --build-arg NODE14_VERSION=$NODE14_VERSION \
         --build-arg NODE16_VERSION=$NODE16_VERSION \
         --build-arg NODE18_VERSION=$NODE18_VERSION \
+        --build-arg NODE20_VERSION=$NODE20_VERSION \
         --build-arg DEBIAN_FLAVOR=$runtimeImageDebianFlavor \
         --secret id=oryx_sdk_storage_account_access_token,env=ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN \
         --secret id=dotnet_storage_account_token_id,env=DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN \
@@ -179,7 +182,7 @@ for dockerFile in $dockerFiles; do
         # $tag will follow a similar format to 20191024.1
         uniqueImageName="$localImageTagName-$BUILD_NUMBER"
 
-        # Tag the image to follow a similar format to .../python:3.7-20191028.1
+        # Tag the image to follow a similar format to .../python:3.7-debian-bullseye-20191028.1
         docker tag "$localImageTagName" "$uniqueImageName"
 
         if [ $clearedOutput == "false" ]

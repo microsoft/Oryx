@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.19-${DEBIAN_FLAVOR} as startupCmdGen
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
@@ -33,7 +33,7 @@ ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-ENV PYTHON_VERSION 3.11.1
+ENV PYTHON_VERSION 3.11.0
 RUN true
 COPY build/__pythonVersions.sh ${BUILD_DIR}
 RUN true
@@ -51,13 +51,12 @@ RUN chmod +x /tmp/build.sh
 
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
-    && ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
+    && ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR
 
 RUN set -ex \
  && cd /opt/python/ \
- && ln -s 3.11.1 3.11 \
+ && ln -s 3.11.0 3.11 \
  && ln -s 3.11 3 \
  && echo /opt/python/3/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \

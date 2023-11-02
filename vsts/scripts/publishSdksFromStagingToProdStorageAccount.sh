@@ -99,24 +99,38 @@ function copyPlatformBlobsToProdForDebianFlavor() {
     else
         binaryPrefix="$platformName-$debianFlavor"
     fi
-    defaultFile="defaultVersion.$debianFlavor.txt"
-    copyBlob "$platformName" "$defaultFile"
 
-    # Here '3' is a file descriptor which is specifically used to read the versions file.
-    # This is used since 'azcopy' command seems to also be using the standard file descriptor for stdin '0'
-    # which causes some issues when trying to loop through the lines of the file.
-    while IFS= read -u 3 -r line || [[ -n $line ]]
-	do
-        # Ignore whitespace and comments
-        if [ -z "$line" ] || [[ $line = \#* ]] ; then
-            continue
-        fi
+    # Function to copy platform blobs to production for a specific Debian flavor
+    # Dotnet and nodejs are currently the only two platform supporting bookworm.
+    # Allowed combinations: 
+    # - platformName=dotnet and debianFlavor=bookworm
+    # - platformName=nodejs and debianFlavor=bookworm
+    # Not allowed combinations: 
+    # - platformName=python and debianFlavor=bookworm
+    # - platformName=java and debianFlavor=bookworm
+    # - Any platformName other than dotnet and node js with debianFlavor=bookworm
+    if [ "$platformName" != "dotnet" ] && [ "$platformName" != "nodejs" ] && [ "$debianFlavor" == "bookworm" ]; then
+        # Do not copy blobs
+        echo "Copying blobs for platformName=$platformName and debianFlavor=$debianFlavor is not supported yet."
+    else
+        defaultFile="defaultVersion.$debianFlavor.txt"
+        copyBlob "$platformName" "$defaultFile"
+        
+        # Here '3' is a file descriptor which is specifically used to read the versions file.
+        # This is used since 'azcopy' command seems to also be using the standard file descriptor for stdin '0'
+        # which causes some issues when trying to loop through the lines of the file.
+        while IFS= read -u 3 -r line || [[ -n $line ]]
+        do
+            # Ignore whitespace and comments
+            if [ -z "$line" ] || [[ $line = \#* ]] ; then
+                continue
+            fi
 
-        IFS=',' read -ra LINE_INFO <<< "$line"
-        version=$(echo -e "${LINE_INFO[0]}" | sed -e 's/^[[:space:]]*//')
-        copyBlob "$platformName" "$binaryPrefix-$version.tar.gz"
-	done 3< "$versionsFile"
-
+            IFS=',' read -ra LINE_INFO <<< "$line"
+            version=$(echo -e "${LINE_INFO[0]}" | sed -e 's/^[[:space:]]*//')
+            copyBlob "$platformName" "$binaryPrefix-$version.tar.gz"
+        done 3< "$versionsFile"
+    fi
 }
 
 if [ ! -f "$azCopyDir/azcopy" ]; then

@@ -6,7 +6,6 @@
 
 set -euo pipefail
 # $1 > buildimage-acr.txt
-# $2 > runtime-images-acr.txt
 declare imagefilter="oryxdevmcr.azurecr.io/public/oryx"
 
 function tagBuildImageForIntegrationTest() {
@@ -42,11 +41,11 @@ function tagBuildImageForIntegrationTest() {
 
 	echo
 	echo "Tagging the source image with tag $newtag ..."
-	
+
 	docker tag "$buildImage" "$newtag" | sed 's/^/     /'
 	echo
 	echo -------------------------------------------------------------------------------
-  
+
 }
 
 buildImageFilter=""
@@ -124,8 +123,26 @@ if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 		# Always convert filter for runtime images to lower case
 		echo "Runtime image filter is set for $platformFilter with version $platformVersionFilter"
 
+		# Create a local file that consolidates the different runtime image files into one to be read from
+		# Note: we don't write this file to the drop folder as we don't want this file written to for every integration test job
+		sourceFile="$BUILD_SOURCESDIRECTORY/temp/images/runtime-images-acr.txt"
+
+		if [[ ! -f "$sourceFile" ]]; then
+			echo "Creating consolidated runtime image file '$sourceFile'..."
+			mkdir -p "$BUILD_SOURCESDIRECTORY/temp/images"
+			touch "$sourceFile"
+		fi
+
+		echo "Consolidating runtime image files into '$sourceFile'..."
+
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.buster.txt"; echo) >> "$sourceFile"
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bullseye.txt"; echo) >> "$sourceFile"
+		(cat "$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/images/runtime-images-acr.bookworm.txt"; echo) >> "$sourceFile"
+
+		echo "Iterating over previously pushed images defined in new '$sourceFile' file..."
+
 		while read sourceImage; do
-  		# Always use specific build number based tag and then use the same tag 
+  		# Always use specific build number based tag and then use the same tag
 		# to create a version tag and push it
   			if [[ "$sourceImage" != *:latest ]]; then
 				if [[ "$sourceImage" == *"$platformFilter:$platformVersionFilter"* ]]; then
@@ -154,7 +171,7 @@ if [ -n "$TESTINTEGRATIONCASEFILTER" ];then
 					echo -------------------------------------------------------------------------------
 				fi
   			fi
-		done <"$2"
+		done <"$sourceFile"
 	fi
 fi
 

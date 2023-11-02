@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.19-${DEBIAN_FLAVOR} as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -13,11 +13,11 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM mcr.microsoft.com/oryx/base:node-18-20221112.1
+FROM mcr.microsoft.com/oryx/base:node-20-debian-bookworm-20231025.7
 
 # Bake Application Insights key from pipeline variable into final image
-ARG AI_KEY
-ENV ORYX_AI_INSTRUMENTATION_KEY=${AI_KEY}
+ARG AI_CONNECTION_STRING
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 #Bake in client certificate path into image to avoid downloading it
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 # Oryx++ Builder variables

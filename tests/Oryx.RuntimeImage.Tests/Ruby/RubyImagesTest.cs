@@ -19,6 +19,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableFact]
+        [Trait("category", "runtime-buster")]
         public void RubyRuntimeImage_Contains_VersionAndCommit_Information()
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -35,7 +36,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("ruby", "dynamic"),
+                ImageId = _imageHelper.GetRuntimeImage("ruby", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { "version" }
             });
@@ -54,6 +55,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Fact]
+        [Trait("category", "runtime-buster")]
         public void GeneratedScript_CanRunStartupScriptsFromAppRoot()
         {
             // Arrange
@@ -69,7 +71,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("ruby", "dynamic"),
+                ImageId = _imageHelper.GetRuntimeImage("ruby", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[] { "-c", script }
             });
@@ -79,16 +81,44 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [Trait("category", "runtime-buster")]
         [InlineData("2.5", "ruby " + RubyVersions.Ruby25Version)]
         [InlineData("2.6", "ruby " + RubyVersions.Ruby26Version)]
         [InlineData("2.7", "ruby " + RubyVersions.Ruby27Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
-        public void RubyVersionMatchesImageName(string rubyVersion, string expectedOutput)
+        public void RubyVersionMatchesBusterImageName(string rubyVersion, string expectedOutput)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("ruby", rubyVersion),
+                ImageId = _imageHelper.GetRuntimeImage("ruby", rubyVersion, ImageTestHelperConstants.OsTypeDebianBuster),
+                CommandToExecuteOnRun = "ruby",
+                CommandArguments = new[] { "--version" }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedOutput, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [Trait("category", "runtime-bullseye")]
+        [InlineData("2.5", "ruby " + RubyVersions.Ruby25Version)]
+        [InlineData("2.6", "ruby " + RubyVersions.Ruby26Version)]
+        [InlineData("2.7", "ruby " + RubyVersions.Ruby27Version)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void RubyVersionMatchesBullseyeImageName(string rubyVersion, string expectedOutput)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("ruby", rubyVersion, ImageTestHelperConstants.OsTypeDebianBullseye),
                 CommandToExecuteOnRun = "ruby",
                 CommandArguments = new[] { "--version" }
             });

@@ -496,8 +496,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             isPhpComposerAlreadyInstalled = isPhpComposerAlreadyInstalled ?? true;
             phpComposerInstallationScript = phpComposerInstallationScript ?? "default-php-composer-installation-script";
             var versionProvider = new TestPhpVersionProvider(supportedPhpVersions, defaultVersion);
-            supportedPhpComposerVersions = supportedPhpComposerVersions ?? new[] { PhpVersions.ComposerVersion };
-            defaultComposerVersion = defaultComposerVersion ?? PhpVersions.ComposerVersion;
+            supportedPhpComposerVersions = supportedPhpComposerVersions ?? new[] { PhpVersions.ComposerDefaultVersion };
+            defaultComposerVersion = defaultComposerVersion ?? PhpVersions.ComposerDefaultVersion;
             var composerVersionProvider = new TestPhpComposerVersionProvider(
                 supportedPhpComposerVersions,
                 defaultComposerVersion);

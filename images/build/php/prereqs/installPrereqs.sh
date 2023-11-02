@@ -34,8 +34,8 @@ apt-get update \
 
 ##<argon2>##
 sed -e 's/# deb http:\/\/deb.debian.org\/debian stretch-updates/deb http:\/\/deb.debian.org\/debian stretch-updates/g' \
-    -e 's/deb http:\/\/archive.debian.org\/debian stretch/deb http:\/\/deb.debian.org\/debian stretch/g' \
-    -e 's/deb http:\/\/archive.debian.org\/debian-security stretch/deb http:\/\/security.debian.org\/debian-security stretch/g' \
+    -e 's/deb http:\/\/archive.kernel.org\/debian-archive\/debian stretch/deb http:\/\/deb.debian.org\/debian stretch/g' \
+    -e 's/deb http:\/\/archive.kernel.org\/debian-archive\/debian-security stretch/deb http:\/\/security.debian.org\/debian-security stretch/g' \
     -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
 { \
 	echo 'Package: *';

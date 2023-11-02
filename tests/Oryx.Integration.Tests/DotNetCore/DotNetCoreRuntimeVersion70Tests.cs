@@ -3,13 +3,10 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
-using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
-using Microsoft.Oryx.BuildScriptGeneratorCli;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
 using Xunit.Abstractions;
@@ -31,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task CanBuildAndRun_NetCore70AppAsync(string sampleApp, string webpageMessage)
         {
             // Arrange
-            var dotnetcoreVersion = DotNetCoreRunTimeVersions.NetCoreApp70;
+            var dotnetcoreVersion = "7.0.9"; // Hard-code .NET 7.0 values for buster while the latest binaries have known issues
             var hostDir = Path.Combine(_hostSamplesDir, "DotNetCore", sampleApp);
             var volume = DockerVolume.CreateMirror(hostDir);
             var appDir = volume.ContainerDir;
@@ -59,7 +56,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "7.0"),
+                _imageHelper.GetRuntimeImage("dotnetcore", "7.0", ImageTestHelperConstants.OsTypeDebianBullseye),
                 ContainerPort,
                 "/bin/sh",
                 new[]

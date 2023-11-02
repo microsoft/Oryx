@@ -66,6 +66,7 @@ then
   echo ""
   retagImageWithStagingRepository node-runtimeimage-bases-buster.txt $imageName buster
   retagImageWithStagingRepository node-runtimeimage-bases-bullseye.txt $imageName bullseye
+  retagImageWithStagingRepository node-runtimeimage-bases-bookworm.txt $imageName bookworm
 elif [ "$imageName" == "python-build" ]
 then
   echo ""

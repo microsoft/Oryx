@@ -21,6 +21,10 @@ parameters:
         buildTag: 'debian-stretch'
       - category: '18'
         buildTag: 'github-actions-debian-bullseye'
+      - category: '20'
+        buildTag: 'github-actions-debian-bookworm'
+      - category: '20-bullseye'
+        buildTag: 'github-actions-debian-bullseye'
 
 jobs:
 - ${{ each mapping in parameters.testMappings }}:
@@ -29,7 +33,9 @@ jobs:
     dependsOn:
     - Job_BuildImage_Latest
     - Job_BuildImage_GithubActions
-    - Job_RuntimeImages
+    - Job_Buster_RuntimeImages
+    - Job_Bullseye_RuntimeImages
+    - Job_Bookworm_RuntimeImages
     pool:
       name: AzurePipelines-EO
       demands:
