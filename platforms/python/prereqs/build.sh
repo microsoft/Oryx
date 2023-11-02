@@ -97,7 +97,6 @@ make install
 IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
 if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "12" ]
 then
-    export PATH=/opt/python/$PYTHON_VERSION/bin:$PATH
     export LD_LIBRARY_PATH="/opt/python/$PYTHON_VERSION/lib/"
     /opt/python/$PYTHON_VERSION/bin/python3 --version
     rm -rf /usr/src/python
@@ -120,7 +119,7 @@ then
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O get-pip.py
 
-    /opt/python/3.12.0/bin/python3 get-pip.py \
+    /opt/python/$PYTHON_VERSION/bin/python3 get-pip.py \
         --trusted-host pypi.python.org \
         --trusted-host pypi.org \
         --trusted-host files.pythonhosted.org \
