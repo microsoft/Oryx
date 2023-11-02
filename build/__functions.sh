@@ -104,7 +104,7 @@ function shouldStageRuntimeVersion()
 	fi
 }
 
-function retrieveSastokenFromKeyvault()
+function retrieveSastokenFromKeyVault()
 {	
 	set +x
 	sdkStorageAccountUrl="$1"

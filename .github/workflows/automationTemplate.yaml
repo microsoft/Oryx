@@ -16,7 +16,7 @@ on:
         description: 'The platform name should be all lowercase'
 
 env:
-  MAX_RETRIES: 10
+  MAX_RETRIES: 15
   TIMEOUT_SECONDS: 900
   ORYX_SDK_STORAGE_BASE_URL: ${{ vars.ORYX_SDK_STORAGE_BASE_URL }}
   DOTNET_MIN_RELEASE_VERSION: ${{ vars.DOTNET_MIN_RELEASE_VERSION }}
@@ -29,6 +29,10 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions: 
+      actions: write
+      contents: write
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v3
@@ -75,7 +79,7 @@ jobs:
         with:
           branch: automation/add-new-${{ inputs.platformName }}-versions-${{ env.RELEASE_DATE }}
           title: New ${{ env.PLATFORM_NAME_CAMEL_CASE }} Sdks ${{ env.RELEASE_DATE }}
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.PAT_TEMP }}
 
       
       - if: ${{ env.CANCEL_WORKFLOW == 0 }}
@@ -130,7 +134,7 @@ jobs:
           
           # run automation again to preserve constants.yaml YamlDotNet indentation
           # since YamlDoNet and yq do not share indentation spacing
-          dotnet run --project build/tools/Automation/Automation.csproj ${RELEASE_DATE} ${{ github.workspace }}
+          dotnet run --project build/tools/Automation/Automation.csproj ${{ inputs.platformName }} ${{ github.workspace }}
           
           ./build/generateConstants.sh
 

@@ -16,15 +16,15 @@ ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
 # stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror
 RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
         sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
-        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
-        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
+        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.kernel.org\/debian-archive\/debian-security stretch/g' /etc/apt/sources.list \
+        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.kernel.org\/debian-archive\/debian stretch/g' /etc/apt/sources.list ; \
     fi
 
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN="$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
+    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
     && buildDir="/opt/tmp/build" \
     && imagesDir="/opt/tmp/images" \
     # Install .NET Core SDKS
@@ -76,5 +76,4 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && ln -s $MAVEN_VERSION lts \
     && rm -rf /opt/tmp \
     && echo "vso" > /opt/oryx/.imagetype \
-    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN=""
+    && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype 

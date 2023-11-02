@@ -15,6 +15,6 @@ namespace Microsoft.Oryx.Automation
         public const string VersionsToBuildTxtFileName = "versionsToBuild.txt";
         public const string ConstantsYaml = "constants.yaml";
         public static readonly HashSet<string> DebianFlavors = new HashSet<string>()
-        { "bullseye", "buster", "focal-scm", "stretch" };
+        { "bookworm", "bullseye", "buster", "focal-scm", "stretch" };
     }
 }

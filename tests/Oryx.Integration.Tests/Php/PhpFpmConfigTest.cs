@@ -41,7 +41,8 @@ namespace Microsoft.Oryx.Integration.Tests
             string failureOutputText = default)
         {
             await PhpFpmConfigTestAsync(
-                "8.0", 
+                "8.0",
+                ImageTestHelperConstants.OsTypeDebianBullseye,
                 fpmMaxChildren, expectedFpmMaxChildren,
                 fpmStartServers, expectedFpmStartServers,
                 fpmMaxSpareServers, expectedFpmMaxSpareServers,
@@ -66,6 +67,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             await PhpFpmConfigTestAsync(
                 "7.4",
+                ImageTestHelperConstants.OsTypeDebianBullseye,
                 fpmMaxChildren, expectedFpmMaxChildren,
                 fpmStartServers, expectedFpmStartServers,
                 fpmMaxSpareServers, expectedFpmMaxSpareServers,
@@ -84,6 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
             var appOutputDirVolume = CreateAppOutputDirVolume();
             var appOutputDir = appOutputDirVolume.ContainerDir;
             var phpVersion = "8.0";
+            var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var nginxDummyCustomConfigFile = appDir + "/NGINX_DUMMY_CUSTOM_CONFIG_FILE.conf";
             var nginxCustomCommand1 = "cp " + nginxDummyCustomConfigFile + " /etc/nginx/nginx.conf";
             var nginxCustomCommand2 = "service nginx reload";
@@ -111,7 +114,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     Settings.BuildImageName,
                     "/bin/sh",
                     new[] { "-c", buildScript },
-                    _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                    _imageHelper.GetRuntimeImage("php", phpimageVersion, osType),
                     new List<EnvironmentVariable>()
                     {
                     new EnvironmentVariable(ExtVarNames.NginxConfFile, nginxDummyCustomConfigFile)
@@ -127,7 +130,8 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         private async Task PhpFpmConfigTestAsync(
-            string phpVersion, 
+            string phpVersion,
+            string osType,
             string fpmMaxChildren, string expectedFpmMaxChildren,
             string fpmStartServers, string expectedFpmStartServers,
             string fpmMaxSpareServers, string expectedFpmMaxSpareServers,
@@ -166,7 +170,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     Settings.BuildImageName,
                     "/bin/sh",
                     new[] { "-c", buildScript },
-                    _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                    _imageHelper.GetRuntimeImage("php", phpimageVersion, osType),
                     new List<EnvironmentVariable>()
                     {
                     new EnvironmentVariable(ExtVarNames.PhpFpmMaxChildrenEnvVarName, fpmMaxChildren),
@@ -201,7 +205,7 @@ namespace Microsoft.Oryx.Integration.Tests
                     Settings.BuildImageName,
                     "/bin/sh",
                     new[] { "-c", buildScript },
-                    _imageHelper.GetRuntimeImage("php", phpimageVersion),
+                    _imageHelper.GetRuntimeImage("php", phpimageVersion, osType),
                     new List<EnvironmentVariable>()
                     {
                     new EnvironmentVariable(ExtVarNames.AppServiceAppNameEnvVarName, appName),

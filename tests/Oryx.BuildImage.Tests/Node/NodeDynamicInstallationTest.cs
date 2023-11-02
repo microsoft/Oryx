@@ -405,7 +405,44 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         [InlineData("18.0.0", ImageTestHelperConstants.GitHubActionsBullseye)]
+        [InlineData("20.9.0", ImageTestHelperConstants.GitHubActionsBullseye)]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationOnBullseyeImage(string version, string buildImageName)
+        {
+            // Arrange
+            var devPackageName = "nodemon";
+            var prodPackageName = "express";
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version} --debug")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{prodPackageName}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetBuildImage(buildImageName),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        [InlineData("20.9.0", ImageTestHelperConstants.GitHubActionsBookworm)]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationOnBookwormImage(string version, string buildImageName)
         {
             // Arrange
             var devPackageName = "nodemon";

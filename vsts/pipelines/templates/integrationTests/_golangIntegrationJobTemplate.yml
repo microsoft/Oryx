@@ -24,7 +24,9 @@ jobs:
     displayName: 'Run Golang ${{ mapping.category }} Integration Tests using build image tag ${{ mapping.buildTag }}'
     dependsOn:
     - Job_BuildImage_Full
-    - Job_RuntimeImages
+    - Job_Buster_RuntimeImages
+    - Job_Bullseye_RuntimeImages
+    - Job_Bookworm_RuntimeImages
     pool:
       name: AzurePipelines-EO
       demands:

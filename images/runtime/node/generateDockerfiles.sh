@@ -15,7 +15,8 @@ declare -r DOCKERFILE_TEMPLATE="$DIR/template.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER="%RUNTIME_BASE_IMAGE_TAG%"
 
 # Please make sure that any changes to debian flavors supported here are also reflected in build/constants.yaml
-declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE18_VERSION)
+declare -r NODE_BOOKWORM_VERSION_ARRAY=($NODE20_VERSION)
+declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE20_VERSION $NODE18_VERSION $NODE16_VERSION $NODE14_VERSION)
 declare -r NODE_BUSTER_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
 
 ImageDebianFlavor="$1"
@@ -23,7 +24,9 @@ echo "node baseimage type: $ImageDebianFlavor"
 
 VERSIONS_DIRECTORY=()
 
-if [ "$ImageDebianFlavor" == "bullseye" ];then
+if [ "$ImageDebianFlavor" == "bookworm" ];then
+    VERSIONS_DIRECTORY=("${NODE_BOOKWORM_VERSION_ARRAY[@]}")
+elif [ "$ImageDebianFlavor" == "bullseye" ];then
     VERSIONS_DIRECTORY=("${NODE_BULLSEYE_VERSION_ARRAY[@]}")
 elif [ "$ImageDebianFlavor" == "buster" ];then
     VERSIONS_DIRECTORY=("${NODE_BUSTER_VERSION_ARRAY[@]}")
@@ -43,6 +46,6 @@ do
 
 	echo "Generating Dockerfile for $ImageDebianFlavor based images..."
 	# Replace placeholders
-	RUNTIME_BASE_IMAGE_TAG="node-$VERSION_DIRECTORY-$NODE_RUNTIME_BASE_TAG"
+	RUNTIME_BASE_IMAGE_TAG="node-$VERSION_DIRECTORY-debian-$ImageDebianFlavor-$NODE_RUNTIME_BASE_TAG"
 	sed -i "s|$RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER|$RUNTIME_BASE_IMAGE_TAG|g" "$TARGET_DOCKERFILE"
 done
