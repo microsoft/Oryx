@@ -59,12 +59,24 @@ echo
 RETRY_DELAY=2
 RETRY_ATTEMPTS=5
 
+function fail_if_retry_exceeded() {
+  retries=$1
+  if [ "$retries" -ge $RETRY_ATTEMPTS ]; then
+    echo "===== Retry attempts exceeded ====="
+    exit 1
+  fi
+}
+
 # Execute the analyze phase
 echo
 echo "===== Executing the analyze phase ====="
 retryCount=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
+  if [ "$retryCount" -ge 1 ]; then
+    echo "===== Retrying analyze phase (attempt $retryCount) ====="
+  fi
+
   /lifecycle/analyzer \
     -log-level debug \
     -run-image mcr.microsoft.com/oryx/builder:stack-run-debian-bullseye-20230926.1 \
@@ -72,9 +84,10 @@ do
     && break
 
   retryCount=$((retryCount+1))
-  echo "Retrying analyze attempt $retryAttempt..."
   sleep $RETRY_DELAY
 done
+
+fail_if_retry_exceeded $retryCount
 
 # Execute the detect phase
 echo
@@ -82,15 +95,20 @@ echo "===== Executing the detect phase ====="
 retryCount=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
+  if [ "$retryCount" -ge 1 ]; then
+    echo "===== Retrying detect phase (attempt $retryCount) ====="
+  fi
+
   /lifecycle/detector \
     -log-level debug \
     -app $CNB_APP_DIR \
     && break
 
   retryCount=$((retryCount+1))
-  echo "Retrying detect attempt $retryAttempt..."
   sleep $RETRY_DELAY
 done
+
+fail_if_retry_exceeded $retryCount
 
 # Execute the restore phase
 echo
@@ -98,15 +116,20 @@ echo "===== Executing the restore phase ====="
 retryCount=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
+  if [ "$retryCount" -ge 1 ]; then
+    echo "===== Retrying restore phase (attempt $retryCount) ====="
+  fi
+
   /lifecycle/restorer \
     -log-level debug \
     -build-image mcr.microsoft.com/oryx/builder:stack-build-debian-bullseye-20230926.1 \
     && break
 
   retryCount=$((retryCount+1))
-  echo "Retrying restore attempt $retryAttempt..."
   sleep $RETRY_DELAY
 done
+
+fail_if_retry_exceeded $retryCount
 
 # Execute the extend phase
 echo
@@ -114,15 +137,20 @@ echo "===== Executing the extend phase ====="
 retryCount=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
+  if [ "$retryCount" -ge 1 ]; then
+    echo "===== Retrying extend phase (attempt $retryCount) ====="
+  fi
+
   /lifecycle/extender \
     -log-level debug \
     -app $CNB_APP_DIR \
     && break
 
   retryCount=$((retryCount+1))
-  echo "Retrying extend attempt $retryAttempt..."
   sleep $RETRY_DELAY
 done
+
+fail_if_retry_exceeded $retryCount
 
 # Execute the export phase
 echo
@@ -130,6 +158,10 @@ echo "===== Executing the export phase ====="
 retryCount=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
+  if [ "$retryCount" -ge 1 ]; then
+    echo "===== Retrying export phase (attempt $retryCount) ====="
+  fi
+
   /lifecycle/exporter \
     -log-level debug \
     -app $CNB_APP_DIR \
@@ -137,6 +169,7 @@ do
     && break
 
   retryCount=$((retryCount+1))
-  echo "Retrying export attempt $retryAttempt..."
   sleep $RETRY_DELAY
 done
+
+fail_if_retry_exceeded $retryCount
