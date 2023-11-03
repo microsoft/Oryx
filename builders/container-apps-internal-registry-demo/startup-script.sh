@@ -132,25 +132,13 @@ done
 fail_if_retry_exceeded $retryCount
 
 # Execute the extend phase
+# Note: we do not retry this, as generally these failures are from the actual build rather than infrastructure.
 echo
 echo "===== Executing the extend phase ====="
-retryCount=0
-until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
-do
-  if [ "$retryCount" -ge 1 ]; then
-    echo "----- Retrying extend phase (attempt $retryCount) -----"
-  fi
 
-  /lifecycle/extender \
-    -log-level debug \
-    -app $CNB_APP_DIR \
-    && break
-
-  retryCount=$((retryCount+1))
-  sleep $RETRY_DELAY
-done
-
-fail_if_retry_exceeded $retryCount
+/lifecycle/extender \
+  -log-level debug \
+  -app $CNB_APP_DIR
 
 # Execute the export phase
 echo
