@@ -62,7 +62,7 @@ RETRY_ATTEMPTS=5
 function fail_if_retry_exceeded() {
   retries=$1
   if [ "$retries" -ge $RETRY_ATTEMPTS ]; then
-    echo "===== Retry attempts exceeded ====="
+    echo "----- Retry attempts exceeded -----"
     exit 1
   fi
 }
@@ -74,7 +74,7 @@ retryCount=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
-    echo "===== Retrying analyze phase (attempt $retryCount) ====="
+    echo "----- Retrying analyze phase (attempt $retryCount) -----"
   fi
 
   /lifecycle/analyzer \
@@ -96,7 +96,7 @@ retryCount=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
-    echo "===== Retrying detect phase (attempt $retryCount) ====="
+    echo "----- Retrying detect phase (attempt $retryCount) -----"
   fi
 
   /lifecycle/detector \
@@ -117,7 +117,7 @@ retryCount=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
-    echo "===== Retrying restore phase (attempt $retryCount) ====="
+    echo "----- Retrying restore phase (attempt $retryCount) -----"
   fi
 
   /lifecycle/restorer \
@@ -138,7 +138,7 @@ retryCount=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
-    echo "===== Retrying extend phase (attempt $retryCount) ====="
+    echo "----- Retrying extend phase (attempt $retryCount) -----"
   fi
 
   /lifecycle/extender \
@@ -159,7 +159,7 @@ retryCount=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
-    echo "===== Retrying export phase (attempt $retryCount) ====="
+    echo "----- Retrying export phase (attempt $retryCount) -----"
   fi
 
   /lifecycle/exporter \
