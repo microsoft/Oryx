@@ -52,49 +52,112 @@ token=$(printf "%s" "$REGISTRY_AUTH_USERNAME:$REGISTRY_AUTH_PASSWORD" | base64)
 acr_access_string="Basic $token"
 export CNB_REGISTRY_AUTH='{"'$ACR_RESOURCE_NAME'":"'$acr_access_string'"}'
 
+echo "Initiating buildpack build..."
+echo "Correlation id: '$CORRELATION_ID'"
+echo 
+
+RETRY_DELAY=2
+RETRY_ATTEMPTS=5
+
+function fail_if_retry_exceeded() {
+  retries=$1
+  if [ "$retries" -ge $RETRY_ATTEMPTS ]; then
+    echo "----- Retry attempts exceeded -----"
+    exit 1
+  fi
+}
+
 # Execute the analyze phase
 echo
-echo "======================================="
 echo "===== Executing the analyze phase ====="
-echo "======================================="
-/lifecycle/analyzer \
-  -log-level debug \
-  -run-image mcr.microsoft.com/oryx/builder:stack-run-debian-bullseye-20230926.1 \
-  $APP_IMAGE
+retryCount=0
+until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
+do
+  if [ "$retryCount" -ge 1 ]; then
+    echo "----- Retrying analyze phase (attempt $retryCount) -----"
+  fi
+
+  /lifecycle/analyzer \
+    -log-level debug \
+    -run-image mcr.microsoft.com/oryx/builder:stack-run-debian-bullseye-20230926.1 \
+    $APP_IMAGE \
+    && break
+
+  retryCount=$((retryCount+1))
+  sleep $RETRY_DELAY
+done
+
+fail_if_retry_exceeded $retryCount
 
 # Execute the detect phase
 echo
-echo "======================================"
 echo "===== Executing the detect phase ====="
-echo "======================================"
-/lifecycle/detector \
-  -log-level debug \
-  -app $CNB_APP_DIR
+retryCount=0
+until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
+do
+  if [ "$retryCount" -ge 1 ]; then
+    echo "----- Retrying detect phase (attempt $retryCount) -----"
+  fi
+
+  /lifecycle/detector \
+    -log-level debug \
+    -app $CNB_APP_DIR \
+    && break
+
+  retryCount=$((retryCount+1))
+  sleep $RETRY_DELAY
+done
+
+fail_if_retry_exceeded $retryCount
 
 # Execute the restore phase
 echo
-echo "======================================="
 echo "===== Executing the restore phase ====="
-echo "======================================="
-/lifecycle/restorer \
-  -log-level debug \
-  -build-image mcr.microsoft.com/oryx/builder:stack-build-debian-bullseye-20230926.1
+retryCount=0
+until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
+do
+  if [ "$retryCount" -ge 1 ]; then
+    echo "----- Retrying restore phase (attempt $retryCount) -----"
+  fi
+
+  /lifecycle/restorer \
+    -log-level debug \
+    -build-image mcr.microsoft.com/oryx/builder:stack-build-debian-bullseye-20230926.1 \
+    && break
+
+  retryCount=$((retryCount+1))
+  sleep $RETRY_DELAY
+done
+
+fail_if_retry_exceeded $retryCount
 
 # Execute the extend phase
+# Note: we do not retry this, as generally these failures are from the actual build rather than infrastructure.
 echo
-echo "======================================"
 echo "===== Executing the extend phase ====="
-echo "======================================"
+
 /lifecycle/extender \
   -log-level debug \
   -app $CNB_APP_DIR
 
 # Execute the export phase
 echo
-echo "======================================"
 echo "===== Executing the export phase ====="
-echo "======================================"
-/lifecycle/exporter \
-  -log-level debug \
-  -app $CNB_APP_DIR \
-  $APP_IMAGE
+retryCount=0
+until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
+do
+  if [ "$retryCount" -ge 1 ]; then
+    echo "----- Retrying export phase (attempt $retryCount) -----"
+  fi
+
+  /lifecycle/exporter \
+    -log-level debug \
+    -app $CNB_APP_DIR \
+    $APP_IMAGE \
+    && break
+
+  retryCount=$((retryCount+1))
+  sleep $RETRY_DELAY
+done
+
+fail_if_retry_exceeded $retryCount
