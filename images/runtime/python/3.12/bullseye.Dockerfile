@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.19-${DEBIAN_FLAVOR} as startupCmdGen
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
@@ -26,6 +26,8 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         xz-utils \
+        libxml2 \
+        libxslt \
     && rm -rf /var/lib/apt/lists/*
 
 ADD images ${IMAGES_DIR}
