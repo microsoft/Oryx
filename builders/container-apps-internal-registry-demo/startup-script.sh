@@ -88,7 +88,7 @@ do
     -run-image mcr.microsoft.com/oryx/builder:stack-run-debian-bullseye-20230926.1 \
     $APP_IMAGE
 
-  $lifecycleExitCode=$?
+  lifecycleExitCode=$?
   if [ "$lifecycleExitCode" -eq 0 ]; then
     break
   fi
@@ -114,7 +114,7 @@ do
     -log-level debug \
     -app $CNB_APP_DIR
 
-  $lifecycleExitCode=$?
+  lifecycleExitCode=$?
   if [ "$lifecycleExitCode" -eq 0 ]; then
     break
   fi
@@ -140,7 +140,7 @@ do
     -log-level debug \
     -build-image mcr.microsoft.com/oryx/builder:stack-build-debian-bullseye-20230926.1
 
-  $lifecycleExitCode=$?
+  lifecycleExitCode=$?
   if [ "$lifecycleExitCode" -eq 0 ]; then
     break
   fi
@@ -160,9 +160,11 @@ echo "===== Executing the extend phase ====="
   -log-level debug \
   -app $CNB_APP_DIR
 
-if [ $? -ne 0 ]; then
+lifecycleExitCode=$?
+if [ $lifecycleExitCode -ne 0 ]; then
     echo "----- Build failed -----"
-    echo "Build process failed with exit code '$exitCode'. Exiting..."
+    echo "Build process failed with exit code '$lifecycleExitCode'. Exiting..."
+    exit $lifecycleExitCode
 fi
 
 # Execute the export phase
@@ -181,7 +183,7 @@ do
     -app $CNB_APP_DIR \
     $APP_IMAGE
 
-  $lifecycleExitCode=$?
+  lifecycleExitCode=$?
   if [ "$lifecycleExitCode" -eq 0 ]; then
     break
   fi
