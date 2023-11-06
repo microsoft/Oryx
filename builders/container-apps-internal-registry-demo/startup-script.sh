@@ -61,16 +61,22 @@ RETRY_ATTEMPTS=5
 
 function fail_if_retry_exceeded() {
   retries=$1
+  exitCode=$2
   if [ "$retries" -ge $RETRY_ATTEMPTS ]; then
     echo "----- Retry attempts exceeded -----"
-    exit 1
+    echo "Build process failed with exit code '$exitCode'. Exiting..."
+    exit $exitCode
   fi
 }
+
+# Allow commands to fail, so we can parse exit codes and handle the failures ourselves.
+set +e
 
 # Execute the analyze phase
 echo
 echo "===== Executing the analyze phase ====="
 retryCount=0
+lifecycleExitCode=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
@@ -80,19 +86,24 @@ do
   /lifecycle/analyzer \
     -log-level debug \
     -run-image mcr.microsoft.com/oryx/builder:stack-run-debian-bullseye-20230926.1 \
-    $APP_IMAGE \
-    && break
+    $APP_IMAGE
+
+  $lifecycleExitCode=$?
+  if [ "$lifecycleExitCode" -eq 0 ]; then
+    break
+  fi
 
   retryCount=$((retryCount+1))
   sleep $RETRY_DELAY
 done
 
-fail_if_retry_exceeded $retryCount
+fail_if_retry_exceeded $retryCount $lifecycleExitCode
 
 # Execute the detect phase
 echo
 echo "===== Executing the detect phase ====="
 retryCount=0
+lifecycleExitCode=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
@@ -101,19 +112,24 @@ do
 
   /lifecycle/detector \
     -log-level debug \
-    -app $CNB_APP_DIR \
-    && break
+    -app $CNB_APP_DIR
+
+  $lifecycleExitCode=$?
+  if [ "$lifecycleExitCode" -eq 0 ]; then
+    break
+  fi
 
   retryCount=$((retryCount+1))
   sleep $RETRY_DELAY
 done
 
-fail_if_retry_exceeded $retryCount
+fail_if_retry_exceeded $retryCount $lifecycleExitCode
 
 # Execute the restore phase
 echo
 echo "===== Executing the restore phase ====="
 retryCount=0
+lifecycleExitCode=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
@@ -122,14 +138,18 @@ do
 
   /lifecycle/restorer \
     -log-level debug \
-    -build-image mcr.microsoft.com/oryx/builder:stack-build-debian-bullseye-20230926.1 \
-    && break
+    -build-image mcr.microsoft.com/oryx/builder:stack-build-debian-bullseye-20230926.1
+
+  $lifecycleExitCode=$?
+  if [ "$lifecycleExitCode" -eq 0 ]; then
+    break
+  fi
 
   retryCount=$((retryCount+1))
   sleep $RETRY_DELAY
 done
 
-fail_if_retry_exceeded $retryCount
+fail_if_retry_exceeded $retryCount $lifecycleExitCode
 
 # Execute the extend phase
 # Note: we do not retry this, as generally these failures are from the actual build rather than infrastructure.
@@ -140,10 +160,16 @@ echo "===== Executing the extend phase ====="
   -log-level debug \
   -app $CNB_APP_DIR
 
+if [ $? -ne 0 ]; then
+    echo "----- Build failed -----"
+    echo "Build process failed with exit code '$exitCode'. Exiting..."
+fi
+
 # Execute the export phase
 echo
 echo "===== Executing the export phase ====="
 retryCount=0
+lifecycleExitCode=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
@@ -153,11 +179,15 @@ do
   /lifecycle/exporter \
     -log-level debug \
     -app $CNB_APP_DIR \
-    $APP_IMAGE \
-    && break
+    $APP_IMAGE
+
+  $lifecycleExitCode=$?
+  if [ "$lifecycleExitCode" -eq 0 ]; then
+    break
+  fi
 
   retryCount=$((retryCount+1))
   sleep $RETRY_DELAY
 done
 
-fail_if_retry_exceeded $retryCount
+fail_if_retry_exceeded $retryCount $lifecycleExitCode
