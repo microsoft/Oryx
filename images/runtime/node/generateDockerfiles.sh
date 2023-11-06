@@ -15,8 +15,8 @@ declare -r DOCKERFILE_TEMPLATE="$DIR/template.Dockerfile"
 declare -r RUNTIME_BASE_IMAGE_TAG_PLACEHOLDER="%RUNTIME_BASE_IMAGE_TAG%"
 
 # Please make sure that any changes to debian flavors supported here are also reflected in build/constants.yaml
-declare -r NODE_BOOKWORM_VERSION_ARRAY=()
-declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE18_VERSION $NODE16_VERSION $NODE14_VERSION)
+declare -r NODE_BOOKWORM_VERSION_ARRAY=($NODE20_VERSION)
+declare -r NODE_BULLSEYE_VERSION_ARRAY=($NODE20_VERSION $NODE18_VERSION $NODE16_VERSION $NODE14_VERSION)
 declare -r NODE_BUSTER_VERSION_ARRAY=($NODE16_VERSION $NODE14_VERSION)
 
 ImageDebianFlavor="$1"

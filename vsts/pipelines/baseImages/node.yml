@@ -28,6 +28,15 @@ jobs:
     artifactsFileName: node-runtimeimage-bases-bullseye.txt
     jobName: Build_Bullseye_BaseImages
 
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build Node runtime bookworm base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: node
+    imageDebianFlavor: bookworm
+    artifactsFileName: node-runtimeimage-bases-bookworm.txt
+    jobName: Build_Bookworm_BaseImages
+
 - job: Release_NodeRuntimeBaseImage
   dependsOn: 
     - Build_Buster_BaseImages

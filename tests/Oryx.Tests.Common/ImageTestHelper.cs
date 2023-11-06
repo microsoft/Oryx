@@ -241,6 +241,10 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetGitHubActionsBuildImage(_gitHubActionsBullseye);
             }
+            else if (string.Equals(tag, _gitHubActionsBookworm))
+            {
+                return GetGitHubActionsBuildImage(_gitHubActionsBookworm);
+            }
             else if (string.Equals(tag, _ltsVersionsBuster))
             {
                 return GetLtsVersionsBuildImage(_ltsVersionsBuster);

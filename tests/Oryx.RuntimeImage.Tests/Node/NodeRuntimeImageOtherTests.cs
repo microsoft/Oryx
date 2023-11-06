@@ -53,6 +53,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("14", NodeVersions.Node14Version)]
         [InlineData("16", NodeVersions.Node16Version)]
         [InlineData("18", NodeVersions.Node18Version)]
+        [InlineData("20", NodeVersions.Node20Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void NodeVersionMatchesBullseyeImageName(string version, string nodeVersion)
         {
@@ -72,6 +73,62 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Equal(expectedNodeVersion, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("20", NodeVersions.Node20Version)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void NodeVersionMatchesBookwormImageName(string version, string nodeVersion)
+        {
+            // Arrange & Act
+            var expectedNodeVersion = "v" + nodeVersion;
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("node", version, ImageTestHelperConstants.OsTypeDebianBookworm),
+                CommandToExecuteOnRun = "node",
+                CommandArguments = new[] { "--version" }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedNodeVersion, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [MemberData(
+            nameof(TestValueGenerator.GetBookwormNodeVersions),
+            MemberType = typeof(TestValueGenerator))]
+        public void HasExpected_Global_Bookworm_Node_Module_Path(string nodeVersion, string osType)
+        {
+            // Arrange & Act
+            var script = new ShellScriptBuilder()
+                .AddCommand("npm root --quiet -g")
+                .ToString();
+
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("node", nodeVersion, osType),
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(FilePaths.NodeGlobalModulesPath, actualOutput);
                 },
                 result.GetDebugInfo());
         }

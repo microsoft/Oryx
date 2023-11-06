@@ -15,11 +15,10 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     *) echo "unsupported architecture"; exit 1 ;; \
   esac
 
-ARG NODE14_VERSION
+ARG NODE20_VERSION
 ARG DEBIAN_FLAVOR
-ENV NODE_VERSION ${NODE14_VERSION}
+ENV NODE_VERSION ${NODE20_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
-
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
