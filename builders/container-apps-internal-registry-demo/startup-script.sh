@@ -52,8 +52,8 @@ token=$(printf "%s" "$REGISTRY_AUTH_USERNAME:$REGISTRY_AUTH_PASSWORD" | base64)
 acr_access_string="Basic $token"
 export CNB_REGISTRY_AUTH='{"'$ACR_RESOURCE_NAME'":"'$acr_access_string'"}'
 
-echo "Initiating buildpack build..."
-echo "Correlation id: '$CORRELATION_ID'"
+echo "----- Initiating buildpack build -----"
+echo "----- Cloud Build correlation id: '$CORRELATION_ID' -----"
 echo 
 
 RETRY_DELAY=2
@@ -64,7 +64,7 @@ function fail_if_retry_exceeded() {
   exitCode=$2
   if [ "$retries" -ge $RETRY_ATTEMPTS ]; then
     echo "----- Retry attempts exceeded -----"
-    echo "Build process failed with exit code '$exitCode'. Exiting..."
+    echo "----- Cloud Build failed with exit code '$lifecycleExitCode' -----"
     exit $exitCode
   fi
 }
@@ -162,8 +162,7 @@ echo "===== Executing the extend phase ====="
 
 lifecycleExitCode=$?
 if [ $lifecycleExitCode -ne 0 ]; then
-    echo "----- Build failed -----"
-    echo "Build process failed with exit code '$lifecycleExitCode'. Exiting..."
+    echo "----- Cloud Build failed with exit code '$lifecycleExitCode' -----"
     exit $lifecycleExitCode
 fi
 
