@@ -80,7 +80,7 @@ lifecycleExitCode=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
-    echo "----- Retrying analyze phase (attempt $retryCount) -----"
+    echo "===== Retrying analyze phase (attempt $retryCount) ====="
   fi
 
   /lifecycle/analyzer \
@@ -107,7 +107,7 @@ lifecycleExitCode=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
-    echo "----- Retrying detect phase (attempt $retryCount) -----"
+    echo "===== Retrying detect phase (attempt $retryCount) ====="
   fi
 
   /lifecycle/detector \
@@ -133,7 +133,7 @@ lifecycleExitCode=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
-    echo "----- Retrying restore phase (attempt $retryCount) -----"
+    echo "===== Retrying restore phase (attempt $retryCount) ====="
   fi
 
   /lifecycle/restorer \
@@ -174,7 +174,7 @@ lifecycleExitCode=0
 until [ "$retryCount" -ge $RETRY_ATTEMPTS ]
 do
   if [ "$retryCount" -ge 1 ]; then
-    echo "----- Retrying export phase (attempt $retryCount) -----"
+    echo "===== Retrying export phase (attempt $retryCount) ====="
   fi
 
   /lifecycle/exporter \
