@@ -59,7 +59,7 @@ isodate==0.6.0
 itertable==2.0.0
 kombu==5.2.4
 libsass==0.21.0
-lxml==4.9.1
+lxml==4.9.3
 MarkupPy==1.14
 msal==1.21.0
 msal-extensions==0.3.0

@@ -28,6 +28,7 @@ RUN apt-get update \
         xz-utils \
         gcc \
         rustc \
+        cargo \
     && rm -rf /var/lib/apt/lists/*
 
 ADD images ${IMAGES_DIR}
