@@ -103,7 +103,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
-                [Fact]
+        [Fact]
         [Trait("category", "python-3.12")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython312App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()

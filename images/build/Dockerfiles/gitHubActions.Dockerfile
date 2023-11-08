@@ -66,7 +66,6 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
             libssl3 \
             libyaml-dev \
             libxml2 \
-            # https://github.com/yaml/pyyaml/issues/724#issuecomment-1638591821
         && rm -rf /var/lib/apt/lists/* ; \
     elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
         apt-get update \
