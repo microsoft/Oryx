@@ -6,7 +6,9 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 8.*
+# Update dotnet-monitor after .NET is out of preview to: 
+#   dotnet-monitor --version 8.*
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 8.0.0-preview.7.23402
 
 FROM mcr.microsoft.com/mirror/docker/library/debian:bookworm-slim
 ARG BUILD_DIR=/tmp/oryx/build

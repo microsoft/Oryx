@@ -6,7 +6,9 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 8.*
+# Update dotnet-monitor after .NET is out of preview to: 
+#   dotnet-monitor --version 8.*
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 8.0.0-preview.7.23402
 
 FROM mcr.microsoft.com/mirror/docker/library/debian:bookworm-slim
 ARG BUILD_DIR=/tmp/oryx/build
@@ -38,11 +40,9 @@ ENV ASPNETCORE_URLS=http://+:80 \
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 
 # Install .NET Core
-
 # mount the secret sas token to pull the binaries, and make sure we do not print to docker build logs
 RUN --mount=type=secret,id=dotnet_storage_account_token_id \
-
-RUN set -e \
+    set -e \
 # based on resolution on https://github.com/NuGet/Announcements/issues/49#issue-795386700
     && apt-get remove ca-certificates -y \
     && apt-get purge ca-certificates -y \
