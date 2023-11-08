@@ -26,6 +26,7 @@ RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y --no-install-recommends \
         xz-utils \
+        gcc \
     && rm -rf /var/lib/apt/lists/*
 
 ADD images ${IMAGES_DIR}

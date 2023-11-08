@@ -108,6 +108,9 @@ function getRuntimeTagVersion()
     elif [ "$PLATFORM_NAME" == "python" ]
     then
         case $PLATFORM_VERSION in
+            3.12)
+                FULL_RUNTIME_TAG_VERSION=$PYTHON312_VERSION
+                ;;
             3.11)
                 FULL_RUNTIME_TAG_VERSION=$PYTHON311_VERSION
                 ;;
