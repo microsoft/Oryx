@@ -81,6 +81,8 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
             libxml2-dev \
             libxslt-dev \
             python3-dev \
+            python3-setuptools \
+            python3-wheel \
         && rm -rf /var/lib/apt/lists/* ; \
     elif [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \

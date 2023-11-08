@@ -27,6 +27,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         xz-utils \
         gcc \
+        rustc \
     && rm -rf /var/lib/apt/lists/*
 
 ADD images ${IMAGES_DIR}
@@ -85,7 +86,7 @@ RUN pip install --upgrade pip \
     && pip install debugpy \
     && pip install viztracer==0.15.6 \
     && pip install vizplugins==0.1.3 \
-    && pip install orjson==3.8.9 \
+    && pip install orjson==3.8.10 \
     && if [ "%PYTHON_VERSION%" = "3.7" ] || [ "%PYTHON_VERSION%" = "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
     && dpkg -i libffi6_3.2.1-9_amd64.deb \
     && rm libffi6_3.2.1-9_amd64.deb; fi \
