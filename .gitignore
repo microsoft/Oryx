@@ -264,7 +264,6 @@ images/runtime/node/*/bullseye.Dockerfile
 images/runtime/dotnetcore/*/Dockerfile
 images/runtime/dotnetcore/*/buster.Dockerfile
 images/runtime/dotnetcore/*/stretch.Dockerfile
-images/runtime/dotnetcore/*/*.staging.Dockerfile
 images/runtime/dotnetcore/*/bullseye.Dockerfile
 images/runtime/dotnetcore/*/bookworm.Dockerfile
 images/runtime/python/*/Dockerfile

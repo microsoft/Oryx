@@ -127,6 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("python", "3.9", "debian-bullseye-stable", "3.9-debian-bullseye")]
         [InlineData("python", "3.10", "debian-bullseye-stable", "3.10-debian-bullseye")]
         [InlineData("python", "3.11", "debian-bullseye-stable", "3.11-debian-bullseye")]
+        [InlineData("python", "3.12", "debian-bullseye-stable", "3.12-debian-bullseye")]
         [InlineData("python", "3.6", "debian-buster-stable", "dynamic-debian-buster")] // 3.6.x not currently a runtime, use dynamic
         [InlineData("python", "3.8.1", "debian-bullseye-stable", "3.8-debian-bullseye")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatform(
@@ -188,6 +189,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("python", "3.9", "debian-bullseye-stable", "3.9-debian-bullseye")]
         [InlineData("python", "3.10", "debian-bullseye-stable", "3.10-debian-bullseye")]
         [InlineData("python", "3.11", "debian-bullseye-stable", "3.11-debian-bullseye")]
+        [InlineData("python", "3.12", "debian-bullseye-stable", "3.12-debian-bullseye")]
         [InlineData("python", "3.6", "debian-buster-stable", "dynamic-debian-buster")] // 3.6.x not currently a runtime, use dynamic
         [InlineData("python", "3.8.1", "debian-bullseye-stable", "3.8-debian-bullseye")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForNoProvidedPlatform(

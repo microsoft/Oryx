@@ -75,6 +75,13 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
             libssl1.1 \
             libyaml-dev \
             libxml2 \
+            # Adding lxml depended packages to avoid build failures
+            # https://lxml.de/installation.html#requirements
+            libxml2-dev \
+            libxslt-dev \
+            python3-dev \
+            python3-setuptools \
+            python3-wheel \
         && rm -rf /var/lib/apt/lists/* ; \
     elif [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         apt-get update \
