@@ -104,6 +104,17 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("category", "python-3.12")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython312App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
+                "3.12",
+                ImageTestHelperConstants.OsTypeDebianBullseye,
+                ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact]
         [Trait("category", "python-3.7")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython37App_UsingScriptCommandAndSetEnvSwitchAsync()
@@ -204,6 +215,10 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "django-app";
+            if (int.Parse(pythonVersion) >= 3.12)
+            {
+                appName = "django42-app";
+            }
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();

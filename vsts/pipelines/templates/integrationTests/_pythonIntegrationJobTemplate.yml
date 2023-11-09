@@ -21,6 +21,8 @@ parameters:
         buildTag: 'github-actions-debian-bullseye'
       - category: '3.11'
         buildTag: 'github-actions-debian-bullseye'
+      - categoty: '3.12'
+        buildTag: 'github-actions-debian-bullseye'
 
 jobs:
 - ${{ each mapping in parameters.testMappings }}:
