@@ -9,6 +9,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
 # Update dotnet-monitor after .NET is out of preview to: 
 #   dotnet-monitor --version 8.*
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 8.0.0-preview.7.23402
+
 FROM mcr.microsoft.com/mirror/docker/library/debian:bullseye-slim
 ARG BUILD_DIR=/tmp/oryx/build
 ADD build ${BUILD_DIR}
@@ -48,7 +49,7 @@ RUN --mount=type=secret,id=dotnet_storage_account_token_id \
     && apt-get update \
     && apt-get install -f ca-certificates -y --no-install-recommends \
     && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
-    && curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Runtime/$NET_CORE_APP_80/dotnet-runtime-$NET_CORE_APP_80-linux-x64.tar.gz \
+    && curl -SL --output dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet-private/Internal/$NET_CORE_APP_80/dotnet-runtime-$NET_CORE_APP_80-linux-x64.tar.gz$(cat /run/secrets/dotnet_storage_account_token_id) \
     && echo "$NET_CORE_APP_80_SHA dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
@@ -56,7 +57,7 @@ RUN --mount=type=secret,id=dotnet_storage_account_token_id \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
     # Install ASP.NET Core
     && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
-    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_80/aspnetcore-runtime-$ASPNET_CORE_APP_80-linux-x64.tar.gz \
+    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet-private/Internal/$ASPNET_CORE_APP_80/aspnetcore-runtime-$ASPNET_CORE_APP_80-linux-x64.tar.gz$(cat /run/secrets/dotnet_storage_account_token_id) \
     && echo "$ASPNET_CORE_APP_80_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
