@@ -93,8 +93,12 @@ make -j $(nproc)
 
 make install
 
-if  [ "${PYTHON_VERSION[0]}" == "3" ] && [ "${PYTHON_VERSION[1]}" -ge "10" ]
+# python3.12.0 version requires the updated pip version. The older pip version:21.2.4 does not work with python3.12.0.
+IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
+if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "12" ]
 then
+    export LD_LIBRARY_PATH="/opt/python/$PYTHON_VERSION/lib/"
+    /opt/python/$PYTHON_VERSION/bin/python3 --version
     rm -rf /usr/src/python
     find /usr/local -depth \
         \( \
@@ -103,31 +107,29 @@ then
         \) -exec rm -rf '{}' + \
 
     ldconfig
-    python3 --version
 
     # make some useful symlinks that are expected to exist
-    cd /usr/local/bin
+    cd /opt/python/$PYTHON_VERSION/bin/
     ln -s idle3 idle
     ln -s pydoc3 pydoc
     ln -s python3 python
     ln -s python3-config python-config
-
     PYTHON_GET_PIP_SHA256="c518250e91a70d7b20cceb15272209a4ded2a0c263ae5776f129e0d9b5674309"
 
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O get-pip.py
 
-    python3 get-pip.py \
+    /opt/python/$PYTHON_VERSION/bin/python3 get-pip.py \
         --trusted-host pypi.python.org \
         --trusted-host pypi.org \
         --trusted-host files.pythonhosted.org \
         --disable-pip-version-check \
         --no-cache-dir \
         --no-warn-script-location
-
     rm -rf /configure* /config.* /*.txt /*.md /*.rst /*.toml /*.m4 /tmpFiles
     rm -rf /LICENSE /install-sh /Makefile* /pyconfig* /python.tar* /python-* /libpython3.* /setup.py
     rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
+
 else
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O get-pip.py
@@ -170,7 +172,9 @@ echo
 
 # Replace log level in pip's code as a workaround for https://github.com/pypa/pip/issues/6189
 pipReqSetPath=`find $INSTALLATION_PREFIX/lib -path "*site-packages/pip/_internal/req/req_set.py"`
-sed -i 's|logger\.debug('\''Cleaning up\.\.\.'\'')|logger\.info('\''Cleaning up\.\.\.'\'')|' "$pipReqSetPath"
+if [ -n "$pipReqSetPath" ]; then
+    sed -i 's|logger\.debug('\''Cleaning up\.\.\.'\'')|logger\.info('\''Cleaning up\.\.\.'\'')|' "$pipReqSetPath"
+fi
 
 compressedSdkDir="/tmp/compressedSdk"
 mkdir -p $compressedSdkDir

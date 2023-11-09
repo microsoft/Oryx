@@ -87,6 +87,7 @@ The following are supported runtime versions for the image `mcr.microsoft.com/or
 - `3.9`
 - `3.10`
 - `3.11`
+- `3.12`
 
 ## Ruby
 

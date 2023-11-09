@@ -165,12 +165,12 @@ getPythonGpgByVersion() {
 
 echo
 # TODO: Determine if we need to continue building newer versions of Python from scratch
-echo "Building python 3.12 or newer from source code..."
+echo "Building python 3.13 or newer from source code..."
 
 getPythonGpgByVersion "/tmp/versionsToBuild.txt" $version
 IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
 
-if  [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "12" ]
+if  [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "13" ]
 then
     buildPythonfromSource $version $pythonVersionGPG
 else
