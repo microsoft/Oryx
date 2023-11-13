@@ -7,6 +7,9 @@
 *.userosscache
 *.sln.docstates
 
+# .NET global.json file to set the SDK version per user
+global.json
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

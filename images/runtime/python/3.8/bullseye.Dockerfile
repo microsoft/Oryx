@@ -81,6 +81,7 @@ LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
 RUN pip install --upgrade pip \
     && pip install gunicorn \
+    && pip install uvicorn \
     && pip install debugpy \
     && pip install viztracer==0.15.6 \
     && pip install vizplugins==0.1.3 \
