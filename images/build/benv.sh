@@ -57,10 +57,6 @@ done < <(set | grep -i '^hugo=')
 
 while read benvEnvironmentVariable; do
   set -- "$benvEnvironmentVariable" "$@"
-done < <(set | grep -i '^ruby=')
-
-while read benvEnvironmentVariable; do
-  set -- "$benvEnvironmentVariable" "$@"
 done < <(set | grep -i '^golang=')
 
 while read benvEnvironmentVariable; do
@@ -319,39 +315,6 @@ benv-resolve() {
     updatePath "$DIR"
     export golang="$DIR/golang/$value"
 
-    return 0
-  fi
-
-  # Resolve RUBY versions
-  if matchesName "ruby" "$name" || matchesName "ruby_version" "$name" && [ "${value::1}" != "/" ]; then
-    platformDir=$(benv-getPlatformDir "ruby" "$value" "$_benvDynamicInstallRootDir")
-    if [ "$platformDir" == "NotFound" ]; then
-      benv-showSupportedVersionsErrorInfo "ruby" "ruby" "$value" "$_benvDynamicInstallRootDir"
-      return 1
-    fi
-
-    local installationDir="$_benvDynamicInstallRootDir/ruby/$value"
-    local currentDir="/opt/ruby"
-    if [ -d "$installationDir" ]; then
-      mkdir -p $currentDir
-      cp -r $installationDir $currentDir
-    fi
-
-    # https://stackoverflow.com/a/4250666/1184056
-    # LIBRARY_PATH is used by gcc before compilation to search directories containing static and shared libraries
-    # that need to be linked to your program.
-    # LD_LIBRARY_PATH is used by your program to search directories containing shared libraries after it has been
-    # successfully compiled and linked.
-    export LIBRARY_PATH="$platformDir/lib:$LIBRARY_PATH"
-    export LD_LIBRARY_PATH="$platformDir/lib:$LD_LIBRARY_PATH"
-    
-    local DIR="$platformDir/bin"
-    updatePath "$DIR"
-    export RUBY_HOME="$platformDir"
-    export GEM_HOME="$platformDir"
-    export ruby="$DIR/ruby"
-    export gem="$DIR/gem"
-    
     return 0
   fi
 

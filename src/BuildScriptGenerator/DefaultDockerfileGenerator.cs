@@ -32,7 +32,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             { "node", NodeVersions.RuntimeVersions },
             { "php", PhpVersions.RuntimeVersions },
             { "python", PythonVersions.RuntimeVersions },
-            { "ruby", RubyVersions.RuntimeVersions },
         };
 
         private readonly ICompatiblePlatformDetector platformDetector;

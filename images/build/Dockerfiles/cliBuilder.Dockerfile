@@ -79,8 +79,6 @@ RUN apt-get update \
         libsqlite3-dev \
         libxml2-dev \
         xz-utils \
-        # ruby pre-req
-        libyaml-dev \
     && rm -rf /var/lib/apt/lists/* \
     && chmod a+x /opt/buildscriptgen/GenerateBuildScript \
     && mkdir -p /opt/oryx \

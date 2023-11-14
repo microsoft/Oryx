@@ -2,13 +2,12 @@ FROM oryxdevmcr.azurecr.io/public/oryx/build
 # This is a separate instruction because of the limit of Docker where variable expansion fails when used in the
 # same instruction. In the below example the variable TEST would be empty instead of having the value "bar"
 # Example: ENV FOO="bar" TEST="$FOO"
-ENV ORYX_PATHS="$ORYX_PATHS:/opt/java/lts/bin:/opt/maven/lts/bin:/opt/ruby/lts/bin"
+ENV ORYX_PATHS="$ORYX_PATHS:/opt/java/lts/bin:/opt/maven/lts/bin"
 
 ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     # VSO requires user installed tools to be preferred over Oryx installed tools
     PATH="$ORIGINAL_PATH:$ORYX_PATHS" \
     CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh" \
-    RUBY_HOME="/opt/ruby/lts" \
     JAVA_HOME="/opt/java/lts" \
     DYNAMIC_INSTALL_ROOT_DIR="/opt" \
     DEBIAN_FLAVOR="stretch"
@@ -61,11 +60,7 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && cd $imagesDir/build/python/conda \
     && cp -rf * "$condaDir" \
     && cd $imagesDir \
-    # Install Ruby and related tools
-    && . $buildDir/__rubyVersions.sh \
-    && ./installPlatform.sh ruby $RUBY27_VERSION \
-    && cd /opt/ruby \
-    && ln -s $RUBY27_VERSION /opt/ruby/lts \
+    # Install Java
     && cd $imagesDir \
     && . $buildDir/__javaVersions.sh \
     && ./installPlatform.sh java $JAVA_VERSION \

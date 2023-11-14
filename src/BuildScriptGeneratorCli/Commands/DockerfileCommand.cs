@@ -26,7 +26,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string Name = "dockerfile";
         public const string Description = "Generates a dockerfile to build and run an app.";
 
-        private readonly string[] supportedRuntimePlatforms = { "dotnetcore", "node", "php", "python", "ruby" };
+        private readonly string[] supportedRuntimePlatforms = { "dotnetcore", "node", "php", "python" };
 
         public DockerfileCommand()
         {

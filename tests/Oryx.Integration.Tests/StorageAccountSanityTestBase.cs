@@ -141,20 +141,6 @@ namespace Oryx.Integration.Tests
         }
 
         [Fact]
-        public void RubyContainer_HasExpectedListOfBlobs()
-        {
-            var platformName = "ruby";
-            AssertExpectedListOfBlobs(platformName, platformName);
-        }
-
-        [Fact]
-        public void RubyContainer_HasExpectedDefaultVersion()
-        {
-            var platformName = "ruby";
-            AssertExpectedDefaultVersion(platformName, platformName);
-        }
-
-        [Fact]
         public void JavaContainer_HasExpectedListOfBlobs()
         {
             var platformName = "java";

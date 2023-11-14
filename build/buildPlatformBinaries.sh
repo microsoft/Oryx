@@ -32,9 +32,6 @@ case $PLATFORM_TO_BUILD in
 	'golang')
 		"$platformsDir/golang/getGolangSdk.sh" $DEBIAN_FLAVOR_TO_BUILD $SDK_STORAGE_ACCOUNT_URL
 		;;
-	'ruby')
-		"$platformsDir/ruby/buildRuby.sh" $DEBIAN_FLAVOR_TO_BUILD $SDK_STORAGE_ACCOUNT_URL
-		;;
 	'java')
 		"$platformsDir/java/getJavaSdk.sh" $DEBIAN_FLAVOR_TO_BUILD $SDK_STORAGE_ACCOUNT_URL
 		;;     

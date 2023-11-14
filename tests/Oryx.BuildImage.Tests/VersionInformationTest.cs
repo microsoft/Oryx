@@ -147,35 +147,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
-        [InlineData("bundler", ImageTestHelperConstants.VsoFocal)]
-        [InlineData("rake", ImageTestHelperConstants.VsoFocal)]
-        [InlineData("ruby-debug-ide", ImageTestHelperConstants.VsoFocal)]
-        [InlineData("debase", ImageTestHelperConstants.VsoFocal)]
-        public void OryxVsoBuildImage_Contains_Required_Ruby_Gems(string gemName, string imageVersion)
-        {
-            var imageTestHelper = new ImageTestHelper();
-            string buildImage = imageTestHelper.GetVsoBuildImage(imageVersion);
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = buildImage,
-                CommandToExecuteOnRun = "gem",
-                CommandArguments = new[] { "list", gemName }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(gemName, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
         [Theory]
         [InlineData(Settings.BuildImageName)]
         [InlineData(Settings.LtsVersionsBuildImageName)]

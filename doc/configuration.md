@@ -19,7 +19,7 @@ ORYX\_DISABLE\_TELEMETRY     | Disable Oryx command line tools from collecting a
 ORYX\_APP\_TYPE              | Type of application that the the source directory has.         | ""  | 'functions','static-sites', 'webapps'.
 DISABLE\_RECURSIVE\_LOOKUP   | Indicates if detectors should consider looking into sub-directories for files | `false` | `true`, `false`
 ENABLE\_MULTIPLATFORM\_BUILD | Apply more than one toolset if repo indicates it               | `false` | `true`, `false`
-PLATFORM\_NAME               | Specify which platform the app is using. Possible values are: nodejs, hugo, python, dotnet, php, ruby, java.                   | ""      | "python"
+PLATFORM\_NAME               | Specify which platform the app is using. Possible values are: nodejs, hugo, python, dotnet, php, java.                   | ""      | "python"
 PLATFORM\_VERSION            | Specify which platform version the app is using           | ""      | "3.7.1"
 REQUIRED\_OS\_PACKAGES       | Indicate if it requires OS packages for Node or Python packages | `false` | `true`, `false`
 CREATE\_PACKAGE              | Indicate if it should create packages for the app          | `false` | `true`, `false`
@@ -79,12 +79,6 @@ JAVA\_DEFAULT\_VERSION     | Specify which Java version the app defaults to if n
 MAVEN\_VERSION             | Specify which Maven version the app is using                   | ""      | "3.6.3"
 MAVEN\_DEFAULT\_VERSION     | Specify which Maven version the app defaults to if none detected | ""      | "3.6.3"
 DISABLE\_JAVA_\_BUILD      | Do not apply Java build even if repo indicates it              | `false` | `true`, `false`
-
-Setting name for Ruby apps | Description                                                    | Default | Example
----------------------------|----------------------------------------------------------------|---------|----------------
-RUBY\_VERSION              | Specify which Ruby version the app is using                    | ""      | "2.7.1"
-RUBY\_DEFAULT\_VERSION     | Specify which Ruby version the app defaults to if none detected | ""      | "2.7.1"
-DISABLE\_RUBY_\_BUILD      | Do not apply Ruby build even if repo indicates it              | `false` | `true`, `false`
 
 Setting name for Hugo apps | Description                                                    | Default | Example
 ---------------------------|----------------------------------------------------------------|---------|----------------
@@ -153,14 +147,6 @@ PhpVersion                      | Platform's version that Oryx will use to run t
 OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         | "\|lTpVCq2KGuY=.e6f14074_"
 SourceDirectoryInBuildContainer | Directory inside Docker container containing source code                                  | "nodejs/helloworld-nuxtjs/"
 PlatformName                    | Name of Oryx supported platform name                                                      | "php"
-CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false"
-
-Ruby fields                     |       Description                                                                         |      Example
---------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------
-RubyVersion                     | Platform's version that Oryx will use to run the app                                      | "2.7.2"
-OperationId                     | Used to correlate with logs. Track telemetries whether build is passed or failed.         | "\|lTpVCq2KGuY=.e6f14074_"
-SourceDirectoryInBuildContainer | Directory inside Docker container containing source code                                  | "nodejs/helloworld-nuxtjs/"
-PlatformName                    | Name of Oryx supported platform name                                                      | "ruby"
 CompressDestinationDir          | Determines whether app is compressed to allow decompression for performance improvements  | "false"
 
 Java fields                     |       Description                                                                         |      Example

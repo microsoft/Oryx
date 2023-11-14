@@ -8,7 +8,6 @@ using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.BuildScriptGenerator.Ruby;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -507,10 +506,6 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 PythonConstants.PlatformName,
                 PythonVersions.RuntimeVersions
-            },
-            {
-                RubyConstants.PlatformName,
-                RubyVersions.RuntimeVersions
             },
         };
     }

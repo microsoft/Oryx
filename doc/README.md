@@ -12,7 +12,6 @@ system and how to configure or change them.
     * [Python](./runtimes/python.md)
     * [.NET Core](./runtimes/dotnetcore.md)
     * [PHP](./runtimes/php.md)
-    * [Ruby](./runtimes/ruby.md)
     * [Java](./runtimes/java.md)
     * [Hugo](./runtimes/hugo.md)
 1. [Architecture and components](./architecture.md)

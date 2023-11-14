@@ -129,12 +129,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     "Microsoft.Oryx.BuildScriptGenerator.Hugo.HugoBashBuildSnippet.sh.tpl");
             }
 
-            public static TemplateResource RubyBuildSnippet
-            {
-                get => new TemplateResource(
-                    "Microsoft.Oryx.BuildScriptGenerator.Ruby.RubyBashBuildSnippet.sh.tpl");
-            }
-
             public static TemplateResource JavaBuildSnippet
             {
                 get => new TemplateResource(

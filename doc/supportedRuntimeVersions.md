@@ -89,16 +89,6 @@ The following are supported runtime versions for the image `mcr.microsoft.com/or
 - `3.11`
 - `3.12`
 
-## Ruby
-
-The following are supported runtime versions for the image `mcr.microsoft.com/oryx/ruby:{version}`.
-
-- `2.5`
-- `2.6`
-- `2.7`
-
-
-
 # Oryx runtime base images debian flavor
 
 Oryx runtime images have different debian flavor and gradually migrate older debian flavor images like Stretch to newer debian flavor Bullseye images.
@@ -135,9 +125,6 @@ The information won't show in runtime image tags, but we can always check the de
 
 ### python
 - 3.9
-
-### ruby
-- 2.5, 2.6, 2.7
 
 
 ## Bullseye based runtime images

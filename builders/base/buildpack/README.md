@@ -19,5 +19,5 @@ pack config trusted-builders add cnbs/sample-builder:bionic
 ## Build the buildpack
 
 ```
-pack build test-ruby-app --path ./ruby-sample-app --buildpack ./buildpack
+pack build test-python-app --path ./python-sample-app --buildpack ./buildpack
 ```

@@ -11,7 +11,7 @@ parameters:
   type: boolean
   default: false
 # If overwrite is false, the only time SDKs will be copied is when the destination
-# account does not have the existing container (e.g. dotnet, nodejs, ruby)
+# account does not have the existing container (e.g. dotnet, nodejs)
 - name: overwrite
   displayName: Copy new SDKs to existing containers?
   type: boolean

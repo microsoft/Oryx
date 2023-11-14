@@ -20,7 +20,6 @@ source $REPO_DIR/build/__dotNetCoreRunTimeVersions.sh
 source $REPO_DIR/build/__nodeVersions.sh
 source $REPO_DIR/build/__phpVersions.sh
 source $REPO_DIR/build/__pythonVersions.sh
-source $REPO_DIR/build/__rubyVersions.sh
 
 # Get the specific platform version used for each runtime image to assist with future patching
 # e.g., for dotnetcore:7.0-debian-buster, we would retrieve 7.0.10 from the __dotNetCoreRunTimeVersions.sh file
@@ -125,22 +124,6 @@ function getRuntimeTagVersion()
                 ;;
             3.7)
                 FULL_RUNTIME_TAG_VERSION=$PYTHON37_VERSION
-                ;;
-            *)
-                FULL_RUNTIME_TAG_VERSION=$PLATFORM_VERSION
-                ;;
-        esac
-    elif [ "$PLATFORM_NAME" == "ruby" ]
-    then
-        case $PLATFORM_VERSION in
-            2.7)
-                FULL_RUNTIME_TAG_VERSION=$RUBY27_VERSION
-                ;;
-            2.6)
-                FULL_RUNTIME_TAG_VERSION=$RUBY26_VERSION
-                ;;
-            2.5)
-                FULL_RUNTIME_TAG_VERSION=$RUBY25_VERSION
                 ;;
             *)
                 FULL_RUNTIME_TAG_VERSION=$PLATFORM_VERSION

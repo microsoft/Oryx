@@ -41,7 +41,6 @@ buildSampleAppAndCalculateSize "java" "MavenSimpleJavaApp"
 buildSampleAppAndCalculateSize "nodejs" "helloworld-nuxtjs"
 buildSampleAppAndCalculateSize "php" "greetings"
 buildSampleAppAndCalculateSize "python" "flask-app"
-buildSampleAppAndCalculateSize "ruby" "Jekyll-app"
 
 echo
 echo "Finished all sample apps. Printing contents of output file $resultFileName..."

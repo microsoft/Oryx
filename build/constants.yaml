@@ -241,34 +241,6 @@
     - type: shell
       directory: build
       file-name-prefix: __
-- name: ruby-versions
-  constants:
-    gem-version: 3.3.21
-    ruby31-version: 3.1.3
-    ruby31-tar-sha256: 4ee161939826bcdfdafa757cf8e293a7f14e357f62be7144f040335cc8c7371a
-    ruby27-version: 2.7.7
-    ruby27-tar-sha256: b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04e3e4c
-    ruby26-version: 2.6.6
-    ruby26-tar-sha256: 5db187882b7ac34016cd48d7032e197f07e4968f406b0690e20193b9b424841f
-    ruby25-version: 2.5.8
-    ruby25-tar-sha256: 0391b2ffad3133e274469f9953ebfd0c9f7c186238968cbdeeb0651aa02a4d6d
-    ruby30-version: 3.0.5
-    ruby30-tar-sha256: cf7cb5ba2030fe36596a40980cdecfd79a0337d35860876dc2b10a38675bddde
-    runtime-versions:
-      - 2.5-debian-bullseye
-      - 2.5-debian-buster
-      - 2.6-debian-bullseye
-      - 2.6-debian-buster
-      - 2.7-debian-bullseye
-      - 2.7-debian-buster
-      - dynamic-debian-buster
-  outputs:
-    - type: csharp
-      directory: src/BuildScriptGenerator
-      namespace: Microsoft.Oryx.BuildScriptGenerator.Common
-    - type: shell
-      directory: build
-      file-name-prefix: __
 - name: file-paths
   constants:
     compressed-output-file-name: oryx_output.tar.gz
@@ -381,7 +353,6 @@
     golang-installation-dir: /opt/golang
     python-installation-root-dir: /opt/python
     setup-script-location: /tmp/oryx/setupEnv.sh
-    ruby-installation-root-dir: /opt/ruby
   outputs:
     - type: go
       directory: src/startupscriptgenerator/src/common/consts
@@ -489,8 +460,6 @@
     php-staging-runtime-versions:
       -
     hugo-staging-runtime-versions:
-      -
-    ruby-staging-runtime-versions:
       -
     golang-staging-runtime-versions:
       -

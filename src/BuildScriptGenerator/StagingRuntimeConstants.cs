@@ -12,7 +12,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public static readonly List<string> JavaStagingRuntimeVersions = new List<string> { };
         public static readonly List<string> PhpStagingRuntimeVersions = new List<string> { };
         public static readonly List<string> HugoStagingRuntimeVersions = new List<string> { };
-        public static readonly List<string> RubyStagingRuntimeVersions = new List<string> { };
         public static readonly List<string> GolangStagingRuntimeVersions = new List<string> { };
     }
 }

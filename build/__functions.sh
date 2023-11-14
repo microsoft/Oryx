@@ -92,7 +92,6 @@ function shouldStageRuntimeVersion()
 		['java']="${JAVA_STAGING_RUNTIME_VERSIONS[*]}"
 		['php']="${PHP_STAGING_RUNTIME_VERSIONS[*]}"
 		['hugo']="${HUGO_STAGING_RUNTIME_VERSIONS[*]}"
-		['ruby']="${RUBY_STAGING_RUNTIME_VERSIONS[*]}"
 		['golang']="${GOLANG_STAGING_RUNTIME_VERSIONS[*]}"
 	)
 

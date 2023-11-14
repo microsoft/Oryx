@@ -24,7 +24,6 @@ using Microsoft.Oryx.BuildScriptGenerator.Hugo;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.BuildScriptGenerator.Python;
-using Microsoft.Oryx.BuildScriptGenerator.Ruby;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Options;
 using Microsoft.Oryx.Detector;
@@ -33,7 +32,6 @@ using Microsoft.Oryx.Detector.Java;
 using Microsoft.Oryx.Detector.Node;
 using Microsoft.Oryx.Detector.Php;
 using Microsoft.Oryx.Detector.Python;
-using Microsoft.Oryx.Detector.Ruby;
 
 namespace Microsoft.Oryx.BuildScriptGeneratorCli
 {
@@ -396,9 +394,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                     break;
                 case JavaConstants.PlatformName:
                     result = new JavaPlatformDetectorResult();
-                    break;
-                case RubyConstants.PlatformName:
-                    result = new RubyPlatformDetectorResult();
                     break;
             }
 

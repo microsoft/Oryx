@@ -96,7 +96,7 @@ fi
 shopt -u nocasematch
 set -x
 
-platforms=("nodejs" "python" "dotnet" "php" "php-composer" "ruby" "java" "maven" "golang")
+platforms=("nodejs" "python" "dotnet" "php" "php-composer" "java" "maven" "golang")
 for platform in "${platforms[@]}"
 do
     uploadFiles $platform

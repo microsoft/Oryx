@@ -97,13 +97,6 @@ shouldOverwritePlatformSdk() {
 					return 1
 				fi
 	    	;;
-        "ruby")
-		if [ "$OVERWRITE_EXISTING_SDKS_RUBY" == "true" ]; then
-					return 0
-				else
-					return 1
-				fi
-		;;
 	"python")
 		if [ "$OVERWRITE_EXISTING_SDKS_PYTHON" == "true" ]; then
 					return 0

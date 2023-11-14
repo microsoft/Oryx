@@ -205,13 +205,12 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && rm -f /etc/apt/sources.list.d/buster.list
 
-ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts::/opt/java/lts/bin:/opt/maven/lts/bin:/opt/ruby/lts/bin"
+ENV ORYX_PATHS="/opt/oryx:/opt/nodejs/lts/bin:/opt/dotnet/lts:/opt/python/latest/bin:/opt/php/lts/bin:/opt/php-composer:/opt/yarn/stable/bin:/opt/hugo/lts::/opt/java/lts/bin:/opt/maven/lts/bin"
 
 ENV ORYX_PREFER_USER_INSTALLED_SDKS=true \
     ORIGINAL_PATH="$PATH" \
     PATH="$ORYX_PATHS:$PATH" \
     CONDA_SCRIPT="/opt/conda/etc/profile.d/conda.sh" \
-    RUBY_HOME="/opt/ruby/lts" \
     JAVA_HOME="/opt/java/lts" \
     DYNAMIC_INSTALL_ROOT_DIR="/opt"
 
@@ -246,14 +245,6 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && cd $imagesDir/build/python/conda \
     && cp -rf * "$condaDir" \
     && cd $imagesDir \
-    && mkdir -p /home/codespace/.ruby \
-    && . $buildDir/__rubyVersions.sh \
-    && ./installPlatform.sh ruby $RUBY30_VERSION \
-    && ./installPlatform.sh ruby $RUBY31_VERSION \
-    && cd /opt/ruby \
-    && ln -s $RUBY30_VERSION /opt/ruby/lts \
-    && ln -sfn /opt/ruby/$RUBY30_VERSION /home/codespace/.ruby/current \
-    && cd $imagesDir \
     && mkdir -p /home/codespace/java \
     && . $buildDir/__javaVersions.sh \
     && ./installPlatform.sh java $JAVA_VERSION \
@@ -274,8 +265,6 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && echo "vso-focal" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
-# install few more tools for VSO
-RUN gem install bundler rake ruby-debug-ide debase jekyll
 RUN  yes | pecl install xdebug \
     && export PHP_LOCATION=$(dirname $(dirname $(which php))) \
     && echo "zend_extension=$(find ${PHP_LOCATION}/lib/php/extensions/ -name xdebug.so)" > ${PHP_LOCATION}/ini/conf.d/xdebug.ini \
