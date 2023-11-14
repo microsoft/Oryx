@@ -13,6 +13,14 @@ temp_app_source_dir="/tmp/appsource"
 temp_app_source_path="$temp_app_source_dir/$FILE_UPLOAD_BLOB_NAME"
 mkdir $temp_app_source_dir
 
+build_env_dir="/platform/env"
+# list all the environment variables and filter the environment variable with prefix BP_, BPL_, ORYX_ or CORRELATION_ID, then write them to the build env dir
+env | grep -E '^BP_|^BPL_|^ORYX_|^CORRELATION_ID$' | while read -r line; do
+  var_name=$(echo "$line" | cut -d= -f1)
+  var_value=$(echo "$line" | cut -d= -f2-)
+  echo "$var_value" > "$build_env_dir/$var_name"
+done
+
 while [[ ! -f "$temp_app_source_path" || ! "$(file $temp_app_source_path)" =~ "compressed data" ]]
 do
   echo "Waiting for app source to be uploaded. Please upload the app source to the endpoint specified in the Build resource's 'uploadEndpoint' property."
