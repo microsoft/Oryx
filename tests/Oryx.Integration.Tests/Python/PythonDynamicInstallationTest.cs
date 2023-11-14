@@ -215,7 +215,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             // Arrange
             var appName = "django-app";
-            if (int.Parse(pythonVersion) >= 3.12)
+            if (pythonVersion == "3.12")
             {
                 appName = "django42-app";
             }
