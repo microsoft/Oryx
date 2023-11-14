@@ -1,0 +1,42 @@
+name: Trigger auto deployment for capp-random-test
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/capp-random-test-AutoDeployTrigger-164dcbae-0669-469e-b0ac-42796b8412af.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.CAPPRANDOMTEST_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.CAPPRANDOMTEST_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.CAPPRANDOMTEST_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: 
+          registryUsername: ${{ secrets.CAPPRANDOMTEST_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.CAPPRANDOMTEST_REGISTRY_PASSWORD }}
+          containerAppName: test-ca-williamhe-west-us
+          resourceGroup: oryx-williamhe
+          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
