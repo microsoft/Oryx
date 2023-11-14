@@ -1,4 +1,4 @@
-ARG BASE_BUILDER_IMAGE="mcr.microsoft.com/oryx/builder:debian-bullseye-20231107.1"
+ARG BASE_BUILDER_IMAGE="mcr.microsoft.com/oryx/builder:debian-bullseye-20231107.2"
 FROM ${BASE_BUILDER_IMAGE}
 
 # these environment variables are generally going to be overwritten:
