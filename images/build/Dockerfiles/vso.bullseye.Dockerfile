@@ -266,7 +266,6 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
     
 # install few more tools for VSO
-RUN gem install bundler rake --backtrace
 RUN apt-get update \
     && apt-get install jekyll -y --no-install-recommends
 RUN  yes | pecl install xdebug \
