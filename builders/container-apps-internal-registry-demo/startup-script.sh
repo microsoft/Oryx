@@ -13,13 +13,21 @@ temp_app_source_dir="/tmp/appsource"
 temp_app_source_path="$temp_app_source_dir/$FILE_UPLOAD_BLOB_NAME"
 mkdir $temp_app_source_dir
 
+
+# List all the environment variables and filter the environment variable with prefix "USER_ENV_", then write them to folder "/platform/env", 
+# file name is the environment variable name without prefix USER_ENV_, file content is the environment variable value.
 build_env_dir="/platform/env"
-# list all the environment variables and filter the environment variable with prefix BP_, BPL_, ORYX_ or CORRELATION_ID, then write them to the build env dir
-env | grep -E '^BP_|^BPL_|^ORYX_|^CORRELATION_ID$' | while read -r line; do
-  var_name=$(echo "$line" | cut -d= -f1)
-  var_value=$(echo "$line" | cut -d= -f2-)
-  echo "$var_value" > "$build_env_dir/$var_name"
+env | grep -E '^USER_ENV_' | while read -r line; do
+  key=$(echo "$line" | cut -d= -f1)
+  value=$(echo "$line" | cut -d= -f2-)
+  filename="${key#USER_ENV_}"
+  echo "$value" > "$build_env_dir/$filename"
 done
+
+# write environment variable CORRELATION_ID to folder "/platform/env", 
+if [ -n "$CORRELATION_ID" ]; then
+  echo "$CORRELATION_ID" > "$build_env_dir/CORRELATION_ID"
+fi
 
 while [[ ! -f "$temp_app_source_path" || ! "$(file $temp_app_source_path)" =~ "compressed data" ]]
 do
