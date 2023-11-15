@@ -88,8 +88,8 @@ today=$(date +%s)
 IFS=',' read -ra parsedOncalls <<< "$ONCALL_LIST"
 
 oncallArrLen=${#parsedOncalls[@]}
-# anchor Date is Feb 21 2022 0:00
-anchorDate=1677002400
+# anchor Date is Nov 7 2023 10:00 PST
+anchorDate=1699380000
 d=$(((today - anchorDate)/60/60/24/7))
 pos=`echo "$d%$oncallArrLen" | bc`
 currentOncall=`echo ${parsedOncalls[$pos]}`
