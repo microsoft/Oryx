@@ -88,9 +88,9 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.10",
+                "django-app"
                 ImageTestHelperConstants.OsTypeDebianBullseye,
-                ImageTestHelperConstants.GitHubActionsBullseye,
-                "django-app");
+                ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Fact]
@@ -100,9 +100,9 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.11",
+                "django-app",
                 ImageTestHelperConstants.OsTypeDebianBullseye, 
-                ImageTestHelperConstants.GitHubActionsBullseye,
-                "django-app");
+                ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Fact]
@@ -112,9 +112,9 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.12",
+                "django42-app"
                 ImageTestHelperConstants.OsTypeDebianBullseye,
-                ImageTestHelperConstants.GitHubActionsBullseye,
-                "django42-app");
+                ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Fact]
@@ -213,9 +213,9 @@ namespace Microsoft.Oryx.Integration.Tests
 
         private async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
             string pythonVersion,
+            string appName,
             string osType,
-            string buildImageTag = null,
-            string appName)
+            string buildImageTag = null)
         {
             // Arrange
             var volume = CreateAppVolume(appName);
