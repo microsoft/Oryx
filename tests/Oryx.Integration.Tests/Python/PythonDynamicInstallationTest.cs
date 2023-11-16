@@ -89,7 +89,8 @@ namespace Microsoft.Oryx.Integration.Tests
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.10",
                 ImageTestHelperConstants.OsTypeDebianBullseye,
-                ImageTestHelperConstants.GitHubActionsBullseye);
+                ImageTestHelperConstants.GitHubActionsBullseye,
+                "django-app");
         }
 
         [Fact]
@@ -100,7 +101,8 @@ namespace Microsoft.Oryx.Integration.Tests
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.11",
                 ImageTestHelperConstants.OsTypeDebianBullseye, 
-                ImageTestHelperConstants.GitHubActionsBullseye);
+                ImageTestHelperConstants.GitHubActionsBullseye,
+                "django-app");
         }
 
         [Fact]
@@ -111,7 +113,8 @@ namespace Microsoft.Oryx.Integration.Tests
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.12",
                 ImageTestHelperConstants.OsTypeDebianBullseye,
-                ImageTestHelperConstants.GitHubActionsBullseye);
+                ImageTestHelperConstants.GitHubActionsBullseye,
+                "django42-app");
         }
 
         [Fact]
@@ -211,14 +214,10 @@ namespace Microsoft.Oryx.Integration.Tests
         private async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
             string pythonVersion,
             string osType,
-            string buildImageTag = null)
+            string buildImageTag = null,
+            string appName)
         {
             // Arrange
-            var appName = "django-app";
-            if (pythonVersion == "3.12")
-            {
-                appName = "django42-app";
-            }
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();
