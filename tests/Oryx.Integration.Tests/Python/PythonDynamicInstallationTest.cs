@@ -88,7 +88,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.10",
-                "django-app"
+                "django-app",
                 ImageTestHelperConstants.OsTypeDebianBullseye,
                 ImageTestHelperConstants.GitHubActionsBullseye);
         }
@@ -112,7 +112,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.12",
-                "django42-app"
+                "django42-app",
                 ImageTestHelperConstants.OsTypeDebianBullseye,
                 ImageTestHelperConstants.GitHubActionsBullseye);
         }
