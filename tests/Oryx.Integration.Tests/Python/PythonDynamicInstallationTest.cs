@@ -88,6 +88,7 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.10",
+                "django-app",
                 ImageTestHelperConstants.OsTypeDebianBullseye,
                 ImageTestHelperConstants.GitHubActionsBullseye);
         }
@@ -99,7 +100,20 @@ namespace Microsoft.Oryx.Integration.Tests
         {
             await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.11",
+                "django-app",
                 ImageTestHelperConstants.OsTypeDebianBullseye, 
+                ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact]
+        [Trait("category", "python-3.12")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task CanBuildAndRunPython312App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
+                "3.12",
+                "django42-app",
+                ImageTestHelperConstants.OsTypeDebianBullseye,
                 ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
@@ -199,11 +213,11 @@ namespace Microsoft.Oryx.Integration.Tests
 
         private async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
             string pythonVersion,
+            string appName,
             string osType,
             string buildImageTag = null)
         {
             // Arrange
-            var appName = "django-app";
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDirVolume = CreateAppOutputDirVolume();

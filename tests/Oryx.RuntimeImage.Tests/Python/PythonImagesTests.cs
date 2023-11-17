@@ -65,6 +65,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.9")]
         [InlineData("3.10")]
         [InlineData("3.11")]
+        [InlineData("3.12")]
         public void PythonBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -135,6 +136,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("3.9")]
         [InlineData("3.10")]
         [InlineData("3.11")]
+        [InlineData("3.12")]
         public void JamSpell_CanBe_InstalledInBullseyeRunTimeImage(string version)
         {
             // Arrange
