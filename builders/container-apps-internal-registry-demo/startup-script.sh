@@ -13,14 +13,13 @@ temp_app_source_dir="/tmp/appsource"
 temp_app_source_path="$temp_app_source_dir/$FILE_UPLOAD_BLOB_NAME"
 mkdir $temp_app_source_dir
 
-
-# List all the environment variables and filter the environment variable with prefix "USER_ENV_", then write them to folder "/platform/env", 
-# file name is the environment variable name without prefix USER_ENV_, file content is the environment variable value.
+# List all the environment variables and filter the environment variable with prefix "ACA_CLOUD_BUILD_USER_ENV_", then write them to folder "/platform/env", 
+# file name is the environment variable name without prefix, file content is the environment variable value.
 build_env_dir="/platform/env"
-env | grep -E '^USER_ENV_' | while read -r line; do
+env | grep -E '^ACA_CLOUD_BUILD_USER_ENV_' | while read -r line; do
   key=$(echo "$line" | cut -d= -f1)
   value=$(echo "$line" | cut -d= -f2-)
-  filename="${key#USER_ENV_}"
+  filename="${key#ACA_CLOUD_BUILD_USER_ENV_}"
   echo "$value" > "$build_env_dir/$filename"
 done
 
