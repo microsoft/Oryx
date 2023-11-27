@@ -800,18 +800,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
-        public void Builds_AzureBlazorWasmFunctionProject_By_Setting_Apptype_Via_BuildCommand()
+        [Theory]
+        [Trait("category", "jamstack")]
+        [InlineData("BlazorStarterAppNet8")]
+        [InlineData("BlazorVanillaApiAppNet8")]
+        public void Builds_AzureBlazorWasmFunctionProject_By_Setting_Apptype_Via_BuildCommand(string appName)
         {
             // Arrange
-            var appName = "Blazor_Function_Sample";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = $"{appDir}/output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --apptype {Constants.StaticSiteApplications} " +
-                $"--platform dotnet --platform-version 3.1.8")
+                $"--platform dotnet --platform-version 8.0")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(ManifestFilePropertyKeys.PlatformName, $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
@@ -820,7 +822,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye),
                 EnvironmentVariables = new List<EnvironmentVariable>
                 {
                     CreateAppNameEnvVar(appName)
@@ -835,23 +837,24 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNet80SdkVersion), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "jamstack")]
-        public void Builds_AzureFunctionProject_FromBlazorFunctionRepo_When_Apptype_Is_SetAs_Functions()
+        [Theory]
+        [Trait("category", "jamstack")]
+        [InlineData("BlazorVanillaApiAppNet8")]
+        public void Builds_AzureFunctionProject_FromBlazorFunctionRepo_When_Apptype_Is_SetAs_Functions(string appName)
         {
             // Arrange
-            var appName = "Blazor_Function_Sample";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/blazor-wasm-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
-                $"{appDir}/MessageFunction -o {appOutputDir} --apptype functions --platform dotnet " +
-                $"--platform-version {FinalStretchVersions.FinalStretchDotNetCoreApp31RunTimeVersion}")
+                $"{appDir} -o {appOutputDir} --apptype {Constants.FunctionApplications} --platform dotnet " +
+                $"--platform-version 8.0")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .ToString();
@@ -859,7 +862,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
+                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye),
                 EnvironmentVariables = new List<EnvironmentVariable>
                 {
                     CreateAppNameEnvVar(appName)
@@ -875,7 +878,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        string.Format(SdkVersionMessageFormat, FinalStretchVersions.FinalStretchDotNetCore31SdkVersion),
+                        string.Format(SdkVersionMessageFormat, DotNetCoreSdkVersions.DotNet80SdkVersion),
                         result.StdOut);
                 },
                 result.GetDebugInfo());
