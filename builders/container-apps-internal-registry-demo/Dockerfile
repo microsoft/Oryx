@@ -49,7 +49,9 @@ RUN chmod u+x /startup-script.sh
 RUN touch /usr/local/share/ca-certificates/internalregistry.crt \
 	&& chmod 666 /usr/local/share/ca-certificates/internalregistry.crt
 RUN chown ${CNB_USER_ID}:${CNB_GROUP_ID} /etc/ssl/certs/ \
-	&& chown ${CNB_USER_ID}:${CNB_GROUP_ID} /usr/local/share/ca-certificates/
+	&& chown ${CNB_USER_ID}:${CNB_GROUP_ID} /usr/local/share/ca-certificates/ \
+	&& chown ${CNB_USER_ID}:${CNB_GROUP_ID} /platform/env
+
 
 # Give cnb user permission to /cnb/extensions directory
 RUN mkdir -p ${CNB_EXTENSIONS_DIR} && \

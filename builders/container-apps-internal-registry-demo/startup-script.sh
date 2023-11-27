@@ -13,6 +13,21 @@ temp_app_source_dir="/tmp/appsource"
 temp_app_source_path="$temp_app_source_dir/$FILE_UPLOAD_BLOB_NAME"
 mkdir $temp_app_source_dir
 
+# List all the environment variables and filter the environment variable with prefix "ACA_CLOUD_BUILD_USER_ENV_", then write them to folder "/platform/env", 
+# file name is the environment variable name without prefix, file content is the environment variable value.
+build_env_dir="/platform/env"
+env | grep -E '^ACA_CLOUD_BUILD_USER_ENV_' | while read -r line; do
+  key=$(echo "$line" | cut -d= -f1)
+  value=$(echo "$line" | cut -d= -f2-)
+  filename="${key#ACA_CLOUD_BUILD_USER_ENV_}"
+  echo "$value" > "$build_env_dir/$filename"
+done
+
+# write environment variable CORRELATION_ID to folder "/platform/env", 
+if [ -n "$CORRELATION_ID" ]; then
+  echo "$CORRELATION_ID" > "$build_env_dir/CORRELATION_ID"
+fi
+
 while [[ ! -f "$temp_app_source_path" || ! "$(file $temp_app_source_path)" =~ "compressed data" ]]
 do
   echo "Waiting for app source to be uploaded. Please upload the app source to the endpoint specified in the Build resource's 'uploadEndpoint' property."
