@@ -12,6 +12,7 @@ source $REPO_DIR/build/__variables.sh
 destinationFqdn="oryxprodmcr.azurecr.io"
 destinationRepo="public/oryx/builder"
 destinationTag="capps-20230208.1"
+baseBuilderImage=""
 
 PARAMS=""
 while (( "$#" )); do
@@ -26,6 +27,10 @@ while (( "$#" )); do
       ;;
     -t|--destination-tag)
       destinationTag=$2
+      shift 2
+      ;;
+    -b|--base-builder-tag)
+      baseBuilderImage=$2
       shift 2
       ;;
     --) # end argument parsing
@@ -54,9 +59,18 @@ BUILD_IMAGE="$destinationFqdn/$destinationRepo:$destinationTag"
 echo "Building '$BUILD_IMAGE'..."
 echo
 cd $SCRIPT_DIR
-docker build \
-  -t $BUILD_IMAGE \
-  -f Dockerfile \
-  .
+if [[ -z "$baseBuilderImage" ]]; then
+  docker build \
+    -t $BUILD_IMAGE \
+    -f Dockerfile \
+    .
+else
+  docker build \
+    --build-arg BASE_BUILDER_IMAGE=$baseBuilderImage \
+    -t $BUILD_IMAGE \
+    -f Dockerfile \
+    .
+fi
+
 echo
 echo "$BUILD_IMAGE" >> $ACR_CAPPS_BUILDER_IMAGES_ARTIFACTS_FILE
