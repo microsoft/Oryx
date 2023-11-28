@@ -844,6 +844,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [Trait("category", "jamstack")]
+        [InlineData("BlazorStarterAppNet8")]
         [InlineData("BlazorVanillaApiAppNet8")]
         public void Builds_AzureFunctionProject_FromBlazorFunctionRepo_When_Apptype_Is_SetAs_Functions(string appName)
         {
