@@ -1,0 +1,55 @@
+name: Container Deploy
+
+on: [push]
+
+env:
+  AZURE_RESOURCE_GROUP: blazor-deployment-samples
+  AZURE_APP_NAME: bwasmcontainerapp
+
+jobs:
+  build:
+    if: github.event_name == 'push' && contains(toJson(github.event.commits), '***NO_CI***') == false && contains(toJson(github.event.commits), '[ci skip]') == false && contains(toJson(github.event.commits), '[skip ci]') == false
+    name: Build Container Image
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CONTAINER_CREDS }}
+
+    - uses: azure/docker-login@v1
+      with:
+        login-server: bwasm.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+    - run: |
+        docker build blazor-sample-app/ -t bwasm.azurecr.io/bwasm:${{ github.sha }}
+        docker push bwasm.azurecr.io/bwasm:${{ github.sha }} 
+
+    - name: Azure logout
+      run: |
+        az logout
+      
+  deploy:
+    needs: build
+    name: Deploy from ACR
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: 'Login via Azure CLI'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CONTAINER_CREDS }}
+
+    - name: 'Deploy from ACR'
+      uses: azure/webapps-container-deploy@v1
+      with:
+        app-name: '${{ env.AZURE_APP_NAME }}'
+        images: 'bwasm.azurecr.io/bwasm:${{ github.sha }}'
+    
+    - name: Azure logout
+      run: |
+        az logout
