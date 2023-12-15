@@ -28,18 +28,29 @@ if [ -n "$CORRELATION_ID" ]; then
   echo "$CORRELATION_ID" > "$build_env_dir/CORRELATION_ID"
 fi
 
-while [[ ! -f "$temp_app_source_path" || ! "$(file $temp_app_source_path)" =~ "compressed data" ]]
+file_type=""
+while [[ ! -f "$temp_app_source_path" ]] || 
+      [[ ! $file_type =~ "compressed data" ]] && 
+      [[ ! $file_type =~ "Zip archive data" ]] && 
+      [[ ! $file_type =~ "Java archive data" ]]
 do
   echo "Waiting for app source to be uploaded. Please upload the app source to the endpoint specified in the Build resource's 'uploadEndpoint' property."
   curl -H "$auth_header" -H "$version_header" -H "$date_header" -X GET "$file_upload_endpoint" -o "$temp_app_source_path" -s
   sleep 5
+  file_type=$(file $temp_app_source_path)
 done
 
 # Extract app code to CNB_APP_DIR directory.
 echo "Found app source at '$temp_app_source_path'. Extracting to $CNB_APP_DIR"
 mkdir -p $CNB_APP_DIR
 cd $CNB_APP_DIR
-tar -xzf "$temp_app_source_path"
+
+if [[ $file_type =~ "Zip archive data" || $file_type =~ "Java archive data" ]]; then
+  unzip -qq "$temp_app_source_path"
+else
+# Keep compatibility with old logic
+  tar -xzf "$temp_app_source_path"
+fi
 
 fileCount=$(ls | wc -l)
 if [ "$fileCount" = "1" ]; then
