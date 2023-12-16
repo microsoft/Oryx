@@ -38,6 +38,7 @@ RUN set -eux; \
 		sudo \
 		curl \
 		unzip \
+		grep \
 	; \
 	rm -rf /var/lib/apt/lists/*
 

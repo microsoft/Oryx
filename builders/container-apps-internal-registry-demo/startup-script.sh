@@ -11,6 +11,7 @@ file_upload_endpoint="$FILE_UPLOAD_CONTAINER_URL/$FILE_UPLOAD_BLOB_NAME"
 
 temp_app_source_dir="/tmp/appsource"
 temp_app_source_path="$temp_app_source_dir/$FILE_UPLOAD_BLOB_NAME"
+temp_app_header_path="$temp_app_source_dir/header.txt"
 mkdir $temp_app_source_dir
 
 # List all the environment variables and filter the environment variable with prefix "ACA_CLOUD_BUILD_USER_ENV_", then write them to folder "/platform/env", 
@@ -28,24 +29,30 @@ if [ -n "$CORRELATION_ID" ]; then
   echo "$CORRELATION_ID" > "$build_env_dir/CORRELATION_ID"
 fi
 
-file_type=""
-while [[ ! -f "$temp_app_source_path" ]] || 
-      [[ ! $file_type =~ "compressed data" ]] && 
-      [[ ! $file_type =~ "Zip archive data" ]] && 
-      [[ ! $file_type =~ "Java archive data" ]]
+content_type=""
+while [[ ! -f "$temp_app_source_path" || 
+        ! "$(file $temp_app_source_path)" =~ "compressed data" &&
+        ! $content_type =~ "application/java-archive" &&
+        ! $content_type =~ "application/gzip" &&
+        ! $content_type =~ "application/zip" ]]
 do
   echo "Waiting for app source to be uploaded. Please upload the app source to the endpoint specified in the Build resource's 'uploadEndpoint' property."
-  curl -H "$auth_header" -H "$version_header" -H "$date_header" -X GET "$file_upload_endpoint" -o "$temp_app_source_path" -s
+  curl -H "$auth_header" -H "$version_header" -H "$date_header" -X GET "$file_upload_endpoint" -o "$temp_app_source_path" -D "$temp_app_header_path" -s
   sleep 5
-  file_type=$(file $temp_app_source_path)
+ 
+  if [[ -f "$temp_app_header_path" ]]; then
+    content_type=$(grep -i Content-Type "$temp_app_header_path" | cut -d ' ' -f2)
+  else 
+    echo ""$temp_app_header_path" not found"
+  fi
 done
 
 # Extract app code to CNB_APP_DIR directory.
-echo "Found app source at '$temp_app_source_path'. Extracting to $CNB_APP_DIR"
+echo "Found app source at '$temp_app_source_path' with format '$content_type'. Extracting to $CNB_APP_DIR"
 mkdir -p $CNB_APP_DIR
 cd $CNB_APP_DIR
 
-if [[ $file_type =~ "Zip archive data" || $file_type =~ "Java archive data" ]]; then
+if [[ $content_type =~ "application/zip" || $content_type =~ "java-archive" ]]; then
   unzip -qq "$temp_app_source_path"
 else
 # Keep compatibility with old logic
