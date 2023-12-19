@@ -26,31 +26,36 @@ done
 
 # write environment variable CORRELATION_ID to folder "/platform/env", 
 if [ -n "$CORRELATION_ID" ]; then
-  echo "$CORRELATION_ID" > "$build_env_dir/CORRELATION_ID"
+  echo -n "$CORRELATION_ID" > "$build_env_dir/CORRELATION_ID"
 fi
 
-content_type=""
-while [[ ! -f "$temp_app_source_path" || 
-        ! "$(file $temp_app_source_path)" =~ "compressed data" &&
-        ! $content_type =~ "application/java-archive" &&
-        ! $content_type =~ "application/gzip" &&
-        ! $content_type =~ "application/zip" ]]
+file_extension=""
+while [[ ! -f "$temp_app_source_path" || ! "$(file $temp_app_source_path)" =~ "compressed data" ]]
 do
   echo "Waiting for app source to be uploaded. Please upload the app source to the endpoint specified in the Build resource's 'uploadEndpoint' property."
   curl -H "$auth_header" -H "$version_header" -H "$date_header" -X GET "$file_upload_endpoint" -o "$temp_app_source_path" -D "$temp_app_header_path" -s
   sleep 5
  
   if [[ -f "$temp_app_header_path" ]]; then
-    content_type=$(grep -i Content-Type "$temp_app_header_path" | cut -d ' ' -f2)
+    file_extension=$(grep -i x-ms-meta-FileExtension "$temp_app_header_path" | cut -d ' ' -f2)
+    # Check if the original file extension is .jar, .war, .zip or .tar.gz
+    if [[ "$file_extension" =~ ".tar.gz" 
+          || "$file_extension" =~ ".jar" 
+          || "$file_extension" =~ ".war" 
+          || "$file_extension" =~ ".zip"  ]]; then
+      break
+    fi
   fi
 done
 
 # Extract app code to CNB_APP_DIR directory.
-echo "Found app source at '$temp_app_source_path' with format '$content_type'. Extracting to $CNB_APP_DIR"
+echo "Found app source at '$temp_app_source_path'. Extracting to $CNB_APP_DIR"
 mkdir -p $CNB_APP_DIR
 cd $CNB_APP_DIR
 
-if [[ $content_type =~ "application/zip" || $content_type =~ "java-archive" ]]; then
+if [[ "$file_extension" =~ ".jar" 
+      || "$file_extension" =~ ".war" 
+      || "$file_extension" =~ ".zip"  ]]; then
   unzip -qq "$temp_app_source_path"
 else
 # Keep compatibility with old logic
