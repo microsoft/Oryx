@@ -42,8 +42,6 @@ do
  
   if [[ -f "$temp_app_header_path" ]]; then
     content_type=$(grep -i Content-Type "$temp_app_header_path" | cut -d ' ' -f2)
-  else 
-    echo ""$temp_app_header_path" not found"
   fi
 done
 
