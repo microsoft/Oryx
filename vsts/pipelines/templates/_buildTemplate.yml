@@ -143,7 +143,7 @@ steps:
     artifactName: drop
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
-- task: Shell++@0
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0.1.10
   displayName: 'Pull and Retag recently built oryx build and runtime images'
   inputs:
     type: FilePath
@@ -151,7 +151,7 @@ steps:
     args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
 
-- task: Shell++@0
+- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0.1.10
   displayName: 'Build a build image for tests'
   inputs:
     type: FilePath
