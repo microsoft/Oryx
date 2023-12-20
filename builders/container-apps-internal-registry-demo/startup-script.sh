@@ -34,8 +34,6 @@ while [[ ! -f "$temp_app_source_path" || ! "$(file $temp_app_source_path)" =~ "c
 do
   echo "Waiting for app source to be uploaded. Please upload the app source to the endpoint specified in the Build resource's 'uploadEndpoint' property."
   curl -H "$auth_header" -H "$version_header" -H "$date_header" -X GET "$file_upload_endpoint" -o "$temp_app_source_path" -D "$temp_app_header_path" -s
-  sleep 5
- 
   if [[ -f "$temp_app_header_path" ]]; then
     file_extension=$(grep -i x-ms-meta-FileExtension "$temp_app_header_path" | cut -d ' ' -f2)
     # Check if the original file extension is .jar, .war, .zip or .tar.gz
@@ -46,6 +44,7 @@ do
       break
     fi
   fi
+  sleep 5
 done
 
 # Extract app code to CNB_APP_DIR directory.
