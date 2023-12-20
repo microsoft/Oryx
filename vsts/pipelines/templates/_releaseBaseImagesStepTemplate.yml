@@ -34,7 +34,7 @@ steps:
     SourceFolder: '$(System.ArtifactsDirectory)'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0.1.10
+- task: Shellpp@0
   displayName: 'Pull and create release tags for PME staging ACR'
   inputs:
     type: FilePath
@@ -49,7 +49,7 @@ steps:
 
 - script: echo base image is ${{ parameters.baseImageName }} and repository is ${{ parameters.baseImageRepository }} 
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0.1.10
+- task: Shellpp@0
   displayName: 'Push images to PME staging ACR'
   inputs:
     type: FilePath
