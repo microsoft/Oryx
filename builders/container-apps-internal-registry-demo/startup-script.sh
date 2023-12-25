@@ -21,7 +21,7 @@ env | grep -E '^ACA_CLOUD_BUILD_USER_ENV_' | while read -r line; do
   key=$(echo "$line" | cut -d= -f1)
   value=$(echo "$line" | cut -d= -f2-)
   filename="${key#ACA_CLOUD_BUILD_USER_ENV_}"
-  echo "$value" > "$build_env_dir/$filename"
+  echo -n "$value" > "$build_env_dir/$filename"
 done
 
 # write environment variable CORRELATION_ID to folder "/platform/env", 
