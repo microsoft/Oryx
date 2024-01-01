@@ -149,7 +149,7 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-runtime-base-tag: 20231102.1
+    python-runtime-base-tag: 20240101.1
     pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
