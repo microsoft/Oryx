@@ -11,6 +11,7 @@ file_upload_endpoint="$FILE_UPLOAD_CONTAINER_URL/$FILE_UPLOAD_BLOB_NAME"
 
 temp_app_source_dir="/tmp/appsource"
 temp_app_source_path="$temp_app_source_dir/$FILE_UPLOAD_BLOB_NAME"
+temp_app_header_path="$temp_app_source_dir/header.txt"
 mkdir $temp_app_source_dir
 
 # List all the environment variables and filter the environment variable with prefix "ACA_CLOUD_BUILD_USER_ENV_", then write them to folder "/platform/env", 
@@ -20,18 +21,29 @@ env | grep -E '^ACA_CLOUD_BUILD_USER_ENV_' | while read -r line; do
   key=$(echo "$line" | cut -d= -f1)
   value=$(echo "$line" | cut -d= -f2-)
   filename="${key#ACA_CLOUD_BUILD_USER_ENV_}"
-  echo "$value" > "$build_env_dir/$filename"
+  echo -n "$value" > "$build_env_dir/$filename"
 done
 
 # write environment variable CORRELATION_ID to folder "/platform/env", 
 if [ -n "$CORRELATION_ID" ]; then
-  echo "$CORRELATION_ID" > "$build_env_dir/CORRELATION_ID"
+  echo -n "$CORRELATION_ID" > "$build_env_dir/CORRELATION_ID"
 fi
 
+file_extension=""
 while [[ ! -f "$temp_app_source_path" || ! "$(file $temp_app_source_path)" =~ "compressed data" ]]
 do
   echo "Waiting for app source to be uploaded. Please upload the app source to the endpoint specified in the Build resource's 'uploadEndpoint' property."
-  curl -H "$auth_header" -H "$version_header" -H "$date_header" -X GET "$file_upload_endpoint" -o "$temp_app_source_path" -s
+  curl -H "$auth_header" -H "$version_header" -H "$date_header" -X GET "$file_upload_endpoint" -o "$temp_app_source_path" -D "$temp_app_header_path" -s
+  if [[ -f "$temp_app_header_path" ]]; then
+    file_extension=$(grep -i x-ms-meta-FileExtension "$temp_app_header_path" | cut -d ' ' -f2)
+    # Check if the original file extension is .jar, .war, .zip or .tar.gz
+    if [[ "$file_extension" =~ ".tar.gz" 
+          || "$file_extension" =~ ".jar" 
+          || "$file_extension" =~ ".war" 
+          || "$file_extension" =~ ".zip"  ]]; then
+      break
+    fi
+  fi
   sleep 5
 done
 
@@ -39,7 +51,15 @@ done
 echo "Found app source at '$temp_app_source_path'. Extracting to $CNB_APP_DIR"
 mkdir -p $CNB_APP_DIR
 cd $CNB_APP_DIR
-tar -xzf "$temp_app_source_path"
+
+if [[ "$file_extension" =~ ".jar" 
+      || "$file_extension" =~ ".war" 
+      || "$file_extension" =~ ".zip"  ]]; then
+  unzip -qq "$temp_app_source_path"
+else
+# Keep compatibility with old logic
+  tar -xzf "$temp_app_source_path"
+fi
 
 fileCount=$(ls | wc -l)
 if [ "$fileCount" = "1" ]; then
