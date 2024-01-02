@@ -60,13 +60,20 @@ jobs:
           
           git status
           git add -A
-          git commit -m "Add new ${{ inputs.platformName }} SDK versions" && true
-          gitCommitExitCode=${PIPESTATUS[0]}
-          if [[ $gitCommitExitCode = 0 ]]; then
-            cancelWorkflow=0
-          else
+
+          # Check if build/constants.yaml has updates
+          if git diff --quiet --exit-code -- build/constants.yaml; then
             echo "No new ${{ inputs.platformName }} SDK versions detected. Canceling workflow..."
             cancelWorkflow=1
+          else
+            git commit -m "Add new ${{ inputs.platformName }} SDK versions" && true
+            gitCommitExitCode=${PIPESTATUS[0]}
+            if [[ $gitCommitExitCode = 0 ]]; then
+              cancelWorkflow=0
+            else
+              echo "Error committing changes. Canceling workflow..."
+              cancelWorkflow=1
+            fi
           fi
 
           echo "CANCEL_WORKFLOW=${cancelWorkflow}" >> $GITHUB_ENV
