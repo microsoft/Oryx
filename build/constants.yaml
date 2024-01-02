@@ -149,7 +149,7 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-runtime-base-tag: 20231205.1
+    python-runtime-base-tag: 20231208.1
     pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
@@ -158,7 +158,7 @@
     python39-version: 3.9.18
     python310-version: 3.10.13
     python311-version: 3.11.7
-    python312-version: 3.12.0
+    python312-version: 3.12.1
     runtime-versions:
       - 3.7-debian-bullseye
       - 3.7-debian-buster
