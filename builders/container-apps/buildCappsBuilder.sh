@@ -28,6 +28,10 @@ while (( "$#" )); do
       destinationTag=$2
       shift 2
       ;;
+    -b|--base-builder-tag)
+      baseBuilderImage=$2
+      shift 2
+      ;;
     --) # end argument parsing
       shift
       break
@@ -54,9 +58,18 @@ BUILD_IMAGE="$destinationFqdn/$destinationRepo:$destinationTag"
 echo "Building '$BUILD_IMAGE'..."
 echo
 cd $SCRIPT_DIR
-docker build \
-  -t $BUILD_IMAGE \
-  -f Dockerfile \
-  .
+if [[ -z "$baseBuilderImage" ]]
+then
+  docker build \
+    -t $BUILD_IMAGE \
+    -f Dockerfile \
+    .
+else
+  docker build \
+    -t $BUILD_IMAGE \
+    --build-arg BASE_BUILDER_IMAGE=$baseBuilderImage \
+    -f Dockerfile \
+    .
+fi
 echo
 echo "$BUILD_IMAGE" >> $ACR_CAPPS_BUILDER_IMAGES_ARTIFACTS_FILE
