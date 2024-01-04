@@ -91,8 +91,8 @@ echo "----- Initiating buildpack build -----"
 echo "----- Cloud Build correlation id: '$CORRELATION_ID' -----"
 echo 
 
-RETRY_DELAY=2
-RETRY_ATTEMPTS=5
+RETRY_DELAY=5
+RETRY_ATTEMPTS=6
 
 function fail_if_retry_exceeded() {
   retries=$1
