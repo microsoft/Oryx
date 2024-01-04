@@ -50,8 +50,8 @@ apt-get update \
         apt-transport-https \
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
     && locale-gen \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql17=17.10.4.1-1 \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.2.2.1-1 \
+    && DEBIAN_FRONTEND=noninteractive ACCEPT_EULA=Y apt-get install -y msodbcsql17=17.10.4.1-1 \
+    && DEBIAN_FRONTEND=noninteractive ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.2.2.1-1 \
     && ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
     && echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc \
     && source ~/.bashrc \
