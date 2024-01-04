@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace Oryx.Integration.Tests
 {
-    [Trait("StorageAccountTests", "Dev")]
+    [Trait("StorageAccountTests", "Staging")]
     public class StagingStorageAccountSanityTest : StorageAccountSanityTestBase
     {
         public StagingStorageAccountSanityTest(

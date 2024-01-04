@@ -8,40 +8,40 @@ parameters:
   - name: buildImages
     type: object
     default:
-      - 
+      -
         key: Latest
         value: latest
-      - 
+      -
         key: LtsVersions
         value: ltsversions
-      - 
+      -
         key: Jamstack
         value: jamstack
-      - 
+      -
         key: GithubActions
         value: githubactions
-      - 
+      -
         key: VsoFocal
         value: vso-focal
-      - 
+      -
         key: VsoBullseye
         value: vso-bullseye
-      - 
+      -
         key: Full
         value: full
-      - 
+      -
         key: Cli
         value: cli-stretch
-      - 
+      -
         key: CliBuster
         value: cli-buster
-      - 
+      -
         key: CliBullseye
         value: cli-bullseye
-      - 
+      -
         key: CliBuilderBullseye
         value: cli-builder-bullseye
-      - 
+      -
         key: Buildpack
         value: buildpack
 
@@ -65,11 +65,11 @@ stages:
       steps:
       - checkout: self
         clean: true
-        
+
       - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
         displayName: 'Component Detection - OSS Compliance'
         inputs:
-          ignoreDirectories: '$(Build.SourcesDirectory)/tests'  
+          ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
       - task: ShellScript@2
         inputs:
@@ -124,7 +124,7 @@ stages:
           }
         displayName: 'Set release tag name as environment variable'
       - template: templates/_signBinary.yml
-    
+
       # Job loop for BuildImages
     - ${{ each buildImage in parameters.buildImages }}:
       - job: Job_BuildImage_${{ buildImage.key }}
@@ -264,10 +264,32 @@ stages:
       - template: templates/_buildTemplate.yml
         parameters:
             imageType: bookworm
-            
+
     - template: templates/_integrationJobTemplate.yml
       parameters:
           storageAccountUrl: ${{ parameters.storageAccountUrl }}
+
+    - job: Job_ProductionStorageAccountTest
+      displayName: Test Production Storage Account
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        skipComponentGovernanceDetection: true
+      steps:
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk 7.x'
+        inputs:
+          version: 7.0.306
+
+      - task: ShellScript@2
+        displayName: 'Test production storage account'
+        env:
+          ORYX_TEST_SDK_STORAGE_URL: ${{ parameters.storageAccountUrl }}
+        inputs:
+          scriptPath: ./build/testIntegration.sh
+          args: StorageAccountTests=Prod
 
   - stage: Release
     displayName: Release Stage

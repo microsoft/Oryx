@@ -28,26 +28,3 @@ jobs:
 - template: integrationTests/_phpIntegrationJobTemplate.yml
   parameters:
     storageAccountUrl: ${{ parameters.storageAccountUrl }}
-
-- job: Job_DevStorageAccountTest
-  displayName: Test Dev Storage Account
-  pool:
-    name: AzurePipelines-EO
-    demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-  variables:
-    skipComponentGovernanceDetection: true
-  steps:
-  - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk 7.x'
-    inputs:
-      version: 7.0.306
-
-  - task: ShellScript@2
-    displayName: 'Test Dev storage account'
-    env:
-      ORYX_TEST_SDK_STORAGE_URL: ${{ parameters.storageAccountUrl }}
-      ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
-    inputs:
-      scriptPath: ./build/testIntegration.sh
-      args: StorageAccountTests=Dev
