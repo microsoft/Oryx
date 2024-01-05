@@ -18,12 +18,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Composer24Version = "2.4.4";
         public const string Composer25Version = "2.5.8";
         public const string Composer26Version = "2.6.2";
-        public const string Php82Version = "8.2.9";
+        public const string Php82Version = "8.2.13";
         public const string Php82Keys = "1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544";
-        public const string Php82TarSha256 = "1e6cb77f997613864ab3127fbfc6a8c7fdaa89a95e8ed6167617b913b4de4765";
-        public const string Php81Version = "8.1.22";
+        public const string Php82TarSha256 = "2629bba10117bf78912068a230c68a8fd09b7740267bd8ebd3cfce91515d454b";
+        public const string Php81Version = "8.1.26";
         public const string Php81Keys = "528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544";
-        public const string Php81TarSha256 = "9ea4f4cfe775cb5866c057323d6b320f3a6e0adb1be41a068ff7bfec6f83e71d";
+        public const string Php81TarSha256 = "17f87133596449327451ad4b8d9911bfaea59ff5109f3a6f2bb679f967a8ea0f";
         public const string Php80Version = "8.0.30";
         public const string Php80Keys = "1729F83938DA44E27BA0F4D3DBDB397470D12172 BFDDD28642824F8118EF77909B67A5C12229118F";
         public const string Php80TarSha256 = "216ab305737a5d392107112d618a755dc5df42058226f1670e9db90e77d777d9";
