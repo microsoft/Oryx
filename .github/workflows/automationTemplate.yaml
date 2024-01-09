@@ -61,8 +61,8 @@ jobs:
           git status
           git add -A
 
-          # Check if build/constants.yaml has updates
-          if git diff --quiet --exit-code -- build/constants.yaml; then
+          # Skip further checks if the event is not a push and there are no updates in build/constants.yaml
+          if [[ "${{ github.event_name }}" != "push" ]] && git diff --quiet --exit-code -- build/constants.yaml; then
             echo "No new ${{ inputs.platformName }} SDK versions detected. Canceling workflow..."
             cancelWorkflow=1
           else
