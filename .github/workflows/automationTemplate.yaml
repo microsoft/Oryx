@@ -62,7 +62,7 @@ jobs:
           git add -A
 
           # Skip further checks if the event is not a manual trigger.
-          if [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
             echo "Forcing the workflow step because the event was manually ran."
             cancelWorkflow=0
           # Check there are no updates in build/constants.yaml
