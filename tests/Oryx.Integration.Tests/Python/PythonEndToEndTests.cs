@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Fact]
         [Trait("category", "python-3.11")]
         [Trait("build-image", "github-actions-debian-bullseye")]
-        public async Task CanBuildAndRun_DjangoRegex()
+        public async Task CanBuildAndRun_DjangoRegex_OnBullseyeBuildImage()
         {
             // Arrange
             var version = "3.11";
@@ -117,9 +117,57 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("category", "python-3.11")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        public async Task CanBuildAndRun_DjangoRegex_OnBookwormBuildImage()
+        {
+            // Arrange
+            var version = "3.11";
+            var osType = ImageTestHelperConstants.OsTypeDebianBookworm;
+            var appName = "django-regex-example-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python311Version}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new[] { volume, appOutputDirVolume },
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetRuntimeImage("python", version, osType),
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello world from Django!", data);
+                });
+        }
+
+        [Fact]
         [Trait("category", "python-3.12")]
         [Trait("build-image", "github-actions-debian-bullseye")]
-        public async Task CanBuildAndRun_DjangoRegex_Python12()
+        public async Task CanBuildAndRun_DjangoRegex_Python12_OnBullseyeBuildImage()
         {
             // Arrange
             var version = "3.12";
@@ -143,6 +191,54 @@ namespace Microsoft.Oryx.Integration.Tests
                 _output,
                 new[] { volume, appOutputDirVolume },
                 _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    buildScript
+                },
+                _imageHelper.GetRuntimeImage("python", version, osType),
+                ContainerPort,
+                "/bin/bash",
+                new[]
+                {
+                    "-c",
+                    runScript
+                },
+                async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+                    Assert.Contains("Hello world from Django!", data);
+                });
+        }
+
+        [Fact]
+        [Trait("category", "python-3.12")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        public async Task CanBuildAndRun_DjangoRegex_Python12_OnBookwormBuildImage()
+        {
+            // Arrange
+            var version = "3.12";
+            var osType = ImageTestHelperConstants.OsTypeDebianBookworm;
+            var appName = "django-regex-example-app";
+            var volume = CreateAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDirVolume = CreateAppOutputDirVolume();
+            var appOutputDir = appOutputDirVolume.ContainerDir;
+            var buildScript = new ShellScriptBuilder()
+                .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python312Version}")
+                .ToString();
+            var runScript = new ShellScriptBuilder()
+                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+                .AddCommand(DefaultStartupFilePath)
+                .ToString();
+
+            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+                appName,
+                _output,
+                new[] { volume, appOutputDirVolume },
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
                 "/bin/bash",
                 new[]
                 {

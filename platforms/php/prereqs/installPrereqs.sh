@@ -14,6 +14,16 @@ set -eux
     echo 'Pin-Priority: -1';
 } > /etc/apt/preferences.d/no-debian-php
 
+# Create the sources.list file for bookworm since it doesn't exist in the buildpack-deps image
+if [ "$DEBIAN_FLAVOR" = bookworm ]
+then
+    {
+        echo 'deb http://deb.debian.org/debian bookworm main';
+        echo 'deb http://deb.debian.org/debian-security bookworm-security main';
+        echo 'deb http://deb.debian.org/debian bookworm-updates main';
+    } > /etc/apt/sources.list
+fi
+
 # dependencies required for running "phpize"
 # (see persistent deps below)
 PHPIZE_DEPS="autoconf dpkg-dev file g++ gcc libc-dev make pkg-config re2c"
@@ -21,8 +31,12 @@ PHPIZE_DEPS="autoconf dpkg-dev file g++ gcc libc-dev make pkg-config re2c"
 # persistent / runtime deps
 # libcurl3 and libcurl4 both needs to be supported in ubuntu focal for php
 # https://github.com/xapienz/curl-debian-scripts
-add-apt-repository ppa:xapienz/curl34 -y \
-&& apt-get update \
+if [ "$DEBIAN_FLAVOR" = focal ]
+then
+    add-apt-repository ppa:xapienz/curl34 -y
+fi
+
+apt-get update \
 && apt-get upgrade -y \
 && apt-get install -y \
         $PHPIZE_DEPS \

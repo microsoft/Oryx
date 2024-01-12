@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.18-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-${DEBIAN_FLAVOR} as startupCmdGen
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
@@ -29,7 +29,7 @@ ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-ENV PYTHON_VERSION 3.12.0
+ENV PYTHON_VERSION 3.11.7
 RUN true
 COPY build/__pythonVersions.sh ${BUILD_DIR}
 RUN true
@@ -46,7 +46,7 @@ RUN chmod +x /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/build.sh && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        build-essential \ 
+        build-essential \
         tk-dev \
         uuid-dev \
         libgeos-dev
@@ -58,8 +58,8 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
 
 RUN set -ex \
  && cd /opt/python/ \
- && ln -s 3.12.0 3.12 \
- && ln -s 3.12 3 \
+ && ln -s 3.11.7 3.11 \
+ && ln -s 3.11 3 \
  && echo /opt/python/3/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
  && cd /opt/python/3/bin \
@@ -75,7 +75,6 @@ ARG AI_CONNECTION_STRING
 ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 
 RUN ${IMAGES_DIR}/runtime/python/install-dependencies.sh
-
 RUN pip install --upgrade pip \
     && pip install gunicorn \
     && pip install debugpy \

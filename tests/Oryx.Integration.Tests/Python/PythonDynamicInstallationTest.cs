@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython310App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
         {
-            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.10",
                 "django-app",
                 ImageTestHelperConstants.OsTypeDebianBullseye,
@@ -94,11 +94,23 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("category", "python-3.10")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        public async Task CanBuildAndRunPython310App_UsingGitHubActionsBookwormBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
+                "3.10",
+                "django-app",
+                ImageTestHelperConstants.OsTypeDebianBookworm,
+                ImageTestHelperConstants.GitHubActionsBookworm);
+        }
+
+        [Fact]
         [Trait("category", "python-3.11")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython311App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
         {
-            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.11",
                 "django-app",
                 ImageTestHelperConstants.OsTypeDebianBullseye, 
@@ -106,15 +118,39 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("category", "python-3.11")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        public async Task CanBuildAndRunPython311App_UsingGitHubActionsBookwormBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
+                "3.11",
+                "django-app",
+                ImageTestHelperConstants.OsTypeDebianBookworm, 
+                ImageTestHelperConstants.GitHubActionsBookworm);
+        }
+
+        [Fact]
         [Trait("category", "python-3.12")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython312App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
         {
-            await CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
                 "3.12",
                 "django42-app",
                 ImageTestHelperConstants.OsTypeDebianBullseye,
                 ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact]
+        [Trait("category", "python-3.12")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        public async Task CanBuildAndRunPython312App_UsingGitHubActionsBookwormBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
+                "3.12",
+                "django42-app",
+                ImageTestHelperConstants.OsTypeDebianBookworm,
+                ImageTestHelperConstants.GitHubActionsBookworm);
         }
 
         [Fact]
@@ -174,44 +210,6 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         private async Task CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
-            string pythonVersion,
-            string debianFlavor = null)
-        {
-            // Arrange
-            var appName = "flask-app";
-            var volume = CreateAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDirVolume = CreateAppOutputDirVolume();
-            var appOutputDir = appOutputDirVolume.ContainerDir;
-            var buildScript = new ShellScriptBuilder()
-               .AddCommand(GetSnippetToCleanUpExistingInstallation())
-               .AddCommand(
-                $"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
-                $"--platform {PythonConstants.PlatformName} --platform-version {pythonVersion}")
-               .ToString();
-            var runScript = new ShellScriptBuilder()
-                .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
-                .AddCommand(DefaultStartupFilePath)
-                .ToString();
-
-            await EndToEndTestHelper.BuildRunAndAssertAppAsync(
-                appName,
-                _output,
-                new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(debianFlavor),
-                "/bin/bash", new[] { "-c", buildScript },
-                _imageHelper.GetRuntimeImage("python", "dynamic", ImageTestHelperConstants.OsTypeDebianBuster),
-                ContainerPort,
-                "/bin/bash",
-                new[] { "-c", runScript },
-                async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("Hello World!", data);
-                });
-        }
-
-        private async Task CanBuildAndRunPythonApp_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync(
             string pythonVersion,
             string appName,
             string osType,
