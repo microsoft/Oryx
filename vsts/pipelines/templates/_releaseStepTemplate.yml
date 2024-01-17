@@ -78,7 +78,7 @@ steps:
 
 - template: _setReleaseTag.yml
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+- task: Shellpp@0
   displayName: 'Pull and create release tags for build images'
   inputs:
     type: FilePath
@@ -86,28 +86,28 @@ steps:
     args: 
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+- task: Shellpp@0
   displayName: 'Pull and create release tags for runtime images'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagRunTimeImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+- task: Shellpp@0
   displayName: 'Pull and create release tags for buildpack images'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagBuildpacksImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+- task: Shellpp@0
   displayName: 'Pull and create release tags for CLI images'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagCliImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+- task: Shellpp@0
   displayName: 'Pull and create release tags for Builder images'
   inputs:
     type: FilePath
@@ -139,7 +139,7 @@ steps:
     command: login
     containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+- task: Shellpp@0
   displayName: 'Push build images to PME staging ACR'
   inputs:
     type: FilePath
@@ -147,7 +147,7 @@ steps:
     args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-build-images-mcr.txt'
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+- task: Shellpp@0
   displayName: 'Push build-pack images to PME staging ACR'
   inputs:
     type: FilePath
@@ -155,7 +155,7 @@ steps:
     args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-buildpack-images-mcr.txt'
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+- task: Shellpp@0
   displayName: 'Push CLI image to PME staging ACR'
   inputs:
     type: FilePath
@@ -163,7 +163,7 @@ steps:
     args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-cli-images-mcr.txt'
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+- task: Shellpp@0
   displayName: 'Push builder images to PME staging ACR'
   inputs:
     type: FilePath
@@ -171,7 +171,7 @@ steps:
     args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-builder-images-mcr.txt'
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- task: ms-devlabs.utilitytasks.task-Shellpp.Shell++@0
+- task: Shellpp@0
   displayName: 'Push runtime images to PME staging ACR'
   inputs:
     type: FilePath

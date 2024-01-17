@@ -6,7 +6,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 {
     public static class StagingRuntimeConstants
     {
-        public static readonly List<string> DotnetcoreStagingRuntimeVersions = new List<string> { "8.0" };
+        public static readonly List<string> DotnetcoreStagingRuntimeVersions = new List<string> { };
         public static readonly List<string> PythonStagingRuntimeVersions = new List<string> { };
         public static readonly List<string> NodeStagingRuntimeVersions = new List<string> { };
         public static readonly List<string> JavaStagingRuntimeVersions = new List<string> { };

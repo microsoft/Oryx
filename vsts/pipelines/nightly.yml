@@ -203,9 +203,32 @@ stages:
       - template: templates/_buildTemplate.yml
         parameters:
             imageType: bookworm
-            
+
     - template: templates/_integrationJobTemplate.yml
       parameters:
         storageAccountUrl: ${{ parameters.storageAccountUrl }}
+
+    - job: Job_StagingStorageAccountTest
+      displayName: Test Staging Storage Account
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        skipComponentGovernanceDetection: true
+      steps:
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk 7.x'
+        inputs:
+          version: 7.0.306
+
+      - task: ShellScript@2
+        displayName: 'Test staging storage account'
+        env:
+          ORYX_TEST_SDK_STORAGE_URL: ${{ parameters.storageAccountUrl }}
+          ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
+        inputs:
+          scriptPath: ./build/testIntegration.sh
+          args: StorageAccountTests=Staging
 
 trigger: none
