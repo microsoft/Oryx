@@ -31,6 +31,7 @@ RUN set -ex \
     && apt-get install -y --no-install-recommends \
         # Adding additional python packages to support all optional python modules:
         # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+        apt-utils \
         git \
         make \
         unzip \
