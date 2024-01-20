@@ -21,6 +21,8 @@ RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
         && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.kernel.org\/debian-archive\/debian stretch/g' /etc/apt/sources.list ; \
     fi
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 RUN set -ex \
     # Install Python SDKs
     # Upgrade system python
@@ -31,6 +33,7 @@ RUN set -ex \
     && apt-get install -y --no-install-recommends \
         # Adding additional python packages to support all optional python modules:
         # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
+        apt-utils \
         git \
         make \
         unzip \
