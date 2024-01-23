@@ -116,10 +116,10 @@ buildPhpComposer() {
 		# a version here.
 		docker build \
 			-f "$phpPlatformDir/composer/Dockerfile" \
-			--build-arg PHP_VERSION="$PHP73_VERSION" \
+			--build-arg PHP_VERSION="$PHP81_VERSION" \
 			--build-arg DEBIAN_FLAVOR=$debianFlavor \
-			--build-arg PHP_SHA256="$PHP73_TAR_SHA256" \
-			--build-arg GPG_KEYS="$PHP73_KEYS" \
+			--build-arg PHP_SHA256="$PHP81_TAR_SHA256" \
+			--build-arg GPG_KEYS="$PHP81_KEYS" \
 			--build-arg COMPOSER_VERSION="$version" \
 			--build-arg COMPOSER_SETUP_SHA384="$COMPOSER_SETUP_SHA384" \
 			-t $imageName \

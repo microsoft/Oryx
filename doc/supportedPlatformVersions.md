@@ -829,6 +829,10 @@
 
 ## php composer
 
+### bookworm
+
+- 2.6.2
+
 ### bullseye
 
 - 1.9.2
@@ -992,6 +996,11 @@
 
 
 ## php
+
+### bookworm
+
+- 8.1.22
+- 8.2.9
 
 ### bullseye
 
@@ -1211,6 +1220,14 @@
 
 
 ## python
+
+### bookworm
+
+- 3.8.18
+- 3.9.18
+- 3.10.13
+- 3.11.7
+- 3.12.1
 
 ### bullseye
 

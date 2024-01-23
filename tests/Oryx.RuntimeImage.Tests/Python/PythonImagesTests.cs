@@ -100,6 +100,47 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        [SkippableTheory]
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("3.8")]
+        [InlineData("3.9")]
+        [InlineData("3.10")]
+        [InlineData("3.11")]
+        [InlineData("3.12")]
+        public void PythonBookwormRuntimeImage_Contains_VersionAndCommit_Information(string version)
+        {
+            // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
+            // so we should check agent_os environment variable to know if the build is happening in azure devops agent
+            // or locally, locally we need to skip this test
+            var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
+            Skip.If(string.IsNullOrEmpty(agentOS));
+
+            // Arrange
+            var gitCommitID = GitHelper.GetCommitID();
+            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
+            var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("python", version, ImageTestHelperConstants.OsTypeDebianBookworm),
+                CommandToExecuteOnRun = "oryx",
+                CommandArguments = new[] { "version" }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.NotNull(result.StdErr);
+                    Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdOut);
+                    Assert.Contains(gitCommitID, result.StdOut);
+                    Assert.Contains(expectedOryxVersion, result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
         [Theory]
         [Trait("category", "runtime-buster")]
         [InlineData("3.7")]
@@ -156,6 +197,65 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(expectedPackage, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("3.8")]
+        [InlineData("3.9")]
+        [InlineData("3.10")]
+        [InlineData("3.11")]
+        [InlineData("3.12")]
+        public void JamSpell_CanBe_InstalledInBookwormRunTimeImage(string version)
+        {
+            // Arrange
+            var expectedPackage = "jamspell";
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("python", version, ImageTestHelperConstants.OsTypeDebianBookworm),
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", $"wget -O - https://pypi.org/simple/ | grep -i {expectedPackage}" }
+            });
+            
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(expectedPackage, actualOutput);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("3.8", "Python " + PythonVersions.Python38Version)]
+        [InlineData("3.9", "Python " + PythonVersions.Python39Version)]
+        [InlineData("3.10", "Python " + PythonVersions.Python310Version)]
+        [InlineData("3.11", "Python " + PythonVersions.Python311Version)]
+        [InlineData("3.12", "Python " + PythonVersions.Python312Version)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void PythonVersionMatchesBookwormImageName(string pythonVersion, string expectedOutput)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("python", pythonVersion, ImageTestHelperConstants.OsTypeDebianBookworm),
+                CommandToExecuteOnRun = "python",
+                CommandArguments = new[] { "--version" }
+            });
+
+            // Assert
+            var actualOutput = result.StdOut.ReplaceNewLine();
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Equal(expectedOutput, actualOutput);
                 },
                 result.GetDebugInfo());
         }

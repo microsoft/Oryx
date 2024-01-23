@@ -63,7 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("php", "7.3", "7.3", "debian-buster-stable", "7.3")]
         [InlineData("python", "2.7", "2.7", "debian-buster-stable", "2.7")]
         [InlineData("python", "3.7", "3.7", "debian-bullseye-stable", "3.7-debian-bullseye")]
-        [InlineData("python", "3.8", "3.8", "debian-bullseye-stable", "3.8-debian-bullseye")]
+        [InlineData("python", "3.8", "3.8", "debian-bookworm-stable", "3.8-debian-bookworm")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatformAndVersion(
             string platformName,
             string detectedPlatformVersion,
@@ -124,12 +124,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("php", "7.4", "debian-bullseye-stable", "7.4-debian-bullseye")]
         [InlineData("php", "8.0", "debian-bullseye-stable", "8.0-debian-bullseye")]
         [InlineData("php", "8.2", "debian-bullseye-stable", "8.2-debian-bullseye")]
-        [InlineData("python", "3.9", "debian-bullseye-stable", "3.9-debian-bullseye")]
-        [InlineData("python", "3.10", "debian-bullseye-stable", "3.10-debian-bullseye")]
-        [InlineData("python", "3.11", "debian-bullseye-stable", "3.11-debian-bullseye")]
-        [InlineData("python", "3.12", "debian-bullseye-stable", "3.12-debian-bullseye")]
+        [InlineData("python", "3.9", "debian-bookworm-stable", "3.9-debian-bookworm")]
+        [InlineData("python", "3.10", "debian-bookworm-stable", "3.10-debian-bookworm")]
+        [InlineData("python", "3.11", "debian-bookworm-stable", "3.11-debian-bookworm")]
+        [InlineData("python", "3.12", "debian-bookworm-stable", "3.12-debian-bookworm")]
         [InlineData("python", "3.6", "debian-buster-stable", "dynamic-debian-buster")] // 3.6.x not currently a runtime, use dynamic
-        [InlineData("python", "3.8.1", "debian-bullseye-stable", "3.8-debian-bullseye")]
+        [InlineData("python", "3.8.1", "debian-bookworm-stable", "3.8-debian-bookworm")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForProvidedPlatform(
             string platformName,
             string detectedPlatformVersion,
@@ -186,12 +186,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         [InlineData("php", "7.4", "debian-bullseye-stable", "7.4-debian-bullseye")]
         [InlineData("php", "8.0", "debian-bullseye-stable", "8.0-debian-bullseye")]
         [InlineData("php", "8.2", "debian-bullseye-stable", "8.2-debian-bullseye")]
-        [InlineData("python", "3.9", "debian-bullseye-stable", "3.9-debian-bullseye")]
-        [InlineData("python", "3.10", "debian-bullseye-stable", "3.10-debian-bullseye")]
-        [InlineData("python", "3.11", "debian-bullseye-stable", "3.11-debian-bullseye")]
-        [InlineData("python", "3.12", "debian-bullseye-stable", "3.12-debian-bullseye")]
+        [InlineData("python", "3.9", "debian-bookworm-stable", "3.9-debian-bookworm")]
+        [InlineData("python", "3.10", "debian-bookworm-stable", "3.10-debian-bookworm")]
+        [InlineData("python", "3.11", "debian-bookworm-stable", "3.11-debian-bookworm")]
+        [InlineData("python", "3.12", "debian-bookworm-stable", "3.12-debian-bookworm")]
         [InlineData("python", "3.6", "debian-buster-stable", "dynamic-debian-buster")] // 3.6.x not currently a runtime, use dynamic
-        [InlineData("python", "3.8.1", "debian-bullseye-stable", "3.8-debian-bullseye")]
+        [InlineData("python", "3.8.1", "debian-bookworm-stable", "3.8-debian-bookworm")]
         public void GenerateDockerfile_GeneratesBuildTagAndRuntime_ForNoProvidedPlatform(
             string platformName,
             string detectedPlatformVersion,

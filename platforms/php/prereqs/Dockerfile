@@ -26,5 +26,6 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
         libncurses5 \
     --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
     else \
+        export DEBIAN_FLAVOR=${DEBIAN_FLAVOR} ; \
         . /php/installPrereqs.sh ; \
     fi

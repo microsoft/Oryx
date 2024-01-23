@@ -149,7 +149,7 @@
       file-name-prefix: __
 - name: python-versions
   constants:
-    python-runtime-base-tag: 20231208.1
+    python-runtime-base-tag: 20240110.3
     pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
@@ -162,13 +162,18 @@
     runtime-versions:
       - 3.7-debian-bullseye
       - 3.7-debian-buster
+      - 3.8-debian-bookworm
       - 3.8-debian-bullseye
       - 3.8-debian-buster
+      - 3.9-debian-bookworm
       - 3.9-debian-bullseye
       - 3.9-debian-buster
+      - 3.10-debian-bookworm
       - 3.10-debian-bullseye
       - 3.10-debian-buster
+      - 3.11-debian-bookworm
       - 3.11-debian-bullseye
+      - 3.12-debian-bookworm
       - 3.12-debian-bullseye
       - dynamic-debian-buster
   outputs:

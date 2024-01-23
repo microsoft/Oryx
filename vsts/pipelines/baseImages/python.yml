@@ -19,9 +19,19 @@ jobs:
     artifactsFileName: python-runtimeimage-bases-bullseye.txt
     jobName: Build_Bullseye_BaseImages
 
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build python runtime bookworm base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: python
+    imageDebianFlavor: bookworm
+    artifactsFileName: python-runtimeimage-bases-bookworm.txt
+    jobName: Build_Bookworm_BaseImages
+
 - job: Release_PythonRuntimeBaseImage
   dependsOn: 
     - Build_Bullseye_BaseImages
+    - Build_Bookworm_BaseImages
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

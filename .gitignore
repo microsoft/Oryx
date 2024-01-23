@@ -255,6 +255,9 @@ paket-files/
 # Python cache
 *.pyc
 
+# .NET global.json for SDK versioning
+global.json
+
 # Node and .NET Core runtime Dockerfiles, that are auto generated
 images/runtime/node/*/Dockerfile
 images/runtime/node/*/buster.Dockerfile

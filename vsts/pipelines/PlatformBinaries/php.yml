@@ -10,6 +10,19 @@ parameters:
 stages:
 - stage: Build
   jobs:
+  - job: Php_Bookworm_SDK 
+    timeoutInMinutes: 1440
+    pool:
+      name: AzurePipelines-EO
+      demands:
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    steps:
+    - template: ../templates/_platformBinariesTemplate.yml
+      parameters:
+        platformName: 'php'
+        debianFlavor: 'bookworm'
+        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
+
   - job: Php_Bullseye_SDK 
     timeoutInMinutes: 1440
     pool:
