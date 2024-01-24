@@ -57,6 +57,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
+        apt-utils \
         # .NET Core dependencies for running Oryx
         libc6 \
         libgcc1 \
