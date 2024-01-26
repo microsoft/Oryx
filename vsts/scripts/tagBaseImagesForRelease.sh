@@ -76,6 +76,7 @@ then
   echo ""
   echo $imageName
   retagImageWithStagingRepository python-runtimeimage-bases-bullseye.txt $imageName bullseye
+  retagImageWithStagingRepository python-runtimeimage-bases-bookworm.txt $imageName bookworm
 elif [ "$imageName" == "php-build" ]
 then
   echo ""

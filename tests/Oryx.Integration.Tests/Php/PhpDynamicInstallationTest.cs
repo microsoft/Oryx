@@ -25,33 +25,75 @@ namespace Microsoft.Oryx.Integration.Tests
         // because our agents currently a space limit of 10GB.
         [Fact, Trait("category", "php-8.2")]
         [Trait("build-image", "github-actions-debian-buster")]
-        public async Task PipelineTestInvocationsPhp82Async()
+        public async Task PipelineTestInvocationsPhp82_WithBusterEnvironmentAsync()
         {
-            await CanBuildAndRunAppAsync("8.2", ImageTestHelperConstants.OsTypeDebianBullseye);
+            await CanBuildAndRunAppAsync("8.2", ImageTestHelperConstants.OsTypeDebianBuster, ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        [Fact, Trait("category", "php-8.2")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task PipelineTestInvocationsPhp82_WithBullseyeEnvironmentAsync()
+        {
+            await CanBuildAndRunAppAsync("8.2", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact, Trait("category", "php-8.2")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        public async Task PipelineTestInvocationsPhp82_WithBookwormEnvironmentAsync()
+        {
+            await CanBuildAndRunAppAsync("8.2", ImageTestHelperConstants.OsTypeDebianBookworm, ImageTestHelperConstants.GitHubActionsBookworm);
         }
 
         [Fact, Trait("category", "php-8.1")]
         [Trait("build-image", "github-actions-debian-buster")]
-        public async Task PipelineTestInvocationsPhp81Async()
+        public async Task PipelineTestInvocationsPhp81_WithBusterEnvironmentAsync()
         {   
-            await CanBuildAndRunAppAsync("8.1", ImageTestHelperConstants.OsTypeDebianBullseye);
+            await CanBuildAndRunAppAsync("8.1", ImageTestHelperConstants.OsTypeDebianBuster, ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        [Fact, Trait("category", "php-8.1")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task PipelineTestInvocationsPhp81_WithBullseyeEnvironmentAsync()
+        {   
+            await CanBuildAndRunAppAsync("8.1", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact, Trait("category", "php-8.1")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        public async Task PipelineTestInvocationsPhp81_WithBookwormEnvironmentAsync()
+        {   
+            await CanBuildAndRunAppAsync("8.1", ImageTestHelperConstants.OsTypeDebianBookworm, ImageTestHelperConstants.GitHubActionsBookworm);
         }
 
         [Fact, Trait("category", "php-8.0")]
         [Trait("build-image", "github-actions-debian-buster")]
-        public async Task PipelineTestInvocationsPhp80Async()
+        public async Task PipelineTestInvocationsPhp80_WithBusterEnvironmentAsync()
         {   
-            await CanBuildAndRunAppAsync("8.0", ImageTestHelperConstants.OsTypeDebianBullseye);
+            await CanBuildAndRunAppAsync("8.0", ImageTestHelperConstants.OsTypeDebianBuster, ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        [Fact, Trait("category", "php-8.0")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task PipelineTestInvocationsPhp80_WithBullseyeEnvironmentAsync()
+        {   
+            await CanBuildAndRunAppAsync("8.0", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
         [Fact, Trait("category", "php-7.4")]
         [Trait("build-image", "github-actions-debian-buster")]
-        public async Task PipelineTestInvocationsPhp74Async()
+        public async Task PipelineTestInvocationsPhp74_WithBusterEnvironmentAsync()
         {
-            await CanBuildAndRunAppAsync("7.4", ImageTestHelperConstants.OsTypeDebianBullseye);
+            await CanBuildAndRunAppAsync("7.4", ImageTestHelperConstants.OsTypeDebianBuster, ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        private async Task CanBuildAndRunAppAsync(string phpVersion, string osType)
+        [Fact, Trait("category", "php-7.4")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task PipelineTestInvocationsPhp74_WithBullseyeEnvironmentAsync()
+        {
+            await CanBuildAndRunAppAsync("7.4", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        private async Task CanBuildAndRunAppAsync(string phpVersion, string osType, string buildImageTag)
         {
             // Arrange
             var exifImageTypePng = "3";
@@ -76,7 +118,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 appName,
                 _output,
                 new[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster),
+                _imageHelper.GetGitHubActionsBuildImage(buildImageTag),
                 "/bin/sh", new[] { "-c", buildScript },
                 _imageHelper.GetRuntimeImage("php", phpVersion, osType),
                 ContainerPort,

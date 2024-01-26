@@ -83,8 +83,6 @@ RUN pip install --upgrade pip \
     && pip install vizplugins \
     && pip install orjson \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
-    && apt-get update \
-    && apt-get upgrade --assume-yes \
     && rm -rf /var/lib/apt/lists/* \
     && rm -rf /tmp/oryx
 
