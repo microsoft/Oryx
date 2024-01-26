@@ -108,8 +108,13 @@ function copyPlatformBlobsToProdForDebianFlavor() {
     # Not allowed combinations: 
     # - platformName=python and debianFlavor=bookworm
     # - platformName=java and debianFlavor=bookworm
-    # - Any platformName other than dotnet and node js with debianFlavor=bookworm
-    if [ "$platformName" != "dotnet" ] && [ "$platformName" != "nodejs" ] && [ "$debianFlavor" == "bookworm" ]; then
+    # - Any platformName other than dotnet, node js, python, php and php-composer with debianFlavor=bookworm
+    if [ "$debianFlavor" == "bookworm" ] && \
+       [ "$platformName" != "dotnet" ] && \
+       [ "$platformName" != "nodejs" ] && \
+       [ "$platformName" != "php" ] && \
+       [ "$platformName" != "php-composer" ] && \
+       [ "$platformName" != "python" ]; then
         # Do not copy blobs
         echo "Copying blobs for platformName=$platformName and debianFlavor=$debianFlavor is not supported yet."
     else
