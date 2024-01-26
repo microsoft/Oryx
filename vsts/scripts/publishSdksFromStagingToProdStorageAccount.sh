@@ -100,6 +100,7 @@ function copyPlatformBlobsToProdForDebianFlavor() {
         binaryPrefix="$platformName-$debianFlavor"
     fi
 
+
     # Function to copy platform blobs to production for a specific Debian flavor
     # Dotnet and nodejs are currently the only two platform supporting bookworm.
     # Allowed combinations: 
