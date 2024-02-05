@@ -1,71 +1,91 @@
-parameters:
-  displayName: ''
-  imageDir: ''
-  imageDebianFlavor: ''
-  scriptPath: ''
-  artifactsFileName: ''
-  jobName: ''
+# trigger: none
 
-jobs:
-- job: ${{ parameters.jobName }}
-  displayName: ${{ parameters.displayName }}
-  pool:
-    name: AzurePipelines-EO
-    demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-  timeoutInMinutes: 250
-  steps:  
-  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-    displayName: 'Component Detection - OSS Compliance'
-    inputs:
-      ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+# The `resources` specify the location and version of the 1ES PT.
+resources:
+  repositories:
+  - repository: 1esPipelines
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
 
-  - task: ShellScript@2
-    displayName: Build images
-    inputs:
-      scriptPath: ${{ parameters.scriptPath }}
-      args: ${{ parameters.imageDir }} ${{ parameters.imageDebianFlavor }}
-    env:
-      ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
-      DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN: $(DotnetPrivateStorageAccountAccessToken)
+extends:
+  # The pipeline extends the 1ES PT which will inject different SDL and compliance tasks.
+  # For non-production pipelines, use "Unofficial" as defined below.
+  # For productions pipelines, use "Official".
+  template: v1/1ES.Official.PipelineTemplate.yml@1esPipelines
+  parameters:
+    # Update the pool with your team's 1ES hosted pool.
+    pool:
+      name: AzurePipelines-EO
+      image: AzurePipelinesUbuntu20.04compliant  # Name of the image in your pool. If not specified, first image of the pool is used
+      os: linux  # OS of the image. Allowed values: windows, linux, macOS
 
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: Generate Software Bill of Materials (SBOM)
-    inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)'
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList **/SampleApps/**'
+    stages:
+    - stage: Stage
+      jobs:
+      - job: HostJob
+        timeoutInMinutes: 250
+        # If the pipeline publishes artifacts, use `templateContext` to define the artifacts.
+        # This will enable 1ES PT to run SDL analysis tools on the artifacts and then upload them.
+        templateContext:
+          outputs:
+          - output: pipelineArtifact
+            targetPath: $(Build.ArtifactStagingDirectory)
+            artifactName: buildImageBasesJobArtifact
+        # Define the steps that the pipeline will run.
+        # In most cases, copy and paste the steps from the original pipeline.
+        steps:  
+        - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+          displayName: 'Component Detection - OSS Compliance'
+          inputs:
+            ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
-  - task: CopyFiles@2
-    displayName: Copy artifacts to staging directory
-    inputs:
-      sourceFolder: '$(Build.SourcesDirectory)/artifacts'
-      contents: '**/*.*'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-      overWrite: true
-    condition: true
+        - task: ShellScript@2
+          displayName: Build images
+          inputs:
+            scriptPath: ${{ parameters.scriptPath }}
+            args: ${{ parameters.imageDir }} ${{ parameters.imageDebianFlavor }}
+          env:
+            ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
+            DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN: $(DotnetPrivateStorageAccountAccessToken)
 
-  - task: Docker@1
-    displayName: Push built base images to dev ACR
-    inputs:
-      command: push
-      azureSubscriptionEndpoint: $(ascName)
-      azureContainerRegistry: $(acrName)
-      pushMultipleImages: true
-      imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/${{ parameters.artifactsFileName }}'
-      enforceDockerNamingConvention: false
+        - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
+          displayName: Generate Software Bill of Materials (SBOM)
+          inputs:
+            BuildDropPath: '$(Build.ArtifactStagingDirectory)'
+            AdditionalComponentDetectorArgs: '--DirectoryExclusionList **/SampleApps/**'
 
-  - task: ShellScript@2
-    displayName: 'Clean up Docker containers and images'
-    inputs:
-      scriptPath: ./vsts/scripts/cleanDocker.sh
+        - task: CopyFiles@2
+          displayName: Copy artifacts to staging directory
+          inputs:
+            sourceFolder: '$(Build.SourcesDirectory)/artifacts'
+            contents: '**/*.*'
+            targetFolder: $(Build.ArtifactStagingDirectory)
+            overWrite: true
+          condition: true
 
-  - task: PublishBuildArtifacts@1
-    displayName: Publish build artifacts
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
+        - task: Docker@1
+          displayName: Push built base images to dev ACR
+          inputs:
+            command: push
+            azureSubscriptionEndpoint: $(ascName)
+            azureContainerRegistry: $(acrName)
+            pushMultipleImages: true
+            imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/${{ parameters.artifactsFileName }}'
+            enforceDockerNamingConvention: false
 
-  - task: ShellScript@2
-    displayName: 'Clean up Docker containers and images'
-    inputs:
-      scriptPath: ./vsts/scripts/cleanDocker.sh
-    condition: true
+        - task: ShellScript@2
+          displayName: 'Clean up Docker containers and images'
+          inputs:
+            scriptPath: ./vsts/scripts/cleanDocker.sh
+
+        - task: PublishBuildArtifacts@1
+          displayName: Publish build artifacts
+          inputs:
+            pathtoPublish: $(Build.ArtifactStagingDirectory)
+
+        - task: ShellScript@2
+          displayName: 'Clean up Docker containers and images'
+          inputs:
+            scriptPath: ./vsts/scripts/cleanDocker.sh
+          condition: true
