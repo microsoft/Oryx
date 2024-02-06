@@ -8,6 +8,7 @@ package main
 import (
 	"common"
 	"common/consts"
+	"path/filepath"
 	"strings"
 )
 
@@ -50,6 +51,12 @@ func (gen *PhpStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("   export APACHE_DOCUMENT_ROOT='" + gen.SourcePath + "'\n")
 	scriptBuilder.WriteString("fi\n\n")
 	gen.AddCustomizedNginxConfigurationToScript(&scriptBuilder)
+
+	extensibleCommands := common.ParseExtensibleConfigFile(filepath.Join(gen.SourcePath, consts.ExtensibleConfigurationFileName))
+	if extensibleCommands != "" {
+		logger.LogInformation("Found extensible configuration file to be used in the generated run script")
+		scriptBuilder.WriteString(extensibleCommands)
+	}
 
 	startupCommand := gen.StartupCmd
 	if startupCommand == "" {

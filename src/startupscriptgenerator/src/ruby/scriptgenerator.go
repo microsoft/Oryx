@@ -9,17 +9,18 @@ import (
 	"common"
 	"common/consts"
 	"fmt"
+	"path/filepath"
 	"strings"
 )
 
 type RubyStartupScriptGenerator struct {
-	SourcePath                      string
-	UserStartupCommand              string
-	DefaultAppFilePath              string
-	BindPort                        string
-	RailEnv                         string
-	Manifest                        common.BuildManifest
-	Configuration                   Configuration
+	SourcePath         string
+	UserStartupCommand string
+	DefaultAppFilePath string
+	BindPort           string
+	RailEnv            string
+	Manifest           common.BuildManifest
+	Configuration      Configuration
 }
 
 const DefaultBindPort = "8080"
@@ -56,6 +57,12 @@ func (gen *RubyStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("export RAILS_ENV=\"production\"\n")
 	} else {
 		scriptBuilder.WriteString(fmt.Sprintf("export RAILS_ENV=\"%s\"\n", gen.RailEnv))
+	}
+
+	extensibleCommands := common.ParseExtensibleConfigFile(filepath.Join(gen.SourcePath, consts.ExtensibleConfigurationFileName))
+	if extensibleCommands != "" {
+		logger.LogInformation("Found extensible configuration file to be used in the generated run script")
+		scriptBuilder.WriteString(extensibleCommands)
 	}
 
 	command := gen.UserStartupCommand // A custom command takes precedence over any framework defaults

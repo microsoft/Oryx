@@ -15,6 +15,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Common.Extensions;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
+using Microsoft.Oryx.BuildScriptGenerator.Extensibility;
 using Microsoft.Oryx.BuildScriptGenerator.Resources;
 using Microsoft.Oryx.Common.Extensions;
 using Microsoft.Oryx.Detector;
@@ -326,58 +327,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             buildProperties[ManifestFilePropertyKeys.CompressDestinationDir] =
                 this.cliOptions.CompressDestinationDir.ToString().ToLower();
 
-            // Workaround for bug in TestSourceRepo class in validation tests
-            // Should be using context.SourceRepo.FileExists
-            string filePathForAppYaml = Path.Combine(context.SourceRepo.RootPath, "appsvc.yaml");
+            // Process the appsvc.yaml file
+            this.ProcessAppSvcYamlFile(context);
 
-            this.logger.LogDebug("Path to appsvc.yaml " + filePathForAppYaml);
-
-            // Override the prebuild and postbuild commands if BuildConfigurationFile exists
-            if (File.Exists(filePathForAppYaml))
-            {
-                this.logger.LogDebug("Found BuildConfigurationFile");
-                this.writer.WriteLine(Environment.NewLine + "Found BuildConfigurationFile");
-                try
-                {
-                    BuildConfigurationFIle buildConfigFile = BuildConfigurationFIle.Create(context.SourceRepo.ReadFile("appsvc.yaml"));
-                    if (!string.IsNullOrEmpty(buildConfigFile.Prebuild))
-                    {
-                        this.cliOptions.PreBuildCommand = buildConfigFile.Prebuild.Replace("\r\n", ";").Replace("\n", ";");
-                        this.cliOptions.PreBuildScriptPath = null;
-                        this.logger.LogDebug("Overriding the pre-build commands with the BuildConfigurationFile section");
-                        this.logger.LogDebug(this.cliOptions.PreBuildCommand.ToString());
-                        this.writer.WriteLine("Overriding the pre-build commands with the BuildConfigurationFile section");
-                        this.writer.WriteLine("\t" + this.cliOptions.PreBuildCommand.ToString());
-                    }
-
-                    if (!string.IsNullOrEmpty(buildConfigFile.Postbuild))
-                    {
-                        this.cliOptions.PostBuildCommand = buildConfigFile.Postbuild.Replace("\r\n", ";").Replace("\n", ";");
-                        this.cliOptions.PostBuildScriptPath = null;
-                        this.logger.LogDebug("Overriding the post-build commands with the BuildConfigurationFile section");
-                        this.logger.LogDebug(this.cliOptions.PostBuildCommand.ToString());
-                        this.writer.WriteLine("Overriding the post-build commands with the BuildConfigurationFile section");
-                        this.writer.WriteLine("\t" + this.cliOptions.PostBuildCommand.ToString());
-                    }
-                }
-                catch (Exception ex)
-                {
-                    this.logger.LogWarning("Invalid BuildConfigurationFile " + ex.ToString());
-                    this.writer.WriteLine(Environment.NewLine + "\"" + DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss") + "\" | WARNING | Invalid BuildConfigurationFile | Exit Code: 1 | Please review your appsvc.yaml | " + Constants.BuildConfigurationFileHelp);
-                    this.writer.WriteLine("This is the structure of a valid appsvc.yaml");
-                    this.writer.WriteLine("-------------------------------------------");
-                    this.writer.WriteLine("version: 1" + Environment.NewLine);
-                    this.writer.WriteLine("pre-build: apt-get install xyz" + Environment.NewLine);
-                    this.writer.WriteLine("post-build: |");
-                    this.writer.WriteLine("  python manage.py makemigrations");
-                    this.writer.WriteLine("  python manage.py migrate");
-                    this.writer.WriteLine("-------------------------------------------");
-                }
-            }
-            else
-            {
-                this.logger.LogDebug("No appsvc.yaml found");
-            }
+            // Process the oryx-config.yaml file
+            var extensibleConfiguration = this.ProcessExtensibleConfigurationFile(context);
 
             (var preBuildCommand, var postBuildCommand) = PreAndPostBuildCommandHelper.GetPreAndPostBuildCommands(
                 context.SourceRepo,
@@ -415,6 +369,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 OutputDirectoryIsNested = outputIsSubDirOfSourceDir,
                 CopySourceDirectoryContentToDestinationDirectory = copySourceDirectoryContentToDestinationDirectory,
                 CompressDestinationDir = this.cliOptions.CompressDestinationDir,
+                ExtensibleConfigurationCommands = extensibleConfiguration,
             };
 
             this.LogScriptIfGiven("pre-build", buildScriptProps.PreBuildCommand);
@@ -426,6 +381,110 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 this.logger,
                 this.telemetryClient);
             return script;
+        }
+
+        /// <summary>
+        /// Checks for the <see cref="FilePaths.AppSvcFileName"/> file in the source repository, and if it exists,
+        /// parses the YAML file for commands specified by the user to be ran during different periods of the build.
+        /// </summary>
+        /// <param name="context"><see cref="BuildScriptGeneratorContext"/> object containing information regarding
+        /// the user's provided source repository.</param>
+        private void ProcessAppSvcYamlFile(BuildScriptGeneratorContext context)
+        {
+            // Workaround for bug in TestSourceRepo class in validation tests
+            // Should be using context.SourceRepo.FileExists
+            string filePathForAppYaml = Path.Combine(context.SourceRepo.RootPath, FilePaths.AppSvcFileName);
+
+            this.logger.LogDebug($"Path to {FilePaths.AppSvcFileName}: '{filePathForAppYaml}'");
+
+            // Override the prebuild and postbuild commands if BuildConfigurationFile exists
+            if (File.Exists(filePathForAppYaml))
+            {
+                this.logger.LogDebug("Found BuildConfigurationFile");
+                this.writer.WriteLine(Environment.NewLine + "Found BuildConfigurationFile");
+                try
+                {
+                    BuildConfigurationFile buildConfigFile = BuildConfigurationFile.Create(context.SourceRepo.ReadFile(FilePaths.AppSvcFileName));
+                    if (!string.IsNullOrEmpty(buildConfigFile.Prebuild))
+                    {
+                        this.cliOptions.PreBuildCommand = buildConfigFile.Prebuild.Replace("\r\n", ";").Replace("\n", ";");
+                        this.cliOptions.PreBuildScriptPath = null;
+                        this.logger.LogDebug("Overriding the pre-build commands with the BuildConfigurationFile section");
+                        this.logger.LogDebug(this.cliOptions.PreBuildCommand.ToString());
+                        this.writer.WriteLine("Overriding the pre-build commands with the BuildConfigurationFile section");
+                        this.writer.WriteLine("\t" + this.cliOptions.PreBuildCommand.ToString());
+                    }
+
+                    if (!string.IsNullOrEmpty(buildConfigFile.Postbuild))
+                    {
+                        this.cliOptions.PostBuildCommand = buildConfigFile.Postbuild.Replace("\r\n", ";").Replace("\n", ";");
+                        this.cliOptions.PostBuildScriptPath = null;
+                        this.logger.LogDebug("Overriding the post-build commands with the BuildConfigurationFile section");
+                        this.logger.LogDebug(this.cliOptions.PostBuildCommand.ToString());
+                        this.writer.WriteLine("Overriding the post-build commands with the BuildConfigurationFile section");
+                        this.writer.WriteLine("\t" + this.cliOptions.PostBuildCommand.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogWarning("Invalid BuildConfigurationFile " + ex.ToString());
+                    this.writer.WriteLine($"{Environment.NewLine}\"{DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss")}\" | WARNING | Invalid BuildConfigurationFile | Exit Code: 1 | Please review your {FilePaths.AppSvcFileName} | {Constants.BuildConfigurationFileHelp}");
+                    this.writer.WriteLine($"The following is the structure of a valid {FilePaths.AppSvcFileName}:");
+                    this.writer.WriteLine("-------------------------------------------");
+                    this.writer.WriteLine("version: 1");
+                    this.writer.WriteLine("pre-build: apt-get install xyz");
+                    this.writer.WriteLine("post-build: |");
+                    this.writer.WriteLine("  python manage.py makemigrations");
+                    this.writer.WriteLine("  python manage.py migrate");
+                    this.writer.WriteLine("-------------------------------------------");
+                }
+            }
+            else
+            {
+                this.logger.LogDebug($"No {FilePaths.AppSvcFileName} found");
+            }
+        }
+
+        /// <summary>
+        /// Checks for the <see cref="FilePaths.ExtensibleConfigurationFileName"/> file in the source repository, and
+        /// if it exists, parses the YAML file for extensibility endpoints defined by the user that will be converted
+        /// to runnable steps during the build.
+        /// </summary>
+        /// <param name="context"><see cref="BuildScriptGeneratorContext"/> object containing information regarding
+        /// the user's provided source repository.</param>
+        private string ProcessExtensibleConfigurationFile(BuildScriptGeneratorContext context)
+        {
+            var filePath = Path.Combine(context.SourceRepo.RootPath, FilePaths.ExtensibleConfigurationFileName);
+            this.logger.LogDebug($"Checking for path to {FilePaths.ExtensibleConfigurationFileName}: '{filePath}'");
+            this.writer.WriteLine($"Checking for path to {FilePaths.ExtensibleConfigurationFileName}: '{filePath}'");
+
+            if (File.Exists(filePath))
+            {
+                this.logger.LogDebug("Found extensible configuration file.");
+                this.writer.WriteLine($"{Environment.NewLine}Found extensible configuration file, {filePath}");
+                ExtensibleConfigurationFile config = null;
+                try
+                {
+                    config = ExtensibleConfigurationFile.Create(context.SourceRepo.ReadFile(FilePaths.ExtensibleConfigurationFileName));
+                    return config.GetBuildScriptSnippet();
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogWarning($"Error thrown when processing extensible configuration file: {ex}");
+                    this.writer.WriteLine($"Error thrown when processing extensible configuration file: {ex}");
+                    if (config != null)
+                    {
+                        var warningMessage = config.GetWarningMessage();
+                        this.writer.WriteLine(warningMessage);
+                    }
+                }
+            }
+            else
+            {
+                this.logger.LogDebug($"No {FilePaths.ExtensibleConfigurationFileName} found");
+            }
+
+            return string.Empty;
         }
     }
 }

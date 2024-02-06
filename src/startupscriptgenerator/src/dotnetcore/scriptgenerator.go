@@ -152,6 +152,12 @@ func (gen *DotnetCoreStartupScriptGenerator) GenerateEntrypointScript(scriptBuil
 		fmt.Printf("Setting up Environment Variables for Application Insights is done.. \n")
 	}
 
+	extensibleCommands := common.ParseExtensibleConfigFile(filepath.Join(gen.AppPath, consts.ExtensibleConfigurationFileName))
+	if extensibleCommands != "" {
+		logger.LogInformation("Found extensible configuration file to be used in the generated run script")
+		scriptBuilder.WriteString(extensibleCommands)
+	}
+
 	runDefaultApp := false
 	if gen.UserStartupCommand != "" {
 		// NOTE: do NOT try printing the command itself

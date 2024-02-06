@@ -105,6 +105,14 @@ echo "{{ PreBuildCommandPrologue }}"
 echo "{{ PreBuildCommandEpilogue }}"
 {{ end }}
 
+{{ if ExtensibleConfigurationCommands | IsNotBlank }}
+{{ # Run the set of extensible configuration commands from the source directory }}
+cd "$SOURCE_DIR"
+echo "{{ ExtensibleConfigurationCommandsPrologue }}"
+{{ ExtensibleConfigurationCommands }}
+echo "{{ ExtensibleConfigurationCommandsEpilogue }}"
+{{ end }}
+
 {{ for Snippet in BuildScriptSnippets }}
 {{ # Makes sure every snippet starts in the context of the source directory. }}
 cd "$SOURCE_DIR"

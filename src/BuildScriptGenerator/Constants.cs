@@ -11,6 +11,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public const string PreBuildCommandEpilogue = "Finished executing pre-build command.";
         public const string PostBuildCommandPrologue = "Executing post-build command...";
         public const string PostBuildCommandEpilogue = "Finished executing post-build command.";
+        public const string ExtensibleConfigurationCommandsPrologue = "Executing extensible configuration commands...";
+        public const string ExtensibleConfigurationCommandsEpilogue = "Finished executing extensible configuration commands.";
 
         public const string OryxEnvironmentSettingNamePrefix = "ORYX_";
         public const string AppInsightsKey = "APPINSIGHTS_INSTRUMENTATIONKEY";

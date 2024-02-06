@@ -19,10 +19,39 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string PostBuildCommandEpilogue { get; set; } = Constants.PostBuildCommandEpilogue;
 
+        public string ExtensibleConfigurationCommandsPrologue { get; set; } = Constants.ExtensibleConfigurationCommandsPrologue;
+
+        public string ExtensibleConfigurationCommandsEpilogue { get; set; } = Constants.ExtensibleConfigurationCommandsEpilogue;
+
         /// <summary>
-        /// Gets or sets the collection of build script snippets.
+        /// Gets or sets the path to logger file.
         /// </summary>
-        public IEnumerable<string> BuildScriptSnippets { get; set; }
+        public string LoggerPath { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the output directory is a nested directory of the source.
+        /// </summary>
+        public bool OutputDirectoryIsNested { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the set of directories to exclude when copying to an intermediate directory.
+        /// </summary>
+        public IEnumerable<string> DirectoriesToExcludeFromCopyToIntermediateDir { get; set; }
+
+        /// <summary>
+        /// Gets or sets the bash script which install the platform binaries.
+        /// </summary>
+        public string PlatformInstallationScript { get; set; }
+
+        /// <summary>
+        /// Gets or sets the argument to the benv command.
+        /// </summary>
+        public string BenvArgs { get; set; }
+
+        /// <summary>
+        /// Gets or sets the path to benv file.
+        /// </summary>
+        public string BenvPath { get; set; }
 
         /// <summary>
         /// Gets or sets a list of OS packages that should be installed for this build.
@@ -36,24 +65,38 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string PreBuildCommand { get; set; }
 
         /// <summary>
-        /// Gets or sets the argument to the benv command.
+        /// Gets or sets the set of commands configured by the extensibility model.
         /// </summary>
-        public string BenvArgs { get; set; }
+        public string ExtensibleConfigurationCommands { get; set; }
+
+        /// <summary>
+        /// Gets or sets the collection of build script snippets.
+        /// </summary>
+        public IEnumerable<string> BuildScriptSnippets { get; set; }
 
         /// <summary>
         /// Gets or sets the path to the post-build script content.
         /// </summary>
         public string PostBuildCommand { get; set; }
 
-        public IEnumerable<string> DirectoriesToExcludeFromCopyToBuildOutputDir { get; set; }
-
-        public IEnumerable<string> DirectoriesToExcludeFromCopyToIntermediateDir { get; set; }
+        /// <summary>
+        /// Gets or sets a value indicating whether the entire output directory (excluding the manifest file) needs
+        /// to be compressed.
+        /// </summary>
+        public bool CompressDestinationDir { get; set; }
 
         /// <summary>
-        /// Gets or sets a list of properties for the build. Those properties are stored in a
-        /// manifest file that can be used when running the app.
+        /// Gets or sets a value indicating whether the source directory's content must be copied to the destination
+        /// directory. <see cref="IProgrammingPlatform"/> set this flag when generating build script.
+        /// <see cref="DotNetCore.DotNetCorePlatform"/> sets this as <c>false</c> since we do not want to copy source
+        /// files like '.cs' files to destination directory where as in other platforms this is fine to do.
         /// </summary>
-        public IDictionary<string, string> BuildProperties { get; set; }
+        public bool CopySourceDirectoryContentToDestinationDirectory { get; set; }
+
+        /// <summary>
+        /// Gets or sets the set of directories to exclude when copying the build artifacts to an output directory.
+        /// </summary>
+        public IEnumerable<string> DirectoriesToExcludeFromCopyToBuildOutputDir { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the manifest file.
@@ -66,42 +109,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public string ManifestDir { get; set; }
 
         /// <summary>
+        /// Gets or sets a list of properties for the build. Those properties are stored in a
+        /// manifest file that can be used when running the app.
+        /// </summary>
+        public IDictionary<string, string> BuildProperties { get; set; }
+
+        /// <summary>
         /// Gets or sets the file name where build commands will be dynamically written during build.
         /// </summary>
         public string BuildCommandsFileName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the path to benv file.
-        /// </summary>
-        public string BenvPath { get; set; }
-
-        /// <summary>
-        /// Gets or sets the path to logger file.
-        /// </summary>
-        public string LoggerPath { get; set; }
-
-        /// <summary>
-        /// Gets or sets the bash script which install the platform binaries.
-        /// </summary>
-        public string PlatformInstallationScript { get; set; }
-
-        /// <summary>
-        /// Gets a value indicating whether the output directory is a nested directory of the source.
-        /// </summary>
-        public bool OutputDirectoryIsNested { get; internal set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the source directory's content must be copied to the destination
-        /// directory. <see cref="IProgrammingPlatform"/> set this flag when generating build script.
-        /// <see cref="DotNetCore.DotNetCorePlatform"/> sets this as <c>false</c> since we do not want to copy source
-        /// files like '.cs' files to destination directory where as in other platforms this is fine to do.
-        /// </summary>
-        public bool CopySourceDirectoryContentToDestinationDirectory { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the entire output directory (excluding the manifest file) needs
-        /// to be compressed.
-        /// </summary>
-        public bool CompressDestinationDir { get; set; }
     }
 }

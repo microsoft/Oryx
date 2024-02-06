@@ -133,6 +133,12 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("echo \"Done.\"\n")
 	}
 
+	extensibleCommands := common.ParseExtensibleConfigFile(filepath.Join(gen.SourcePath, consts.ExtensibleConfigurationFileName))
+	if extensibleCommands != "" {
+		logger.LogInformation("Found extensible configuration file to be used in the generated run script")
+		scriptBuilder.WriteString(extensibleCommands)
+	}
+
 	// If user passed a custom startup command, it should take precedence above all other options
 	startupCommand := strings.TrimSpace(gen.UserStartupCommand)
 	userStartupCommandFullPath := ""
