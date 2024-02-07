@@ -90,7 +90,7 @@ function getRuntimeTagVersion()
     then
         case $PLATFORM_VERSION in
             8.3)
-                FULL_RUNTIME_TAG_VERSION=$PHP82_VERSION
+                FULL_RUNTIME_TAG_VERSION=$PHP83_VERSION
                 ;;
             8.2)
                 FULL_RUNTIME_TAG_VERSION=$PHP82_VERSION
