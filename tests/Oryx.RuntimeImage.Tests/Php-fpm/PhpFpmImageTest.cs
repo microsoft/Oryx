@@ -43,6 +43,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm", PhpVersions.Php80Version)]
         [InlineData("8.1-fpm", PhpVersions.Php81Version)]
         [InlineData("8.2-fpm", PhpVersions.Php82Version)]
+        [InlineData("8.3-fpm", PhpVersions.Php82Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBusterImageName(string version, string expectedPhpVersion)
         {
@@ -68,6 +69,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm", PhpVersions.Php80Version)]
         [InlineData("8.1-fpm", PhpVersions.Php81Version)]
         [InlineData("8.2-fpm", PhpVersions.Php82Version)]
+        [InlineData("8.3-fpm", PhpVersions.Php82Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBullseyeImageName(string version, string expectedPhpVersion)
         {
@@ -93,6 +95,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
         public void GraphicsExtension_Gd_IsInstalled_For_Buster(string version)
         {
             // Arrange & Act
@@ -117,6 +120,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
         public void GraphicsExtension_Gd_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -189,6 +193,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
         public void PhpFpmBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -229,6 +234,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
         public void PhpFpmBusterRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -269,6 +275,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
         public void Redis_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -296,6 +303,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
         public void Redis_IsInstalled_For_Buster(string version)
         {
             // Arrange & Act
@@ -322,6 +330,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
         public void SqlSrv_IsInstalled_For_Buster(string version)
         {
             // Arrange & Act
@@ -347,6 +356,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
         public void SqlSrv_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -371,6 +381,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Trait("category", "runtime-bullseye")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
         public void Mongodb_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -395,6 +406,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Trait("category", "runtime-buster")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
         public void Mongodb_IsInstalled_For_Buster(string version)
         {
             // Arrange & Act

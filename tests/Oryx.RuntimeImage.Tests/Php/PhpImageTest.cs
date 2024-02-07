@@ -45,6 +45,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0", PhpVersions.Php80Version)]
         [InlineData("8.1", PhpVersions.Php81Version)]
         [InlineData("8.2", PhpVersions.Php82Version)]
+        [InlineData("8.3", PhpVersions.Php82Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBusterImageName(string version, string expectedPhpVersion)
         {
@@ -70,6 +71,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0", PhpVersions.Php80Version)]
         [InlineData("8.1", PhpVersions.Php81Version)]
         [InlineData("8.2", PhpVersions.Php82Version)]
+        [InlineData("8.3", PhpVersions.Php82Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBullseyeImageName(string version, string expectedPhpVersion)
         {
@@ -95,6 +97,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public void GraphicsExtension_Gd_IsInstalled_For_Buster_Image(string version)
         {
             // Arrange & Act
@@ -120,6 +123,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public void GraphicsExtension_Gd_IsInstalled_For_Bullseye_Image(string version)
         {
             // Arrange & Act
@@ -145,6 +149,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public async Task Check_If_Apache_Allows_Casing_In_PHP_File_ExtensionAsync_For_Buster(string version)
         {
             // Arrange
@@ -217,6 +222,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public async Task Check_If_Apache_Allows_Casing_In_PHP_File_ExtensionAsync_For_Bullseye(string version)
         {
             // Arrange
@@ -289,6 +295,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public void MongoDb_IsInstalled_For_Buster(string version)
         {
             // Arrange & Act
@@ -316,6 +323,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public void MongoDb_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -391,6 +399,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public void PhpRuntimeBusterImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -431,6 +440,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public void PhpRuntimeBullseyeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -471,6 +481,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public void Redis_IsInstalled_For_Buster(string version)
         {
             // Arrange & Act
@@ -498,6 +509,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public void Redis_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -524,6 +536,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public void SqlSrv_IsInstalled_For_Buster(string version)
         {
             // Arrange & Act
@@ -550,6 +563,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0")]
         [InlineData("8.1")]
         [InlineData("8.2")]
+        [InlineData("8.3")]
         public void SqlSrv_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act

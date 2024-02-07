@@ -1,30 +1,29 @@
-FROM oryxdevmcr.azurecr.io/private/oryx/%PHP_BASE_IMAGE_TAG%
+FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-8.3-bullseye
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION %PHP_VERSION%
+ENV PHP_VERSION 8.3.2
 
-RUN a2enmod rewrite expires include deflate remoteip headers
-
-ENV APACHE_RUN_USER www-data
+# An environment variable for oryx run-script to know the origin of php image so that
+# start-up command can be determined while creating run script
+ENV PHP_ORIGIN php-fpm
+ENV NGINX_RUN_USER www-data
 # Edit the default DocumentRoot setting
-ENV APACHE_DOCUMENT_ROOT /home/site/wwwroot
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+ENV NGINX_DOCUMENT_ROOT /home/site/wwwroot
+# Install NGINX latest stable version using APT Method with Nginx Repository instead of distribution-provided one:
+# - https://www.linuxcapable.com/how-to-install-latest-nginx-mainline-or-stable-on-debian-11/
+RUN apt-get update
+RUN apt install curl nano -y
+RUN curl -sSL https://packages.sury.org/nginx/README.txt | bash -x
+RUN apt-get update
+RUN yes '' | apt-get install nginx-core nginx-common nginx nginx-full -y
+RUN ls -l /etc/nginx
+COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-available/default
+COPY images/runtime/php-fpm/nginx_conf/default.conf /etc/nginx/sites-enabled/default
+RUN sed -ri -e 's!worker_connections 768!worker_connections 10068!g' /etc/nginx/nginx.conf
+RUN sed -ri -e 's!# multi_accept on!multi_accept on!g' /etc/nginx/nginx.conf
+RUN ls -l /etc/nginx
+RUN nginx -t
 # Edit the default port setting
-ENV APACHE_PORT 8080
-RUN sed -ri -e 's!<VirtualHost \*:80>!<VirtualHost *:${APACHE_PORT}>!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!<VirtualHost _default_:443>!<VirtualHost _default_:${APACHE_PORT}>!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!Listen 80!Listen ${APACHE_PORT}!g' /etc/apache2/ports.conf
-# Edit Configuration to instruct Apache on how to process PHP files
-RUN echo -e '<FilesMatch "\.(?i:ph([[p]?[0-9]*|tm[l]?))$">\n SetHandler application/x-httpd-php\n</FilesMatch>' >> /etc/apache2/apache2.conf
-# Disable Apache2 server signature
-RUN echo -e 'ServerSignature Off' >> /etc/apache2/apache2.conf
-RUN echo -e 'ServerTokens Prod' >> /etc/apache2/apache2.conf
-RUN { \
-   echo '<DirectoryMatch "^/.*/\.git/">'; \
-   echo '   Order deny,allow'; \
-   echo '   Deny from all'; \
-   echo '</DirectoryMatch>'; \
-} >> /etc/apache2/apache2.conf
+ENV NGINX_PORT 8080
 
 # Install common PHP extensions
 # TEMPORARY: Holding odbc related packages from upgrading.
@@ -36,7 +35,7 @@ RUN apt-mark hold msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.*]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.*  || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* ]]; then \
 		apt-get update \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends apache2-dev \
@@ -75,24 +74,17 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         sysvshm \
         pdo_odbc \
 # deprecated from 7.4, so should be avoided in general template for all php versions
-#       wddx \
-#       xmlrpc \
+#        xmlrpc \
         xsl
-
-RUN set -eux; \
-    if [[ $PHP_VERSION != 5.* ]]; then \
-        pecl install redis && docker-php-ext-enable redis; \
-    fi
-
+RUN pecl install redis && docker-php-ext-enable redis
 # https://github.com/Imagick/imagick/issues/331
 RUN pecl install imagick && docker-php-ext-enable imagick
 
-# deprecated from 5.*, so should be avoided 
-RUN set -eux; \
-    if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \
-        echo "pecl/mongodb requires PHP (version >= 7.1.0, version <= 7.99.99)"; \
-        pecl install mongodb && docker-php-ext-enable mongodb; \
-    fi
+# deprecated from 5.*, so should be avoided 	
+RUN set -eux; \	
+    if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \	
+        pecl install mongodb && docker-php-ext-enable mongodb; \	
+    fi	
 
 # https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
 RUN set -eux; \
@@ -105,7 +97,6 @@ RUN set -eux; \
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
-# pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 7.3.0)
 RUN set -eux; \
     if [[ $PHP_VERSION == 8.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
@@ -140,8 +131,6 @@ RUN set -x \
     && ./configure --with-unixODBC=shared,/usr \
     && docker-php-ext-install odbc \
     && rm -rf /var/lib/apt/lists/*
-
-RUN rm -rf /tmp/oryx
 
 ENV LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \

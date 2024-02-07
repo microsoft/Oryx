@@ -13,6 +13,11 @@ parameters:
         buildTag: 'github-actions-debian-buster'
       - category: '8.2'
         buildTag: 'github-actions-debian-buster'
+      - category: '8.3'
+        buildTag: 'debian-stretch'
+      - category: '8.3'
+        buildTag: 'github-actions-debian-buster'
+
 
 jobs:
 - ${{ each mapping in parameters.testMappings }}:
