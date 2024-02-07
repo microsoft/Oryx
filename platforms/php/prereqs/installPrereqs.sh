@@ -6,6 +6,11 @@
 
 set -eux
 
+# Check if buster.list file exists before removing it
+if [ -f /etc/apt/sources.list.d/buster.list ]; then
+    rm -f /etc/apt/sources.list.d/buster.list
+fi
+
 # prevent Debian's PHP packages from being installed
 # https://github.com/docker-library/php/pull/542
 {
