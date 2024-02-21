@@ -320,8 +320,8 @@
     node12-version: 12.22.12
     node14-version: 14.21.3
     node16-version: 16.20.2
-    node18-version: 18.19.0
-    node20-version: 20.11.0
+    node18-version: 18.19.1
+    node20-version: 20.11.1
     node-app-insights-sdk-version: 1.8.7
     pm2-version: 4.5.6
     npm-version: 9.6.4
