@@ -31,7 +31,7 @@ PHPIZE_DEPS="autoconf dpkg-dev file g++ gcc libc-dev make pkg-config re2c"
 # persistent / runtime deps
 # libcurl3 and libcurl4 both needs to be supported in ubuntu focal for php
 # https://github.com/xapienz/curl-debian-scripts
-if [ "$DEBIAN_FLAVOR" = focal ]
+if [ "$DEBIAN_FLAVOR" = focal-scm ]
 then
     add-apt-repository ppa:xapienz/curl34 -y
 fi
