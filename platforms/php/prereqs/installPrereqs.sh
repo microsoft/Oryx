@@ -47,7 +47,10 @@ apt-get update \
     --no-install-recommends && rm -r /var/lib/apt/lists/*
 
 ##<argon2>##
-sed -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
+sed -e 's/# deb http:\/\/deb.debian.org\/debian stretch-updates/deb http:\/\/deb.debian.org\/debian stretch-updates/g' \
+    -e 's/deb http:\/\/archive.debian.org\/debian stretch/deb http:\/\/deb.debian.org\/debian stretch/g' \
+    -e 's/deb http:\/\/archive.debian.org\/debian-security stretch/deb http:\/\/security.debian.org\/debian-security stretch/g' \
+    -e 's/stretch/buster/g' /etc/apt/sources.list > /etc/apt/sources.list.d/buster.list;
 { \
 	echo 'Package: *';
 	echo 'Pin: release n=buster';
