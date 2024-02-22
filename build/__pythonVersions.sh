@@ -1,6 +1,6 @@
 # This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
-PYTHON_RUNTIME_BASE_TAG='20240110.3'
+PYTHON_RUNTIME_BASE_TAG='20240222.5'
 PIP_VERSION='21.2.4'
 PYTHON27_VERSION='2.7.18'
 PYTHON36_VERSION='3.6.15'
