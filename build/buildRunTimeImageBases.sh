@@ -77,7 +77,8 @@ labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
 
-dockerFileName="bullseye.Dockerfile"
+dockerFileName="base.$runtimeImageDebianFlavor.Dockerfile"	dockerFileName="bullseye.Dockerfile"
+stagingDockerFileName="base.$runtimeImageDebianFlavor.staging.Dockerfile"
 dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name $dockerFileName -o -name $stagingDockerFileName \))
 
 nodeDockerfiles=()
@@ -183,7 +184,6 @@ for dockerFile in $dockerFiles; do
 
         # Tag the image to follow a similar format to .../python:3.7-debian-bullseye-20191028.1
         docker tag "$localImageTagName" "$uniqueImageName"
-
 
         if [ $clearedOutput == "false" ]
         then
