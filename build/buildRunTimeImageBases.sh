@@ -77,7 +77,7 @@ labels="$labels --label com.microsoft.oryx.build-number=$BUILD_NUMBER"
 
 execAllGenerateDockerfiles "$runtimeImagesSourceDir" "generateDockerfiles.sh" "$runtimeImageDebianFlavor"
 
-dockerFileName="base.$runtimeImageDebianFlavor.Dockerfile"	dockerFileName="bullseye.Dockerfile"
+dockerFileName="base.$runtimeImageDebianFlavor.Dockerfile"
 stagingDockerFileName="base.$runtimeImageDebianFlavor.staging.Dockerfile"
 dockerFiles=$(find $runtimeImagesSourceDir -type f \( -name $dockerFileName -o -name $stagingDockerFileName \))
 
