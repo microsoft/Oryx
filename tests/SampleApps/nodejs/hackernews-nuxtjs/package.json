@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.5.3",
-    "nuxt": "^2.8.0"
+    "nuxt": "^3.4.3"
   },
   "devDependencies": {
     "@nuxtjs/pwa": "3.0.0-beta.8",
