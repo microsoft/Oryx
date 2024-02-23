@@ -29,7 +29,7 @@ ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-ENV PYTHON_VERSION 3.11.8
+ENV PYTHON_VERSION 3.11.7
 RUN true
 COPY build/__pythonVersions.sh ${BUILD_DIR}
 RUN true
@@ -58,7 +58,7 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
 
 RUN set -ex \
  && cd /opt/python/ \
- && ln -s 3.11.8 3.11 \
+ && ln -s 3.11.7 3.11 \
  && ln -s 3.11 3 \
  && echo /opt/python/3/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
