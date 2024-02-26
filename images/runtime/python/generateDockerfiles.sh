@@ -49,7 +49,7 @@ do
     MAJOR_MINOR_VERSION="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
 
     mkdir -p "$DIR/$MAJOR_MINOR_VERSION/"
-    TARGET_DOCKERFILE="$DIR/$MAJOR_MINOR_VERSION/base.$ImageDebianFlavor.Dockerfile"
+    TARGET_DOCKERFILE="$DIR/$MAJOR_MINOR_VERSION/$ImageDebianFlavor.Dockerfile"
     cp "$DOCKERFILE_TEMPLATE" "$TARGET_DOCKERFILE"
 
     ORYX_PYTHON_IMAGE_BASE_TAG="oryx-run-base-$ImageDebianFlavor"
