@@ -36,7 +36,7 @@ RUN apt-mark hold msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.*]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* ]]; then \
 		apt-get update \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends apache2-dev \

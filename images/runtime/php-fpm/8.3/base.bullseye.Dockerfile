@@ -1,6 +1,6 @@
 FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-8.3-bullseye
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION 8.3.2
+ENV PHP_VERSION 8.3.3
 
 # An environment variable for oryx run-script to know the origin of php image so that
 # start-up command can be determined while creating run script

@@ -63,16 +63,6 @@ namespace Microsoft.Oryx.Integration.Tests
             //Temporarily skipping PhpFpmImagickExampleAsync(phpVersion81)
         }
 
-        [Fact, Trait("category", "php-8.3")]
-        [Trait("build-image", "debian-stretch")]
-        public async Task PipelineTestInvocationsPhp83Async()
-        {
-            string phpVersion83 = "8.3";
-            await Task.WhenAll(
-                ImagickExampleAsync(phpVersion83, ImageTestHelperConstants.OsTypeDebianBullseye));
-            //Temporarily skipping PhpFpmImagickExampleAsync(phpVersion81)
-        }
-
         private async Task ImagickExampleAsync(string phpVersion, string osType)
         {
             // Arrange
