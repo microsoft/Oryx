@@ -18,9 +18,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Composer24Version = "2.4.4";
         public const string Composer25Version = "2.5.8";
         public const string Composer26Version = "2.6.2";
-        public const string Php83Version = "8.3.2";
+        public const string Php83Version = "8.3.3";
         public const string Php83Keys = "1198C0117593497A5EC5C199286AF1F9897469DC AFD8691FDAEDF03BDF6E460563F15A9B715376CA";
-        public const string Php83TarSha256 = "4ffa3e44afc9c590e28dc0d2d31fc61f0139f8b335f11880a121b9f9b9f0634e";
+        public const string Php83TarSha256 = "b0a996276fe21fe9ca8f993314c8bc02750f464c7b0343f056fb0894a8dfa9d1";
         public const string Php82Version = "8.2.14";
         public const string Php82Keys = "1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544";
         public const string Php82TarSha256 = "763ecd39fcf51c3815af6ef6e43fa9aa0d0bd8e5a615009e5f4780c92705f583";
