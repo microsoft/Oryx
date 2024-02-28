@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.Integration.Tests
         [Trait("build-image", "debian-stretch")]
         public async Task PipelineTestInvocationsPhp83Async()
         {
-            string phpVersion82 = "8.3";
+            string phpVersion83 = "8.3";
             await Task.WhenAll(
                 GdExampleAsync(phpVersion83, ImageTestHelperConstants.OsTypeDebianBullseye),
                 PhpFpmGdExampleAsync(phpVersion83, ImageTestHelperConstants.OsTypeDebianBullseye));
