@@ -77,9 +77,14 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 #        xmlrpc \
         xsl
 RUN pecl install redis && docker-php-ext-enable redis
-# https://github.com/Imagick/imagick/issues/331
-RUN pecl install imagick && docker-php-ext-enable imagick
 
+# https://github.com/Imagick/imagick/issues/331
+# https://github.com/ihneo/php/pull/24/files
+RUN set -eux; \	
+    if [[ $PHP_VERSION != 8.3.* ]]; then \
+        pecl install imagick && docker-php-ext-enable imagick; \
+    fi
+        
 # deprecated from 5.*, so should be avoided 	
 RUN set -eux; \	
     if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \	
