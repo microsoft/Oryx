@@ -209,8 +209,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresExplicitRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
-            // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
-
             // Arrange
             var expectedSdkVersion = "3.1.201";
             var globalJsonTemplate = @"
@@ -222,7 +220,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
             var appName = NetCoreApp21WebApp;
-            var runtimeVersion = "2.1";
+            var runtimeVersion = "3.1";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -272,8 +270,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
-            // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
-
             // Arrange
             var expectedSdkVersion = "3.1.201";
             var globalJsonTemplate = @"
@@ -285,7 +281,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
             var appName = NetCoreApp21WebApp;
-            var runtimeVersion = "2.1";
+            var runtimeVersion = "3.1";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -344,7 +340,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
             var appName = NetCoreApp50MvcApp;
-            var runtimeVersion = "5.0";
+            var runtimeVersion = "7.0";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -430,8 +426,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_IntoCustomDynamicInstallationDir()
         {
-            // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
-
             // Arrange
             var expectedSdkVersion = "3.1.201";
             var globalJsonTemplate = @"
@@ -443,7 +437,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
             var appName = NetCoreApp21WebApp;
-            var runtimeVersion = "2.1";
+            var runtimeVersion = "3.1";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -611,7 +605,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(SupportedVersionAndImageNameData))]
-        public void BuildsApplication_AfterInstallingSupportedSdk(
+        public void BuildsApplication_SpecifyingRuntimeVersion_AfterInstallingSupportedSdk(
             string runtimeVersion, 
             string sdkVersion, 
             string appName,
@@ -625,6 +619,52 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddBuildCommand(
                 $"{appDir} -i /tmp/int -o {appOutputDir} " +
                 $"--platform {DotNetCoreConstants.PlatformName} --platform-version {runtimeVersion}")
+                .AddFileExistsCheck(manifestFile)
+                .AddCommand($"cat {manifestFile}")
+                .ToString();
+
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = imageName,
+                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
+
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, sdkVersion), result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreRuntimeVersion}=\"{runtimeVersion}",
+                        result.StdOut);
+                    Assert.Contains(
+                        $"{ManifestFilePropertyKeys.DotNetCoreSdkVersion}=\"{sdkVersion}",
+                        result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
+
+        [Theory, Trait("category", "githubactions")]
+        [MemberData(nameof(SupportedVersionAndImageNameData))]
+        public void BuildsApplication_SpecifyingSdkVersion_AfterInstallingSupportedSdk(
+            string runtimeVersion,
+            string sdkVersion,
+            string appName,
+            string imageName)
+        {
+            var volume = CreateSampleAppVolume(appName);
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand(
+                $"{appDir} -i /tmp/int -o {appOutputDir} " +
+                $"--platform {DotNetCoreConstants.PlatformName} --platform-version {sdkVersion}")
                 .AddFileExistsCheck(manifestFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
