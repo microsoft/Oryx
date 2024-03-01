@@ -85,7 +85,11 @@ RUN set -eux; \
     fi
 
 # https://github.com/Imagick/imagick/issues/331
-RUN pecl install imagick && docker-php-ext-enable imagick
+# https://github.com/ihneo/php/pull/24/files
+RUN set -eux; \	
+    if [[ $PHP_VERSION != 8.3.* ]]; then \
+        pecl install imagick && docker-php-ext-enable imagick; \
+    fi
 
 # deprecated from 5.*, so should be avoided 
 RUN set -eux; \
