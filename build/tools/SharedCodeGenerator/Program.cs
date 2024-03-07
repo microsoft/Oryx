@@ -159,6 +159,11 @@ namespace Microsoft.Oryx.SharedCodeGenerator
             {
                 var osTypeDirInfo = new DirectoryInfo(osTypeDirPath);
                 var osType = osTypeDirInfo.Name;
+                if (osType == "stretch" || osType == "focal-scm")
+                {
+                    continue;
+                }
+
                 sw.WriteLine($"### {osType}");
                 sw.WriteLine();
                 var versionFile = Path.Join(osTypeDirPath, VersionsToBuildFile);
