@@ -5,16 +5,12 @@ parameters:
   - name: testMappings
     type: object
     default:
-      - category: '8.0'
-        buildTag: 'debian-stretch'
+      - category: '7.4'
+        buildTag: 'github-actions-debian-buster'
       - category: '8.0'
         buildTag: 'github-actions-debian-buster'
       - category: '8.1'
-        buildTag: 'debian-stretch'
-      - category: '8.1'
         buildTag: 'github-actions-debian-buster'
-      - category: '8.2'
-        buildTag: 'debian-stretch'
       - category: '8.2'
         buildTag: 'github-actions-debian-buster'
 
