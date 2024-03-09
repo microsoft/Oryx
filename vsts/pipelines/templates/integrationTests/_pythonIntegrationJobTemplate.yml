@@ -5,12 +5,6 @@ parameters:
   - name: testMappings
     type: object
     default:
-      - category: '3.7'
-        buildTag: 'debian-stretch'
-      - category: '3.7'
-        buildTag: 'github-actions-debian-bullseye'
-      - category: '3.8'
-        buildTag: 'debian-stretch'
       - category: '3.8'
         buildTag: 'github-actions-debian-bullseye'
       - category: '3.9'
