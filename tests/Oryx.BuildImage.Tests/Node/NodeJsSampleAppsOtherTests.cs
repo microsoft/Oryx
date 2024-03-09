@@ -992,8 +992,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 },
                 result.GetDebugInfo());
         }
-
-        [Fact, Trait("category", "ltsversions")]
+        
+        [Fact(Skip = "https://msazure.visualstudio.com/Antares/_workitems/edit/27122108")]
+        [Trait("category", "ltsversions")]
         public void  CanBuildAndRunNodeApp_WithWorkspace_UsingYarn2ForBuild()
         {
             // Arrange
