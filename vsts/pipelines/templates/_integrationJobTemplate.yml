@@ -19,11 +19,6 @@ jobs:
   parameters:
     storageAccountUrl: ${{ parameters.storageAccountUrl }}
 
-# Golang integration tests
-- template: integrationTests/_golangIntegrationJobTemplate.yml
-  parameters:
-    storageAccountUrl: ${{ parameters.storageAccountUrl }}
-
 # PHP integration tests
 - template: integrationTests/_phpIntegrationJobTemplate.yml
   parameters:

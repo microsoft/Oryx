@@ -5,16 +5,6 @@ parameters:
   - name: testMappings
     type: object
     default:
-      - category: '3.0'
-        buildTag: 'debian-stretch'
-      - category: '3.1'
-        buildTag: 'debian-stretch'
-      - category: '3.1'
-        buildTag: 'github-actions-debian-stretch'
-      - category: '5.0'
-        buildTag: 'debian-stretch'
-      - category: '5.0'
-        buildTag: 'github-actions-debian-stretch'
       - category: '6.0'
         buildTag: 'debian-stretch'
       - category: '6.0'
