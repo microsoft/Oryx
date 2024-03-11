@@ -12,20 +12,11 @@ parameters:
         key: Latest
         value: latest
       -
-        key: LtsVersions
-        value: ltsversions
-      -
         key: Jamstack
         value: jamstack
       -
         key: GithubActions
         value: githubactions
-      -
-        key: VsoFocal
-        value: vso-focal
-      -
-        key: VsoBullseye
-        value: vso-bullseye
       -
         key: Full
         value: full
@@ -160,17 +151,6 @@ stages:
         - template: templates/_buildTemplate.yml
           parameters:
             imageType: ${{ buildImage.value }}
-
-    - job: Job_BuilderImages
-      displayName: Build Builder Images
-      pool:
-        name: AzurePipelines-EO
-        demands:
-          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-      timeoutInMinutes: 480
-      steps:
-      - template: templates/_builderTemplate.yml
-      dependsOn: Job_BuildImage_CliBuilderBullseye
 
     - job: Job_Buster_RuntimeImages
       displayName: Build and Test Buster Runtime Images
