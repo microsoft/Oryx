@@ -9,6 +9,11 @@ jobs:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
   steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk 7.x'
+    inputs:
+      version: 7.0.306
+
   - script: |
       echo "##vso[task.setvariable variable=ReleaseBuildImages;]true"
       echo "##vso[task.setvariable variable=ReleaseRuntimeImages;]false"

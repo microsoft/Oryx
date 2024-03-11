@@ -114,27 +114,6 @@ steps:
     scriptPath: ./vsts/scripts/tagBuilderImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- script: |
-    dotnet --version
-    if [ $? -ne 0 ]; then
-      echo "Failed to check dotnet version. Assuming not installed."
-    fi
-    # Check for installed .NET 7.x using package manager
-    dpkg --list | grep 'dotnet-sdk-7\.'
-    if [ $? -ne 0 ]; then
-      echo "dotnet 7.x is not installed. Installing..."
-      # Update package list and install .NET 7.x SDK
-      sudo apt-get update
-      sudo apt-get install -y dotnet-sdk-7.0
-    fi
-    # Check if dotnet is present in the PATH
-    echo "$PATH"
-    # try adding dotnet to path
-    export PATH=$PATH:/usr/bin/dotnet
-    # Check if it is in PATH now
-    dotnet --list-sdks
-  displayName: 'Install Dotnet SDK 7 if not installed'
-
 - task: ShellScript@2
   displayName: 'Test runtime images for pme staging registry'
   inputs:
