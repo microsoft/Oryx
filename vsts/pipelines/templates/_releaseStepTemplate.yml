@@ -127,6 +127,12 @@ steps:
       sudo apt-get update
       sudo apt-get install -y dotnet-sdk-7.0
     fi
+    # Check if dotnet is present in the PATH
+    echo "$PATH"
+    # try adding dotnet to path
+    export PATH=$PATH:/usr/bin/dotnet
+    # Check if it is in PATH now
+    dotnet --list-sdks
   displayName: 'Install Dotnet SDK 7 if not installed'
 
 - task: ShellScript@2
