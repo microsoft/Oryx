@@ -114,20 +114,10 @@ steps:
     scriptPath: ./vsts/scripts/tagBuilderImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
-- script: |
-    dotnet --version
-    if [ $? -ne 0 ]; then
-      echo "Failed to check dotnet version. Assuming not installed."
-    fi
-    # Check for installed .NET 7.x using package manager
-    dpkg --list | grep 'dotnet-sdk-7\.'
-    if [ $? -ne 0 ]; then
-      echo "dotnet 7.x is not installed. Installing..."
-      # Update package list and install .NET 7.x SDK
-      sudo apt-get update
-      sudo apt-get install -y dotnet-sdk-7.0
-    fi
-  displayName: 'Install Dotnet SDK 7 if not installed'
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 7.x'
+  inputs:
+    version: 7.x
 
 - task: ShellScript@2
   displayName: 'Test runtime images for pme staging registry'
