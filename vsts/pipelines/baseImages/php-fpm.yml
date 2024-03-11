@@ -28,6 +28,15 @@ jobs:
     artifactsFileName: php-fpm-runtimeimage-bases-bullseye.txt
     jobName: Build_PHP_Fpm_Bullseye_Base
 
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build php bookworm runtime base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: php-fpm
+    imageDebianFlavor: bookworm
+    artifactsFileName: php-fpm-runtimeimage-bases-bookworm.txt
+    jobName: Build_PHP_Fpm_Bookworm_Base
+
 - job: Release_PhpRuntimeBaseImage
   dependsOn: 
     - Build_Php_Fpm_Buster_Base
