@@ -60,17 +60,6 @@ steps:
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrDevName }}
 
-- task: DownloadBuildArtifacts@0
-  displayName: 'Download Artifacts for release'
-  inputs:
-    artifactName: drop
-
-- task: CopyFiles@2
-  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
-  inputs:
-    SourceFolder: '$(System.ArtifactsDirectory)'
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
 - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
   displayName: 'Component Detection - OSS Compliance'
   inputs:
