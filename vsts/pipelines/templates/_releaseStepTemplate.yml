@@ -99,24 +99,10 @@ steps:
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
 - task: Shellpp@0
-  displayName: 'Pull and create release tags for buildpack images'
-  inputs:
-    type: FilePath
-    scriptPath: ./vsts/scripts/tagBuildpacksImagesForRelease.sh
-  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
-- task: Shellpp@0
   displayName: 'Pull and create release tags for CLI images'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagCliImagesForRelease.sh
-  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
-- task: Shellpp@0
-  displayName: 'Pull and create release tags for Builder images'
-  inputs:
-    type: FilePath
-    scriptPath: ./vsts/scripts/tagBuilderImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: ShellScript@2
@@ -148,27 +134,11 @@ steps:
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: Shellpp@0
-  displayName: 'Push build-pack images to PME staging ACR'
-  inputs:
-    type: FilePath
-    scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
-    args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-buildpack-images-mcr.txt'
-  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
-- task: Shellpp@0
   displayName: 'Push CLI image to PME staging ACR'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
     args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-cli-images-mcr.txt'
-  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
-- task: Shellpp@0
-  displayName: 'Push builder images to PME staging ACR'
-  inputs:
-    type: FilePath
-    scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
-    args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-builder-images-mcr.txt'
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
 
 - task: Shellpp@0
