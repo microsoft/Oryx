@@ -42,6 +42,12 @@ steps:
     docker images && docker system prune -fa && docker images && echo
   displayName: 'clean docker images'
 
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 7.x'
+  inputs:
+    version: 7.0.306
+  condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
+
 - script: |
       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
       echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
