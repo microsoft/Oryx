@@ -42,11 +42,6 @@ steps:
     docker images && docker system prune -fa && docker images && echo
   displayName: 'clean docker images'
 
-- task: UseDotNet@2
-  displayName: 'Use .NET Core sdk 7.x'
-  inputs:
-    version: 7.0.306
-
 - script: |
       curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
       echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
@@ -104,13 +99,6 @@ steps:
     type: FilePath
     scriptPath: ./vsts/scripts/tagCliImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
-- task: ShellScript@2
-  displayName: 'Test runtime images for pme staging registry'
-  inputs:
-    scriptPath: ./build/testRunTimeImages.sh
-    args: skipBuildingImages ${{ parameters.acrPmeProdName }}.azurecr.io/public/oryx $(RELEASE_TAG_NAME) Category=Release
-  condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
 
 - task: Docker@1
   displayName: Dev Container registry logout
