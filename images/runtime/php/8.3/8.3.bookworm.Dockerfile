@@ -1,6 +1,5 @@
-ARG DEBIAN_FLAVOR
 # From https://github.com/docker-library/php.git
-FROM oryxdevmcr.azurecr.io/private/oryx/php-run-base-${DEBIAN_FLAVOR}
+FROM oryxdevmcr.azurecr.io/private/oryx/php-run-base-bookworm
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
@@ -12,7 +11,7 @@ RUN set -eux \
 		gnupg2 \
 		apt-transport-https \
 	&& curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-	&& curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+	&& curl https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list \
 	&& apt-get update \
 	&& ACCEPT_EULA=Y apt-get install -y msodbcsql17 msodbcsql18=18.1.2.1-1 odbcinst1debian2=2.3.7 odbcinst=2.3.7 unixodbc=2.3.7 unixodbc-dev=2.3.7
 
