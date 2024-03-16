@@ -1,5 +1,6 @@
+ARG DEBIAN_FLAVOR
 # From https://github.com/docker-library/php.git
-FROM oryxdevmcr.azurecr.io/private/oryx/php-run-base-bookworm
+FROM oryxdevmcr.azurecr.io/private/oryx/php-run-base-${DEBIAN_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
@@ -143,7 +144,7 @@ RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		libargon2-1 \
+		libargon2-dev \
 		libcurl4-openssl-dev \
 		libedit-dev \
 		libonig-dev \
@@ -232,8 +233,8 @@ RUN set -eux; \
 		| sort -u \
 		| xargs -r apt-mark manual \
 	; \
-	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
-	\
+	#apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+	#\
 # update pecl channel definitions https://github.com/docker-library/php/issues/443
 	pecl update-channels; \
 	rm -rf /tmp/pear ~/.pearrc; \
