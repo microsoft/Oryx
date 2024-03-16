@@ -1,19 +1,19 @@
 # From https://github.com/docker-library/php.git
-FROM oryxdevmcr.azurecr.io/private/oryx/php-run-base-bookworm
+FROM mcr.microsoft.com/oryx/php-run-base-bookworm
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
-#RUN set -eux \
-#	&& apt-get update \
-#	&& apt-get install -y --no-install-recommends \
-#		gnupg2 \
-#		apt-transport-https \
-#	&& curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-#	&& curl https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list \
-#	&& apt-get update \
-#	&& ACCEPT_EULA=Y apt-get install -y msodbcsql17 msodbcsql18=18.1.2.1-1 odbcinst1debian2=2.3.7 odbcinst=2.3.7 unixodbc=2.3.7 unixodbc-dev=2.3.7
+RUN set -eux \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends \
+		gnupg2 \
+		apt-transport-https \
+	&& curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && echo "deb [arch=amd64,arm64,armhf] https://packages.microsoft.com/debian/12/prod bookworm main" > /etc/apt/sources.list.d/mssql-release.list \
+	&& apt-get update \
+	&& ACCEPT_EULA=Y apt-get install -y msodbcsql17 msodbcsql18=18.1.2.1-1 odbcinst1debian2=2.3.7 odbcinst=2.3.7 unixodbc=2.3.7 unixodbc-dev=2.3.7
 
 ENV PHP_INI_DIR /usr/local/etc/php
 RUN set -eux; \
