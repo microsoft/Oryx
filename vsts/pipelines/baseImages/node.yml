@@ -1,7 +1,7 @@
 variables:
 - group: Oryx
 - name: ascName
-  value: oryx-automation-service-principal
+  value: oryx-new-service-connection
 - name: acrName
   value: oryxdevmcr.azurecr.io
 - name: skipComponentGovernanceDetection

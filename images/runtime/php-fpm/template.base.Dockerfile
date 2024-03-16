@@ -99,6 +99,9 @@ RUN set -eux; \
         && docker-php-ext-enable mysqlnd_azure; \
     fi
 
+# Install the Microsoft SQL Server PDO driver on supported versions only.
+#  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
+#  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
 # For php|8.0, latest stable version of pecl/sqlsrv, pecl/pdo_sqlsrv is 5.11.0
 RUN set -eux; \
     if [[ $PHP_VERSION == 8.0.* ]]; then \
@@ -109,11 +112,12 @@ RUN set -eux; \
 
 # Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.1.0)
 RUN set -eux; \
-    if [[ $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* ]]; then \
+    if [[ $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
     fi
+
 
 RUN { \
                 echo 'opcache.memory_consumption=128'; \

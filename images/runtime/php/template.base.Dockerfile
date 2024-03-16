@@ -119,7 +119,7 @@ RUN set -eux; \
 
 # Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.1.0)
 RUN set -eux; \
-    if [[ $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* ]]; then \
+    if [[ $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* ||  $PHP_VERSION == 8.3.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \

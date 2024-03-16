@@ -1,5 +1,5 @@
 parameters:
-  ascName: oryx-automation-service-principal
+  ascName: oryx-new-service-connection
   acrName: oryxdevmcr.azurecr.io
 
 steps:
