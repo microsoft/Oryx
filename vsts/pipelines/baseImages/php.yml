@@ -12,24 +12,6 @@ variables:
 jobs:
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
-    displayName: Build php runtime buster base images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: php
-    imageDebianFlavor: buster
-    artifactsFileName: php-runtimeimage-bases-buster.txt
-    jobName: Build_Buster_BaseImages
-
-- template: ../templates/_buildimageBasesJobTemplate.yml
-  parameters:
-    displayName: Build php runtime bullseye base images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: php
-    imageDebianFlavor: bullseye
-    artifactsFileName: php-runtimeimage-bases-bullseye.txt
-    jobName: Build_Bullseye_BaseImages
-
-- template: ../templates/_buildimageBasesJobTemplate.yml
-  parameters:
     displayName: Build php runtime bookworm base images
     scriptPath: ./build/buildRunTimeImageBases.sh
     imageDir: php
@@ -39,8 +21,6 @@ jobs:
 
 - job: Release_PhpRuntimeBaseImage
   dependsOn: 
-    - Build_Buster_BaseImages
-    - Build_Bullseye_BaseImages
     - Build_Bookworm_BaseImages  
   displayName: Push images to MCR
   timeoutInMinutes: 250
