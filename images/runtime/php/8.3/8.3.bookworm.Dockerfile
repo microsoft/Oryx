@@ -1,5 +1,5 @@
 # From https://github.com/docker-library/php.git
-FROM mcr.microsoft.com/oryx/php-run-base-bookworm
+FROM oryxdevmcr.azurecr.io/private/oryx/php-run-base-bookworm
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
@@ -143,7 +143,7 @@ RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \
-		libargon2-dev \
+		libargon2-1 \
 		libcurl4-openssl-dev \
 		libedit-dev \
 		libonig-dev \
