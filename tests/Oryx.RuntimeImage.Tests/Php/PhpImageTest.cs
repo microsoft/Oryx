@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0", PhpVersions.Php80Version)]
         [InlineData("8.1", PhpVersions.Php81Version)]
         [InlineData("8.2", PhpVersions.Php82Version)]
-        [InlineData("8.3", PhpVersions.Php82Version)]
+        [InlineData("8.3", PhpVersions.Php83Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBusterImageName(string version, string expectedPhpVersion)
         {
@@ -71,7 +71,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0", PhpVersions.Php80Version)]
         [InlineData("8.1", PhpVersions.Php81Version)]
         [InlineData("8.2", PhpVersions.Php82Version)]
-        [InlineData("8.3", PhpVersions.Php82Version)]
+        [InlineData("8.3", PhpVersions.Php83Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBullseyeImageName(string version, string expectedPhpVersion)
         {
