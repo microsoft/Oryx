@@ -43,7 +43,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm", PhpVersions.Php80Version)]
         [InlineData("8.1-fpm", PhpVersions.Php81Version)]
         [InlineData("8.2-fpm", PhpVersions.Php82Version)]
-        [InlineData("8.3-fpm", PhpVersions.Php82Version)]
+        [InlineData("8.3-fpm", PhpVersions.Php83Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBusterImageName(string version, string expectedPhpVersion)
         {
@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.0-fpm", PhpVersions.Php80Version)]
         [InlineData("8.1-fpm", PhpVersions.Php81Version)]
         [InlineData("8.2-fpm", PhpVersions.Php82Version)]
-        [InlineData("8.3-fpm", PhpVersions.Php82Version)]
+        [InlineData("8.3-fpm", PhpVersions.Php83Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBullseyeImageName(string version, string expectedPhpVersion)
         {
