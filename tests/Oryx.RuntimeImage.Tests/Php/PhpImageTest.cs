@@ -92,6 +92,28 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("8.3", PhpVersions.Php83Version)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void VersionMatchesBookwormImageName(string version, string expectedPhpVersion)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(
+                _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBookworm),
+                "php",
+                new[] { "--version" }
+            );
+
+            // Assert
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("PHP " + expectedPhpVersion, result.StdOut);
+            },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
         [Trait("category", "runtime-buster")]
         [InlineData("7.4")]
         [InlineData("8.0")]
@@ -130,6 +152,28 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBullseye),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
+            });
+
+            // Assert
+            JObject gdInfo = JsonConvert.DeserializeObject<JObject>(result.StdOut);
+            //Assert.Contains((((JValue)gdInfo.GetValue("GIF Read Support")).Value).ToString(), "true");
+            Assert.True((bool)((JValue)gdInfo.GetValue("GIF Read Support")).Value);
+            Assert.True((bool)((JValue)gdInfo.GetValue("GIF Create Support")).Value);
+            Assert.True((bool)((JValue)gdInfo.GetValue("JPEG Support")).Value);
+            Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
+        }
+
+        [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("8.3")]
+        public void GraphicsExtension_Gd_IsInstalled_For_Bookworm_Image(string version)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBookworm),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
             });
@@ -290,6 +334,75 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("8.3")]
+        public async Task Check_If_Apache_Allows_Casing_In_PHP_File_ExtensionAsync_For_Bookworm(string version)
+        {
+            // Arrange
+            var appName = "imagick-example";
+            var hostDir = Path.Combine(_hostSamplesDir, "php", appName);
+            var volume = CreateSampleAppVolume(hostDir);
+            var appDir = volume.ContainerDir;
+
+            var testSiteConfigApache2 =
+                @"<VirtualHost *:80>
+                    \nServerAdmin php-x@localhost
+                    \nDocumentRoot /var/www/php-x/
+                    \nServerName localhost
+                    \nServerAlias www.php-x.com
+                    
+                    \n<Directory />
+                    \n    Options FollowSymLinks
+                    \n    AllowOverride None
+                    \n</Directory>
+                    \n<Directory /var/www/php-x/>
+                        Require all granted
+                    \n</Directory>
+
+                    \nErrorLog /var/www/php-x/error.log
+                    \nCustomLog /var/www/php-x/access.log combined
+                  </VirtualHost>";
+
+            int containerPort = 8080;
+            var customSiteConfig = @"echo '" + testSiteConfigApache2 + "' > /etc/apache2/sites-available/php-x.conf";
+            var portConfig = @"sed -i -e 's!\${APACHE_PORT}!" + containerPort + "!g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf";
+            var documentRootConfig = @"sed -i -e 's!\${APACHE_DOCUMENT_ROOT}!/var/www/php-x/!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf /etc/apache2/sites-available/*.conf";
+            var script = new ShellScriptBuilder()
+                .AddCommand("mkdir -p /var/www/php-x")
+                .AddCommand("echo '' > /var/www/php-x/error.log")
+                .AddCommand("echo '' > /var/www/php-x/access.log")
+                .AddCommand("echo '<?php\n phpinfo();\n ?>' > /var/www/php-x/inDex.PhP")
+                .AddCommand("chmod -R +x /var/www/php-x")
+                .AddCommand(documentRootConfig)
+                .AddCommand(portConfig)
+                .AddCommand("echo 'ServerName localhost' >> /etc/apache2/apache2.conf")
+                .AddCommand(customSiteConfig)
+                .AddCommand("a2ensite php-x.conf") // load custom site
+                .AddCommand("service apache2 start") // start apache with the custom site configuration
+                .AddCommand("tail -f /dev/null") //foreground process to keep the container alive
+                .ToString();
+
+            // Assert
+            await EndToEndTestHelper.RunAndAssertAppAsync(
+                imageName: _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBookworm),
+                output: _output,
+                volumes: new List<DockerVolume> { volume },
+                environmentVariables: null,
+                port: containerPort,
+                link: null,
+                runCmd: "/bin/sh",
+                runArgs: new[] { "-c", script },
+                assertAction: async (hostPort) =>
+                {
+                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/inDex.PhP");
+                    Assert.DoesNotContain("<?", data);
+                    Assert.DoesNotContain("<?php", data);
+                    Assert.DoesNotContain("?>", data);
+                },
+                dockerCli: _dockerCli);
+        }
+
+        [Theory]
         [Trait("category", "runtime-buster")]
         [InlineData("7.4")]
         [InlineData("8.0")]
@@ -330,6 +443,30 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBullseye),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-m", " | grep mongodb);" }
+            });
+
+            // Assert
+            var output = result.StdOut.ToString();
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("mongodb", output);
+            },
+                result.GetDebugInfo());
+
+        }
+
+        [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("8.3")]
+        public void MongoDb_IsInstalled_For_Bookworm(string version)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBookworm),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-m", " | grep mongodb);" }
             });
@@ -582,7 +719,29 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 Assert.Contains("pdo_sqlsrv", output);
             },
                 result.GetDebugInfo());
+        }
 
+        [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("8.3")]
+        public void SqlSrv_IsInstalled_For_Bookworm(string version)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBookworm),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-m", " | grep pdo_sqlsrv);" }
+            });
+
+            // Assert
+            var output = result.StdOut.ToString();
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("pdo_sqlsrv", output);
+            },
+                result.GetDebugInfo());
         }
     }
 }
