@@ -3,8 +3,6 @@ ARG DEBIAN_FLAVOR
 FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-run-base-${DEBIAN_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 
-# do NOT merge this content with above line because the 
-# above line is shared across all php images
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
