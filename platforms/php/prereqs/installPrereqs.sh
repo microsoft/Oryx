@@ -36,9 +36,13 @@ then
     add-apt-repository ppa:xapienz/curl34 -y
 fi
 
+# Set DEBIAN_FRONTEND environment variable
+export DEBIAN_FRONTEND=noninteractive
+
 apt-get update \
 && apt-get upgrade -y \
 && apt-get install -y \
+        apt-utils \
         $PHPIZE_DEPS \
         ca-certificates \
         curl \
