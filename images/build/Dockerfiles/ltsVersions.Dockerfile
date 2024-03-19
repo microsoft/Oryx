@@ -196,7 +196,7 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && ln -s 7.3 7 \
     && ln -s 7 lts \
     && cd /opt/php-composer \
-    && ln -sfn 2.0.8 stable \
+    && ln -sfn 2.6.2 stable \
     && ln -sfn /opt/php-composer/stable/composer.phar /opt/php-composer/composer.phar \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
