@@ -89,6 +89,9 @@ function getRuntimeTagVersion()
     elif [ "$PLATFORM_NAME" == "php" ]
     then
         case $PLATFORM_VERSION in
+            8.3)
+                FULL_RUNTIME_TAG_VERSION=$PHP83_VERSION
+                ;;
             8.2)
                 FULL_RUNTIME_TAG_VERSION=$PHP82_VERSION
                 ;;

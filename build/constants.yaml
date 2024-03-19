@@ -185,9 +185,9 @@
     file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20240318.2
-    php-fpm-runtime-base-tag: 20240318.2
-    composer-default-version: 2.0.8
+    php-runtime-base-tag: 20240318.5
+    php-fpm-runtime-base-tag: 20240318.4
+    composer-default-version: 2.6.2
     composer-setup-sha384: e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02
     composer1-9-version: 1.9.3
     composer1-10-version: 1.10.19
@@ -197,6 +197,9 @@
     composer2-4-version: 2.4.4
     composer2-5-version: 2.5.8
     composer2-6-version: 2.6.2
+    php83-version: 8.3.4
+    php83-keys: 1198C0117593497A5EC5C199286AF1F9897469DC AFD8691FDAEDF03BDF6E460563F15A9B715376CA
+    php83-tar-sha256: 39a337036a546e5c28aea76cf424ac172db5156bd8a8fd85252e389409a5ba63
     php82-version: 8.2.17
     php82-keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
     php82-tar-sha256: 1cc4ef733ba58f6557db648012471f1916e5bac316303aa165535bedab08ee35

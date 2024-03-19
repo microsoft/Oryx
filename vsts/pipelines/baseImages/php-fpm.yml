@@ -18,7 +18,7 @@ jobs:
     imageDebianFlavor: buster
     artifactsFileName: php-fpm-runtimeimage-bases-buster.txt
     jobName: Build_PHP_FPM_Buster_Base
-
+    
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
     displayName: Build php bullseye runtime base images
@@ -27,11 +27,21 @@ jobs:
     imageDebianFlavor: bullseye
     artifactsFileName: php-fpm-runtimeimage-bases-bullseye.txt
     jobName: Build_PHP_Fpm_Bullseye_Base
+    
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build php bookworm runtime base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: php-fpm
+    imageDebianFlavor: bookworm
+    artifactsFileName: php-fpm-runtimeimage-bases-bookworm.txt
+    jobName: Build_PHP_Fpm_Bookworm_Base
 
 - job: Release_PhpRuntimeBaseImage
-  dependsOn: 
+  dependsOn:
     - Build_Php_Fpm_Buster_Base
-    - Build_PHP_Fpm_Bullseye_Base
+    - Build_PHP_Fpm_Bullseye_Base  
+    - Build_PHP_Fpm_Bookworm_Base
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

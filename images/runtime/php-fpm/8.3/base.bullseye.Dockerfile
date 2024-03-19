@@ -1,6 +1,6 @@
-FROM oryxdevmcr.azurecr.io/private/oryx/%PHP_BASE_IMAGE_TAG%
+FROM oryxdevmcr.azurecr.io/private/oryx/php-fpm-8.3-bullseye
 SHELL ["/bin/bash", "-c"]
-ENV PHP_VERSION %PHP_VERSION%
+ENV PHP_VERSION 8.3.4
 
 # An environment variable for oryx run-script to know the origin of php image so that
 # start-up command can be determined while creating run script
@@ -77,14 +77,9 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 #        xmlrpc \
         xsl
 RUN pecl install redis && docker-php-ext-enable redis
-
 # https://github.com/Imagick/imagick/issues/331
-# https://github.com/ihneo/php/pull/24/files
-RUN set -eux; \	
-    if [[ $PHP_VERSION != 8.3.* ]]; then \
-        pecl install imagick && docker-php-ext-enable imagick; \
-    fi
-        
+RUN pecl install imagick && docker-php-ext-enable imagick
+
 # deprecated from 5.*, so should be avoided 	
 RUN set -eux; \	
     if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \	
@@ -102,22 +97,12 @@ RUN set -eux; \
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
 #  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
-# For php|8.0, latest stable version of pecl/sqlsrv, pecl/pdo_sqlsrv is 5.11.0
 RUN set -eux; \
-    if [[ $PHP_VERSION == 8.0.* ]]; then \
-        pecl install sqlsrv-5.11.0 pdo_sqlsrv-5.11.0 \
-        && echo extension=pdo_sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||")/30-pdo_sqlsrv.ini \
-        && echo extension=sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||")/20-sqlsrv.ini; \
-    fi
-
-# Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.1.0)
-RUN set -eux; \
-    if [[ $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* ]]; then \
+    if [[ $PHP_VERSION == 8.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
     fi
-
 
 RUN { \
                 echo 'opcache.memory_consumption=128'; \
