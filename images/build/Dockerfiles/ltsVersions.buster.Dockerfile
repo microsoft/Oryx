@@ -177,7 +177,7 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     # Copy PHP versions
     && . $buildDir/__phpVersions.sh \
     && $imagesDir/installPlatform.sh php $PHP80_VERSION \
-    && $imagesDir/installPlatform.sh php-composer $COMPOSER1_10_VERSION \
+    && $imagesDir/installPlatform.sh php-composer $COMPOSER2_6_VERSION \
     && cd /opt/php \
     && ln -s 8.0 8 \
     && ln -s 8 lts \
