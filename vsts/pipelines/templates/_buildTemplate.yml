@@ -43,6 +43,13 @@ steps:
     scriptPath: ./build/buildSln.sh
     args: Oryx.sln
 - task: Docker@1
+  displayName: Container registry logout
+  inputs:
+    command: logout
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
+
+- task: Docker@1
   displayName: Container registry login
   inputs:
     command: login

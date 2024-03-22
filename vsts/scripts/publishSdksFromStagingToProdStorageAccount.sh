@@ -101,15 +101,20 @@ function copyPlatformBlobsToProdForDebianFlavor() {
     fi
 
     # Function to copy platform blobs to production for a specific Debian flavor
-    # Dotnet and nodejs are currently the only two platform supporting bookworm.
+    # Dotnet, nodejs, php and python platforms are currently supporting bookworm.
     # Allowed combinations: 
     # - platformName=dotnet and debianFlavor=bookworm
     # - platformName=nodejs and debianFlavor=bookworm
-    # Not allowed combinations: 
+    # - platformName=php and debianFlavor=bookworm
     # - platformName=python and debianFlavor=bookworm
-    # - platformName=java and debianFlavor=bookworm
-    # - Any platformName other than dotnet and node js with debianFlavor=bookworm
-    if [ "$platformName" != "dotnet" ] && [ "$platformName" != "nodejs" ] && [ "$debianFlavor" == "bookworm" ]; then
+    # Not allowed combinations:
+    # - Any platformName other than dotnet, node js, python and php with debianFlavor=bookworm
+    if [ "$debianFlavor" == "bookworm" ] && \
+       [ "$platformName" != "dotnet" ] && \
+       [ "$platformName" != "nodejs" ] && \
+       [ "$platformName" != "php" ] && \
+       [ "$platformName" != "php-composer" ] && \
+       [ "$platformName" != "python" ]; then
         # Do not copy blobs
         echo "Copying blobs for platformName=$platformName and debianFlavor=$debianFlavor is not supported yet."
     else

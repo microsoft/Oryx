@@ -94,25 +94,18 @@ fi
 
 echo "Build image filter is set for '$buildImageFilter:$buildImageTagFilter'"
 
-tagBuildImageForIntegrationTest "$imagefilter/build" "debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
-tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions-debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
-tagBuildImageForIntegrationTest "$imagefilter/build" "lts-versions-debian-buster" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-debian-buster" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/build" "azfunc-jamstack-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
-tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-buster" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/build" "github-actions-debian-bookworm" "$buildImageFilter" "$buildImageTagFilter"
-tagBuildImageForIntegrationTest "$imagefilter/build" "vso-ubuntu-focal" "$buildImageFilter" "$buildImageTagFilter"
-tagBuildImageForIntegrationTest "$imagefilter/build" "vso-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-buster" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/build" "full-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-stretch" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-buster" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/cli" "debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
 tagBuildImageForIntegrationTest "$imagefilter/cli" "builder-debian-bullseye" "$buildImageFilter" "$buildImageTagFilter"
-tagBuildImageForIntegrationTest "$imagefilter/pack" "" "$buildImageFilter" "$buildImageTagFilter"
 
 
 # Extract language string from string (e.g extract 'python' from 'category=python', 'debian-stretch' from 'build-image=debian-stretch')
