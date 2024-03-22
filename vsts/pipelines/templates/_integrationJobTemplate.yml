@@ -12,9 +12,6 @@ jobs:
 - template: /vsts/pipelines/templates/integrationTests/_nodeIntegrationJobTemplate.yml@self
   parameters:
     storageAccountUrl: ${{ parameters.storageAccountUrl }}
-- template: /vsts/pipelines/templates/integrationTests/_golangIntegrationJobTemplate.yml@self
-  parameters:
-    storageAccountUrl: ${{ parameters.storageAccountUrl }}
 - template: /vsts/pipelines/templates/integrationTests/_phpIntegrationJobTemplate.yml@self
   parameters:
     storageAccountUrl: ${{ parameters.storageAccountUrl }}
