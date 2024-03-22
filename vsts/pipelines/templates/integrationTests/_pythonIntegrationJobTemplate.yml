@@ -44,11 +44,6 @@ jobs:
     variables:
       skipComponentGovernanceDetection: true
     timeoutInMinutes: 300
-    templateContext:
-      outputs:
-      - output: pipelineArtifact
-        displayName: 'Publish Artifact: drop'
-        condition: true
     steps:
     - script: |
         echo "##vso[task.setvariable variable=BuildBuildImages;]false"

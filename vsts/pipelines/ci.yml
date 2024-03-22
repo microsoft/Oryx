@@ -144,11 +144,6 @@ extends:
           variables:
             SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]
             skipComponentGovernanceDetection: true
-          templateContext:
-            outputs:
-            - output: pipelineArtifact
-              displayName: 'Publish Artifact: drop'
-              condition: true
           steps:
           - script: |
               echo "##vso[task.setvariable variable=BuildBuildImages;]true"
@@ -189,11 +184,6 @@ extends:
         variables:
           SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]
           skipComponentGovernanceDetection: true
-        templateContext:
-          outputs:
-          - output: pipelineArtifact
-            displayName: 'Publish Artifact: drop'
-            condition: true
         steps:
         - script: |
             echo "##vso[task.setvariable variable=BuildBuildImages;]false"
@@ -221,11 +211,6 @@ extends:
         variables:
           SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]
           skipComponentGovernanceDetection: true
-        templateContext:
-          outputs:
-          - output: pipelineArtifact
-            displayName: 'Publish Artifact: drop'
-            condition: true
         steps:
         - script: |
             echo "##vso[task.setvariable variable=BuildBuildImages;]false"
@@ -253,11 +238,6 @@ extends:
         variables:
           SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]
           skipComponentGovernanceDetection: true
-        templateContext:
-          outputs:
-          - output: pipelineArtifact
-            displayName: 'Publish Artifact: drop'
-            condition: true
         steps:
         - script: |
             echo "##vso[task.setvariable variable=BuildBuildImages;]false"
