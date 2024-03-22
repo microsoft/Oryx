@@ -4,7 +4,7 @@ jobs:
   pool:
     name: AzurePipelines-EO
     demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 300
@@ -13,15 +13,13 @@ jobs:
       echo "##vso[task.setvariable variable=ReleaseBuildImages;]true"
       echo "##vso[task.setvariable variable=ReleaseRuntimeImages;]false"
     displayName: 'Set variables'
-      
-  - template: _releaseStepTemplate.yml
-
+  - template: /vsts/pipelines/templates/_releaseStepTemplate.yml@self
 - job: Release_RuntimeImages
   displayName: Push Runtime Images to MCR
   pool:
     name: AzurePipelines-EO
     demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
   timeoutInMinutes: 400
@@ -30,35 +28,25 @@ jobs:
       echo "##vso[task.setvariable variable=ReleaseBuildImages;]false"
       echo "##vso[task.setvariable variable=ReleaseRuntimeImages;]true"
     displayName: 'Set variables'
-      
-  - template: _releaseStepTemplate.yml
-
+  - template: /vsts/pipelines/templates/_releaseStepTemplate.yml@self
 - job: Release_GitHub
   displayName: Create GitHub release
-  dependsOn: 
-    - Release_BuildImages
-    - Release_RuntimeImages
+  dependsOn:
+  - Release_BuildImages
+  - Release_RuntimeImages
   pool:
     name: AzurePipelines-EO
     demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+    - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   variables:
     skipComponentGovernanceDetection: true
-
   steps:
   - task: DownloadPipelineArtifact@2
     displayName: 'Download Oryx binaries to publish to release'
     inputs:
       artifactName: 'signed_binaries'
       path: $(Build.SourcesDirectory)/artifacts
-  
-  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-    displayName: 'Component Detection - OSS Compliance'
-    inputs:
-      ignoreDirectories: '$(Build.SourcesDirectory)/tests'
-  
-  - template: _setReleaseTag.yml
-
+  - template: /vsts/pipelines/templates/_setReleaseTag.yml@self
   - task: GitHubRelease@0
     displayName: 'GitHub release (create)'
     inputs:

@@ -8,37 +8,51 @@ variables:
   value: true
 - name: Packaging.EnableSBOMSigning
   value: true
-
-jobs:
-- template: ../templates/_buildimageBasesJobTemplate.yml
+resources:
+  repositories:
+  - repository: 1ESPipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
   parameters:
-    displayName: Build php buster runtime base images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: php-fpm
-    imageDebianFlavor: buster
-    artifactsFileName: php-fpm-runtimeimage-bases-buster.txt
-    jobName: Build_PHP_FPM_Buster_Base
-
-- template: ../templates/_buildimageBasesJobTemplate.yml
-  parameters:
-    displayName: Build php bullseye runtime base images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: php-fpm
-    imageDebianFlavor: bullseye
-    artifactsFileName: php-fpm-runtimeimage-bases-bullseye.txt
-    jobName: Build_PHP_Fpm_Bullseye_Base
-
-- job: Release_PhpRuntimeBaseImage
-  dependsOn: 
-    - Build_Php_Fpm_Buster_Base
-    - Build_PHP_Fpm_Bullseye_Base
-  displayName: Push images to MCR
-  timeoutInMinutes: 250
-  pool:
-    name: AzurePipelines-EO
-    demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-  steps:
-    - template: ../templates/_releaseBaseImagesStepTemplate.yml
-      parameters:
-        baseImageName: 'php-fpm'
+    pool:
+      name: AzurePipelines-EO
+      image: AzurePipelinesUbuntu20.04compliant
+      os: linux
+    sdl:
+      sourceAnalysisPool:
+        name: AzurePipelines-EO
+        os: windows
+    customBuildTags:
+    - ES365AIMigrationTooling-BulkMigrated
+    stages:
+    - stage: stage
+      jobs:
+      - template: /vsts/pipelines/templates/_buildimageBasesJobTemplate.yml@self
+        parameters:
+          displayName: Build php buster runtime base images
+          scriptPath: ./build/buildRunTimeImageBases.sh
+          imageDir: php-fpm
+          imageDebianFlavor: buster
+          artifactsFileName: php-fpm-runtimeimage-bases-buster.txt
+          jobName: Build_PHP_FPM_Buster_Base
+      - template: /vsts/pipelines/templates/_buildimageBasesJobTemplate.yml@self
+        parameters:
+          displayName: Build php bullseye runtime base images
+          scriptPath: ./build/buildRunTimeImageBases.sh
+          imageDir: php-fpm
+          imageDebianFlavor: bullseye
+          artifactsFileName: php-fpm-runtimeimage-bases-bullseye.txt
+          jobName: Build_PHP_Fpm_Bullseye_Base
+      - job: Release_PhpRuntimeBaseImage
+        dependsOn:
+        - Build_Php_Fpm_Buster_Base
+        - Build_PHP_Fpm_Bullseye_Base
+        displayName: Push images to MCR
+        timeoutInMinutes: 250
+        steps:
+        - template: /vsts/pipelines/templates/_releaseBaseImagesStepTemplate.yml@self
+          parameters:
+            baseImageName: 'php-fpm'
