@@ -1,12 +1,21 @@
 parameters:
   destinationSdkStorageAccountName: 'oryxsdksstaging'
+
 steps:
+
 - checkout: self
   clean: true
+
 - task: DownloadBuildArtifacts@0
   displayName: 'Download Artifacts'
   inputs:
     artifactName: drop
+
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection - OSS Compliance'
+  inputs:
+    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+
 - task: ShellScript@2
   displayName: Upload files to Azure Storage
   env:
@@ -18,10 +27,12 @@ steps:
   inputs:
     scriptPath: ./vsts/scripts/publishFilesToAzureStorage.sh
     args: ${{ parameters.destinationSdkStorageAccountName }}
+
 - task: UseDotNet@2
   displayName: 'Use .NET Core SDK 7.x'
   inputs:
     version: 7.0.306
+
 - task: ShellScript@2
   displayName: 'Test Dev storage account'
   env:

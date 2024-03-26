@@ -1,31 +1,32 @@
 parameters:
-- name: storageAccountUrl
-  type: string
-  default: https://oryxsdksstaging.blob.core.windows.net
-- name: testMappings
-  type: object
-  default:
-  - category: '3.7'
-    buildTag: 'github-actions-debian-bullseye'
-  - category: '3.8'
-    buildTag: 'github-actions-debian-bullseye'
-  - category: '3.9'
-    buildTag: 'debian-buster'
-  - category: '3.9'
-    buildTag: 'github-actions-debian-buster'
-  - category: '3.10'
-    buildTag: 'github-actions-debian-bullseye'
-  - category: '3.11'
-    buildTag: 'github-actions-debian-bullseye'
-  - category: '3.11'
-    buildTag: 'github-actions-debian-bookworm'
-  - category: '3.12'
-    buildTag: 'github-actions-debian-bullseye'
-  - category: '3.12'
-    buildTag: 'github-actions-debian-bookworm'
+  - name: storageAccountUrl
+    type: string
+    default: https://oryxsdksstaging.blob.core.windows.net
+  - name: testMappings
+    type: object
+    default:
+      - category: '3.7'
+        buildTag: 'github-actions-debian-bullseye'
+      - category: '3.8'
+        buildTag: 'github-actions-debian-bullseye'
+      - category: '3.9'
+        buildTag: 'debian-buster'
+      - category: '3.9'
+        buildTag: 'github-actions-debian-buster'
+      - category: '3.10'
+        buildTag: 'github-actions-debian-bullseye'
+      - category: '3.11'
+        buildTag: 'github-actions-debian-bullseye'
+      - category: '3.11'
+        buildTag: 'github-actions-debian-bookworm'
+      - category: '3.12'
+        buildTag: 'github-actions-debian-bullseye'
+      - category: '3.12'
+        buildTag: 'github-actions-debian-bookworm'
+
 jobs:
 - ${{ each mapping in parameters.testMappings }}:
-  - job: ''
+  - job:
     displayName: 'Run Python ${{ mapping.category }} Integration Tests using build image tag ${{ mapping.buildTag }}'
     dependsOn:
     - Job_BuildImage_Latest
@@ -36,22 +37,22 @@ jobs:
     pool:
       name: AzurePipelines-EO
       demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
     variables:
       skipComponentGovernanceDetection: true
     timeoutInMinutes: 300
     steps:
-    - script: |
-        echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-        echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
-        echo "##vso[task.setvariable variable=TestBuildImages;]false"
-        echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
-        echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=python-${{ mapping.category }}&build-image=${{ mapping.buildTag }}"
-        echo "##vso[task.setvariable variable=TestIntegration;]true"
-        echo "##vso[task.setvariable variable=PushBuildImages;]false"
-        echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-        echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
-        echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
-      displayName: 'Set variables'
-    - template: /vsts/pipelines/templates/_setReleaseTag.yml@self
-    - template: /vsts/pipelines/templates/_buildTemplate.yml@self
+        - script: |
+            echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+            echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=TestBuildImages;]false"
+            echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=TestIntegrationCaseFilter;]category=python-${{ mapping.category }}&build-image=${{ mapping.buildTag }}"
+            echo "##vso[task.setvariable variable=TestIntegration;]true"
+            echo "##vso[task.setvariable variable=PushBuildImages;]false"
+            echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+            echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]false"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
+          displayName: 'Set variables'
+        - template: ../_setReleaseTag.yml
+        - template: ../_buildTemplate.yml

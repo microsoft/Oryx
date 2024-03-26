@@ -1,25 +1,41 @@
 steps:
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection - OSS Compliance'
+  inputs:
+    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+
 - powershell: |
-    Write-Host "##vso[task.setvariable variable=SignType;isOutput=true]real"
+   Write-Host "##vso[task.setvariable variable=SignType;isOutput=true]real"
   name: setSignTypeVariable
   displayName: 'Set sign binary variable'
   condition: >
-    and(in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'),  or(
-      startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
-      startsWith(variables['Build.SourceBranch'], 'refs/heads/patch/'), 
-      startsWith(variables['Build.SourceBranch'],'refs/heads/exp/' )))
+   and(in(variables['Build.Reason'], 'Schedule', 'Manual'), eq(variables['Build.DefinitionName'], 'Oryx-CI'), 
+   or(
+     startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
+     startsWith(variables['Build.SourceBranch'], 'refs/heads/patch/'), 
+     startsWith(variables['Build.SourceBranch'],'refs/heads/exp/' )))
+
 - script: |
     echo $(setSignTypeVariable.SignType)
   name: SignType
+
 - task: NuGetToolInstaller@0
   displayName: 'Use NuGet 4.6.2'
   inputs:
     versionSpec: 4.6.2
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+
+- task: ms-vseng.MicroBuildTasks.30666190-6959-11e5-9f96-f56098202fef.MicroBuildSigningPlugin@1
+  displayName: 'Install Signing Plugin'
+  inputs:
+    signType: '$(setSignTypeVariable.SignType)'
+  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 7.x'
   inputs:
     version: 7.0.306
+
 - powershell: |
     Write-Host "Setting up git_commit and build_number as env variable"
     $env:GIT_COMMIT=$(git rev-parse HEAD)
@@ -28,6 +44,7 @@ steps:
     dotnet publish -r linux-x64 -c Release src\BuildServer\BuildServer.csproj
   displayName: 'dotnet publish and after setting git_commit and build_number as env variable'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+  
 - task: VSBuild@1
   displayName: 'Sign Oryx Binaries'
   inputs:
@@ -35,6 +52,7 @@ steps:
     msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
     configuration: '$(BuildConfiguration)'
     condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+
 - task: VSBuild@1
   displayName: 'Sign Oryx Build Server Binaries'
   inputs:
@@ -42,6 +60,7 @@ steps:
     msbuildArgs: '/t:SignFiles /p:RuntimeIdentifier=linux-x64 /p:MicroBuild_SigningEnabled=true'
     configuration: '$(BuildConfiguration)'
     condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+
 - task: ArchiveFiles@2
   displayName: 'Create compressed file of Oryx binaries'
   inputs:
@@ -53,6 +72,7 @@ steps:
     replaceExistingArchive: true
     verbose: true
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+
 - task: ArchiveFiles@2
   displayName: 'Create compressed file of Oryx Build Server binaries'
   inputs:
@@ -64,6 +84,7 @@ steps:
     replaceExistingArchive: true
     verbose: true
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/binaries'
   inputs:
@@ -72,6 +93,7 @@ steps:
     TargetFolder: '$(Build.ArtifactStagingDirectory)/binaries'
     CleanTargetFolder: true
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+
 - task: CopyFiles@2
   displayName: 'Copy BuildServer Files to: $(Build.ArtifactStagingDirectory)/binaries'
   inputs:
@@ -79,4 +101,11 @@ steps:
     Contents: '**\*'
     TargetFolder: '$(Build.ArtifactStagingDirectory)/binaries'
     CleanTargetFolder: false
+  condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+
+- task: PublishPipelineArtifact@0
+  displayName: 'Publish Pipeline Artifact'
+  inputs:
+    artifactName: 'signed_binaries'
+    targetPath: '$(Build.ArtifactStagingDirectory)'
   condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))

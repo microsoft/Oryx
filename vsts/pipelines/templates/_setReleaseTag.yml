@@ -4,6 +4,7 @@ steps:
   inputs:
     targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag
     artifactName: 'releaseTag'
+
 - script: |
     set -e
     file="$(Build.SourcesDirectory)/artifacts/releaseTag/releaseTag.txt"

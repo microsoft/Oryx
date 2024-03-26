@@ -1,0 +1,269 @@
+parameters:
+- name: storageAccountUrl
+  displayName: SDK storage account URL for production images and testing
+  type: string
+  default: https://oryx-cdn.microsoft.io
+  values:
+  - https://oryx-cdn.microsoft.io
+- name: buildImages
+  type: object
+  default:
+  - key: Latest
+    value: latest
+  - key: Jamstack
+    value: jamstack
+  - key: GithubActions
+    value: githubactions
+  - key: Full
+    value: full
+  - key: Cli
+    value: cli-stretch
+  - key: CliBuster
+    value: cli-buster
+  - key: CliBullseye
+    value: cli-bullseye
+  - key: CliBuilderBullseye
+    value: cli-builder-bullseye
+  - key: Buildpack
+    value: buildpack
+resources:
+  repositories:
+  - repository: MicroBuildTemplate
+    type: git
+    name: 1ESPipelineTemplates/MicroBuildTemplate
+    ref: refs/tags/release
+variables:
+  group: Oryx
+  Packaging.EnableSBOMSigning: true
+trigger: none
+extends:
+  template: azure-pipelines/MicroBuild.1ES.Official.yml@MicroBuildTemplate
+  parameters:
+    sdl:
+      sourceAnalysisPool:
+        name: AzurePipelines-EO
+        image: AzurePipelinesWindows2022compliantGPT
+        os: windows
+    pool:
+      name: AzurePipelines-EO
+      image: AzurePipelinesUbuntu20.04compliant
+      os: linux
+    customBuildTags:
+    - ES365AIMigrationTooling-BulkMigrated
+    stages:
+    - stage: CreateReleaseTag
+      jobs:
+      - job: CreateReleaseTag
+        pool:
+          name: AzurePipelines-EO
+          demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+        variables:
+          skipComponentGovernanceDetection: true
+        templateContext:
+          outputs:
+          - output: pipelineArtifact
+            displayName: 'Publish artifact file having the release tag name'
+            targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag.txt
+            artifactName: releaseTag
+        steps:
+        - checkout: self
+          clean: true
+        - task: ShellScript@2
+          inputs:
+            scriptPath: ./vsts/scripts/createReleaseTag.sh
+          displayName: 'Create release tag'
+        - script: |
+            set -ex
+            sourcesArtifactsDir="$(Build.SourcesDirectory)/artifacts"
+            mkdir -p "$sourcesArtifactsDir"
+            echo "$(RELEASE_TAG_NAME)" > "$sourcesArtifactsDir/releaseTag.txt"
+          displayName: 'Write release tag name to an artifact file'
+    - stage: Build
+      displayName: Build Stage
+      jobs:
+      - job: Job_Security
+        displayName: Security
+        condition: succeeded()
+        pool:
+          name: Azure Pipelines
+          vmImage: windows-2022
+        steps:
+        - template: /vsts/pipelines/templates/_securityChecks.yml@self
+      - job: Job_SignBinaries
+        displayName: Sign Oryx Binaries
+        pool:
+          name: VSEngSS-MicroBuild2022-1ES
+          demands:
+          - msbuild
+          - visualstudio
+        variables:
+          SignType: 'test'
+          skipComponentGovernanceDetection: true
+        templateContext:
+          mb:
+            signing:
+              enabled: true
+              signType: '$(setSignTypeVariable.SignType)'
+          outputs:
+          - output: pipelineArtifact
+            displayName: 'Publish Pipeline Artifact'
+            condition: and(succeeded(), eq(variables['setSignTypeVariable.SignType'], 'real'))
+            artifactName: 'signed_binaries'
+            targetPath: '$(Build.ArtifactStagingDirectory)'
+        steps:
+        - task: DownloadPipelineArtifact@2
+          displayName: 'Download artifact file having release tag name'
+          inputs:
+            targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag
+            artifactName: 'releaseTag'
+        - powershell: |
+            $file = "$env:BUILD_SOURCESDIRECTORY\artifacts\releaseTag\releaseTag.txt"
+            if (Test-Path $file) {
+              $tagName = [IO.File]::ReadAllText($file)
+              Write-Host "Content is $tagName"
+              echo "##vso[task.setvariable variable=RELEASE_TAG_NAME;]$tagName"
+            }
+          displayName: 'Set release tag name as environment variable'
+        - template: /vsts/pipelines/templates/_signBinary.yml@self
+      - ${{ each buildImage in parameters.buildImages }}:
+        - job: Job_BuildImage_${{ buildImage.key }}
+          displayName: 'Build & Test ${{ buildImage.key }} Build image'
+          condition: succeeded()
+          timeoutInMinutes: 480
+          pool:
+            name: AzurePipelines-EO
+            demands:
+            - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+          variables:
+            SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]
+            skipComponentGovernanceDetection: true
+          steps:
+          - script: |
+              echo "##vso[task.setvariable variable=BuildBuildImages;]true"
+              echo "##vso[task.setvariable variable=TestBuildImages;]true"
+              echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+              echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+              echo "##vso[task.setvariable variable=PushBuildImages;]true"
+              echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+              echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+              echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
+              if [[ "${{ buildImage.value }}" =~ "cli-builder" ]]; then
+                echo "##vso[task.setvariable variable=PushBuilderImages;]true"
+              fi
+            displayName: 'Set variables'
+          - template: /vsts/pipelines/templates/_setReleaseTag.yml@self
+          - template: /vsts/pipelines/templates/_buildTemplate.yml@self
+            parameters:
+              imageType: ${{ buildImage.value }}
+      - job: Job_Buster_RuntimeImages
+        displayName: Build and Test Buster Runtime Images
+        dependsOn: Job_SignBinaries
+        condition: succeeded()
+        timeoutInMinutes: 480
+        pool:
+          name: AzurePipelines-EO
+          demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+        variables:
+          SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]
+          skipComponentGovernanceDetection: true
+        steps:
+        - script: |
+            echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+            echo "##vso[task.setvariable variable=TestBuildImages;]false"
+            echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
+            echo "##vso[task.setvariable variable=TestRuntimeImages;]true"
+            echo "##vso[task.setvariable variable=PushRuntimeImages;]true"
+            echo "##vso[task.setvariable variable=PushBuildImages;]false"
+            echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
+          displayName: 'Set variables'
+        - template: /vsts/pipelines/templates/_setReleaseTag.yml@self
+        - template: /vsts/pipelines/templates/_buildTemplate.yml@self
+          parameters:
+            imageType: buster
+      - job: Job_Bullseye_RuntimeImages
+        displayName: Build and Test Bullseye Runtime Images
+        dependsOn: Job_SignBinaries
+        condition: succeeded()
+        timeoutInMinutes: 480
+        pool:
+          name: AzurePipelines-EO
+          demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+        variables:
+          SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]
+          skipComponentGovernanceDetection: true
+        steps:
+        - script: |
+            echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+            echo "##vso[task.setvariable variable=TestBuildImages;]false"
+            echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
+            echo "##vso[task.setvariable variable=TestRuntimeImages;]true"
+            echo "##vso[task.setvariable variable=PushRuntimeImages;]true"
+            echo "##vso[task.setvariable variable=PushBuildImages;]false"
+            echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
+          displayName: 'Set variables'
+        - template: /vsts/pipelines/templates/_setReleaseTag.yml@self
+        - template: /vsts/pipelines/templates/_buildTemplate.yml@self
+          parameters:
+            imageType: bullseye
+      - job: Job_Bookworm_RuntimeImages
+        displayName: Build and Test Bookworm Runtime Images
+        dependsOn: Job_SignBinaries
+        condition: succeeded()
+        timeoutInMinutes: 480
+        pool:
+          name: AzurePipelines-EO
+          demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+        variables:
+          SignType: $[ dependencies.Job_SignBinaries.outputs['setSignTypeVariable.SignType'] ]
+          skipComponentGovernanceDetection: true
+        steps:
+        - script: |
+            echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+            echo "##vso[task.setvariable variable=TestBuildImages;]false"
+            echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
+            echo "##vso[task.setvariable variable=TestRuntimeImages;]true"
+            echo "##vso[task.setvariable variable=PushRuntimeImages;]true"
+            echo "##vso[task.setvariable variable=PushBuildImages;]false"
+            echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+            echo "##vso[task.setvariable variable=storageAccountUrl;]${{ parameters.storageAccountUrl }}"
+          displayName: 'Set variables'
+        - template: /vsts/pipelines/templates/_setReleaseTag.yml@self
+        - template: /vsts/pipelines/templates/_buildTemplate.yml@self
+          parameters:
+            imageType: bookworm
+      - template: /vsts/pipelines/templates/_integrationJobTemplate.yml@self
+        parameters:
+          storageAccountUrl: ${{ parameters.storageAccountUrl }}
+      - job: Job_ProductionStorageAccountTest
+        displayName: Test Production Storage Account
+        pool:
+          name: AzurePipelines-EO
+          demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+        variables:
+          skipComponentGovernanceDetection: true
+        steps:
+        - task: UseDotNet@2
+          displayName: 'Use .NET Core sdk 7.x'
+          inputs:
+            version: 7.0.306
+        - task: ShellScript@2
+          displayName: 'Test production storage account'
+          env:
+            ORYX_TEST_SDK_STORAGE_URL: ${{ parameters.storageAccountUrl }}
+          inputs:
+            scriptPath: ./build/testIntegration.sh
+            args: StorageAccountTests=Prod
+    - stage: Release
+      displayName: Release Stage
+      dependsOn: Build
+      condition: >
+        and(succeeded(), or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/'), startsWith(variables['Build.SourceBranch'],'refs/heads/exp/')))
+      jobs:
+      - template: /vsts/pipelines/templates/_releaseJobTemplate.yml@self

@@ -1,0 +1,196 @@
+resources:
+- repo: self
+
+variables:
+- group: Oryx
+
+stages:
+  - stage: CreateReleaseTag
+    jobs:
+    - job: CreateReleaseTag
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        skipComponentGovernanceDetection: true
+      steps:
+      - task: ShellScript@2
+        inputs:
+          scriptPath: ./vsts/scripts/createReleaseTag.sh
+        displayName: 'Create release tag'
+      - script: |
+          set -ex
+          sourcesArtifactsDir="$(Build.SourcesDirectory)/artifacts"
+          mkdir -p "$sourcesArtifactsDir"
+          echo "$(RELEASE_TAG_NAME)" > "$sourcesArtifactsDir/releaseTag.txt"
+        displayName: 'Write release tag name to an artifact file'
+      - task: PublishPipelineArtifact@1
+        displayName: 'Publish artifact file having the release tag name'
+        inputs:
+          targetPath: $(Build.SourcesDirectory)/artifacts/releaseTag.txt
+          artifactName: releaseTag
+
+  - stage: Build
+    displayName: Build Stage
+    jobs:
+    - job: Job_Security
+      displayName: Security
+      condition: succeeded()
+      pool:
+        name: Azure Pipelines
+        vmImage: windows-2022
+      steps:
+      - template: templates/_securityChecks.yml
+
+    - job: Job_BuildImage
+      displayName: Build and Test Build Image
+      timeoutInMinutes: 300
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        SignType: 'test'
+        skipComponentGovernanceDetection: true
+
+      steps:
+      - script: |
+          echo "##vso[task.setvariable variable=BuildBuildImages;]true"
+          echo "##vso[task.setvariable variable=TestBuildImages;]false"
+          echo "##vso[task.setvariable variable=BuildRuntimeImages;]false"
+          echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+          echo "##vso[task.setvariable variable=PushBuildImages;]true"
+          echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+          echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+        displayName: 'Set variables'
+
+      - template: templates/_setReleaseTag.yml
+
+      - template: templates/_buildTemplate.yml
+
+    - job: Job_Buster_RuntimeImages
+      displayName: Build and Test Buster Runtime Images
+      timeoutInMinutes: 300
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        SignType: 'test'
+        skipComponentGovernanceDetection: true
+
+      steps:
+      - script: |
+          echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+          echo "##vso[task.setvariable variable=TestBuildImages;]false"
+          echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
+          echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+          echo "##vso[task.setvariable variable=PushRuntimeImages;]true"
+          echo "##vso[task.setvariable variable=PushBuildImages;]false"
+          echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+        displayName: 'Set variables'
+
+      - template: templates/_setReleaseTag.yml
+
+      - template: templates/_buildTemplate.yml
+        parameters:
+            imageType: buster
+
+    - job: Job_Bullseye_RuntimeImages
+      displayName: Build and Test Bullseye Runtime Images
+      timeoutInMinutes: 300
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        SignType: 'test'
+        skipComponentGovernanceDetection: true
+
+      steps:
+      - script: |
+          echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+          echo "##vso[task.setvariable variable=TestBuildImages;]false"
+          echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
+          echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+          echo "##vso[task.setvariable variable=PushRuntimeImages;]true"
+          echo "##vso[task.setvariable variable=PushBuildImages;]false"
+          echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+        displayName: 'Set variables'
+
+      - template: templates/_setReleaseTag.yml
+
+      - template: templates/_buildTemplate.yml
+        parameters:
+            imageType: bullseye
+
+    - job: Job_Bookworm_RuntimeImages
+      displayName: Build and Test Bookworm Runtime Images
+      timeoutInMinutes: 300
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        SignType: 'test'
+        skipComponentGovernanceDetection: true
+
+      steps:
+      - script: |
+          echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+          echo "##vso[task.setvariable variable=TestBuildImages;]false"
+          echo "##vso[task.setvariable variable=BuildRuntimeImages;]true"
+          echo "##vso[task.setvariable variable=TestRuntimeImages;]false"
+          echo "##vso[task.setvariable variable=PushRuntimeImages;]true"
+          echo "##vso[task.setvariable variable=PushBuildImages;]false"
+          echo "##vso[task.setvariable variable=EmbedBuildContextInImages;]true"
+        displayName: 'Set variables'
+
+      - template: templates/_setReleaseTag.yml
+
+      - template: templates/_buildTemplate.yml
+        parameters:
+            imageType: bookworm
+            
+  - stage: Release
+    displayName: Release Stage
+    dependsOn: Build
+    condition: succeeded()
+
+    jobs:
+    - job: Release_BuildImage
+      displayName: Push Build Image to MCR
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        skipComponentGovernanceDetection: true
+      timeoutInMinutes: 300
+      steps:
+      - script: |
+          echo "##vso[task.setvariable variable=ReleaseBuildImages;]true"
+          echo "##vso[task.setvariable variable=ReleaseRuntimeImages;]false"
+        displayName: 'Set variables'
+      
+      - template: templates/_releaseStepTemplate.yml
+
+    - job: Release_RuntimeImages
+      displayName: Push Runtime Images to MCR
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        skipComponentGovernanceDetection: true
+      timeoutInMinutes: 400
+      steps:
+      - script: |
+          echo "##vso[task.setvariable variable=ReleaseBuildImages;]false"
+          echo "##vso[task.setvariable variable=ReleaseRuntimeImages;]true"
+        displayName: 'Set variables'
+      
+      - template: templates/_releaseStepTemplate.yml
+
+trigger: none
