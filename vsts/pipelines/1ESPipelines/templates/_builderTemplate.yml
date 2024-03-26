@@ -1,0 +1,41 @@
+parameters:
+  ascName: oryx-new-service-connection
+  acrName: oryxdevmcr.azurecr.io
+steps:
+- script: |
+    curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.28.0/pack-v0.28.0-linux.tgz" | tar -C /usr/local/bin/ --no-same-owner -xzv pack
+  displayName: 'Install Pack CLI'
+  condition: true
+- task: Docker@1
+  displayName: Container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
+- task: ShellScript@2
+  displayName: 'Build base builder images'
+  inputs:
+    scriptPath: ./builders/base/buildBaseBuilder.sh
+    args: -f ${{ parameters.acrName }} -r "public/oryx/builder" -v $(Build.DefinitionName).$(Build.BuildNumber)
+- task: ShellScript@2
+  displayName: 'Build container apps builder images'
+  inputs:
+    scriptPath: ./builders/container-apps/buildCappsBuilder.sh
+    args: -f ${{ parameters.acrName }} -r "public/oryx/builder" -t "capps-$(Build.DefinitionName).$(Build.BuildNumber)" -b "${{ parameters.acrName }}/public/oryx/builder:$(Build.DefinitionName).$(Build.BuildNumber)"
+- task: CopyFiles@2
+  displayName: 'Copy artifacts from source repo to agent artifacts folder'
+  inputs:
+    sourceFolder: '$(Build.SourcesDirectory)/artifacts'
+    contents: '**/*.*'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+    overWrite: true
+- task: 1ES.PushContainerImage@1
+  displayName: 'Push base build images to ACR'
+  inputs:
+    image: ${{ parameters.acrName }}/${{ parameters.acrName }}:$(Build.BuildNumber)
+    remoteImage: ${{ parameters.acrName }}/${{ parameters.acrName }}:$(Build.BuildNumber)
+- task: 1ES.PushContainerImage@1
+  displayName: 'Push container apps builder images to ACR'
+  inputs:
+    image: ${{ parameters.acrName }}/${{ parameters.ascName }}:$(Build.ArtifactStagingDirectory)/images/capps-builder-images-acr.txt
+    remoteImage: ${{ parameters.acrName }}/${{ parameters.ascName }}:$(Build.ArtifactStagingDirectory)/images/capps-builder-images-acr.txt

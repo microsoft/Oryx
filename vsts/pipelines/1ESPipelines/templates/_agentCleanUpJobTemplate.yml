@@ -1,0 +1,13 @@
+parameters:
+  agentName: ''
+
+jobs:
+- job: Cleaning_${{ parameters.agentName }}
+  displayName: ${{ parameters.agentName }}
+  pool:
+    name: ${{ parameters.poolName }}
+    demands:
+    - agent.name -equals ${{ parameters.agentName }}
+  timeoutInMinutes: 50
+  steps:
+  - template: _cleanImageCacheTemplate.yml

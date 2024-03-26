@@ -1,0 +1,115 @@
+resources:
+- repo: self
+
+variables:
+- group: Oryx
+
+stages:
+  - stage: ValidatePipeline
+    displayName: Validate Pipeline
+    jobs:
+    - job: ValidatePipeline
+      displayName: Validate pipeline
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        skipComponentGovernanceDetection: true
+      steps:
+      - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+        displayName: 'Component Detection - OSS Compliance'
+        inputs:
+          ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+          
+      - script: |
+          set -x
+          if [ "$(Build.Reason)" != "Manual" ]; then
+            echo
+            echo "Invalid configuration."
+            echo "Build should be Manual"
+            exit 1
+          fi
+          if [ "$(Build.DefinitionName)" != "Oryx-Detector-CI" ]; then
+            echo
+            echo "Invalid configuration."
+            echo "Build definition name should be Oryx-Detector-CI."
+            exit 1
+          fi
+          if [[ "$(Build.SourceBranch)" != "refs/heads/main" ]] \
+          && [[ "$(Build.SourceBranch)" != refs/heads/patch* ]] \
+          && [[ "$(Build.SourceBranch)" != refs/heads/exp* ]]; then
+            echo
+            echo "Invalid configuration."
+            echo 'Only 'main', 'patch/*' and 'exp/*' branches are allowed.'
+            exit 1
+          fi
+        displayName: 'Validate pipeline run'
+
+  - stage: Build
+    displayName: Build Stage
+    dependsOn: ValidatePipeline
+    jobs:
+    - job: Job_SignBinariesAndPackages
+      displayName: Sign Detector Binaries and NuGet packages
+      pool:
+        name: VSEngSS-MicroBuild2022-1ES
+        demands:
+        - msbuild
+        - visualstudio
+      variables:
+        skipComponentGovernanceDetection: true
+      steps:
+      - template: templates/_signBinaryDetector.yml
+    - job: Job_BuildAndTestDetector
+      displayName: Build and test detector
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      steps:
+      - template: templates/_buildTemplateDetector.yml
+      
+  - stage: Release
+    displayName: Release Stage
+    dependsOn: Build
+    jobs:
+    - job: Release_GitHub
+      displayName: Create GitHub release
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      variables:
+        skipComponentGovernanceDetection: true
+      steps:
+      - checkout: self
+        clean: true
+      - task: DownloadPipelineArtifact@2
+        displayName: 'Download artifacts to publish to release'
+        inputs:
+          artifactName: 'detector_signed'
+          path: $(Build.ArtifactStagingDirectory)/detector_signed
+      - bash: |
+          . build/detector/__detectorNugetPackagesVersions.sh
+          echo "Setting release name to '$releaseName'..."
+          echo "##vso[task.setvariable variable=RELEASE_NAME;]$VERSION"
+        displayName: 'Set relase name environment variable'
+      - bash: |
+          dotnet nuget push \
+          $(Build.ArtifactStagingDirectory)/detector_signed/packages/*.nupkg \
+          -s https://api.nuget.org/v3/index.json \
+          --api-key $NUGETORG_API_KEY
+        env:
+          # Map the value that we got from keyvault/variablegroup to environment variable
+          NUGETORG_API_KEY: $(NUGETORG-API-KEY)
+        displayName: 'Push nuget packages to nuget.org'
+      - task: GitHubRelease@0
+        displayName: 'GitHub release (create)'
+        inputs:
+          gitHubConnection: 'Oryx-GitHub'
+          repositoryName: microsoft/oryx
+          tagSource: manual
+          tag: '$(RELEASE_NAME)'
+          assets: $(Build.ArtifactStagingDirectory)/detector_signed/packages/*.nupkg
+trigger: none

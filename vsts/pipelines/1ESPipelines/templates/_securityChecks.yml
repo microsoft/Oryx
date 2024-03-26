@@ -1,0 +1,41 @@
+steps:
+- checkout: self
+  clean: true
+- task: NuGetToolInstaller@1
+  inputs:
+    versionSpec: 5.8.x
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 7.x'
+  inputs:
+    version: 7.0.306
+- script: |
+    dotnet --version && dotnet msbuild -version && echo
+  displayName: 'Print dotnet and msbuild version'
+- task: NuGetCommand@2
+  displayName: 'Run "nuget restore" on Oryx solution'
+  inputs:
+    command: 'restore'
+    restoreSolution: '$(Build.SourcesDirectory)\Oryx.sln'
+- task: VSBuild@1
+  displayName: 'Build the Oryx solution'
+  inputs:
+    solution: '$(Build.SourcesDirectory)\Oryx.sln'
+    configuration: 'debug'
+    createLogFile: true
+    logFileVerbosity: diagnostic
+- task: PowerShell@2
+  displayName: 'Wait 30 seconds after building solution'
+  inputs:
+    targetType: 'inline'
+    script: 'Start-Sleep -Seconds 30'
+- task: AntiMalware@3
+  displayName: 'Run Antimalware Scan'
+  inputs:
+    InputType: 'Basic'
+    ScanType: 'CustomScan'
+    EnableServices: true
+    TreatSignatureUpdateFailureAs: 'Warning'
+    SupportLogOnError: false
+    FileDirPath: '$(Build.StagingDirectory)'
+    SignatureFreshness: 'UpToDate'
+    TreatStaleSignatureAs: 'Warning'

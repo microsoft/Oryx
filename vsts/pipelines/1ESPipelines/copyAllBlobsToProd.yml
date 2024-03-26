@@ -1,0 +1,54 @@
+variables:
+- group: Oryx
+  
+parameters:
+- name: sourceStorageAccount
+  displayName: Source Storage Account
+  type: string
+  default: https://oryxsdkssandbox.blob.core.windows.net
+  values:
+  - https://oryxsdkssandbox.blob.core.windows.net
+  - https://oryxsdksstaging.blob.core.windows.net
+- name: dryRun
+  displayName: Dry Run?
+  type: boolean
+  default: true
+
+trigger: none
+
+jobs:
+    - job: CreateReleaseTag
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      steps:
+      - checkout: self
+        clean: true
+
+      - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+        displayName: 'Component Detection - OSS Compliance'
+        inputs:
+          ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk 7.x'
+        inputs:
+          version: 7.0.306
+
+      - task: ShellScript@2
+        displayName: 'Copy all blobs from a source storage account to the prod storage account'
+        env:
+          DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
+          ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
+          SANDBOX_STORAGE_SAS_TOKEN: $(SANDBOX-STORAGE-SAS-TOKEN)
+          PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
+        inputs:
+          scriptPath: ./vsts/scripts/copyAllBlobsToProdStorageAccount.sh
+          args:  ${{ parameters.sourceStorageAccount }} ${{ parameters.dryRun }}
+      
+      - task: ShellScript@2
+        displayName: 'Test Prod storage account'
+        inputs:
+          scriptPath: ./build/testIntegration.sh
+          args: StorageAccountTests=Prod

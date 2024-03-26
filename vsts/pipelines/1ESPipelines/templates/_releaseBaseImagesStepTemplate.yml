@@ -1,0 +1,54 @@
+parameters:
+  ascName: oryx-new-service-connection
+  acrDevName: oryxdevmcr
+  acrProdName: oryxmcr
+  acrPmeProdName: oryxprodmcr
+  acrPmeProdSrvConnection: Oryx-PME-ACR-Production
+  baseImageName: ''
+  baseImageRepository: public/oryx/base
+steps:
+- checkout: self
+  clean: true
+- task: Docker@1
+  displayName: Container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrDevName }}.azurecr.io
+- task: DownloadBuildArtifacts@0
+  displayName: 'Download Artifacts for release'
+  inputs:
+    artifactName: drop
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    SourceFolder: '$(System.ArtifactsDirectory)'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+- task: Shellpp@0
+  displayName: 'Pull and create release tags for PME staging ACR'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/tagBaseImagesForRelease.sh
+    args: '${{ parameters.baseImageName }} ${{ parameters.acrPmeProdName }}'
+- task: Docker@2
+  displayName: Login to production PME ACR
+  inputs:
+    command: login
+    containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
+- script: echo base image is ${{ parameters.baseImageName }} and repository is ${{ parameters.baseImageRepository }}
+- task: Shellpp@0
+  displayName: 'Push images to PME staging ACR'
+  inputs:
+    type: FilePath
+    scriptPath: ./vsts/scripts/pushBaseImagesToRegistry.sh
+    args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.baseImageName }}/${{ parameters.acrPmeProdName }}'
+- task: Docker@2
+  displayName: Logout from PME ACR
+  inputs:
+    command: logout
+    containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
+- task: ShellScript@2
+  displayName: 'Clean up Docker containers and images'
+  inputs:
+    scriptPath: ./vsts/scripts/cleanDocker.sh
+  condition: true

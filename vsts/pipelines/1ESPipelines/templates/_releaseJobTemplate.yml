@@ -1,0 +1,57 @@
+jobs:
+- job: Release_BuildImages
+  displayName: Push Build Image to MCR
+  pool:
+    name: AzurePipelines-EO
+    demands:
+    - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+  variables:
+    skipComponentGovernanceDetection: true
+  timeoutInMinutes: 300
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=ReleaseBuildImages;]true"
+      echo "##vso[task.setvariable variable=ReleaseRuntimeImages;]false"
+    displayName: 'Set variables'
+  - template: /vsts/pipelines/templates/_releaseStepTemplate.yml@self
+- job: Release_RuntimeImages
+  displayName: Push Runtime Images to MCR
+  pool:
+    name: AzurePipelines-EO
+    demands:
+    - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+  variables:
+    skipComponentGovernanceDetection: true
+  timeoutInMinutes: 400
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=ReleaseBuildImages;]false"
+      echo "##vso[task.setvariable variable=ReleaseRuntimeImages;]true"
+    displayName: 'Set variables'
+  - template: /vsts/pipelines/templates/_releaseStepTemplate.yml@self
+- job: Release_GitHub
+  displayName: Create GitHub release
+  dependsOn:
+  - Release_BuildImages
+  - Release_RuntimeImages
+  pool:
+    name: AzurePipelines-EO
+    demands:
+    - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+  variables:
+    skipComponentGovernanceDetection: true
+  steps:
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download Oryx binaries to publish to release'
+    inputs:
+      artifactName: 'signed_binaries'
+      path: $(Build.SourcesDirectory)/artifacts
+  - template: /vsts/pipelines/templates/_setReleaseTag.yml@self
+  - task: GitHubRelease@0
+    displayName: 'GitHub release (create)'
+    inputs:
+      gitHubConnection: 'Oryx-GitHub'
+      repositoryName: Microsoft/Oryx
+      tagSource: manual
+      tag: '$(RELEASE_TAG_NAME)'
+      assets: $(Build.SourcesDirectory)/artifacts/oryx_linux_x64.tar.gz

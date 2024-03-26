@@ -1,0 +1,75 @@
+variables:
+- group: Oryx
+
+stages:
+  - stage: DryRun
+    jobs:
+    - job: DryRun
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      steps:
+      - checkout: self
+        clean: true
+
+      - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+        displayName: 'Component Detection - OSS Compliance'
+        inputs:
+          ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+      
+      - task: UseDotNet@2
+        displayName: 'Use .NET Core sdk 7.x'
+        inputs:
+          version: 7.0.306
+
+      - task: ShellScript@2
+        displayName: '(Dry run) Publish SDKs from dev to prod storage account'
+        env:
+          DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
+          ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
+          PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
+        inputs:
+          scriptPath: ./vsts/scripts/publishSdksFromStagingToProdStorageAccount.sh
+          args: True # dry run
+
+  - stage: PublishSDKsToProduction
+    jobs:
+    - deployment: PublishSDKsToProduction
+      environment: oryx-prod # maps to the oryx-prod ADO environment, which requires manual approval to begin this stage
+      pool:
+        name: AzurePipelines-EO
+        demands:
+          - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - checkout: self
+              clean: true
+
+            - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+              displayName: 'Component Detection - OSS Compliance'
+              inputs:
+                ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+
+            - task: UseDotNet@2
+              displayName: 'Use .NET Core sdk 7.x'
+              inputs:
+                version: 7.0.306
+
+            - task: ShellScript@2
+              displayName: 'Publish SDKs from dev to prod storage account'
+              env:
+                DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
+                ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
+                PROD_STORAGE_SAS_TOKEN: $(PROD-STORAGE-SAS-TOKEN)
+              inputs:
+                scriptPath: ./vsts/scripts/publishSdksFromStagingToProdStorageAccount.sh
+                args: False # no dry run
+
+            - task: ShellScript@2
+              displayName: 'Test prod storage account'
+              inputs:
+                scriptPath: ./build/testIntegration.sh
+                args: StorageAccountTests=Prod

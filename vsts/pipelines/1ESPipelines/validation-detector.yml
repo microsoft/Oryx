@@ -1,0 +1,22 @@
+# specific branch
+pr:
+  paths:
+    exclude:
+    - /*
+    include:
+    - Detector.sln
+    - src/Detector/*
+    - tests/Detector.Tests/*
+    - vsts/nugetpackages.signproj
+    - vsts/pipelines/validation-detector.yml
+
+jobs:
+- job: Job_Detector
+  displayName: Detector Validation
+  pool:
+    name: AzurePipelines-EO
+    demands:
+      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
+  timeoutInMinutes: 480
+  steps:
+  - template: templates/_buildTemplateDetector.yml
