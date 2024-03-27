@@ -1,25 +1,13 @@
-parameters:
-  displayName: ''
-  imageDir: ''
-  imageDebianFlavor: ''
-  scriptPath: ''
-  artifactsFileName: ''
-  jobName: ''
-
 jobs:
 - job: ${{ parameters.jobName }}
   displayName: ${{ parameters.displayName }}
-  pool:
-    name: AzurePipelines-EO
-    demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
   timeoutInMinutes: 250
-  steps:  
-  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-    displayName: 'Component Detection - OSS Compliance'
-    inputs:
-      ignoreDirectories: '$(Build.SourcesDirectory)/tests'
-
+  templateContext:
+    outputs:
+    - output: pipelineArtifact
+      displayName: 'Publish build artifacts'
+      targetPath: $(Build.ArtifactStagingDirectory)
+  steps:
   - task: ShellScript@2
     displayName: Build images
     inputs:
@@ -28,13 +16,6 @@ jobs:
     env:
       ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
       DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN: $(DotnetPrivateStorageAccountAccessToken)
-
-  - task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-    displayName: Generate Software Bill of Materials (SBOM)
-    inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)'
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList **/SampleApps/**'
-
   - task: CopyFiles@2
     displayName: Copy artifacts to staging directory
     inputs:
@@ -43,27 +24,15 @@ jobs:
       targetFolder: $(Build.ArtifactStagingDirectory)
       overWrite: true
     condition: true
-
-  - task: Docker@1
+  - task: 1ES.PushContainerImage@1
     displayName: Push built base images to dev ACR
     inputs:
-      command: push
-      azureSubscriptionEndpoint: $(ascName)
-      azureContainerRegistry: $(acrName)
-      pushMultipleImages: true
-      imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/${{ parameters.artifactsFileName }}'
-      enforceDockerNamingConvention: false
-
+      image: '$(Build.ArtifactStagingDirectory)/images/${{ parameters.artifactsFileName }}'
+      remoteImage: $(acrname)/$(Build.ArtifactStagingDirectory)/images/${{ parameters.artifactsFileName }}
   - task: ShellScript@2
     displayName: 'Clean up Docker containers and images'
     inputs:
       scriptPath: ./vsts/scripts/cleanDocker.sh
-
-  - task: PublishBuildArtifacts@1
-    displayName: Publish build artifacts
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
-
   - task: ShellScript@2
     displayName: 'Clean up Docker containers and images'
     inputs:

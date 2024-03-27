@@ -8,47 +8,60 @@ variables:
   value: true
 - name: Packaging.EnableSBOMSigning
   value: true
-
-jobs:
-- template: ../templates/_buildimageBasesJobTemplate.yml
+resources:
+  repositories:
+  - repository: 1ESPipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
   parameters:
-    displayName: Build php runtime buster base images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: php
-    imageDebianFlavor: buster
-    artifactsFileName: php-runtimeimage-bases-buster.txt
-    jobName: Build_Buster_BaseImages
- 
-- template: ../templates/_buildimageBasesJobTemplate.yml
-  parameters:
-    displayName: Build php runtime bullseye base images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: php
-    imageDebianFlavor: bullseye
-    artifactsFileName: php-runtimeimage-bases-bullseye.txt
-    jobName: Build_Bullseye_BaseImages
-    
-- template: ../templates/_buildimageBasesJobTemplate.yml
-  parameters:
-    displayName: Build php runtime bookworm base images
-    scriptPath: ./build/buildRunTimeImageBases.sh
-    imageDir: php
-    imageDebianFlavor: bookworm
-    artifactsFileName: php-runtimeimage-bases-bookworm.txt
-    jobName: Build_Bookworm_BaseImages
-
-- job: Release_PhpRuntimeBaseImage
-  dependsOn: 
-    - Build_Buster_BaseImages
-    - Build_Bullseye_BaseImages  
-    - Build_Bookworm_BaseImages  
-  displayName: Push images to MCR
-  timeoutInMinutes: 250
-  pool:
-    name: AzurePipelines-EO
-    demands:
-      - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-  steps:
-    - template: ../templates/_releaseBaseImagesStepTemplate.yml
-      parameters:
-        baseImageName: 'php'
+    pool:
+      name: AzurePipelines-EO
+      image: AzurePipelinesUbuntu20.04compliant
+      os: linux
+    sdl:
+      sourceAnalysisPool:
+        name: AzurePipelines-EO
+        os: windows
+    customBuildTags:
+    - ES365AIMigrationTooling-BulkMigrated
+    stages:
+    - stage: stage
+      jobs:
+      - template: /vsts/pipelines/templates/_buildimageBasesJobTemplate.yml@self
+        parameters:
+          displayName: Build php runtime buster base images
+          scriptPath: ./build/buildRunTimeImageBases.sh
+          imageDir: php
+          imageDebianFlavor: buster
+          artifactsFileName: php-runtimeimage-bases-buster.txt
+          jobName: Build_Buster_BaseImages
+      - template: /vsts/pipelines/templates/_buildimageBasesJobTemplate.yml@self
+        parameters:
+          displayName: Build php runtime bullseye base images
+          scriptPath: ./build/buildRunTimeImageBases.sh
+          imageDir: php
+          imageDebianFlavor: bullseye
+          artifactsFileName: php-runtimeimage-bases-bullseye.txt
+          jobName: Build_Bullseye_BaseImages
+      - template: /vsts/pipelines/templates/_buildimageBasesJobTemplate.yml@self
+        parameters:
+          displayName: Build php runtime bookworm base images
+          scriptPath: ./build/buildRunTimeImageBases.sh
+          imageDir: php
+          imageDebianFlavor: bookworm
+          artifactsFileName: php-runtimeimage-bases-bookworm.txt
+          jobName: Build_Bookworm_BaseImages
+      - job: Release_PhpRuntimeBaseImage
+        dependsOn:
+        - Build_Buster_BaseImages
+        - Build_Bullseye_BaseImages
+        - Build_Bookworm_BaseImages  
+        displayName: Push images to MCR
+        timeoutInMinutes: 250
+        steps:
+        - template: /vsts/pipelines/templates/_releaseBaseImagesStepTemplate.yml@self
+          parameters:
+            baseImageName: 'php'

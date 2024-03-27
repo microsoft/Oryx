@@ -1,25 +1,17 @@
 parameters:
-  - name: storageAccountUrl
-    type: string
-    default: https://oryxsdksstaging.blob.core.windows.net
-
+- name: storageAccountUrl
+  type: string
+  default: https://oryxsdksstaging.blob.core.windows.net
 jobs:
-# Python integration tests
-- template: integrationTests/_pythonIntegrationJobTemplate.yml
+- template: /vsts/pipelines/templates/integrationTests/_pythonIntegrationJobTemplate.yml@self
   parameters:
     storageAccountUrl: ${{ parameters.storageAccountUrl }}
-
-# DotNetCore integration tests
-- template: integrationTests/_dotnetcoreIntegrationJobTemplate.yml
+- template: /vsts/pipelines/templates/integrationTests/_dotnetcoreIntegrationJobTemplate.yml@self
   parameters:
     storageAccountUrl: ${{ parameters.storageAccountUrl }}
-
-# NodeJS integration tests
-- template: integrationTests/_nodeIntegrationJobTemplate.yml
+- template: /vsts/pipelines/templates/integrationTests/_nodeIntegrationJobTemplate.yml@self
   parameters:
     storageAccountUrl: ${{ parameters.storageAccountUrl }}
-
-# PHP integration tests
-- template: integrationTests/_phpIntegrationJobTemplate.yml
+- template: /vsts/pipelines/templates/integrationTests/_phpIntegrationJobTemplate.yml@self
   parameters:
     storageAccountUrl: ${{ parameters.storageAccountUrl }}

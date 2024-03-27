@@ -3,7 +3,6 @@ parameters:
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
   imageType: null
-
 steps:
 - script: |
     if [ "$(BuildBuildImages)" != "true" ] && [ "$(BuildRuntimeImages)" != "true" ] && [ "$(TestIntegration)" != "true" ]
@@ -13,7 +12,6 @@ steps:
       exit 1
     fi
   displayName: 'Validate pipeline run'
-
 - script: |
     sudo rm -rf /usr/share/dotnet
     sudo rm -rf /opt/ghc
@@ -22,10 +20,8 @@ steps:
     docker images && docker system prune -fa && docker images && echo
   displayName: 'clean docker images'
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'))
-
 - checkout: self
   clean: true
-
 - task: DownloadPipelineArtifact@0
   displayName: 'Download Pipeline Artifact'
   inputs:
@@ -33,32 +29,19 @@ steps:
     artifactName: 'signed_binaries'
     targetPath: '$(Build.SourcesDirectory)'
   condition: >
-    and(succeeded(),
-    or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')),
-    or(startsWith(variables['Build.SourceBranch'], 'refs/heads/main'),
-    startsWith(variables['Build.SourceBranch'],'refs/heads/patch/'),
-    startsWith(variables['Build.SourceBranch'],'refs/heads/exp/')))
-
+    and(succeeded(), or(in(variables['SIGNTYPE'], 'real', 'Real'), in(variables['SignType'], 'real', 'Real')), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'],'refs/heads/patch/'), startsWith(variables['Build.SourceBranch'],'refs/heads/exp/')))
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 7.x'
   inputs:
     version: 7.0.306
-
 - script: |
     dotnet --version && dotnet msbuild -version && echo
   displayName: 'Print dotnet and msbuild version'
-
 - task: ShellScript@2
   displayName: 'Build Oryx.sln'
   inputs:
     scriptPath: ./build/buildSln.sh
     args: Oryx.sln
-
-- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  displayName: 'Component Detection - OSS Compliance'
-  inputs:
-    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
-
 - task: Docker@1
   displayName: Container registry logout
   inputs:
@@ -72,23 +55,19 @@ steps:
     command: login
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrName }}
-
 - script: |
     docker images && docker system prune -fa && df -h && echo
   displayName: 'Free up space for oryx layers'
-
 - task: ShellScript@2
   displayName: 'Test build script generator'
   inputs:
     scriptPath: ./build/testBuildScriptGenerator.sh
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
-
 - task: ShellScript@2
   displayName: 'Test startup script generators'
   inputs:
     scriptPath: ./build/testStartupScriptGenerators.sh
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
-
 - task: ShellScript@2
   displayName: 'Build build images'
   env:
@@ -97,7 +76,6 @@ steps:
     scriptPath: ./build/buildBuildImages.sh
     args: -t ${{ parameters.imageType }} -s $(storageAccountUrl)
   condition: and(succeeded(), eq(variables['BuildBuildImages'], 'true'))
-
 - task: ShellScript@2
   displayName: 'Build runtime images'
   env:
@@ -106,24 +84,20 @@ steps:
     scriptPath: ./build/buildRunTimeImages.sh
     args: -s $(storageAccountUrl) ${{ parameters.imageType }}
   condition: and(succeeded(), eq(variables['BuildRuntimeImages'], 'true'))
-
-
 - script: |
     docker images && docker system prune -f && df -h && echo
   displayName: 'clean docker unknown layers'
-
 - script: |
     docker -v
-    echo "Installing Docker CE version 24.0.5................"
+    echo "Installing Docker CE version 24.0.5."
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt update
     sudo apt-get install docker-ce=5:24.0.5~3-0~ubuntu-focal docker-ce-cli=5:24.0.5~3-0~ubuntu-focal containerd.io
-    echo "After installing ................"
+    echo "After installing ."
     docker -v
   displayName: 'Install Docker 24.0.5'
   condition: true
-
 - task: ShellScript@2
   displayName: 'Test build images'
   env:
@@ -133,7 +107,6 @@ steps:
     scriptPath: ./build/testBuildImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME) ${{ parameters.imageType }}
   condition: and(succeeded(), eq(variables['TestBuildImages'], 'true'))
-
 - task: ShellScript@2
   displayName: 'Test runtime images'
   env:
@@ -143,13 +116,11 @@ steps:
     scriptPath: ./build/testRunTimeImages.sh
     args: skipBuildingImages ${{ parameters.imageName }} $(Build.DefinitionName).$(RELEASE_TAG_NAME) category=runtime-${{ parameters.imageType }}
   condition: and(succeeded(), eq(variables['TestRuntimeImages'], 'true'))
-
 - task: DownloadBuildArtifacts@0
   displayName: 'Download Build Artifacts'
   inputs:
     artifactName: drop
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
-
 - task: Shellpp@0
   displayName: 'Pull and Retag recently built oryx build and runtime images'
   inputs:
@@ -157,14 +128,12 @@ steps:
     scriptPath: ./vsts/scripts/pullAndTag.sh
     args: $(System.ArtifactsDirectory)/drop/images/build-images-acr.txt
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
-
 - task: Shellpp@0
   displayName: 'Build a build image for tests'
   inputs:
     type: FilePath
     scriptPath: ./build/buildTestBuildImages.sh
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
-
 - task: ShellScript@2
   displayName: 'Test integration'
   inputs:
@@ -178,7 +147,6 @@ steps:
     ORYX_TEST_SDK_STORAGE_URL: $(storageAccountUrl)
     ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
   condition: and(succeeded(), eq(variables['TestIntegration'], 'true'))
-
 - task: CopyFiles@2
   displayName: 'Copy source projects output to artifacts folder'
   inputs:
@@ -189,7 +157,6 @@ steps:
     overWrite: true
     flattenFolders: true
   condition: true
-
 - task: CopyFiles@2
   displayName: 'Copy artifacts from source repo to agent artifacts folder'
   inputs:
@@ -198,77 +165,47 @@ steps:
     targetFolder: $(Build.ArtifactStagingDirectory)
     overWrite: true
   condition: true
-
-- task: AzureArtifacts.manifest-generator-task.manifest-generator-task.ManifestGeneratorTask@0
-  displayName: Generate Software Bill of Materials (SBOM)
-  inputs:
-      BuildDropPath: '$(Build.ArtifactStagingDirectory)'
-      AdditionalComponentDetectorArgs: '--DirectoryExclusionList **/SampleApps/**'
-
 - task: PublishTestResults@2
   inputs:
     testRunner: 'xUnit'
     testResultsFiles: '$(Build.ArtifactStagingDirectory)/testResults/*.xml'
     mergeTestResults: true
   condition: true
-
-- task: Docker@1
+- task: 1ES.PushContainerImage@1
   displayName: 'Push build images to ACR'
   inputs:
-    azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrName }}
-    command: 'Push an image'
-    pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/build-images-acr.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: false
-  condition: and(succeeded(), or(eq(variables['PushBuildImages'], 'true'), eq(variables['PushBuilderImages'], 'true')), eq(variables['BuildBuildImages'], 'true'))
-
-- task: Docker@1
+    image: ${{ parameters.acrName }}/${{ parameters.ascName }}
+    remoteImage: ${{ parameters.acrName }}/${{ parameters.ascName }}:${{ parameters.acrName }}
+- task: 1ES.PushContainerImage@1
   displayName: 'Push runtime images to ACR'
   inputs:
-    azureSubscriptionEndpoint: ${{ parameters.ascName }}
-    azureContainerRegistry: ${{ parameters.acrName }}
-    command: 'Push an image'
-    pushMultipleImages: true
-    imageNamesPath: '$(Build.ArtifactStagingDirectory)/images/runtime-images-acr.${{ parameters.imageType }}.txt'
-    includeLatestTag: false
-    enforceDockerNamingConvention: false
+    image: ${{ parameters.acrName }}/${{ parameters.acrName }}:${{ parameters.imageType }}
+    remoteImage: ${{ parameters.acrName }}/${{ parameters.acrName }}:${{ parameters.imageType }}
   condition: and(succeeded(), eq(variables['PushRuntimeImages'], 'true'), eq(variables['BuildRuntimeImages'], 'true'))
-
 - task: ShellScript@2
   displayName: 'Clean up Docker containers and images'
   inputs:
     scriptPath: ./vsts/scripts/cleanDocker.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
-
 - task: ShellScript@2
   displayName: 'Clean up Docker mounted directories'
   inputs:
     scriptPath: ./vsts/scripts/removeDockerArtifacts.sh
   condition: or(eq(variables['TestBuildImages'], 'true'), eq(variables['TestRuntimeImages'], 'true'), eq(variables['TestIntegration'], 'true'))
-
 - script: |
     docker images && docker system prune -fa && df -h && docker images && echo
   displayName: 'clean docker images and stopped containers'
-
 - task: ShellScript@2
   displayName: 'Generate release notes'
   inputs:
     scriptPath: ./vsts/scripts/generateReleaseNotes.sh
   condition: and(succeeded(), eq(variables['PushBuildImages'], 'true'), eq(variables['BuildBuildImages'], 'true'))
-
 - task: ArchiveFiles@2
   displayName: 'Archive docker files and scripts for Oryx build and runtime images'
   inputs:
     rootFolderOrFile: images
     archiveFile: '$(Build.ArtifactStagingDirectory)/images/dockerFiles.zip'
   condition: true
-
-- task: PublishBuildArtifacts@1
-  displayName: 'Publish Artifact: drop'
-  condition: true
-
 - task: mspremier.PostBuildCleanup.PostBuildCleanup-task.PostBuildCleanup@3
   displayName: 'Clean Agent Directories'
   condition: true

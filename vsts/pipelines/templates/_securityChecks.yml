@@ -1,38 +1,21 @@
 steps:
 - checkout: self
   clean: true
-
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-policheck.PoliCheck@1
-  displayName: 'Run PoliCheck'
-  inputs:
-    targetType: F
-  condition: always()
-
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-credscan.CredScan@2
-  displayName: 'Run CredScan'
-  inputs:
-    debugMode: false
-  condition: always()
-
 - task: NuGetToolInstaller@1
   inputs:
     versionSpec: 5.8.x
-
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 7.x'
   inputs:
     version: 7.0.306
-
 - script: |
     dotnet --version && dotnet msbuild -version && echo
   displayName: 'Print dotnet and msbuild version'
-
 - task: NuGetCommand@2
   displayName: 'Run "nuget restore" on Oryx solution'
   inputs:
     command: 'restore'
     restoreSolution: '$(Build.SourcesDirectory)\Oryx.sln'
-
 - task: VSBuild@1
   displayName: 'Build the Oryx solution'
   inputs:
@@ -40,37 +23,11 @@ steps:
     configuration: 'debug'
     createLogFile: true
     logFileVerbosity: diagnostic
-
 - task: PowerShell@2
   displayName: 'Wait 30 seconds after building solution'
   inputs:
     targetType: 'inline'
     script: 'Start-Sleep -Seconds 30'
-
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-roslynanalyzers.RoslynAnalyzers@2
-  displayName: 'Run Roslyn Analyzers'
-  condition: always()
-
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-binskim.BinSkim@3
-  displayName: 'Run BinSkim '
-  inputs:
-    arguments: 'analyze Microsoft.Oryx*.dll --recurse --output $(Build.BinariesDirectory)\binskim.sarif --verbose'
-  condition: always()
-
-- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  displayName: 'Component Detection - OSS Compliance'
-  inputs:
-    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
-
-- task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@1
-  displayName: 'Post Analysis'
-  inputs:
-    BinSkim: true
-    CredScan: true
-    PoliCheck: true
-    RoslynAnalyzers: true
-  continueOnError: false
-
 - task: AntiMalware@3
   displayName: 'Run Antimalware Scan'
   inputs:

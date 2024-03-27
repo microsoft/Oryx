@@ -1,95 +1,10 @@
 variables:
-  - group: Oryx
-
+- group: Oryx
 parameters:
 - name: destinationStorageAccountName
   displayName: Destination Storage Account Name
   type: string
   default: oryxsdksstaging
-
-stages:
-- stage: Build
-  jobs:
-  - job: Node_Bookworm
-    timeoutInMinutes: 250
-    pool:
-      name: AzurePipelines-EO
-      demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-    steps:
-    - template: ../templates/_platformBinariesTemplate.yml
-      parameters:
-        platformName: 'nodejs'
-        debianFlavor: 'bookworm'
-        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
-  
-  - job: Node_Bullseye
-    timeoutInMinutes: 250
-    pool:
-      name: AzurePipelines-EO
-      demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-    steps:
-    - template: ../templates/_platformBinariesTemplate.yml
-      parameters:
-        platformName: 'nodejs'
-        debianFlavor: 'bullseye'
-        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
-
-  - job: Node_Buster
-    timeoutInMinutes: 250
-    pool:
-      name: AzurePipelines-EO
-      demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-    steps:
-    - template: ../templates/_platformBinariesTemplate.yml
-      parameters:
-        platformName: 'nodejs'
-        debianFlavor: 'buster'
-        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
-
-  - job: Node_Stretch
-    timeoutInMinutes: 250
-    pool:
-      name: AzurePipelines-EO
-      demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-    steps:
-    - template: ../templates/_platformBinariesTemplate.yml
-      parameters:
-        platformName: 'nodejs'
-        debianFlavor: 'stretch'
-        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
-  
-  - job: Node_Ubuntu
-    timeoutInMinutes: 250
-    pool:
-      name: AzurePipelines-EO
-      demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-    steps:
-    - template: ../templates/_platformBinariesTemplate.yml
-      parameters:
-        platformName: 'nodejs'
-        debianFlavor: 'focal-scm'
-        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
-
-- stage: Release
-  dependsOn: Build
-  jobs:
-  - job: Publish_Platform_Binaries
-    timeoutInMinutes: 250
-    displayName: Publish to Azure Blob Storage
-    pool:
-      name: AzurePipelines-EO
-      demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-    steps:
-    - template: ../templates/_platformBinariesReleaseTemplate.yml
-      parameters:
-        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
-
 trigger:
   batch: true
   branches:
@@ -101,3 +16,105 @@ trigger:
     include:
     - platforms/nodejs
     - vsts/PlatformBinaries/node.yml
+resources:
+  repositories:
+  - repository: 1ESPipelineTemplates
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+extends:
+  template: v1/1ES.Official.PipelineTemplate.yml@1ESPipelineTemplates
+  parameters:
+    pool:
+      name: AzurePipelines-EO
+      image: AzurePipelinesUbuntu20.04compliant
+      os: linux
+    sdl:
+      sourceAnalysisPool:
+        name: AzurePipelines-EO
+        os: windows
+    customBuildTags:
+    - ES365AIMigrationTooling
+    stages:
+    - stage: Build
+      jobs:
+      - job: Node_Bookworm
+        timeoutInMinutes: 250
+        templateContext:
+          outputs:
+          - output: pipelineArtifact
+            displayName: 'Publish build artifacts'
+            condition: true
+            targetPath: $(Build.ArtifactStagingDirectory)
+        steps:
+        - template: /vsts/pipelines/templates/_platformBinariesTemplate.yml@self
+          parameters:
+            platformName: 'nodejs'
+            debianFlavor: 'bookworm'
+            destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
+      - job: Node_Bullseye
+        timeoutInMinutes: 250
+        templateContext:
+          outputs:
+          - output: pipelineArtifact
+            displayName: 'Publish build artifacts'
+            condition: true
+            targetPath: $(Build.ArtifactStagingDirectory)
+        steps:
+        - template: /vsts/pipelines/templates/_platformBinariesTemplate.yml@self
+          parameters:
+            platformName: 'nodejs'
+            debianFlavor: 'bullseye'
+            destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
+      - job: Node_Buster
+        timeoutInMinutes: 250
+        templateContext:
+          outputs:
+          - output: pipelineArtifact
+            displayName: 'Publish build artifacts'
+            condition: true
+            targetPath: $(Build.ArtifactStagingDirectory)
+        steps:
+        - template: /vsts/pipelines/templates/_platformBinariesTemplate.yml@self
+          parameters:
+            platformName: 'nodejs'
+            debianFlavor: 'buster'
+            destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
+      - job: Node_Stretch
+        timeoutInMinutes: 250
+        templateContext:
+          outputs:
+          - output: pipelineArtifact
+            displayName: 'Publish build artifacts'
+            condition: true
+            targetPath: $(Build.ArtifactStagingDirectory)
+        steps:
+        - template: /vsts/pipelines/templates/_platformBinariesTemplate.yml@self
+          parameters:
+            platformName: 'nodejs'
+            debianFlavor: 'stretch'
+            destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
+      - job: Node_Ubuntu
+        timeoutInMinutes: 250
+        templateContext:
+          outputs:
+          - output: pipelineArtifact
+            displayName: 'Publish build artifacts'
+            condition: true
+            targetPath: $(Build.ArtifactStagingDirectory)
+        steps:
+        - template: /vsts/pipelines/templates/_platformBinariesTemplate.yml@self
+          parameters:
+            platformName: 'nodejs'
+            debianFlavor: 'focal-scm'
+            destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
+    - stage: Release
+      dependsOn: Build
+      jobs:
+      - job: Publish_Platform_Binaries
+        timeoutInMinutes: 250
+        displayName: Publish to Azure Blob Storage
+        steps:
+        - template: /vsts/pipelines/templates/_platformBinariesReleaseTemplate.yml@self
+          parameters:
+            destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'

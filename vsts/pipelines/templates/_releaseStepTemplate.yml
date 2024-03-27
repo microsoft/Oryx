@@ -5,14 +5,7 @@ parameters:
   acrPmeProdName: oryxprodmcr
   acrPmeProdSrvConnection: Oryx-PME-ACR-Production
   prodImageName: oryxmcr.azurecr.io/public/oryx
-
 steps:
-
-- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  displayName: 'Component Detection - OSS Compliance'
-  inputs:
-    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
-    
 - script: |
     if [ "$(ReleaseBuildImages)" != "true" ] && [ "$(ReleaseRuntimeImages)" != "true" ]
     then
@@ -21,19 +14,17 @@ steps:
       exit 1
     fi
   displayName: 'Validate release pipeline run'
-
 - script: |
     docker -v
-    echo "Installing Docker CE version 24.0.5................"
+    echo "Installing Docker CE version 24.0.5."
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt update
     sudo apt-get install docker-ce=5:24.0.5~3-0~ubuntu-focal docker-ce-cli=5:24.0.5~3-0~ubuntu-focal containerd.io
-    echo "After installing ................"
+    echo "After installing ."
     docker -v
   displayName: 'Install Docker 24.0.5'
   condition: true
-
 - script: |
     sudo rm -rf /usr/share/dotnet
     sudo rm -rf /opt/ghc
@@ -41,78 +32,65 @@ steps:
     sudo rm -rf "$AGENT_TOOLSDIRECTORY"
     docker images && docker system prune -fa && docker images && echo
   displayName: 'clean docker images'
-
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 7.x'
+  inputs:
+    version: 7.0.306
 - script: |
-      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-      echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-      sudo apt update
-      sudo apt-get install docker-ce=5:24.0.5~3-0~ubuntu-focal docker-ce-cli=5:24.0.5~3-0~ubuntu-focal containerd.io
-      docker -v
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+    sudo apt update
+    sudo apt-get install docker-ce=5:24.0.5~3-0~ubuntu-focal docker-ce-cli=5:24.0.5~3-0~ubuntu-focal containerd.io
+    docker -v
   displayName: 'Install Docker 24.0.5'
-    
 - checkout: self
   clean: true
-
 - task: Docker@1
   displayName: Container registry login
   inputs:
     command: login
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrDevName }}
-
 - task: DownloadBuildArtifacts@0
   displayName: 'Download Artifacts for release'
   inputs:
     artifactName: drop
-
 - task: CopyFiles@2
   displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
   inputs:
     SourceFolder: '$(System.ArtifactsDirectory)'
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  displayName: 'Component Detection - OSS Compliance'
-  inputs:
-    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
-
-- template: _setReleaseTag.yml
-
+- template: /vsts/pipelines/templates/_setReleaseTag.yml@self
 - task: Shellpp@0
   displayName: 'Pull and create release tags for build images'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagBuildImagesForRelease.sh
-    args: 
+    args: ''
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
 - task: Shellpp@0
   displayName: 'Pull and create release tags for runtime images'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagRunTimeImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
-
 - task: Shellpp@0
   displayName: 'Pull and create release tags for CLI images'
   inputs:
     type: FilePath
     scriptPath: ./vsts/scripts/tagCliImagesForRelease.sh
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
 - task: Docker@1
   displayName: Dev Container registry logout
   inputs:
     command: logout
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrDevName }}
-    
 - task: Docker@2
   displayName: Login to PME ACR
-  inputs: 
+  inputs:
     command: login
     containerRegistry: ${{ parameters.acrPmeProdSrvConnection }}
-
 - task: Shellpp@0
   displayName: 'Push build images to PME staging ACR'
   inputs:
@@ -120,7 +98,6 @@ steps:
     scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
     args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-build-images-mcr.txt'
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
 - task: Shellpp@0
   displayName: 'Push CLI image to PME staging ACR'
   inputs:
@@ -128,7 +105,6 @@ steps:
     scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
     args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-cli-images-mcr.txt'
   condition: and(succeeded(), eq(variables['ReleaseBuildImages'], 'true'))
-
 - task: Shellpp@0
   displayName: 'Push runtime images to PME staging ACR'
   inputs:
@@ -136,13 +112,11 @@ steps:
     scriptPath: ./vsts/scripts/pushImagesToRegistry.sh
     args: '$(Build.ArtifactStagingDirectory)/drop/images/${{ parameters.acrPmeProdName }}-runtime-images-mcr.txt'
   condition: and(succeeded(), eq(variables['ReleaseRuntimeImages'], 'true'))
-
 - task: Docker@2
   displayName: Logout from PME ACR
-  inputs: 
+  inputs:
     command: logout
     containerRegistry: '${{ parameters.acrPmeProdSrvConnection }}'
-
 - task: ShellScript@2
   displayName: 'Clean up Docker containers and images'
   inputs:
