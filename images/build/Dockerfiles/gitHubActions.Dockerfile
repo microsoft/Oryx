@@ -54,6 +54,11 @@ RUN apt-get update \
         lzma \
         lzma-dev \
         zlib1g-dev \
+        # GIS libraries for GeoDjango (https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/)
+        binutils \
+        libproj-dev \
+        gdal-bin \
+        libgdal-dev \
     && rm -rf /var/lib/apt/lists/* \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
@@ -105,7 +110,7 @@ FROM main AS intermediate
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
 COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 ARG BUILD_DIR="/opt/tmp/build"
-ARG IMAGES_DIR="/opt/tmp/images" 
+ARG IMAGES_DIR="/opt/tmp/images"
 RUN ${IMAGES_DIR}/build/installHugo.sh
 RUN set -ex \
  && yarnCacheFolder="/usr/local/share/yarn-cache" \
@@ -156,7 +161,7 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ] || [ "${DEBIAN_FLAVOR}" = "bullseye" ] 
     --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
     else \
         .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
-    fi 
+    fi
 
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
@@ -185,11 +190,11 @@ RUN tmpDir="/opt/tmp" \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
-# For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 
+# For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty:
 #   ENV LASTNAME="JORDAN" \
 #       NAME="MICHAEL $LASTNAME"
 #
-# Even though this adds a new docker layer we are doing this 
+# Even though this adds a new docker layer we are doing this
 # because we want to avoid duplication (which is always error-prone)
 ENV ORYX_PATHS="/opt/oryx:/opt/yarn/stable/bin:/opt/hugo/lts"
 
