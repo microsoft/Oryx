@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// --------------------------------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+// --------------------------------------------------------------------------------------------
+
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
     /// <summary>
-    /// BuildConfigurationFIle class to be used for YAML deserialization.
+    /// BuildConfigurationFile class to be used for YAML deserialization.
     /// </summary>
-    public class BuildConfigurationFIle
+    public class BuildConfigurationFile
     {
         [YamlMember(Alias = "version", ApplyNamingConventions = false)]
         public string Version { get; set; }
@@ -26,12 +28,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         [YamlMember(Alias = "run", ApplyNamingConventions = false)]
         public string Run { get; set; }
 
-        public static BuildConfigurationFIle Create(string text)
+        public static BuildConfigurationFile Create(string text)
         {
             var deserializer = new YamlDotNet.Serialization.DeserializerBuilder()
                         .WithNamingConvention(CamelCaseNamingConvention.Instance)
                         .Build();
-            var buildConfigFile = deserializer.Deserialize<BuildConfigurationFIle>(text);
+            var buildConfigFile = deserializer.Deserialize<BuildConfigurationFile>(text);
             return buildConfigFile;
         }
     }

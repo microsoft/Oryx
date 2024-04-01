@@ -7,17 +7,19 @@ package main
 
 import (
 	"common"
-	"strings"
+	"common/consts"
 	"fmt"
+	"path/filepath"
+	"strings"
 )
 
 type GolangStartupScriptGenerator struct {
-	AppPath                  string
-	UserStartupCommand       string
-	DefaultAppPath           string
-	BindPort                 string
-	Manifest                 common.BuildManifest
-	Configuration            Configuration
+	AppPath            string
+	UserStartupCommand string
+	DefaultAppPath     string
+	BindPort           string
+	Manifest           common.BuildManifest
+	Configuration      Configuration
 }
 
 const DefaultHost = "0.0.0.0"
@@ -44,10 +46,16 @@ func (gen *GolangStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder.WriteString("\n# Enter the source directory to make sure the script runs where the user expects\n")
 	scriptBuilder.WriteString("cd " + gen.getAppPath() + "\n\n")
 	scriptBuilder.WriteString("export APP_PATH=\"" + gen.getAppPath() + "\"\n")
-	
+
 	// set host:port
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "HOST", "", DefaultHost)
 	common.SetEnvironmentVariableInScript(&scriptBuilder, "PORT", gen.BindPort, DefaultBindPort)
+
+	extensibleCommands := common.ParseExtensibleConfigFile(filepath.Join(gen.AppPath, consts.ExtensibleConfigurationFileName))
+	if extensibleCommands != "" {
+		logger.LogInformation("Found extensible configuration file to be used in the generated run script")
+		scriptBuilder.WriteString(extensibleCommands)
+	}
 
 	scriptBuilder.WriteString("./oryxBuildBinary\n\n")
 

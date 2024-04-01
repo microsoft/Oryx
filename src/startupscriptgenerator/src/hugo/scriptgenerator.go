@@ -7,16 +7,18 @@ package main
 
 import (
 	"common"
+	"common/consts"
+	"path/filepath"
 	"strings"
 )
 
 type HugoStartupScriptGenerator struct {
-	AppPath                  string
-	UserStartupCommand       string
-	DefaultAppPath           string
-	BindPort                 string
-	Manifest                 common.BuildManifest
-	Configuration            Configuration
+	AppPath            string
+	UserStartupCommand string
+	DefaultAppPath     string
+	BindPort           string
+	Manifest           common.BuildManifest
+	Configuration      Configuration
 }
 
 func (gen *HugoStartupScriptGenerator) GenerateEntrypointScript() string {
@@ -27,6 +29,12 @@ func (gen *HugoStartupScriptGenerator) GenerateEntrypointScript() string {
 	scriptBuilder := strings.Builder{}
 	scriptBuilder.WriteString("#!/bin/sh\n\n")
 	scriptBuilder.WriteString("echo TODO: update with hugo script commands")
+
+	extensibleCommands := common.ParseExtensibleConfigFile(filepath.Join(gen.AppPath, consts.ExtensibleConfigurationFileName))
+	if extensibleCommands != "" {
+		logger.LogInformation("Found extensible configuration file to be used in the generated run script")
+		scriptBuilder.WriteString(extensibleCommands)
+	}
 
 	command := gen.UserStartupCommand // A custom command takes precedence over any framework defaults
 	if command != "" {

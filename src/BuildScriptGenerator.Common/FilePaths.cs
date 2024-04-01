@@ -17,5 +17,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string Benv = "/opt/oryx/benv";
         public const string PreRunCommandEnvVarName = "PRE_RUN_COMMAND";
         public const string AppSvcFileName = "appsvc.yaml";
+        public const string ExtensibleConfigurationFileName = "oryx-config.yaml";
     }
 }
