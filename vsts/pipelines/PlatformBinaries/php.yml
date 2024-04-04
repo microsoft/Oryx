@@ -35,19 +35,7 @@ stages:
         platformName: 'php'
         debianFlavor: 'bullseye'
         destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
-  
-  - job: Php_Stretch_SDK 
-    timeoutInMinutes: 1440
-    pool:
-      name: AzurePipelines-EO
-      demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-    steps:
-    - template: ../templates/_platformBinariesTemplate.yml
-      parameters:
-        platformName: 'php'
-        debianFlavor: 'stretch'
-        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
+
   
   - job: Php_Buster_SDK 
     timeoutInMinutes: 1440
@@ -60,19 +48,6 @@ stages:
       parameters:
         platformName: 'php'
         debianFlavor: 'buster'
-        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
-  
-  - job: Php_Ubuntu_SDK
-    timeoutInMinutes: 1440
-    pool:
-      name: AzurePipelines-EO
-      demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-    steps:
-    - template: ../templates/_platformBinariesTemplate.yml
-      parameters:
-        platformName: 'php'
-        debianFlavor: 'focal-scm'
         destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
 - stage: Release
