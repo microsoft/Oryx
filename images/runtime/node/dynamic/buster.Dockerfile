@@ -33,7 +33,7 @@ RUN apt-get update \
 RUN ${IMAGES_DIR}/receiveGpgKeys.sh \
     6A010C5166006599AA17F08146C2130DFD2497F5
 
-ENV YARN_VERSION 1.17.3
+ENV YARN_VERSION 1.22.15
 
 RUN curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
   && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
