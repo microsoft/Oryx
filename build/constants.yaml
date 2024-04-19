@@ -331,8 +331,8 @@
     node16-version: 16.20.2
     node18-version: 18.19.1
     node20-version: 20.11.1
-    node-app-insights-sdk-version: 1.8.7
-    pm2-version: 4.5.6
+    node-app-insights-sdk-version: 3.0.0
+    pm2-version: 5.3.1
     npm-version: 9.6.4
     runtime-versions:
     - 14-debian-bullseye
