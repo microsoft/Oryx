@@ -4,6 +4,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Go
 {
     public static class GoVersions
     {
-        public const string GoVersion = "1.22";
+        public const string GoVersion = "1.15.8";
     }
 }
