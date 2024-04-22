@@ -482,7 +482,7 @@
     namespace: Microsoft.Oryx.BuildScriptGenerator.Java
 - name: go-versions
   constants:
-    go-version: 1.22
+    go-version: 1.15.8
   outputs:
   - type: shell
     directory: build
