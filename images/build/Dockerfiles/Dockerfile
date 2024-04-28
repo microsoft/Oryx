@@ -4,7 +4,7 @@ FROM oryxdevmcr.azurecr.io/public/oryx/build:lts-versions-debian-stretch AS main
 # Build run script generators (to be used by the `oryx run-script` command)
 ###
 # DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.22-bullseye as startupScriptGens
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-bullseye as startupScriptGens
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src

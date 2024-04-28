@@ -1,6 +1,6 @@
 ARG DEBIAN_FLAVOR
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.22-bullseye as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-${DEBIAN_FLAVOR} as startupCmdGen
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
