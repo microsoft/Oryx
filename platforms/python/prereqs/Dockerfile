@@ -2,7 +2,7 @@
 ARG DEBIAN_FLAVOR
 # DEBIAN_HACK_FLAVOR is only needed for python 3.10 or newer
 ARG DEBIAN_HACK_FLAVOR
-FROM buildpack-deps:${DEBIAN_HACK_FLAVOR}
+FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${DEBIAN_HACK_FLAVOR}
 ARG DEBIAN_FLAVOR
 ARG DEBIAN_HACK_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
