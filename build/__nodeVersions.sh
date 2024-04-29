@@ -1,6 +1,6 @@
 # This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
-NODE_RUNTIME_BASE_TAG='20240423.2'
+NODE_RUNTIME_BASE_TAG='20240429.4'
 YARN_VERSION='1.22.15'
 YARN_MINOR_VERSION='1.22'
 YARN_MAJOR_VERSION='1'
