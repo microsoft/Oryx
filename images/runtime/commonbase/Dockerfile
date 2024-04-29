@@ -1,5 +1,5 @@
 ARG DEBIAN_FLAVOR
-FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
+FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${DEBIAN_FLAVOR}-scm
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 
