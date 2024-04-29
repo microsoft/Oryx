@@ -49,32 +49,6 @@ stages:
         debianFlavor: 'buster'
         destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
 
-  - job: DotNetCore_Stretch
-    timeoutInMinutes: 250
-    pool:
-      name: AzurePipelines-EO
-      demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-    steps:
-    - template: ../templates/_platformBinariesTemplate.yml
-      parameters:
-        platformName: 'dotnet'
-        debianFlavor: 'stretch'
-        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
-        
-  - job: DotNetCore_Ubuntu
-    timeoutInMinutes: 250
-    pool:
-      name: AzurePipelines-EO
-      demands:
-        - ImageOverride -equals AzurePipelinesUbuntu20.04compliant
-    steps:
-    - template: ../templates/_platformBinariesTemplate.yml
-      parameters:
-        platformName: 'dotnet'
-        debianFlavor: 'focal-scm'
-        destinationSdkStorageAccountName: '${{ parameters.destinationStorageAccountName }}'
-
 - stage: Release
   dependsOn: Build
   jobs:
