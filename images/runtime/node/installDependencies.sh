@@ -28,13 +28,13 @@ currentNpmVersion=$(npm --version)
 echo "Version of npm: $currentNpmVersion"
 
 # Upgrade npm to the latest available version
-# if [[ $nodeVersionMajor -ge 10  ]]; then
-#     echo "Upgrading npm..."
-#     npm install npm@$NPM_VERSION -g -loglevel silent
-#     echo "Done upgrading npm."
-#     currentNpmVersion=$(npm --version)
-#     echo "Version of npm after upgrade: $currentNpmVersion"
-# fi
+if [[ $nodeVersionMajor -ge 18  ]]; then
+    echo "Upgrading npm..."
+    npm install npm@10.5.0 -g -loglevel silent
+    echo "Done upgrading npm."
+    currentNpmVersion=$(npm --version)
+    echo "Version of npm after upgrade: $currentNpmVersion"
+fi
 
 currentNodeVersion=$(node --version)
 echo "Current Node version is $currentNodeVersion"

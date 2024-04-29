@@ -319,9 +319,9 @@
     directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20240221.3
+    node-runtime-base-tag: 20240429.5
     yarn-version: 1.22.15
-    yarn-minor-version: 1.17
+    yarn-minor-version: 1.22
     yarn-major-version: 1
     node6-version: 6.17.1
     node8-version: 8.17.0
@@ -332,7 +332,7 @@
     node18-version: 18.19.1
     node20-version: 20.11.1
     node-app-insights-sdk-version: 1.8.7
-    pm2-version: 4.5.6
+    pm2-version: 5.3.1
     npm-version: 9.6.4
     runtime-versions:
     - 14-debian-bullseye
