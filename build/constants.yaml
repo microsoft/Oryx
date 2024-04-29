@@ -69,7 +69,7 @@
     file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20240313.1
+    dot-net-core-runtime-base-tag: 20240429.2
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
@@ -149,7 +149,7 @@
     file-name-prefix: __
 - name: python-versions
   constants:
-    python-runtime-base-tag: 20240227.1
+    python-runtime-base-tag: 20240429.1
     pip-version: 21.2.4
     python27-version: 2.7.18
     python36-version: 3.6.15
@@ -185,8 +185,8 @@
     file-name-prefix: __
 - name: php-versions
   constants:
-    php-runtime-base-tag: 20240319.1
-    php-fpm-runtime-base-tag: 20240319.1
+    php-runtime-base-tag: 20240429.2
+    php-fpm-runtime-base-tag: 20240429.2
     composer-default-version: 2.6.2
     composer-setup-sha384: e21205b207c3ff031906575712edab6f13eb0b361f2085f1f1237b7126d785e826a450292b6cfd1d64d92e6563bbde02
     composer1-9-version: 1.9.3
@@ -319,7 +319,7 @@
     directory: src/startupscriptgenerator/src/common/consts
 - name: node-versions
   constants:
-    node-runtime-base-tag: 20240429.5
+    node-runtime-base-tag: 20240429.6
     yarn-version: 1.22.15
     yarn-minor-version: 1.22
     yarn-major-version: 1
