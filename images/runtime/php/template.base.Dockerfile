@@ -28,7 +28,7 @@ RUN { \
 
 # Install common PHP extensions
 # TEMPORARY: Holding odbc related packages from upgrading.
-RUN apt-mark hold msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
+RUN apt-mark hold msodbcsql18=18.3.3.1-1 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
     && apt-get update \
     && apt-get upgrade -y \
     && ln -s /usr/lib/x86_64-linux-gnu/libldap.so /usr/lib/libldap.so \
