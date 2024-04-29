@@ -265,7 +265,14 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(NodeVersions.NpmVersion, result.StdOut.ReplaceNewLine());
+                    if (version == "18" || version == "20")
+                    {
+                        Assert.Contains("10.5.0", result.StdOut.ReplaceNewLine());
+                    }
+                    else
+                    {
+                        Assert.Contains(NodeVersions.NpmVersion, result.StdOut.ReplaceNewLine());
+                    }
                 },
                 result.GetDebugInfo());
         }
