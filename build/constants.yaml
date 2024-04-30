@@ -69,7 +69,7 @@
     file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20240429.2
+    dot-net-core-runtime-base-tag: 20240430.1
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
