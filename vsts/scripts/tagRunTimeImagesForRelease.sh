@@ -28,7 +28,7 @@ if [ -f "$outFilePmeMCR" ]; then
   rm $outFilePmeMCR
 fi
 
-declare -r skipImages=("python:3.7" "python:3.8" "dotnetcore:3" "dotnetcore:5" "php:7" "php:8.0" "ruby" "node:14")
+declare -r skipImages=("python:3.7" "dotnetcore:3" "dotnetcore:5" "php:7" "php:8.0" "ruby" "node:14")
 
 # This is a temporary function that will be used to skip unused images and will save some space on the agent.
 should_skip() {
