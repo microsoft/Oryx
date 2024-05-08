@@ -1,20 +1,8 @@
 parameters:
   destinationSdkStorageAccountName: 'oryxsdksstaging'
+  sourceFolder: ''
 
 steps:
-
-- checkout: self
-  clean: true
-
-- task: DownloadBuildArtifacts@0
-  displayName: 'Download Artifacts'
-  inputs:
-    artifactName: drop
-
-- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-  displayName: 'Component Detection - OSS Compliance'
-  inputs:
-    ignoreDirectories: '$(Build.SourcesDirectory)/tests'
 
 - task: ShellScript@2
   displayName: Upload files to Azure Storage
