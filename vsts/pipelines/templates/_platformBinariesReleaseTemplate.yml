@@ -9,7 +9,7 @@ steps:
   inputs:
     azureSubscription: 'Oryx (e13e3c2a-b6ed-4969-875a-28bec9f4513f)'
     scriptPath: ./vsts/scripts/publishFilesToAzureStorage.sh
-    args: ${{ parameters.destinationSdkStorageAccountName }}
+    arguments: ${{ parameters.destinationSdkStorageAccountName }}
     scriptType: 'bash'
 
 - task: UseDotNet@2
@@ -24,5 +24,5 @@ steps:
   inputs:
     azureSubscription: 'Oryx (e13e3c2a-b6ed-4969-875a-28bec9f4513f)'
     scriptPath: ./build/testIntegration.sh
-    args: StorageAccountTests=Dev
+    arguments: StorageAccountTests=Dev
     scriptType: 'bash'
