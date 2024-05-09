@@ -3,7 +3,6 @@ parameters:
     debianFlavor: ''
     sourceFolder: ''
     destinationSdkStorageAccountName: ''
-    oryxSdkStagingPrivateSasToken: ''
     dotnetPrivateStorageSasToken: ''
   
 steps:
@@ -16,7 +15,6 @@ steps:
 - task: ShellScript@2
   displayName: 'Building platform binaries'
   env:
-    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: ${{ parameters.oryxSdkStagingPrivateSasToken }}
     DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN: ${{ parameters.dotnetPrivateStorageSasToken }}
   inputs:
     scriptPath: ${{ parameters.sourceFolder }}/build/buildPlatformBinaries.sh
