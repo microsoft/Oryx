@@ -17,12 +17,10 @@ steps:
   inputs:
     version: 7.0.306
 
-- task: AzureCLI@2
+- task: ShellScript@2
   displayName: 'Test Dev storage account'
   env:
     ORYX_TEST_SDK_STORAGE_URL: https://${{ parameters.destinationSdkStorageAccountName }}.blob.core.windows.net
   inputs:
-    azureSubscription: 'Oryx (e13e3c2a-b6ed-4969-875a-28bec9f4513f)'
     scriptPath: ${{ parameters.sourceFolder }}/build/testIntegration.sh
-    arguments: StorageAccountTests=Dev
-    scriptType: 'bash'
+    args: StorageAccountTests=Dev
