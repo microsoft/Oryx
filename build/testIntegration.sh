@@ -73,6 +73,7 @@ dotnet test \
     $testCaseFilter \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
+    --verbosity detailed \
     -c $BUILD_CONFIGURATION
 
 # --blame flag generates an xml file which it drops under the project directory.
