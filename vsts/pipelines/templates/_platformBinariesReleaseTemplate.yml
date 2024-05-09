@@ -1,17 +1,21 @@
 parameters:
   destinationSdkStorageAccountName: 'oryxsdksstaging'
   sourceFolder: ''
+  oryxSdkStagingPrivateSasToken: ''
+  devStorageSasToken: ''
+  sandboxStorageSasToken: ''
+  oryxSdkPrivateSasToken: ''
 
 steps:
 
 - task: ShellScript@2
   displayName: Upload files to Azure Storage
   env:
-    DEV_STORAGE_SAS_TOKEN: $(DEV-STORAGE-SAS-TOKEN)
-    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
-    SANDBOX_STORAGE_SAS_TOKEN: $(SANDBOX-STORAGE-SAS-TOKEN)
+    DEV_STORAGE_SAS_TOKEN: ${{ parameters.devStorageSasToken }}
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: ${{ parameters.oryxSdkStagingPrivateSasToken }}
+    SANDBOX_STORAGE_SAS_TOKEN: ${{ parameters.sandboxStorageSasToken }}
     PERSONAL_STORAGE_SAS_TOKEN: $(${{ upper(parameters.destinationSdkStorageAccountName) }}-PERSONAL-STORAGE-SAS-TOKEN)
-    PRIVATE_STORAGE_SAS_TOKEN: $(ORYX-SDK-PRIVATE-SAS-TOKEN)
+    PRIVATE_STORAGE_SAS_TOKEN: ${{ parameters.oryxSdkPrivateSasToken }}
   inputs:
     scriptPath: ./vsts/scripts/publishFilesToAzureStorage.sh
     args: ${{ parameters.destinationSdkStorageAccountName }}
@@ -25,7 +29,7 @@ steps:
   displayName: 'Test Dev storage account'
   env:
     ORYX_TEST_SDK_STORAGE_URL: https://${{ parameters.destinationSdkStorageAccountName }}.blob.core.windows.net
-    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: $(ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN)
+    ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN: ${{ parameters.oryxSdkStagingPrivateSasToken }}
   inputs:
     scriptPath: ./build/testIntegration.sh
     args: StorageAccountTests=Dev
