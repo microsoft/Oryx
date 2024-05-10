@@ -11,11 +11,13 @@ steps:
   displayName: 'Use .NET Core sdk 7.x'
   inputs:
     version: 7.x
+
 - task: ShellScript@2
   displayName: 'display env'
   inputs:
     inlineScript: |
-      env
+      printenv
+
 - task: ShellScript@2
   displayName: 'Building platform binaries'
   env:
