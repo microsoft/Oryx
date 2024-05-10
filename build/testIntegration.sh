@@ -67,6 +67,8 @@ export MSBUILDDEBUGPATH="$msbuildDebugLogsDir"
 export COMPlus_DbgEnableMiniDump="1"
 export COMPlus_DbgMiniDumpName="$ARTIFACTS_DIR/$testProjectName.Tests-dump.%d"
 
+dotnet restore --no-cache --ignore-failed-sources
+
 dotnet test \
     --blame \
     --diag "$diagnosticFileLocation" \
@@ -74,6 +76,7 @@ dotnet test \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
     --verbosity detailed \
+    --no-restore
     -c $BUILD_CONFIGURATION
 
 # --blame flag generates an xml file which it drops under the project directory.

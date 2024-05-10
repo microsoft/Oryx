@@ -21,7 +21,6 @@ steps:
   displayName: 'Test Dev storage account'
   env:
     ORYX_TEST_SDK_STORAGE_URL: https://${{ parameters.destinationSdkStorageAccountName }}.blob.core.windows.net
-    VSS_NUGET_EXTERNAL_FEED_ENDPOINTS: ""
   inputs:
     scriptPath: ${{ parameters.sourceFolder }}/build/testIntegration.sh
     args: StorageAccountTests=Dev
