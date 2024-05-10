@@ -10,7 +10,7 @@ steps:
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 7.x'
   inputs:
-    version: 7.0
+    version: 7.x
 
 - task: ShellScript@2
   displayName: 'Building platform binaries'
