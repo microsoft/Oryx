@@ -3,6 +3,11 @@ parameters:
   sourceFolder: ''
 
 steps:
+- task: ShellScript@2
+  displayName: 'display env'
+  inputs:
+    inlineScript: |
+      env
 
 - task: AzureCLI@2
   displayName: Upload files to Azure Storage
