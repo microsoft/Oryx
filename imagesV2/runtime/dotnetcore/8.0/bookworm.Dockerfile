@@ -98,14 +98,11 @@ LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
 COPY DotNetCoreAgent.${USER_DOTNET_AI_VERSION}.zip /DotNetCoreAgent/appinsights.zip
-RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -e \
+RUN set -e \
     && echo $USER_DOTNET_AI_VERSION \ 
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
     && apt-get update \
     && apt-get install unzip -y \ 
     && apt-get upgrade --assume-yes \
-    && mkdir -p /DotNetCoreAgent \
-    && curl -o /DotNetCoreAgent/appinsights.zip "https://oryxsdksstaging.blob.core.windows.net/appinsights-agent/DotNetCoreAgent.$USER_DOTNET_AI_VERSION.zip$(cat /run/secrets/oryx_sdk_storage_account_access_token)" \
     && cd DotNetCoreAgent \
     && unzip appinsights.zip && rm appinsights.zip
