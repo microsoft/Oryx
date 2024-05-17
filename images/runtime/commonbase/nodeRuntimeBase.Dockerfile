@@ -1,6 +1,5 @@
-ARG DEBIAN_FLAVOR
-#TODO change acr name
-FROM ev2testing.azurecr.io/private/oryx/oryx-run-base-${DEBIAN_FLAVOR}
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
 ARG IMAGES_DIR=/tmp/oryx/images
 
 RUN apt-get update \
