@@ -22,7 +22,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 #Bake in client certificate path into image to avoid downloading it
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
-RUN ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
+RUN chmod +x build.sh && ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
 
 FROM mcr.microsoft.com/mirror/docker/library/debian:bookworm-slim
@@ -97,6 +97,7 @@ ENV CNB_STACK_ID="oryx.stacks.skeleton"
 LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
+COPY DotNetCoreAgent.${USER_DOTNET_AI_VERSION}.zip /DotNetCoreAgent/appinsights.zip
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -e \
     && echo $USER_DOTNET_AI_VERSION \ 

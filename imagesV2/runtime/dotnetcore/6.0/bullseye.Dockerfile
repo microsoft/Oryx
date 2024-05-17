@@ -94,8 +94,7 @@ ENV CNB_STACK_ID="oryx.stacks.skeleton"
 LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
 
 COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
-
-COPY 'DotNetCoreAgent.2.8.42.zip' /DotNetCoreAgent/
+COPY DotNetCoreAgent.${USER_DOTNET_AI_VERSION}.zip /DotNetCoreAgent/appinsights.zip
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -e \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
