@@ -3,7 +3,7 @@ FROM buildpack-deps:stretch
 
 WORKDIR /tmp
 
-COPY images/pack-builder/installPack.sh installPack.sh
+COPY imagesV2/pack-builder/installPack.sh installPack.sh
 RUN ./installPack.sh && mv pack /usr/local/bin && rm installPack.sh
 
 ENTRYPOINT ["/usr/local/bin/pack"]

@@ -1,9 +1,9 @@
 # DisableDockerDetector "Below image not yet supported in the Docker Hub mirror"
 FROM buildpack-deps:stretch AS php-build-prereqs
-COPY images/build/php/prereqs /php
+COPY imagesV2/build/php/prereqs /php
 COPY build/__phpVersions.sh /php/
-COPY images/build/python/prereqs/build.sh /tmp/
-COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
+COPY imagesV2/build/python/prereqs/build.sh /tmp/
+COPY imagesV2/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/*.sh && chmod +x /php/*.sh
 RUN if [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
     apt-get update \

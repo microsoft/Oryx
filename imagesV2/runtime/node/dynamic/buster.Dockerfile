@@ -56,5 +56,5 @@ COPY src/startupscriptgenerator/src/node/wrapper/node /opt/node-wrapper/
 RUN chmod a+x /opt/node-wrapper/node
 
 RUN mkdir -p /opt/node
-COPY images/runtime/node/installDependencies.sh /opt/node
+COPY imagesV2/runtime/node/installDependencies.sh /opt/node
 RUN chmod +x /opt/node/installDependencies.sh
