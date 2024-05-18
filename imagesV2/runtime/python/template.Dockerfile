@@ -51,7 +51,7 @@ COPY platforms/python/prereqs/build.sh /tmp/
 RUN true
 COPY platforms/python/versions/${DEBIAN_FLAVOR}/versionsToBuild.txt /tmp/
 RUN true
-COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
+COPY imagesV2/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN true
 
 RUN chmod +x /tmp/receiveGpgKeys.sh
