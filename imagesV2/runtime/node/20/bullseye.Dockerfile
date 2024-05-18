@@ -36,10 +36,11 @@ ENV NODE_VERSION ${NODE20_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
-RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
-    && ${IMAGES_DIR}/installPlatform.sh nodejs $NODE_VERSION --dir /usr/local --links false \
+
+COPY nodejs-bullseye-${NODE20_VERSION}.tar.gz .
+RUN set -e \
+    && tar -xzf nodejs-bullseye-${NODE20_VERSION}.tar.gz -C /opt/nodejs/${NODE20_VERSION}
+    && rm nodejs-bullseye-${NODE20_VERSION}.tar.gz
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN . ${BUILD_DIR}/__nodeVersions.sh \
     && npm install -g npm@${NPM_VERSION}
