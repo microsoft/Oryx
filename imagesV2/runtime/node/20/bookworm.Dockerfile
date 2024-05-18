@@ -1,4 +1,4 @@
-ARG BUILD_NUMBER=unspecified
+ARG BASE_IMAGE
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-bookworm as startupCmdGen
@@ -7,13 +7,15 @@ FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-bookworm as startupCmdGen
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
 ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
 ARG RELEASE_TAG_NAME=unspecified
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bookworm:${BUILD_NUMBER}
+#FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bookworm:${BUILD_NUMBER}
+FROM ${BASE_IMAGE}
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node

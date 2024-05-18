@@ -1,4 +1,4 @@
-ARG BUILD_NUMBER=unspecified
+ARG BASE_IMAGE
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-bullseye as startupCmdGen
@@ -7,13 +7,15 @@ FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-bullseye as startupCmdGen
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
 ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
 ARG RELEASE_TAG_NAME=unspecified
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 RUN ./build.sh php /opt/startupcmdgen/startupcmdgen
 
-FROM oryxdevmcr.azurecr.io/private/oryx/php-run-base-bullseye:{BUILD_NUMBER}
+#FROM oryxdevmcr.azurecr.io/private/oryx/php-run-base-bullseye:{BUILD_NUMBER}
+FROM ${BASE_IMAGE}
 ARG IMAGES_DIR=/tmp/oryx/images
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
