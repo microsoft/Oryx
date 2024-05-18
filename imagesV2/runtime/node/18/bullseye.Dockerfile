@@ -39,7 +39,7 @@ ARG IMAGES_DIR=/tmp/oryx/images
 COPY nodejs-bullseye-${NODE18_VERSION}.tar.gz .
 RUN set -e \
     && mkdir -p /opt/nodejs/${NODE18_VERSION} \
-    && tar -xzf nodejs-bullseye-${NODE18_VERSION}.tar.gz -C /opt/nodejs/${NODE18_VERSION} \
+    && tar -xzf nodejs-bullseye-${NODE18_VERSION}.tar.gz -C /usr/local \
     && rm nodejs-bullseye-${NODE18_VERSION}.tar.gz \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN . ${BUILD_DIR}/__nodeVersions.sh \
