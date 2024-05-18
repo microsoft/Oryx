@@ -32,7 +32,7 @@ RUN apt-get update \
         gcc \
     && rm -rf /var/lib/apt/lists/*
 
-ADD images ${IMAGES_DIR}
+ADD imagesV2 ${IMAGES_DIR}
 ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
