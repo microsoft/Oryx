@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- File name extension must be .runsettings -->
+<RunSettings>
+	<RunConfiguration>
+		<EnvironmentVariables>
+			<!-- List of environment variables we want to set-->
+			<ORYX_TEST_IMAGE_BASE>ev2testing.azurecr.io/public/oryx</ORYX_TEST_IMAGE_BASE>
+			<ORYX_TEST_TAG_SUFFIX>20240518.27</ORYX_TEST_TAG_SUFFIX>
+		</EnvironmentVariables>
+	</RunConfiguration>
+</RunSettings>
