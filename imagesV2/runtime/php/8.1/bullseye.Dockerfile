@@ -152,6 +152,7 @@ RUN set -eux; \
 	apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
 
 COPY imagesV2/runtime/php/8.1/docker-php-source /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-php-source
 
 RUN set -eux; \
 	\
@@ -257,6 +258,7 @@ RUN set -eux; \
 	php --version
 
 COPY imagesV2/runtime/php/8.1/docker-php-ext-* imagesV2/runtime/php/8.1/docker-php-entrypoint /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-php-*
 
 # sodium was built as a shared module (so that it can be replaced later if so desired), so let's enable it too (https://github.com/docker-library/php/issues/598)
 RUN docker-php-ext-enable sodium \
@@ -267,7 +269,8 @@ ENTRYPOINT ["docker-php-entrypoint"]
 # https://httpd.apache.org/docs/2.4/stopping.html#gracefulstop
 STOPSIGNAL SIGWINCH
 
-COPY apache2-foreground /usr/local/bin/
+COPY imagesV2/runtime/php/8.1/apache2-foreground /usr/local/bin/
+RUN chmod +x /usr/local/bin/apache2-foreground
 WORKDIR /var/www/html
 
 EXPOSE 80
