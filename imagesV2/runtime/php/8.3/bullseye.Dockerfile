@@ -280,7 +280,7 @@ CMD ["apache2-foreground"]
 ## base dockerfile
 SHELL ["/bin/bash", "-c"]
 ARG PHP_VERSION
-ENV PHP_VERSION %{PHP_VERSION}
+ENV PHP_VERSION ${PHP_VERSION}
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 
