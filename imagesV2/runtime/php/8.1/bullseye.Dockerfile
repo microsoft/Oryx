@@ -12,7 +12,7 @@ ARG RELEASE_TAG_NAME=unspecified
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-RUN ./build.sh php /opt/startupcmdgen/startupcmdgen
+RUN chmod +x build.sh && ./build.sh php /opt/startupcmdgen/startupcmdgen
 
 #FROM oryxdevmcr.azurecr.io/private/oryx/php-run-base-bullseye:{BUILD_NUMBER}
 FROM ${BASE_IMAGE}
@@ -267,7 +267,7 @@ ENTRYPOINT ["docker-php-entrypoint"]
 # https://httpd.apache.org/docs/2.4/stopping.html#gracefulstop
 STOPSIGNAL SIGWINCH
 
-COPY imagesV2/runtime/php/8.1/apache2-foreground /usr/local/bin/
+COPY apache2-foreground /usr/local/bin/
 WORKDIR /var/www/html
 
 EXPOSE 80

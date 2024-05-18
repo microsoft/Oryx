@@ -12,7 +12,7 @@ ARG RELEASE_TAG_NAME=unspecified
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-RUN ./build.sh php /opt/startupcmdgen/startupcmdgen
+RUN chmod +x build.sh && ./build.sh php /opt/startupcmdgen/startupcmdgen
 
 #FROM oryxdevmcr.azurecr.io/private/oryx/php-run-base-buster:${BUILD_NUMBER}
 FROM ${BASE_IMAGE}
