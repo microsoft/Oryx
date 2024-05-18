@@ -1,5 +1,19 @@
-ARG DEBIAN_FLAVOR
-FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-${DEBIAN_FLAVOR}
+ARG BUILD_NUMBER=unspecified
+
+# Startup script generator
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-bullseye as startupCmdGen
+
+# GOPATH is set to "/go" in the base image
+WORKDIR /go/src
+COPY src/startupscriptgenerator/src .
+ARG GIT_COMMIT=unspecified
+ARG RELEASE_TAG_NAME=unspecified
+ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
+
+FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bullseye:${BUILD_NUMBER}
 
 RUN groupadd --gid 1000 node \
   && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
@@ -16,7 +30,6 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   esac
 
 ARG NODE18_VERSION
-ARG DEBIAN_FLAVOR
 ENV NODE_VERSION ${NODE18_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
@@ -30,6 +43,29 @@ RUN . ${BUILD_DIR}/__nodeVersions.sh \
     && npm install -g npm@${NPM_VERSION}
 RUN ${IMAGES_DIR}/runtime/node/installDependencies.sh
 RUN rm -rf /tmp/oryx
+
+# Bake Application Insights key from pipeline variable into final image
+ARG AI_CONNECTION_STRING
+ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
+#Bake in client certificate path into image to avoid downloading it
+ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
+# Oryx++ Builder variables
+ENV CNB_STACK_ID="oryx.stacks.skeleton"
+LABEL io.buildpacks.stack.id="oryx.stacks.skeleton"
+
+COPY --from=startupCmdGen /opt/startupcmdgen/startupcmdgen /opt/startupcmdgen/startupcmdgen
+
+# Node wrapper is used to debug apps when node is executed indirectly, e.g. by npm.
+COPY src/startupscriptgenerator/src/node/wrapper/node /opt/node-wrapper/
+RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
+    && chmod a+x /opt/node-wrapper/node \
+    && apt-get update \
+    && apt-get upgrade --assume-yes \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV LANG="C.UTF-8" \
+    LANGUAGE="C.UTF-8" \
+    LC_ALL="C.UTF-8"
 
 CMD [ "node" ]
 
