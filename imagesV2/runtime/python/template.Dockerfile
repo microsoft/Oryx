@@ -16,7 +16,7 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM {BASE_IMAGE} as main
+FROM ${BASE_IMAGE} as main
 
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
