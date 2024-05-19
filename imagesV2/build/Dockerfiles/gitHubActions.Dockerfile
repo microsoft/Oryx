@@ -137,19 +137,18 @@ RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \; \
 COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
 
 RUN ${IMAGES_DIR}/build/installHugo.sh
+
+COPY imagesV2/yarn-v1.22.15.tar.gz .
 RUN set -ex \
  && yarnCacheFolder="/usr/local/share/yarn-cache" \
  && mkdir -p $yarnCacheFolder \
  && chmod 777 $yarnCacheFolder \
  && . ${BUILD_DIR}/__nodeVersions.sh \
- && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
- && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
- && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
- && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
  && mkdir -p /opt/yarn \
- && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
- && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
- && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+ && tar -xzf yarn-v1.22.15.tar.gz -C /opt/yarn \
+ && mv /opt/yarn/yarn-v1.22.15 /opt/yarn/1.22.15 \
+ && rm yarn-v1.22.15.tar.gz
+
 RUN set -ex \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ln -s $YARN_VERSION /opt/yarn/stable \

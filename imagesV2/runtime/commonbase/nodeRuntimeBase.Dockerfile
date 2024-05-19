@@ -15,7 +15,7 @@ RUN apt-get update \
 RUN ${IMAGES_DIR}/receiveGpgKeys.sh \
     6A010C5166006599AA17F08146C2130DFD2497F5
 
-COPY imagesV2/runtime/commonbase/yarn-v1.22.15.tar.gz .
+COPY imagesV2/yarn-v1.22.15.tar.gz .
 
 RUN mkdir -p /opt \
   && tar -xzf yarn-v1.22.15.tar.gz -C /opt/ \
