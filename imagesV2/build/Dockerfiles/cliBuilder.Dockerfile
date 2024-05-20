@@ -118,6 +118,7 @@ RUN apt-get update \
 ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images"
 RUN ${IMAGES_DIR}/build/installHugo.sh
+COPY imagesV2/yarn-v1.22.15.tar.gz .
 RUN set -ex \
     && yarnCacheFolder="/usr/local/share/yarn-cache" \
     && mkdir -p $yarnCacheFolder \

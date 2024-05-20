@@ -15,7 +15,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
-RUN ./build.sh golang     /opt/startupcmdgen/golang
+RUN chmod +x build.sh && ./build.sh golang     /opt/startupcmdgen/golang
 
 ### oryx build image
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
