@@ -78,8 +78,6 @@ RUN set -e \
     && yarnCacheFolder="/usr/local/share/yarn-cache" \
     && mkdir -p $yarnCacheFolder \
     && chmod 777 $yarnCacheFolder \
-    && . ${BUILD_DIR}/__nodeVersions.sh \
-    && if [ "${DEBIAN_FLAVOR}" == "bullseye" || "${DEBIAN_FLAVOR}" == "buster" ]; then ${IMAGES_DIR}/installPlatform.sh nodejs ${NODE16_VERSION}; fi \
     && mkdir -p /opt/yarn \
     && tar -xzf yarn-v1.22.15.tar.gz -C /opt/yarn \
     && mv /opt/yarn/yarn-v1.22.15 /opt/yarn/1.22.15 \
@@ -95,9 +93,11 @@ RUN set -ex \
     && mkdir -p /links \
     && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
   
-RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
+ARG PYTHON38_VERSION
+ENV PYTHON38_VERSION ${PYTHON38_VERSION}
+COPY python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz .
+
+RUN set -e \
     # Install Python SDKs
     # Upgrade system python
     && PYTHONIOENCODING="UTF-8" \
@@ -109,8 +109,9 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && pip3 install pip --upgrade \
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \
-    && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
+    && mkdir -p /opt/python/${PYTHON38_VERSION} \
+    && tar -xzf python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz -C /opt/python/${PYTHON38_VERSION} \
+    && rm python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz \
     && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \

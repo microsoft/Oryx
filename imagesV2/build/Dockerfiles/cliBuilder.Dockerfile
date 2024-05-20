@@ -159,10 +159,11 @@ RUN set -ex \
         uuid-dev \
     && rm -rf /var/lib/apt/lists/*
 
+ARG PYTHON38_VERSION
+ENV PYTHON38_VERSION ${PYTHON38_VERSION}
+COPY python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz .
 # Install Python 3.8 to use in some .NET and node applications
-RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
+RUN set -e \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
@@ -175,8 +176,9 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && pip3 install pip --upgrade \
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \
-    && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
+    && mkdir -p /opt/python/${PYTHON38_VERSION} \
+    && tar -xzf python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz -C /opt/python/${PYTHON38_VERSION} \
+    && rm python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz \
     && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \
