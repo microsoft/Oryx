@@ -1,8 +1,15 @@
-ARG PARENT_DEBIAN_FLAVOR
+ARG BASE_IMAGE
 ARG DEBIAN_FLAVOR
-FROM oryxdevmcr.azurecr.io/public/oryx/cli:${PARENT_DEBIAN_FLAVOR} AS main
+FROM ${BASE_IMAGE} AS main
 
-COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /tmp
+ARG IMAGES_DIR=/tmp/images
+ARG BUILD_DIR=/tmp/build
+RUN mkdir -p ${IMAGES_DIR} \
+    && mkdir -p ${BUILD_DIR}
+COPY imagesV2 ${IMAGES_DIR}
+COPY build ${BUILD_DIR}
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \; \
+    && find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     ORYX_BUILDIMAGE_TYPE="jamstack" \
