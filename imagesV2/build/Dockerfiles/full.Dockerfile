@@ -30,7 +30,7 @@ ARG IMAGES_DIR=/opt/tmp/images
 ARG BUILD_DIR=/opt/tmp/build
 RUN mkdir -p ${IMAGES_DIR} \
     && mkdir -p ${BUILD_DIR}
-COPY images ${IMAGES_DIR}
+COPY imagesV2 ${IMAGES_DIR}
 COPY build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \; \
     && find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
