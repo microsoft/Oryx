@@ -39,7 +39,7 @@ ARG IMAGES_DIR=/tmp/oryx/images
 
 COPY nodejs-bullseye-${NODE20_VERSION}.tar.gz .
 RUN set -e \
-    && mkdir -p /opt/nodejs/${NODE18_VERSION} \
+    && mkdir -p /opt/nodejs/${NODE20_VERSION} \
     && tar -xzf nodejs-bullseye-${NODE20_VERSION}.tar.gz -C /usr/local \
     && rm nodejs-bullseye-${NODE20_VERSION}.tar.gz \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs

@@ -37,11 +37,11 @@ ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
 
-COPY nodejs-bullseye-${NODE20_VERSION}.tar.gz .
+COPY nodejs-bookworm-${NODE20_VERSION}.tar.gz .
 RUN set -e \
-    && mkdir -p /opt/nodejs/${NODE18_VERSION} \
-    && tar -xzf nodejs-bullseye-${NODE20_VERSION}.tar.gz -C /usr/local \
-    && rm nodejs-bullseye-${NODE20_VERSION}.tar.gz \
+    && mkdir -p /opt/nodejs/${NODE20_VERSION} \
+    && tar -xzf nodejs-bookworm-${NODE20_VERSION}.tar.gz -C /usr/local \
+    && rm nodejs-bookworm-${NODE20_VERSION}.tar.gz \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN . ${BUILD_DIR}/__nodeVersions.sh \
     && npm install -g npm@${NPM_VERSION}
