@@ -1,0 +1,28 @@
+// This file was auto-generated from 'constants.yaml'. Changes may be overridden.
+
+package consts
+
+const EnableDynamicInstallKey string = "ENABLE_DYNAMIC_INSTALL"
+const SdkStorageBaseUrlKeyName string = "ORYX_SDK_STORAGE_BASE_URL"
+const TestingSdkStorageUrlKeyName string = "ORYX_TEST_SDK_STORAGE_URL"
+const PrivateStagingStorageSasTokenKey string = "ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN"
+const OryxKeyvaultUri string = "https://oryx.vault.azure.net"
+const StagingStorageSasTokenKeyvaultSecretName string = "ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN"
+const PrivateStagingSdkStorageBaseUrl string = "https://oryxsdksstaging.blob.core.windows.net"
+const DevSdkStorageBaseUrl string = "https://oryxsdksdev.blob.core.windows.net"
+const SandboxSdkStorageBaseUrl string = "https://oryxsdkssandbox.blob.core.windows.net"
+const PrivateSdkStorageBaseUrl string = "https://oryxsdksprivate.blob.core.windows.net"
+const ProdSdkStorageBaseUrl string = "https://oryxsdksprod.blob.core.windows.net"
+const ProdBackupSdkStorageBaseUrl string = "https://oryxsdksprodbackup.blob.core.windows.net"
+const ProdSdkCdnStorageBaseUrl string = "https://oryx-cdn.microsoft.io"
+const DefaultVersionFileName string = "defaultVersion.txt"
+const DefaultVersionFilePrefix string = "defaultVersion"
+const DefaultVersionFileType string = "txt"
+const VersionsToBuildFileName string = "versionsToBuild.txt"
+const ContainerMetadataUrlFormat string = "{0}/{1}?restype=container&comp=list&include=metadata&marker={2}&{3}"
+const SdkDownloadSentinelFileName string = ".oryx-sdkdownload-sentinel"
+const SdkVersionMetadataName string = "Sdk_version"
+const LegacySdkVersionMetadataName string = "Version"
+const DotnetRuntimeVersionMetadataName string = "Dotnet_runtime_version"
+const LegacyDotnetRuntimeVersionMetadataName string = "Runtime_version"
+const OsTypeMetadataName string = "Os_type"

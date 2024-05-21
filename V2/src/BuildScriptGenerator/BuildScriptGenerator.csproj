@@ -1,0 +1,93 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <AssemblyName>Microsoft.Oryx.BuildScriptGenerator</AssemblyName>
+    <RootNamespace>Microsoft.Oryx.BuildScriptGenerator</RootNamespace>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>true</DelaySign>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AssemblyVersion>0.2</AssemblyVersion>
+    <LangVersion>7.3</LangVersion>
+    <!-- Remove when proper XML documentation is added to the project. -->
+    <DisableDocRequirement>true</DisableDocRequirement>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\AssemblyVersion.proj" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.0" />
+    <PackageReference Include="Nett" Version="0.15.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Scriban.Signed" Version="5.5.2" />
+    <PackageReference Include="SemanticVersioning" Version="2.0.2" />
+    <PackageReference Include="System.CodeDom" Version="7.0.0" />
+    <PackageReference Include="YamlDotNet" Version="12.3.1" />
+  </ItemGroup>
+    
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Resources\Labels.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Labels.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Labels.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Labels.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="BaseBashBuildScript.sh.tpl" />
+    <Content Remove="Dockerfile.oryx.tpl" />
+    <Content Remove="Node\NodeBashBuildSnippet.sh.tpl" />
+    <Content Remove="Php\PhpBashBuildSnippet.sh.tpl" />
+    <Content Remove="Golang\GolangBashBuildSnippet.sh.tpl" />
+    <Content Remove="Python\PythonBashBuildSnippet.sh.tpl" />
+    <Content Remove="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" />
+    <Content Remove="Hugo\HugoBashBuildSnippet.sh.tpl" />
+    <Content Remove="Ruby\RubyBashBuildSnippet.sh.tpl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Java\JavaBashBuildSnippet.sh.tpl" />
+    <None Remove="Python\JupyterNotebookBashBuildSnippet.sh.tpl" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="BaseBashBuildScript.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Dockerfile.oryx.tpl" WithCulture="false" />
+    <EmbeddedResource Include="DotNetCore\DotNetCoreBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Java\JavaBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Node\NodeBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Hugo\HugoBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Php\PhpBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Golang\GolangBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Python\JupyterNotebookBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Python\PythonBashBuildSnippet.sh.tpl" WithCulture="false" />
+    <EmbeddedResource Include="Ruby\RubyBashBuildSnippet.sh.tpl" WithCulture="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BuildScriptGenerator.Common\BuildScriptGenerator.Common.csproj" />
+    <ProjectReference Include="..\Detector\Detector.csproj" />
+  </ItemGroup>
+  
+</Project>
