@@ -5,7 +5,7 @@ parameters:
     type: string
   - name: sourceFolder
     type: string
-  - name: destinationSdkStorageAccountName
+  - name: storageAccountName
     type: string
   - name: dotnetPrivateStorageSasToken
     type: string
@@ -23,4 +23,4 @@ steps:
     DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN: ${{ parameters.dotnetPrivateStorageSasToken }}
   inputs:
     scriptPath: ${{ parameters.sourceFolder }}/build/buildPlatformBinaries.sh
-    args: ${{ parameters.platformName }} ${{ parameters.debianFlavor }} https://${{ parameters.destinationSdkStorageAccountName }}.blob.core.windows.net
+    args: ${{ parameters.platformName }} ${{ parameters.debianFlavor }} https://${{ parameters.storageAccountName }}.blob.core.windows.net

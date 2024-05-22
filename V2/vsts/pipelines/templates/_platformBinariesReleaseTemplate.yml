@@ -1,6 +1,8 @@
 parameters:
-  destinationSdkStorageAccountName: ''
-  sourceFolder: ''
+  - name: sourceFolder
+    type: string
+  - name: storageAccountName
+    type: string
 
 steps:
 
@@ -9,7 +11,7 @@ steps:
   inputs:
     azureSubscription: 'Oryx (e13e3c2a-b6ed-4969-875a-28bec9f4513f)'
     scriptPath: ${{ parameters.sourceFolder }}/vsts/scripts/publishFilesToAzureStorage.sh
-    arguments: ${{ parameters.destinationSdkStorageAccountName }}
+    arguments: ${{ parameters.storageAccountName }}
     scriptType: 'bash'
 
 - task: UseDotNet@2
@@ -20,7 +22,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Test Dev storage account'
   env:
-    ORYX_TEST_SDK_STORAGE_URL: https://${{ parameters.destinationSdkStorageAccountName }}.blob.core.windows.net
+    ORYX_TEST_SDK_STORAGE_URL: https://${{ parameters.storageAccountName }}.blob.core.windows.net
   inputs:
     scriptPath: ${{ parameters.sourceFolder }}/build/testIntegration.sh
     args: StorageAccountTests=Dev
