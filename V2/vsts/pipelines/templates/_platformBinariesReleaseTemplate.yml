@@ -3,13 +3,15 @@ parameters:
     type: string
   - name: storageAccountName
     type: string
+  - name: subscription
+    type: string
 
 steps:
 
 - task: AzureCLI@2
   displayName: Upload files to Azure Storage
   inputs:
-    azureSubscription: 'Oryx (e13e3c2a-b6ed-4969-875a-28bec9f4513f)'
+    azureSubscription: ${{ parameters.subscription }}
     scriptPath: ${{ parameters.sourceFolder }}/vsts/scripts/publishFilesToAzureStorage.sh
     arguments: ${{ parameters.storageAccountName }}
     scriptType: 'bash'
