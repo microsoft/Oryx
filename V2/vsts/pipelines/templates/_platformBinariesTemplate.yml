@@ -1,12 +1,17 @@
 parameters:
-    platformName: ''
-    debianFlavor: ''
-    sourceFolder: ''
-    destinationSdkStorageAccountName: ''
-    dotnetPrivateStorageSasToken: ''
-  
-steps:
+  - name: platformName
+    type: string
+  - name: debianFlavor
+    type: string
+  - name: sourceFolder
+    type: string
+  - name: destinationSdkStorageAccountName
+    type: string
+  - name: dotnetPrivateStorageSasToken
+    type: string
+    default: ''
 
+steps:
 - task: UseDotNet@2
   displayName: 'Use .NET Core sdk 7.x'
   inputs:
