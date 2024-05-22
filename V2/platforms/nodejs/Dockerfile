@@ -15,6 +15,11 @@ RUN apt-get update \
         jq \
     && rm -rf /var/lib/apt/lists/*
 RUN curl -sL https://git.io/n-install | bash -s -- -ny -
+
 RUN mkdir -p /tmp/scripts
 COPY platforms/nodejs/build.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/build.sh
+
+COPY platforms /tmp/
+RUN chmod +x /tmp/*.sh
+RUN /tmp/platforms/nodejs/getNode.sh ${DEBIAN_FLAVOR} ""
