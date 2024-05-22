@@ -8,10 +8,10 @@ set -e
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
-source $REPO_DIR/platformsV2/__common.sh
-source $REPO_DIR/buildV2/__pythonVersions.sh
+source $REPO_DIR/platforms/__common.sh
+source $REPO_DIR/build/__pythonVersions.sh
 
-pythonPlatformDir="$REPO_DIR/platformsV2/python"
+pythonPlatformDir="$REPO_DIR/platforms/python"
 targetDir="$volumeHostDir/python"
 debianFlavor=$1
 sdkStorageAccountUrl="$2"

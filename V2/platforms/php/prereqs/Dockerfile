@@ -2,9 +2,9 @@ ARG DEBIAN_FLAVOR
 FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${DEBIAN_FLAVOR} AS php-buildpack-prereqs
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
-COPY platformsV2/php/prereqs /php
-COPY buildV2/__phpVersions.sh /php/
-COPY platformsV2/php/prereqs/build.sh /tmp/
+COPY platforms/php/prereqs /php
+COPY build/__phpVersions.sh /php/
+COPY platforms/php/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 
 RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \

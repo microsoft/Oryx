@@ -16,5 +16,5 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 RUN curl -sL https://git.io/n-install | bash -s -- -ny -
 RUN mkdir -p /tmp/scripts
-COPY platformsV2/nodejs/build.sh /tmp/scripts
+COPY platforms/nodejs/build.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/build.sh

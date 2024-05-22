@@ -2,9 +2,9 @@
 set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && cd .. && pwd )
-source $REPO_DIR/platformsV2/__common.sh
+source $REPO_DIR/platforms/__common.sh
 
-mavenPlatformDir="$REPO_DIR/platformsV2/java/maven"
+mavenPlatformDir="$REPO_DIR/platforms/java/maven"
 hostMavenArtifactsDir="$volumeHostDir/maven"
 debianFlavor="$1"
 sdkStorageAccountUrl="$2"

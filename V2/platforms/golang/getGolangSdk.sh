@@ -8,9 +8,9 @@ set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
-source $REPO_DIR/platformsV2/__common.sh
+source $REPO_DIR/platforms/__common.sh
 
-golangPlatformDir="$REPO_DIR/platformsV2/golang"
+golangPlatformDir="$REPO_DIR/platforms/golang"
 targetDir="$volumeHostDir/golang"
 debianFlavor="$1"
 sdkStorageAccountUrl="$2"

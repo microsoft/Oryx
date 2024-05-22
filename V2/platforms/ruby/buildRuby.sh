@@ -8,10 +8,10 @@ set -ex
 
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
-source $REPO_DIR/platformsV2/__common.sh
-source $REPO_DIR/buildV2/__rubyVersions.sh
+source $REPO_DIR/platforms/__common.sh
+source $REPO_DIR/build/__rubyVersions.sh
 
-rubyPlatformDir="$REPO_DIR/platformsV2/ruby"
+rubyPlatformDir="$REPO_DIR/platforms/ruby"
 targetDir="$volumeHostDir/ruby"
 debianFlavor=$1
 sdkStorageAccountUrl="$2"
