@@ -20,6 +20,6 @@ RUN mkdir -p /tmp/scripts
 COPY platforms/nodejs/build.sh /tmp/scripts
 RUN chmod +x /tmp/scripts/build.sh
 
-COPY platforms /tmp/
-RUN chmod +x /tmp/*.sh
+COPY platforms /tmp/platforms
+RUN chmod +x /tmp/platforms/*.sh
 RUN /tmp/platforms/nodejs/getNode.sh ${DEBIAN_FLAVOR} ""
