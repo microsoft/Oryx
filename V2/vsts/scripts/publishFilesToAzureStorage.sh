@@ -13,7 +13,7 @@ storageAccountName="$1"
 
 uploadFiles() {
     local platform="$1"
-    local artifactsDir="$BUILD_ARTIFACTSTAGINGDIRECTORY/drop/platformSdks/$platform"
+    local artifactsDir="$ARTIFACTS_DIR/platformSdks/$platform"
     if [ ! -d "$artifactsDir" ]; then
         return
     fi
