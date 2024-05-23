@@ -116,10 +116,13 @@ export \
 cd $PHP_SRC_DIR;
 gnuArch="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)";
 debMultiarch="$(dpkg-architecture --query DEB_BUILD_MULTIARCH)";
-# https://bugs.php.net/bug.php?id=74125
-if [ ! -d /usr/include/curl ]; then
-	ln -sT "/usr/include/$debMultiarch/curl" /usr/local/include/curl;
-fi;
+
+# Only needed for php 7.1 and also the following has an error. It checks for /usr/include/curl and links to /usr/local/include/curl.
+# In a way it never worked!!
+# # https://bugs.php.net/bug.php?id=74125
+# if [ ! -d /usr/include/curl ]; then
+# 	ln -sT "/usr/include/$debMultiarch/curl" /usr/local/include/curl;
+# fi;
 
 versionConfigureArgs=''
 # in PHP 7.4+, the pecl/pear installers are officially deprecated (requiring an explicit "--with-pear") and will be removed in PHP 8+; 
