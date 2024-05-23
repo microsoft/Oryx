@@ -127,7 +127,8 @@ buildPhpComposer() {
 			composerSdkFile="php-composer-$version.tar.gz" 
 		fi;
 		tar -zcf "$compressedSdkDir/$composerSdkFile" .
-			
+		rm -r ./*
+
 		echo "$sdkVersionMetadataName=$version" >> $metadataFile
 		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
 	fi
