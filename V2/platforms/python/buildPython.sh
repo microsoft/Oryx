@@ -56,7 +56,7 @@ buildPython() {
 		
 		cat $dockerFile
 
-		DEBIAN_FLAVOR=$debianFlavor PYTHON_VERSION=$version GPG_KEYS=$gpgKey PIP_VERSION=$PIP_VERSION /tmp/build.sh
+		DEBIAN_FLAVOR=$debianFlavor PYTHON_VERSION=$version GPG_KEY=$gpgKey PIP_VERSION=$PIP_VERSION /tmp/build.sh
 
 		rm -r /opt/python/*
 

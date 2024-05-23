@@ -30,7 +30,7 @@ COPY build /tmp/build
 RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
 RUN mkdir /tmp/sdk
-RUN /tmp/platforms/python/buildPython.sh ${DEBIAN_FLAVOR} "" "php"
+RUN /tmp/platforms/python/buildPython.sh ${DEBIAN_FLAVOR} ""
 
 # RUN PYTHON_VERSION=$VERSION_TO_BUILD \
 #     GPG_KEY=$GPG_KEYS \
