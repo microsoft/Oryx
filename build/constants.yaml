@@ -46,8 +46,8 @@
     dot-net-50-sdk-version: 5.0.408
     dot-net-60-sdk-version: 6.0.421
     dot-net-60-rtm-sdk-version: 6-0-100-rtm-21527-11
-    dot-net-70-sdk-version: 7.0.404
-    dot-net-80-sdk-version: 8.0.202
+    dot-net-70-sdk-version: 7.0.409
+    dot-net-80-sdk-version: 8.0.300
     runtime-versions:
     - 3.0-debian-buster
     - 3.1-debian-bullseye
@@ -69,7 +69,7 @@
     file-name-prefix: __
 - name: dot-net-core-run-time-versions
   constants:
-    dot-net-core-runtime-base-tag: 20240430.1
+    dot-net-core-runtime-base-tag: 20240523.4
     net-core-app-10: 1.0.16
     net-core-app-11: 1.1.13
     net-core-app-20: 2.0.9
@@ -95,14 +95,14 @@
     net-core-app-60-sha: c9fc66d47e7c5ed77f13d03bd3a6d09f99560bd432aa308392e0604bdf2a378f66f836184dca4a678052989e6e51a5535225de337c32a4a4e17a67abdc554ffa
     aspnet-core-app-60: 6.0.29
     aspnet-core-app-60-sha: 6dc21e1a8dd597df9c1135065f7350bbde9cc040c3079ec7850b0e5f254051b883c6c6e0056682d2963ec74dadff8eb32d82c13b35c9088f3d7c055d3d3f0863
-    net-core-app-70: 7.0.14
-    net-core-app-70-sha: 02fd66ef2059d124d9c4f3fbfd0d5b0375b83610cdf51a2972567e4bdaf1d55e532478533509ec2408c371e7fdd6efea8e9b9aec9eb5cd703e8e5d2814ef319b
-    aspnet-core-app-70: 7.0.14
-    aspnet-core-app-70-sha: 00f55556cb580d81bf0059a61a642ed8b405452d55e94460c03a0edec9a4f608fd78561560e5fc5bf6e42fb1f45420eba75f8d102d8bd46686379dab7ffde6f6
-    net-core-app-80: 8.0.3
-    net-core-app-80-sha: 08ad7065abf73d09bd718963bd1277c4736f9d51c7c51849255732db03b59f2321d321235be8be35ca5ef2bbd4f331a0fecaefb48d3e1075659e075bcd1f0169
-    aspnet-core-app-80: 8.0.3
-    aspnet-core-app-80-sha: 73a16e08402989f25ca780acc981c2ae3a41ef39b4bb6b6b4962053144b6eda7c175fdd5ee3c25bcd0c86a27d1a83d4f8b9b2f69f37d4e3972f5901a9e0600b6
+    net-core-app-70: 7.0.19
+    net-core-app-70-sha: 4e556c1437a58d2325e3eeb5a5c4b718599dff206af957a80490ef2945b1a2f5114d25b808b4c9ea233cc4eb2e5ce40932bb249e198319e97f3b5cc443612e6f
+    aspnet-core-app-70: 7.0.19
+    aspnet-core-app-70-sha: 569fcc25f0c32df3b28c4569bbeabb6c20afc8865088f14a405d3847bbfd159cf291d2dc4810140b8f436f06c95ebb09214ac837b5ade6bd8121e9c0204eb217
+    net-core-app-80: 8.0.5
+    net-core-app-80-sha: 3efff49feb2e11cb5ec08dcee4e1e8ad92a4d2516b721a98b55ef2ada231cad0c91fd20b71ab5e340047fc837bd02d143449dd32f4f95288f6f659fa6c790eaa
+    aspnet-core-app-80: 8.0.5
+    aspnet-core-app-80-sha: ffe6a534ed7dffe031e7d687b153f09a743792fad6ddcdf70fcbdbe4564462d5db71a8c9eb52036b817192386ef6a8fc574d995e0cdf572226302e797a6581c4
   outputs:
   - type: csharp
     directory: src/BuildScriptGenerator/DotNetCore
