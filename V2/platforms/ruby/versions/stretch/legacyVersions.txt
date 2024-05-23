@@ -1,2 +1,0 @@
-# contains versions that no longer exist in the versionsToBuild.txt file, but
-# exist in the storage accounts, and are used by customers
