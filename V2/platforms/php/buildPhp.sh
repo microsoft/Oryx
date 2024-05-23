@@ -134,7 +134,7 @@ buildPhpComposer() {
 	fi
 }
 
-if ["$phpType" == "php"]; then
+if "$phpType" == "php"; then
 	echo "Building Php..."
 	echo
 	buildPlatform "$phpPlatformDir/versions/$debianFlavor/versionsToBuild.txt" buildPhp
