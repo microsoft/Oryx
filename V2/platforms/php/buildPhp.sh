@@ -51,7 +51,7 @@ buildPhp() {
 		PHP_VERSION=$version GPG_KEYS=$gpgKeys PHP_SHA256=$sha /php/build.sh
 
 		rm -r /opt/php/*
-		
+
 		# docker build \
 		# 	-f "$phpPlatformDir/Dockerfile" \
 		# 	--build-arg PHP_VERSION=$version \
@@ -111,7 +111,7 @@ buildPhpComposer() {
 		# 	-t $imageName \
 		# 	$REPO_DIR
 
-		set -eux
+		set -ex
 		composerDir="/opt/php-composer/$version"
 		mkdir -p "$composerDir"
 		export phpbin="/opt/php/$PHP81_VERSION/bin/php" 
@@ -135,7 +135,7 @@ buildPhpComposer() {
 	fi
 }
 
-if "$phpType" == "php"; then
+if $phpType == "php"; then
 	echo "Building Php..."
 	echo
 	buildPlatform "$phpPlatformDir/versions/$debianFlavor/versionsToBuild.txt" buildPhp
