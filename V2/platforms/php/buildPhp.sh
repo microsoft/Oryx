@@ -50,6 +50,8 @@ buildPhp() {
 
 		PHP_VERSION=$version GPG_KEYS=$gpgKeys PHP_SHA256=$sha /php/build.sh
 
+		rm -r /opt/php/*
+		
 		# docker build \
 		# 	-f "$phpPlatformDir/Dockerfile" \
 		# 	--build-arg PHP_VERSION=$version \
@@ -110,13 +112,10 @@ buildPhpComposer() {
 		# 	$REPO_DIR
 
 		set -eux
-		composerDir="/opt/php-composer"
+		composerDir="/opt/php-composer/$version"
 		mkdir -p "$composerDir"
 		export phpbin="/opt/php/$PHP81_VERSION/bin/php" 
-		$phpbin -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" 
-		$phpbin -r "if (hash_file('sha384', 'composer-setup.php') === '$COMPOSER_SETUP_SHA384') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" 
-		$phpbin composer-setup.php --version=$version --install-dir="$composerDir" 
-		$phpbin -r "unlink('composer-setup.php');" 
+		$phpbin /tmp/platforms/php/composer-setup.php --version=$version --install-dir="$composerDir" 
 		compressedSdkDir="/tmp/compressedSdk"
 		mkdir -p "$compressedSdkDir"
 		cd "$composerDir"
@@ -127,7 +126,9 @@ buildPhpComposer() {
 			composerSdkFile="php-composer-$version.tar.gz" 
 		fi;
 		tar -zcf "$compressedSdkDir/$composerSdkFile" .
+
 		rm -r ./*
+		rm -r /opt/php/*
 
 		echo "$sdkVersionMetadataName=$version" >> $metadataFile
 		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
