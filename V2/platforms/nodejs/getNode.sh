@@ -11,7 +11,7 @@ declare -r REPO_DIR="/tmp"
 source $REPO_DIR/platforms/__common.sh
 
 nodePlatformDir="$REPO_DIR/platforms/nodejs"
-outputDir="/tmp/sdk"
+outputDir="/tmp/compressedSdk"
 debianFlavor="$1"
 sdkStorageAccountUrl="$2"
 
@@ -40,7 +40,7 @@ getNode() {
 		echo "Getting Node version '$version'..."
 		echo
 
-		/tmp/scripts/build.sh $version && cp -f /tmp/compressedSdk/* $outputDir
+		/tmp/scripts/build.sh $version
 		
 		echo "$sdkVersionMetadataName=$version" >> $metadataFile
 		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
