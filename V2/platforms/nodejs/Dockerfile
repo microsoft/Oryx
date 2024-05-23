@@ -24,4 +24,5 @@ COPY platforms /tmp/platforms
 COPY build /tmp/build
 RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
+RUN mkdir /tmp/sdk
 RUN /tmp/platforms/nodejs/getNode.sh ${DEBIAN_FLAVOR} ""
