@@ -198,7 +198,7 @@ if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ||
         && /php/docker-php-ext-enable.sh mysqlnd_azure; \
 fi
 
-compressedSdkDir="/tmp/compressedSdk"
+compressedSdkDir="/tmp/compressedSdk/php"
 mkdir -p $compressedSdkDir
 cd "$INSTALLATION_PREFIX"
 tar -zcf $compressedSdkDir/$phpSdkFileName .

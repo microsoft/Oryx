@@ -116,7 +116,7 @@ buildPhpComposer() {
 		mkdir -p "$composerDir"
 		export phpbin="/opt/php/$PHP81_VERSION/bin/php" 
 		$phpbin /tmp/platforms/php/composer-setup.php --version=$version --install-dir="$composerDir" 
-		compressedSdkDir="/tmp/compressedSdk"
+		compressedSdkDir="/tmp/compressedSdk/php-composer"
 		mkdir -p "$compressedSdkDir"
 		cd "$composerDir"
 		echo 'debian flavor is: $debianFlavor' 
