@@ -35,7 +35,7 @@ shouldBuildSdk() {
 	local blobName="$2"
 	local sdkStorageAccountUrl="$3"
 
-	return whatever exit code the following returns
+	# return whatever exit code the following returns
 	blobExists $containerName $blobName $sdkStorageAccountUrl
 	exitCode=$?
 	if [ "$exitCode" == 0 ]; then
