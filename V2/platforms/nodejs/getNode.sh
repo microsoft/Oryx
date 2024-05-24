@@ -15,6 +15,8 @@ outputDir="/tmp/compressedSdk/nodejs"
 debianFlavor="$1"
 sdkStorageAccountUrl="$2"
 
+mkdir -p "$outputDir"
+
 getNode() {
 	local version="$1"
 	
