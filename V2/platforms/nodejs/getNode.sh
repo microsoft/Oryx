@@ -11,7 +11,7 @@ declare -r REPO_DIR="/tmp"
 source $REPO_DIR/platforms/__common.sh
 
 nodePlatformDir="$REPO_DIR/platforms/nodejs"
-outputDir="/tmp/compressedSdk"
+outputDir="/tmp/compressedSdk/nodejs"
 debianFlavor="$1"
 sdkStorageAccountUrl="$2"
 
