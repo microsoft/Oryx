@@ -17,11 +17,11 @@ blobExists() {
 	local containerName="$1"
 	local blobName="$2"
 	local sdkStorageAccountUrl="$3"
-	local inStorageAccountFile="$REPO_DIR/platforms/$containerName/inStorageAccount.txt"
+	local inStorageAccountFile="$REPO_DIR/platforms/$containerName/versions/inStorageAccount.txt"
 	local exitCode=1
 
 	echo "Checking if blob exists..."
-	if grep -q "$blobName" "$inStorageAccountFile"; then
+	if grep "$blobName" "$inStorageAccountFile"; then
 		echo "Exists in storage account"
 		return 0
 	else
