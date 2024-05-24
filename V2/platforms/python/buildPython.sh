@@ -56,7 +56,9 @@ buildPython() {
 		
 		cat $dockerFile
 
-		rm -r /usr/src/python && mkdir /usr/src/python && cd /usr/src/python
+		rm -rf /usr/src/python
+		mkdir /usr/src/python
+		cd /usr/src/python
 		DEBIAN_FLAVOR=$debianFlavor PYTHON_VERSION=$version GPG_KEY=$gpgKey PIP_VERSION=$PIP_VERSION /tmp/build.sh
 		cd $REPO_DIR
 
