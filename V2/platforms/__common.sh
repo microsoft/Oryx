@@ -17,15 +17,15 @@ blobExists() {
 	local containerName="$1"
 	local blobName="$2"
 	local sdkStorageAccountUrl="$3"
+	local inStorageAccountFile="$REPO_DIR/platforms/$containerName/inStorageAccount.txt"
 	local exitCode=1
 
 	echo "Checking if blob exists..."
-	az storage blob show --container-name $containerName --name $blobName --account-name $sdkStorageAccountUrl &> /dev/null
-	echo "Done checking if blob exists..."
-	exitCode=$?
-	if [ $exitCode -eq 0 ]; then
+	if grep -q "$blobName" "$inStorageAccountFile"; then
+		echo "Exists in storage account"
 		return 0
 	else
+		echo "Does not exist in storage account"
 		return 1
 	fi
 }
@@ -35,15 +35,14 @@ shouldBuildSdk() {
 	local blobName="$2"
 	local sdkStorageAccountUrl="$3"
 
-	# return whatever exit code the following returns
-	# blobExists $containerName $blobName $sdkStorageAccountUrl
-	# exitCode=$?
-	# if [ "$exitCode" == 0 ]; then
-	# 	return 1
-	# else
-	# 	return 0
-	# fi
-	return 0
+	return whatever exit code the following returns
+	blobExists $containerName $blobName $sdkStorageAccountUrl
+	exitCode=$?
+	if [ "$exitCode" == 0 ]; then
+		return 1
+	else
+		return 0
+	fi
 }
 
 shouldOverwriteSdk() {
