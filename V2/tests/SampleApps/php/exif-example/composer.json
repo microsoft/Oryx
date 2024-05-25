@@ -1,0 +1,7 @@
+{
+  "name": "oryx/exif-example",
+  "require": {
+    "php": ">=5.3.0",
+    "ext-exif": "*"
+  }
+}

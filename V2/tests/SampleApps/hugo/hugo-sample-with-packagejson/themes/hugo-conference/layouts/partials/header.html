@@ -1,0 +1,26 @@
+{{ with .forkbutton }}
+  <a href="{{ .repository }}" class="github-link" target="_blank">
+    <img src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png" alt="Fork me on GitHub">
+  </a>
+{{ end }}
+
+<header class="header">
+  <div class="wrapper">
+    <h1 class="logo-name">
+      <a class="logo-link" href="#" title="{{ .name }}" itemprop="name">{{ .name }}</a>
+    </h1>
+    <h2 class="tagline">{{ .date }}, {{ .venue }}, {{ .city }}</h2>
+
+    <div class="call-action-area">
+      {{ with .price }}
+        <span class="price">{{ . }}</span>
+      {{ end }}
+
+      {{ with .calltoaction }}
+        <a href="{{ .link }}" class="call-action-link" target="_blank" title="{{ .text }}">{{ .text }}</a>
+      {{ end }}
+    </div>
+  </div>
+</header>
+
+<hr>

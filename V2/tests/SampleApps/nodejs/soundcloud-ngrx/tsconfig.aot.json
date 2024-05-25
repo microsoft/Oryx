@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "lib": [
+      "dom",
+      "es2015"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": true,
+    "noEmitHelpers": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "target": "es5",
+    "types": [
+      "jasmine",
+      "node"
+    ]
+  },
+
+  "exclude": [
+    "build",
+    "dist",
+    "node_modules",
+    "src/main.jit.ts",
+    "tmp"
+  ],
+
+  "angularCompilerOptions": {
+    "genDir": "build",
+    "skipMetadataEmit": true
+  }
+}

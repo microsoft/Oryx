@@ -1,0 +1,9 @@
+FROM mcr.microsoft.com/mssql/server:2017-CU12-ubuntu
+
+create new user
+
+create database
+
+add the newly created user to database
+
+give the user permission to do crud operations on database

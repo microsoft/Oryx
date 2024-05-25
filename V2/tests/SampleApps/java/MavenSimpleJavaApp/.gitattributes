@@ -1,0 +1,2 @@
+# When shell scripts end in CRLF, bash gives a cryptic error message
+*.sh text eol=lf
