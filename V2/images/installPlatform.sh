@@ -48,26 +48,8 @@ fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 sdkStorageAccountUrl="$ORYX_SDK_STORAGE_BASE_URL"
 sasToken=""
 if [ -z "$sdkStorageAccountUrl" ]; then
-  sdkStorageAccountUrl=$PRIVATE_STAGING_SDK_STORAGE_BASE_URL
-fi
-if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
-    set +x
-
-    if [ "$IS_FROM_DYNAMIC_INSTALLATION" = "true" ]; then
-      # retrieves the token coming from the Dynamic Installation Process.
-      sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
-    else
-      # retrieves the token coming from the Dockerfiles.
-      sasToken="$(cat $ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH)"
-    fi
-
-    if [ -z "$sasToken" ]; then
-      echo "sasToken is empty for $sdkStorageAccountUrl."
-      echo "sasToken cannot be empty. Please get the valid sasToken."
-    fi
-    set -x
-    
-    echo $sasToken
+  echo "Env variable ORYX_SDK_STORAGE_BASE_URL should not be empty."
+  exit 1
 fi
 if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
   # Use default sdk file name

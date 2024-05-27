@@ -5,19 +5,24 @@
 
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Tests.Common;
+using System;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Oryx.Integration.Tests
 {
-    [Trait("StorageAccountTests", "Prod")]
+    [Trait("StorageAccountTests", "SanityTests")]
     public class ProdStorageAccountSanityTest : StorageAccountSanityTestBase
     {
         public ProdStorageAccountSanityTest(
             ITestOutputHelper output,
             TestTempDirTestFixture testTempDirTestFixture,
             RepoRootDirTestFixture repoRootDirTestFixture)
-            : base(SdkStorageConstants.ProdSdkStorageBaseUrl, output, testTempDirTestFixture, repoRootDirTestFixture)
+            : base(Environment.GetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName)
+                  ?? throw new InvalidOperationException($"Environment variable '{SdkStorageConstants.SdkStorageBaseUrlKeyName}' is required."),
+                  output, 
+                  testTempDirTestFixture, 
+                  repoRootDirTestFixture)
         {
         }
     }
