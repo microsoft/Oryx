@@ -13,7 +13,6 @@ namespace Microsoft.Oryx.Automation.Commons
         /// <summary>
         /// Gets the SDK storage URL by combining the base URL with a platform-specific suffix.
         /// If the base URL is not provided, the default base URL will be used.
-        /// For the staging account, a SAS token is required and will be appended to the URL.
         /// </summary>
         /// <param name="oryxSdkStorageBaseUrl">The base URL of the SDK storage.</param>
         /// <param name="platformSuffixUrl">The platform-specific suffix URL.</param>
@@ -26,19 +25,6 @@ namespace Microsoft.Oryx.Automation.Commons
             }
 
             string sdkVersionsUrl = oryxSdkStorageBaseUrl + platformSuffixUrl;
-
-            // A SAS token is required for the staging account.
-            if (sdkVersionsUrl.StartsWith(Constants.OryxSdkStagingStorageBaseUrl))
-            {
-                string sasToken = Environment.GetEnvironmentVariable(Constants.OryxSdkStagingPrivateSasTokenEnvVar);
-                if (string.IsNullOrEmpty(sasToken))
-                {
-                    throw new ArgumentException($"The environment variable {Constants.OryxSdkStagingPrivateSasTokenEnvVar} " +
-                        $"must be provided in order to access {Constants.OryxSdkStagingStorageBaseUrl}");
-                }
-
-                sdkVersionsUrl += "&" + sasToken;
-            }
 
             return sdkVersionsUrl;
         }

@@ -64,7 +64,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string YarnTimeOutConfig = "YARN_TIMEOUT_CONFIG";
         public const string PythonVirtualEnvironmentName = "VIRTUALENV_NAME";
         public const string OryxSdkStorageBaseUrl = "ORYX_SDK_STORAGE_BASE_URL";
-        public const string OryxSdkStorageAccountAccessToken = "ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN";
         public const string AppType = "ORYX_APP_TYPE";
         public const string BuildCommandsFileName = "BUILDCOMMANDS_FILE";
         public const string DynamicInstallRootDir = "DYNAMIC_INSTALL_ROOT_DIR";

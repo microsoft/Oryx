@@ -51,7 +51,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
             options.PostBuildScriptPath = this.GetStringValue(SettingsKeys.PostBuildScriptPath);
             options.PostBuildCommand = this.GetStringValue(SettingsKeys.PostBuildCommand);
             options.OryxSdkStorageBaseUrl = this.GetStringValue(SettingsKeys.OryxSdkStorageBaseUrl);
-            options.OryxSdkStorageAccountAccessToken = this.GetStringValue(SettingsKeys.OryxSdkStorageAccountAccessToken);
             options.AppType = this.GetStringValue(SettingsKeys.AppType);
             options.BuildCommandsFileName = this.GetStringValue(SettingsKeys.BuildCommandsFileName);
             options.CompressDestinationDir = this.GetBooleanValue(SettingsKeys.CompressDestinationDir);
