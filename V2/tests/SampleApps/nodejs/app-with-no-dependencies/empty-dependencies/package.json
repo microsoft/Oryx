@@ -1,9 +1,0 @@
-{
-  "name": "webfrontend",
-  "version": "0.1.0",
-  "scripts": {
-    "build": "echo Hello"
-  },
-  "dependencies": {  },
-  "devDependencies": {  }
-}

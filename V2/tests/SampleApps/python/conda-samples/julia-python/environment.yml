@@ -1,7 +1,0 @@
-dependencies:
-  - matplotlib
-  - numpy
-  - pip
-  - pip:
-      - julia
-  

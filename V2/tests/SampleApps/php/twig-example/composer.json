@@ -1,6 +1,0 @@
-{
-  "name": "microsoft/echo",
-  "require": {
-    "twig/twig": "^2.0"
-  }
-}

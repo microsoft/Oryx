@@ -16,27 +16,6 @@ if [ -z "$ORYX_TEST_SDK_STORAGE_URL" ]; then
     export ORYX_TEST_SDK_STORAGE_URL="$PRIVATE_STAGING_SDK_STORAGE_BASE_URL"
 fi
 
-# When this script is run in CI agent these environment variables are already set
-if [ -z "$SQLSERVER_DATABASE_HOST" ]; then
-    function getSecretFromKeyVault() {
-        local secretName="$1"
-        result=`az.cmd keyvault secret show \
-                                        --name "$secretName" \
-                                        --vault-name "oryx" \
-                                        | grep value \
-                                        | awk '{print $NF}' \
-                                        | tr -d '"'`
-        echo $result
-    }
-
-    echo
-    echo Retrieving secrets from Azure Key Vault...
-    export SQLSERVER_DATABASE_HOST=$(getSecretFromKeyVault "SQLSERVER-DATABASE-HOST")
-    export SQLSERVER_DATABASE_NAME=$(getSecretFromKeyVault "SQLSERVER-DATABASE-NAME")
-    export SQLSERVER_DATABASE_USERNAME=$(getSecretFromKeyVault "SQLSERVER-DATABASE-USERNAME")
-    export SQLSERVER_DATABASE_PASSWORD=$(getSecretFromKeyVault "SQLSERVER-DATABASE-PASSWORD")
-fi
-
 echo
 
 # This is needed because when we are running tests in multiple agent machines
@@ -94,6 +73,7 @@ dotnet test \
     $testCaseFilter \
     --test-adapter-path:. \
     --logger:"xunit;LogFilePath=$ARTIFACTS_DIR/testResults/$testProjectName$integrationTestPlatform.Tests.xml" \
+    --verbosity detailed \
     -c $BUILD_CONFIGURATION
 
 # --blame flag generates an xml file which it drops under the project directory.

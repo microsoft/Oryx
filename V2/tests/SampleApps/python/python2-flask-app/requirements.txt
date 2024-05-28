@@ -1,2 +1,0 @@
-Flask==0.9
-Werkzeug==0.15.3

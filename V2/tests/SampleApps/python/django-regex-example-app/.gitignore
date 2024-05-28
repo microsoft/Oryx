@@ -1,6 +1,0 @@
-/env
-sqlite
-db.sqlite3
-myapp/__pycache__/
-project/__pycache__/
-staticfiles/

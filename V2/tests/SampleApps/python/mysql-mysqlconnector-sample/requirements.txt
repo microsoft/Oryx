@@ -1,2 +1,0 @@
-Flask==2.2.5
-mysql-connector==2.6.0

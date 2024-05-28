@@ -70,6 +70,9 @@ tar -xJf /python.tar.xz --strip-components=1 -C .
 
 INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 
+ls
+pwd
+
 if [ "${PYTHON_VERSION::1}" == "2" ]; then
     ./configure \
         --prefix=$INSTALLATION_PREFIX \
@@ -176,7 +179,7 @@ if [ -n "$pipReqSetPath" ]; then
     sed -i 's|logger\.debug('\''Cleaning up\.\.\.'\'')|logger\.info('\''Cleaning up\.\.\.'\'')|' "$pipReqSetPath"
 fi
 
-compressedSdkDir="/tmp/compressedSdk"
+compressedSdkDir="/tmp/compressedSdk/python"
 mkdir -p $compressedSdkDir
 cd "$INSTALLATION_PREFIX"
 tar -zcf $compressedSdkDir/$pythonSdkFileName .

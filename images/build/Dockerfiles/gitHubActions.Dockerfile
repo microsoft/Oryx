@@ -1,5 +1,27 @@
-ARG DEBIAN_FLAVOR
-FROM oryxdevmcr.azurecr.io/private/oryx/githubrunners-buildpackdeps-${DEBIAN_FLAVOR} AS main
+ARG BASE_IMAGE
+
+FROM mcr.microsoft.com/dotnet/sdk:7.0 as buildscriptgenerator
+
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ARG RELEASE_TAG_NAME=unspecified
+
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
+
+WORKDIR /usr/oryx
+COPY build build
+# This statement copies signed oryx binaries from during agent build.
+# For local/dev contents of blank/empty directory named binaries are getting copied
+COPY binaries /opt/buildscriptgen/
+COPY src src
+COPY build/FinalPublicKey.snk build/
+
+RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
+RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
+
+FROM ${BASE_IMAGE} AS main
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
@@ -102,24 +124,31 @@ RUN if [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
 
 # Install Yarn, HUGO
 FROM main AS intermediate
-COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
-COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-ARG BUILD_DIR="/opt/tmp/build"
-ARG IMAGES_DIR="/opt/tmp/images" 
+
+ARG IMAGES_DIR=/opt/tmp/images
+ARG BUILD_DIR=/opt/tmp/build
+RUN mkdir -p ${IMAGES_DIR} \
+    && mkdir -p ${BUILD_DIR}
+COPY images ${IMAGES_DIR}
+COPY build ${BUILD_DIR}
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \; \
+    && find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+
+COPY --from=buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
+
 RUN ${IMAGES_DIR}/build/installHugo.sh
+
+COPY images/yarn-v1.22.15.tar.gz .
 RUN set -ex \
  && yarnCacheFolder="/usr/local/share/yarn-cache" \
  && mkdir -p $yarnCacheFolder \
  && chmod 777 $yarnCacheFolder \
  && . ${BUILD_DIR}/__nodeVersions.sh \
- && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
- && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
- && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
- && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
  && mkdir -p /opt/yarn \
- && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
- && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
- && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+ && tar -xzf yarn-v1.22.15.tar.gz -C /opt/yarn \
+ && mv /opt/yarn/yarn-v1.22.15 /opt/yarn/1.22.15 \
+ && rm yarn-v1.22.15.tar.gz
+
 RUN set -ex \
  && . ${BUILD_DIR}/__nodeVersions.sh \
  && ln -s $YARN_VERSION /opt/yarn/stable \
