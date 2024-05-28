@@ -22,13 +22,6 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>The method returns the collection with the newly added environment variables.</returns>
         public static ICollection<EnvironmentVariable> AddTestStorageAccountEnvironmentVariables(this ICollection<EnvironmentVariable> envVarList)
         {
-            var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
-            var sdkStorageUrl = string.IsNullOrEmpty(testStorageAccountUrl) 
-                                ? throw new InvalidOperationException($"Environment variable '{SdkStorageConstants.SdkStorageBaseUrlKeyName}' is required.") 
-                                : testStorageAccountUrl;
-
-            envVarList.Add(new EnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, sdkStorageUrl));
-
             return envVarList;
         }
     }

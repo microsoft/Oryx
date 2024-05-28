@@ -183,16 +183,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         /// </summary>
         public ShellScriptBuilder AddDefaultTestEnvironmentVariables()
         {
-            var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
-
-            if (string.IsNullOrEmpty(testStorageAccountUrl))
-            {
-                throw new InvalidOperationException(
-                    $"Environment variable '{SdkStorageConstants.TestingSdkStorageUrlKeyName}' is not set.");
-            }
-
-            this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, testStorageAccountUrl);
-
             return this;
         }
 
