@@ -116,7 +116,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             string directoryToInstall = null)
         {
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-            var sdkStorageAccountAccessToken = this.CommonOptions.OryxSdkStorageAccountAccessToken;
 
             var versionDirInTemp = directoryToInstall;
             if (string.IsNullOrEmpty(versionDirInTemp))

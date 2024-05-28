@@ -16,23 +16,18 @@ namespace Microsoft.Oryx.Tests.Common
     {
         /// <summary>
         /// This method adds environment variables for the staging storage to a collection. 
-        /// It adds the URL of the staging storage and the sasToken to access the storage.
+        /// It adds the URL of the staging storage.
         /// </summary>
         /// <param name="envVarList"> A Collection of EnvironmentVariable objects. The storage environment variables are be added here</param>
         /// <returns>The method returns the collection with the newly added environment variables.</returns>
         public static ICollection<EnvironmentVariable> AddTestStorageAccountEnvironmentVariables(this ICollection<EnvironmentVariable> envVarList)
         {
             var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
-            var sdkStorageUrl = string.IsNullOrEmpty(testStorageAccountUrl) ? SdkStorageConstants.PrivateStagingSdkStorageBaseUrl : testStorageAccountUrl;
+            var sdkStorageUrl = string.IsNullOrEmpty(testStorageAccountUrl) 
+                                ? throw new InvalidOperationException($"Environment variable '{SdkStorageConstants.SdkStorageBaseUrlKeyName}' is required.") 
+                                : testStorageAccountUrl;
 
             envVarList.Add(new EnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, sdkStorageUrl));
-
-            if (sdkStorageUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
-            {
-                string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) ??
-                KeyVaultHelper.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
-                envVarList.Add(new EnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken));
-            }
 
             return envVarList;
         }

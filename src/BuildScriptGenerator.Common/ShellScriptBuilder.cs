@@ -187,16 +187,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
 
             if (string.IsNullOrEmpty(testStorageAccountUrl))
             {
-                testStorageAccountUrl = SdkStorageConstants.PrivateStagingSdkStorageBaseUrl;
+                throw new InvalidOperationException(
+                    $"Environment variable '{SdkStorageConstants.TestingSdkStorageUrlKeyName}' is not set.");
             }
 
             this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, testStorageAccountUrl);
-            if (testStorageAccountUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
-            {
-                 string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) ??
-                    KeyVaultHelper.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
-                 this.SetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken);
-            }
 
             return this;
         }
