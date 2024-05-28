@@ -1,9 +1,0 @@
-{
-    "tool": "Credential Scanner",
-    "suppressions": [
-        {
-            "folder": "SampleApps",
-            "_justification": "These are just sample test apps."
-        }
-    ]
-}
