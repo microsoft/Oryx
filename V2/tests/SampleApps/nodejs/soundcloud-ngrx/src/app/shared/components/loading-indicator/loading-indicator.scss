@@ -1,0 +1,39 @@
+//=========================================================
+//  LoadingIndicatorComponent
+//---------------------------------------------------------
+
+@keyframes loadingIndicator {
+  0%, 100% {
+    transform: scale(0);
+  }
+  75% {
+    transform: scale(1);
+  }
+}
+
+.loading-indicator {
+  position: relative;
+  margin: 100px auto 0;
+  width: 80px;
+  height: 80px;
+
+  .circle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 50%;
+    width: 100%;
+    height: 100%;
+    opacity: 0.4;
+    background-color: #9a5b45;
+    animation: loadingIndicator 2.25s infinite ease-in-out;
+  }
+
+  .circle--2 {
+    animation-delay: -.75s;
+  }
+
+  .circle--3 {
+    animation-delay: -1.5s;
+  }
+}

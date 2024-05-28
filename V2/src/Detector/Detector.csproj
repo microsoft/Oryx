@@ -1,0 +1,89 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AssemblyName>Microsoft.Oryx.Detector</AssemblyName>
+    <RootNamespace>Microsoft.Oryx.Detector</RootNamespace>
+    <LangVersion>7.3</LangVersion>
+    <SignAssembly>true</SignAssembly>
+    <DelaySign>true</DelaySign>
+    <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
+    <IsPackable>true</IsPackable>
+
+    <!-- We want to automatically generate package only for testing purposes (i.e in local development or CI agents) -->
+    <!-- In case of release builds, we want to do the following: build, sign the dlls and then run dotnet pack -->
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild Condition="'$(SIGN_PACKAGE)' == 'true'">false</GeneratePackageOnBuild>
+    
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft</Company>
+    <RepositoryUrl>https://github.com/microsoft/oryx</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Remove when proper XML documentation is added to the project. -->
+    <DisableDocRequirement>true</DisableDocRequirement>
+    <NeutralLanguage>en-US</NeutralLanguage>
+  </PropertyGroup>
+  
+  <Import Project="$(MSBuildThisFileDirectory)\..\../build/detector/__detectorNugetPackagesVersions.props" />
+  <Import Project="$(MSBuildThisFileDirectory)\..\CommonFiles\General.targets" />
+
+  <!-- Workaround: https://github.com/NuGet/Home/issues/3891#issuecomment-309792369 -->
+  <ItemGroup>
+    <_PackageFiles Include="$(OutputPath)\Microsoft.Oryx.Common.dll">
+      <BuildAction>None</BuildAction>
+      <PackagePath>lib\net7.0\</PackagePath>
+    </_PackageFiles>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <AssemblyVersion>$(VERSION_PREFIX)</AssemblyVersion>
+    <VersionPrefix>$(VERSION_PREFIX)</VersionPrefix>
+    <VersionSuffix>$(VERSION_SUFFIX)</VersionSuffix>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/microsoft/oryx</PackageProjectUrl>
+    <PackageTags>Oryx Detector OryxDetector</PackageTags>
+    <Description>A library to detect tools and frameworks used in an application.</Description>
+    
+    <!-- Test projects in this repo will use the following package version to 
+    avoid testing any publicly available versions -->
+    <Version Condition="'$(CREATE_PACKAGE_FOR_TESTS)' == 'true'">1.0.0-test</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="SemanticVersioning" Version="2.0.2" />
+    <PackageReference Include="System.Private.Uri" Version="4.3.2" />
+    <PackageReference Include="xunit" Version="2.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Oryx.Common\Common.csproj">
+      <!-- PrivateAssets because we do not want this project to be referenced as a nuget package dependency and
+      instead we want it to be included as part of the Detector package dlls itself. -->
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\Messages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,19 @@
+@import 'styles/base';
+
+//=========================================================
+//  WaveformTimelineComponent
+//---------------------------------------------------------
+
+.waveform-timeline {
+  position: relative;
+  margin-bottom: 25px;
+  width: 100%;
+  height: 70px;
+  background: #2a2b2c;
+  opacity: 0;
+  transition: opacity 400ms ease-in-out;
+}
+
+.waveform-timeline--ready {
+  opacity: 1;
+}

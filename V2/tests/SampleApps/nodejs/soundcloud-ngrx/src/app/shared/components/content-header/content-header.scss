@@ -1,0 +1,24 @@
+@import 'styles/base';
+
+//=========================================================
+//  ContentHeaderComponent
+//---------------------------------------------------------
+
+.content-header {
+  margin-bottom: 40px;
+  padding-top: 94px;
+  height: 220px;
+  color: #7d7e7f;
+  background: #1d1e1f;
+}
+
+.content-header__title {
+  color: #d6d6d6;
+  font-size: rem(36px);
+  font-weight: 300;
+  line-height: (42px / 36px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+}
