@@ -14,7 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         public static XDocument GetAllBlobs(string sdkStorageBaseUrl, string platform, HttpClient httpClient)
         {
-            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform);
+            var url = string.Format(SdkStorageConstants.ContainerMetadataUrlFormat, sdkStorageBaseUrl, platform, string.Empty);
             string blobList;
             try
             {
