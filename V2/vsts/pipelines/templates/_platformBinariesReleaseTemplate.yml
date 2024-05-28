@@ -1,0 +1,30 @@
+parameters:
+  - name: sourceFolder
+    type: string
+  - name: storageAccountName
+    type: string
+  - name: subscription
+    type: string
+
+steps:
+
+- task: AzureCLI@2
+  displayName: Upload files to Azure Storage
+  inputs:
+    azureSubscription: ${{ parameters.subscription }}
+    scriptPath: ${{ parameters.sourceFolder }}/vsts/scripts/publishFilesToAzureStorage.sh
+    arguments: ${{ parameters.storageAccountName }}
+    scriptType: 'bash'
+
+- task: UseDotNet@2
+  displayName: 'Use .NET Core SDK 7.x'
+  inputs:
+    version: 7.x
+
+- task: ShellScript@2
+  displayName: 'Test Dev storage account'
+  env:
+    ORYX_TEST_SDK_STORAGE_URL: https://${{ parameters.storageAccountName }}.blob.core.windows.net
+  inputs:
+    scriptPath: ${{ parameters.sourceFolder }}/build/testIntegration.sh
+    args: StorageAccountTests=Dev

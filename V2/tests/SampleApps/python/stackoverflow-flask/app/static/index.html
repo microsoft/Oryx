@@ -1,0 +1,120 @@
+
+<!doctype html>
+<html>
+
+<head>
+	<title>Line Chart</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+</head>
+
+<body>
+	<div style="width:90%;">
+		<canvas id="canvas"></canvas>
+	</div>
+	<script>
+		var randomScalingFactor = function() {
+			return Math.round(Math.random() * 100);
+		};
+
+
+		var chartColors = {
+			red: 'rgb(255, 99, 132)',
+			orange: 'rgb(255, 159, 64)',
+			yellow: 'rgb(255, 205, 86)',
+			green: 'rgb(75, 192, 192)',
+			blue: 'rgb(54, 162, 235)',
+			purple: 'rgb(153, 102, 255)',
+			grey: 'rgb(201, 203, 207)'
+		};
+
+		window.onload = function() {
+			axios.get('/api/data').then(function(response) {
+				var data = response.data;
+				console.log(data);
+
+				var years = ['2013','2014','2015','2016', '2017'];
+				var languages = ['Python', 'C#'];
+				var pythonData = [];
+				var javaData = [];
+				var cppData = [];
+				var jsData = [];
+				var csData = [];
+				
+				
+				years.forEach(function(year) {
+					pythonData.push(data[year].percent['Python']);
+					csData.push(data[year].percent['C#']);
+					javaData.push(data[year].percent['Java']);
+					cppData.push(data[year].percent['C++']);
+					jsData.push(data[year].percent['JavaScript']);
+				});
+
+				years.push('2018');
+				pythonData.push(38.8);
+				csData.push(34.4);
+				javaData.push(45.3);
+				cppData.push(25.4);
+				jsData.push(69.8);
+
+				var config = {
+					type: 'line',
+					data: {
+						labels: years,
+						datasets: [{
+							label: 'Python',
+							fill: false,
+							backgroundColor: chartColors.blue,
+							borderColor: chartColors.blue,
+							data: pythonData
+						}, {
+							label: 'C#',
+							fill: false,
+							backgroundColor: chartColors.red,
+							borderColor: chartColors.red,
+							data: csData
+						}, {
+							label: 'Java',
+							fill: false,
+							backgroundColor: chartColors.green,
+							borderColor: chartColors.green,
+							data: javaData
+						}, {
+							label: 'C++',
+							fill: false,
+							backgroundColor: chartColors.orange,
+							borderColor: chartColors.orange,
+							data: cppData
+						}, {
+							label: 'JavaScript',
+							fill: false,
+							backgroundColor: chartColors.purple,
+							borderColor: chartColors.purple,
+							data: jsData
+
+						}]
+					},
+					options: {
+						responsive: true,
+						title: {
+							display: true,
+							text: 'StackOverflow Language Share'
+						},
+					}
+				};
+		
+				var ctx = document.getElementById('canvas').getContext('2d');
+				window.myLine = new Chart(ctx, config);
+			});
+		};
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,223 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7515BF2B-C485-43A0-AB2F-DC761B6AB151}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "images", "images", "{4697D28B-277F-409C-870E-F1EDA3E30FD4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{33D6DAAC-19A1-43DC-A586-A5F18EE98718}"
+	ProjectSection(SolutionItems) = preProject
+		images\build\benv.sh = images\build\benv.sh
+		images\build\Dockerfile = images\build\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C0150C21-3EC8-4973-B57C-26BC27A4ED57}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGenerator", "src\BuildScriptGenerator\BuildScriptGenerator.csproj", "{3D9F7A28-3549-4E18-AAB0-FAE55DAD91C9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGeneratorCli", "src\BuildScriptGeneratorCli\BuildScriptGeneratorCli.csproj", "{893D4B44-CD8A-40C2-BA86-6AE46CF3EF4A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.BuildImage.Tests", "tests\Oryx.BuildImage.Tests\Oryx.BuildImage.Tests.csproj", "{D6446227-8F24-4EDC-B170-0A732C071D03}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{0FEBE7DD-10C0-4650-89E4-69DDB0930C56}"
+	ProjectSection(SolutionItems) = preProject
+		build\buildBuildImageBases.sh = build\buildBuildImageBases.sh
+		build\buildBuildImages.sh = build\buildBuildImages.sh
+		build\buildBuildpacksImages.sh = build\buildBuildpacksImages.sh
+		build\buildRunTimeImageBases.sh = build\buildRunTimeImageBases.sh
+		build\buildRunTimeImages.sh = build\buildRunTimeImages.sh
+		build\buildSln.sh = build\buildSln.sh
+		build\buildTestBuildImages.sh = build\buildTestBuildImages.sh
+		build\constants.yaml = build\constants.yaml
+		build\testBuildImages.sh = build\testBuildImages.sh
+		build\testBuildScriptGenerator.sh = build\testBuildScriptGenerator.sh
+		build\testIntegration.sh = build\testIntegration.sh
+		build\testRunTimeImages.sh = build\testRunTimeImages.sh
+		build\testStartupScriptGenerators.sh = build\testStartupScriptGenerators.sh
+		build\__variables.sh = build\__variables.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{45542CEB-0A3B-42DF-95AE-D13A673D3183}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		build.sh = build.sh
+		CodeMaid.config = CodeMaid.config
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Tests.Common", "tests\Oryx.Tests.Common\Oryx.Tests.Common.csproj", "{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.RuntimeImage.Tests", "tests\Oryx.RuntimeImage.Tests\Oryx.RuntimeImage.Tests.csproj", "{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "vsts", "vsts", "{D7D9E386-B13E-45FA-8AE6-8FC20CB84974}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pipelines", "pipelines", "{BDB3B191-6F72-4EC8-BD74-D2DEEFDAC99D}"
+	ProjectSection(SolutionItems) = preProject
+		vsts\pipelines\buildImageBases.yml = vsts\pipelines\buildImageBases.yml
+		vsts\pipelines\ci.yml = vsts\pipelines\ci.yml
+		vsts\pipelines\nightly.yml = vsts\pipelines\nightly.yml
+		vsts\pipelines\validation.yml = vsts\pipelines\validation.yml
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGenerator.Tests", "tests\BuildScriptGenerator.Tests\BuildScriptGenerator.Tests.csproj", "{8D7BC3E8-37BE-4E59-8694-1364E314285A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGeneratorCli.Tests", "tests\BuildScriptGeneratorCli.Tests\BuildScriptGeneratorCli.Tests.csproj", "{16C061C3-3F6E-43C2-A9CC-3E905322E443}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{4885C6A7-0C9A-406C-89E9-D06A3A03C52D}"
+	ProjectSection(SolutionItems) = preProject
+		vsts\scripts\cleanDocker.sh = vsts\scripts\cleanDocker.sh
+		vsts\scripts\removeDockerArtifacts.sh = vsts\scripts\removeDockerArtifacts.sh
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonFiles", "CommonFiles", "{7475604B-12AC-4765-9259-505BF742FDEF}"
+	ProjectSection(SolutionItems) = preProject
+		src\CommonFiles\AssemblyVersion.proj = src\CommonFiles\AssemblyVersion.proj
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Oryx.Integration.Tests", "tests\Oryx.Integration.Tests\Oryx.Integration.Tests.csproj", "{A563B2F8-26B1-4114-AE1C-C9E078BC7754}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedCodeGenerator", "build\tools\SharedCodeGenerator\SharedCodeGenerator.csproj", "{A7605A5F-9C7E-4BAF-BF13-949467DA9351}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{2AA826A1-5647-46B2-9885-20E89050653F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Tests", "tests\Oryx.Common.Tests\Common.Tests.csproj", "{48391B54-0D43-4E49-94C6-727B47F7C416}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Detector.Tests", "tests\Detector.Tests\Detector.Tests.csproj", "{63DF4653-908C-47BE-861B-278E3CDAE2BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Detector", "src\Detector\Detector.csproj", "{8845CC4E-3B22-4D0B-901C-2F893B6E1F00}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGenerator.Common", "src\BuildScriptGenerator.Common\BuildScriptGenerator.Common.csproj", "{ECEEEF09-5053-46D7-B7E8-2711B523D1F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Oryx.Common\Common.csproj", "{93C07A18-89BA-45A2-B818-F2B20E17E0BE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGenerator.Common.Tests", "tests\BuildScriptGenerator.Common.Tests\BuildScriptGenerator.Common.Tests.csproj", "{3078BCDB-FC35-4826-82A1-9CE094446DE8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer", "src\BuildServer\BuildServer.csproj", "{F13BEF5A-5426-4F77-879F-A7F812F1E336}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer.Tests", "tests\BuildServer.Tests\BuildServer.Tests.csproj", "{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation", "build\tools\Automation\Automation.csproj", "{18F7BB74-0A1E-4289-9161-515E65E667CE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation.Tests", "tests\AutomationTests\Automation.Tests.csproj", "{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3D9F7A28-3549-4E18-AAB0-FAE55DAD91C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D9F7A28-3549-4E18-AAB0-FAE55DAD91C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D9F7A28-3549-4E18-AAB0-FAE55DAD91C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D9F7A28-3549-4E18-AAB0-FAE55DAD91C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{893D4B44-CD8A-40C2-BA86-6AE46CF3EF4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{893D4B44-CD8A-40C2-BA86-6AE46CF3EF4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{893D4B44-CD8A-40C2-BA86-6AE46CF3EF4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{893D4B44-CD8A-40C2-BA86-6AE46CF3EF4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6446227-8F24-4EDC-B170-0A732C071D03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6446227-8F24-4EDC-B170-0A732C071D03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6446227-8F24-4EDC-B170-0A732C071D03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6446227-8F24-4EDC-B170-0A732C071D03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D7BC3E8-37BE-4E59-8694-1364E314285A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D7BC3E8-37BE-4E59-8694-1364E314285A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D7BC3E8-37BE-4E59-8694-1364E314285A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D7BC3E8-37BE-4E59-8694-1364E314285A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16C061C3-3F6E-43C2-A9CC-3E905322E443}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16C061C3-3F6E-43C2-A9CC-3E905322E443}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16C061C3-3F6E-43C2-A9CC-3E905322E443}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16C061C3-3F6E-43C2-A9CC-3E905322E443}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A563B2F8-26B1-4114-AE1C-C9E078BC7754}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A563B2F8-26B1-4114-AE1C-C9E078BC7754}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A563B2F8-26B1-4114-AE1C-C9E078BC7754}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A563B2F8-26B1-4114-AE1C-C9E078BC7754}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7605A5F-9C7E-4BAF-BF13-949467DA9351}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7605A5F-9C7E-4BAF-BF13-949467DA9351}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7605A5F-9C7E-4BAF-BF13-949467DA9351}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7605A5F-9C7E-4BAF-BF13-949467DA9351}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48391B54-0D43-4E49-94C6-727B47F7C416}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48391B54-0D43-4E49-94C6-727B47F7C416}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48391B54-0D43-4E49-94C6-727B47F7C416}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48391B54-0D43-4E49-94C6-727B47F7C416}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63DF4653-908C-47BE-861B-278E3CDAE2BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63DF4653-908C-47BE-861B-278E3CDAE2BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63DF4653-908C-47BE-861B-278E3CDAE2BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63DF4653-908C-47BE-861B-278E3CDAE2BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8845CC4E-3B22-4D0B-901C-2F893B6E1F00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8845CC4E-3B22-4D0B-901C-2F893B6E1F00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8845CC4E-3B22-4D0B-901C-2F893B6E1F00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8845CC4E-3B22-4D0B-901C-2F893B6E1F00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECEEEF09-5053-46D7-B7E8-2711B523D1F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECEEEF09-5053-46D7-B7E8-2711B523D1F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECEEEF09-5053-46D7-B7E8-2711B523D1F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECEEEF09-5053-46D7-B7E8-2711B523D1F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{93C07A18-89BA-45A2-B818-F2B20E17E0BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{93C07A18-89BA-45A2-B818-F2B20E17E0BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{93C07A18-89BA-45A2-B818-F2B20E17E0BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{93C07A18-89BA-45A2-B818-F2B20E17E0BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3078BCDB-FC35-4826-82A1-9CE094446DE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3078BCDB-FC35-4826-82A1-9CE094446DE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3078BCDB-FC35-4826-82A1-9CE094446DE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3078BCDB-FC35-4826-82A1-9CE094446DE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F13BEF5A-5426-4F77-879F-A7F812F1E336}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F13BEF5A-5426-4F77-879F-A7F812F1E336}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F13BEF5A-5426-4F77-879F-A7F812F1E336}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F13BEF5A-5426-4F77-879F-A7F812F1E336}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18F7BB74-0A1E-4289-9161-515E65E667CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18F7BB74-0A1E-4289-9161-515E65E667CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18F7BB74-0A1E-4289-9161-515E65E667CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18F7BB74-0A1E-4289-9161-515E65E667CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{33D6DAAC-19A1-43DC-A586-A5F18EE98718} = {4697D28B-277F-409C-870E-F1EDA3E30FD4}
+		{3D9F7A28-3549-4E18-AAB0-FAE55DAD91C9} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
+		{893D4B44-CD8A-40C2-BA86-6AE46CF3EF4A} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
+		{D6446227-8F24-4EDC-B170-0A732C071D03} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{7F1935EF-4F1D-4A08-A1FD-AF2508ADFB53} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{2A6CBF09-2040-4FE2-BD60-0BB43B43E2E9} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{D7D9E386-B13E-45FA-8AE6-8FC20CB84974} = {45542CEB-0A3B-42DF-95AE-D13A673D3183}
+		{BDB3B191-6F72-4EC8-BD74-D2DEEFDAC99D} = {D7D9E386-B13E-45FA-8AE6-8FC20CB84974}
+		{8D7BC3E8-37BE-4E59-8694-1364E314285A} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{16C061C3-3F6E-43C2-A9CC-3E905322E443} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{4885C6A7-0C9A-406C-89E9-D06A3A03C52D} = {D7D9E386-B13E-45FA-8AE6-8FC20CB84974}
+		{7475604B-12AC-4765-9259-505BF742FDEF} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
+		{A563B2F8-26B1-4114-AE1C-C9E078BC7754} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{A7605A5F-9C7E-4BAF-BF13-949467DA9351} = {2AA826A1-5647-46B2-9885-20E89050653F}
+		{2AA826A1-5647-46B2-9885-20E89050653F} = {0FEBE7DD-10C0-4650-89E4-69DDB0930C56}
+		{48391B54-0D43-4E49-94C6-727B47F7C416} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{63DF4653-908C-47BE-861B-278E3CDAE2BE} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{8845CC4E-3B22-4D0B-901C-2F893B6E1F00} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
+		{ECEEEF09-5053-46D7-B7E8-2711B523D1F6} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
+		{93C07A18-89BA-45A2-B818-F2B20E17E0BE} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
+		{3078BCDB-FC35-4826-82A1-9CE094446DE8} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{F13BEF5A-5426-4F77-879F-A7F812F1E336} = {C0150C21-3EC8-4973-B57C-26BC27A4ED57}
+		{5BD3E03A-3086-4CF6-950B-215C1E76B7F5} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+		{18F7BB74-0A1E-4289-9161-515E65E667CE} = {2AA826A1-5647-46B2-9885-20E89050653F}
+		{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF} = {7515BF2B-C485-43A0-AB2F-DC761B6AB151}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3577CC82-8B1B-4B06-829A-3E1CCE78A2C3}
+	EndGlobalSection
+EndGlobal

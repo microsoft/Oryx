@@ -1,0 +1,26 @@
+parameters:
+  - name: platformName
+    type: string
+  - name: debianFlavor
+    type: string
+  - name: sourceFolder
+    type: string
+  - name: storageAccountName
+    type: string
+  - name: dotnetPrivateStorageSasToken
+    type: string
+    default: ''
+
+steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET Core sdk 7.x'
+  inputs:
+    version: 7.x
+
+- task: ShellScript@2
+  displayName: 'Building platform binaries'
+  env:
+    DOTNET_PRIVATE_STORAGE_ACCOUNT_ACCESS_TOKEN: ${{ parameters.dotnetPrivateStorageSasToken }}
+  inputs:
+    scriptPath: ${{ parameters.sourceFolder }}/build/buildPlatformBinaries.sh
+    args: ${{ parameters.platformName }} ${{ parameters.debianFlavor }} https://${{ parameters.storageAccountName }}.blob.core.windows.net
