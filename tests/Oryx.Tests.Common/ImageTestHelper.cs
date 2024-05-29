@@ -312,18 +312,13 @@ namespace Microsoft.Oryx.Tests.Common
         /// <returns>A 'build:slim' image that can be pulled for testing.</returns>
         public string GetAzureFunctionsJamStackBuildImage(string buildImageTag = null)
         {
-            if (!string.IsNullOrEmpty(buildImageTag)
-                && string.Equals(buildImageTag.ToLower(), _azureFunctionsJamStackBuster))
-            {
-                return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBuster}{_tagSuffix}";
-            }
-            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _azureFunctionsJamStackBullseye))
+            if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _azureFunctionsJamStackBullseye))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBullseye}{_tagSuffix}";
             }
             else
             {
-                return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackStretch}{_tagSuffix}";
+                return $"{_repoPrefix}/{_buildRepository}:{_azureFunctionsJamStackBuster}{_tagSuffix}";
             }
         }
 
