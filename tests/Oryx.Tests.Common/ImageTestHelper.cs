@@ -324,11 +324,7 @@ namespace Microsoft.Oryx.Tests.Common
 
         public string GetGitHubActionsBuildImage(string buildImageTag = null)
         {
-            if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBuster))
-            {
-                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBuster}{_tagSuffix}";
-            }
-            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBookworm))
+            if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBookworm))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBookworm}{_tagSuffix}";
             }
@@ -338,7 +334,7 @@ namespace Microsoft.Oryx.Tests.Common
             }
             else
             {
-                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBookworm}{_tagSuffix}";
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBuster}{_tagSuffix}";
             }
         }
 

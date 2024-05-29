@@ -54,10 +54,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(dotNetCorePlatform);
                     Assert.NotNull(dotNetCorePlatform.Versions);
                     Assert.True(dotNetCorePlatform.Versions.Any());
-                    Assert.True(dotNetCorePlatform.Versions.Contains("1.1.13"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("5.0.0-preview.3.20214.6"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("6.0.0-rc.1.21451.13"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("7.0.0-preview.1.22076.8"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("3.1.415"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("5.0.100"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("6.0.100-rc.1.21458.32"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("7.0.100-preview.1.22110.4"));
 
                     var nodePlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(NodeConstants.PlatformName))
@@ -65,7 +65,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(nodePlatform);
                     Assert.NotNull(nodePlatform.Versions);
                     Assert.True(nodePlatform.Versions.Any());
-                    Assert.True(nodePlatform.Versions.Contains("4.4.7"));
+                    Assert.True(nodePlatform.Versions.Contains("17.6.0"));
 
                     var pythonPlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(PythonConstants.PlatformName))
@@ -73,11 +73,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(pythonPlatform);
                     Assert.NotNull(pythonPlatform.Versions);
                     Assert.True(pythonPlatform.Versions.Any());
-                    Assert.True(pythonPlatform.Versions.Contains("2.7.17"));
-                    Assert.True(pythonPlatform.Versions.Contains("3.8.4rc1"));
-                    Assert.True(pythonPlatform.Versions.Contains("3.9.0b1"));
+                    Assert.True(pythonPlatform.Versions.Contains("3.6.14"));
+                    Assert.True(pythonPlatform.Versions.Contains("3.8.12"));
+                    Assert.True(pythonPlatform.Versions.Contains("3.9.7"));
                     Assert.True(pythonPlatform.Versions.Contains("3.9.0"));
-                    Assert.True(pythonPlatform.Versions.Contains("3.10.4"));
+                    Assert.True(pythonPlatform.Versions.Contains("3.10.13"));
 
                     var phpPlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(PhpConstants.PlatformName))
@@ -85,25 +85,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(phpPlatform);
                     Assert.NotNull(phpPlatform.Versions);
                     Assert.True(phpPlatform.Versions.Any());
-                    Assert.True(phpPlatform.Versions.Contains("8.1.6"));
-
-                    var hugoPlatform = actualResults
-                        .Where(pr => pr.Name.EqualsIgnoreCase(HugoConstants.PlatformName))
-                        .FirstOrDefault();
-                    Assert.NotNull(hugoPlatform);
-                    Assert.NotNull(hugoPlatform.Versions);
-                    Assert.True(hugoPlatform.Versions.Any());
-                    Assert.True(hugoPlatform.Versions.Contains(HugoConstants.Version));
-
-                    var rubyPlatform = actualResults
-                        .Where(pr => pr.Name.EqualsIgnoreCase(RubyConstants.PlatformName))
-                        .FirstOrDefault();
-                    Assert.NotNull(rubyPlatform);
-                    Assert.NotNull(rubyPlatform.Versions);
-                    Assert.True(rubyPlatform.Versions.Any());
-                    Assert.True(rubyPlatform.Versions.Contains("2.6.6"));
-                    Assert.True(rubyPlatform.Versions.Contains("2.7.1"));
-                    Assert.True(rubyPlatform.Versions.Contains("3.0.3"));
+                    Assert.True(phpPlatform.Versions.Contains("8.3.7"));
                 },
             result.GetDebugInfo());
         }

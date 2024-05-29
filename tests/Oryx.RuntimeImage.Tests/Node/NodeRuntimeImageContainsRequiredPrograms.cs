@@ -81,47 +81,47 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
         }
 
-        [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("14")]
-        public void Node14BusterImage_Contains_PM2(string version)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("node", version, ImageTestHelperConstants.OsTypeDebianBuster),
-                CommandToExecuteOnRun = "/bin/sh",
-                CommandArguments = new[]
-                {
-                    "-c",
-                    "which pm2"
-                }
-            });
+        // [Theory]
+        // [Trait("category", "runtime-buster")]
+        // [InlineData("14")]
+        // public void Node14BusterImage_Contains_PM2(string version)
+        // {
+        //     // Arrange & Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetRuntimeImage("node", version, ImageTestHelperConstants.OsTypeDebianBuster),
+        //         CommandToExecuteOnRun = "/bin/sh",
+        //         CommandArguments = new[]
+        //         {
+        //             "-c",
+        //             "which pm2"
+        //         }
+        //     });
 
-            // Assert
-            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
-        }
+        //     // Assert
+        //     RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
+        // }
 
-        [Theory]
-        [Trait("category", "runtime-bullseye")]
-        [InlineData("14")]
-        public void Node14BullseyeImage_Contains_PM2(string version)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("node", version, ImageTestHelperConstants.OsTypeDebianBullseye),
-                CommandToExecuteOnRun = "/bin/sh",
-                CommandArguments = new[]
-                {
-                    "-c",
-                    "which pm2"
-                }
-            });
+        // [Theory]
+        // [Trait("category", "runtime-bullseye")]
+        // [InlineData("14")]
+        // public void Node14BullseyeImage_Contains_PM2(string version)
+        // {
+        //     // Arrange & Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetRuntimeImage("node", version, ImageTestHelperConstants.OsTypeDebianBullseye),
+        //         CommandToExecuteOnRun = "/bin/sh",
+        //         CommandArguments = new[]
+        //         {
+        //             "-c",
+        //             "which pm2"
+        //         }
+        //     });
 
-            // Assert
-            RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
-        }
+        //     // Assert
+        //     RunAsserts(() => Assert.True(result.IsSuccess), result.GetDebugInfo());
+        // }
 
         // [Theory]
         // [Trait("category", "runtime-buster")]

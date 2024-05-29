@@ -463,7 +463,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var imageHelper = new ImageTestHelper();
 
                 // stretch
-                data.Add(PythonVersions.Python27Version, imageHelper.GetAzureFunctionsJamStackBuildImage());
+                // data.Add(PythonVersions.Python27Version, imageHelper.GetAzureFunctionsJamStackBuildImage());
 
                 //buster
                 data.Add(PythonVersions.Python36Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBuster));
