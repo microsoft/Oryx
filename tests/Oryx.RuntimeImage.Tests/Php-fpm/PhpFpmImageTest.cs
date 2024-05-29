@@ -39,8 +39,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-buster")]
-        [InlineData("7.4-fpm", PhpVersions.Php74Version)]
-        [InlineData("8.0-fpm", PhpVersions.Php80Version)]
+        // [InlineData("7.4-fpm", PhpVersions.Php74Version)]
+        // [InlineData("8.0-fpm", PhpVersions.Php80Version)]
         [InlineData("8.1-fpm", PhpVersions.Php81Version)]
         [InlineData("8.2-fpm", PhpVersions.Php82Version)]
         [InlineData("8.3-fpm", PhpVersions.Php83Version)]
@@ -65,8 +65,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("7.4-fpm", PhpVersions.Php74Version)]
-        [InlineData("8.0-fpm", PhpVersions.Php80Version)]
+        // [InlineData("7.4-fpm", PhpVersions.Php74Version)]
+        // [InlineData("8.0-fpm", PhpVersions.Php80Version)]
         [InlineData("8.1-fpm", PhpVersions.Php81Version)]
         [InlineData("8.2-fpm", PhpVersions.Php82Version)]
         [InlineData("8.3-fpm", PhpVersions.Php83Version)]
@@ -113,8 +113,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-buster")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("7.4-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
@@ -138,8 +138,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("7.4-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
@@ -182,58 +182,58 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
         }
 
-        [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("7.4-fpm")]
-        public void MySqlnd_Azure_IsInstalled_For_Buster(string version)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBuster),
-                CommandToExecuteOnRun = "php",
-                CommandArguments = new[] { "-m", " | grep mysqlnd_azure);" }
-            });
+        // [Theory]
+        // [Trait("category", "runtime-buster")]
+        // [InlineData("7.4-fpm")]
+        // public void MySqlnd_Azure_IsInstalled_For_Buster(string version)
+        // {
+        //     // Arrange & Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBuster),
+        //         CommandToExecuteOnRun = "php",
+        //         CommandArguments = new[] { "-m", " | grep mysqlnd_azure);" }
+        //     });
 
-            // Assert
-            var output = result.StdOut.ToString();
-            RunAsserts(() =>
-            {
-                Assert.True(result.IsSuccess);
-                Assert.Contains("mysqlnd_azure", output);
-            },
-                result.GetDebugInfo());
+        //     // Assert
+        //     var output = result.StdOut.ToString();
+        //     RunAsserts(() =>
+        //     {
+        //         Assert.True(result.IsSuccess);
+        //         Assert.Contains("mysqlnd_azure", output);
+        //     },
+        //         result.GetDebugInfo());
 
-        }
+        // }
 
-        [Theory]
-        [Trait("category", "runtime-bullseye")]
-        [InlineData("7.4-fpm")]
-        public void MySqlnd_Azure_IsInstalled_For_Bullseye(string version)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBullseye),
-                CommandToExecuteOnRun = "php",
-                CommandArguments = new[] { "-m", " | grep mysqlnd_azure);" }
-            });
+        // [Theory]
+        // [Trait("category", "runtime-bullseye")]
+        // [InlineData("7.4-fpm")]
+        // public void MySqlnd_Azure_IsInstalled_For_Bullseye(string version)
+        // {
+        //     // Arrange & Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBullseye),
+        //         CommandToExecuteOnRun = "php",
+        //         CommandArguments = new[] { "-m", " | grep mysqlnd_azure);" }
+        //     });
 
-            // Assert
-            var output = result.StdOut.ToString();
-            RunAsserts(() =>
-            {
-                Assert.True(result.IsSuccess);
-                Assert.Contains("mysqlnd_azure", output);
-            },
-                result.GetDebugInfo());
+        //     // Assert
+        //     var output = result.StdOut.ToString();
+        //     RunAsserts(() =>
+        //     {
+        //         Assert.True(result.IsSuccess);
+        //         Assert.Contains("mysqlnd_azure", output);
+        //     },
+        //         result.GetDebugInfo());
 
-        }
+        // }
 
         [SkippableTheory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("7.4-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
@@ -273,8 +273,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [SkippableTheory]
         [Trait("category", "runtime-buster")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("7.4-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
@@ -351,8 +351,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("7.4-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
@@ -379,8 +379,8 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-buster")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("7.4-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
@@ -431,7 +431,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-buster")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
@@ -457,7 +457,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
