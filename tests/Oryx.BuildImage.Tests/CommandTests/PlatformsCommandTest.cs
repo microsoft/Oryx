@@ -54,10 +54,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(dotNetCorePlatform);
                     Assert.NotNull(dotNetCorePlatform.Versions);
                     Assert.True(dotNetCorePlatform.Versions.Any());
-                    Assert.True(dotNetCorePlatform.Versions.Contains("3.1.415"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("5.0.100"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("6.0.100-rc.1.21458.32"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("7.0.100-preview.1.22110.4"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("2.8.811"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("5.0.408"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("6.0.100-preview.7.21379.14"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("7.0.409"));
 
                     var nodePlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(NodeConstants.PlatformName))
@@ -73,11 +73,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(pythonPlatform);
                     Assert.NotNull(pythonPlatform.Versions);
                     Assert.True(pythonPlatform.Versions.Any());
-                    Assert.True(pythonPlatform.Versions.Contains("3.6.14"));
-                    Assert.True(pythonPlatform.Versions.Contains("3.8.12"));
-                    Assert.True(pythonPlatform.Versions.Contains("3.9.7"));
+                    Assert.True(pythonPlatform.Versions.Contains("3.6.12"));
+                    Assert.True(pythonPlatform.Versions.Contains("3.7.9"));
+                    Assert.True(pythonPlatform.Versions.Contains("3.9.15"));
                     Assert.True(pythonPlatform.Versions.Contains("3.9.0"));
-                    Assert.True(pythonPlatform.Versions.Contains("3.10.13"));
+                    Assert.True(pythonPlatform.Versions.Contains("3.10.4"));
 
                     var phpPlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(PhpConstants.PlatformName))

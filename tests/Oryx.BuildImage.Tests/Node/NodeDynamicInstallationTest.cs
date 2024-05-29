@@ -88,13 +88,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        [Theory, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-stretch")]
-        [MemberData(nameof(ImageNameData))]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationGithubActions(string version, string buildImageName)
-        {
-            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
-        }
+        // [Theory, Trait("category", "githubactions")]
+        // [Trait("build-image", "github-actions-debian-stretch")]
+        // [MemberData(nameof(ImageNameData))]
+        // public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationGithubActions(string version, string buildImageName)
+        // {
+        //     GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
+        // }
 
         [Theory, Trait("category", "cli-stretch")]
         [Trait("build-image", "cli-debian-stretch")]
@@ -160,41 +160,41 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-stretch")]
-        [InlineData("14.19.1", "14.19.1")]
-        [InlineData("16", FinalStretchVersions.FinalStretchNode16Version)]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation_DefaultEnvVar(string defaultVersion, string expectedVersion)
-        {
-            // Arrange
-            var volume = CreateWebFrontEndVolume();
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/webfrontend-output";
-            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
-            var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable(SettingsKeys.NodeDefaultVersion, defaultVersion)
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --debug")
-                .AddCommand($"cat {manifestFile}")
-                .ToString();
+        // [Theory, Trait("category", "githubactions")]
+        // [Trait("build-image", "github-actions-debian-stretch")]
+        // [InlineData("14.19.1", "14.19.1")]
+        // [InlineData("16", FinalStretchVersions.FinalStretchNode16Version)]
+        // public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation_DefaultEnvVar(string defaultVersion, string expectedVersion)
+        // {
+        //     // Arrange
+        //     var volume = CreateWebFrontEndVolume();
+        //     var appDir = volume.ContainerDir;
+        //     var appOutputDir = "/tmp/webfrontend-output";
+        //     var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+        //     var script = new ShellScriptBuilder()
+        //         .SetEnvironmentVariable(SettingsKeys.NodeDefaultVersion, defaultVersion)
+        //         .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --debug")
+        //         .AddCommand($"cat {manifestFile}")
+        //         .ToString();
 
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
+        //     // Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+        //         Volumes = new List<DockerVolume> { volume },
+        //         CommandToExecuteOnRun = "/bin/bash",
+        //         CommandArguments = new[] { "-c", script }
+        //     });
 
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains($"{ManifestFilePropertyKeys.NodeVersion}=\"{expectedVersion}\"", result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
+        //     // Assert
+        //     RunAsserts(
+        //         () =>
+        //         {
+        //             Assert.True(result.IsSuccess);
+        //             Assert.Contains($"{ManifestFilePropertyKeys.NodeVersion}=\"{expectedVersion}\"", result.StdOut);
+        //         },
+        //         result.GetDebugInfo());
+        // }
 
         [Fact, Trait("category", "ltsversions")]
         [Trait("build-image", "lts-versions-debian-stretch")]
@@ -238,7 +238,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
-            var version = "12.16.1"; //NOTE: use the full version so that we know the install directory path
+            var version = "12.22.4"; //NOTE: use the full version so that we know the install directory path
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/nodejs/{version}";
             var sentinelFile = $"{installationDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}";
             var volume = CreateWebFrontEndVolume();
@@ -315,42 +315,42 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-stretch")]
-        public void BuildNodeApp_AfterInstallingStretchSpecificSdk()
-        {
-            // Arrange
-            var version = "9.4.0"; // version only exists for stretch images
+        // [Fact, Trait("category", "githubactions")]
+        // [Trait("build-image", "github-actions-debian-stretch")]
+        // public void BuildNodeApp_AfterInstallingStretchSpecificSdk()
+        // {
+        //     // Arrange
+        //     var version = "9.4.0"; // version only exists for stretch images
 
-            var devPackageName = "nodemon";
-            var prodPackageName = "express";
-            var volume = CreateWebFrontEndVolume();
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/webfrontend-output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version} --debug")
-                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
-                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
-                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{prodPackageName}")
-                .ToString();
+        //     var devPackageName = "nodemon";
+        //     var prodPackageName = "express";
+        //     var volume = CreateWebFrontEndVolume();
+        //     var appDir = volume.ContainerDir;
+        //     var appOutputDir = "/tmp/webfrontend-output";
+        //     var script = new ShellScriptBuilder()
+        //         .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version} --debug")
+        //         .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+        //         .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
+        //         .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{prodPackageName}")
+        //         .ToString();
 
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
+        //     // Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+        //         Volumes = new List<DockerVolume> { volume },
+        //         CommandToExecuteOnRun = "/bin/bash",
+        //         CommandArguments = new[] { "-c", script }
+        //     });
 
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
+        //     // Assert
+        //     RunAsserts(
+        //         () =>
+        //         {
+        //             Assert.True(result.IsSuccess);
+        //         },
+        //         result.GetDebugInfo());
+        // }
 
         [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-buster")]

@@ -296,7 +296,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
-            var version = "3.8.1"; //NOTE: use the full version so that we know the install directory path
+            var version = "3.8.16"; //NOTE: use the full version so that we know the install directory path
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
                 $"python/{version}";
             var sentinelFile = $"{installationDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}";
