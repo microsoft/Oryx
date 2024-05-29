@@ -338,7 +338,7 @@ namespace Microsoft.Oryx.Tests.Common
             }
             else
             {
-                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsStretch}{_tagSuffix}";
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBookworm}{_tagSuffix}";
             }
         }
 
