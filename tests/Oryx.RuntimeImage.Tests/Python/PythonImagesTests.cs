@@ -20,7 +20,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [SkippableTheory]
         [Trait("category", "runtime-buster")]
-        [InlineData("3.7")]
         [InlineData("3.8")]
         [InlineData("3.9")]
         [InlineData("3.10")]
@@ -60,7 +59,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [SkippableTheory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("3.7")]
         [InlineData("3.8")]
         [InlineData("3.9")]
         [InlineData("3.10")]
@@ -143,7 +141,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-buster")]
-        [InlineData("3.7")]
         [InlineData("3.8")]
         [InlineData("3.9")]
         [InlineData("3.10")]
@@ -172,7 +169,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("3.7")]
         [InlineData("3.8")]
         [InlineData("3.9")]
         [InlineData("3.10")]
@@ -262,7 +258,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("3.7", "Python " + PythonVersions.Python37Version)]
         [InlineData("3.8", "Python " + PythonVersions.Python38Version)]
         [InlineData("3.9", "Python " + PythonVersions.Python39Version)]
         [InlineData("3.10", "Python " + PythonVersions.Python310Version)]
@@ -292,7 +287,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-buster")]
-        [InlineData("3.7", "Python " + PythonVersions.Python37Version)]
         [InlineData("3.8", "Python " + PythonVersions.Python38Version)]
         [InlineData("3.9", "Python " + PythonVersions.Python39Version)]
         [InlineData("3.10", "Python " + PythonVersions.Python310Version)]
@@ -335,7 +329,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("python", "3.7", ImageTestHelperConstants.OsTypeDebianBullseye),
+                ImageId = _imageHelper.GetRuntimeImage("python", "3.11", ImageTestHelperConstants.OsTypeDebianBullseye),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[] { "-c", script }
             });

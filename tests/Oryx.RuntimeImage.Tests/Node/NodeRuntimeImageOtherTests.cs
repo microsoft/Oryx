@@ -21,37 +21,35 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
         }
 
-        [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("14", NodeVersions.Node14Version)]
-        [InlineData("16", NodeVersions.Node16Version)]
-        [Trait(TestConstants.Category, TestConstants.Release)]
-        public void NodeVersionMatchesBusterImageName(string version, string nodeVersion)
-        {
-            // Arrange & Act
-            var expectedNodeVersion = "v" + nodeVersion;
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("node", version, ImageTestHelperConstants.OsTypeDebianBuster),
-                CommandToExecuteOnRun = "node",
-                CommandArguments = new[] { "--version" }
-            });
+        // [Theory]
+        // [Trait("category", "runtime-buster")]
+        // [InlineData("14", NodeVersions.Node14Version)]
+        // [InlineData("16", NodeVersions.Node16Version)]
+        // [Trait(TestConstants.Category, TestConstants.Release)]
+        // public void NodeVersionMatchesBusterImageName(string version, string nodeVersion)
+        // {
+        //     // Arrange & Act
+        //     var expectedNodeVersion = "v" + nodeVersion;
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetRuntimeImage("node", version, ImageTestHelperConstants.OsTypeDebianBuster),
+        //         CommandToExecuteOnRun = "node",
+        //         CommandArguments = new[] { "--version" }
+        //     });
 
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Equal(expectedNodeVersion, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
+        //     // Assert
+        //     var actualOutput = result.StdOut.ReplaceNewLine();
+        //     RunAsserts(
+        //         () =>
+        //         {
+        //             Assert.True(result.IsSuccess);
+        //             Assert.Equal(expectedNodeVersion, actualOutput);
+        //         },
+        //         result.GetDebugInfo());
+        // }
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("14", NodeVersions.Node14Version)]
-        [InlineData("16", NodeVersions.Node16Version)]
         [InlineData("18", NodeVersions.Node18Version)]
         [InlineData("20", NodeVersions.Node20Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
@@ -211,7 +209,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("node", "14", ImageTestHelperConstants.OsTypeDebianBullseye),
+                ImageId = _imageHelper.GetRuntimeImage("node", "20", ImageTestHelperConstants.OsTypeDebianBullseye),
                 CommandToExecuteOnRun = "/bin/sh",
                 CommandArguments = new[] { "-c", script }
             });

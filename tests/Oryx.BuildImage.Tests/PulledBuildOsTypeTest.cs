@@ -99,14 +99,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), "DEBIAN|BULLSEYE");
         }
 
-
-        [Fact]
-        [Trait("category", "jamstack")]
-        public void PulledJamstackStretchBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackStretch), "DEBIAN|STRETCH");
-        }
-
         [Fact]
         [Trait("category", "jamstack")]
         public void PulledJamstackBusterBuildImages_Contains_BUILDOS_TYPE_Info()

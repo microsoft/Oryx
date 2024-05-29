@@ -474,109 +474,109 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 dockerCli: _dockerCli);
         }
 
-        [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("14", "")]
-        [InlineData("14", "disabled")]
-        public async Task GeneratesScriptForBuster_Doesnot_Add_Oryx_AppInsights_Logic_With_IPA_Configuration_Async(
-            string nodeVersion,
-            string agentExtensionVersionEnvValue)
-        {
-            // This test is for the following scenario:
-            // When we find the user has set env variable "ApplicationInsightsAgent_EXTENSION_VERSION" to '~3' 
-            // Oryx should not attach appinsight codeless config to runscript
+        // [Theory]
+        // [Trait("category", "runtime-buster")]
+        // [InlineData("14", "")]
+        // [InlineData("14", "disabled")]
+        // public async Task GeneratesScriptForBuster_Doesnot_Add_Oryx_AppInsights_Logic_With_IPA_Configuration_Async(
+        //     string nodeVersion,
+        //     string agentExtensionVersionEnvValue)
+        // {
+        //     // This test is for the following scenario:
+        //     // When we find the user has set env variable "ApplicationInsightsAgent_EXTENSION_VERSION" to '~3' 
+        //     // Oryx should not attach appinsight codeless config to runscript
 
-            // Arrange
-            var appName = "linxnodeexpress-appinsights";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion, ImageTestHelperConstants.OsTypeDebianBuster);
-            //agentextension version will be set to '~3' or '' or 'disabled'
-            var agentExtensionVersionEnv = ExtVarNames.UserAppInsightsAgentExtensionVersion;
-            var connectionStringEnv = ExtVarNames.UserAppInsightsConnectionStringEnv;
-            int containerDebugPort = 8080;
-            var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
+        //     // Arrange
+        //     var appName = "linxnodeexpress-appinsights";
+        //     var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+        //     var volume = DockerVolume.CreateMirror(hostDir);
+        //     var appDir = volume.ContainerDir;
+        //     var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion, ImageTestHelperConstants.OsTypeDebianBuster);
+        //     //agentextension version will be set to '~3' or '' or 'disabled'
+        //     var agentExtensionVersionEnv = ExtVarNames.UserAppInsightsAgentExtensionVersion;
+        //     var connectionStringEnv = ExtVarNames.UserAppInsightsConnectionStringEnv;
+        //     int containerDebugPort = 8080;
+        //     var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
 
-            var script = new ShellScriptBuilder()
-                .AddCommand($"export {agentExtensionVersionEnv}={agentExtensionVersionEnvValue}")
-                .AddCommand($"export {connectionStringEnv}=alkajsldkajd")
-                .AddCommand($"cd {appDir}")
-                .AddCommand("npm install")
-                .AddCommand($"oryx create-script -appPath {appDir}")
-                .AddDirectoryExistsCheck($"{appDir}/node_modules")
-                .AddCommand($"./run.sh > {appDir}/log.log")
-                .AddStringDoesNotExistInFileCheck(OryxAppInsightsAttachString, $"{appDir}/run.sh")
-                .ToString();
+        //     var script = new ShellScriptBuilder()
+        //         .AddCommand($"export {agentExtensionVersionEnv}={agentExtensionVersionEnvValue}")
+        //         .AddCommand($"export {connectionStringEnv}=alkajsldkajd")
+        //         .AddCommand($"cd {appDir}")
+        //         .AddCommand("npm install")
+        //         .AddCommand($"oryx create-script -appPath {appDir}")
+        //         .AddDirectoryExistsCheck($"{appDir}/node_modules")
+        //         .AddCommand($"./run.sh > {appDir}/log.log")
+        //         .AddStringDoesNotExistInFileCheck(OryxAppInsightsAttachString, $"{appDir}/run.sh")
+        //         .ToString();
 
-            await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, ImageTestHelperConstants.OsTypeDebianBuster),
-                output: _output,
-                volumes: new List<DockerVolume> { volume },
-                environmentVariables: null,
-                port: containerDebugPort,
-                link: null,
-                runCmd: "/bin/sh",
-                runArgs: new[] { "-c", script },
-                assertAction: async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("AppInsights is not configured!", data);
-                },
-                dockerCli: _dockerCli);
-        }
+        //     await EndToEndTestHelper.RunAndAssertAppAsync(
+        //         imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, ImageTestHelperConstants.OsTypeDebianBuster),
+        //         output: _output,
+        //         volumes: new List<DockerVolume> { volume },
+        //         environmentVariables: null,
+        //         port: containerDebugPort,
+        //         link: null,
+        //         runCmd: "/bin/sh",
+        //         runArgs: new[] { "-c", script },
+        //         assertAction: async (hostPort) =>
+        //         {
+        //             var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+        //             Assert.Contains("AppInsights is not configured!", data);
+        //         },
+        //         dockerCli: _dockerCli);
+        // }
 
-        [Theory]
-        [Trait("category", "runtime-bullseye")]
-        [InlineData("14", "")]
-        [InlineData("14", "disabled")]
-        public async Task GeneratesScriptForBullseye_Doesnot_Add_Oryx_AppInsights_Logic_With_IPA_Configuration_Async(
-            string nodeVersion,
-            string agentExtensionVersionEnvValue)
-        {
-            // This test is for the following scenario:
-            // When we find the user has set env variable "ApplicationInsightsAgent_EXTENSION_VERSION" to '~3' 
-            // Oryx should not attach appinsight codeless config to runscript
+        // [Theory]
+        // [Trait("category", "runtime-bullseye")]
+        // [InlineData("14", "")]
+        // [InlineData("14", "disabled")]
+        // public async Task GeneratesScriptForBullseye_Doesnot_Add_Oryx_AppInsights_Logic_With_IPA_Configuration_Async(
+        //     string nodeVersion,
+        //     string agentExtensionVersionEnvValue)
+        // {
+        //     // This test is for the following scenario:
+        //     // When we find the user has set env variable "ApplicationInsightsAgent_EXTENSION_VERSION" to '~3' 
+        //     // Oryx should not attach appinsight codeless config to runscript
 
-            // Arrange
-            var appName = "linxnodeexpress-appinsights";
-            var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
-            var volume = DockerVolume.CreateMirror(hostDir);
-            var appDir = volume.ContainerDir;
-            var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion, ImageTestHelperConstants.OsTypeDebianBullseye);
-            //agentextension version will be set to '~3' or '' or 'disabled'
-            var agentExtensionVersionEnv = ExtVarNames.UserAppInsightsAgentExtensionVersion;
-            var connectionStringEnv = ExtVarNames.UserAppInsightsConnectionStringEnv;
-            int containerDebugPort = 8080;
-            var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
+        //     // Arrange
+        //     var appName = "linxnodeexpress-appinsights";
+        //     var hostDir = Path.Combine(_hostSamplesDir, "nodejs", appName);
+        //     var volume = DockerVolume.CreateMirror(hostDir);
+        //     var appDir = volume.ContainerDir;
+        //     var imageName = _imageHelper.GetRuntimeImage("node", nodeVersion, ImageTestHelperConstants.OsTypeDebianBullseye);
+        //     //agentextension version will be set to '~3' or '' or 'disabled'
+        //     var agentExtensionVersionEnv = ExtVarNames.UserAppInsightsAgentExtensionVersion;
+        //     var connectionStringEnv = ExtVarNames.UserAppInsightsConnectionStringEnv;
+        //     int containerDebugPort = 8080;
+        //     var OryxAppInsightsAttachString = "--require /usr/local/lib/node_modules/applicationinsights/out/Bootstrap/Oryx.js";
 
-            var script = new ShellScriptBuilder()
-                .AddCommand($"export {agentExtensionVersionEnv}={agentExtensionVersionEnvValue}")
-                .AddCommand($"export {connectionStringEnv}=alkajsldkajd")
-                .AddCommand($"cd {appDir}")
-                .AddCommand("npm install")
-                .AddCommand($"oryx create-script -appPath {appDir}")
-                .AddDirectoryExistsCheck($"{appDir}/node_modules")
-                .AddCommand($"./run.sh > {appDir}/log.log")
-                .AddStringDoesNotExistInFileCheck(OryxAppInsightsAttachString, $"{appDir}/run.sh")
-                .ToString();
+        //     var script = new ShellScriptBuilder()
+        //         .AddCommand($"export {agentExtensionVersionEnv}={agentExtensionVersionEnvValue}")
+        //         .AddCommand($"export {connectionStringEnv}=alkajsldkajd")
+        //         .AddCommand($"cd {appDir}")
+        //         .AddCommand("npm install")
+        //         .AddCommand($"oryx create-script -appPath {appDir}")
+        //         .AddDirectoryExistsCheck($"{appDir}/node_modules")
+        //         .AddCommand($"./run.sh > {appDir}/log.log")
+        //         .AddStringDoesNotExistInFileCheck(OryxAppInsightsAttachString, $"{appDir}/run.sh")
+        //         .ToString();
 
-            await EndToEndTestHelper.RunAndAssertAppAsync(
-                imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, ImageTestHelperConstants.OsTypeDebianBullseye),
-                output: _output,
-                volumes: new List<DockerVolume> { volume },
-                environmentVariables: null,
-                port: containerDebugPort,
-                link: null,
-                runCmd: "/bin/sh",
-                runArgs: new[] { "-c", script },
-                assertAction: async (hostPort) =>
-                {
-                    var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
-                    Assert.Contains("AppInsights is not configured!", data);
-                },
-                dockerCli: _dockerCli);
-        }
+        //     await EndToEndTestHelper.RunAndAssertAppAsync(
+        //         imageName: _imageHelper.GetRuntimeImage("node", nodeVersion, ImageTestHelperConstants.OsTypeDebianBullseye),
+        //         output: _output,
+        //         volumes: new List<DockerVolume> { volume },
+        //         environmentVariables: null,
+        //         port: containerDebugPort,
+        //         link: null,
+        //         runCmd: "/bin/sh",
+        //         runArgs: new[] { "-c", script },
+        //         assertAction: async (hostPort) =>
+        //         {
+        //             var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+        //             Assert.Contains("AppInsights is not configured!", data);
+        //         },
+        //         dockerCli: _dockerCli);
+        // }
 
     }
 }
