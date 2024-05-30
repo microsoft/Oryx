@@ -40,7 +40,6 @@ function copyBlob() {
     set +x
     local platformName="$1"
     local blobName="$2"
-    local isDefaultVersionFile="$3"
 
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName || isDefaultVersionFile $blobName; then
         echo
