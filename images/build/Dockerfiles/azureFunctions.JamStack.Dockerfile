@@ -90,6 +90,13 @@ RUN set -e \
     && mv /opt/yarn/yarn-v1.22.15 /opt/yarn/1.22.15 \
     && rm yarn-v1.22.15.tar.gz
 
+COPY nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz .
+RUN set -e \
+    && mkdir -p /opt/nodejs/16.20.0 \
+    && tar -xzf nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz -C /usr/local \
+    && rm nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz \
+    && ln -sfn "/opt/nodejs/16.20.0" "/opt/nodejs/16.20"
+
 RUN set -ex \
     && . ${BUILD_DIR}/__nodeVersions.sh \
     && ln -s $YARN_VERSION /opt/yarn/stable \
