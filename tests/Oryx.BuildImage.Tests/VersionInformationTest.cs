@@ -97,7 +97,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             // Arrange
             var gitCommitID = GitHelper.GetCommitID();
-            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
+            var buildNumber = Environment.GetEnvironmentVariable("IMAGE_BUILDNUMBER");
             var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
 
             // Act

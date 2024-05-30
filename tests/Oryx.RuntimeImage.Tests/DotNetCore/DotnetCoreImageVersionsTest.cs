@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         //     Skip.If(string.IsNullOrEmpty(agentOS));
 
         //     // Arrange
-        //     var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
+        //     var buildNumber = Environment.GetEnvironmentVariable("IMAGE_BUILDNUMBER");
         //     var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
         //     var gitCommitID = GitHelper.GetCommitID();
 
@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
             Skip.If(string.IsNullOrEmpty(agentOS));
 
             // Arrange
-            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
+            var buildNumber = Environment.GetEnvironmentVariable("IMAGE_BUILDNUMBER");
             var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
             var gitCommitID = GitHelper.GetCommitID();
 
