@@ -417,7 +417,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_WithPackageDir()
         {
             // Arrange
-            var version = "3.6.9";
+            var version = "3.10.13";
             var appName = "flask-app";
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}" +
                 $"/python/{version}";

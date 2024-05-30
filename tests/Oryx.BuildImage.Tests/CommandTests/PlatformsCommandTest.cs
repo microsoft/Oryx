@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(dotNetCorePlatform);
                     Assert.NotNull(dotNetCorePlatform.Versions);
                     Assert.True(dotNetCorePlatform.Versions.Any());
-                    Assert.True(dotNetCorePlatform.Versions.Contains("2.8.811"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("2.1.811"));
                     Assert.True(dotNetCorePlatform.Versions.Contains("5.0.408"));
                     Assert.True(dotNetCorePlatform.Versions.Contains("6.0.100-preview.7.21379.14"));
                     Assert.True(dotNetCorePlatform.Versions.Contains("7.0.409"));
