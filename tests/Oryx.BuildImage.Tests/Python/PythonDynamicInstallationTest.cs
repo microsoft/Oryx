@@ -337,7 +337,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsAzureFunctionApp()
         {
             // Arrange
-            var version = "3.8.1";
+            var version = "3.8.18";
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
                 $"python/{version}";
             var appName = "Python_HttpTriggerSample";
