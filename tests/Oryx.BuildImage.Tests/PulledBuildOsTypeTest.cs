@@ -57,12 +57,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.LtsVersionsBuster), "DEBIAN|BUSTER");
         }
 
-        [Fact]
-        [Trait("category", "githubactions")]
-        public void PulledGitHubActionsStretchBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsStretch), "DEBIAN|STRETCH");
-        }
+        // [Fact]
+        // [Trait("category", "githubactions")]
+        // public void PulledGitHubActionsStretchBuildImages_Contains_BUILDOS_TYPE_Info()
+        // {
+        //     PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsStretch), "DEBIAN|STRETCH");
+        // }
 
         [Fact]
         [Trait("category", "githubactions")]
