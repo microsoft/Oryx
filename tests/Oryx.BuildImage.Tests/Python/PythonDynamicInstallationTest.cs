@@ -253,8 +253,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [InlineData("3.8.0b3")]
-        [InlineData("3.9.0b1")]
+        [InlineData("3.10.0a2")]
         public void GeneratesScript_AndBuildsPythonPreviewVersion(string previewVersion)
         {
             // Arrange
@@ -273,7 +272,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
