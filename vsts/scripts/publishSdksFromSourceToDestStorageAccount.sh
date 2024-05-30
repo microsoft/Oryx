@@ -17,6 +17,9 @@ if [ $dryRun != "True" ] && [ $dryRun != "False" ]; then
 	exit 1
 fi
 
+export AZCOPY_AUTO_LOGIN_TYPE=AZCLI
+export AZCOPY_TENANT_ID=$tenantId
+
 function blobExistsInProd() {
 	local containerName="$1"
 	local blobName="$2"
@@ -43,11 +46,11 @@ function copyBlob() {
         echo
         echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
         if [ $dryRun == "False" ]; then
-            azcopy copy \
+            "$azCopyDir/azcopy" copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
                 "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --overwrite true
         else
-            azcopy copy \
+            "$azCopyDir/azcopy" copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
                 "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --overwrite true --dry-run
         fi
@@ -58,11 +61,11 @@ function copyBlob() {
         echo
         echo "Blob '$blobName' does not exist in Prod storage container '$platformName'. Copying it..."
         if [ $dryRun == "False" ]; then
-            azcopy copy \
+            "$azCopyDir/azcopy" copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
                 "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName"
         else
-            azcopy copy \
+            "$azCopyDir/azcopy" copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
                 "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --dry-run
         fi
@@ -137,6 +140,17 @@ function copyPlatformBlobsToProdForDebianFlavor() {
         done 3< "$versionsFile"
     fi
 }
+
+if [ ! -f "$azCopyDir/azcopy" ]; then
+    curl -SL https://aka.ms/downloadazcopy-v10-linux -o /tmp/azcopy_download.tar.gz
+    tar -xvf /tmp/azcopy_download.tar.gz -C /tmp
+    rm -rf /tmp/azcopy_download.tar.gz
+    mkdir -p $azCopyDir
+    cp /tmp/azcopy_linux_amd64_*/azcopy $azCopyDir
+
+    echo "Version of azcopy tool being used:"
+    $azCopyDir/azcopy --version
+fi
 
 copyPlatformBlobsToProd "dotnet"
 copyPlatformBlobsToProd "python"
