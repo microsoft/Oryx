@@ -54,10 +54,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(dotNetCorePlatform);
                     Assert.NotNull(dotNetCorePlatform.Versions);
                     Assert.True(dotNetCorePlatform.Versions.Any());
-                    Assert.True(dotNetCorePlatform.Versions.Contains("2.1.811"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("5.0.408"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("6.0.100-preview.7.21379.14"));
-                    Assert.True(dotNetCorePlatform.Versions.Contains("7.0.409"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("2.1.23"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("5.0.17"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("6.0.0-preview.7.21377.19"));
+                    Assert.True(dotNetCorePlatform.Versions.Contains("7.0.3"));
 
                     var nodePlatform = actualResults
                         .Where(pr => pr.Name.EqualsIgnoreCase(NodeConstants.PlatformName))
@@ -85,7 +85,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.NotNull(phpPlatform);
                     Assert.NotNull(phpPlatform.Versions);
                     Assert.True(phpPlatform.Versions.Any());
-                    Assert.True(phpPlatform.Versions.Contains("8.3.7"));
+                    Assert.True(phpPlatform.Versions.Contains("7.4.14"));
                 },
             result.GetDebugInfo());
         }
