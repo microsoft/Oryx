@@ -11,18 +11,18 @@ using Xunit.Abstractions;
 
 namespace Oryx.Integration.Tests
 {
-    [Trait("StorageAccountTests", "Staging")]
-    public class StagingStorageAccountSanityTest : StorageAccountSanityTestBase
+    [Trait("StorageAccountTests", "SanityTests")]
+    public class StorageAccountSanityTest : StorageAccountSanityTestBase
     {
-        public StagingStorageAccountSanityTest(
+        public StorageAccountSanityTest(
             ITestOutputHelper output,
             TestTempDirTestFixture testTempDirTestFixture,
             RepoRootDirTestFixture repoRootDirTestFixture)
-            : base(
-                Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName) ?? SdkStorageConstants.PrivateStagingSdkStorageBaseUrl,
-                output, 
-                testTempDirTestFixture, 
-                repoRootDirTestFixture)
+            : base(Environment.GetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName)
+                  ?? throw new InvalidOperationException($"Environment variable '{SdkStorageConstants.SdkStorageBaseUrlKeyName}' is required."),
+                  output, 
+                  testTempDirTestFixture, 
+                  repoRootDirTestFixture)
         {
         }
     }

@@ -81,9 +81,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Fact]
         [Trait("category", "jamstack")]
-        public void PulledJamstackStretchBuildImages_Contains_BUILDIMAGE_TYPE_Info()
+        public void PulledJamstackBullseyeBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackStretch), "jamstack");
+            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye), "jamstack");
         }
 
         [Fact]
