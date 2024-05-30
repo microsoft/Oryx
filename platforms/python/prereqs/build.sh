@@ -70,9 +70,6 @@ tar -xJf /python.tar.xz --strip-components=1 -C .
 
 INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 
-ls
-pwd
-
 if [ "${PYTHON_VERSION::1}" == "2" ]; then
     ./configure \
         --prefix=$INSTALLATION_PREFIX \
