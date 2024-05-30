@@ -40,20 +40,15 @@ function copyBlob() {
     set +x
     local platformName="$1"
     local blobName="$2"
+    local arg=""
 
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName || isDefaultVersionFile $blobName; then
         echo
         echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
-        if [ $dryRun == "False" ]; then
-            "$azCopyDir/azcopy" copy \
-                "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --overwrite true
-        else
-            "$azCopyDir/azcopy" copy \
-                "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --overwrite true --dry-run
-        fi
-    elif blobExistsInProd $platformName $blobName; then
+        arg=" --overwrite true"
+    fi
+
+    if blobExistsInProd $platformName $blobName && [ -z "$arg" ]; then
         echo
         echo "Blob '$blobName' already exists in Prod storage container '$platformName'. Skipping copying it..."
     else
