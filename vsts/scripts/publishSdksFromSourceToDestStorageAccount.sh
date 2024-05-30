@@ -43,11 +43,11 @@ function copyBlob() {
         echo
         echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
         if [ $dryRun == "False" ]; then
-            "$azCopyDir/azcopy" copy \
+            azcopy copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
                 "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --overwrite true
         else
-            "$azCopyDir/azcopy" copy \
+            azcopy copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
                 "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --overwrite true --dry-run
         fi
