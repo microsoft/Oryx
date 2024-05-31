@@ -37,39 +37,6 @@ fi
 echo
 echo "Building build images for tests..."
 
-# Build GitHub Actions stretch build image
-if [ -z "$buildImageTagFilter" ] || [ "$buildImageTagFilter" == "github-actions-debian-stretch" ];then
-    echo "Building stretch based GitHub Action image for tests..."
-    docker build \
-        -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-stretch" \
-        --build-arg PARENT_IMAGE_BASE=github-actions-debian-stretch \
-        -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
-        .
-
-    echo
-    echo
-
-    echo "Building image that uses stretch based github action as a base but doesn't have all required environment variables..."
-    docker build \
-        -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-stretch-base" \
-        --build-arg PARENT_IMAGE_BASE=github-actions-debian-stretch \
-        -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_BUILDIMAGE_DOCKERFILE" \
-        .
-
-    echo
-    echo
-
-    echo "Building image that uses stretch based github action as a base and has all required environment variables..."
-    docker build \
-        -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-debian-stretch-base-withenv" \
-        --build-arg PARENT_IMAGE_BASE=github-actions-debian-stretch \
-        --build-arg DEBIAN_FLAVOR=stretch \
-        -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_WITHENV_BUILDIMAGE_DOCKERFILE" \
-        .
-
-    echo
-    echo
-fi
 
 # Build GitHub Actions buster build image
 if [ -z "$buildImageTagFilter" ] || [ "$buildImageTagFilter" == "github-actions-debian-buster" ];then
@@ -168,44 +135,6 @@ if [ -z "$buildImageTagFilter" ] || [ "$buildImageTagFilter" == "github-actions-
         -f "$ORYXTESTS_GITHUB_ACTIONS_ASBASE_WITHENV_BUILDIMAGE_DOCKERFILE" \
         .
 
-    echo
-fi
-
-# Build latest stretch build image
-if [ -z "$buildImageTagFilter" ] || [ "$buildImageTagFilter" == "debian-stretch" ];then
-    echo "Building stretch based full build image for tests..."
-    docker build \
-        -t "$ORYXTESTS_BUILDIMAGE_REPO:debian-stretch" \
-        -f "$ORYXTESTS_BUILDIMAGE_DOCKERFILE" \
-        .
-
-    echo
-    echo
-fi
-
-# Build LTS versions stretch build image
-if [ -z "$buildImageTagFilter" ] || [ "$buildImageTagFilter" == "lts-versions-debian-stretch" ];then
-    echo "Building stretch based LTS versions image for tests..."
-    docker build \
-        -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions-debian-stretch" \
-        --build-arg PARENT_IMAGE_BASE=lts-versions-debian-stretch \
-        -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
-        .
-
-    echo
-    echo
-fi
-
-# Build LTS versions buster build image
-if [ -z "$buildImageTagFilter" ] || [ "$buildImageTagFilter" == "lts-versions-debian-buster" ];then
-    echo "Building buster based LTS versions image for tests..."
-    docker build \
-        -t "$ORYXTESTS_BUILDIMAGE_REPO:lts-versions-debian-buster" \
-        --build-arg PARENT_IMAGE_BASE=lts-versions-debian-buster \
-        -f "$ORYXTESTS_LTS_VERSIONS_BUILDIMAGE_DOCKERFILE" \
-        .
-
-    echo
     echo
 fi
 

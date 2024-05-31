@@ -315,42 +315,42 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        // [Fact, Trait("category", "githubactions")]
-        // [Trait("build-image", "github-actions-debian-stretch")]
-        // public void BuildNodeApp_AfterInstallingStretchSpecificSdk()
-        // {
-        //     // Arrange
-        //     var version = "9.4.0"; // version only exists for stretch images
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public void BuildNodeApp_AfterInstallingBusterSpecificSdk()
+        {
+            // Arrange
+            var version = "16.20.2";
 
-        //     var devPackageName = "nodemon";
-        //     var prodPackageName = "express";
-        //     var volume = CreateWebFrontEndVolume();
-        //     var appDir = volume.ContainerDir;
-        //     var appOutputDir = "/tmp/webfrontend-output";
-        //     var script = new ShellScriptBuilder()
-        //         .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version} --debug")
-        //         .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
-        //         .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
-        //         .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{prodPackageName}")
-        //         .ToString();
+            var devPackageName = "nodemon";
+            var prodPackageName = "express";
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var script = new ShellScriptBuilder()
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version} --debug")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{devPackageName}")
+                .AddDirectoryExistsCheck($"{appOutputDir}/node_modules/{prodPackageName}")
+                .ToString();
 
-        //     // Act
-        //     var result = _dockerCli.Run(new DockerRunArguments
-        //     {
-        //         ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-        //         Volumes = new List<DockerVolume> { volume },
-        //         CommandToExecuteOnRun = "/bin/bash",
-        //         CommandArguments = new[] { "-c", script }
-        //     });
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
-        //     // Assert
-        //     RunAsserts(
-        //         () =>
-        //         {
-        //             Assert.True(result.IsSuccess);
-        //         },
-        //         result.GetDebugInfo());
-        // }
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                },
+                result.GetDebugInfo());
+        }
 
         [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-buster")]

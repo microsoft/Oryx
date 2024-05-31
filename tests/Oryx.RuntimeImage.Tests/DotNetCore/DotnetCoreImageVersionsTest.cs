@@ -19,43 +19,43 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
         }
 
-        // [SkippableTheory]
-        // [Trait("category", "runtime-bullseye")]
-        // [InlineData("3.1")]
-        // public void DotNetCoreBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version)
-        // {
-        //     // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
-        //     // so we should check agent_os environment variable to know if the build is happening in azure devops agent
-        //     // or locally, locally we need to skip this test
-        //     var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
-        //     Skip.If(string.IsNullOrEmpty(agentOS));
+        [SkippableTheory]
+        [Trait("category", "runtime-bullseye")]
+        [InlineData("6.0")]
+        public void DotNetCoreBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version)
+        {
+            // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
+            // so we should check agent_os environment variable to know if the build is happening in azure devops agent
+            // or locally, locally we need to skip this test
+            var agentOS = Environment.GetEnvironmentVariable("AGENT_OS");
+            Skip.If(string.IsNullOrEmpty(agentOS));
 
-        //     // Arrange
-        //     var buildNumber = Environment.GetEnvironmentVariable("IMAGE_BUILDNUMBER");
-        //     var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
-        //     var gitCommitID = GitHelper.GetCommitID();
+            // Arrange
+            var buildNumber = Environment.GetEnvironmentVariable("IMAGE_BUILDNUMBER");
+            var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
+            var gitCommitID = GitHelper.GetCommitID();
 
-        //     // Act
-        //     var result = _dockerCli.Run(new DockerRunArguments
-        //     {
-        //         ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, ImageTestHelperConstants.OsTypeDebianBullseye),
-        //         CommandToExecuteOnRun = "oryx",
-        //         CommandArguments = new[] { "version" }
-        //     });
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, ImageTestHelperConstants.OsTypeDebianBullseye),
+                CommandToExecuteOnRun = "oryx",
+                CommandArguments = new[] { "version" }
+            });
 
-        //     // Assert
-        //     RunAsserts(
-        //         () =>
-        //         {
-        //             Assert.True(result.IsSuccess);
-        //             Assert.NotNull(result.StdErr);
-        //             Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdOut);
-        //             Assert.Contains(gitCommitID, result.StdOut);
-        //             Assert.Contains(expectedOryxVersion, result.StdOut);
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.NotNull(result.StdErr);
+                    Assert.DoesNotContain(".unspecified, Commit: unspecified", result.StdOut);
+                    Assert.Contains(gitCommitID, result.StdOut);
+                    Assert.Contains(expectedOryxVersion, result.StdOut);
 
-        //         },
-        //         result.GetDebugInfo());
-        // }
+                },
+                result.GetDebugInfo());
+        }
 
         [SkippableTheory]
         [Trait("category", "runtime-buster")]
