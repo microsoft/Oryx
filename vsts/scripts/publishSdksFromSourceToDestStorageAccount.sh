@@ -57,11 +57,11 @@ function copyBlob() {
         if [ $dryRun == "False" ]; then
             "$azCopyDir/azcopy" copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName"
+                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" $arg
         else
             "$azCopyDir/azcopy" copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --dry-run
+                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --dry-run $arg
         fi
     fi
     set -x
