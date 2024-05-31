@@ -18,9 +18,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-buster")]
-        [InlineData("3.1")]
-        [InlineData("5.0")]
-        [InlineData("7.0")]
+        [InlineData("6.0")]
         public void GDIPlusLibrary_IsPresentInTheBusterImage(string version)
         {
             // Arrange
@@ -47,8 +45,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("3.1")]
-        [InlineData("7.0")]
+        [InlineData("8.0")]
         public void GDIPlusLibrary_IsPresentInTheBullseyeImage(string version)
         {
             // Arrange
@@ -75,10 +72,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-buster")]
-        [InlineData("3.1")]
-        [InlineData("5.0")]
         [InlineData("6.0")]
-        [InlineData("7.0")]
         public void DotnetMonitorTool_IsPresentInTheBusterImage(string version)
         {
             // Act
@@ -102,9 +96,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("3.1")]
         [InlineData("6.0")]
-        [InlineData("7.0")]
         public void DotnetMonitorTool_IsPresentInTheBullseyeImage(string version)
         {
             // Act

@@ -57,12 +57,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
             PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.LtsVersionsBuster), "DEBIAN|BUSTER");
         }
 
-        [Fact]
-        [Trait("category", "githubactions")]
-        public void PulledGitHubActionsStretchBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsStretch), "DEBIAN|STRETCH");
-        }
+        // [Fact]
+        // [Trait("category", "githubactions")]
+        // public void PulledGitHubActionsStretchBuildImages_Contains_BUILDOS_TYPE_Info()
+        // {
+        //     PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsStretch), "DEBIAN|STRETCH");
+        // }
 
         [Fact]
         [Trait("category", "githubactions")]
@@ -97,14 +97,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PulledCliBullseyeBuildImages_Contains_BUILDOS_TYPE_Info()
         {
             PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), "DEBIAN|BULLSEYE");
-        }
-
-
-        [Fact]
-        [Trait("category", "jamstack")]
-        public void PulledJamstackStretchBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackStretch), "DEBIAN|STRETCH");
         }
 
         [Fact]

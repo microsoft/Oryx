@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string runtimeVersion)
         {
             BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage());
+                appName, runtimeVersion, _imageHelper.GetGitHubActionsBuildImage());
         }
 
         [Theory, Trait("category", "cli-stretch")]
@@ -164,7 +164,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     ""rollForward"": ""Disable""
                 }
             }";
-            var globalJsonSdkVersion = "3.1.201";
+            var globalJsonSdkVersion = "3.1.404";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", globalJsonSdkVersion);
             var sentinelFile = $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}/{globalJsonSdkVersion}/" +
                 $"{SdkStorageConstants.SdkDownloadSentinelFileName}";
@@ -212,7 +212,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.201";
+            var expectedSdkVersion = "3.1.404";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -275,7 +275,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.201";
+            var expectedSdkVersion = "3.1.404";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -433,7 +433,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.201";
+            var expectedSdkVersion = "3.1.404";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {

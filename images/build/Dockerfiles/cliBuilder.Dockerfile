@@ -3,7 +3,7 @@ ARG DEBIAN_FLAVOR
 # Use the curl flavor of buildpack-deps as the base image, which is lighter than the standard flavor; more information here: https://hub.docker.com/_/buildpack-deps
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl as main
 ARG DEBIAN_FLAVOR
-ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
+ARG SDK_STORAGE_BASE_URL_VALUE
 ARG AI_CONNECTION_STRING
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
@@ -14,8 +14,34 @@ RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
         && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
     fi
 
-COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/buildscriptgen/ /opt/buildscriptgen/
-COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
+## Build Script Generator
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ARG RELEASE_TAG_NAME=unspecified
+
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
+
+WORKDIR /usr/oryx
+COPY build build
+# This statement copies signed oryx binaries from during agent build.
+# For local/dev contents of blank/empty directory named binaries are getting copied
+COPY binaries /opt/buildscriptgen/
+COPY src src
+COPY build/FinalPublicKey.snk build/
+RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
+RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
+
+ARG IMAGES_DIR=/opt/tmp/images
+ARG BUILD_DIR=/opt/tmp/build
+RUN mkdir -p ${IMAGES_DIR} \
+    && mkdir -p ${BUILD_DIR}
+COPY images ${IMAGES_DIR}
+COPY build ${BUILD_DIR}
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \; \
+    && find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+
 
 ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE} \
     ENABLE_DYNAMIC_INSTALL="true" \
@@ -92,19 +118,17 @@ RUN apt-get update \
 ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images"
 RUN ${IMAGES_DIR}/build/installHugo.sh
+COPY images/yarn-v1.22.15.tar.gz .
 RUN set -ex \
     && yarnCacheFolder="/usr/local/share/yarn-cache" \
     && mkdir -p $yarnCacheFolder \
     && chmod 777 $yarnCacheFolder \
     && . ${BUILD_DIR}/__nodeVersions.sh \
-    && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
-    && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
-    && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
-    && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
     && mkdir -p /opt/yarn \
-    && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
-    && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
-    && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+    && tar -xzf yarn-v1.22.15.tar.gz -C /opt/yarn \
+    && mv /opt/yarn/yarn-v1.22.15 /opt/yarn/1.22.15 \
+    && rm yarn-v1.22.15.tar.gz
+    
 RUN set -ex \
     && . ${BUILD_DIR}/__nodeVersions.sh \
     && ln -s $YARN_VERSION /opt/yarn/stable \
@@ -136,10 +160,11 @@ RUN set -ex \
         uuid-dev \
     && rm -rf /var/lib/apt/lists/*
 
+ARG PYTHON38_VERSION
+ENV PYTHON38_VERSION ${PYTHON38_VERSION}
+COPY python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz .
 # Install Python 3.8 to use in some .NET and node applications
-RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
+RUN set -e \
     && tmpDir="/opt/tmp" \
     && imagesDir="$tmpDir/images" \
     && buildDir="$tmpDir/build" \
@@ -152,8 +177,9 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && pip3 install pip --upgrade \
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \
-    && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
+    && mkdir -p /opt/python/${PYTHON38_VERSION} \
+    && tar -xzf python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz -C /opt/python/${PYTHON38_VERSION} \
+    && rm python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz \
     && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \

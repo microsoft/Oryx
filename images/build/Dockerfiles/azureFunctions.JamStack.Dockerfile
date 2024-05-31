@@ -1,8 +1,15 @@
-ARG PARENT_DEBIAN_FLAVOR
+ARG BASE_IMAGE
 ARG DEBIAN_FLAVOR
-FROM oryxdevmcr.azurecr.io/public/oryx/cli:${PARENT_DEBIAN_FLAVOR} AS main
+FROM ${BASE_IMAGE} AS main
 
-COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /tmp
+ARG IMAGES_DIR=/tmp/images
+ARG BUILD_DIR=/tmp/build
+RUN mkdir -p ${IMAGES_DIR} \
+    && mkdir -p ${BUILD_DIR}
+COPY images ${IMAGES_DIR}
+COPY build ${BUILD_DIR}
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \; \
+    && find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR \
     ORYX_BUILDIMAGE_TYPE="jamstack" \
@@ -73,22 +80,23 @@ RUN set -ex \
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG BUILD_DIR="/opt/tmp/build"
 
-RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
+COPY images/yarn-v1.22.15.tar.gz .
+RUN set -e \
     && yarnCacheFolder="/usr/local/share/yarn-cache" \
     && mkdir -p $yarnCacheFolder \
     && chmod 777 $yarnCacheFolder \
-    && . ${BUILD_DIR}/__nodeVersions.sh \
-    && if [ "${DEBIAN_FLAVOR}" == "bullseye" || "${DEBIAN_FLAVOR}" == "buster" ]; then ${IMAGES_DIR}/installPlatform.sh nodejs ${NODE16_VERSION}; fi \
-    && ${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5 \
-    && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
-    && ${IMAGES_DIR}/retry.sh "curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
-    && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
     && mkdir -p /opt/yarn \
-    && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
-    && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
-    && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+    && tar -xzf yarn-v1.22.15.tar.gz -C /opt/yarn \
+    && mv /opt/yarn/yarn-v1.22.15 /opt/yarn/1.22.15 \
+    && rm yarn-v1.22.15.tar.gz
+
+COPY nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz .
+RUN set -e \
+    && mkdir -p /opt/nodejs/16.20.0 \
+    && tar -xzf nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz -C /usr/local \
+    && rm nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz \
+    && ln -sfn "/opt/nodejs/16.20.0" "/opt/nodejs/16.20"
+
 RUN set -ex \
     && . ${BUILD_DIR}/__nodeVersions.sh \
     && ln -s $YARN_VERSION /opt/yarn/stable \
@@ -99,9 +107,11 @@ RUN set -ex \
     && mkdir -p /links \
     && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
   
-RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
+ARG PYTHON38_VERSION
+ENV PYTHON38_VERSION ${PYTHON38_VERSION}
+COPY python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz .
+
+RUN set -e \
     # Install Python SDKs
     # Upgrade system python
     && PYTHONIOENCODING="UTF-8" \
@@ -113,8 +123,9 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     && pip3 install pip --upgrade \
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \
-    && . $buildDir/__pythonVersions.sh \
-    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
+    && mkdir -p /opt/python/${PYTHON38_VERSION} \
+    && tar -xzf python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz -C /opt/python/${PYTHON38_VERSION} \
+    && rm python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz \
     && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \

@@ -176,7 +176,7 @@ if [ -n "$pipReqSetPath" ]; then
     sed -i 's|logger\.debug('\''Cleaning up\.\.\.'\'')|logger\.info('\''Cleaning up\.\.\.'\'')|' "$pipReqSetPath"
 fi
 
-compressedSdkDir="/tmp/compressedSdk"
+compressedSdkDir="/tmp/compressedSdk/python"
 mkdir -p $compressedSdkDir
 cd "$INSTALLATION_PREFIX"
 tar -zcf $compressedSdkDir/$pythonSdkFileName .

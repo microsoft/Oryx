@@ -88,7 +88,6 @@ declare -r BASE_IMAGES_STAGING_REPO="$ACR_DEV_NAME/staging/oryx/base"
 
 # Flag to add information to images through labels (example: build number, commit sha)
 declare -r EMBED_BUILDCONTEXT_IN_IMAGES="${EMBEDBUILDCONTEXTINIMAGES:-false}"
-declare -r GIT_COMMIT=$(git rev-parse HEAD)
 
 declare -r DOCKER_SYSTEM_PRUNE="${ORYX_DOCKER_SYSTEM_PRUNE:-false}"
 

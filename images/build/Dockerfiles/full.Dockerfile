@@ -15,20 +15,45 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
-RUN ./build.sh golang     /opt/startupcmdgen/golang
+RUN chmod +x build.sh && ./build.sh golang     /opt/startupcmdgen/golang
 
 ### oryx build image
 FROM buildpack-deps:${DEBIAN_FLAVOR}-curl
 ARG DEBIAN_FLAVOR
-ARG SDK_STORAGE_BASE_URL_VALUE="https://oryx-cdn.microsoft.io"
+ARG SDK_STORAGE_BASE_URL_VALUE
 ARG AI_CONNECTION_STRING
 ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE}
 
-# docker multi-stage builds
-COPY --from=oryxdevmcr.azurecr.io/private/oryx/support-files-image-for-build /tmp/oryx/ /opt/tmp
-COPY --from=oryxdevmcr.azurecr.io/private/oryx/buildscriptgenerator /opt/ /opt/
+ARG IMAGES_DIR=/opt/tmp/images
+ARG BUILD_DIR=/opt/tmp/build
+RUN mkdir -p ${IMAGES_DIR} \
+    && mkdir -p ${BUILD_DIR}
+COPY images ${IMAGES_DIR}
+COPY build ${BUILD_DIR}
+RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \; \
+    && find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
+
+ARG GIT_COMMIT=unspecified
+ARG BUILD_NUMBER=unspecified
+ARG RELEASE_TAG_NAME=unspecified
+
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV BUILD_NUMBER=${BUILD_NUMBER}
+ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
+
+WORKDIR /usr/oryx
+COPY build build
+# This statement copies signed oryx binaries from during agent build.
+# For local/dev contents of blank/empty directory named binaries are getting copied
+COPY binaries /opt/buildscriptgen/
+COPY src src
+COPY build/FinalPublicKey.snk build/
+
+RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
+RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
+    
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
 RUN if [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \

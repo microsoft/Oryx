@@ -29,7 +29,7 @@ namespace Oryx.BuildImage.Tests
         public void ExecutesCommand_AfterInstallingPlatformIfNotPresentAlready()
         {
             // Arrange
-            var nodeVersion = "4.4.7";
+            var nodeVersion = "17.6.0";
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var subDir = Guid.NewGuid();
@@ -67,7 +67,7 @@ namespace Oryx.BuildImage.Tests
         public void ExecutesCommand_AfterInstallingPlatformVersionSpecifiedByBuildEnvFile()
         {
             // Arrange
-            var nodeVersion = "4.4.7";
+            var nodeVersion = "17.6.0";
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var subDir = Guid.NewGuid();
