@@ -4,8 +4,6 @@
 # Licensed under the MIT license.
 # --------------------------------------------------------------------------------------------
 
-set -e
-
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
 
@@ -37,7 +35,6 @@ function blobExistsInProd() {
 }
 
 function copyBlob() {
-    set +x
     local platformName="$1"
     local blobName="$2"
     local arg=""
@@ -64,7 +61,6 @@ function copyBlob() {
                 "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --dry-run $arg
         fi
     fi
-    set -x
 }
 
 function copyPlatformBlobsToProd() {
