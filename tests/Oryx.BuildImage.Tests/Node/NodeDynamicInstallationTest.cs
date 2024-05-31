@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.12", imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add("17.1.0", imageTestHelper.GetGitHubActionsBuildImage());
                 data.Add(FinalStretchVersions.FinalStretchNode14Version, imageTestHelper.GetGitHubActionsBuildImage());
                 data.Add(FinalStretchVersions.FinalStretchNode16Version, imageTestHelper.GetGitHubActionsBuildImage());
                 return data;
@@ -88,13 +88,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        // [Theory, Trait("category", "githubactions")]
-        // [Trait("build-image", "github-actions-debian-stretch")]
-        // [MemberData(nameof(ImageNameData))]
-        // public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationGithubActions(string version, string buildImageName)
-        // {
-        //     GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
-        // }
+        [Theory, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-stretch")]
+        [MemberData(nameof(ImageNameData))]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationGithubActions(string version, string buildImageName)
+        {
+            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
+        }
 
         [Theory, Trait("category", "cli-stretch")]
         [Trait("build-image", "cli-debian-stretch")]
@@ -160,41 +160,41 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        // [Theory, Trait("category", "githubactions")]
-        // [Trait("build-image", "github-actions-debian-stretch")]
-        // [InlineData("14.19.1", "14.19.1")]
-        // [InlineData("16", FinalStretchVersions.FinalStretchNode16Version)]
-        // public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation_DefaultEnvVar(string defaultVersion, string expectedVersion)
-        // {
-        //     // Arrange
-        //     var volume = CreateWebFrontEndVolume();
-        //     var appDir = volume.ContainerDir;
-        //     var appOutputDir = "/tmp/webfrontend-output";
-        //     var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
-        //     var script = new ShellScriptBuilder()
-        //         .SetEnvironmentVariable(SettingsKeys.NodeDefaultVersion, defaultVersion)
-        //         .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --debug")
-        //         .AddCommand($"cat {manifestFile}")
-        //         .ToString();
+        [Theory, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-stretch")]
+        [InlineData("14.19.1", "14.19.1")]
+        [InlineData("16", "16.20.2")]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation_DefaultEnvVar(string defaultVersion, string expectedVersion)
+        {
+            // Arrange
+            var volume = CreateWebFrontEndVolume();
+            var appDir = volume.ContainerDir;
+            var appOutputDir = "/tmp/webfrontend-output";
+            var manifestFile = $"{appOutputDir}/{FilePaths.BuildManifestFileName}";
+            var script = new ShellScriptBuilder()
+                .SetEnvironmentVariable(SettingsKeys.NodeDefaultVersion, defaultVersion)
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --debug")
+                .AddCommand($"cat {manifestFile}")
+                .ToString();
 
-        //     // Act
-        //     var result = _dockerCli.Run(new DockerRunArguments
-        //     {
-        //         ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-        //         Volumes = new List<DockerVolume> { volume },
-        //         CommandToExecuteOnRun = "/bin/bash",
-        //         CommandArguments = new[] { "-c", script }
-        //     });
+            // Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+                Volumes = new List<DockerVolume> { volume },
+                CommandToExecuteOnRun = "/bin/bash",
+                CommandArguments = new[] { "-c", script }
+            });
 
-        //     // Assert
-        //     RunAsserts(
-        //         () =>
-        //         {
-        //             Assert.True(result.IsSuccess);
-        //             Assert.Contains($"{ManifestFilePropertyKeys.NodeVersion}=\"{expectedVersion}\"", result.StdOut);
-        //         },
-        //         result.GetDebugInfo());
-        // }
+            // Assert
+            RunAsserts(
+                () =>
+                {
+                    Assert.True(result.IsSuccess);
+                    Assert.Contains($"{ManifestFilePropertyKeys.NodeVersion}=\"{expectedVersion}\"", result.StdOut);
+                },
+                result.GetDebugInfo());
+        }
 
         [Fact, Trait("category", "ltsversions")]
         [Trait("build-image", "lts-versions-debian-stretch")]
