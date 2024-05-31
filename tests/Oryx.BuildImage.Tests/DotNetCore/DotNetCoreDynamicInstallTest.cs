@@ -54,7 +54,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string runtimeVersion)
         {
             BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage());
+                appName, runtimeVersion, _imageHelper.GetGitHubActionsBuildImage());
         }
 
         [Theory, Trait("category", "cli-stretch")]
