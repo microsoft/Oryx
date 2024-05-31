@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -62,7 +62,7 @@ namespace Oryx.BuildImage.Tests
         public void DetectsAndInstallsPlatformVersion_SpecifiedByEnvironmentVariable()
         {
             // Arrange
-            var nodeVersion = "4.4.7";
+            var nodeVersion = "12.19.0";
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var subDir = Guid.NewGuid();
@@ -97,7 +97,7 @@ namespace Oryx.BuildImage.Tests
         public void DetectsAndInstallsPlatformVersion_SpecifiedByBuildEnvFile()
         {
             // Arrange
-            var nodeVersion = "4.4.7";
+            var nodeVersion = "12.19.0";
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
@@ -132,8 +132,8 @@ namespace Oryx.BuildImage.Tests
         public void SkipsDetectionAndInstallsPlatform()
         {
             // Arrange
-            var nodeVersion = "4.4.7";
-            var pythonVersion = "3.7.7";
+            var nodeVersion = "12.19.0";
+            var pythonVersion = "3.10.0";
             var script = new ShellScriptBuilder()
                 .AddCommand(
                 $"oryx prep --skip-detection --platforms-and-versions " +
@@ -165,8 +165,8 @@ namespace Oryx.BuildImage.Tests
         public void SkipsDetectionAndInstallsPlatformsFromFile()
         {
             // Arrange
-            var nodeVersion = "8.0.0";
-            var pythonVersion = "3.7.7";
+            var nodeVersion = "16.5.0";
+            var pythonVersion = "3.10.0";
             var versionsFile = "/tmp/versions.txt";
             var script = new ShellScriptBuilder()
                 .AddCommand($"echo 'nodejs={nodeVersion}' >> {versionsFile}")
@@ -201,7 +201,7 @@ namespace Oryx.BuildImage.Tests
         public void InstallsPlatformAtCustomInstallationRootDirectory()
         {
             // Arrange
-            var nodeVersion = "4.4.7";
+            var nodeVersion = "16.5.0";
             var customDynamicInstallRootDir = "/foo/bar";
             var expectedText =
                 $"Node path is: {customDynamicInstallRootDir}/{NodeConstants.PlatformName}/{nodeVersion}/bin";

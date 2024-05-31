@@ -28,7 +28,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.12", imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add("17.1.0", imageTestHelper.GetGitHubActionsBuildImage());
                 data.Add(FinalStretchVersions.FinalStretchNode14Version, imageTestHelper.GetGitHubActionsBuildImage());
                 data.Add(FinalStretchVersions.FinalStretchNode16Version, imageTestHelper.GetGitHubActionsBuildImage());
                 return data;
@@ -163,7 +163,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-stretch")]
         [InlineData("14.19.1", "14.19.1")]
-        [InlineData("16", FinalStretchVersions.FinalStretchNode16Version)]
+        [InlineData("16", "16.20.2")]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation_DefaultEnvVar(string defaultVersion, string expectedVersion)
         {
             // Arrange
@@ -238,7 +238,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
-            var version = "12.16.1"; //NOTE: use the full version so that we know the install directory path
+            var version = "12.22.4"; //NOTE: use the full version so that we know the install directory path
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/nodejs/{version}";
             var sentinelFile = $"{installationDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}";
             var volume = CreateWebFrontEndVolume();
@@ -316,11 +316,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-stretch")]
-        public void BuildNodeApp_AfterInstallingStretchSpecificSdk()
+        [Trait("build-image", "github-actions-debian-buster")]
+        public void BuildNodeApp_AfterInstallingBusterSpecificSdk()
         {
             // Arrange
-            var version = "9.4.0"; // version only exists for stretch images
+            var version = "16.20.2";
 
             var devPackageName = "nodemon";
             var prodPackageName = "express";

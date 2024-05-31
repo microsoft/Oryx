@@ -10,12 +10,6 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__sdkStorageConstants.sh
 
-if [ -z "$ORYX_TEST_SDK_STORAGE_URL" ]; then
-    echo
-    echo "Setting environment variable 'ORYX_TEST_SDK_STORAGE_URL' to default value '$PRIVATE_STAGING_SDK_STORAGE_BASE_URL' for integration tests."
-    export ORYX_TEST_SDK_STORAGE_URL="$PRIVATE_STAGING_SDK_STORAGE_BASE_URL"
-fi
-
 echo
 
 # This is needed because when we are running tests in multiple agent machines

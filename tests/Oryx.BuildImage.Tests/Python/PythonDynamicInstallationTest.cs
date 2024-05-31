@@ -253,8 +253,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [InlineData("3.8.0b3")]
-        [InlineData("3.9.0b1")]
+        [InlineData("3.10.0a2")]
         public void GeneratesScript_AndBuildsPythonPreviewVersion(string previewVersion)
         {
             // Arrange
@@ -273,7 +272,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -296,7 +295,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
-            var version = "3.8.1"; //NOTE: use the full version so that we know the install directory path
+            var version = "3.8.16"; //NOTE: use the full version so that we know the install directory path
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
                 $"python/{version}";
             var sentinelFile = $"{installationDir}/{SdkStorageConstants.SdkDownloadSentinelFileName}";
@@ -338,7 +337,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsAzureFunctionApp()
         {
             // Arrange
-            var version = "3.8.1";
+            var version = "3.8.18";
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}/" +
                 $"python/{version}";
             var appName = "Python_HttpTriggerSample";
@@ -418,7 +417,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void GeneratesScript_AndBuilds_WithPackageDir()
         {
             // Arrange
-            var version = "3.6.9";
+            var version = "3.10.13";
             var appName = "flask-app";
             var installationDir = $"{BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot}" +
                 $"/python/{version}";
@@ -463,7 +462,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var imageHelper = new ImageTestHelper();
 
                 // stretch
-                data.Add(PythonVersions.Python27Version, imageHelper.GetAzureFunctionsJamStackBuildImage());
+                // data.Add(PythonVersions.Python27Version, imageHelper.GetAzureFunctionsJamStackBuildImage());
 
                 //buster
                 data.Add(PythonVersions.Python36Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBuster));

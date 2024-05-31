@@ -123,8 +123,8 @@ shouldOverwritePlatformSdk() {
 }
 
 isDefaultVersionFile() {
-	$blobName="$1"
-	if [[ "$blobName" == "defaultVersion"* ]]; then
+	blobName="$1"
+	if [[ $blobName == defaultVersion* ]]; then
 		return 0
 	else
 		return 1
