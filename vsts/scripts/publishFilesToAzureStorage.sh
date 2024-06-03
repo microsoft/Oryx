@@ -21,6 +21,7 @@ uploadFiles() {
     allFiles=$(find $artifactsDir -type f -name '*.tar.gz' -o -name 'defaultVersion.*txt')
     for fileToUpload in $allFiles
     do
+        echo "Uploading $fileToUpload to $platform"
         fileName=$(basename $fileToUpload)
         fileNameWithoutExtension=${fileName%".tar.gz"}
 
@@ -42,6 +43,7 @@ uploadFiles() {
         fi
         
         if shouldOverwriteSdk || shouldOverwritePlatformSdk $platform || [[ "$fileToUpload" == *defaultVersion*txt ]]; then
+            echo "running az command with override"
             az storage blob upload \
             --name $fileName \
             --file "$fileToUpload" \
@@ -55,6 +57,7 @@ uploadFiles() {
                 $fileMetadata \
             --overwrite true
         else
+            echo "running az command without override"
             az storage blob upload \
             --name $fileName \
             --file "$fileToUpload" \
