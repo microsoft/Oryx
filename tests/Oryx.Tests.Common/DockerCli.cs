@@ -300,6 +300,9 @@ namespace Microsoft.Oryx.Tests.Common
             [NotNull] List<string> args,
             [CanBeNull] IEnumerable<EnvironmentVariable> newVars)
         {
+            args.Add("-e");
+            args.Add($"{ORYX_SDK_STORAGE_BASE_URL}={Environment.GetEnvironmentVariable("ORYX_SDK_STORAGE_BASE_URL")}");
+
             if (newVars == null)
             {
                 return;
