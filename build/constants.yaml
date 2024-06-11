@@ -354,14 +354,6 @@
   constants:
     enable-dynamic-install-key: ENABLE_DYNAMIC_INSTALL
     sdk-storage-base-url-key-name: ORYX_SDK_STORAGE_BASE_URL
-    testing-sdk-storage-url-key-name: ORYX_TEST_SDK_STORAGE_URL
-    private-staging-storage-sas-token-key: ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
-    oryx-keyvault-uri: https://oryx.vault.azure.net
-    staging-storage-sas-token-keyvault-secret-name: ORYX-SDK-STAGING-PRIVATE-SAS-TOKEN
-    private-staging-sdk-storage-base-url: https://oryxsdksstaging.blob.core.windows.net
-    dev-sdk-storage-base-url: https://oryxsdksdev.blob.core.windows.net
-    sandbox-sdk-storage-base-url: https://oryxsdkssandbox.blob.core.windows.net
-    private-sdk-storage-base-url: https://oryxsdksprivate.blob.core.windows.net
     prod-sdk-storage-base-url: https://oryxsdksprod.blob.core.windows.net
     prod-backup-sdk-storage-base-url: https://oryxsdksprodbackup.blob.core.windows.net
     prod-sdk-cdn-storage-base-url: https://oryx-cdn.microsoft.io
