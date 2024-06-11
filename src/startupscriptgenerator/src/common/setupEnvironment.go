@@ -44,12 +44,6 @@ func GetSetupScript(platformName string, version string, installationDir string)
 	}
 
 	sasToken := ""
-	if sdkStorageBaseUrl == consts.PrivateStagingSdkStorageBaseUrl {
-		sasToken = os.Getenv(consts.PrivateStagingStorageSasTokenKey)
-		if sdkStorageBaseUrl == "" {
-			panic("Environment variable " + consts.PrivateStagingStorageSasTokenKey + " is required.")
-		}
-	}
 
 	tarFile := fmt.Sprintf("%s.tar.gz", version)
 	debianFlavor := os.Getenv(consts.DebianFlavor)
