@@ -13,7 +13,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         public const string DefaultVersionFilePrefix = "defaultVersion";
         public const string DefaultVersionFileType = "txt";
         public const string VersionsToBuildFileName = "versionsToBuild.txt";
-        public const string ContainerMetadataUrlFormat = "{0}/{1}?restype=container&comp=list&include=metadata&marker={2}&{3}";
+        public const string ContainerMetadataUrlFormat = "{0}/{1}?restype=container&comp=list&include=metadata&marker={2}";
         public const string SdkDownloadSentinelFileName = ".oryx-sdkdownload-sentinel";
         public const string SdkVersionMetadataName = "Sdk_version";
         public const string LegacySdkVersionMetadataName = "Version";

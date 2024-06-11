@@ -361,7 +361,7 @@
     default-version-file-prefix: defaultVersion
     default-version-file-type: txt
     versions-to-build-file-name: versionsToBuild.txt
-    container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata&marker={2}&{3}'
+    container-metadata-url-format: '{0}/{1}?restype=container&comp=list&include=metadata&marker={2}'
     sdk-download-sentinel-file-name: .oryx-sdkdownload-sentinel
     sdk-version-metadata-name: Sdk_version
     legacy-sdk-version-metadata-name: Version
