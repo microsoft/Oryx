@@ -7,10 +7,10 @@ RUN apt-get update \
 	&& apt-get upgrade -y \
 	&& apt-get install -y --no-install-recommends \
 		xz-utils \
+		ca-certificates \
 		curl \
 		gnupg \
 		netbase \
-		sq \
 		wget \
 	&& rm -rf /var/lib/apt/lists/*
 
