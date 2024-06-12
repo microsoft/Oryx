@@ -60,6 +60,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [SkippableTheory]
         [Trait("category", "runtime-buster")]
         [InlineData("6.0")]
+        [InlineData("7.0")]
         public void DotNetCoreBusterRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -98,6 +99,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [Trait("category", "runtime-buster")]
         [InlineData("6.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
+        [InlineData("7.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp70)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_Buster_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
@@ -123,6 +125,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [Trait("category", "runtime-bullseye")]
         [InlineData("6.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
+        [InlineData("7.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp70)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_Bullseye_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
