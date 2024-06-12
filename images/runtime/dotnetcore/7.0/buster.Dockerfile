@@ -22,7 +22,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 #Bake in client certificate path into image to avoid downloading it
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
-RUN RUN  chmod +x build.sh && ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
+RUN chmod +x build.sh && ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
 FROM mcr.microsoft.com/mirror/docker/library/debian:buster-slim
 ARG BUILD_DIR=/tmp/oryx/build
