@@ -9,7 +9,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 7.*
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-bullseye as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
