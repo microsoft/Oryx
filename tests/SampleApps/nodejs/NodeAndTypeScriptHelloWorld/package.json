@@ -15,17 +15,17 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "7.0.22",
-    "express": "4.15.3",
-    "nodemon": "1.11.0"
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22"
   },
   "devDependencies": {
     "@types/mocha": "2.2.41",
     "@types/node": "7.0.22",
-    "eslint": "4.0.0",
-    "eslint-config-airbnb-base": "11.2.0",
-    "eslint-plugin-import": "2.3.0",
+    "eslint": "^8.42.0",
+    "eslint-config-airbnb-base": "15.0.0",
+    "eslint-plugin-import": "2.27.5",
     "eslint-plugin-promise": "3.5.0",
-    "mocha": "3.5.3",
+    "mocha": "^10.2.0",
     "supertest": "3.0.0",
     "tsc": "1.20150623.0",
     "typescript": "2.3.3",
