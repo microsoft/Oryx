@@ -85,17 +85,12 @@ RUN set -e \
     && yarnCacheFolder="/usr/local/share/yarn-cache" \
     && mkdir -p $yarnCacheFolder \
     && chmod 777 $yarnCacheFolder \
+    && . ${BUILD_DIR}/__nodeVersions.sh \
+    && if [ "${DEBIAN_FLAVOR}" == "bullseye" || "${DEBIAN_FLAVOR}" == "buster" ]; then ${IMAGES_DIR}/installPlatform.sh nodejs ${NODE16_VERSION}; fi \
     && mkdir -p /opt/yarn \
     && tar -xzf yarn-v1.22.15.tar.gz -C /opt/yarn \
     && mv /opt/yarn/yarn-v1.22.15 /opt/yarn/1.22.15 \
     && rm yarn-v1.22.15.tar.gz
-
-COPY nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz .
-RUN set -e \
-    && mkdir -p /opt/nodejs/16.20.0 \
-    && tar -xzf nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz -C /usr/local \
-    && rm nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz \
-    && ln -sfn "/opt/nodejs/16.20.0" "/opt/nodejs/16.20"
 
 RUN set -ex \
     && . ${BUILD_DIR}/__nodeVersions.sh \
@@ -106,10 +101,6 @@ RUN set -ex \
 RUN set -ex \
     && mkdir -p /links \
     && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
-  
-ARG PYTHON38_VERSION
-ENV PYTHON38_VERSION ${PYTHON38_VERSION}
-COPY python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz .
 
 RUN set -e \
     # Install Python SDKs
@@ -123,9 +114,8 @@ RUN set -e \
     && pip3 install pip --upgrade \
     && pip install --upgrade cython \
     && pip3 install --upgrade cython \
-    && mkdir -p /opt/python/${PYTHON38_VERSION} \
-    && tar -xzf python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz -C /opt/python/${PYTHON38_VERSION} \
-    && rm python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz \
+    && . $buildDir/__pythonVersions.sh \
+    && $imagesDir/installPlatform.sh python $PYTHON38_VERSION \
     && [ -d "/opt/python/$PYTHON38_VERSION" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf \
     && ldconfig \
     && cd /opt/python \

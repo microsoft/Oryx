@@ -37,12 +37,11 @@ ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
 
-COPY nodejs-bookworm-${NODE20_VERSION}.tar.gz .
 RUN set -e \
-    && mkdir -p /opt/nodejs/${NODE20_VERSION} \
-    && tar -xzf nodejs-bookworm-${NODE20_VERSION}.tar.gz -C /usr/local \
-    && rm nodejs-bookworm-${NODE20_VERSION}.tar.gz \
+    && . ${BUILD_DIR}/__nodeVersions.sh \
+    && ${IMAGES_DIR}/installPlatform.sh nodejs $NODE20_VERSION --dir /usr/local --links false \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+
 RUN . ${BUILD_DIR}/__nodeVersions.sh \
     && npm install -g npm@${NPM_VERSION}
 RUN ${IMAGES_DIR}/runtime/node/installDependencies.sh

@@ -31,16 +31,12 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     *) echo "unsupported architecture"; exit 1 ;; \
   esac
 
-ARG NODE18_VERSION
-ENV NODE_VERSION ${NODE18_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
 ARG IMAGES_DIR=/tmp/oryx/images
-COPY nodejs-bullseye-${NODE18_VERSION}.tar.gz .
 RUN set -e \
-    && mkdir -p /opt/nodejs/${NODE18_VERSION} \
-    && tar -xzf nodejs-bullseye-${NODE18_VERSION}.tar.gz -C /usr/local \
-    && rm nodejs-bullseye-${NODE18_VERSION}.tar.gz \
+    && . ${BUILD_DIR}/__nodeVersions.sh \
+    && ${IMAGES_DIR}/installPlatform.sh nodejs $NODE18_VERSION --dir /usr/local --links false \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 RUN . ${BUILD_DIR}/__nodeVersions.sh \
     && npm install -g npm@${NPM_VERSION}
