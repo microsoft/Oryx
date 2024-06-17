@@ -51,9 +51,7 @@ RUN true
 RUN chmod +x /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/build.sh
 
-RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
-    set -e \
-    && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
+RUN set -e \
     && ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR
 
 RUN set -ex \
