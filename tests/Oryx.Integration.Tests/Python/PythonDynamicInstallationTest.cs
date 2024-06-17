@@ -22,7 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.7")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython37AppAsync()
         {
@@ -32,7 +32,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.8")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython38AppAsync()
         {
@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.9")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task CanBuildAndRunPython39AppAsync()
         {
@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.8")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython38App_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync()
         {
@@ -72,7 +72,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.9")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task CanBuildAndRunPython39App_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync()
         {
@@ -82,7 +82,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.10")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython310App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
         {
@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.10")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bookworm")]
         public async Task CanBuildAndRunPython310App_UsingGitHubActionsBookwormBuildImage_AndDynamicRuntimeInstallationAsync()
         {
@@ -106,7 +106,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.11")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython311App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
         {
@@ -118,7 +118,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.11")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bookworm")]
         public async Task CanBuildAndRunPython311App_UsingGitHubActionsBookwormBuildImage_AndDynamicRuntimeInstallationAsync()
         {
@@ -130,7 +130,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.12")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython312App_UsingGitHubActionsBullseyeBuildImage_AndDynamicRuntimeInstallationAsync()
         {
@@ -142,7 +142,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.12")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bookworm")]
         public async Task CanBuildAndRunPython312App_UsingGitHubActionsBookwormBuildImage_AndDynamicRuntimeInstallationAsync()
         {
@@ -154,7 +154,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.7")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython37App_UsingScriptCommandAndSetEnvSwitchAsync()
         {
@@ -162,7 +162,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.7")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython37App_WhenUsingPackageDirSwitchAsync()
         {

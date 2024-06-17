@@ -69,7 +69,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.11")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRun_DjangoRegex_OnBullseyeBuildImage()
         {
@@ -117,7 +117,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.11")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bookworm")]
         public async Task CanBuildAndRun_DjangoRegex_OnBookwormBuildImage()
         {
@@ -165,7 +165,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.12")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRun_DjangoRegex_Python12_OnBullseyeBuildImage()
         {
@@ -213,7 +213,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
-        [Trait("category", "python-3.12")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bookworm")]
         public async Task CanBuildAndRun_DjangoRegex_Python12_OnBookwormBuildImage()
         {

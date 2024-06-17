@@ -42,7 +42,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory(Skip = "Bug #1410367")]
-        [Trait("category", "python-3.9")]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-buster")]
         [InlineData("mysql-pymysql-sample")]
         [InlineData("mysql-mysqlconnector-sample")]
