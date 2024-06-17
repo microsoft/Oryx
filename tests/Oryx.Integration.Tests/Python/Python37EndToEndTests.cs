@@ -369,6 +369,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Fact]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPythonApp_WhenAllOutputIsCompressedAsync()
         {
