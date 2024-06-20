@@ -13,7 +13,7 @@ FROM dotnetcore:base as final
 
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 
-COPY bin.zip /tmp
+COPY images/runtime/dotnetcore/7.0/bin.zipbin.zip /tmp
 RUN unzip -q -o /tmp/bin.zip -d /defaulthome/hostingstart \
     && rm /tmp/bin.zip
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
