@@ -94,7 +94,7 @@ RUN apt-get update \
 COPY tcpping /usr/bin/tcpping
 RUN chmod 755 /usr/bin/tcpping
 
-RUN curl -L https://aka.ms/downloadazcopy-v10-linux | tar -C /usr/local/bin -xzf - --strip-components=1
+RUN curl -L --insecure https://aka.ms/downloadazcopy-v10-linux | tar -C /usr/local/bin -xzf - --strip-components=1
 
 RUN mkdir -p /defaulthome/hostingstart \
     && mkdir -p /home/LogFiles/ /opt/startup/ \
