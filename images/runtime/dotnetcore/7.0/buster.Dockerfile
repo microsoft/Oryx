@@ -25,7 +25,7 @@ RUN set -ex \
     && apt-get update \
     && apt-get install -f ca-certificates=20200601~deb10u2 -y --no-install-recommends \
     && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
-    && curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Runtime/$NET_CORE_APP_70/dotnet-runtime-$NET_CORE_APP_70-linux-x64.tar.gz \
+    && curl -SL --insecure --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Runtime/$NET_CORE_APP_70/dotnet-runtime-$NET_CORE_APP_70-linux-x64.tar.gz \
     && echo "$NET_CORE_APP_70_SHA dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
@@ -33,7 +33,7 @@ RUN set -ex \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
     # Install ASP.NET Core
     && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
-    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_70/aspnetcore-runtime-$ASPNET_CORE_APP_70-linux-x64.tar.gz \
+    && curl -SL --insecure --output aspnetcore.tar.gz https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_70/aspnetcore-runtime-$ASPNET_CORE_APP_70-linux-x64.tar.gz \
     && echo "$ASPNET_CORE_APP_70_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
