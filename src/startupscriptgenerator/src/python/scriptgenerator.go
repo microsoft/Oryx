@@ -87,7 +87,8 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	appType := ""         // "Django", "Flask", etc.
 	appDebugAdapter := "" // Used debugger adapter
 	appDirectory := ""
-	appModule := ""      // Suspected entry module in app
+	gunicornModule := "" // Gunicorn entry module in app
+	uvicornModule := ""  // Uvicorn entry module in app
 	appDebugModule := "" // Command to run under a debugger in case debugging mode was requested
 
 	command := gen.UserStartupCommand // A custom command takes precedence over any framework defaults
@@ -102,18 +103,19 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 			println("Detected an app based on " + appFw.Name())
 			appType = appFw.Name()
 			appDirectory = gen.getAppPath()
-			appModule = appFw.GetGunicornModuleArg()
+			gunicornModule = appFw.GetGunicornModuleArg()
+			uvicornModule = appFw.GetUvicornModuleArg()
 			appDebugModule = appFw.GetDebuggableModule()
 		} else {
 			println("No framework detected; using default app from " + gen.DefaultAppPath)
 			logger.LogInformation("Using default app.")
 			appType = "Default"
 			appDirectory = gen.DefaultAppPath
-			appModule = gen.DefaultAppModule
+			gunicornModule = gen.DefaultAppModule
 			appDebugModule = gen.DefaultAppDebugModule
 		}
 
-		if appModule != "" {
+		if gunicornModule != "" || uvicornModule != "" {
 			// Patch all legacy ptvsd debug adaptor calls to debugpy
 			if gen.DebugAdapter == "ptvsd" {
 				gen.DebugAdapter = "debugpy"
@@ -128,10 +130,14 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 				}
 
 				appDebugAdapter = gen.DebugAdapter
+			} else if uvicornModule != "" {
+				logger.LogInformation(fmt.Sprintf("Generating Uvicorn startup command for module '%s'.", uvicornModule))
+				println(fmt.Sprintf(GeneratingCommandMessage, "uvicorn", uvicornModule))
+				command = gen.buildUvicornCommandForModule(uvicornModule, appDirectory)
 			} else {
-				logger.LogInformation("Generating command for appModule.")
-				println(fmt.Sprintf(GeneratingCommandMessage, "gunicorn", appModule))
-				command = gen.buildGunicornCommandForModule(appModule, appDirectory)
+				logger.LogInformation(fmt.Sprintf("Generating Gunicorn startup command for module '%s'.", gunicornModule))
+				println(fmt.Sprintf(GeneratingCommandMessage, "gunicorn", gunicornModule))
+				command = gen.buildGunicornCommandForModule(gunicornModule, appDirectory)
 			}
 		}
 	}
@@ -141,7 +147,7 @@ func (gen *PythonStartupScriptGenerator) GenerateEntrypointScript() string {
 	logger.LogProperties(
 		"Finalizing script",
 		map[string]string{"appType": appType, "appDebugAdapter": appDebugAdapter,
-			"appModule": appModule, "venv": gen.Manifest.VirtualEnvName})
+			"gunicornModule": gunicornModule, "uvicornModule": uvicornModule, "venv": gen.Manifest.VirtualEnvName})
 
 	var runScript = scriptBuilder.String()
 	return runScript
@@ -277,10 +283,10 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 	args := "--timeout 600 --access-logfile '-' --error-logfile '-'"
 
 	pythonUseGunicornConfigFromPath := os.Getenv(consts.PythonGunicornConfigPathEnvVarName)
-	if pythonUseGunicornConfigFromPath != ""  {
-		args = appendArgs(args, "-c "+pythonUseGunicornConfigFromPath)		
+	if pythonUseGunicornConfigFromPath != "" {
+		args = appendArgs(args, "-c "+pythonUseGunicornConfigFromPath)
 	}
-	
+
 	pythonEnableGunicornMultiWorkers := common.GetBooleanEnvironmentVariable(consts.PythonEnableGunicornMultiWorkersEnvVarName)
 
 	if pythonEnableGunicornMultiWorkers {
@@ -290,7 +296,7 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 		pythonCustomWorkerNum := os.Getenv(consts.PythonGunicornCustomWorkerNum)
 		pythonCustomThreadNum := os.Getenv(consts.PythonGunicornCustomThreadNum)
 		workers := ""
-		if (pythonCustomWorkerNum != "") {
+		if pythonCustomWorkerNum != "" {
 			workers = pythonCustomWorkerNum
 		} else {
 			workers = strconv.Itoa((2 * runtime.NumCPU()) + 1)
@@ -298,7 +304,7 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 			// Where N is the number of CPU threads.
 		}
 		args = appendArgs(args, "--workers="+workers)
-		if (pythonCustomThreadNum != "") {
+		if pythonCustomThreadNum != "" {
 			args = appendArgs(args, "--threads="+pythonCustomThreadNum)
 		}
 	}
@@ -316,6 +322,12 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 	}
 
 	return "gunicorn " + module
+}
+
+// Produces the uvicorn command to run the app.
+// `module` is of the pattern "<dotted module path>:<variable name>".
+func (gen *PythonStartupScriptGenerator) buildUvicornCommandForModule(module string, appDir string) string {
+	return fmt.Sprintf("uvicorn %s --port $PORT --host $HOST", module)
 }
 
 func (gen *PythonStartupScriptGenerator) shouldStartAppInDebugMode() bool {

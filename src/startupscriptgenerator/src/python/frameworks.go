@@ -6,44 +6,123 @@
 package main
 
 import (
+	"bufio"
 	"common"
-	"io/ioutil"
-	"path/filepath"
 	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
 )
 
 type PyAppFramework interface {
-    Name() string
-    GetGunicornModuleArg() string
-    GetDebuggableModule() string
-    detect() bool
+	Name() string
+	GetGunicornModuleArg() string
+	GetUvicornModuleArg() string
+	GetDebuggableModule() string
+	detect() bool
 }
 
 type djangoDetector struct {
-	appPath		string
-	venvName	string
-	wsgiModule	string
+	appPath    string
+	venvName   string
+	wsgiModule string
 }
 
 type flaskDetector struct {
-	appPath		string
-	mainFile	string
+	appPath  string
+	mainFile string
+}
+
+type fastApiDetector struct {
+	appPath    string
+	mainFile   string
+	launchPath string
 }
 
 func DetectFramework(appPath string, venvName string) PyAppFramework {
 	var detector PyAppFramework
 
-	detector = &djangoDetector{ appPath: appPath, venvName: venvName }
+	detector = &fastApiDetector{appPath: appPath}
 	if detector.detect() {
 		return detector
 	}
 
-	detector = &flaskDetector{ appPath: appPath }
+	detector = &djangoDetector{appPath: appPath, venvName: venvName}
+	if detector.detect() {
+		return detector
+	}
+
+	detector = &flaskDetector{appPath: appPath}
 	if detector.detect() {
 		return detector
 	}
 
 	return nil
+}
+
+func (detector *fastApiDetector) Name() string {
+	return "FastAPI"
+}
+
+// Checks if the app is based on FastAPI
+func (detector *fastApiDetector) detect() bool {
+	logger := common.GetLogger("python.frameworks.fastApiDetector.detect")
+	defer logger.Shutdown()
+
+	filesToSearch := []string{"app.py", "main.py"}
+
+	for _, file := range filesToSearch {
+		fullPath := filepath.Join(detector.appPath, file)
+		if common.FileExists(fullPath) {
+			// Match on something that looks like the following in the main file:
+			//	app = FastAPI()
+			//	app = fastapi.FastAPI()
+			//	app = FastAPI(
+			f, err := os.Open(fullPath)
+			if err != nil {
+				logger.LogWarning("Failed to open and read file %s for FastAPI detection: %s", fullPath, err.Error())
+				continue
+			}
+
+			defer f.Close()
+
+			scanner := bufio.NewScanner(f)
+			for scanner.Scan() {
+				if strings.Contains(scanner.Text(), "FastAPI(") {
+					decl := strings.Split(scanner.Text(), " ")
+					if len(decl) >= 3 && decl[1] == "=" {
+						detector.mainFile = fullPath
+						mainObjName := decl[0]
+						relativePath, err := filepath.Rel(detector.appPath, fullPath)
+						if err != nil {
+							continue
+						}
+
+						// dir1/dir2/main.py -> dir1.dir2.main
+						mainPath := strings.ReplaceAll(strings.TrimSuffix(relativePath, ".py"), "/", ".")
+
+						detector.launchPath = fmt.Sprintf("%s:%s", mainPath, mainObjName)
+						return true
+					}
+				}
+			}
+		}
+	}
+
+	return false
+}
+
+func (detector *fastApiDetector) GetGunicornModuleArg() string {
+	return ""
+}
+
+func (detector *fastApiDetector) GetUvicornModuleArg() string {
+	return detector.launchPath
+}
+
+func (detector *fastApiDetector) GetDebuggableModule() string {
+	return ""
 }
 
 func (detector *djangoDetector) Name() string {
@@ -79,6 +158,10 @@ func (detector *djangoDetector) detect() bool {
 
 func (detector *djangoDetector) GetGunicornModuleArg() string {
 	return detector.wsgiModule
+}
+
+func (detector *djangoDetector) GetUvicornModuleArg() string {
+	return ""
 }
 
 func (detector *djangoDetector) GetDebuggableModule() string {
@@ -122,8 +205,12 @@ func (detector *flaskDetector) detect() bool {
 
 // TODO: detect correct variable name from a list of common names (app, application, etc.)
 func (detector *flaskDetector) GetGunicornModuleArg() string {
-	module := detector.mainFile[0 : len(detector.mainFile) - 3] // Remove the '.py' from the end
+	module := detector.mainFile[0 : len(detector.mainFile)-3] // Remove the '.py' from the end
 	return module + ":app"
+}
+
+func (detector *flaskDetector) GetUvicornModuleArg() string {
+	return ""
 }
 
 func (detector *flaskDetector) GetDebuggableModule() string {
