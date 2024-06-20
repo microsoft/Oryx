@@ -10,6 +10,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 7
 
 
 FROM dotnetcore:base as final
+ARG BUILD_DIR=/tmp/oryx/build
 
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 

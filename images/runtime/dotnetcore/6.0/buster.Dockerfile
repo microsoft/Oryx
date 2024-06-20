@@ -9,6 +9,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 7.*
 
 FROM dotnetcore:base AS final
+ARG BUILD_DIR=/tmp/oryx/build
 
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 
