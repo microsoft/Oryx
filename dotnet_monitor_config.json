@@ -1,0 +1,9 @@
+{
+  "DefaultProcess": {
+    "Filters": [{
+      "Key": "CommandLine",
+      "Value": "/usr/share/dotnet/dotnet",
+      "MatchType": "Contains"
+    }]
+  }
+}
