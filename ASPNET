@@ -1,0 +1,5 @@
+ docker run -it -p 8086:80 \
+ -v C:\Repo\Oryx\tests\SampleApps\:/tmp/SampleApps \
+ -e "ASPNETCORE_URLS=http://+80" \
+ oryxdevmcr.azurecr.io/public/oryx/build:lts-versions \
+ /opt/buildscriptgen/BuildServer
