@@ -28,7 +28,7 @@ where the build happens, and the runtime environments where the web apps are exe
 share files through the `/home` network directory.
 
 As a side note, since `/home` is a shared location for both build and runtime, and is also a 
-persistent storage location, some web apps use it to store state. We don't recomment this since
+persistent storage location, some web apps use it to store state. We don't recommend this since
 it's easy to run into concurrent access issues. We recommend the use of services specifically
 designed for [storage][], which might also include backups, replication, and much more.
 
