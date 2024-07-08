@@ -36,8 +36,7 @@ export ACCEPT_EULA=Y \
 
 if [ "$debianFlavor" == "bookworm" ]; then \
     curl https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list \ 
-    curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
-
+    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
 elif [ "$debianFlavor" == "bullseye" ]; then \
     curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
 elif [ "$debianFlavor" == "buster" ]; then \
