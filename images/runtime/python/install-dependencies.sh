@@ -56,7 +56,8 @@ if [ "$debianFlavor" != "bookworm" ]; then \
     ACCEPT_EULA=Y apt-get install -y msodbcsql17=17.10.4.1-1 \
     && ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.2.2.1-1
 elif [ "$debianFlavor" == "bookworm" ]; then \
-    ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.3.3.1-1
+    ACCEPT_EULA=Y apt-get install -y msodbcsql17=17.10.6.1-1 \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.3.3.1-1
 fi
 
 ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
