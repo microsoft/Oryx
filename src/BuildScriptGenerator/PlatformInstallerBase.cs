@@ -78,7 +78,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendLine("pip3 install pip --upgrade");
             stringBuilder.AppendLine("python3 -m pip install --upgrade cython");
             stringBuilder.AppendLine("pip3 install --upgrade cython");
-            // stringBuilder.AppendLine(". $buildDir/__pythonVersions.sh");
+            //// stringBuilder.AppendLine(". $buildDir/__pythonVersions.sh");
             stringBuilder.AppendLine($"isFromDynamicInstallation=\"true\"");
             stringBuilder.AppendLine("$imagesDir/installPlatform.sh python $PYTHON38_VERSION $isFromDynamicInstallation");
             stringBuilder.AppendLine("[ -d \"/opt/python/$PYTHON38_VERSION\" ] && echo /opt/python/$PYTHON38_VERSION/lib >> /etc/ld.so.conf.d/python.conf");
