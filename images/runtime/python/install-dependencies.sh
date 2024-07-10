@@ -50,18 +50,21 @@ apt-get update \
         locales \
         apt-transport-https \
     && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
-    && locale-gen \
-    && ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
+    && locale-gen 
+
+if [ "$debianFlavor" != "bookworm" ]; then \
+    ACCEPT_EULA=Y apt-get install -y msodbcsql17=17.10.4.1-1 \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.2.2.1-1
+elif [ "$debianFlavor" == "bookworm" ]; then \
+    ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.3.3.1-1
+fi
+
+ACCEPT_EULA=Y apt-get install -y mssql-tools18 \
     && echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc \
     && source ~/.bashrc \
     && apt-get install -y --no-install-recommends \
         unixodbc-dev \
         libgssapi-krb5-2
-
-if [ "$debianFlavor" != "bookworm" ]; then \
-    ACCEPT_EULA=Y apt-get install -y msodbcsql17=17.10.4.1-1 \
-    && ACCEPT_EULA=Y apt-get install -y msodbcsql18=18.2.2.1-1
-fi
 
 mkdir -p /etc/unixODBC
 cat >/etc/unixODBC/odbcinst.ini <<EOL
