@@ -26,9 +26,11 @@ RUN set -eux \
 		gnupg2 \
 		apt-transport-https \
 	&& curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
-	&& curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+	&& curl https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+	&& curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
 	&& apt-get update \
-	&& ACCEPT_EULA=Y apt-get install -y msodbcsql17 msodbcsql18=18.1.2.1-1 odbcinst1debian2=2.3.7 odbcinst=2.3.7 unixodbc=2.3.7 unixodbc-dev=2.3.7
+	&& ACCEPT_EULA=Y apt-get install -y msodbcsql17=17.10.6.1-1 msodbcsql18=18.3.3.1-1 odbcinst1debian2=2.3.11-2+deb12u1 odbcinst=2.3.11-2+deb12u1 unixodbc=2.3.11-2+deb12u1 unixodbc-dev=2.3.11-2+deb12u1
+	# && ACCEPT_EULA=Y apt-get install -y msodbcsql17 msodbcsql18=18.1.2.1-1 odbcinst1debian2=2.3.7 odbcinst=2.3.7 unixodbc=2.3.7 unixodbc-dev=2.3.7
 
 ENV PHP_INI_DIR /usr/local/etc/php
 RUN set -eux; \
