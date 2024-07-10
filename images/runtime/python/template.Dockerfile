@@ -45,8 +45,8 @@ ARG PYTHON_MAJOR_VERSION
 
 ENV PYTHON_VERSION ${PYTHON_FULL_VERSION}
 RUN true
-COPY build/__pythonVersions.sh ${BUILD_DIR}
-RUN true
+# COPY build/__pythonVersions.sh ${BUILD_DIR}
+# RUN true
 COPY platforms/__common.sh /tmp/
 RUN true
 COPY platforms/python/prereqs/build.sh /tmp/
