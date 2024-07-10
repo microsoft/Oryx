@@ -59,9 +59,9 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
 ENV GPG_KEYS 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544 F1F692238FBC1666E5A5CCD4199F9DFEF6FFBAFD
 
-
-ENV PHP_VERSION 8.1.29
-ENV PHP_URL="https://www.php.net/get/php-8.1.29.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-8.1.29.tar.xz.asc/from/this/mirror"
+ARG PHP_VERSION
+ENV PHP_VERSION ${PHP_VERSION}
+ENV PHP_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror"
 ENV PHP_SHA256="288884af60581d4284baba2ace9ca6d646f72facbd3e3c2dd2acc7fe6f903536" PHP_MD5=""
 
 RUN set -eux; \
@@ -269,8 +269,6 @@ CMD ["php-fpm"]
 ## base dockerfile
 SHELL ["/bin/bash", "-c"]
 
-ARG PHP_VERSION
-ENV PHP_VERSION ${PHP_VERSION}
 
 # An environment variable for oryx run-script to know the origin of php image so that
 # start-up command can be determined while creating run script

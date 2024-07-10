@@ -12,7 +12,7 @@ declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 source $REPO_DIR/build/__variables.sh
 source $REPO_DIR/build/__functions.sh
 source $REPO_DIR/build/__sdkStorageConstants.sh
-source $REPO_DIR/build/__nodeVersions.sh
+# source $REPO_DIR/build/__nodeVersions.sh
 
 cd "$BUILD_IMAGES_BUILD_CONTEXT_DIR"
 
