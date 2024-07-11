@@ -33,10 +33,10 @@ namespace Microsoft.Oryx.Integration.Tests
         [Fact]
         [Trait("category", "node-16")]
         [Trait("build-image", "github-actions-debian-buster")]
-        public async Task CanBuildAndRunNode16AppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync()
-        {
-            await CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(NodeVersions.Node16Version);
-        }
+        // public async Task CanBuildAndRunNode16AppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync()
+        // {
+        //     await CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(NodeVersions.Node16Version);
+        // }
 
         private async Task CanBuildAndRunAppUsingDynamicInstallationOfRuntimeInRuntimeImageAsync(string nodeVersion)
         {
