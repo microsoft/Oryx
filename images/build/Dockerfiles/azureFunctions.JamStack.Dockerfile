@@ -90,6 +90,8 @@ RUN set -e \
     && mv /opt/yarn/yarn-v1.22.15 /opt/yarn/1.22.15 \
     && rm yarn-v1.22.15.tar.gz
 
+
+
 # COPY nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz .
 # RUN set -e \
 #     && mkdir -p /opt/nodejs/16.20.0 \
@@ -97,8 +99,16 @@ RUN set -e \
 #     && rm nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz \
 #     && ln -sfn "/opt/nodejs/16.20.0" "/opt/nodejs/16.20"
 
+ARG YARN_VERSION
+ARG YARN_MINOR_VERSION
+ARG YARN_MAJOR_VERSION
+
+ENV YARN_VERSION=$YARN_VERSION
+ENV YARN_MINOR_VERSION=$YARN_MINOR_VERSION
+ENV YARN_MAJOR_VERSION=$YARN_MAJOR_VERSION
+
 RUN set -ex \
-    && . ${BUILD_DIR}/__nodeVersions.sh \
+    # && . ${BUILD_DIR}/__nodeVersions.sh \
     && ln -s $YARN_VERSION /opt/yarn/stable \
     && ln -s $YARN_VERSION /opt/yarn/latest \
     && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
@@ -106,7 +116,7 @@ RUN set -ex \
 RUN set -ex \
     && mkdir -p /links \
     && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
-  
+                                                     
 ARG PYTHON38_VERSION
 ENV PYTHON38_VERSION ${PYTHON38_VERSION}
 COPY python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz .

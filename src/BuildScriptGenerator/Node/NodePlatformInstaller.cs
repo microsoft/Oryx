@@ -46,7 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             stringBuilder.AppendLine("yarnCacheFolder=\"/usr/local/share/yarn-cache\"");
             stringBuilder.AppendLine("mkdir -p $yarnCacheFolder");
             stringBuilder.AppendLine("chmod 777 $yarnCacheFolder");
-            stringBuilder.AppendLine(". ${BUILD_DIR}/__nodeVersions.sh");
+            //// stringBuilder.AppendLine(". ${BUILD_DIR}/__nodeVersions.sh");
             stringBuilder.AppendLine("${IMAGES_DIR}/receiveGpgKeys.sh 6A010C5166006599AA17F08146C2130DFD2497F5");
             stringBuilder.AppendLine("${IMAGES_DIR}/retry.sh \"curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz\"");
             stringBuilder.AppendLine("${IMAGES_DIR}/retry.sh \"curl -fsSLO --compressed https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc\"");
@@ -55,7 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             stringBuilder.AppendLine("tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn");
             stringBuilder.AppendLine("mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION");
             stringBuilder.AppendLine("rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz");
-            stringBuilder.AppendLine(". ${BUILD_DIR}/__nodeVersions.sh");
+            //// stringBuilder.AppendLine(". ${BUILD_DIR}/__nodeVersions.sh");
             stringBuilder.AppendLine("ln -s $YARN_VERSION /opt/yarn/stable");
             stringBuilder.AppendLine("ln -s $YARN_VERSION /opt/yarn/latest");
             stringBuilder.AppendLine("ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION");

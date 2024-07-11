@@ -3,9 +3,16 @@ FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${DEBIAN_FLAVOR} AS 
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 COPY platforms/php/prereqs /php
-COPY build/__phpVersions.sh /php/
+# COPY build/__phpVersions.sh /php/
 COPY platforms/php/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
+
+ARG PHP81_VERSION
+ENV PHP81_VERSION=$PHP81_VERSION
+ARG PHP81_KEYS
+ENV PHP81_KEYS=$PHP81_KEYS
+ARG PHP81_TAR_SHA256
+ENV PHP81_TAR_SHA256=$PHP81_TAR_SHA256
 
 RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
         sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
@@ -35,7 +42,7 @@ COPY build /tmp/build
 RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
 RUN mkdir /tmp/sdk
-RUN /tmp/platforms/php/buildPhp.sh ${DEBIAN_FLAVOR} "" "php"
+RUN /tmp/platforms/php/buildPhp.sh ${DEBIAN_FLAVOR} "" "php" ${PHP81_VERSION} ${PHP81_KEYS} ${PHP81_TAR_SHA256}
 
 # ARG PHP_VERSION
 # ARG GPG_KEYS

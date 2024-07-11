@@ -56,9 +56,18 @@ ENV ASPNETCORE_URLS=http://+:80 \
 
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 
+ARG NET_CORE_APP_60_SHA
+ENV NET_CORE_APP_60_SHA ${NET_CORE_APP_60_SHA}
+ARG ASPNET_CORE_APP_60_SHA
+ENV ASPNET_CORE_APP_60_SHA ${ASPNET_CORE_APP_60_SHA}
+ARG NET_CORE_APP_60
+ENV NET_CORE_APP_60 ${NET_CORE_APP_60}
+ARG ASPNET_CORE_APP_60
+ENV ASPNET_CORE_APP_60 ${$ASPNET_CORE_APP_60}
+
 # Install .NET Core
 RUN set -ex \
-    && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
+    # && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
     && curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Runtime/$NET_CORE_APP_60/dotnet-runtime-$NET_CORE_APP_60-linux-x64.tar.gz \
     && echo "$NET_CORE_APP_60_SHA dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
@@ -66,7 +75,7 @@ RUN set -ex \
     && rm dotnet.tar.gz \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
     # Install ASP.NET Core
-    && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
+    # && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
     && curl -SL --output aspnetcore.tar.gz https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_60/aspnetcore-runtime-$ASPNET_CORE_APP_60-linux-x64.tar.gz \
     && echo "$ASPNET_CORE_APP_60_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
