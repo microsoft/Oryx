@@ -8,11 +8,8 @@ COPY platforms/php/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 
 ARG PHP81_VERSION
-ENV PHP81_VERSION=$PHP81_VERSION
 ARG PHP81_KEYS
-ENV PHP81_KEYS=$PHP81_KEYS
 ARG PHP81_TAR_SHA256
-ENV PHP81_TAR_SHA256=$PHP81_TAR_SHA256
 
 RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
         sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \

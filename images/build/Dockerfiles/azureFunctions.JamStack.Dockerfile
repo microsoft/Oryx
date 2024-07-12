@@ -92,20 +92,16 @@ RUN set -e \
 
 
 
-# COPY nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz .
-# RUN set -e \
-#     && mkdir -p /opt/nodejs/16.20.0 \
-#     && tar -xzf nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz -C /usr/local \
-#     && rm nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz \
-#     && ln -sfn "/opt/nodejs/16.20.0" "/opt/nodejs/16.20"
+COPY nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz .
+RUN set -e \
+    && mkdir -p /opt/nodejs/16.20.0 \
+    && tar -xzf nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz -C /usr/local \
+    && rm nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz \
+    && ln -sfn "/opt/nodejs/16.20.0" "/opt/nodejs/16.20"
 
 ARG YARN_VERSION
 ARG YARN_MINOR_VERSION
 ARG YARN_MAJOR_VERSION
-
-ENV YARN_VERSION=$YARN_VERSION
-ENV YARN_MINOR_VERSION=$YARN_MINOR_VERSION
-ENV YARN_MAJOR_VERSION=$YARN_MAJOR_VERSION
 
 RUN set -ex \
     # && . ${BUILD_DIR}/__nodeVersions.sh \
