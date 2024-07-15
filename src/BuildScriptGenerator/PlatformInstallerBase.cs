@@ -94,7 +94,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             stringBuilder.AppendLine("echo 'Installing golang tooling and language...'");
             stringBuilder.AppendLine("BUILD_DIR=\"/opt/tmp/build\"");
             stringBuilder.AppendLine("IMAGES_DIR=\"/opt/tmp/images\"");
-            stringBuilder.AppendLine(". ${BUILD_DIR}/__goVersions.sh");
+            // stringBuilder.AppendLine(". ${BUILD_DIR}/__goVersions.sh");
             stringBuilder.AppendLine("echo \"${GO_VERSION}\"");
             stringBuilder.AppendLine("downloadedFileName=\"go${GO_VERSION}.linux-amd64.tar.gz\"");
             stringBuilder.AppendLine("echo \"${downloadedFileName}\"");
