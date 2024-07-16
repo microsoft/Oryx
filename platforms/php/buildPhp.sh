@@ -15,9 +15,9 @@ sdkStorageAccountUrl="$2"
 phpType=$3
 phpPlatformDir="$REPO_DIR/platforms/php"
 
-PHP81_VERSION=$4
-PHP81_KEYS=$5
-PHP81_TAR_SHA256=$6
+# PHP81_VERSION=$4
+# PHP81_KEYS=$5
+# PHP81_TAR_SHA256=$6
 
 buildPhp() {
 	local version="$1"

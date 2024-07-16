@@ -13,8 +13,8 @@ set -ex
 mkdir -p /node_modules
 chmod 777 /node_modules
 
-PM2_VERSION=$1
-NODE_APP_INSIGHTS_SDK_VERSION=$2
+# PM2_VERSION=$1
+# NODE_APP_INSIGHTS_SDK_VERSION=$2
 
 # Since older versions of npm cli have security vulnerabilities, we try upgrading it
 # to the latest available version. However latest versions of npm do not work with very

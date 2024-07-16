@@ -39,7 +39,7 @@ COPY build /tmp/build
 RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
 RUN mkdir /tmp/sdk
-RUN /tmp/platforms/php/buildPhp.sh ${DEBIAN_FLAVOR} "" "php" ${PHP81_VERSION} ${PHP81_KEYS} ${PHP81_TAR_SHA256}
+RUN PHP81_VERSION=${PHP81_VERSION} PHP81_KEYS=${PHP81_KEYS} PHP81_TAR_SHA256=${PHP81_TAR_SHA256} /tmp/platforms/php/buildPhp.sh ${DEBIAN_FLAVOR} "" "php"
 
 # ARG PHP_VERSION
 # ARG GPG_KEYS
