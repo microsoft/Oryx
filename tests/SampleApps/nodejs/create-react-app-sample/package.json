@@ -5,7 +5,8 @@
   "dependencies": {
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
-    "react-scripts": "5.0.1"
+    "react-scripts": "^5.0.1",
+    "webpack": "5.76.1"
   },
   "scripts": {
     "start": "react-scripts start",
