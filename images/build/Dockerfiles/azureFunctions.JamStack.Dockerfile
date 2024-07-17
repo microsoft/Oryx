@@ -90,8 +90,6 @@ RUN set -e \
     && mv /opt/yarn/yarn-v1.22.15 /opt/yarn/1.22.15 \
     && rm yarn-v1.22.15.tar.gz
 
-
-
 COPY nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz .
 RUN set -e \
     && mkdir -p /opt/nodejs/16.20.0 \
