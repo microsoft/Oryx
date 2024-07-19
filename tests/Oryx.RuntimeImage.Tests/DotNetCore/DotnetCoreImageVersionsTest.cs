@@ -12,14 +12,13 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
-    [Trait("platform", "dotnet")]
     public class DotNetCoreImageVersionsTest : TestBase
     {
         public DotNetCoreImageVersionsTest(ITestOutputHelper output) : base(output)
         {
         }
 
-        [SkippableTheory]
+        [Theory]
         [Trait("category", "runtime-bullseye")]
         [InlineData("6.0")]
         [InlineData("7.0")]
@@ -59,7 +58,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
-        [SkippableTheory]
+        [Theory]
         [Trait("category", "runtime-buster")]
         [InlineData("6.0")]
         [InlineData("7.0")]
@@ -98,7 +97,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
-        [SkippableTheory]
+        [Theory]
         [Trait("category", "runtime-bookworm")]
         [InlineData("8.0")]
         [InlineData("9.0")]
