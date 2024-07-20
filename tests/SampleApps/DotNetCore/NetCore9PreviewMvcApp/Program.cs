@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace NetCore8PreviewMvcApp
+namespace NetCore9PreviewMvcApp
 {
     public class Program
     {
