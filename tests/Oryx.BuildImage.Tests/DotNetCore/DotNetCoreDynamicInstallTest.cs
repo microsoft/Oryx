@@ -52,7 +52,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NetCoreApp50MvcApp, "5.0")]
         [InlineData(NetCore7PreviewMvcApp, "7.0")]
         [InlineData(NetCore9PreviewMvcApp, "9.0")]
-        [InlineData(NetCore9WebApp, "9.0")]
+        [InlineData(NetCore90WebApp, "9.0")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_GithubActions(
             string appName,
             string runtimeVersion)
