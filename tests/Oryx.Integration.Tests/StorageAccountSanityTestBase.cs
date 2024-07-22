@@ -32,7 +32,7 @@ namespace Oryx.Integration.Tests
 
         private readonly string[] _debianFlavors = 
         {
-            OsTypes.DebianBuster, OsTypes.DebianStretch, OsTypes.UbuntuFocalScm, OsTypes.DebianBullseye
+            OsTypes.DebianBuster, OsTypes.DebianStretch, OsTypes.UbuntuFocalScm, OsTypes.DebianBullseye, OsTypes.DebianBookworm
         };
 
         public StorageAccountSanityTestBase(
