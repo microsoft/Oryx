@@ -60,20 +60,6 @@ namespace Oryx.Integration.Tests
             AssertExpectedDefaultVersion(platformName, platformName);
         }
 
-        // [Fact]
-        // public void GolangCoreContainer_HasExpectedListOfBlobs()
-        // {
-        //     var platformName = "golang";
-        //     AssertExpectedListOfBlobs(platformName, platformName);
-        // }
-
-        // [Fact]
-        // public void GolangContainer_HasExpectedDefaultVersion()
-        // {
-        //     var platformName = "golang";
-        //     AssertExpectedDefaultVersion(platformName, platformName);
-        // }
-
         [Fact]
         public void PythonContainer_HasExpectedListOfBlobs()
         {
@@ -130,47 +116,6 @@ namespace Oryx.Integration.Tests
             var platformName = "php-composer";
             AssertExpectedDefaultVersion(platformName, "php", "composer");
         }
-
-        // [Fact]
-        // public void RubyContainer_HasExpectedListOfBlobs()
-        // {
-        //     var platformName = "ruby";
-        //     AssertExpectedListOfBlobs(platformName, platformName);
-        // }
-
-        // [Fact]
-        // public void RubyContainer_HasExpectedDefaultVersion()
-        // {
-        //     var platformName = "ruby";
-        //     AssertExpectedDefaultVersion(platformName, platformName);
-        // }
-
-        // [Fact]
-        // public void JavaContainer_HasExpectedListOfBlobs()
-        // {
-        //     var platformName = "java";
-        //     AssertExpectedListOfBlobs(platformName, platformName);
-        // }
-
-        // [Fact]
-        // public void JavaContainer_HasExpectedDefaultVersion()
-        // {
-        //     var platformName = "java";
-        //     AssertExpectedDefaultVersion(platformName, platformName);
-
-        // }
-
-        // [Fact]
-        // public void MavenContainer_HasExpectedListOfBlobs()
-        // {
-        //     AssertExpectedListOfBlobs("maven", "java", "maven");
-        // }
-
-        // [Fact]
-        // public void MavenContainer_HasExpectedDefaultVersion()
-        // {
-        //     AssertExpectedDefaultVersion("maven", "java", "maven");
-        // }
 
         [Fact]
         public void Throws_CorrectHttpErrorMessage()
