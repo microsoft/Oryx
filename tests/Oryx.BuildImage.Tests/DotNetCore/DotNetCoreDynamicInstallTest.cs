@@ -62,7 +62,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "githubactions")]
         [InlineData(NetCore9PreviewMvcApp, "9.0")]
         [InlineData(NetCoreApp90WebApp, "9.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_GithubActions(
+        public void BuildsApplication_ByDynamicallyInstallingSDKs_GithubActionsBookworm(
             string appName,
             string runtimeVersion)
         {
