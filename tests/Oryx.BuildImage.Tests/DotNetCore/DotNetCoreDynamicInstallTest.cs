@@ -51,8 +51,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(NetCoreApp31MvcApp, "3.1")]
         [InlineData(NetCoreApp50MvcApp, "5.0")]
         [InlineData(NetCore7PreviewMvcApp, "7.0")]
-        [InlineData(NetCore9PreviewMvcApp, "9.0")]
-        [InlineData(NetCoreApp90WebApp, "9.0")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_GithubActions(
             string appName,
             string runtimeVersion)
@@ -60,6 +58,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
             BuildsApplication_ByDynamicallyInstallingSDKs(
                 appName, runtimeVersion, _imageHelper.GetGitHubActionsBuildImage());
         }
+
+        [Theory, Trait("category", "githubactions")]
+        [InlineData(NetCore9PreviewMvcApp, "9.0")]
+        [InlineData(NetCoreApp90WebApp, "9.0")]
+        public void BuildsApplication_ByDynamicallyInstallingSDKs_GithubActions(
+            string appName,
+            string runtimeVersion)
+        {
+            BuildsApplication_ByDynamicallyInstallingSDKs(
+                appName, runtimeVersion, _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
+        }
+
 
         [Theory, Trait("category", "cli-stretch")]
         [InlineData(NetCoreApp21WebApp, "2.1")]
