@@ -29,7 +29,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         protected const string NetCore6PreviewWebApp = "NetCore6PreviewWebApp";
         protected const string NetCore7PreviewMvcApp = "NetCore7PreviewMvcApp";
         protected const string NetCore8PreviewMvcApp = "NetCore8PreviewMvcApp";
+        protected const string NetCore9PreviewMvcApp = "NetCore9PreviewMvcApp";
         protected const string NetCoreApp70WebApp = "NetCore7WebApp";
+        protected const string NetCoreApp90WebApp = "NetCore9WebApp";
         protected const string DefaultWebApp = "DefaultWebApp";
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
@@ -56,6 +58,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
             BuildsApplication_ByDynamicallyInstallingSDKs(
                 appName, runtimeVersion, _imageHelper.GetGitHubActionsBuildImage());
         }
+
+        [Theory, Trait("category", "githubactions")]
+        [InlineData(NetCore9PreviewMvcApp, "9.0")]
+        [InlineData(NetCoreApp90WebApp, "9.0")]
+        public void BuildsApplication_ByDynamicallyInstallingSDKs_GithubActionsBookworm(
+            string appName,
+            string runtimeVersion)
+        {
+            BuildsApplication_ByDynamicallyInstallingSDKs(
+                appName, runtimeVersion, _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
+        }
+
 
         [Theory, Trait("category", "cli-stretch")]
         [InlineData(NetCoreApp21WebApp, "2.1")]
