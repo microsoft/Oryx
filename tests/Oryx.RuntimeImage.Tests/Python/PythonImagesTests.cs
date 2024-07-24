@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
         }
 
+        [Theory]
         [Trait("category", "runtime-buster")]
         [InlineData("3.8")]
         [InlineData("3.9")]
@@ -56,6 +57,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 result.GetDebugInfo());
         }
 
+        [Theory]
         [Trait("category", "runtime-bullseye")]
         [InlineData("3.8")]
         [InlineData("3.9")]
