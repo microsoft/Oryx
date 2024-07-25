@@ -117,7 +117,7 @@ ENV GPG_KEYS 1198C0117593497A5EC5C199286AF1F9897469DC AFD8691FDAEDF03BDF6E460563
 
 ENV PHP_VERSION 8.3.9
 ENV PHP_URL="https://www.php.net/get/php-8.3.9.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-8.3.9.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="f484dec6ee005c83f899af02fc021e1bc3b1d7b3f143ca062ef66b0fcee96566" PHP_MD5=""
+ENV PHP_SHA256="bf4d7b8ea60a356064f88485278bd6f941a230ec16f0fc401574ce1445ad6c77" PHP_MD5=""
 
 RUN set -eux; \
 	\
