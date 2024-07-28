@@ -267,7 +267,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.True(result.IsSuccess);
                     if (version == "18" || version == "20")
                     {
-                        Assert.Contains("10.5.0", result.StdOut.ReplaceNewLine());
+                        Assert.Contains("10.7.0", result.StdOut.ReplaceNewLine());
                     }
                     else
                     {
@@ -301,7 +301,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                     Assert.True(result.IsSuccess);
                     if (version == "18" || version == "20")
                     {
-                        Assert.Contains("10.5.0", result.StdOut.ReplaceNewLine());
+                        Assert.Contains("10.7.0", result.StdOut.ReplaceNewLine());
                     }
                     else
                     {
