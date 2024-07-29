@@ -31,6 +31,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     *) echo "unsupported architecture"; exit 1 ;; \
   esac
 
+RUN chmod +x . ${BUILD_DIR}/defaultVersions.sh
 RUN . ${BUILD_DIR}/defaultVersions.sh
 
 ARG NODE18_VERSION=${NODE18_VERSION}
