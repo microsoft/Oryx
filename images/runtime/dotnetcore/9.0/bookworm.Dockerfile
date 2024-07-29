@@ -54,6 +54,13 @@ ENV ASPNETCORE_URLS=http://+:80 \
 
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 
+RUN . ${BUILD_DIR}/defaultVersions.sh
+
+ARG NET_CORE_APP_90_SHA = $NET_CORE_APP_90_SHA
+ARG ASPNET_CORE_APP_90_SHA = $ASPNET_CORE_APP_90_SHA
+ARG NET_CORE_APP_90 = $NET_CORE_APP_90
+ARG ASPNET_CORE_APP_90 = $ASPNET_CORE_APP_90
+
 # Install .NET Core
 RUN set -ex \
 # based on resolution on https://github.com/NuGet/Announcements/issues/49#issue-795386700
