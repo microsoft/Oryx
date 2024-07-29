@@ -54,7 +54,7 @@ ENV ASPNETCORE_URLS=http://+:80 \
 
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 
-RUN chmod +x . ${BUILD_DIR}/defaultVersions.sh
+RUN chmod +x ${BUILD_DIR}/defaultVersions.sh
 RUN . ${BUILD_DIR}/defaultVersions.sh
 
 ARG NET_CORE_APP_80_SHA=$NET_CORE_APP_80_SHA
