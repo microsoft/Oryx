@@ -33,7 +33,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
 
 RUN . ${BUILD_DIR}/defaultVersions.sh
 
-ARG NODE20_VERSION = ${NODE20_VERSION}
+ARG NODE20_VERSION=${NODE20_VERSION}
 ENV NODE_VERSION ${NODE20_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
@@ -46,9 +46,9 @@ RUN set -e \
     && rm nodejs-bullseye-${NODE20_VERSION}.tar.gz \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
-ARG NPM_VERSION = ${NPM_VERSION}
-ARG PM2_VERSION = ${PM2_VERSION}
-ARG NODE_APP_INSIGHTS_SDK_VERSION = ${NODE_APP_INSIGHTS_SDK_VERSION}
+ARG NPM_VERSION=${NPM_VERSION}
+ARG PM2_VERSION=${PM2_VERSION}
+ARG NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION}
 
 # RUN . ${BUILD_DIR}/__nodeVersions.sh \
 #     && npm install -g npm@${NPM_VERSION}

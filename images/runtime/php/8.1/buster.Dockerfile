@@ -117,8 +117,8 @@ ENV GPG_KEYS 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9
 
 RUN . ${BUILD_DIR}/defaultVersions.sh
 
-ARG PHP_VERSION = ${php81Version}
-ARG PHP_SHA256 = ${php81Version_SHA}
+ARG PHP_VERSION=${php81Version}
+ARG PHP_SHA256=${php81Version_SHA}
 ENV PHP_VERSION ${PHP_VERSION}
 ENV PHP_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror" PHP_MD5=""
 ENV PHP_SHA256 ${PHP_SHA256}
