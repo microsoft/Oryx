@@ -39,12 +39,9 @@ ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-RUN chmod +x ${BUILD_DIR}/defaultVersions.sh
-RUN . ${BUILD_DIR}/defaultVersions.sh
-
-ARG PYTHON_FULL_VERSION=$python312Version
-ARG PYTHON_VERSION=3.12
-ARG PYTHON_MAJOR_VERSION=3
+ARG PYTHON_FULL_VERSION
+ARG PYTHON_VERSION
+ARG PYTHON_MAJOR_VERSION
 
 ENV PYTHON_VERSION ${PYTHON_FULL_VERSION}
 RUN true

@@ -31,10 +31,7 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
     *) echo "unsupported architecture"; exit 1 ;; \
   esac
 
-RUN chmod +x ${BUILD_DIR}/defaultVersions.sh
-RUN . ${BUILD_DIR}/defaultVersions.sh
-
-ARG NODE18_VERSION=${NODE18_VERSION}
+ARG NODE18_VERSION
 ENV NODE_VERSION ${NODE18_VERSION}
 ENV NPM_CONFIG_LOGLEVEL info
 ARG BUILD_DIR=/tmp/oryx/build
@@ -46,9 +43,9 @@ RUN set -e \
     && rm nodejs-bullseye-${NODE18_VERSION}.tar.gz \
     && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
-ARG NPM_VERSION=${NPM_VERSION}
-ARG PM2_VERSION=${PM2_VERSION}
-ARG NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION}
+ARG NPM_VERSION
+ARG PM2_VERSION
+ARG NODE_APP_INSIGHTS_SDK_VERSION
 
 RUN npm install -g npm@${NPM_VERSION}
 RUN PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} ${IMAGES_DIR}/runtime/node/installDependencies.sh 
