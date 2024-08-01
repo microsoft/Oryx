@@ -63,7 +63,7 @@ ARG PHP_VERSION
 ARG PHP_SHA256
 ENV PHP_VERSION ${PHP_VERSION}
 ENV PHP_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror" PHP_MD5=""
-ENV PHP_SHA256 ${PHP_SHA256}e5524d5c5331a7e1765cd2d2234881e50" PHP_MD5=""
+ENV PHP_SHA256 ${PHP_SHA256}
 
 RUN set -eux; \
 	\
