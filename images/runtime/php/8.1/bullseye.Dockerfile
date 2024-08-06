@@ -157,9 +157,9 @@ RUN set -eux; \
 COPY images/runtime/php/8.1/docker-php-source /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-php-source
 
-RUN set -eux; \
-	\
+RUN ls /usr/local/bin
 
+RUN set -eux; \
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \

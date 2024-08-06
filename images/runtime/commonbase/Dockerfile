@@ -1,4 +1,4 @@
-ARG DEBIAN_FLAVOR
+ARG DEBIAN_FLAVOR="bullseye"
 FROM mcr.microsoft.com/mirror/docker/library/debian:${DEBIAN_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build

@@ -1,0 +1,48 @@
+export ASPNET_CORE_APP_60=6.0.31
+export ASPNET_CORE_APP_60_SHA=ebb20a3461bf9d1e3a5c91761452f5ef2e60873826ad3158493768a18d207319bccc40d6c1a64fd61dd8c22bad51c26689394b0e6a40c4bfe4cca00ce4c00db1
+export ASPNET_CORE_APP_70=7.0.20
+export ASPNET_CORE_APP_70_SHA=62ed9743972043a72e48d5aa2f7fdf3483cf684a32b051315004d1c778e9712bf66e5e7a97a5a53993fa8e92daf5bacaf2cdb3eae44bb9a9e25532b9a80f4f70
+export ASPNET_CORE_APP_80=8.0.6
+export ASPNET_CORE_APP_80_SHA=16cd54c431d80710a06037f8ea593e04764a80cbaad75e1db4225fbe3e7fce4c4d279f40757b9811e1c092436d2a1ca3be64c74cb190ebf78418a9865992ad12
+export ASPNET_CORE_APP_90=9.0.0-preview.6.24328.4
+export ASPNET_CORE_APP_90_SHA=4e178bbd26c70a3f1690c2b84b01c5a43cbf546adc878617fdf4c39d10e8063684420126261aacabcaa7f72c697290c1c06d3e93d9f3babe57c72d5fe98346fb
+export NET_CORE_APP_60=6.0.31
+export NET_CORE_APP_60_SHA=8df8d8bfe24104f41cc9715bb04fdc1811426c4d16f29336607c68a30d245fb8f36577d639e7da4865204fa85280fb5cdcf47e93183afe6b9e946e0c53df32c8
+export NET_CORE_APP_70=7.0.20
+export NET_CORE_APP_70_SHA=87855297338555a7b577d7e314e5dbf2c2350f8c867a489cd1e535634bad5c123a1871464d37fc9421837ff5d426c2eadecbe0f60bbf3fd32bc2461f47790a40
+export NET_CORE_APP_80=8.0.6
+export NET_CORE_APP_80_SHA=c0c5e93d4e68e2075c4c63336dc74246efb704ac9663411351efdefc4cc7da5a7750f44b8a23aebe959bb4308575bead443a41b2524ae03b29ac41929d27e0e0
+export NET_CORE_APP_90=9.0.0-preview.6.24327.7
+export NET_CORE_APP_90_SHA=09aa8c4e6ae3ada1a265a5cd2b46779a763163e4dd9a1892b44606b89cf147339e10b7c584dbcaf5404af0553f0ef6c5801436c217f4fe1a5d3bdb6d74aef1d1
+export NODE_APP_INSIGHTS_SDK_VERSION=1.8.7
+export node18Version=18.20.3
+export node20Version=20.14.0
+export NPM_VERSION=9.6.4
+export php81Version=8.1.29
+export php81Version_SHA=288884af60581d4284baba2ace9ca6d646f72facbd3e3c2dd2acc7fe6f903536
+export php82Version=8.2.20
+export php82Version_SHA=4474cc430febef6de7be958f2c37253e5524d5c5331a7e1765cd2d2234881e50
+export php83Version=8.3.8
+export php83Version_SHA=aea358b56186f943c2bbd350c9005b9359133d47e954cfc561385319ae5bb8d7
+export PM2_VERSION=5.3.1
+export python310Version=3.10.14
+export python311Version=3.11.8
+export python312Version=3.12.2
+export python38Version=3.8.19
+export python39Version=3.9.19
+export YARN_MAJOR_VERSION=1
+export YARN_MINOR_VERSION=1.22
+export YARN_VERSION=1.22.15
+export AI_CONNECTION_STRING="InstrumentationKey=4aadba6b-30c8-42db-9b93-024d5c62b887"
+export USER_DOTNET_AI_VERSION=2.8.42
+# export registry=oryxdevmcr.azurecr.io
+# export StorageAccountName=oryxsdksdev
+# export sdkStorageBaseUrl=https://oryxsdksdev.blob.core.windows.net
+# export Subscription='Oryx (e13e3c2a-b6ed-4969-875a-28bec9f4513f)'
+# export Endpoint=OryxDevMcr
+export php_run_base_bullseye=oryxdevmcr.azurecr.io/private/oryx/php-run-base-bullseye:20240730.1
+export php_run_base_buster=oryxdevmcr.azurecr.io/private/oryx/php-run-base-buster:20240730.1
+export php_run_base_bookworm=oryxdevmcr.azurecr.io/private/oryx/php-run-base-bookworm:20240730.1
+
+
+
