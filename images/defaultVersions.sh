@@ -35,14 +35,6 @@ export YARN_MINOR_VERSION=1.22
 export YARN_VERSION=1.22.15
 export AI_CONNECTION_STRING="InstrumentationKey=4aadba6b-30c8-42db-9b93-024d5c62b887"
 export USER_DOTNET_AI_VERSION=2.8.42
-# export registry=oryxdevmcr.azurecr.io
-# export StorageAccountName=oryxsdksdev
-# export sdkStorageBaseUrl=https://oryxsdksdev.blob.core.windows.net
-# export Subscription='Oryx (e13e3c2a-b6ed-4969-875a-28bec9f4513f)'
-# export Endpoint=OryxDevMcr
-export php_run_base_bullseye=oryxdevmcr.azurecr.io/private/oryx/php-run-base-bullseye:20240730.1
-export php_run_base_buster=oryxdevmcr.azurecr.io/private/oryx/php-run-base-buster:20240730.1
-export php_run_base_bookworm=oryxdevmcr.azurecr.io/private/oryx/php-run-base-bookworm:20240730.1
 
 
 

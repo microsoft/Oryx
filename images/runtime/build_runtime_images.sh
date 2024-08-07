@@ -1,16 +1,47 @@
 #!/bin/bash
 
+if ! command -v yq &> /dev/null
+then
+    echo "yq could not be found, installing..."
+    sudo apt-get update
+    sudo apt-get install -y yq
+fi
+
+setting_variables_yaml_file="./images/setting_variables.yml"
+
+# Get the absolute path
+absolute_path=$(realpath "$setting_variables_yaml_file")
+
+# Print the absolute path to verify
+echo "The absolute path to the YAML file is: $absolute_path"
+
+declare -r REPO_DIR=$(cd images && pwd)
+keys=$(yq e '.variables | keys' $setting_variables_yaml_file | sed 's/^ *//g' )
+
+for key in $keys; do
+  echo "$key"
+done
+
+for key in $keys; do
+    value=$(yq e ".variables.$key" $setting_variables_yaml_file)
+    export $key=$value
+done
+
+for key in $keys; do
+  echo "$key: ${!key}"
+done
+
 stack_name=$1;
 stack_version=$2;
 debian_flavor=$3;
 
 set -ex
 
-declare -r REPO_DIR=$(cd images && pwd)
+# declare -r REPO_DIR=$(cd images && pwd)
 
 echo "Current directory: $(pwd)"
 
-source $REPO_DIR/defaultVersions.sh
+# source $REPO_DIR/defaultVersions.sh
 
 docker build -f ./images/runtime/commonbase/Dockerfile -t oryx_run_base_$debian_flavor --build-arg DEBIAN_FLAVOR=$debian_flavor .
 
@@ -89,23 +120,23 @@ case $stack_name in
         case $stack_version in
             "3.8")
                 curl -SL --output python-$debian_flavor-$python38Version.tar.gz https://oryxsdksdev.blob.core.windows.net/python/python-$debian_flavor-$python38Version.tar.gz
-                docker build -f ./images/runtime/python/template.Dockerfile -t python38_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$(python38Version) --build-arg PYTHON_VERSION=3.8 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
+                docker build -f ./images/runtime/python/template.Dockerfile -t python38_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$python38Version --build-arg PYTHON_VERSION=3.8 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
             ;;
 
             "3.9")
-                docker build -f ./images/runtime/python/template.Dockerfile -t python39_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$(python39Version) --build-arg PYTHON_VERSION=3.9 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
+                docker build -f ./images/runtime/python/template.Dockerfile -t python39_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$python39Version --build-arg PYTHON_VERSION=3.9 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
             ;;
 
             "3.10")
-                docker build -f ./images/runtime/python/template.Dockerfile -t python310_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$(python310Version) --build-arg PYTHON_VERSION=3.10 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
+                docker build -f ./images/runtime/python/template.Dockerfile -t python310_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$python310Version --build-arg PYTHON_VERSION=3.10 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
             ;;
 
             "3.11")
-                docker build -f ./images/runtime/python/template.Dockerfile -t python311_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$(python311Version) --build-arg PYTHON_VERSION=3.11 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
+                docker build -f ./images/runtime/python/template.Dockerfile -t python311_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$python311Version --build-arg PYTHON_VERSION=3.11 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
             ;;
 
             "3.12")
-                docker build -f ./images/runtime/python/template.Dockerfile -t python312_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$(python3122Version) --build-arg PYTHON_VERSION=3.12 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
+                docker build -f ./images/runtime/python/template.Dockerfile -t python312_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$python3122Version --build-arg PYTHON_VERSION=3.12 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
             ;;
         esac
     ;;
