@@ -37,3 +37,18 @@ variables:
   USER_DOTNET_AI_VERSION: 2.8.42
   AI_CONNECTION_STRING: "1234(RANDOMVALUE)" 
   SDK_STORAGE_BASE_URL_VALUE: 'https://oryxsdksdev.blob.core.windows.net'
+  node18DebianFlavors: 'bullseye'
+  node20DebianFlavors: 'bullseye,bookworm'
+  python38DebianFlavors: 'buster,bullseye'
+  python39DebianFlavors: 'buster,bullseye'
+  python310DebianFlavors: 'buster,bullseye'
+  python311DebianFlavors: 'bullseye,bookworm'
+  python312DebianFlavors: 'bullseye,bookworm'
+  dotnet60DebianFlavors: 'buster,bullseye'
+  dotnet70DebianFlavors: 'buster,bullseye'
+  dotnet80DebianFlavors: 'bullseye,bookworm'
+  dotnet90DebianFlavors: 'bookworm'
+  php81DebianFlavors: 'bullseye,buster'
+  php82DebianFlavors: 'bullseye,buster'
+  php83DebianFlavors: 'bullseye,buster,bookworm'
+  
