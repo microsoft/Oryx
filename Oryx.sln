@@ -29,7 +29,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{0FEBE7DD
 	    build\buildRunTimeImageBases.sh = build\buildRunTimeImageBases.sh
 		build\buildRunTimeImages.sh = build\buildRunTimeImages.sh
 		build\buildSln.sh = build\buildSln.sh
-		build\buildTestBuildImages.sh = build\buildTestBuildImages.sh
 		build\constants.yaml = build\constants.yaml
 		build\testBuildImages.sh = build\testBuildImages.sh
 		build\testBuildScriptGenerator.sh = build\testBuildScriptGenerator.sh
