@@ -66,15 +66,15 @@ case $stack_name in
         docker build -f ./images/runtime/commonbase/nodeRuntimeBase.Dockerfile -t oryx_node_run_base_$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
        case $stack_version in
             "18")
-                curl -SL --output "nodejs-$debian_flavor-18.20.3.tar.gz" "https://oryxsdksdev.blob.core.windows.net/nodejs/nodejs-$debian_flavor-18.20.3.tar.gz"
+                curl -SL --output "nodejs-$debian_flavor-$node18Version.tar.gz" "https://oryxsdksdev.blob.core.windows.net/nodejs/nodejs-$debian_flavor-$node18Version.tar.gz"
                 docker build -f ./images/runtime/node/18/$debian_flavor.Dockerfile -t node18_$debian_flavor --build-arg NODE18_VERSION=$node18Version --build-arg BASE_IMAGE="docker.io/library/oryx_node_run_base_$debian_flavor" --build-arg NPM_VERSION=$NPM_VERSION --build-arg PM2_VERSION=$PM2_VERSION --build-arg NODE_APP_INSIGHTS_SDK_VERSION=$NODE_APP_INSIGHTS_SDK_VERSION --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
-                rm -f ./nodejs-$debian_flavor-18.20.3.tar.gz
+                rm -f ./nodejs-$debian_flavor-$node18Version.tar.gz
             ;;
 
             "20")
-                curl -SL --output "nodejs-$debian_flavor-20.14.0.tar.gz" "https://oryxsdksdev.blob.core.windows.net/nodejs/nodejs-$debian_flavor-20.14.0.tar.gz"
+                curl -SL --output "nodejs-$debian_flavor-$node20Version.tar.gz" "https://oryxsdksdev.blob.core.windows.net/nodejs/nodejs-$debian_flavor-$node20Version.tar.gz"
                 docker build -f ./images/runtime/node/20/$debian_flavor.Dockerfile -t node20_$debian_flavor --build-arg NODE20_VERSION=$node20Version --build-arg BASE_IMAGE="docker.io/library/oryx_node_run_base_$debian_flavor" --build-arg NPM_VERSION=$NPM_VERSION --build-arg PM2_VERSION=$PM2_VERSION --build-arg NODE_APP_INSIGHTS_SDK_VERSION=$NODE_APP_INSIGHTS_SDK_VERSION --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
-                rm -f ./nodejs-$debian_flavor-20.14.0.tar.gz
+                rm -f ./nodejs-$debian_flavor-$node20Version.tar.gz
             ;;
         esac
     ;;
