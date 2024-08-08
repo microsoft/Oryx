@@ -80,15 +80,19 @@ RUN set -ex \
 ARG IMAGES_DIR="/opt/tmp/images"
 ARG BUILD_DIR="/opt/tmp/build"
 
-COPY images/yarn-v1.22.15.tar.gz .
+ARG YARN_VERSION
+ARG YARN_MINOR_VERSION
+ARG YARN_MAJOR_VERSION
+
+COPY images/yarn-v$YARN_VERSION.tar.gz .
 RUN set -e \
     && yarnCacheFolder="/usr/local/share/yarn-cache" \
     && mkdir -p $yarnCacheFolder \
     && chmod 777 $yarnCacheFolder \
     && mkdir -p /opt/yarn \
-    && tar -xzf yarn-v1.22.15.tar.gz -C /opt/yarn \
-    && mv /opt/yarn/yarn-v1.22.15 /opt/yarn/1.22.15 \
-    && rm yarn-v1.22.15.tar.gz
+    && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
+    && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
+    && rm yarn-v$YARN_VERSION.tar.gz
 
 COPY nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz .
 RUN set -e \
@@ -96,10 +100,6 @@ RUN set -e \
     && tar -xzf nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz -C /usr/local \
     && rm nodejs-${DEBIAN_FLAVOR}-16.20.0.tar.gz \
     && ln -sfn "/opt/nodejs/16.20.0" "/opt/nodejs/16.20"
-
-ARG YARN_VERSION
-ARG YARN_MINOR_VERSION
-ARG YARN_MAJOR_VERSION
 
 RUN set -ex \
     # && . ${BUILD_DIR}/__nodeVersions.sh \
