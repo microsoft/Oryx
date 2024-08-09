@@ -40,7 +40,7 @@ docker build -f ./images/runtime/commonbase/Dockerfile -t oryx_run_base_$debian_
 
 case $stack_name in
     "dotnet") 
-        curl -SL --output DotNetCoreAgent.2.8.42.zip https://oryxsdksdev.blob.core.windows.net/appinsights-agent/DotNetCoreAgent.2.8.42.zip
+        curl -SL --output "DotNetCoreAgent.$DotNetCoreAgent_version.zip" "https://oryxsdksdev.blob.core.windows.net/appinsights-agent/DotNetCoreAgent.$DotNetCoreAgent_version.zip"
        case $stack_version in
             "6.0")
                 docker build -f ./images/runtime/dotnetcore/6.0/$debian_flavor.Dockerfile -t dotnet6_image_$debian_flavor --build-arg NET_CORE_APP_60_SHA=$NET_CORE_APP_60_SHA --build-arg ASPNET_CORE_APP_60_SHA=$ASPNET_CORE_APP_60_SHA --build-arg NET_CORE_APP_60=$NET_CORE_APP_60 --build-arg ASPNET_CORE_APP_60=$ASPNET_CORE_APP_60 --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
