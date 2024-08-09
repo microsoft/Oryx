@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${DEBIAN_FLAVOR} AS 
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 COPY platforms/php/prereqs /php
-COPY build/__phpVersions.sh /php/
+# COPY build/__phpVersions.sh /php/
 COPY platforms/php/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 

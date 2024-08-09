@@ -4,7 +4,7 @@ FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${DEBIAN_FLAVOR}
 ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 
-COPY build/__pythonVersions.sh /tmp/
+# COPY build/__pythonVersions.sh /tmp/
 
 COPY platforms/python/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
