@@ -270,7 +270,6 @@ CMD ["php-fpm"]
 ## base dockerfile
 SHELL ["/bin/bash", "-c"]
 
-
 # An environment variable for oryx run-script to know the origin of php image so that
 # start-up command can be determined while creating run script
 ENV PHP_ORIGIN php-fpm
