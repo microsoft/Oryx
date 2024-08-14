@@ -18,7 +18,8 @@ COPY binaries /opt/buildscriptgen/
 COPY src src
 COPY build/FinalPublicKey.snk build/
 
-RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
+RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript \
+    && chmod +x /opt/buildscriptgen/createdump
 RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
 
 FROM ${BASE_IMAGE} AS main
