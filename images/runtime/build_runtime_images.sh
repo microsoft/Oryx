@@ -7,20 +7,20 @@ then
     sudo apt-get install -y yq
 fi
 
-setting_variables_yaml_file="./images/setting_variables.yml"
+constants_yaml_file="./images/constants.yml"
 
 # Get the absolute path
-absolute_path=$(realpath "$setting_variables_yaml_file")
+absolute_path=$(realpath "$constants_yaml_file")
 
 # Print the absolute path to verify
 echo "The absolute path to the YAML file is: $absolute_path"
 
 declare -r REPO_DIR=$(cd images && pwd)
 
-keys=$(yq e '.variables | keys' $setting_variables_yaml_file | sed 's/^[- ]*//g')
+keys=$(yq e '.variables | keys' $constants_yaml_file | sed 's/^[- ]*//g')
 
 for key in $keys; do
-    value=$(yq e ".variables.$key" $setting_variables_yaml_file)
+    value=$(yq e ".variables.$key" $constants_yaml_file)
     export $key=$value
 done
 
