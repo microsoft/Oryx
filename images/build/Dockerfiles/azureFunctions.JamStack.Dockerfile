@@ -102,7 +102,6 @@ RUN set -e \
     && ln -sfn "/opt/nodejs/16.20.0" "/opt/nodejs/16.20"
 
 RUN set -ex \
-    # && . ${BUILD_DIR}/__nodeVersions.sh \
     && ln -s $YARN_VERSION /opt/yarn/stable \
     && ln -s $YARN_VERSION /opt/yarn/latest \
     && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \

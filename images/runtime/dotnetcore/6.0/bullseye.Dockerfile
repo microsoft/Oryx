@@ -63,15 +63,12 @@ ARG ASPNET_CORE_APP_60
 
 # Install .NET Core
 RUN set -ex \
-    # && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
     && curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Runtime/$NET_CORE_APP_60/dotnet-runtime-$NET_CORE_APP_60-linux-x64.tar.gz \
     && echo "$NET_CORE_APP_60_SHA dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
-    # Install ASP.NET Core
-    # && . ${BUILD_DIR}/__dotNetCoreRunTimeVersions.sh \
     && curl -SL --output aspnetcore.tar.gz https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_60/aspnetcore-runtime-$ASPNET_CORE_APP_60-linux-x64.tar.gz \
     && echo "$ASPNET_CORE_APP_60_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
