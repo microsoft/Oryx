@@ -109,7 +109,7 @@ RUN set -ex \
 RUN set -ex \
     && mkdir -p /links \
     && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
-                       
+
 ARG PYTHON38_VERSION
 ENV PYTHON38_VERSION ${PYTHON38_VERSION}
 COPY python-${DEBIAN_FLAVOR}-${PYTHON38_VERSION}.tar.gz .
