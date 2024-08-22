@@ -1,4 +1,4 @@
-ARG BASE_BUILDER_IMAGE="mcr.microsoft.com/oryx/builder:debian-bullseye-20231107.1"
+ARG BASE_BUILDER_IMAGE="mcr.microsoft.com/oryx/builder:debian-bullseye-20231107.2"
 FROM ${BASE_BUILDER_IMAGE}
 
 # these environment variables are generally going to be overwritten:
@@ -69,6 +69,8 @@ RUN mkdir -p /analyzed && \
 # Give cnb user permission to /cache directory
 RUN mkdir -p /cache && \
 	chown -R ${CNB_USER_ID}:${CNB_GROUP_ID} /cache
+
+ADD lifecycle /cnb/lifecycle
 
 USER ${CNB_USER_ID}:${CNB_GROUP_ID}
 
