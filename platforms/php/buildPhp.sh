@@ -9,11 +9,12 @@ set -ex
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
 source $REPO_DIR/platforms/__common.sh
-source $REPO_DIR/build/__phpVersions.sh
+# source $REPO_DIR/build/__phpVersions.sh
 debianFlavor=$1
 sdkStorageAccountUrl="$2"
 phpType=$3
 phpPlatformDir="$REPO_DIR/platforms/php"
+
 
 buildPhp() {
 	local version="$1"
@@ -114,7 +115,7 @@ buildPhpComposer() {
 		set -ex
 		composerDir="/opt/php-composer/$version"
 		mkdir -p "$composerDir"
-		export phpbin="/opt/php/$PHP81_VERSION/bin/php" 
+		export phpbin="/opt/php/$PHP_VERSION/bin/php" 
 		$phpbin /tmp/platforms/php/composer-setup.php --version=$version --install-dir="$composerDir" 
 		compressedSdkDir="/tmp/compressedSdk/php-composer"
 		mkdir -p "$compressedSdkDir"

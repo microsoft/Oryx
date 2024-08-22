@@ -115,9 +115,12 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
 ENV GPG_KEYS 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544 F1F692238FBC1666E5A5CCD4199F9DFEF6FFBAFD
 
-ENV PHP_VERSION 8.1.29
-ENV PHP_URL="https://www.php.net/get/php-8.1.29.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-8.1.29.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="288884af60581d4284baba2ace9ca6d646f72facbd3e3c2dd2acc7fe6f903536" PHP_MD5=""
+ARG PHP_VERSION
+ARG PHP_SHA256
+
+ENV PHP_VERSION ${PHP_VERSION}
+ENV PHP_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror" PHP_MD5=""
+ENV PHP_SHA256 ${PHP_SHA256} 
 
 RUN set -eux; \
 	\
@@ -155,8 +158,6 @@ COPY images/runtime/php/8.1/docker-php-source /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-php-source
 
 RUN set -eux; \
-	\
-
 	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
 	apt-get install -y --no-install-recommends \

@@ -114,23 +114,25 @@ RUN apt-get update \
     && echo "cli-builder" > /opt/oryx/.imagetype \
     && echo "DEBIAN|${DEBIAN_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
+ARG YARN_VERSION
+ARG YARN_MINOR_VERSION
+ARG YARN_MAJOR_VERSION
+
 # Install Hugo and Yarn for node applications
 ARG BUILD_DIR="/opt/tmp/build"
 ARG IMAGES_DIR="/opt/tmp/images"
 RUN ${IMAGES_DIR}/build/installHugo.sh
-COPY images/yarn-v1.22.15.tar.gz .
+COPY images/yarn-v$YARN_VERSION.tar.gz .
 RUN set -ex \
     && yarnCacheFolder="/usr/local/share/yarn-cache" \
     && mkdir -p $yarnCacheFolder \
     && chmod 777 $yarnCacheFolder \
-    && . ${BUILD_DIR}/__nodeVersions.sh \
     && mkdir -p /opt/yarn \
-    && tar -xzf yarn-v1.22.15.tar.gz -C /opt/yarn \
-    && mv /opt/yarn/yarn-v1.22.15 /opt/yarn/1.22.15 \
-    && rm yarn-v1.22.15.tar.gz
-    
+    && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/yarn \
+    && mv /opt/yarn/yarn-v$YARN_VERSION /opt/yarn/$YARN_VERSION \
+    && rm yarn-v$YARN_VERSION.tar.gz
+
 RUN set -ex \
-    && . ${BUILD_DIR}/__nodeVersions.sh \
     && ln -s $YARN_VERSION /opt/yarn/stable \
     && ln -s $YARN_VERSION /opt/yarn/latest \
     && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \

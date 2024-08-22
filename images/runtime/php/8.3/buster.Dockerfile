@@ -115,9 +115,11 @@ ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
 ENV GPG_KEYS 1198C0117593497A5EC5C199286AF1F9897469DC AFD8691FDAEDF03BDF6E460563F15A9B715376CA C28D937575603EB4ABB725861C0779DC5C0A9DE4
 
-ENV PHP_VERSION 8.3.9
-ENV PHP_URL="https://www.php.net/get/php-8.3.9.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-8.3.9.tar.xz.asc/from/this/mirror"
-ENV PHP_SHA256="bf4d7b8ea60a356064f88485278bd6f941a230ec16f0fc401574ce1445ad6c77" PHP_MD5=""
+ARG PHP_VERSION
+ARG PHP_SHA256
+ENV PHP_VERSION ${PHP_VERSION}
+ENV PHP_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz/from/this/mirror" PHP_ASC_URL="https://www.php.net/get/php-${PHP_VERSION}.tar.xz.asc/from/this/mirror" PHP_MD5=""
+ENV PHP_SHA256$ {PHP_SHA256}
 
 RUN set -eux; \
 	\
@@ -279,9 +281,6 @@ CMD ["apache2-foreground"]
 
 ## base dockerfile
 SHELL ["/bin/bash", "-c"]
-
-ARG PHP_VERSION
-ENV PHP_VERSION ${PHP_VERSION}
 
 RUN a2enmod rewrite expires include deflate remoteip headers
 

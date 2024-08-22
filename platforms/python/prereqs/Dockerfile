@@ -8,7 +8,7 @@ ARG DEBIAN_HACK_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 ENV DEBIAN_HACK_FLAVOR=$DEBIAN_HACK_FLAVOR
 
-COPY build/__pythonVersions.sh /tmp/
+# COPY build/__pythonVersions.sh /tmp/
 
 COPY platforms/python/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh

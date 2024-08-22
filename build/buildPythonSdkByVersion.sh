@@ -7,8 +7,6 @@
 set -ex
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
-source $REPO_DIR/build/__pythonVersions.sh
-
 pythonVersionGPG=''
 
 version="$1"
