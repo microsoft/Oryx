@@ -1,5 +1,7 @@
 # #!/bin/bash
 
+
+echo "python38Version is $python38"
 apt-get update
 apt-get install -y python3 python3-pip
 
