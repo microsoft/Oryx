@@ -1,10 +1,12 @@
 # #!/bin/bash
 
-printenv
 
 
 echo "python38Version is $python38"
 echo "dotnet6 is $ASPNET_CORE_APP_60"
+echo "1234"
+printenv
+
 apt-get update
 apt-get install -y python3 python3-pip
 
