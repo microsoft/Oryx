@@ -4,10 +4,10 @@ import requests
 url = "https://www.python.org/downloads/"
 response = requests.get(url)
 
-with open("python_version.xml", "w", encoding="utf-8") as file:
+with open("generated_files/python_version.xml", "w", encoding="utf-8") as file:
     file.write(BeautifulSoup(response.content, 'html.parser').prettify())
 
-with open('python_version.xml','r') as file:
+with open('generated_files/python_version.xml','r') as file:
     content = file.read()
 
 soup = BeautifulSoup(content, 'lxml-xml')
@@ -36,5 +36,5 @@ for version_tab in version_table:
     second_part=version_full[index_of_colon1+1:index_of_colon2]
     key="".join(["python",first_part,second_part,"Version"])
 
-    with open('python_latest_versions.txt', 'a') as version_file:
+    with open('generated_files/python_latest_versions.txt', 'a') as version_file:
         version_file.write(f"{key}={version}\n")

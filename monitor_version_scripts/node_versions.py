@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 
-with open('node_version.xml','r') as file:
+with open('generated_files/node_version.xml','r') as file:
     content = file.read()
 
 soup = BeautifulSoup(content, 'lxml-xml')
@@ -14,5 +14,5 @@ for version_elements in versions_table:
 
     # globals()[f'node{major_version}Version']=version_element.text[1:]
 
-    with open('node_latest_versions.txt', 'a') as version_file:
+    with open('generated_files/node_latest_versions.txt', 'a') as version_file:
         version_file.write(f"node{major_version}Version={version_element.text[1:]}\n")

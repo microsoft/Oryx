@@ -1,16 +1,15 @@
 # #!/bin/bash
 
-echo "python38Version is $python38"
-echo "dotnet6 is $ASPNET_CORE_APP_60"
-echo "1234"
 printenv
 
 apt-get update
 apt-get install -y python3 python3-pip
 
-curl -o php_version.xml "https://www.php.net/downloads.php"
-curl -o node_version.xml "https://nodejs.org/en/about/previous-releases"
-curl -o dotnet_version.xml "https://dotnet.microsoft.com/en-us/download/dotnet"
+mkdir generated_files
+
+curl -o generated_files/php_version.xml "https://www.php.net/downloads.php"
+curl -o generated_files/node_version.xml "https://nodejs.org/en/about/previous-releases"
+curl -o generated_files/dotnet_version.xml "https://dotnet.microsoft.com/en-us/download/dotnet"
 
 pip install bs4
 pip install lxml
@@ -27,10 +26,10 @@ create_versionfile() {
     fi
 }
 
-create_versionfile node_latest_versions.txt
-create_versionfile php_latest_versions.txt
-create_versionfile python_latest_versions.txt
-create_versionfile dotnet_latest_versions.txt
+create_versionfile generated_files/node_latest_versions.txt
+create_versionfile generated_files/php_latest_versions.txt
+create_versionfile generated_files/python_latest_versions.txt
+create_versionfile generated_files/dotnet_latest_versions.txt
 
 python3 php_versions.py 
 python3 node_versions.py
@@ -51,12 +50,16 @@ split_lines() {
 
                 if yq eval ".variables | has(\"$key\")" latest_stack_versions.yaml | grep -q 'true'; then
                     if [[ "$key" != *"python"* ]]; then
+                        yq eval "del(.variables.$key)" -i latest_stack_versions.yaml
                         yq eval ".variables.$key = \"$value\"" -i latest_stack_versions.yaml
                     else
+                        #this is only for python, in https://www.python.org/downloads/ all available minor versions are present of a major version
+                        #so update with latest one
                         current_value=$(yq eval ".variables.$key" latest_stack_versions.yaml)
 
                         # Update the key in latest_stack_versions.yaml
                         if [[ $(printf '%s\n' "$current_value" "$value" | sort -V | tail -n 1) != "$current_value" ]]; then
+                            yq eval "del(.variables.$key)" -i latest_stack_versions.yaml
                             yq eval ".variables.$key = \"$value\"" -i latest_stack_versions.yaml
                             echo "Updated $key in latest_stack_versions.yaml"
                         fi
@@ -70,10 +73,10 @@ split_lines() {
     done < "$1"
 }
 
-split_lines "node_latest_versions.txt"
-split_lines "python_latest_versions.txt"
-split_lines "php_latest_versions.txt"
-split_lines "dotnet_latest_versions.txt"
+split_lines "generated_files/node_latest_versions.txt"
+split_lines "generated_files/python_latest_versions.txt"
+split_lines "generated_files/php_latest_versions.txt"
+split_lines "generated_files/dotnet_latest_versions.txt"
 
 chmod +x update_constants.sh
 ./update_constants.sh

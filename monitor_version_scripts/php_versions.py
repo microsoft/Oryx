@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 
-with open('php_version.xml','r') as file:
+with open('generated_files/php_version.xml','r') as file:
     content = file.read()
 
 soup = BeautifulSoup(content, 'lxml-xml')
@@ -23,6 +23,6 @@ for element in elements:
             if sha256_spans:
                 x=version[2]
 
-                with open('php_latest_versions.txt', 'a') as version_file:
+                with open('generated_files/php_latest_versions.txt', 'a') as version_file:
                     version_file.write(f"php8{x}Version={version},")
                     version_file.write(f"php8{x}Version_SHA={sha256_spans[0].text}\n")

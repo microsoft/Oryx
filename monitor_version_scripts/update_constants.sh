@@ -43,9 +43,14 @@ update_constants_file() {
             fi
 
         else
-            old_value=$(yq eval ".variables.$key" $Temp_constants_FILE)
-            yq eval ".variables.$key = \"$old_value\"" -i $constants_FILE
-            echo "constants.yml with old value $key=$old_value"
+            if yq eval ".variables | has(\"$key\")" $Temp_constants_FILE | grep -q 'true'; then
+                old_value=$(yq eval ".variables.$key" $Temp_constants_FILE)
+                yq eval ".variables.$key = \"$old_value\"" -i $constants_FILE
+                echo "constants.yml with old value $key=$old_value"
+            else
+                yq eval ".variables.$key = \"$value\"" -i $constants_FILE
+                echo "Added $key = $value in constants.yml"
+            fi
         fi
 
     done < <(yq e '.[]' "$1")

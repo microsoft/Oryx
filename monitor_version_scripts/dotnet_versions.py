@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 
-with open('dotnet_version.xml','r') as file:
+with open('generated_files/dotnet_version.xml','r') as file:
     content = file.read()
 
 soup = BeautifulSoup(content, 'lxml-xml')
@@ -35,7 +35,7 @@ for index,each_version in enumerate(version_table):
         x="".join([first_part,second_part])
 
 
-        with open('dotnet_latest_versions.txt', 'a') as version_file:
+        with open('generated_files/dotnet_latest_versions.txt', 'a') as version_file:
             version_file.write(f"NET_CORE_APP_{x}={version},")
             version_file.write(f"NET_CORE_APP_{x}_SHA={check_sum_netcore}\n")
             version_file.write(f"ASPNET_CORE_APP_{x}={version},")
