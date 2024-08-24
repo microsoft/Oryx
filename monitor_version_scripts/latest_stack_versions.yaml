@@ -28,4 +28,5 @@ variables:
   python312Version: 3.12.2
   python38Version: 3.8.19
   python39Version: 3.9.19
+  abcd: 1234
   

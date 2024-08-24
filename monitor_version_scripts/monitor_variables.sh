@@ -1,7 +1,5 @@
 # #!/bin/bash
 
-
-
 echo "python38Version is $python38"
 echo "dotnet6 is $ASPNET_CORE_APP_60"
 echo "1234"
