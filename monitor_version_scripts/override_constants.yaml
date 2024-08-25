@@ -22,6 +22,11 @@ variables:
   php81DebianFlavors: 'bullseye,buster'
   php82DebianFlavors: 'bullseye,buster'
   php83DebianFlavors: 'bullseye,buster,bookworm'
+  debianFlavors: 'buster,bullseye,bookworm'
+  dotnetDebianFlavors: 'bookworm,bullseye,buster'
+  nodejsDebianFlavors: 'bookworm,bullseye'
+  phpDebianFlavors: 'bookworm,bullseye,buster'
+  pythonDebianFlavors: 'bookworm,bullseye,buster'
   DotNetCoreAgent_version: 2.8.42
   GitHubActions_BaseImage_Buster: 'mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:be7137ba47bdf421d3950abe1200322631e8db11b468cd6f0ebf3d687e556c90'
   GitHubActions_BaseImage_Bullseye: 'mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:25c86292946cce832340fe808ac47e5a845b68c488f177a47ff44fd59040397d'
