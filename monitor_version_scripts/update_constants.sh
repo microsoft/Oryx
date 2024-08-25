@@ -13,6 +13,10 @@ cat <<EOL > $constants_FILE
 variables:
 EOL
 
+Updated_ValuesFILE=Updated_Values.txt
+cat <<EOL > $Updated_ValuesFILE
+EOL
+
 update_constants_file() {
     while IFS= read -r line; do
         # Use yq to parse the YAML line and extract the key and value
@@ -31,15 +35,38 @@ update_constants_file() {
             echo "The value of $key is: $valueInVariableGroup"
 
             if [ "$valueInVariableGroup" = "latest" ]; then
-                yq eval ".variables.$key = \"$value\"" -i $constants_FILE
-                echo "Updated constants.yml with latest value $key=$value"
+                old_value=$(yq eval ".variables.$key" $Temp_constants_FILE)
+
+                if [ $old_value = $value ]; then
+                    echo "$key is already upto date"
+                else
+                    yq eval ".variables.$key = \"$value\"" -i $constants_FILE
+                    echo "Updated constants.yml with latest value $key=$value"
+
+                    if [ -n $old_value ]; then
+                        update_line="Updated $key from $old_value to $value"
+                    else
+                        update_line="Added $key to $value"
+                    fi
+
+                    echo "$update_line" >> "$Updated_ValuesFILE"
+                fi
+
             elif [ "$valueInVariableGroup" = "dont_change" ]; then
                 old_value=$(yq eval ".variables.$key" $Temp_constants_FILE)
                 yq eval ".variables.$key = \"$old_value\"" -i $constants_FILE
                 echo "constants.yml with old value $key=$old_value"
             else
-                yq eval ".variables.$key = \"$valueInVariableGroup\"" -i $constants_FILE
-                echo "Updated constants.yml with given value $key=$valueInVariableGroup"
+                old_value=$(yq eval ".variables.$key" $Temp_constants_FILE)
+                if [ $old_value = $valueInVariableGroup ]; then
+                    echo "$key has required value in constants.yml"
+                    yq eval ".variables.$key = \"$valueInVariableGroup\"" -i $constants_FILE
+                else
+                    yq eval ".variables.$key = \"$valueInVariableGroup\"" -i $constants_FILE
+                    echo "Updated constants.yml with given value $key=$valueInVariableGroup"
+                    update_line="Updated $key from $old_value to $valueInVariableGroup"
+                    echo "$update_line" >> "$Updated_ValuesFILE"
+                fi
             fi
 
         else
