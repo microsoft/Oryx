@@ -50,7 +50,6 @@ split_lines() {
 
                 if yq eval ".variables | has(\"$key\")" latest_stack_versions.yaml | grep -q 'true'; then
                     if [[ "$key" != *"python"* ]]; then
-                        yq eval "del(.variables.$key)" -i latest_stack_versions.yaml
                         yq eval ".variables.$key = \"$value\"" -i latest_stack_versions.yaml
                     else
                         #this is only for python, in https://www.python.org/downloads/ all available minor versions are present of a major version
@@ -59,7 +58,6 @@ split_lines() {
 
                         # Update the key in latest_stack_versions.yaml
                         if [[ $(printf '%s\n' "$current_value" "$value" | sort -V | tail -n 1) != "$current_value" ]]; then
-                            yq eval "del(.variables.$key)" -i latest_stack_versions.yaml
                             yq eval ".variables.$key = \"$value\"" -i latest_stack_versions.yaml
                             echo "Updated $key in latest_stack_versions.yaml"
                         fi
@@ -77,6 +75,8 @@ split_lines "generated_files/node_latest_versions.txt"
 split_lines "generated_files/python_latest_versions.txt"
 split_lines "generated_files/php_latest_versions.txt"
 split_lines "generated_files/dotnet_latest_versions.txt"
+
+yq eval -i 'sort_keys(..)' "latest_stack_versions.yaml"
 
 chmod +x update_constants.sh
 ./update_constants.sh
