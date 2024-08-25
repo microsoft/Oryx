@@ -86,4 +86,7 @@ chmod +x update_constants.sh
 # # compare values latest values for each stack and then update the latest_stack_versions.yaml
 # # as of now, only minor versions
 
+rm -r generated_files
+
+
 
