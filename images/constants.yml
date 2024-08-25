@@ -26,32 +26,67 @@ variables:
   GitHubActions_BaseImage_Buster: mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:be7137ba47bdf421d3950abe1200322631e8db11b468cd6f0ebf3d687e556c90
   GitHubActions_BaseImage_Bullseye: mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:25c86292946cce832340fe808ac47e5a845b68c488f177a47ff44fd59040397d
   GitHubActions_BaseImage_Bookworm: mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:ff838f535d6e3bace9ab7eefa360d648ba529f9aa57fdd709335f8ef0516cdde
-  ASPNET_CORE_APP_60: 6.0.32
-  ASPNET_CORE_APP_60_SHA: 1849c0073f12477b94357a1afb1cbd4ad67764263528b66037c19d554df41e681e4b41c0804b106319fe661d0bc3bae9e29e4913c0d0df33861cf6f32ebaac96
+  ASPNET_CORE_APP_60: 6.0.33
+  ASPNET_CORE_APP_60_SHA: 12b34fe1d0a679ff63db4bf002a2988194d9e64d0e107d128c247821dd939a86eced0fe453c0638d3742dac3a32e533792c26299400fb4fd5566b75177e66875
   ASPNET_CORE_APP_70: 7.0.20
   ASPNET_CORE_APP_70_SHA: 62ed9743972043a72e48d5aa2f7fdf3483cf684a32b051315004d1c778e9712bf66e5e7a97a5a53993fa8e92daf5bacaf2cdb3eae44bb9a9e25532b9a80f4f70
-  ASPNET_CORE_APP_80: 8.0.7
-  ASPNET_CORE_APP_80_SHA: c7479dc008fce77c2bfcaa1ac1c9fe6f64ef7e59609fff6707da14975aade73e3cb22b97f2b3922a2642fa8d843a3caf714ab3a2b357abeda486b9d0f8bebb18
-  ASPNET_CORE_APP_90: 9.0.0-preview.6.24328.4
-  ASPNET_CORE_APP_90_SHA: 4e178bbd26c70a3f1690c2b84b01c5a43cbf546adc878617fdf4c39d10e8063684420126261aacabcaa7f72c697290c1c06d3e93d9f3babe57c72d5fe98346fb
-  NET_CORE_APP_60: 6.0.32
-  NET_CORE_APP_60_SHA: 9babfe66f4a4261dd454f3220899af0a19532ab93575b581cec838f1c5f130d98b6fb1aaae5ee8e5b2e70deb55b619a0d55347f014ace72cb84b78d61faf0a59
+  ASPNET_CORE_APP_80: 8.0.8
+  ASPNET_CORE_APP_80_SHA: d6c0cc2aac79fbacbf81b597f286763599f66278c17ddb448ce0b93d499bad8f88777d425854e68602945ab18af8a61f1ee59d431d5503006137f86113faa8b2
+  ASPNET_CORE_APP_90: 9.0.0-preview.7
+  ASPNET_CORE_APP_90_SHA: 44f86c407b501a700aaeae2ce95cf544d85c08b41cdd12cee22bfcfdd03c4f6a16e495d9f8315f5e56a66b7e6187a4fc39d899f967a65f73883e40172343275c
+  NET_CORE_APP_60: 6.0.33
+  NET_CORE_APP_60_SHA: 0892015544d8903999f8e0fadab6b4b91eb180e495fa5e36c1a755b1d42e134858b7bdbfd60d1880650d9c528d07e31b9ccfc73e650e5d890a955902a89139cf
   NET_CORE_APP_70: 7.0.20
   NET_CORE_APP_70_SHA: 87855297338555a7b577d7e314e5dbf2c2350f8c867a489cd1e535634bad5c123a1871464d37fc9421837ff5d426c2eadecbe0f60bbf3fd32bc2461f47790a40
-  NET_CORE_APP_80: 8.0.7
-  NET_CORE_APP_80_SHA: 88e9ac34ad5ac76eec5499f2eb8d1aa35076518c842854ec1053953d34969c7bf1c5b2dbce245dbace3a18c3b8a4c79d2ef2d2ff105ce9d17cbbdbe813d8b16f
-  NET_CORE_APP_90: 9.0.0-preview.6.24327.7
-  NET_CORE_APP_90_SHA: 09aa8c4e6ae3ada1a265a5cd2b46779a763163e4dd9a1892b44606b89cf147339e10b7c584dbcaf5404af0553f0ef6c5801436c217f4fe1a5d3bdb6d74aef1d1
+  NET_CORE_APP_80: 8.0.8
+  NET_CORE_APP_80_SHA: 8f5220098c562fa3490417748eb9f4f9ca1551f7155728b9ebb1924359c63c18dedef643bcd89ec67b59cb5b1b9de7283ee156ef381ffb16801b516dba9b1b0f
+  NET_CORE_APP_90: 9.0.0-preview.7
+  NET_CORE_APP_90_SHA: 9ede46bc2e6f87a9f592f888562a4cdda6ffa01ca9822f6d4ae586a7c478d3e4fe6c70758a4e9ecbba86445978c68f805d1d6d6f4d37fc653a2b7510309dd5dc
+  abcd: "1234"
+  node0Version: 0.12.18
+  node10Version: 10.24.1
+  node11Version: 11.15.0
+  node12Version: 12.22.12
+  node13Version: 13.14.0
+  node14Version: 14.21.3
+  node15Version: 15.14.0
+  node16Version: 16.20.2
+  node17Version: 17.9.1
   node18Version: 18.20.4
-  node20Version: 20.15.1
+  node19Version: 19.9.0
+  node20Version: 20.17.0
+  node21Version: 21.7.3
+  node22Version: 22.7.0
+  node4Version: 4.9.1
+  node5Version: 5.12.0
+  node6Version: 6.17.1
+  node7Version: 7.10.1
+  node8Version: 8.17.0
+  node9Version: 9.11.2
   php81Version: 8.1.29
-  php81Version_SHA: 288884af60581d4284baba2ace9ca6d646f72facbd3e3c2dd2acc7fe6f903536
-  php82Version: 8.2.21
-  php82Version_SHA: 8cc44d51bb2506399ec176f70fe110f0c9e1f7d852a5303a2cd1403402199707
-  php83Version: 8.3.9
-  php83Version_SHA: bf4d7b8ea60a356064f88485278bd6f941a230ec16f0fc401574ce1445ad6c77
+  php81Version_SHA: 87a60313263f2f533f180e719272ca5e47cd9884d4ec3c93720198eaffae0827
+  php82Version: 8.2.22
+  php82Version_SHA: 5aae5964c60533185f9be928cf7d79a13393cc5560cedf1f4b977944cc76a585
+  php83Version: 8.3.10
+  php83Version_SHA: e584199c350b46343c37069bb9cc20ad893cb04c747c899ef1b05eadc0eea3b0
+  python20Version: 2.0.1
+  python21Version: 2.1.3
+  python22Version: 2.2.3
+  python23Version: 2.3.7
+  python24Version: 2.4.6
+  python25Version: 2.5.6
+  python26Version: 2.6.9
+  python27Version: 2.7.18
+  python30Version: 3.0.1
   python310Version: 3.10.14
-  python311Version: 3.11.8
-  python312Version: 3.12.2
+  python311Version: 3.11.9
+  python312Version: 3.12.5
+  python31Version: 3.1.5
+  python32Version: 3.2.6
+  python33Version: 3.3.7
+  python34Version: 3.4.10
+  python35Version: 3.5.10
+  python36Version: 3.6.15
+  python37Version: 3.7.17
   python38Version: 3.8.19
   python39Version: 3.9.19
