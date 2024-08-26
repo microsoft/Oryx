@@ -54,7 +54,7 @@ update_constants_file() {
                     yq eval ".variables.$key = \"$value\"" -i $constants_FILE
                     echo "Updated constants.yml with latest value $key=$value"
 
-                    if [ $key != *"SHA"* ]; then
+                    if [[ "$key" != *"SHA"* ]]; then
                         if [ -n $old_value ]; then
                             update_line="Updated $key from $old_value to $value"
                         else
@@ -76,7 +76,7 @@ update_constants_file() {
                 else
                     yq eval ".variables.$key = \"$valueInVariableGroup\"" -i $constants_FILE
                     echo "Updated constants.yml with given value $key=$valueInVariableGroup"
-                    if [ $key != *"SHA"* ]; then
+                    if [[ "$key" != *"SHA"* ]]; then
                         update_line="Updated $key from $old_value to $valueInVariableGroup"
                         echo "$update_line" >> "$Updated_ValuesFILE"
                     fi
