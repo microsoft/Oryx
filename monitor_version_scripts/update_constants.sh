@@ -17,6 +17,17 @@ Updated_ValuesFILE=Updated_Values.txt
 cat <<EOL > $Updated_ValuesFILE
 EOL
 
+// copy all values from override_constants.yaml to constants.yaml
+
+while IFS= read -r line; do
+    key=$(echo "$line" | yq e 'keys' - | sed 's/^[[:space:]]*-*//' | sed 's/^[[:space:]]*//')
+
+    value=$(echo "$line" | yq e '.[]' -)
+
+    echo "Key: $key, Value: $value,"
+    yq eval ".variables.$key = \"$value\"" -i $constants_FILE
+done < <(yq e '.[]' "override_constants.yaml")
+
 update_constants_file() {
     while IFS= read -r line; do
         # Use yq to parse the YAML line and extract the key and value
@@ -86,7 +97,6 @@ update_constants_file() {
     done < <(yq e '.[]' "$1")
 }
 
-update_constants_file "override_constants.yaml"
 update_constants_file "latest_stack_versions.yaml"
 
 # delete temporary constants file
