@@ -28,21 +28,26 @@ while IFS= read -r line; do
 done < <(yq e '.[]' "override_constants.yaml")
 
 update_node_versions_to_build(){
-    node_versionsToBuild_FILE = $1
-    version = $2
-    value = $3
+    node_versionsToBuild_FILE="$1"
+    version="$2"
+    value="$3"
 
-    version_found = false
+    echo "$version"
+    echo "$value"
+    
+    version_found=false
     while IFS= read -r line; do
-        if [[ "$line" == *"$version"* ]]; then
-            version_found = true
+        if [[ "$line" == *"$value"* ]]; then
+            version_found=true
+            echo "version is found"
             break
         fi
     done < "$node_versionsToBuild_FILE"
 
     if ! $version_found; then
-        echo "$value" >> "$node_versionsToBuild_FILE"
-        sort "$node_versionsToBuild_FILE" -o "$node_versionsToBuild_FILE"
+        echo -e "\n$value" >> "$node_versionsToBuild_FILE"
+        echo "adding this version to build file"
+        sort -V "$node_versionsToBuild_FILE" -o "$node_versionsToBuild_FILE"
     fi
 }
 
@@ -51,8 +56,8 @@ update_node_versions_to_build(){
 # }
 
 update_versions_to_build() {
-    key = $1
-    value = $2
+    key="$1"
+    value="$2"
     version=${key//[^0-9]/}
     if [[ "$key" == *"node"* ]]; then
         versionsToBuild_Folder=$(cd .. && pwd)/platforms/nodejs/versions
@@ -69,11 +74,14 @@ update_versions_to_build() {
     fi 
 
     debianFlavors+="DebianFlavors"
+    echo "The one which needs to be searched is $debianFlavors"
+    alldebianFlavors=$(yq eval ".variables.$debianFlavors" override_constants.yaml)
+    echo "$alldebianFlavors"
 
     IFS=','
-
-    for flavor in $debianFlavors; do
-        versionsToBuild_FILE="$versionsToBuild_Folder/$flavor"
+    for flavor in $alldebianFlavors; do
+        echo "$flavor"
+        versionsToBuild_FILE="$versionsToBuild_Folder/$flavor/versionsToBuild.txt"
 
         if [[ "$key" == *"node"* ]]; then
             update_node_versions_to_build $versionsToBuild_FILE $version $value
