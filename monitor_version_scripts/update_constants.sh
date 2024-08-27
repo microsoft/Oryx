@@ -18,7 +18,6 @@ cat <<EOL > $Updated_ValuesFILE
 EOL
 
 // copy all values from override_constants.yaml to constants.yaml
-
 while IFS= read -r line; do
     key=$(echo "$line" | yq e 'keys' - | sed 's/^[[:space:]]*-*//' | sed 's/^[[:space:]]*//')
 
@@ -27,6 +26,66 @@ while IFS= read -r line; do
     echo "Key: $key, Value: $value,"
     yq eval ".variables.$key = \"$value\"" -i $constants_FILE
 done < <(yq e '.[]' "override_constants.yaml")
+
+update_node_versions_to_build(){
+    node_versionsToBuild_FILE = $1
+    version = $2
+    value = $3
+
+    version_found = false
+    while IFS= read -r line; do
+        if [[ "$line" == *"$version"* ]]; then
+            version_found = true
+            break
+        fi
+    done < "$node_versionsToBuild_FILE"
+
+    if ! $version_found; then
+        echo "$value" >> "$node_versionsToBuild_FILE"
+        sort "$node_versionsToBuild_FILE" -o "$node_versionsToBuild_FILE"
+    fi
+}
+
+# update_python_versions_to_build(){
+
+# }
+
+update_versions_to_build() {
+    key = $1
+    value = $2
+    version=${key//[^0-9]/}
+    if [[ "$key" == *"node"* ]]; then
+        versionsToBuild_Folder=$(cd .. && pwd)/platforms/nodejs/versions
+        debianFlavors="node$version"
+    elif [[ "$key" == *"python"* ]]; then
+        versionsToBuild_Folder=$(cd .. && pwd)/platforms/python/versions
+        debianFlavors="python$version"
+    elif [[ "$key" == *"php"* ]]; then
+        versionsToBuild_Folder=$(cd .. && pwd)/platforms/php/versions
+        debianFlavors="php$version"
+    elif [[ "$key" == *"NET"* ]]; then
+        versionsToBuild_Folder=$(cd .. && pwd)/platforms/dotnet/versions
+        debianFlavors="dotnet$version"
+    fi 
+
+    debianFlavors+="DebianFlavors"
+
+    IFS=','
+
+    for flavor in $debianFlavors; do
+        versionsToBuild_FILE="$versionsToBuild_Folder/$flavor"
+
+        if [[ "$key" == *"node"* ]]; then
+            update_node_versions_to_build $versionsToBuild_FILE $version $value
+        # elif [[ "$key" == *"python"* ]]; then
+
+        # elif [[ "$key" == *"php"* ]]; then
+
+        # elif [[ "$key" == *"NET"* ]]; then
+
+        fi
+    done
+}
 
 update_constants_file() {
     while IFS= read -r line; do
@@ -61,6 +120,8 @@ update_constants_file() {
                             update_line="Added $key to $value"
                         fi
                         echo "$update_line" >> "$Updated_ValuesFILE"
+
+                        update_versions_to_build $key $value
                     fi
                 fi
 
@@ -79,6 +140,8 @@ update_constants_file() {
                     if [[ "$key" != *"SHA"* ]]; then
                         update_line="Updated $key from $old_value to $valueInVariableGroup"
                         echo "$update_line" >> "$Updated_ValuesFILE"
+
+                        update_versions_to_build $key $value
                     fi
                 fi
             fi
