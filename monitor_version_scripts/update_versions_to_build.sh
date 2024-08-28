@@ -93,9 +93,9 @@ update_versions_to_build() {
         echo "$flavor"
         versionsToBuild_FILE="$versionsToBuild_Folder/$flavor/versionsToBuild.txt"
 
-        if [[ "$key" == *"NET"* ]]
+        if [[ "$key" == *"NET"* ]]; then
             while IFS= read -r line; do
-                if [[ "$line" == *"$value"* ]]
+                if [[ "$line" == *"$value"* ]]; then
                     sdk_version=$(echo $line | cut -d':' -f2)
                         
                     version_found=false
