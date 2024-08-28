@@ -58,7 +58,7 @@ def find_sdks(version):
 
     return
 
-def scrap_sdk_versions(HTML_CONTENT):
+def scrap_sdk_versions(HTML_CONTENT,version):
     all_version_tags=HTML_CONTENT.select('h3')
     all_description_tags=HTML_CONTENT.select('dl')
     print(all_version_tags)
@@ -80,7 +80,7 @@ def scrap_sdk_versions(HTML_CONTENT):
             
             print(f"sdk_version is {sdk_version}, SHA is {check_sum}")
             with open('generated_files/dotnet_sdk_latest_versions.txt', 'a') as version_file:
-                version_file.write(f"{sdk_version}, {check_sum},\n")      
+                version_file.write(f"{version}:{sdk_version}, {check_sum},\n")      
     return
 
 def scrap_runtime_versions(HTML_CONTENT,major_version):
@@ -130,7 +130,7 @@ def scrap_runtime_versions(HTML_CONTENT,major_version):
         
     return
 
-def scrap_particular_version(major_version):
+def scrap_particular_version(major_version,version):
     url=f"https://dotnet.microsoft.com/en-us/download/dotnet/{major_version}"
     response=requests.get(url)
     html_content=response.text
@@ -140,7 +140,7 @@ def scrap_particular_version(major_version):
 
     version_details=soup.select('.download-wrap .row .col-md-6')
 
-    scrap_sdk_versions(version_details[0])
+    scrap_sdk_versions(version_details[0],version)
     scrap_runtime_versions(version_details[1],major_version)
 
     return
@@ -155,7 +155,7 @@ for index,each_version in enumerate(version_table):
         print(f"version is {version}")
         print(f"major version is {major_version}")
 
-        scrap_particular_version(major_version)
+        scrap_particular_version(major_version,version)
         # print(version)
         # find_sdks(version)
         # check_sum_aspnetcore=scrape_CheckSum(version,"aspnetcore-","runtime")

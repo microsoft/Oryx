@@ -58,6 +58,9 @@ update_stack_versions_to_build(){
             phpSHAName="php${version}Version_SHA"
             phpSHAValue=$(yq eval ".variables.$phpSHAName" latest_stack_versions.yaml)
             echo -e "\n$value, $phpSHAValue, $gpgkeysvalue" >> "$stack_versionsToBuild_FILE"
+        # elif [[ "$key" = *"NET"* ]]; then
+        #     sdk_version="$5"
+        #     echo -e "\n$sdk_version" >> "$stack_versionsToBuild_FILE"
         fi
     fi
 }
@@ -90,7 +93,26 @@ update_versions_to_build() {
         echo "$flavor"
         versionsToBuild_FILE="$versionsToBuild_Folder/$flavor/versionsToBuild.txt"
 
-        update_stack_versions_to_build $versionsToBuild_FILE $version $value $key
+        if [[ "$key" == *"NET"* ]]
+            while IFS= read -r line; do
+                if [[ "$line" == *"$value"* ]]
+                    sdk_version=$(echo $line | cut -d':' -f2)
+                        
+                    version_found=false
+                    while IFS= read -r line_in_versionsToBuild; do
+                        if [[ "$line_in_versionsToBuild" == *"$sdk_version"* ]]; then
+                            version_found=true
+                        fi
+                    done < "$versionsToBuild_FILE"
+
+                    if ! $version_found; then
+                        echo -e "\n$sdk_version" >> "$versionsToBuild_FILE"
+                    fi
+                fi
+            done < "generated_files/dotnet_sdk_latest_versions.txt"            
+        else
+            update_stack_versions_to_build $versionsToBuild_FILE $version $value $key
+        fi
     done
 }
 
