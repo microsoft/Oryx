@@ -56,6 +56,4 @@ chmod +x update_versions_to_build.sh
 # # as of now, only minor versions
 
 rm -r generated_files
-
-
-
+rm $latest_stack_versions_FILE
