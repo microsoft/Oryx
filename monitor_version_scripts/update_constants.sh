@@ -51,9 +51,38 @@ update_node_versions_to_build(){
     fi
 }
 
-# update_python_versions_to_build(){
+update_stack_versions_to_build(){
+    stack_versionsToBuild_FILE="$1"
+    version="$2"
+    value="$3"
+    key="$4"
 
-# }
+    echo "$version"
+    echo "$value"
+
+    version_found=false
+    while IFS= read -r line; do
+        if [[ "$line" == *"$value"* ]]; then
+            version_found=true
+            echo "version is found"
+            break
+        fi
+    done < "$stack_versionsToBuild_FILE"
+
+    if ! $version_found; then
+        if [[ "$key" == *"node"* ]]
+            echo -e "\n$value" >> "$node_versionsToBuild_FILE"
+            echo "adding this version to build file"
+        elif [[ "$key" == *"python"* ]]
+            gpgkey="python${version}gpg"
+            echo -e "\n$value, $gpgkey"
+        elif [[ "$key" == *"php"* ]]
+            gpgkey
+        fi
+
+        sort -V "$stack_versionsToBuild_FILE" -o "$stack_versionsToBuild_FILE"
+    fi
+}
 
 update_versions_to_build() {
     key="$1"
@@ -84,13 +113,11 @@ update_versions_to_build() {
         versionsToBuild_FILE="$versionsToBuild_Folder/$flavor/versionsToBuild.txt"
 
         if [[ "$key" == *"node"* ]]; then
-            update_node_versions_to_build $versionsToBuild_FILE $version $value
-        # elif [[ "$key" == *"python"* ]]; then
-
-        # elif [[ "$key" == *"php"* ]]; then
-
-        # elif [[ "$key" == *"NET"* ]]; then
-
+            update_node_versions_to_build $versionsToBuild_FILE $version $value $key
+        elif [[ "$key" == *"python"* ]]; then
+            update_python_versions_to_build $versionsToBuild_FILE $version $value $key
+        elif [[ "$key" == *"php"* ]]; then
+            update_python_versions_to_build $versionsToBuild_FILE $version $value $key $3
         fi
     done
 }
@@ -129,7 +156,13 @@ update_constants_file() {
                         fi
                         echo "$update_line" >> "$Updated_ValuesFILE"
 
-                        update_versions_to_build $key $value
+                        if [[ "$key" = *"php"* ]]; then
+                            phpSHAName="php${version}Version_SHA"
+                            phpSHAValue=$(yq eval ".variables.$phpSHAName" latest_stack_versions.yaml)
+                            update_versions_to_build $key $value $phpSHAValue
+                        else
+                            update_versions_to_build $key $value
+                        fi
                     fi
                 fi
 
@@ -149,7 +182,13 @@ update_constants_file() {
                         update_line="Updated $key from $old_value to $valueInVariableGroup"
                         echo "$update_line" >> "$Updated_ValuesFILE"
 
-                        update_versions_to_build $key $value
+                        if [[ "$key" = *"php"* ]]; then
+                            phpSHAName="php${version}Version_SHA"
+                            phpSHAValue=$(printenv "$phpSHAName")
+                            update_versions_to_build $key $value $phpSHAValue
+                        else
+                            update_versions_to_build $key $value
+                        fi
                     fi
                 fi
             fi
