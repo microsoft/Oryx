@@ -50,6 +50,7 @@ update_stack_versions_to_build(){
         elif [[ "$key" = *"python"* ]]; then
             gpgkeyname="python${version}_GPG_keys"
             gpgkeysvalue=$(yq eval ".variables.$gpgkeyname" override_constants.yaml)
+            line = "\n$value, $gpgkeysvalue"
             echo -e "\n$value, $gpgkeysvalue" >> "$stack_versionsToBuild_FILE"
         elif [[ "$key" = *"php"* ]]; then
             gpgkeyname="php${version}_GPG_keys"
