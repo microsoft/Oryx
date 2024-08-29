@@ -19,7 +19,7 @@ create_versionfile() {
     FILE=$1
     if [ ! -e "$FILE" ]; then
         # Create the file
-        touch "$FILE"
+        echo -n "" > $FILE
         echo "File '$FILE' created."
     else
         echo "File '$FILE' already exists."

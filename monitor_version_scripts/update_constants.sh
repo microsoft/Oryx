@@ -11,12 +11,12 @@ variables:
 EOL
 
 Updated_ValuesFILE=Updated_Values.txt
-cat <<EOL > $Updated_ValuesFILE
-EOL
+echo -n "" > $Updated_ValuesFILE
+
 
 Stack_Updated_values=Stack_Updated_values.txt
- cat <<EOL > $Stack_Updated_values
-EOL
+echo -n "" > $Stack_Updated_values
+
 
 update_constants_file(){
     while IFS= read -r line; do
