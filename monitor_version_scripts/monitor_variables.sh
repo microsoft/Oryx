@@ -59,3 +59,4 @@ chmod +x update_versions_to_build.sh
 
 rm -rf "generated_files"
 rm "Stack_Updated_values.txt"
+rm "latest_stack_versions.yaml"
