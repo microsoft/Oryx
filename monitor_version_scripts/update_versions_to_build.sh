@@ -46,18 +46,17 @@ update_stack_versions_to_build(){
 
     if ! $version_found; then
         if [[ "$key" = *"node"* ]]; then
-            echo -e "\n$value" >> "$stack_versionsToBuild_FILE"
+            echo -e "$value" >> "$stack_versionsToBuild_FILE"
         elif [[ "$key" = *"python"* ]]; then
             gpgkeyname="python${version}_GPG_keys"
             gpgkeysvalue=$(yq eval ".variables.$gpgkeyname" override_constants.yaml)
-            line = "\n$value, $gpgkeysvalue"
-            echo -e "\n$value, $gpgkeysvalue" >> "$stack_versionsToBuild_FILE"
+            echo -e "$value, $gpgkeysvalue" >> "$stack_versionsToBuild_FILE"
         elif [[ "$key" = *"php"* ]]; then
             gpgkeyname="php${version}_GPG_keys"
             gpgkeysvalue=$(yq eval ".variables.$gpgkeyname" override_constants.yaml)
             phpSHAName="php${version}Version_SHA"
             phpSHAValue=$(yq eval ".variables.$phpSHAName" latest_stack_versions.yaml)
-            echo -e "\n$value, $phpSHAValue, $gpgkeysvalue" >> "$stack_versionsToBuild_FILE"
+            echo -e "$value, $phpSHAValue, $gpgkeysvalue" >> "$stack_versionsToBuild_FILE"
         # elif [[ "$key" = *"NET"* ]]; then
         #     sdk_version="$5"
         #     echo -e "\n$sdk_version" >> "$stack_versionsToBuild_FILE"
@@ -92,7 +91,7 @@ update_versions_to_build() {
     for flavor in $alldebianFlavors; do
         echo "$flavor"
         versionsToBuild_FILE="$versionsToBuild_Folder/$flavor/versionsToBuild.txt"
-
+        echo "Sdk version line is $sdk_version"
         if [[ "$key" == *"NET"* ]]; then
             while IFS= read -r line; do
                 if [[ "$line" == *"$value"* ]]; then
@@ -106,7 +105,7 @@ update_versions_to_build() {
                     done < "$versionsToBuild_FILE"
 
                     if ! $version_found; then
-                        echo -e "\n$sdk_version" >> "$versionsToBuild_FILE"
+                        echo -e "$sdk_version" >> "$versionsToBuild_FILE"
                     fi
                 fi
             done < "generated_files/dotnet_sdk_latest_versions.txt"            

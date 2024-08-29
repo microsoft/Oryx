@@ -1,6 +1,6 @@
 # #!/bin/bash
 
-# printenv
+printenv
 
 apt-get update
 apt-get install -y python3 python3-pip
@@ -56,6 +56,3 @@ chmod +x update_versions_to_build.sh
 # # each job for different stack, in each job call the respective .py file for web scrapping, now store the new values in latest_versions file(make diff version file for diff stacks)
 # # compare values latest values for each stack and then update the latest_stack_versions.yaml
 # # as of now, only minor versions
-
-rm -r generated_files
-rm $latest_stack_versions_FILE
