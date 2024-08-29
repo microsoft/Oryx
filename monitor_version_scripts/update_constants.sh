@@ -109,3 +109,5 @@ update_constants_file(){
 
 update_constants_file "override_constants.yaml"
 update_constants_file "latest_stack_versions.yaml"
+
+rm $Temp_constants_FILE
