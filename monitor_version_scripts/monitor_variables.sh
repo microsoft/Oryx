@@ -58,5 +58,4 @@ chmod +x update_versions_to_build.sh
 ./update_versions_to_build.sh
 
 rm -rf "generated_files"
-rm "../images/temp_constants.yaml"
 rm "Stack_Updated_values.txt"
