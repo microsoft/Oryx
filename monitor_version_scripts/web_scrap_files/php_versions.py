@@ -7,7 +7,9 @@ soup = BeautifulSoup(content, 'lxml-xml')
 
 elements = soup.select('h3[id^=v8]')
 
-file_type="tar.bz2"
+file_type="tar.xz"
+
+print("Available Php Versions on Web")
 
 for element in elements:
     version=(element.get('id')[1:])
@@ -22,7 +24,7 @@ for element in elements:
             sha256_spans = li_element.find_all(class_='sha256')
             if sha256_spans:
                 x=version[2]
-
+                print(f"{version}")
                 with open('generated_files/php_latest_versions.txt', 'a') as version_file:
                     version_file.write(f"php8{x}Version={version},")
                     version_file.write(f"php8{x}Version_SHA={sha256_spans[0].text}\n")

@@ -269,3 +269,6 @@ src/startupscriptgenerator/src/**/__debug_bin
 src/startupscriptgenerator/src/**/run.sh
 !**/dynamic/Dockerfile
 !**/dynamic/buster.Dockerfile
+
+# needed just for pr description
+Updated_Values.txt

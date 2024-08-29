@@ -12,10 +12,10 @@ with open('generated_files/python_version.xml','r') as file:
 
 soup = BeautifulSoup(content, 'lxml-xml')
 
+print("Available Python Versions on Web")
+
 version_table = soup.select('.row.download-list-widget .list-row-container.menu li')
 for version_tab in version_table:
-    # version=version_tab.find(class__='release-number').find('a').text
-    # print(f"{version}\n")
     version_full=version_tab.select('.release-number a')[0].text
 
     # Initialize variables to store the indices
@@ -36,5 +36,6 @@ for version_tab in version_table:
     second_part=version_full[index_of_colon1+1:index_of_colon2]
     key="".join(["python",first_part,second_part,"Version"])
 
+    print(f"{version}")
     with open('generated_files/python_latest_versions.txt', 'a') as version_file:
         version_file.write(f"{key}={version}\n")

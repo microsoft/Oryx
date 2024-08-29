@@ -1,23 +1,24 @@
 # #!/bin/bash
 
-sort_versions_to_build_file(){
-    versionsToBuild_File="$1"
-    tempfile1=$(mktemp)
-    tempfile2=$(mktemp)
+while IFS= read -r line; do
+    echo "Sdk_version line is $line"
+    if [[ "$line" = *"$value"* ]]; then
+        sdk_version=$(echo $line | cut -d':' -f2- | tr -d '\n')
+        echo "after processing sdk_version is $sdk_version"
+        # version_found=false
+        # while IFS= read -r line_in_versionsToBuild; do
+        #     if [[ "$line_in_versionsToBuild" = *"$sdk_version"* ]]; then
+        #         version_found=true
+        #     fi
+        # done < "$versionsToBuild_FILE"
 
-    while IFS= read -r line; do
-        if [[ "$line" = *"#"* ]]; then
-            echo "$line" >> "$tempfile1"
-        elif [[ -n "$line" ]]; then
-            echo "$line" >> "$tempfile2"
-        fi
-    done < "$versionsToBuild_File"
-
-    sort -V $tempfile2 -o $tempfile2
-
-    cat $tempfile2 >> $tempfile1
-
-    cp $tempfile1 $versionsToBuild_File
-}
-versionsToBuild_File=$(cd .. && pwd)/platforms/python/versions/bookworm/versionsToBuild.txt
-sort_versions_to_build_file "$versionsToBuild_File"
+        # if ! $version_found; then
+        #     if [ -n "$(tail -c 1 "$versionsToBuild_FILE")" ]; then
+        #         echo "" >> "$versionsToBuild_FILE"
+        #     fi
+        #     echo -n "$sdk_version" >> "$versionsToBuild_FILE"
+        #     updated_files+=("$versionsToBuild_FILE")
+        #     # sort_versions_to_build_file $versionsToBuild_FILE
+        # fi
+    fi
+done < "generated_files/dotnet_sdk_latest_versions.txt" 
