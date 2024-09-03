@@ -607,15 +607,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     NetCore7PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
                 data.Add(
-                    "8.0.7",
-                    "8.0.303",
+                    DotNetCoreRunTimeVersions.NetCoreApp80,
+                    DotNetCoreSdkVersions.DotNet80SdkVersion,
                     NetCore8PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
 
                 // bookworm
                 data.Add(
-                    "8.0.7",
-                    "8.0.303",
+                    DotNetCoreRunTimeVersions.NetCoreApp80,
+                    DotNetCoreSdkVersions.DotNet80SdkVersion,
                     NetCore8PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
 
