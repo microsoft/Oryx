@@ -608,14 +608,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
                 data.Add(
                     "8.0.7",
-                    "8.0.303"
+                    "8.0.303",
                     NetCore8PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
 
                 // bookworm
                 data.Add(
                     "8.0.7",
-                    "8.0.303"
+                    "8.0.303",
                     NetCore8PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
 
