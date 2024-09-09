@@ -1,11 +1,11 @@
 #!/bin/bash
 
-Old_constants_FILE=$(cd .. && pwd)/images/constants.yml
-Temp_constants_FILE=$(cd .. && pwd)/images/temp_constants.yml
+Old_constants_FILE="../images/constants.yml"
+Temp_constants_FILE="../images/temp_constants.yml"
 
 mv $Old_constants_FILE $Temp_constants_FILE
 
-constants_FILE=$(cd .. && pwd)/images/constants.yml
+constants_FILE="../images/constants.yml"
 cat <<EOL > $constants_FILE
 variables:
 EOL
