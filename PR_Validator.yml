@@ -62,9 +62,14 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
+              RESULT=$(az pipelines runs show --id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com/ --project Antares --query result -o tsv)    
               echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
-              echo "Pipeling Result: " $(az pipelines runs show --id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com/ --project Antares --query result -o tsv)
+              echo "Pipeline Result: " $RESULT
               echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_BUILD_SDK&view=results"
+              if [ "$RESULT" != "succeeded" ]; then
+                echo "Pipeline run failed with result: $RESULT"
+                exit 1
+              fi
 
 - stage: build_image
   displayName: Build Image
@@ -132,9 +137,14 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
+              RESULT=$(az pipelines runs show --id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com/ --project Antares --query result -o tsv)
               echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
-              echo "Pipeling Result: " $(az pipelines runs show --id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com/ --project Antares --query result -o tsv)
+              echo "Pipeline Result: " $RESULT
               echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_BUILD_IMAGE&view=results"
+              if [ "$RESULT" != "succeeded" ]; then
+                echo "Pipeline run failed with result: $RESULT"
+                exit 1
+              fi
 
 - stage: Test
   displayName: Testing
@@ -195,7 +205,12 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
+              RESULT=$(az pipelines runs show --id $RUN_ID_TEST --organization https://msazure.visualstudio.com/ --project Antares --query result -o tsv)
               echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_TEST --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
-              echo "Pipeling Result: " $(az pipelines runs show --id $RUN_ID_TEST --organization https://msazure.visualstudio.com/ --project Antares --query result -o tsv)
+              echo "Pipeline Result: " $RESULT  
               echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_TEST&view=results"
+              if [ "$RESULT" != "succeeded" ]; then
+                echo "Pipeline run failed with result: $RESULT"
+                exit 1
+              fi
   
