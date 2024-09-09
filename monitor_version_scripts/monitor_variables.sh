@@ -1,10 +1,6 @@
 # #!/bin/bash
 
-apt-get update
-apt-get install -y python3 python3-pip
-pip install bs4
-pip install lxml
-pip install requests
+pip install bs4 lxml requests
 
 set -e
 
