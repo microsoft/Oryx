@@ -8,7 +8,7 @@ with open('generated_files/php_version.xml', 'r') as file:
 soup = BeautifulSoup(content, 'lxml-xml')
  
 def getSHA(php_version):
-    elements = soup.find("a", href=f"/distributions/php-{php_version}.tar.gz")
+    elements = soup.find("a", href=f"/distributions/php-{php_version}.tar.xz")
     if elements:
         element_SHA = elements.find_parent().find(class_="sha256").text
         return element_SHA
