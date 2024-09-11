@@ -1,4 +1,3 @@
-
 # NOTE: Make sure to set the default version in 'defaultVersion.txt' file
 # version, sha, download url
 6.0.415, b1a3f84b50faf5840f5151bc8e41550f4c5828ea6a8df472e802fae8a00dca1a141ae620e2c20eec90935c322bc1fb082b38dee90a625766df1ec66b0f640d02,

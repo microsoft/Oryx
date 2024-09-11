@@ -1,4 +1,3 @@
-
 # NOTE: Make sure to set the default version in 'defaultVersion.txt' file
 # version, gpg keys, dockerfile
 3.6.12, 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D,
