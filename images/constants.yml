@@ -27,6 +27,10 @@ variables:
   nodejsDebianFlavors: bookworm,bullseye
   phpDebianFlavors: bookworm,bullseye,buster
   pythonDebianFlavors: bookworm,bullseye,buster
+  cliDebianFlavors: buster,bullseye
+  cliBuilderDebianFlavors: buster,bullseye
+  fullDebianFlavors: buster,bullseye
+  jamstackDebianFlavors: buster,bullseye
   DotNetCoreAgent_version: 2.8.42
   GitHubActions_BaseImage_Buster: mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:be7137ba47bdf421d3950abe1200322631e8db11b468cd6f0ebf3d687e556c90
   GitHubActions_BaseImage_Bullseye: mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:25c86292946cce832340fe808ac47e5a845b68c488f177a47ff44fd59040397d
