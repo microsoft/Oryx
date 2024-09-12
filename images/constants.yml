@@ -19,18 +19,30 @@ variables:
   dotnet70DebianFlavors: buster,bullseye
   dotnet80DebianFlavors: bullseye,bookworm
   dotnet90DebianFlavors: bookworm
-  php81DebianFlavors: bullseye
-  php82DebianFlavors: bullseye
-  php83DebianFlavors: bullseye,bookworm
-  debianFlavors: 'buster,bullseye,bookworm'
-  dotnetDebianFlavors: 'bookworm,bullseye,buster'
-  nodejsDebianFlavors: 'bookworm,bullseye'
-  phpDebianFlavors: 'bookworm,bullseye'
-  pythonDebianFlavors: 'bookworm,bullseye,buster'
+  php81DebianFlavors: bullseye,buster
+  php82DebianFlavors: bullseye,buster
+  php83DebianFlavors: bullseye,buster,bookworm
+  debianFlavors: buster,bullseye,bookworm
+  dotnetDebianFlavors: bookworm,bullseye,buster
+  nodejsDebianFlavors: bookworm,bullseye
+  phpDebianFlavors: bookworm,bullseye,buster
+  pythonDebianFlavors: bookworm,bullseye,buster
+  cliDebianFlavors: buster,bullseye
+  cliBuilderDebianFlavors: buster,bullseye
+  fullDebianFlavors: buster,bullseye
+  jamstackDebianFlavors: buster,bullseye
   DotNetCoreAgent_version: 2.8.42
   GitHubActions_BaseImage_Buster: mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:be7137ba47bdf421d3950abe1200322631e8db11b468cd6f0ebf3d687e556c90
   GitHubActions_BaseImage_Bullseye: mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:25c86292946cce832340fe808ac47e5a845b68c488f177a47ff44fd59040397d
   GitHubActions_BaseImage_Bookworm: mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:ff838f535d6e3bace9ab7eefa360d648ba529f9aa57fdd709335f8ef0516cdde
+  php81_GPG_keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
+  php82_GPG_keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
+  php83_GPG_keys: 1198C0117593497A5EC5C199286AF1F9897469DC AFD8691FDAEDF03BDF6E460563F15A9B715376CA
+  python310_GPG_keys: A035C8C19219BA821ECEA86B64E628F8D684696D
+  python311_GPG_keys: A035C8C19219BA821ECEA86B64E628F8D684696D
+  python312_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
+  python38_GPG_keys: E3FF2839C048B25C084DEBE9B26995E310250568
+  python39_GPG_keys: E3FF2839C048B25C084DEBE9B26995E310250568
   ASPNET_CORE_APP_60: 6.0.32
   ASPNET_CORE_APP_60_SHA: 1849c0073f12477b94357a1afb1cbd4ad67764263528b66037c19d554df41e681e4b41c0804b106319fe661d0bc3bae9e29e4913c0d0df33861cf6f32ebaac96
   ASPNET_CORE_APP_70: 7.0.20

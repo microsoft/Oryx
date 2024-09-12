@@ -1,4 +1,3 @@
-
 # NOTE: Make sure to set the default version in 'defaultVersion.txt' file
 # version, gpg keys, dockerfile
 3.8.18, E3FF2839C048B25C084DEBE9B26995E310250568,
