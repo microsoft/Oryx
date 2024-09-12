@@ -59,6 +59,7 @@ if [ "$debianFlavor" == "stretch" ]; then
 
     PIP_VERSION="20.2.3"
 else
+    PIP_VERSION="21.2.4"
 	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
 fi
 
