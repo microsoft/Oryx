@@ -22,20 +22,19 @@ variables:
   php81DebianFlavors: bullseye,buster
   php82DebianFlavors: bullseye,buster
   php83DebianFlavors: bullseye,buster,bookworm
-  debianFlavors: 'buster,bullseye,bookworm'
-  dotnetDebianFlavors: 'bookworm,bullseye,buster'
-  nodejsDebianFlavors: 'bookworm,bullseye'
-  phpDebianFlavors: 'bookworm,bullseye,buster'
-  pythonDebianFlavors: 'bookworm,bullseye,buster'
+  debianFlavors: buster,bullseye,bookworm
+  dotnetDebianFlavors: bookworm,bullseye,buster
+  nodejsDebianFlavors: bookworm,bullseye
+  phpDebianFlavors: bookworm,bullseye,buster
+  pythonDebianFlavors: bookworm,bullseye,buster
+  cliDebianFlavors: buster,bullseye
+  cliBuilderDebianFlavors: buster,bullseye
+  fullDebianFlavors: buster,bullseye
+  jamstackDebianFlavors: buster,bullseye
   DotNetCoreAgent_version: 2.8.42
   GitHubActions_BaseImage_Buster: mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:be7137ba47bdf421d3950abe1200322631e8db11b468cd6f0ebf3d687e556c90
   GitHubActions_BaseImage_Bullseye: mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:25c86292946cce832340fe808ac47e5a845b68c488f177a47ff44fd59040397d
   GitHubActions_BaseImage_Bookworm: mcr.microsoft.com/mirror/docker/library/buildpack-deps@sha256:ff838f535d6e3bace9ab7eefa360d648ba529f9aa57fdd709335f8ef0516cdde
-  debianFlavors: 'buster,bullseye,bookworm'
-  dotnetDebianFlavors: 'bookworm,bullseye,buster'
-  nodejsDebianFlavors: 'bookworm,bullseye'
-  phpDebianFlavors: 'bookworm,bullseye,buster'
-  pythonDebianFlavors: 'bookworm,bullseye,buster'
   php81_GPG_keys: '528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544'
   php82_GPG_keys: '1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544'
   php83_GPG_keys: '1198C0117593497A5EC5C199286AF1F9897469DC AFD8691FDAEDF03BDF6E460563F15A9B715376CA'

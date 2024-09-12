@@ -15,6 +15,21 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
+    public class PhpTestBase : TestBase, IClassFixture<TestTempDirTestFixture>
+    {
+        public readonly string _hostSamplesDir;
+        public readonly string _tempRootDir;
+        public readonly HttpClient _httpClient = new HttpClient();
+
+        public DockerVolume CreateSampleAppVolume(string sampleAppName) =>
+            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", sampleAppName));
+
+        public PhpTestBase(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture) : base(output)
+        {
+            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            _tempRootDir = testTempDirTestFixture.RootDirPath;
+        }
+    }
     public class PhpFpmTestBase : TestBase, IClassFixture<TestTempDirTestFixture>
     {
         public readonly string _hostSamplesDir;
