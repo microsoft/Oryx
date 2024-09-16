@@ -238,15 +238,10 @@
     - 8.3-debian-bookworm
     fpm-runtime-versions:
     - 7.4-fpm-debian-bullseye
-    - 7.4-fpm-debian-buster
     - 8.0-fpm-debian-bullseye
-    - 8.0-fpm-debian-buster
     - 8.1-fpm-debian-bullseye
-    - 8.1-fpm-debian-buster
     - 8.2-fpm-debian-bullseye
-    - 8.2-fpm-debian-buster
     - 8.3-fpm-debian-bullseye
-    - 8.3-fpm-debian-buster
     - 8.3-fpm-debian-bookworm
   outputs:
   - type: csharp
