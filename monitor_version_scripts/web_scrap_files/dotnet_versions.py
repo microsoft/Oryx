@@ -43,6 +43,8 @@ def scrap_sdk_versions(HTML_CONTENT,ASPNET_runtime_version,NET_runtime_version):
             with open('generated_files/dotnet_sdk_latest_versions.txt', 'a') as version_file:
                 version_file.write(f"{ASPNET_runtime_version}:{sdk_version}, {check_sum},\n") 
                 version_file.write(f"{NET_runtime_version}:{sdk_version}, {check_sum},\n")
+                
+            break
 
     return
 
