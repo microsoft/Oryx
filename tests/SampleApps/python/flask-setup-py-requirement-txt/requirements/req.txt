@@ -1,3 +1,3 @@
-Flask==1.0.2
+Flask==2.2.5
 chatterbot>=0.7.1
 SQLAlchemy>=1.1.11
