@@ -89,5 +89,12 @@
     <ProjectReference Include="..\BuildScriptGenerator.Common\BuildScriptGenerator.Common.csproj" />
     <ProjectReference Include="..\Detector\Detector.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="Microsoft.Net.Compilers.Toolset" Version="4.11.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
   
 </Project>
