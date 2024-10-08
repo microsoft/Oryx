@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RuntimeFrameworkVersion>7.0</RuntimeFrameworkVersion>
     <AssemblyName>GenerateBuildScript</AssemblyName>
     <RootNamespace>Microsoft.Oryx.BuildScriptGeneratorCli</RootNamespace>

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <!--Suppress XML comment related warns from failing builds-->
     <NoWarn>1570;1591</NoWarn>
   </PropertyGroup>
