@@ -1,7 +1,7 @@
 ARG DEBIAN_FLAVOR
 
 # Use the curl flavor of buildpack-deps as the base image, which is lighter than the standard flavor; more information here: https://hub.docker.com/_/buildpack-deps
-FROM buildpack-deps:${DEBIAN_FLAVOR}-curl as main
+FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${DEBIAN_FLAVOR}-curl as main
 ARG DEBIAN_FLAVOR
 ARG SDK_STORAGE_BASE_URL_VALUE
 ARG AI_CONNECTION_STRING

@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <DelaySign>true</DelaySign>
+    <SelfContained>true</SelfContained>
     <AssemblyOriginatorKeyFile>..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>Microsoft.Oryx.BuildServer</AssemblyName>
     <RootNamespace>Microsoft.Oryx.BuildServer</RootNamespace>
