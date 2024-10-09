@@ -15,17 +15,16 @@ variables:
   python310DebianFlavors: buster,bullseye
   python311DebianFlavors: bullseye,bookworm
   python312DebianFlavors: bullseye,bookworm
-  dotnet60DebianFlavors: buster,bullseye
-  dotnet70DebianFlavors: buster,bullseye
+  dotnet60DebianFlavors: bullseye
   dotnet80DebianFlavors: bullseye,bookworm
   dotnet90DebianFlavors: bookworm
-  php81DebianFlavors: bullseye,buster
-  php82DebianFlavors: bullseye,buster
-  php83DebianFlavors: bullseye,buster,bookworm
+  php81DebianFlavors: bullseye
+  php82DebianFlavors: bullseye
+  php83DebianFlavors: bullseye,bookworm
   debianFlavors: buster,bullseye,bookworm
-  dotnetDebianFlavors: bookworm,bullseye,buster
+  dotnetDebianFlavors: bookworm,bullseye
   nodejsDebianFlavors: bookworm,bullseye
-  phpDebianFlavors: bookworm,bullseye,buster
+  phpDebianFlavors: bookworm,bullseye
   pythonDebianFlavors: bookworm,bullseye,buster
   cliDebianFlavors: buster,bullseye
   cliBuilderDebianFlavors: buster,bullseye
