@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>Microsoft.Oryx.Detector</AssemblyName>
     <RootNamespace>Microsoft.Oryx.Detector</RootNamespace>
@@ -33,7 +33,7 @@
   <ItemGroup>
     <_PackageFiles Include="$(OutputPath)\Microsoft.Oryx.Common.dll">
       <BuildAction>None</BuildAction>
-      <PackagePath>lib\net7.0\</PackagePath>
+      <PackagePath>lib\net8.0\</PackagePath>
     </_PackageFiles>
   </ItemGroup>
 

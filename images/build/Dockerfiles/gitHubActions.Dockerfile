@@ -1,6 +1,6 @@
 ARG BASE_IMAGE
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 as buildscriptgenerator
+FROM mcr.microsoft.com/dotnet/sdk:8.0 as buildscriptgenerator
 
 ARG GIT_COMMIT=unspecified
 ARG BUILD_NUMBER=unspecified
