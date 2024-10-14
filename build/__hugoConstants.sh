@@ -1,6 +1,6 @@
 # This file was auto-generated from 'constants.yaml'. Changes may be overridden.
 
-VERSION='0.134.3'
+VERSION='0.124.1'
 PLATFORM_NAME='hugo'
 INSTALLED_HUGO_VERSIONS_DIR='/opt/hugo'
 INSTALLATION_URL_FORMAT='https://github.com/gohugoio/hugo/releases/download/v#VERSION#/#TAR_FILE#'
