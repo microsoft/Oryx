@@ -26,7 +26,7 @@ variables:
   dotnetDebianFlavors: bookworm,bullseye
   nodejsDebianFlavors: bookworm,bullseye
   phpDebianFlavors: bookworm,bullseye
-  pythonDebianFlavors: bookworm,bullseye
+  pythonDebianFlavors: bookworm
   cliDebianFlavors: buster,bullseye
   cliBuilderDebianFlavors: buster,bullseye
   fullDebianFlavors: buster,bullseye
@@ -67,7 +67,7 @@ variables:
   php83Version_SHA: f774e28633e26fc8c5197f4dae58ec9e3ff87d1b4311cbc61ab05a7ad24bd131
   python310Version: 3.10.15
   python311Version: 3.11.10
-  python312Version: 3.12.7
+  python312Version: 3.12.6
   python38Version: 3.8.20
   python313Version: 3.13.0
   python39Version: 3.9.20
