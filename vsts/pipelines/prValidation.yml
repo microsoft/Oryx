@@ -1,6 +1,3 @@
-pr:
-  -main
-
 parameters:
   - name: Subscription
     default: 'Oryx (e13e3c2a-b6ed-4969-875a-28bec9f4513f)'
@@ -12,8 +9,6 @@ stages:
   jobs:
   - job: Build_SDK_Job
     timeoutInMinutes: 120
-    variables:
-      github_branchname: ${{ system.pullRequest.sourceBranch }}
     steps:
     - task: AzureCLI@2
       displayName: Initiating Build SDK pipeline run
@@ -30,7 +25,7 @@ stages:
                 --organization https://msazure.visualstudio.com/ \
                 --project Antares \
                 --query id \
-                --parameters "github_branchname=$github_branchname"
+                --parameters "github_branchname=$(system.pullRequest.sourceBranch)"
               )
               echo "Pipeline run has been initiated with RUN ID: " $RUN_ID
               echo "##vso[task.setvariable variable=RUN_ID_BUILD_SDK;]$RUN_ID"
@@ -54,6 +49,7 @@ stages:
               echo "Pipeline run has been completed with status: " $STATUS
     - task: AzureCLI@2
       displayName: Result of Build SDK pipeline run
+      condition: always()
       env:
         AZURE_STORAGE_AUTH_MODE: 'login'
         AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
@@ -62,13 +58,23 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-              RESULT=$(az pipelines runs show --id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com/ --project Antares --query result -o tsv)    
-              echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
-              echo "Pipeline Result: " $RESULT
-              echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_BUILD_SDK&view=results"
-              if [ "$RESULT" != "succeeded" ]; then
-                echo "Pipeline run failed with result: $RESULT"
-                exit 1
+              if [ "$AGENT_JOBSTATUS" = "Canceled" ]; then
+                if [ -n "$RUN_ID_BUILD_SDK" ]; then
+                  echo "Pipeline abandoned"
+                  echo $(az pipelines build cancel --build-id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com --project Antares --query status -o tsv) 
+                fi
+              fi
+              if [ -n "$RUN_ID_BUILD_SDK" ]; then
+                RESULT=$(az pipelines runs show --id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com --project Antares --query result -o tsv)
+                echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_BUILD_SDK --organization https://msazure.visualstudio.com --project Antares --query status -o tsv)
+                echo "Pipeline Result: " $RESULT
+                echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_BUILD_SDK&view=results"
+                if [ "$RESULT" != "succeeded" ]; then
+                  echo "Pipeline run failed with result: $RESULT"
+                  exit 1
+                fi
+              else
+                echo "Run was not initiated"
               fi
 
 - stage: build_image
@@ -77,8 +83,6 @@ stages:
   jobs:
   - job: Build_Image_Job
     timeoutInMinutes: 120
-    variables:
-      github_branchname: ${{ system.pullRequest.sourceBranch }}
     steps:
     - task: AzureCLI@2
       displayName: Initiating Build Image pipeline run
@@ -96,7 +100,7 @@ stages:
                 --organization https://msazure.visualstudio.com/ \
                 --project Antares \
                 --query id \
-                --parameters "github_branchname=$github_branchname"
+                --parameters "github_branchname=$(system.pullRequest.sourceBranch)"
               )
               echo "Pipeline run has been initiated with RUN ID: " $RUN_ID
               echo "##vso[task.setvariable variable=RUN_ID_BUILD_IMAGE;]$RUN_ID"
@@ -129,6 +133,7 @@ stages:
               echo "Pipeline run has been completed with status: " $STATUS
     - task: AzureCLI@2
       displayName: Result of Build Image pipeline run
+      condition: always()
       env:
         AZURE_STORAGE_AUTH_MODE: 'login'
         AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
@@ -137,13 +142,23 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-              RESULT=$(az pipelines runs show --id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com/ --project Antares --query result -o tsv)
-              echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
-              echo "Pipeline Result: " $RESULT
-              echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_BUILD_IMAGE&view=results"
-              if [ "$RESULT" != "succeeded" ]; then
-                echo "Pipeline run failed with result: $RESULT"
-                exit 1
+              if [ "$AGENT_JOBSTATUS" = "Canceled" ]; then
+                if [ -n "$RUN_ID_BUILD_IMAGE" ]; then
+                  echo "Pipeline abandoned"
+                  echo $(az pipelines build cancel --build-id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com --project Antares --query status -o tsv) 
+                fi
+              fi
+              if [ -n "$RUN_ID_BUILD_IMAGE" ]; then
+                RESULT=$(az pipelines runs show --id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com --project Antares --query result -o tsv)
+                echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_BUILD_IMAGE --organization https://msazure.visualstudio.com --project Antares --query status -o tsv)
+                echo "Pipeline Result: " $RESULT
+                echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_BUILD_IMAGE&view=results"
+                if [ "$RESULT" != "succeeded" ]; then
+                  echo "Pipeline run failed with result: $RESULT"
+                  exit 1
+                fi
+              else
+                echo "Run was not initiated"
               fi
 
 - stage: Test
@@ -154,8 +169,6 @@ stages:
     timeoutInMinutes: 120
     variables:
       BUILD_NUMBER_BUILD_IMAGE: $[stageDependencies.build_image.Build_Image_Job.outputs['Init_Build_Image_Pipe.BUILD_NUMBER_BUILD_IMAGE']]
-      github_branchname: ${{ system.pullRequest.sourceBranch }}
-      GitCommit: ${{ system.pullRequest.sourceCommitId }}
     steps:
     - task: AzureCLI@2
       displayName: Initiating Test pipeline run
@@ -173,7 +186,7 @@ stages:
                 --organization https://msazure.visualstudio.com/ \
                 --project Antares \
                 --query id \
-                --parameters "BuildNumber=$BUILD_NUMBER_BUILD_IMAGE" "github_branchname=$github_branchname" "GitCommit=$GitCommit"
+                --parameters "BuildNumber=$BUILD_NUMBER_BUILD_IMAGE" "github_branchname=$(system.pullRequest.sourceBranch)" "GitCommit=$(system.pullRequest.sourceCommitId)"
               )
               echo "Pipeline run has been initiated with RUN ID: " $RUN_ID
               echo "##vso[task.setvariable variable=RUN_ID_TEST;]$RUN_ID"
@@ -197,6 +210,7 @@ stages:
               echo "Pipeline run has been completed with status: " $STATUS
     - task: AzureCLI@2
       displayName: Result of Test pipeline run
+      condition: always()
       env:
         AZURE_STORAGE_AUTH_MODE: 'login'
         AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
@@ -205,12 +219,22 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-              RESULT=$(az pipelines runs show --id $RUN_ID_TEST --organization https://msazure.visualstudio.com/ --project Antares --query result -o tsv)
-              echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_TEST --organization https://msazure.visualstudio.com/ --project Antares --query status -o tsv)
-              echo "Pipeline Result: " $RESULT  
-              echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_TEST&view=results"
-              if [ "$RESULT" != "succeeded" ]; then
-                echo "Pipeline run failed with result: $RESULT"
-                exit 1
+              if [ "$AGENT_JOBSTATUS" = "Canceled" ]; then
+                if [ -n "$RUN_ID_TEST" ]; then
+                  echo "Pipeline abandoned"
+                  echo $(az pipelines build cancel --build-id $RUN_ID_TEST --organization https://msazure.visualstudio.com --project Antares --query status -o tsv) 
+                fi
+              fi
+              if [ -n "$RUN_ID_TEST" ]; then
+                RESULT=$(az pipelines runs show --id $RUN_ID_TEST --organization https://msazure.visualstudio.com --project Antares --query result -o tsv)
+                echo "Pipeline Status: " $(az pipelines runs show --id $RUN_ID_TEST --organization https://msazure.visualstudio.com --project Antares --query status -o tsv)
+                echo "Pipeline Result: " $RESULT
+                echo "Pipeline Link: https://msazure.visualstudio.com/Antares/_build/results?buildId=$RUN_ID_TEST&view=results"
+                if [ "$RESULT" != "succeeded" ]; then
+                  echo "Pipeline run failed with result: $RESULT"
+                  exit 1
+                fi
+              else
+                echo "Run was not initiated"
               fi
   
