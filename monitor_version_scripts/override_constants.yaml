@@ -15,6 +15,7 @@ variables:
   python310DebianFlavors: buster,bullseye
   python311DebianFlavors: bullseye,bookworm
   python312DebianFlavors: bullseye,bookworm
+  python313DebianFlavors: bookworm
   dotnet60DebianFlavors: bullseye
   dotnet80DebianFlavors: bullseye,bookworm
   dotnet90DebianFlavors: bookworm
