@@ -10,12 +10,13 @@ variables:
   SDK_STORAGE_BASE_URL_VALUE: https://oryxsdksdev.blob.core.windows.net
   node18DebianFlavors: bullseye
   node20DebianFlavors: bullseye,bookworm
+  node22DebianFlavors: bullseye,bookworm
   python38DebianFlavors: buster,bullseye
   python39DebianFlavors: buster,bullseye
   python310DebianFlavors: buster,bullseye
   python311DebianFlavors: bullseye,bookworm
   python312DebianFlavors: bullseye,bookworm
-  python313DebianFlavors: bookworm
+  python313DebianFlavors: bullseye,bookworm
   dotnet60DebianFlavors: bullseye
   dotnet80DebianFlavors: bullseye,bookworm
   dotnet90DebianFlavors: bookworm
@@ -26,7 +27,7 @@ variables:
   dotnetDebianFlavors: bookworm,bullseye
   nodejsDebianFlavors: bookworm,bullseye
   phpDebianFlavors: bookworm,bullseye
-  pythonDebianFlavors: bookworm
+  pythonDebianFlavors: bookworm,bullseye
   cliDebianFlavors: buster,bullseye
   cliBuilderDebianFlavors: buster,bullseye
   fullDebianFlavors: buster,bullseye
