@@ -22,6 +22,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string NodeAppInsightsSdkVersion = "1.8.7";
         public const string Pm2Version = "5.3.1";
         public const string NpmVersion = "10.7.0";
-        public static readonly List<string> RuntimeVersions = new List<string> { "14-debian-bullseye", "14-debian-buster", "16-debian-bullseye", "16-debian-buster", "18-debian-bullseye", "20-debian-bullseye", "20-debian-bookworm", "dynamic-debian-buster" };
+        public static readonly List<string> RuntimeVersions = new List<string> { "14-debian-bullseye", "14-debian-buster", "16-debian-bullseye", "16-debian-buster", "18-debian-bullseye", "20-debian-bullseye", "20-debian-bookworm", "22-debian-bullseye", "22-debian-bookworm", "dynamic-debian-buster" };
     }
 }
