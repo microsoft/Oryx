@@ -7,7 +7,7 @@
         Condition="'$(MicroBuild_SigningEnabled)'=='true'" />
 
     <PropertyGroup>
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <OutDir>$(MSBuildThisFileDirectory)bin\Release</OutDir>
         <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\..\build\FinalPublicKey.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
