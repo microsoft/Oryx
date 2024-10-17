@@ -2,7 +2,16 @@ ARG DEBIAN_FLAVOR
 ARG BASE_IMAGE
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.1-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20.1-${DEBIAN_FLAVOR} as startupCmdGen
+
+# Download and install the latest version of Go
+RUN curl -OL https://go.dev/dl/go1.23.1.linux-amd64.tar.gz && \
+    rm -rf /usr/local/go && \
+    tar -C /usr/local -xzf go1.23.1.linux-amd64.tar.gz && \
+    rm go1.23.1.linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+# Verify the installation
+RUN go version
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .

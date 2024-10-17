@@ -11,9 +11,9 @@ variables:
   node18DebianFlavors: bullseye
   node20DebianFlavors: bullseye,bookworm
   node22DebianFlavors: bullseye,bookworm
-  python38DebianFlavors: bullseye
-  python39DebianFlavors: bullseye
-  python310DebianFlavors: bullseye
+  python38DebianFlavors: bullseye,buster
+  python39DebianFlavors: bullseye,buster
+  python310DebianFlavors: bullseye,buster
   python311DebianFlavors: bullseye,bookworm
   python312DebianFlavors: bullseye,bookworm
   python313DebianFlavors: bookworm
