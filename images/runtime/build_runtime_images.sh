@@ -134,7 +134,11 @@ case $stack_name in
             ;;
 
             "3.12")
-                docker build -f ./images/runtime/python/template.Dockerfile -t python312_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$python3122Version --build-arg PYTHON_VERSION=3.12 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" --build-arg SDK_STORAGE_BASE_URL_VALUE=$SDK_STORAGE_BASE_URL_VALUE .
+                docker build -f ./images/runtime/python/template.Dockerfile -t python312_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$python312Version --build-arg PYTHON_VERSION=3.12 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" --build-arg SDK_STORAGE_BASE_URL_VALUE=$SDK_STORAGE_BASE_URL_VALUE .
+            ;;
+
+            "3.13")
+                docker build -f ./images/runtime/python/template.Dockerfile -t python313_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$python313Version --build-arg PYTHON_VERSION=3.13 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" --build-arg SDK_STORAGE_BASE_URL_VALUE=$SDK_STORAGE_BASE_URL_VALUE .
             ;;
         esac
     ;;

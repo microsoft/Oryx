@@ -16,33 +16,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("6.0")]
-        public void GDIPlusLibrary_IsPresentInTheBusterImage(string version)
-        {
-            // Arrange
-            var expectedLibrary = "libgdiplus";
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, ImageTestHelperConstants.OsTypeDebianBuster),
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", $"ldconfig -p | grep {expectedLibrary}" },
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedLibrary, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
         [Trait("category", "runtime-bullseye")]
         [InlineData("6.0")]
         [InlineData("8.0")]
@@ -94,31 +67,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(expectedLibrary, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-
-        [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("6.0")]
-        public void DotnetMonitorTool_IsPresentInTheBusterImage(string version)
-        {
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("dotnetcore", version, ImageTestHelperConstants.OsTypeDebianBuster),
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", $"ls opt/dotnetcore-tools/" },
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains("dotnet-monitor", actualOutput);
                 },
                 result.GetDebugInfo());
         }
