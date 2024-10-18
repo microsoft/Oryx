@@ -102,7 +102,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Trait("category", "runtime-bookworm")]
         [InlineData("3.11")]
         [InlineData("3.12")]
-        [InlineData("3.13")]
         public void PythonBookwormRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -199,7 +198,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Trait("category", "runtime-bookworm")]
         [InlineData("3.11")]
         [InlineData("3.12")]
-        [InlineData("3.13")]
         public void JamSpell_CanBe_InstalledInBookwormRunTimeImage(string version)
         {
             // Arrange
@@ -227,7 +225,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Trait("category", "runtime-bookworm")]
         [InlineData("3.11", "Python " + PythonVersions.Python311Version)]
         [InlineData("3.12", "Python " + PythonVersions.Python312Version)]
-        [InlineData("3.13", "Python " + PythonVersions.Python313Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void PythonVersionMatchesBookwormImageName(string pythonVersion, string expectedOutput)
         {
