@@ -170,7 +170,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
-            string major_version = nodeVersion.Split('.')[0]; 
+            var major_version = nodeVersion.Split('.')[0]; 
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
@@ -223,7 +223,7 @@ namespace Microsoft.Oryx.Integration.Tests
                 .AddCommand(DefaultStartupFilePath)
                 .ToString();
 
-            string major_version = nodeVersion.Split('.')[0];
+            var major_version = nodeVersion.Split('.')[0];
 
             await EndToEndTestHelper.BuildRunAndAssertAppAsync(
                 appName,
