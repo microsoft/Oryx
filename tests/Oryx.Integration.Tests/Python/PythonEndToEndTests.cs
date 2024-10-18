@@ -260,6 +260,54 @@ namespace Microsoft.Oryx.Integration.Tests
                 });
         }
 
+        // [Fact]
+        // [Trait("category", "githubactions")]
+        // [Trait("build-image", "github-actions-debian-bookworm")]
+        // public async Task CanBuildAndRun_DjangoRegex_Python13_OnBookwormBuildImage()
+        // {
+        //     // Arrange
+        //     var version = "3.13";
+        //     var osType = ImageTestHelperConstants.OsTypeDebianBookworm;
+        //     var appName = "django-regex-example-app";
+        //     var volume = CreateAppVolume(appName);
+        //     var appDir = volume.ContainerDir;
+        //     var appOutputDirVolume = CreateAppOutputDirVolume();
+        //     var appOutputDir = appOutputDirVolume.ContainerDir;
+        //     var buildScript = new ShellScriptBuilder()
+        //         .AddCommand($"oryx build {appDir} -i /tmp/int -o {appOutputDir} " +
+        //         $"--platform {PythonConstants.PlatformName} --platform-version {PythonVersions.Python313Version}")
+        //         .ToString();
+        //     var runScript = new ShellScriptBuilder()
+        //         .AddCommand($"oryx create-script -appPath {appOutputDir} -bindPort {ContainerPort}")
+        //         .AddCommand(DefaultStartupFilePath)
+        //         .ToString();
+
+        //     await EndToEndTestHelper.BuildRunAndAssertAppAsync(
+        //         appName,
+        //         _output,
+        //         new[] { volume, appOutputDirVolume },
+        //         _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
+        //         "/bin/bash",
+        //         new[]
+        //         {
+        //             "-c",
+        //             buildScript
+        //         },
+        //         _imageHelper.GetRuntimeImage("python", version, osType),
+        //         ContainerPort,
+        //         "/bin/bash",
+        //         new[]
+        //         {
+        //             "-c",
+        //             runScript
+        //         },
+        //         async (hostPort) =>
+        //         {
+        //             var data = await _httpClient.GetStringAsync($"http://localhost:{hostPort}/");
+        //             Assert.Contains("Hello world from Django!", data);
+        //         });
+        // }
+
         [Theory]
         [Trait("category", "python-3.7")]
         [Trait("build-image", "debian-stretch")]

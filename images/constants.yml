@@ -10,20 +10,21 @@ variables:
   SDK_STORAGE_BASE_URL_VALUE: https://oryxsdksdev.blob.core.windows.net
   node18DebianFlavors: bullseye
   node20DebianFlavors: bullseye,bookworm
-  python38DebianFlavors: buster,bullseye
-  python39DebianFlavors: buster,bullseye
-  python310DebianFlavors: buster,bullseye
+  node22DebianFlavors: bullseye,bookworm
+  python38DebianFlavors: bullseye,buster
+  python39DebianFlavors: bullseye,buster
+  python310DebianFlavors: bullseye,buster
   python311DebianFlavors: bullseye,bookworm
   python312DebianFlavors: bullseye,bookworm
-  dotnet60DebianFlavors: buster,bullseye
-  dotnet70DebianFlavors: buster,bullseye
+  python313DebianFlavors: bookworm
+  dotnet60DebianFlavors: bullseye
   dotnet80DebianFlavors: bullseye,bookworm
   dotnet90DebianFlavors: bookworm
   php81DebianFlavors: bullseye
   php82DebianFlavors: bullseye
   php83DebianFlavors: bullseye,bookworm
   debianFlavors: buster,bullseye,bookworm
-  dotnetDebianFlavors: bookworm,bullseye,buster
+  dotnetDebianFlavors: bookworm,bullseye
   nodejsDebianFlavors: bookworm,bullseye
   phpDebianFlavors: bookworm,bullseye
   pythonDebianFlavors: bookworm,bullseye,buster
@@ -41,31 +42,33 @@ variables:
   python310_GPG_keys: A035C8C19219BA821ECEA86B64E628F8D684696D
   python311_GPG_keys: A035C8C19219BA821ECEA86B64E628F8D684696D
   python312_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
+  python313_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
   python38_GPG_keys: E3FF2839C048B25C084DEBE9B26995E310250568
   python39_GPG_keys: E3FF2839C048B25C084DEBE9B26995E310250568
-  ASPNET_CORE_APP_60: 6.0.33
-  ASPNET_CORE_APP_60_SHA: 12b34fe1d0a679ff63db4bf002a2988194d9e64d0e107d128c247821dd939a86eced0fe453c0638d3742dac3a32e533792c26299400fb4fd5566b75177e66875
-  ASPNET_CORE_APP_80: 8.0.8
-  ASPNET_CORE_APP_80_SHA: d6c0cc2aac79fbacbf81b597f286763599f66278c17ddb448ce0b93d499bad8f88777d425854e68602945ab18af8a61f1ee59d431d5503006137f86113faa8b2
-  ASPNET_CORE_APP_90: 9.0.0-rc.1.24452.1
-  ASPNET_CORE_APP_90_SHA: f8fd285d67bb044d631596869d6301e10a2a243c81c9a05096a66aff4fb3431529812c7482e6cf0e065e8e065fc50b16b50d7f2a495ab30077a68bd45b3ba376
-  NET_CORE_APP_60: 6.0.33
-  NET_CORE_APP_60_SHA: 0892015544d8903999f8e0fadab6b4b91eb180e495fa5e36c1a755b1d42e134858b7bdbfd60d1880650d9c528d07e31b9ccfc73e650e5d890a955902a89139cf
-  NET_CORE_APP_80: 8.0.8
-  NET_CORE_APP_80_SHA: 8f5220098c562fa3490417748eb9f4f9ca1551f7155728b9ebb1924359c63c18dedef643bcd89ec67b59cb5b1b9de7283ee156ef381ffb16801b516dba9b1b0f
-  NET_CORE_APP_90: 9.0.0-rc.1.24431.7
-  NET_CORE_APP_90_SHA: 9f9a85b8d9f6362ed2c2d0edefd04999181b2c386647644fbc1d9f248255387324399edb1c40bc7fa8c47adc22e2d71db5f25ce794521d59e46c40593b5f6cc5
+  ASPNET_CORE_APP_60: 6.0.35
+  ASPNET_CORE_APP_60_SHA: d86da938338a6d97250436d49340e8f114c05b46512ca562aadca6f3e77403d36468d3f34ed5f2d935c070f9e14aedf7299f5a03d2964dbd6576b9a2d3e776e8
+  ASPNET_CORE_APP_80: 8.0.10
+  ASPNET_CORE_APP_80_SHA: 33221f19964ccb06cba74420dacbfe5bfd036f7847387093119f8f391d5716e1c5a8e05721f2335984409b43423d79b51ec571e51f0cdfae6d9d2a2b2d98505a
+  ASPNET_CORE_APP_90: 9.0.0-rc.2.24474.3
+  ASPNET_CORE_APP_90_SHA: 9370c26174cd7f1b2fef58e0a53041c94b7d5412f15ea5865fbc653a65b148b1f92e7992f147610a6ca2e92011ff28c43480ab26a6e7f8cd56f2189af0610be8
+  NET_CORE_APP_60: 6.0.35
+  NET_CORE_APP_60_SHA: d8d10d600fb664336949576f8ec0534dbffd573f754b9e741f20812221fafcac5f509a7e1ab44e9e63fc31a7b5dbcb19e4ec1930ffd29312212dc7454977090e
+  NET_CORE_APP_80: 8.0.10
+  NET_CORE_APP_80_SHA: 7fb813677720d125c2337fedc6131b230daf1c1d79d5912a1ca6b5e08bf7802b412de3248d645b6483ab23f3fae837ed02a0e520e33020cfef2c888c54f474ac
+  NET_CORE_APP_90: 9.0.0-rc.2.24473.5
+  NET_CORE_APP_90_SHA: ba0431e7bb82accab144cf1666c470549d8102a17f260cd7e0d988923a27f3ad5c10cadd160b5a180d5bb15972143f30fdb73b687d1f8ccc02e9e9334ab8c2cd
   node18Version: 18.20.4
-  node20Version: 20.17.0
-  node22Version: 22.8.0
-  php81Version: 8.1.29
-  php81Version_SHA: 288884af60581d4284baba2ace9ca6d646f72facbd3e3c2dd2acc7fe6f903536
-  php82Version: 8.2.23
-  php82Version_SHA: 81c5ae6ba44e262a076349ee54a2e468638a4571085d80bff37f6fd308e1d8d5
-  php83Version: 8.3.11
-  php83Version_SHA: b862b098a08ab9bf4b36ed12c7d0d9f65353656b36fb0e3c5344093aceb35802
+  node20Version: 20.18.0
+  node22Version: 22.9.0
+  php81Version: 8.1.30
+  php81Version_SHA: f24a6007f0b25a53cb7fbaee69c85017e0345b62089c2425a0afb7e177192ed1
+  php82Version: 8.2.24
+  php82Version_SHA: 80a5225746a9eb484475b312d4c626c63a88a037d8e56d214f30205e1ba1411a
+  php83Version: 8.3.12
+  php83Version_SHA: f774e28633e26fc8c5197f4dae58ec9e3ff87d1b4311cbc61ab05a7ad24bd131
   python310Version: 3.10.15
   python311Version: 3.11.10
   python312Version: 3.12.6
   python38Version: 3.8.20
+  python313Version: 3.13.0
   python39Version: 3.9.20

@@ -2,7 +2,18 @@ ARG DEBIAN_FLAVOR
 ARG BASE_IMAGE
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.1-${DEBIAN_FLAVOR} as startupCmdGen
+# Using 1.20 golang image because golang latest image is not supported for buster, so using 1.20 golang image and then updating it.
+# TODO: Once buster gets deprecated, update the golang base image
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-${DEBIAN_FLAVOR} as startupCmdGen
+
+# Download and install the latest version of Go
+RUN curl -OL https://go.dev/dl/go1.23.1.linux-amd64.tar.gz && \
+    rm -rf /usr/local/go && \
+    tar -C /usr/local -xzf go1.23.1.linux-amd64.tar.gz && \
+    rm go1.23.1.linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+# Verify the installation
+RUN go version
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
@@ -95,7 +106,7 @@ RUN pip install --upgrade pip \
     && pip install viztracer==0.15.6 \
     && pip install vizplugins==0.1.3 \
     # Removing orjson only for 3.12 due to build errors
-    && if [ "${PYTHON_VERSION}" != "3.12" ] && [ "${PYTHON_VERSION}" != "3.7" ]; then pip install orjson==3.10.1; fi \
+    && if [ "${PYTHON_VERSION}" != "3.12" ] && [ "${PYTHON_VERSION}" != "3.7" ]; then pip install orjson==3.10.7; fi \
     && if [ "${PYTHON_VERSION}" = "3.7" ] || [ "${PYTHON_VERSION}" = "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
     && dpkg -i libffi6_3.2.1-9_amd64.deb \
     && rm libffi6_3.2.1-9_amd64.deb; fi \
