@@ -27,7 +27,7 @@ variables:
   dotnetDebianFlavors: bookworm,bullseye
   nodejsDebianFlavors: bookworm,bullseye
   phpDebianFlavors: bookworm,bullseye
-  pythonDebianFlavors: bookworm,bullseye
+  pythonDebianFlavors: bookworm,bullseye,buster
   cliDebianFlavors: buster,bullseye
   cliBuilderDebianFlavors: buster,bullseye
   fullDebianFlavors: buster,bullseye
