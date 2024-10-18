@@ -155,6 +155,18 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Fact]
         [Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        public async Task CanBuildAndRunPython313App_UsingGitHubActionsBookwormBuildImage_AndDynamicRuntimeInstallationAsync()
+        {
+            await CanBuildAndRunPythonApp_UsingGitHubActionsBuildImage_AndDynamicRuntimeInstallationAsync(
+                "3.13",
+                "django-app",
+                ImageTestHelperConstants.OsTypeDebianBookworm,
+                ImageTestHelperConstants.GitHubActionsBookworm);
+        }
+
+        [Fact]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task CanBuildAndRunPython37App_UsingScriptCommandAndSetEnvSwitchAsync()
         {
