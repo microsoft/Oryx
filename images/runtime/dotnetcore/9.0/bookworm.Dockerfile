@@ -29,6 +29,8 @@ FROM mcr.microsoft.com/mirror/docker/library/debian:bookworm-slim
 ARG BUILD_DIR=/tmp/oryx/build
 ADD build ${BUILD_DIR}
 
+ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         # .NET Core dependencies
