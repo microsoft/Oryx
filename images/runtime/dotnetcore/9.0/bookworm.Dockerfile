@@ -1,12 +1,12 @@
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
-FROM mcr.microsoft.com/dotnet/sdk:9.0-preview AS tools-install
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS tools-install
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-sos
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 9.0.0-preview.6.24352.10
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.1-bookworm as startupCmdGen
@@ -60,20 +60,22 @@ ARG NET_CORE_APP_90
 ARG ASPNET_CORE_APP_90
 
 # Install .NET Core
-RUN set -ex \
+# mount the secret sas token to pull the binaries, and make sure we do not print to docker build logs
+RUN --mount=type=secret,id=dotnet_storage_account_token_id \
+    set -e \
 # based on resolution on https://github.com/NuGet/Announcements/issues/49#issue-795386700
     && apt-get remove ca-certificates -y \
     && apt-get purge ca-certificates -y \
     && apt-get update \
     && apt-get install -f ca-certificates -y --no-install-recommends \
-    && curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Runtime/$NET_CORE_APP_90/dotnet-runtime-$NET_CORE_APP_90-linux-x64.tar.gz \
+    && curl -SL --output dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet-private/Internal/$NET_CORE_APP_90/dotnet-runtime-$NET_CORE_APP_90-linux-x64.tar.gz$(cat /run/secrets/dotnet_storage_account_token_id)  \
     && echo "$NET_CORE_APP_90_SHA dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
     # Install ASP.NET Core
-    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_90/aspnetcore-runtime-$ASPNET_CORE_APP_90-linux-x64.tar.gz \
+    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet-private/Internal/$ASPNET_CORE_APP_90/aspnetcore-runtime-$ASPNET_CORE_APP_90-linux-x64.tar.gz$(cat /run/secrets/dotnet_storage_account_token_id)  \
     && echo "$ASPNET_CORE_APP_90_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
