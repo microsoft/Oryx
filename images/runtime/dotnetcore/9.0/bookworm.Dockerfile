@@ -70,14 +70,14 @@ RUN --mount=type=secret,id=dotnet_storage_account_token_id \
     && apt-get purge ca-certificates -y \
     && apt-get update \
     && apt-get install -f ca-certificates -y --no-install-recommends \
-    && curl -SL --output dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet-private/Internal/$NET_CORE_APP_90/dotnet-runtime-$NET_CORE_APP_90-linux-x64.tar.gz$(cat /run/secrets/dotnet_storage_account_token_id)  \
+    && curl -SL --output dotnet.tar.gz https://oryxsdksdev.blob.core.windows.net/dotnet-sdks/dotnet-runtime-9.0.0-linux-x64.tar.gz$(cat /run/secrets/dotnet_storage_account_token_id)  \
     && echo "$NET_CORE_APP_90_SHA dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
     # Install ASP.NET Core
-    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.blob.core.windows.net/dotnet-private/Internal/$ASPNET_CORE_APP_90/aspnetcore-runtime-$ASPNET_CORE_APP_90-linux-x64.tar.gz$(cat /run/secrets/dotnet_storage_account_token_id)  \
+    && curl -SL --output aspnetcore.tar.gz https://oryxsdksdev.blob.core.windows.net/dotnet-sdks/aspnetcore-runtime-9.0.0-linux-x64.tar.gz$(cat /run/secrets/dotnet_storage_account_token_id)  \
     && echo "$ASPNET_CORE_APP_90_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
