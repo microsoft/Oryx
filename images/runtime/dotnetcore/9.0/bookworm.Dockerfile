@@ -6,7 +6,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 9.0.0-rc.2.24504.9
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.1-bookworm as startupCmdGen
@@ -62,22 +62,20 @@ ARG NET_CORE_APP_90
 ARG ASPNET_CORE_APP_90
 
 # Install .NET Core
-# mount the secret sas token to pull the binaries, and make sure we do not print to docker build logs
-RUN --mount=type=secret,id=oryx_dev_storage_token \
-    set -e \
+RUN set -ex \
 # based on resolution on https://github.com/NuGet/Announcements/issues/49#issue-795386700
     && apt-get remove ca-certificates -y \
     && apt-get purge ca-certificates -y \
     && apt-get update \
     && apt-get install -f ca-certificates -y --no-install-recommends \
-    && curl -SL --output dotnet.tar.gz https://oryxsdksdev.blob.core.windows.net/dotnet-sdks/dotnet-runtime-$NET_CORE_APP_90-linux-x64.tar.gz$(cat /run/secrets/oryx_dev_storage_token)  \
+    && curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Runtime/$NET_CORE_APP_90/dotnet-runtime-$NET_CORE_APP_90-linux-x64.tar.gz \
     && echo "$NET_CORE_APP_90_SHA dotnet.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
     # Install ASP.NET Core
-    && curl -SL --output aspnetcore.tar.gz https://oryxsdksdev.blob.core.windows.net/dotnet-sdks/aspnetcore-runtime-$ASPNET_CORE_APP_90-linux-x64.tar.gz$(cat /run/secrets/oryx_dev_storage_token)  \
+    && curl -SL --output aspnetcore.tar.gz https://dotnetcli.azureedge.net/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_90/aspnetcore-runtime-$ASPNET_CORE_APP_90-linux-x64.tar.gz \
     && echo "$ASPNET_CORE_APP_90_SHA aspnetcore.tar.gz" | sha512sum -c - \
     && mkdir -p /usr/share/dotnet \
     && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
