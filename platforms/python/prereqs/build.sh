@@ -5,6 +5,7 @@
 # --------------------------------------------------------------------------------------------
 
 set -ex
+dpkg -s libexpat1 | grep Version
 
 pythonVersion=$PYTHON_VERSION 
 
@@ -85,7 +86,6 @@ else
         --enable-shared \
 	--enable-optimizations \
 	--with-lto \
-        --with-system-expat \
         --with-system-ffi \
         --without-ensurepip
 fi
