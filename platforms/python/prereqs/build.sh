@@ -5,7 +5,6 @@
 # --------------------------------------------------------------------------------------------
 
 set -ex
-dpkg -s libexpat1 | grep Version
 
 pythonVersion=$PYTHON_VERSION 
 
