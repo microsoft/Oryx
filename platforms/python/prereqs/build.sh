@@ -85,7 +85,6 @@ else
         --enable-shared \
 	--enable-optimizations \
 	--with-lto \
-        --with-system-expat \
         --with-system-ffi \
         --without-ensurepip
 fi
