@@ -16,7 +16,7 @@ decorator==4.3.2
 defusedxml==0.5.0
 diff-match-patch==20181111
 dj-database-url==0.5.0
-Django==2.2.24
+Django==2.2.28
 django-debug-toolbar==1.11
 django-debug-toolbar-request-history==0.0.9
 django-import-export==1.2.0
