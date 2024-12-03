@@ -6,11 +6,17 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "body-parser": "^1.20.3",
+    "cookie": "^0.7.0",
     "cookie-parser": "~1.4.3",
     "debug": "~3.1.0",
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "morgan": "~1.9.0",
-    "pug": "2.0.0-beta11"
+    "path-to-regexp": "^0.1.10",
+    "pug": "2.0.0-beta11",
+    "qs": "^6.5.3",
+    "send": "^0.19.0",
+    "serve-static": "^1.16.0"
   }
 }
