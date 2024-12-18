@@ -16,13 +16,14 @@ variables:
   python310DebianFlavors: bullseye,buster
   python311DebianFlavors: bullseye,bookworm
   python312DebianFlavors: bullseye,bookworm
-  python313DebianFlavors: bookworm
+  python313DebianFlavors: bullseye,bookworm
   dotnet60DebianFlavors: bullseye
   dotnet80DebianFlavors: bullseye,bookworm
   dotnet90DebianFlavors: bookworm
   php81DebianFlavors: bullseye
   php82DebianFlavors: bullseye
   php83DebianFlavors: bullseye,bookworm
+  php84DebianFlavors: bullseye,bookworm
   debianFlavors: buster,bullseye,bookworm
   dotnetDebianFlavors: bookworm,bullseye
   nodejsDebianFlavors: bookworm,bullseye
@@ -39,6 +40,7 @@ variables:
   php81_GPG_keys: 528995BFEDFBA7191D46839EF9BA0ADA31CBD89E 39B641343D8C104B2B146DC3F9C39DC0B9698544
   php82_GPG_keys: 1198C0117593497A5EC5C199286AF1F9897469DC 39B641343D8C104B2B146DC3F9C39DC0B9698544
   php83_GPG_keys: 1198C0117593497A5EC5C199286AF1F9897469DC AFD8691FDAEDF03BDF6E460563F15A9B715376CA
+  php84_GPG_keys: AFD8691FDAEDF03BDF6E460563F15A9B715376CA 9D7F99A0CB8F05C8A6958D6256A97AF7600A39A6
   python310_GPG_keys: A035C8C19219BA821ECEA86B64E628F8D684696D
   python311_GPG_keys: A035C8C19219BA821ECEA86B64E628F8D684696D
   python312_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
@@ -60,15 +62,17 @@ variables:
   node18Version: 18.20.4
   node20Version: 20.18.0
   node22Version: 22.9.0
-  php81Version: 8.1.30
-  php81Version_SHA: f24a6007f0b25a53cb7fbaee69c85017e0345b62089c2425a0afb7e177192ed1
-  php82Version: 8.2.24
-  php82Version_SHA: 80a5225746a9eb484475b312d4c626c63a88a037d8e56d214f30205e1ba1411a
-  php83Version: 8.3.12
-  php83Version_SHA: f774e28633e26fc8c5197f4dae58ec9e3ff87d1b4311cbc61ab05a7ad24bd131
+  php81Version: 8.1.31
+  php81Version_SHA: c4f244d46ba51c72f7d13d4f66ce6a9e9a8d6b669c51be35e01765ba58e7afca
+  php82Version: 8.2.26
+  php82Version_SHA: 54747400cb4874288ad41a785e6147e2ff546cceeeb55c23c00c771ac125c6ef
+  php83Version: 8.3.14
+  php83Version_SHA: 58b4cb9019bf70c0cbcdb814c7df79b9065059d14cf7dbf48d971f8e56ae9be7
+  php84Version: 8.4.1
+  php84Version_SHA: 94c8a4fd419d45748951fa6d73bd55f6bdf0adaefb8814880a67baa66027311f
   python310Version: 3.10.15
   python311Version: 3.11.10
-  python312Version: 3.12.6
+  python312Version: 3.12.7
   python38Version: 3.8.20
   python313Version: 3.13.0
   python39Version: 3.9.20
