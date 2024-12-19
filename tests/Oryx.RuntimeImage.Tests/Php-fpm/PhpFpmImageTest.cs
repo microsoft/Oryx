@@ -59,6 +59,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1-fpm", PhpVersions.Php81Version)]
         [InlineData("8.2-fpm", PhpVersions.Php82Version)]
         [InlineData("8.3-fpm", PhpVersions.Php83Version)]
+        [InlineData("8.4-fpm", PhpVersions.Php84Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBullseyeImageName(string version, string expectedPhpVersion)
         {
@@ -81,6 +82,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [Trait("category", "runtime-bookworm")]
         [InlineData("8.3-fpm", PhpVersions.Php83Version)]
+        [InlineData("8.4-fpm", PhpVersions.Php84Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBookwormImageName(string version, string expectedPhpVersion)
         {
@@ -107,6 +109,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void GraphicsExtension_Gd_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -128,6 +131,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [Trait("category", "runtime-bookworm")]
         [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void GraphicsExtension_Gd_IsInstalled_For_Bookworm(string version)
         {
             // Arrange & Act
@@ -201,6 +205,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void PhpFpmBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -238,6 +243,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [SkippableTheory]
         [Trait("category", "runtime-bookworm")]
         [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void PhpFpmBookwormRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -279,6 +285,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void Redis_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -303,6 +310,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [Trait("category", "runtime-bookworm")]
         [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void Redis_IsInstalled_For_Bookworm(string version)
         {
             // Arrange & Act
@@ -330,6 +338,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void SqlSrv_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -353,6 +362,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [Trait("category", "runtime-bookworm")]
         [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void SqlSrv_IsInstalled_For_Bookworm(string version)
         {
             // Arrange & Act
@@ -378,6 +388,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
         [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void Mongodb_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -401,6 +412,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Theory]
         [Trait("category", "runtime-bookworm")]
         [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void Mongodb_IsInstalled_For_Bookworm(string version)
         {
             // Arrange & Act
