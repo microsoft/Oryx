@@ -64,8 +64,8 @@ variables:
   php81Version_SHA: f24a6007f0b25a53cb7fbaee69c85017e0345b62089c2425a0afb7e177192ed1
   php82Version: 8.2.24
   php82Version_SHA: 80a5225746a9eb484475b312d4c626c63a88a037d8e56d214f30205e1ba1411a
-  php83Version: 8.3.12
-  php83Version_SHA: f774e28633e26fc8c5197f4dae58ec9e3ff87d1b4311cbc61ab05a7ad24bd131
+  php83Version: 8.3.14
+  php83Version_SHA: 58b4cb9019bf70c0cbcdb814c7df79b9065059d14cf7dbf48d971f8e56ae9be7
   python310Version: 3.10.15
   python311Version: 3.11.10
   python312Version: 3.12.6
