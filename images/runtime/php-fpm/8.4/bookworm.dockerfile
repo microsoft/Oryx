@@ -55,7 +55,7 @@ ENV PHP_CFLAGS="-fstack-protector-strong -fpic -fpie -O2 -D_LARGEFILE_SOURCE -D_
 ENV PHP_CPPFLAGS="$PHP_CFLAGS"
 ENV PHP_LDFLAGS="-Wl,-O1 -Wl,--hash-style=both -pie"
 
-ENV GPG_KEYS AFD8691FDAEDF03BDF6E460563F15A9B715376CA 9D7F99A0CB8F05C8A6958D6256A97AF7600A39A6 0616E93D95AF471243E26761770426E17EBBB3DD
+ENV GPG_KEYS 1198C0117593497A5EC5C199286AF1F9897469DC AFD8691FDAEDF03BDF6E460563F15A9B715376CA C28D937575603EB4ABB725861C0779DC5C0A9DE4
 
 ARG PHP_VERSION
 ARG PHP_SHA256
@@ -298,7 +298,7 @@ RUN apt-mark hold msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.*  || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* || $PHP_VERSION == 8.4.*]]; then \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.*  || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* || $PHP_VERSION == 8.4.* ]]; then \
 		apt-get update \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends apache2-dev \
@@ -375,7 +375,7 @@ RUN set -eux; \
 
 # Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.1.0)
 RUN set -eux; \
-    if [[ $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* || $PHP_VERSION == 8.4.*]]; then \
+    if [[ $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* || $PHP_VERSION == 8.4.* ]]; then \
         pecl install sqlsrv pdo_sqlsrv \
         && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
         && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
