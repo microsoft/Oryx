@@ -38,6 +38,7 @@ usage() {
 }
 
 ext="$1"
+echo "the argument is $ext"
 if [ -z "$ext" ] || [ ! -d "$ext" ]; then
 	usage >&2
 	exit 1
