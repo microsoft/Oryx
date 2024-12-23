@@ -334,7 +334,6 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         calendar \
         exif \
         gettext \
-        imap \
         tidy \
         shmop \
         soap \

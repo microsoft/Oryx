@@ -305,11 +305,10 @@ RUN set -eux; \
         && docker-php-ext-configure gd --with-freetype --with-jpeg \
 		# From php 8.4 version imap is removed from php core and moved to pecl
         # && PHP_OPENSSL=yes \docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
-		&& pecl install imap --with-kerberos --with-imap-ssl && docker-php-ext-enable imap ; \
-    else \
-		docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
-        && docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
+		&& pecl install imap --with-kerberos --with-imap-ssl ; \
     fi
+
+#33 2.797 bcmath bz2 calendar ctype curl dba dl_test dom enchant exif ffi fileinfo filter ftp gd gettext gmp hash iconv intl json ldap mbstring mysqli odbc opcache pcntl pdo pdo_dblib pdo_firebird pdo_mysql pdo_odbc pdo_pgsql pdo_sqlite pgsql phar posix random readline reflection session shmop simplexml snmp soap sockets sodium spl standard sysvmsg sysvsem sysvshm tidy tokenizer xml xmlreader xmlwriter xsl zend_test zip
 
 RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
     && docker-php-ext-install gd \
@@ -329,7 +328,6 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
         calendar \
         exif \
         gettext \
-        imap \
         tidy \
         shmop \
         soap \

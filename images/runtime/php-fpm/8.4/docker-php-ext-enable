@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+echo "currently in enable file"
+
 extDir="$(php -d 'display_errors=stderr' -r 'echo ini_get("extension_dir");')"
 cd "$extDir"
 
