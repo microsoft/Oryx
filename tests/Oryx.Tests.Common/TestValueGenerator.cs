@@ -33,7 +33,8 @@ namespace Microsoft.Oryx.Tests.Common
 
         private readonly static List<(string Version, string OsType)> NodeBookwormVersions = new List<(string, string)>
         {
-            ("20", ImageTestHelperConstants.OsTypeDebianBookworm)
+            ("20", ImageTestHelperConstants.OsTypeDebianBookworm),
+            ("22", ImageTestHelperConstants.OsTypeDebianBookworm),
         };
 
         private readonly static List<(string Version, string OsType)> PythonVersions = new List<(string, string)>
