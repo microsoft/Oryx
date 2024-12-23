@@ -1,8 +1,6 @@
 #!/bin/sh
 set -e
 
-echo "currently in install file"
-
 # prefer user supplied CFLAGS, but default to our PHP_CFLAGS
 : ${CFLAGS:=$PHP_CFLAGS}
 : ${CPPFLAGS:=$PHP_CPPFLAGS}
