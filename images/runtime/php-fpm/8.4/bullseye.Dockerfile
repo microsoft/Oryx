@@ -303,13 +303,15 @@ RUN apt-mark hold msodbcsql18 odbcinst1debian2 odbcinst unixodbc unixodbc-dev \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
 RUN set -eux; \
-	apt-get update \
-	&& apt-get upgrade -y \
-	&& apt-get install -y --no-install-recommends apache2-dev \
-	&& docker-php-ext-configure gd --with-freetype --with-jpeg \
-	# From php 8.4 version imap is removed from php core and moved to pecl
-	# && PHP_OPENSSL=yes \docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
-	&& pecl install imap --with-kerberos --with-imap-ssl ; \
+    if [[ $PHP_VERSION == 7.4.* || $PHP_VERSION == 8.0.* || $PHP_VERSION == 8.1.*  || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* || $PHP_VERSION == 8.4.* ]]; then \
+		apt-get update \
+        && apt-get upgrade -y \
+        && apt-get install -y --no-install-recommends apache2-dev \
+        && docker-php-ext-configure gd --with-freetype --with-jpeg \
+		# From php 8.4 version imap is removed from php core and moved to pecl
+        # && PHP_OPENSSL=yes \docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
+		&& pecl install imap ; \
+    fi
 
 RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
     && docker-php-ext-install gd \
@@ -341,14 +343,46 @@ RUN docker-php-ext-configure pdo_odbc --with-pdo-odbc=unixODBC,/usr \
 #        xmlrpc \
         xsl
 RUN pecl install redis && docker-php-ext-enable redis
-RUN pecl install imagick && docker-php-ext-enable imagick
-RUN pecl install mongodb && docker-php-ext-enable mongodb
+
+# https://github.com/Imagick/imagick/issues/331
+# https://github.com/ihneo/php/pull/24/files
+RUN set -eux; \	
+    if [[ $PHP_VERSION != 8.3.* ]]; then \
+        pecl install imagick && docker-php-ext-enable imagick; \
+    fi
+        
+# deprecated from 5.*, so should be avoided 	
+RUN set -eux; \	
+    if [[ $PHP_VERSION != 5.* && $PHP_VERSION != 7.0.* ]]; then \	
+        pecl install mongodb && docker-php-ext-enable mongodb; \	
+    fi	
+
+# https://github.com/microsoft/mysqlnd_azure, Supports  7.2*, 7.3* and 7.4*
+RUN set -eux; \
+    if [[ $PHP_VERSION == 7.2.* || $PHP_VERSION == 7.3.* || $PHP_VERSION == 7.4.* ]]; then \
+        echo "pecl/mysqlnd_azure requires PHP (version >= 7.2.*, version <= 7.99.99)"; \
+        pecl install mysqlnd_azure \
+        && docker-php-ext-enable mysqlnd_azure; \
+    fi
+
+# Install the Microsoft SQL Server PDO driver on supported versions only.
+#  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac
+#  - https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
+# For php|8.0, latest stable version of pecl/sqlsrv, pecl/pdo_sqlsrv is 5.11.0
+RUN set -eux; \
+    if [[ $PHP_VERSION == 8.0.* ]]; then \
+        pecl install sqlsrv-5.11.0 pdo_sqlsrv-5.11.0 \
+        && echo extension=pdo_sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||")/30-pdo_sqlsrv.ini \
+        && echo extension=sqlsrv.so >> $(php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||")/20-sqlsrv.ini; \
+    fi
 
 # Latest pecl/sqlsrv, pecl/pdo_sqlsrv requires PHP (version >= 8.1.0)
 RUN set -eux; \
-    pecl install sqlsrv pdo_sqlsrv \
-    && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
-    && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
+    if [[ $PHP_VERSION == 8.1.* || $PHP_VERSION == 8.2.* || $PHP_VERSION == 8.3.* || $PHP_VERSION == 8.4.* ]]; then \
+        pecl install sqlsrv pdo_sqlsrv \
+        && echo extension=pdo_sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/30-pdo_sqlsrv.ini \
+        && echo extension=sqlsrv.so >> `php --ini | grep "Scan for additional .ini files" | sed -e "s|.*:\s*||"`/20-sqlsrv.ini; \
+    fi
 
 
 RUN { \
