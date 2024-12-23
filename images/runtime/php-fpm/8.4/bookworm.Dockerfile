@@ -303,7 +303,9 @@ RUN set -eux; \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends apache2-dev \
         && docker-php-ext-configure gd --with-freetype --with-jpeg \
-        && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
+		# From php 8.4 version imap is removed from php core and moved to pecl
+        # && PHP_OPENSSL=yes \docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
+		&& pecl install imap --with-kerberos --with-imap-ssl && docker-php-ext-enable imap ; \
     else \
 		docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
         && docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
@@ -360,7 +362,7 @@ RUN set -eux; \
         echo "pecl/mysqlnd_azure requires PHP (version >= 7.2.*, version <= 7.99.99)"; \
         pecl install mysqlnd_azure \
         && docker-php-ext-enable mysqlnd_azure; \
-    fi
+    fi	
 
 # Install the Microsoft SQL Server PDO driver on supported versions only.
 #  - https://docs.microsoft.com/en-us/sql/connect/php/installation-tutorial-linux-mac

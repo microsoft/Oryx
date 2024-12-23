@@ -308,7 +308,9 @@ RUN set -eux; \
         && apt-get upgrade -y \
         && apt-get install -y --no-install-recommends apache2-dev \
         && docker-php-ext-configure gd --with-freetype --with-jpeg \
-        && PHP_OPENSSL=yes docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
+		# From php 8.4 version imap is removed from php core and moved to pecl
+        # && PHP_OPENSSL=yes \docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
+		&& pecl install imap --with-kerberos --with-imap-ssl && docker-php-ext-enable imap ; \
     else \
 		docker-php-ext-configure gd --with-png-dir=/usr --with-jpeg-dir=/usr \
         && docker-php-ext-configure imap --with-kerberos --with-imap-ssl ; \
