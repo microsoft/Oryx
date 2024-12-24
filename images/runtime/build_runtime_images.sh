@@ -76,6 +76,12 @@ case $stack_name in
                 docker build -f ./images/runtime/node/20/$debian_flavor.Dockerfile -t node20_$debian_flavor --build-arg NODE20_VERSION=$node20Version --build-arg BASE_IMAGE="docker.io/library/oryx_node_run_base_$debian_flavor" --build-arg NPM_VERSION=$NPM_VERSION --build-arg PM2_VERSION=$PM2_VERSION --build-arg NODE_APP_INSIGHTS_SDK_VERSION=$NODE_APP_INSIGHTS_SDK_VERSION --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
                 rm -f ./nodejs-$debian_flavor-$node20Version.tar.gz
             ;;
+
+            "22")
+                curl -SL --output "nodejs-$debian_flavor-$node22Version.tar.gz" "https://oryxsdksdev.blob.core.windows.net/nodejs/nodejs-$debian_flavor-$node22Version.tar.gz"
+                docker build -f ./images/runtime/node/22/$debian_flavor.Dockerfile -t node22_$debian_flavor --build-arg NODE22_VERSION=$node22Version --build-arg BASE_IMAGE="docker.io/library/oryx_node_run_base_$debian_flavor" --build-arg NPM_VERSION=$NPM_VERSION --build-arg PM2_VERSION=$PM2_VERSION --build-arg NODE_APP_INSIGHTS_SDK_VERSION=$NODE_APP_INSIGHTS_SDK_VERSION --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
+                rm -f ./nodejs-$debian_flavor-$node22Version.tar.gz
+            ;;
         esac
     ;;
 
