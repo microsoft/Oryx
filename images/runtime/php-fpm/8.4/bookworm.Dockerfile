@@ -341,8 +341,8 @@ RUN pecl install redis && docker-php-ext-enable redis
 
 # https://github.com/Imagick/imagick/issues/331
 # https://github.com/ihneo/php/pull/24/files
-RUN set -eux; \	
-    pecl install imagick && docker-php-ext-enable imagick
+# RUN set -eux; \	
+#     pecl install imagick && docker-php-ext-enable imagick
         
 # deprecated from 5.*, so should be avoided 	
 RUN set -eux; \	
