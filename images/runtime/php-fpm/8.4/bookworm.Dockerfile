@@ -341,6 +341,7 @@ RUN pecl install redis && docker-php-ext-enable redis
 
 # https://github.com/Imagick/imagick/issues/331
 # https://github.com/ihneo/php/pull/24/files
+# https://github.com/Imagick/imagick/pull/641 -- uncomment this imagick install when the issue with imagick gets fixed
 # RUN set -eux; \	
 #     pecl install imagick && docker-php-ext-enable imagick
         
