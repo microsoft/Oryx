@@ -76,22 +76,11 @@ case $stack_name in
                 docker build -f ./images/runtime/node/20/$debian_flavor.Dockerfile -t node20_$debian_flavor --build-arg NODE20_VERSION=$node20Version --build-arg BASE_IMAGE="docker.io/library/oryx_node_run_base_$debian_flavor" --build-arg NPM_VERSION=$NPM_VERSION --build-arg PM2_VERSION=$PM2_VERSION --build-arg NODE_APP_INSIGHTS_SDK_VERSION=$NODE_APP_INSIGHTS_SDK_VERSION --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
                 rm -f ./nodejs-$debian_flavor-$node20Version.tar.gz
             ;;
-        esac
-    ;;
 
-    "php")
-        docker build -f ./images/runtime/commonbase/phpRuntimeBase.Dockerfile -t oryx_php_run_base_$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
-        case $stack_version in
-            "8.1")
-                docker build -f ./images/runtime/php/8.1/$debian_flavor.Dockerfile -t php81_image_$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_php_run_base_$debian_flavor" --build-arg PHP_VERSION=$php81Version --build-arg PHP_SHA256=$php81Version_SHA --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
-            ;;
-
-            "8.2")
-                docker build -f ./images/runtime/php/8.2/$debian_flavor.Dockerfile -t php82_image_$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_php_run_base_$debian_flavor" --build-arg PHP_VERSION=$php82Version --build-arg PHP_SHA256=$php82Version_SHA --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
-            ;;
-
-            "8.3")
-                docker build -f ./images/runtime/php/8.3/$debian_flavor.Dockerfile -t php83_image_$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_php_run_base_$debian_flavor" --build-arg PHP_VERSION=$php83Version --build-arg PHP_SHA256=$php83Version_SHA --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
+            "22")
+                curl -SL --output "nodejs-$debian_flavor-$node22Version.tar.gz" "https://oryxsdksdev.blob.core.windows.net/nodejs/nodejs-$debian_flavor-$node22Version.tar.gz"
+                docker build -f ./images/runtime/node/22/$debian_flavor.Dockerfile -t node22_$debian_flavor --build-arg NODE22_VERSION=$node22Version --build-arg BASE_IMAGE="docker.io/library/oryx_node_run_base_$debian_flavor" --build-arg NPM_VERSION=$NPM_VERSION --build-arg PM2_VERSION=$PM2_VERSION --build-arg NODE_APP_INSIGHTS_SDK_VERSION=$NODE_APP_INSIGHTS_SDK_VERSION --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
+                rm -f ./nodejs-$debian_flavor-$node22Version.tar.gz
             ;;
         esac
     ;;
@@ -108,7 +97,11 @@ case $stack_name in
             ;;
 
             "8.3")
-                docker build -f ./images/runtime/php-fpm/8.3/$debian_flavor.Dockerfile -t phpfpm83_image_$debian_flavor --build-arg PHP_VERSION=$php83Version --build-arg PHP_SHA256=$php81Version_SHA --build-arg BASE_IMAGE="docker.io/library/oryx_php_fpm_run_base_$debian_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
+                docker build -f ./images/runtime/php-fpm/8.3/$debian_flavor.Dockerfile -t phpfpm83_image_$debian_flavor --build-arg PHP_VERSION=$php83Version --build-arg PHP_SHA256=$php83Version_SHA --build-arg BASE_IMAGE="docker.io/library/oryx_php_fpm_run_base_$debian_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
+            ;;
+
+            "8.4")
+                docker build -f ./images/runtime/php-fpm/8.4/$debian_flavor.Dockerfile -t phpfpm84_image_$debian_flavor --build-arg PHP_VERSION=$php84Version --build-arg PHP_SHA256=$php84Version_SHA --build-arg BASE_IMAGE="docker.io/library/oryx_php_fpm_run_base_$debian_flavor" --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
             ;;
         esac
     ;;
