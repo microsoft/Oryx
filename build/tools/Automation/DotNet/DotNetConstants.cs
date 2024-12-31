@@ -17,7 +17,7 @@ namespace Microsoft.Oryx.Automation.DotNet
         public const string DotNetRuntimeKey = "dot-net-core-run-time-versions";
         public const string DotNetLinuxTarFileRegex = ".*-linux-x64.tar.gz";
         public const string SdkName = "sdk";
-        public const string ReleasesIndexJsonUrl = "https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/releases-index.json";
+        public const string ReleasesIndexJsonUrl = "https://builds.dotnet.microsoft.com/dotnet/release-metadata/releases-index.json";
         public const string DotNetSuffixUrl = "/dotnet?restype=container&comp=list&include=metadata";
     }
 }
