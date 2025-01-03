@@ -20,9 +20,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-buster")]
-        [InlineData("3.8")]
         [InlineData("3.9")]
-        [InlineData("3.10")]
         public void PythonBusterRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -138,9 +136,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-buster")]
-        [InlineData("3.8")]
         [InlineData("3.9")]
-        [InlineData("3.10")]
         public void JamSpell_CanBe_InstalledInBusterRunTimeImage(string version)
         {
             // Arrange
@@ -278,9 +274,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-buster")]
-        [InlineData("3.8", "Python " + PythonVersions.Python38Version)]
         [InlineData("3.9", "Python " + PythonVersions.Python39Version)]
-        [InlineData("3.10", "Python " + PythonVersions.Python310Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void PythonVersionMatchesBusterImageName(string pythonVersion, string expectedOutput)
         {
