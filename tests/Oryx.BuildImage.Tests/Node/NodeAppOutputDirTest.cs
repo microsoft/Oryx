@@ -36,12 +36,14 @@ namespace Oryx.BuildImage.Tests.Node
         public void BuildsApp_AndAddsOutputDirToManifestFile(string appName, string expectedOutputDirPath)
         {
             // Arrange
+            var version = "18.18.0";
             var volume = DockerVolume.CreateMirror(
                 Path.Combine(_hostSamplesDir, "nodejs", appName));
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir}")
+                .AddCommand("node -v")
+                .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(
                 $"{NodeManifestFilePropertyKeys.OutputDirPath}=\"{expectedOutputDirPath}\"",
