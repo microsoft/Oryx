@@ -36,7 +36,7 @@ namespace Oryx.BuildImage.Tests.Node
         public void BuildsApp_AndAddsOutputDirToManifestFile(string appName, string expectedOutputDirPath)
         {
             // Arrange
-            var version = "18.18.0";
+            var version = "20.11.0";
             var volume = DockerVolume.CreateMirror(
                 Path.Combine(_hostSamplesDir, "nodejs", appName));
             var appDir = volume.ContainerDir;
