@@ -100,9 +100,9 @@ fi
         printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
         pip install poetry
         echo "Running poetry install..."
-        InstallPoetryCommand="poetry install --only"
+        InstallPoetryCommand="poetry install --without dev"
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( poetry install --only; exit ${PIPESTATUS[0]} ) 2>&1)
+        output=$( ( poetry install --without dev; exit ${PIPESTATUS[0]} ) 2>&1)
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
         echo "${output}"
