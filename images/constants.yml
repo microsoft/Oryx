@@ -59,9 +59,9 @@ variables:
   NET_CORE_APP_80_SHA: 7fb813677720d125c2337fedc6131b230daf1c1d79d5912a1ca6b5e08bf7802b412de3248d645b6483ab23f3fae837ed02a0e520e33020cfef2c888c54f474ac
   NET_CORE_APP_90: 9.0.0
   NET_CORE_APP_90_SHA: 5176bd68637646cd36fce7a88f83effe1065fb075e6d4a46b8be3c33d5a8394740577f0ed4f8b4fb13fa69fe83b229eb55ab7f45caac90849bf0392a670ed5af
-  node18Version: 18.20.4
-  node20Version: 20.18.0
-  node22Version: 22.9.0
+  node18Version: 18.20.5
+  node20Version: 20.18.1
+  node22Version: 22.13.0
   php81Version: 8.1.31
   php81Version_SHA: c4f244d46ba51c72f7d13d4f66ce6a9e9a8d6b669c51be35e01765ba58e7afca
   php82Version: 8.2.27
