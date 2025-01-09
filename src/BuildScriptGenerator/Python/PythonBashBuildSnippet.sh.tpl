@@ -96,9 +96,9 @@ fi
     then
         set +e
         echo "Running pip install poetry..."
-        InstallPipCommand="pip install poetry"
+        InstallPipCommand="pip install poetry==1.8.5"
         printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
-        pip install poetry
+        pip install poetry==1.8.5
         echo "Running poetry install..."
         InstallPoetryCommand="poetry install --no-dev"
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
