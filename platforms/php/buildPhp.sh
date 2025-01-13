@@ -115,7 +115,7 @@ buildPhpComposer() {
 		set -ex
 		composerDir="/opt/php-composer/$version"
 		mkdir -p "$composerDir"
-		export phpbin="/opt/php/$PHP_VERSION/bin/php" 
+		export phpbin="/opt/php/$PHP81_VERSION/bin/php" 
 		$phpbin /tmp/platforms/php/composer-setup.php --version=$version --install-dir="$composerDir" 
 		compressedSdkDir="/tmp/compressedSdk/php-composer"
 		mkdir -p "$compressedSdkDir"
