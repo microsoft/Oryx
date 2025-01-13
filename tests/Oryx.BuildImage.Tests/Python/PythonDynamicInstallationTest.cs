@@ -48,8 +48,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python38Version);
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PythonVersions.Python39Version);
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python310Version);
-            //Pyodbc package not yet supported for python 3.11, 3.12, 3.13 versions: https://pyreadiness.org/3.11/
-            //GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python311Version);
+            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python311Version);
+            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python312Version);
+            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm), PythonVersions.Python313Version);
 
             GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python310Version);
             GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python311Version);
