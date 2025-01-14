@@ -12,7 +12,7 @@ COPY build /tmp/build
 RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
 RUN mkdir /tmp/sdk
-RUN /tmp/platforms/php/buildPhp.sh ${DEBIAN_FLAVOR} "" "php"
+RUN /tmp/platforms/php/buildPhp.sh debianFlavor=${DEBIAN_FLAVOR} sdkStorageAccountUrl="" phpType="php"
 
 # ARG PHP_VERSION
 # ARG GPG_KEYS
