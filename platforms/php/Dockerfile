@@ -13,7 +13,6 @@ COPY build /tmp/build
 RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
 RUN mkdir /tmp/sdk
-RUN echo "DEBIAN_FLAVOR is: ${DEBIAN_FLAVOR}"
 RUN /tmp/platforms/php/buildPhp.sh ${DEBIAN_FLAVOR} "" "php"
 
 # ARG PHP_VERSION
