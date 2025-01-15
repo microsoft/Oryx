@@ -31,28 +31,13 @@ currentNpmVersion=$(npm --version)
 echo "Version of npm: $currentNpmVersion"
 
 # Upgrade npm to the latest available version
-if [[ $nodeVersionMajor -ge 18  ]]; then
-    echo "Upgrading npm..."
-    npm install npm@10.7.0 -g -loglevel silent
-    echo "Done upgrading npm."
-    currentNpmVersion=$(npm --version)
-    echo "Version of npm after upgrade: $currentNpmVersion"
-fi
+echo "Upgrading npm..."
+npm install npm@$NPM_VERSION -g -loglevel silent
+echo "Done upgrading npm."
+currentNpmVersion=$(npm --version)
+echo "Version of npm after upgrade: $currentNpmVersion"
 
-currentNodeVersion=$(node --version)
-echo "Current Node version is $currentNodeVersion"
-currentNodeVersion=${currentNodeVersion#?}
-IFS='.' read -ra SPLIT_VERSION <<< "$currentNodeVersion"
-major="${SPLIT_VERSION[0]}"
-
-if [ "$major" -lt "10" ]; then
-    echo "Installing PM2..."
-    # PM2 is supported as an option when running the app,
-    # so we need to make sure it is available in our images.
-    npm install -g pm2@3.5.1 -loglevel silent
-else
-    npm install -g pm2@$PM2_VERSION -loglevel silent
-fi
+npm install -g pm2@$PM2_VERSION -loglevel silent
 
 # Application-Insights is supported as an option for telemetry when running the app,
 # so we need to make sure it is available in our images.
