@@ -1,5 +1,6 @@
 ARG DEBIAN_FLAVOR
 FROM mcr.microsoft.com/mirror/docker/library/buildpack-deps:${DEBIAN_FLAVOR} AS php-buildpack-prereqs
+ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
 COPY platforms/php/prereqs /php
 COPY platforms/php/prereqs/build.sh /tmp/
@@ -12,7 +13,8 @@ COPY build /tmp/build
 RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
 RUN mkdir /tmp/sdk
-RUN /tmp/platforms/php/buildPhp.sh debianFlavor=${DEBIAN_FLAVOR} sdkStorageAccountUrl="" phpType="php"
+RUN echo "DEBIAN_FLAVOR is: ${DEBIAN_FLAVOR}"
+RUN /tmp/platforms/php/buildPhp.sh ${DEBIAN_FLAVOR} "" "php"
 
 # ARG PHP_VERSION
 # ARG GPG_KEYS

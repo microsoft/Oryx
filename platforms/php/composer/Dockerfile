@@ -20,7 +20,7 @@ COPY build /tmp/build
 RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
 RUN mkdir /tmp/sdk
-RUN PHP_VERSION=${PHP83_VERSION} GPG_KEYS=${PHP83_KEYS} PHP_SHA256=${PHP83_TAR_SHA256} /tmp/platforms/php/buildPhp.sh debianFlavor=${DEBIAN_FLAVOR} sdkStorageAccountUrl="" phpType="php-composer"
+RUN PHP_VERSION=${PHP83_VERSION} GPG_KEYS=${PHP83_KEYS} PHP_SHA256=${PHP83_TAR_SHA256} /tmp/platforms/php/buildPhp.sh ${DEBIAN_FLAVOR} "" "php-composer"
 
 # ARG PHP_VERSION
 # ARG GPG_KEYS
