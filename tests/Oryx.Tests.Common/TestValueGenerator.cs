@@ -14,7 +14,8 @@ namespace Microsoft.Oryx.Tests.Common
         {
             ("18", ImageTestHelperConstants.OsTypeDebianBullseye),
             ("20", ImageTestHelperConstants.OsTypeDebianBullseye),
-            ("20", ImageTestHelperConstants.OsTypeDebianBookworm)
+            ("20", ImageTestHelperConstants.OsTypeDebianBookworm),
+            ("22", ImageTestHelperConstants.OsTypeDebianBookworm),
         };
 
         private readonly static List<(string Version, string OsType)> NodeBusterVersions = new List<(string, string)>
@@ -26,12 +27,14 @@ namespace Microsoft.Oryx.Tests.Common
         private readonly static List<(string Version, string OsType)> NodeBullseyeVersions = new List<(string, string)>
         {
             ("18", ImageTestHelperConstants.OsTypeDebianBullseye),
-            ("20", ImageTestHelperConstants.OsTypeDebianBullseye)
+            ("20", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("22", ImageTestHelperConstants.OsTypeDebianBullseye),
         };
 
         private readonly static List<(string Version, string OsType)> NodeBookwormVersions = new List<(string, string)>
         {
-            ("20", ImageTestHelperConstants.OsTypeDebianBookworm)
+            ("20", ImageTestHelperConstants.OsTypeDebianBookworm),
+            ("22", ImageTestHelperConstants.OsTypeDebianBookworm),
         };
 
         private readonly static List<(string Version, string OsType)> PythonVersions = new List<(string, string)>
@@ -41,7 +44,15 @@ namespace Microsoft.Oryx.Tests.Common
             ("3.8", ImageTestHelperConstants.OsTypeDebianBuster),
             ("3.8", ImageTestHelperConstants.OsTypeDebianBullseye),
             ("3.9", ImageTestHelperConstants.OsTypeDebianBuster),
-            ("3.9", ImageTestHelperConstants.OsTypeDebianBullseye)
+            ("3.9", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("3.10", ImageTestHelperConstants.OsTypeDebianBuster),
+            ("3.10", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("3.11", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("3.11", ImageTestHelperConstants.OsTypeDebianBookworm),
+            ("3.12", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("3.12", ImageTestHelperConstants.OsTypeDebianBookworm),
+            ("3.13", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("3.13", ImageTestHelperConstants.OsTypeDebianBookworm),
         };
 
         private readonly static List<(string Version, string OsType)> PythonBusterVersions = new List<(string, string)>
@@ -55,7 +66,11 @@ namespace Microsoft.Oryx.Tests.Common
         {
             ("3.7", ImageTestHelperConstants.OsTypeDebianBullseye),
             ("3.8", ImageTestHelperConstants.OsTypeDebianBullseye),
-            ("3.9", ImageTestHelperConstants.OsTypeDebianBullseye)
+            ("3.9", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("3.10", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("3.11", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("3.12", ImageTestHelperConstants.OsTypeDebianBullseye),
+            ("3.13", ImageTestHelperConstants.OsTypeDebianBullseye),
         };
 
         public static IEnumerable<object[]> GetNodeVersions_SupportDebugging()
