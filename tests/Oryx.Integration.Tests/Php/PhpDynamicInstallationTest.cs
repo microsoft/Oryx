@@ -23,6 +23,21 @@ namespace Microsoft.Oryx.Integration.Tests
         // Unique category traits are needed to run each
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
+
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task PipelineTestInvocationsPhp84_WithBullseyeEnvironmentAsync()
+        {
+            await CanBuildAndRunAppAsync("8.4", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        public async Task PipelineTestInvocationsPhp84_WithBookwormEnvironmentAsync()
+        {
+            await CanBuildAndRunAppAsync("8.4", ImageTestHelperConstants.OsTypeDebianBookworm, ImageTestHelperConstants.GitHubActionsBookworm);
+        }
+
         [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp83_WithBusterEnvironmentAsync()

@@ -49,7 +49,7 @@ ARG PM2_VERSION
 ARG NODE_APP_INSIGHTS_SDK_VERSION
 
 RUN npm install -g npm@${NPM_VERSION}
-RUN PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} ${IMAGES_DIR}/runtime/node/installDependencies.sh 
+RUN NPM_VERSION=${NPM_VERSION} PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} ${IMAGES_DIR}/runtime/node/installDependencies.sh 
 RUN rm -rf /tmp/oryx
 
 # Bake Application Insights key from pipeline variable into final image

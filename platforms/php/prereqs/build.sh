@@ -91,7 +91,7 @@ fi
 
 if [ $PHP_MAJOR == '8' ]; then
 	apt-get update
-	apt-get install -y --no-install-recommends libargon2-dev libonig-dev
+	apt-get install -y --no-install-recommends libargon2-dev libonig-dev libsodium-dev
 fi
 
 savedAptMark="$(apt-mark showmanual)";
