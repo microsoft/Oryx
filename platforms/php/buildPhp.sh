@@ -103,7 +103,8 @@ buildPhpComposer() {
 		echo 'debian flavor is: $debianFlavor' 
 		composerSdkFile="php-composer-$debianFlavor-$version.tar.gz"
 		tar -zcf "$compressedSdkDir/$composerSdkFile" .
-
+        # Removing php sdk that is generated as part of composer build
+		rm -r /tmp/compressedSdk/php/php-$debianFlavor-$PHP_VERSION.tar.gz
 		rm -r ./*
 		rm -r /opt/php/*
 
