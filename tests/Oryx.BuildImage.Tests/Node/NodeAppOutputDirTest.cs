@@ -71,7 +71,7 @@ namespace Oryx.BuildImage.Tests.Node
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
+                ImageId = _imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -136,7 +136,7 @@ namespace Oryx.BuildImage.Tests.Node
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
+                ImageId = _imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
