@@ -66,10 +66,10 @@ variables:
   php81Version_SHA: c4f244d46ba51c72f7d13d4f66ce6a9e9a8d6b669c51be35e01765ba58e7afca
   php82Version: 8.2.27
   php82Version_SHA: 3eec91294d8c09b3df80b39ec36d574ed9b05de4c8afcb25fa215d48f9ecbc6b
-  php83Version: 8.3.16
-  php83Version_SHA: 40d3b4e6cac33d3bcefe096d75a28d4fb4e3a9615eb20a4de55ba139fbfacdd5
-  php84Version: 8.4.3
-  php84Version_SHA: 5c42173cbde7d0add8249c2e8a0c19ae271f41d8c47d67d72bdf91a88dcc7e4b
+  php83Version: 8.3.17
+  php83Version_SHA: 6158ee678e698395da13d72c7679a406d2b7554323432f14d37b60ed87d8ccfb
+  php84Version: 8.4.4
+  php84Version_SHA: 05a6c9a2cc894dd8be719ecab221b311886d5e0c02cb6fac648dd9b3459681ac
   python310Version: 3.10.16
   python311Version: 3.11.11
   python312Version: 3.12.8
