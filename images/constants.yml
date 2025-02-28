@@ -59,20 +59,20 @@ variables:
   NET_CORE_APP_80_SHA: e0d216d54e9a21aaefc120a481050f1137cc708cbbd17204f0b1a47dbb6424078e8b44dc842957a6691025cda1490e5061092802484b5fd12c5903f5ba634481
   NET_CORE_APP_90: 9.0.1
   NET_CORE_APP_90_SHA: d4a31944a5ab063037dca5141dbc8466d0c894b8d2560256782bdbe5a8e86585e8c4c789c40fbe51d56b3853e15adba0985bdc6ae91c85a763565316e1c3cfcb
-  node18Version: 18.20.5
-  node20Version: 20.18.1
-  node22Version: 22.13.0
+  node18Version: 18.20.7
+  node20Version: 20.18.3
+  node22Version: 22.14.0
   php81Version: 8.1.31
   php81Version_SHA: c4f244d46ba51c72f7d13d4f66ce6a9e9a8d6b669c51be35e01765ba58e7afca
   php82Version: 8.2.27
   php82Version_SHA: 3eec91294d8c09b3df80b39ec36d574ed9b05de4c8afcb25fa215d48f9ecbc6b
-  php83Version: 8.3.16
-  php83Version_SHA: 40d3b4e6cac33d3bcefe096d75a28d4fb4e3a9615eb20a4de55ba139fbfacdd5
-  php84Version: 8.4.3
-  php84Version_SHA: 5c42173cbde7d0add8249c2e8a0c19ae271f41d8c47d67d72bdf91a88dcc7e4b
+  php83Version: 8.3.17
+  php83Version_SHA: 6158ee678e698395da13d72c7679a406d2b7554323432f14d37b60ed87d8ccfb
+  php84Version: 8.4.4
+  php84Version_SHA: 05a6c9a2cc894dd8be719ecab221b311886d5e0c02cb6fac648dd9b3459681ac
   python310Version: 3.10.16
   python311Version: 3.11.11
-  python312Version: 3.12.8
+  python312Version: 3.12.9
   python38Version: 3.8.20
-  python313Version: 3.13.1
+  python313Version: 3.13.2
   python39Version: 3.9.21

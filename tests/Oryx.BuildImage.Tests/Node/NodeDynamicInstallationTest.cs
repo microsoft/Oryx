@@ -404,9 +404,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
-        [InlineData("18.0.0", ImageTestHelperConstants.GitHubActionsBullseye)]
-        [InlineData("20.9.0", ImageTestHelperConstants.GitHubActionsBullseye)]
-        [InlineData("22.9.0", ImageTestHelperConstants.GitHubActionsBullseye)]
+        [InlineData(NodeVersions.Node18Version, ImageTestHelperConstants.GitHubActionsBullseye)]
+        [InlineData(NodeVersions.Node20Version, ImageTestHelperConstants.GitHubActionsBullseye)]
+        [InlineData(NodeVersions.Node22Version, ImageTestHelperConstants.GitHubActionsBullseye)]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationOnBullseyeImage(string version, string buildImageName)
         {
             // Arrange
@@ -442,8 +442,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bookworm")]
-        [InlineData("20.9.0", ImageTestHelperConstants.GitHubActionsBookworm)]
-        [InlineData("22.9.0", ImageTestHelperConstants.GitHubActionsBookworm)]
+        [InlineData(NodeVersions.Node20Version, ImageTestHelperConstants.GitHubActionsBookworm)]
+        [InlineData(NodeVersions.Node22Version, ImageTestHelperConstants.GitHubActionsBookworm)]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationOnBookwormImage(string version, string buildImageName)
         {
             // Arrange
