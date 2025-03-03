@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Azure.Core;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -35,6 +36,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 SupportedVersions = supportedVersions,
                 DefaultVersion = defaultVersion,
                 PlatformVersionSourceType = PlatformVersionSourceType.AvailableOnWeb,
+            };
+        }
+
+        public static PlatformVersionInfo CreateAvailableViaExternalProvider(
+            IEnumerable<string> supportedVersions,
+            string defaultVersion)
+        {
+            return new PlatformVersionInfo
+            {
+                SupportedVersions = supportedVersions,
+                DefaultVersion = defaultVersion,
+                PlatformVersionSourceType = PlatformVersionSourceType.AvailableViaExternalProvider,
             };
         }
     }

@@ -81,6 +81,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         private readonly BuildScriptGeneratorOptions commonOptions;
         private readonly NodeScriptGeneratorOptions nodeScriptGeneratorOptions;
         private readonly INodeVersionProvider nodeVersionProvider;
+        private readonly IExternalSdkProvider externalSdkProvider;
         private readonly ILogger<NodePlatform> logger;
         private readonly INodePlatformDetector detector;
         private readonly IEnvironment environment;
@@ -101,6 +102,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
             INodeVersionProvider nodeVersionProvider,
+            IExternalSdkProvider externalSdkProvider,
             ILogger<NodePlatform> logger,
             INodePlatformDetector detector,
             IEnvironment environment,
@@ -110,6 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             this.commonOptions = commonOptions.Value;
             this.nodeScriptGeneratorOptions = nodeScriptGeneratorOptions.Value;
             this.nodeVersionProvider = nodeVersionProvider;
+            this.externalSdkProvider = externalSdkProvider;
             this.logger = logger;
             this.detector = detector;
             this.environment = environment;
@@ -490,6 +493,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             PlatformDetectorResult detectorResult)
         {
             string installationScriptSnippet = null;
+            bool skipDownloadingSDKBinaries = false;
             if (this.commonOptions.EnableDynamicInstall)
             {
                 this.logger.LogDebug("Dynamic install is enabled.");
@@ -499,6 +503,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                     this.logger.LogDebug(
                         "Node version {version} is already installed. So skipping installing it again.",
                         detectorResult.PlatformVersion);
+                }
+
+                if (this.commonOptions.EnableExternalSdkProvider)
+                {
+                    this.logger.LogDebug(
+                        "Node version {version} is not installed. " +
+                        "External SDK provider is enabled so trying to fetch SDK using it.",
+                        detectorResult.PlatformVersion);
+
+                    this.externalSdkProvider.RequestSdkAsync(this.Name, detectorResult.PlatformVersion).Wait();
+                    installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
+                        detectorResult.PlatformVersion,
+                        skipDownloadingSDKBinaries: true);
                 }
                 else
                 {

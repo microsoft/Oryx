@@ -128,7 +128,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             snippet
                 .AppendLine()
                 .AppendLine($"if grep -q -e '^cli$' \"/opt/oryx/.imagetype\" -e '^jamstack$' \"/opt/oryx/.imagetype\"; then")
-                .AppendCommonSkeletonDepenendenciesInstallation()
+                .AppendCommonSkeletonDepenendenciesInstallation() // we need to take care of these too
                 .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")

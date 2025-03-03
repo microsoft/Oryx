@@ -60,6 +60,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
 
             // Dynamic install
             options.EnableDynamicInstall = this.GetBooleanValue(SettingsKeys.EnableDynamicInstall);
+            options.EnableExternalSdkProvider = this.GetBooleanValue(SettingsKeys.EnableExternalSdkProvider);
 
             var dynamicInstallRootDir = this.GetStringValue(SettingsKeys.DynamicInstallRootDir);
 
