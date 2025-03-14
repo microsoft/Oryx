@@ -279,7 +279,29 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             dotNetCorePlatformDetectorResult.PlatformVersion = resolvedRuntimeVersion;
 
             var versionMap = this.versionProvider.GetSupportedVersions();
-            var sdkVersion = this.GetSdkVersion(context, dotNetCorePlatformDetectorResult.PlatformVersion, versionMap);
+            var sdkVersion = versionMap[dotNetCorePlatformDetectorResult.PlatformVersion];
+
+            // Check for a global.json file and update the SDK and runtime versions based on the result
+            if (this.commonOptions.EnableDynamicInstall
+                && context.SourceRepo.FileExists(DotNetCoreConstants.GlobalJsonFileName))
+            {
+                var availableSdks = versionMap.Values;
+                sdkVersion = this.globalJsonSdkResolver.GetSatisfyingSdkVersion(
+                    context.SourceRepo,
+                    dotNetCorePlatformDetectorResult.PlatformVersion,
+                    availableSdks);
+
+                // Update the runtime version based on the SDK version from the global.json
+                if (versionMap.Any(v => v.Value.Equals(sdkVersion, StringComparison.OrdinalIgnoreCase)))
+                {
+                    dotNetCorePlatformDetectorResult.PlatformVersion =
+                        versionMap
+                        .Where(v => v.Value.Equals(sdkVersion, StringComparison.OrdinalIgnoreCase))
+                        .Select(v => v.Key)
+                        .FirstOrDefault();
+                }
+            }
+
             dotNetCorePlatformDetectorResult.SdkVersion = sdkVersion;
         }
 
@@ -336,25 +358,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             buildProperties[DotNetCoreManifestFilePropertyKeys.StartupDllFileName] = startupDllFileName;
         }
 
-        private string GetSdkVersion(
-            RepositoryContext context,
-            string runtimeVersion,
-            Dictionary<string, string> versionMap)
-        {
-            if (this.commonOptions.EnableDynamicInstall
-                && context.SourceRepo.FileExists(DotNetCoreConstants.GlobalJsonFileName))
-            {
-                var availableSdks = versionMap.Values;
-                var globalJsonSdkVersion = this.globalJsonSdkResolver.GetSatisfyingSdkVersion(
-                    context.SourceRepo,
-                    runtimeVersion,
-                    availableSdks);
-                return globalJsonSdkVersion;
-            }
-
-            return versionMap[runtimeVersion];
-        }
-
         private string GetBuildConfiguration()
         {
             var configuration = this.dotNetCoreScriptGeneratorOptions.MSBuildConfiguration;
@@ -366,9 +369,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             return configuration;
         }
 
-        private string GetMaxSatisfyingRuntimeVersionAndVerify(string runtimeVersion)
+        private string GetMaxSatisfyingRuntimeVersionAndVerify(string platformVersion)
         {
+            // versionMap is a mapping of runtime versions -> SDK versions
             var versionMap = this.versionProvider.GetSupportedVersions();
+
+            // First try to exactly match the given version with an existing SDK version
+            var exactSdkVersion = versionMap.Values.FirstOrDefault(v => v.Equals(platformVersion, StringComparison.OrdinalIgnoreCase));
+            if (exactSdkVersion != null)
+            {
+                // Return the corresponding runtime version for the exact-matched SDK version
+                return versionMap
+                    .Where(v => v.Value.Equals(exactSdkVersion, StringComparison.OrdinalIgnoreCase))
+                    .Select(v => v.Key)
+                    .FirstOrDefault();
+            }
+
+            // Next try to exactly match the given version with an existing runtime version
+            var exactRuntimeVersion = versionMap.Keys.FirstOrDefault(v => v.Equals(platformVersion, StringComparison.OrdinalIgnoreCase));
+            if (exactRuntimeVersion != null)
+            {
+                return versionMap.Keys
+                    .Where(v => v.Equals(exactRuntimeVersion, StringComparison.OrdinalIgnoreCase))
+                    .FirstOrDefault();
+            }
 
             // Since our semantic versioning library does not work with .NET Core preview version format, here
             // we do some trivial way of finding the latest version which matches a given runtime version
@@ -378,7 +402,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // have '-' in their names.
             var nonPreviewRuntimeVersions = versionMap.Keys.Where(version => version.IndexOf("-") < 0);
             var maxSatisfyingVersion = SemanticVersionResolver.GetMaxSatisfyingVersion(
-                runtimeVersion,
+                platformVersion,
                 nonPreviewRuntimeVersions);
 
             // Check if a preview version is available
@@ -388,7 +412,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 // Preview versions: 5.0.0-preview.3.20214.6, 5.0.0-preview.2.20160.6, 5.0.0-preview.1.20120.5
                 var previewRuntimeVersions = versionMap.Keys
                     .Where(version => version.Contains("-"))
-                    .Where(version => version.StartsWith(runtimeVersion))
+                    .Where(version => version.StartsWith(platformVersion))
                     .OrderByDescending(version => version);
                 if (previewRuntimeVersions.Any())
                 {
@@ -400,11 +424,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 var exception = new UnsupportedVersionException(
                     DotNetCoreConstants.PlatformName,
-                    runtimeVersion,
+                    platformVersion,
                     versionMap.Keys);
                 this.logger.LogError(
                     exception,
-                    $"Exception caught, the version '{runtimeVersion}' is not supported for the .NET Core platform.");
+                    $"Exception caught, the version '{platformVersion}' is not supported for the .NET Core platform.");
                 throw exception;
             }
 
@@ -414,9 +438,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         private string GetRuntimeVersionUsingHierarchicalRules(string detectedVersion)
         {
             // Explicitly specified version by user wins over detected version
-            if (!string.IsNullOrEmpty(this.dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion))
+            if (!string.IsNullOrEmpty(this.dotNetCoreScriptGeneratorOptions.DotNetCorePlatformVersion))
             {
-                return this.dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion;
+                return this.dotNetCoreScriptGeneratorOptions.DotNetCorePlatformVersion;
             }
 
             // If a version was detected, then use it.
@@ -434,25 +458,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             // Fallback to default version detection
             var defaultVersion = this.versionProvider.GetDefaultRuntimeVersion();
             return defaultVersion;
-        }
-
-        private bool TryGetExplicitVersion(out string explicitVersion)
-        {
-            explicitVersion = null;
-
-            var platformName = this.commonOptions.PlatformName;
-            if (platformName.EqualsIgnoreCase(DotNetCoreConstants.PlatformName))
-            {
-                if (string.IsNullOrWhiteSpace(this.dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion))
-                {
-                    return false;
-                }
-
-                explicitVersion = this.dotNetCoreScriptGeneratorOptions.DotNetCoreRuntimeVersion;
-                return true;
-            }
-
-            return false;
         }
     }
 }
