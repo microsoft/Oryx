@@ -6,16 +6,13 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.IO;
-using System.Data;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
-using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGeneratorCli.Commands;
 using Microsoft.Oryx.Common.Extensions;
 
@@ -118,6 +115,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 checkerMessageSink: null,
                 operationId: null);
 
+            // TODO check if changes needed here as well?
             if (!scriptGenerator.TryGenerateScript(out var generatedScript, out var exception))
             {
                 if (exception != null)

@@ -275,6 +275,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 var scriptGenerator = new BuildScriptGenerator(
                     serviceProvider, console, checkerMessages, buildOperationId);
 
+                // TODO: Install required platforms from external provider
                 var generated = scriptGenerator.TryGenerateScript(out scriptContent, out exception);
                 stopwatch.AddProperty("generateSucceeded", generated.ToString());
 

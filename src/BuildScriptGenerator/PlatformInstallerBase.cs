@@ -113,10 +113,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         protected string GetInstallerScriptSnippet(
             string platformName,
             string version,
-            string directoryToInstall = null)
+            string directoryToInstall = null,
+            bool skipSdkBinaryDownload = false)
         {
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
 
+            // TODO
+            // if skipSdkBinaryDownload is true, we will not download the sdk binaries
+            // just verify that the binaries are in place and throw an error if binaries are not in place/sentinal file does not exist
             var versionDirInTemp = directoryToInstall;
             if (string.IsNullOrEmpty(versionDirInTemp))
             {
@@ -128,7 +132,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             snippet
                 .AppendLine()
                 .AppendLine($"if grep -q -e '^cli$' \"/opt/oryx/.imagetype\" -e '^jamstack$' \"/opt/oryx/.imagetype\"; then")
-                .AppendCommonSkeletonDepenendenciesInstallation()
+                .AppendCommonSkeletonDepenendenciesInstallation() // we need to take care of these too, but these are not getting installed in githubactions image
                 .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")
