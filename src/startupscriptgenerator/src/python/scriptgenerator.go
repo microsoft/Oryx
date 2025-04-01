@@ -277,10 +277,10 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 	args := "--timeout 600 --access-logfile '-' --error-logfile '-'"
 
 	pythonUseGunicornConfigFromPath := os.Getenv(consts.PythonGunicornConfigPathEnvVarName)
-	if pythonUseGunicornConfigFromPath != ""  {
-		args = appendArgs(args, "-c "+pythonUseGunicornConfigFromPath)		
+	if pythonUseGunicornConfigFromPath != "" {
+		args = appendArgs(args, "-c "+pythonUseGunicornConfigFromPath)
 	}
-	
+
 	pythonEnableGunicornMultiWorkers := common.GetBooleanEnvironmentVariable(consts.PythonEnableGunicornMultiWorkersEnvVarName)
 
 	if pythonEnableGunicornMultiWorkers {
@@ -290,7 +290,7 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 		pythonCustomWorkerNum := os.Getenv(consts.PythonGunicornCustomWorkerNum)
 		pythonCustomThreadNum := os.Getenv(consts.PythonGunicornCustomThreadNum)
 		workers := ""
-		if (pythonCustomWorkerNum != "") {
+		if pythonCustomWorkerNum != "" {
 			workers = pythonCustomWorkerNum
 		} else {
 			workers = strconv.Itoa((2 * runtime.NumCPU()) + 1)
@@ -298,7 +298,7 @@ func (gen *PythonStartupScriptGenerator) buildGunicornCommandForModule(module st
 			// Where N is the number of CPU threads.
 		}
 		args = appendArgs(args, "--workers="+workers)
-		if (pythonCustomThreadNum != "") {
+		if pythonCustomThreadNum != "" {
 			args = appendArgs(args, "--threads="+pythonCustomThreadNum)
 		}
 	}

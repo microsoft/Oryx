@@ -14,7 +14,7 @@ import (
 func main() {
 	// setup flags
 	versionCommand := flag.NewFlagSet(consts.VersionCommandName, flag.ExitOnError)
-	
+
 	// setup env commands
 	setupEnvCommand := flag.NewFlagSet(consts.SetupEnvCommandName, flag.ExitOnError)
 
@@ -32,7 +32,7 @@ func main() {
 			"it is assumed to be under the directory specified by 'appPath'.")
 	userStartupCommandPtr := scriptCommand.String("userStartupCommand", "", "[Optional] Command that will be executed "+
 		"to start the application up.")
-	
+
 	logger := common.GetLogger("hugo.main")
 	defer logger.Shutdown()
 	logger.StartupScriptRequested()
@@ -48,14 +48,14 @@ func main() {
 		viperConfig := common.GetViperConfiguration(fullAppPath)
 		configuration.EnableDynamicInstall = viperConfig.GetBool(consts.EnableDynamicInstallKey)
 		configuration.PreRunCommand = viperConfig.GetString(consts.PreRunCommandEnvVarName)
-		
+
 		entrypointGenerator := HugoStartupScriptGenerator{
-			AppPath:                  fullAppPath,
-			UserStartupCommand:       *userStartupCommandPtr,
-			BindPort:                 *bindPortPtr,
-			DefaultAppPath:           defaultAppFullPath,
-			Manifest:                 buildManifest,
-			Configuration:            configuration,
+			AppPath:            fullAppPath,
+			UserStartupCommand: *userStartupCommandPtr,
+			BindPort:           *bindPortPtr,
+			DefaultAppPath:     defaultAppFullPath,
+			Manifest:           buildManifest,
+			Configuration:      configuration,
 		}
 		command := entrypointGenerator.GenerateEntrypointScript()
 		common.WriteScript(*outputPathPtr, command)
