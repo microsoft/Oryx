@@ -38,7 +38,6 @@ set -ex
 echo "current directory: $(pwd)"
 
 dotnet publish ./src/BuildScriptGeneratorCli/BuildScriptGeneratorCli.csproj --configuration Release --output binaries --runtime linux-x64 --self-contained
-dotnet publish ./src/BuildServer/BuildServer.csproj --configuration Release --output binaries --runtime linux-x64 --self-contained
 
 case $build_image in
     "githubactions")

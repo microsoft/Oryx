@@ -95,10 +95,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "src\Oryx.Common\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildScriptGenerator.Common.Tests", "tests\BuildScriptGenerator.Common.Tests\BuildScriptGenerator.Common.Tests.csproj", "{3078BCDB-FC35-4826-82A1-9CE094446DE8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer", "src\BuildServer\BuildServer.csproj", "{F13BEF5A-5426-4F77-879F-A7F812F1E336}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BuildServer.Tests", "tests\BuildServer.Tests\BuildServer.Tests.csproj", "{5BD3E03A-3086-4CF6-950B-215C1E76B7F5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation", "build\tools\Automation\Automation.csproj", "{18F7BB74-0A1E-4289-9161-515E65E667CE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Automation.Tests", "tests\AutomationTests\Automation.Tests.csproj", "{B13C48B3-71A8-428F-A6BD-FBCDB42A68AF}"
