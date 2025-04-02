@@ -20,12 +20,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     public const string ExternalSdksStorageDir = "/var/OryxSdksCache";
 
     /// <summary>
-    /// Checks if external SDK provider is enabled.
-    /// </summary>
-    /// <returns>True if external SDK provider should be used.</returns>
-    bool IsEnabled();
-
-    /// <summary>
     /// Gets all metadata for a specific platform from the external SDK provider.
     /// </summary>
     Task<XDocument> GetPlatformMetaDataAsync(string platformName);
@@ -36,7 +30,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     Task<string> GetChecksumForVersionAsync(string platformName, string version);
 
     /// <summary>
-    /// Requests an SDK from the external provider and downloads it to SDKs cache path.
+    /// Requests an SDK to be downloaded to SDKs cache path by the external SDK provider.
     /// </summary>
     /// <param name="platformName">The name of the platform.</param>
     /// <param name="blobName">The blobName of the SDK.</param>

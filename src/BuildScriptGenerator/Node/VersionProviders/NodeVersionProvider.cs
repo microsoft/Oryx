@@ -39,6 +39,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 {
                     if (this.options.EnableExternalSdkProvider)
                     {
+                        // Todo : try catch?
                         return this.externalVersionProvider.GetVersionInfo();
                     }
 

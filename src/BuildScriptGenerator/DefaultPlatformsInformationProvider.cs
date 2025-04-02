@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
 {
@@ -15,13 +16,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     {
         private readonly IEnumerable<IProgrammingPlatform> platforms;
         private readonly IStandardOutputWriter outputWriter;
+        private readonly BuildScriptGeneratorOptions commonOptions;
 
         public DefaultPlatformsInformationProvider(
             IEnumerable<IProgrammingPlatform> platforms,
-            IStandardOutputWriter outputWriter)
+            IStandardOutputWriter outputWriter,
+            IOptions<BuildScriptGeneratorOptions> commonOptions)
         {
             this.platforms = platforms;
             this.outputWriter = outputWriter;
+            this.commonOptions = commonOptions.Value;
         }
 
         /// <summary>
@@ -39,6 +43,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // of Oryx might explicitly supply the platform of the app as .NET Core, we still need to make sure the
             // build environment is setup with detected platforms' sdks.
             this.outputWriter.WriteLine("Detecting platforms...");
+
+            if (this.commonOptions.EnableExternalSdkProvider)
+            {
+                this.outputWriter.WriteLine("External SDK provider is enabled.");
+            }
 
             foreach (var platform in this.platforms)
             {

@@ -512,7 +512,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                             "External SDK provider is enabled so trying to fetch SDK using it.",
                             detectorResult.PlatformVersion);
 
-                        // TODO : move this to nodePlatformInstaller?
                         try
                         {
                             var isExternalFetchSuccess = this.externalSdkProvider.RequestSdkAsync(this.Name, this.GetBlobNameForVersion(detectorResult.PlatformVersion)).Result;

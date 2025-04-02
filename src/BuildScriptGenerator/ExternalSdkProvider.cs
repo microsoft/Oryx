@@ -6,16 +6,15 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Common.Extensions;
 
 namespace Microsoft.Oryx.BuildScriptGenerator
@@ -27,21 +26,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
   {
     public const string ExternalSdksStorageDir = "/var/OryxSdks";
     private const string SocketPath = "/var/sockets/oryx-pull-sdk.socket";
-    private readonly BuildScriptGeneratorOptions options;
+    private const int MaxTimeoutForSocketOperationInSeconds = 100;
     private readonly ILogger<ExternalSdkProvider> logger;
 
     public ExternalSdkProvider(
-        IOptions<BuildScriptGeneratorOptions> options,
         ILogger<ExternalSdkProvider> logger)
     {
-      this.options = options.Value;
       this.logger = logger;
-    }
-
-    /// <inheritdoc />
-    public bool IsEnabled()
-    {
-      return this.options.EnableExternalSdkProvider;
     }
 
     /// <inheritdoc />
@@ -61,28 +52,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator
           },
         };
 
-        var response = await this.SendRequestAsync(request);
         var filePath = Path.Combine(ExternalSdksStorageDir, platformName, platformName);
-        this.logger.LogInformation("Received response from external SDK provider: {response}, expected path: {filePath}", response, filePath);
+        this.logger.LogInformation("Requesting metadata for platform {} from external SDK provider, expected filepath: {filePath}", platformName, filePath);
+        var response = await this.SendRequestAsync(request);
 
         if (response && File.Exists(filePath))
         {
-          this.logger.LogInformation(
-              "Successfully got metadata for platform {platformName}, available at {FilePath}", platformName, filePath);
-
-          // TODO: Error handling
-          return XDocument.Load(filePath);
+          this.logger.LogInformation("Successfully got metadata for platform {platformName}, available at filePath: {filePath}", platformName, filePath);
+          try
+          {
+            return XDocument.Load(filePath);
+          }
+          catch (Exception ex)
+          {
+            throw new InvalidOperationException($"Error loading metadata file {filePath} for platform {platformName}", ex);
+          }
         }
         else
         {
-          this.logger.LogError("Failed to get metadata for platform {platformName}", platformName);
-          return null;
+          throw new InvalidOperationException($"Failed to get metadata for platform {platformName} from external SDK provider");
         }
       }
       catch (Exception ex)
       {
-        this.logger.LogError(ex, "Error getting metadata for platform {platformName} from external provider.", platformName);
-        return null;
+        throw new InvalidOperationException($"Error getting metadata for platform {platformName} from external provider.", ex);
       }
     }
 
@@ -94,6 +87,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         var xdoc = await this.GetPlatformMetaDataAsync(platformName);
         if (xdoc == null)
         {
+          this.logger.LogError("Unable to get checksum for Platform: {platformName}, Blob: {blobName} as fetching metadata from external provider failed.", platformName, blobName);
           return null;
         }
         else
@@ -103,6 +97,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
           if (string.IsNullOrEmpty(checksum))
           {
             this.logger.LogError("Checksum not found for platform {platformName}, blobname {blobName} from external provider.", platformName, blobName);
+            return null;
           }
 
           return checksum;
@@ -117,8 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
     public bool CheckLocalCacheForSdk(string platformName, string blobName, string expectedChecksum)
     {
-      var sdkDir = Path.Combine(ExternalSdksStorageDir, platformName);
-      var sdkPath = Path.Combine(sdkDir, blobName);
+      var sdkPath = Path.Combine(ExternalSdksStorageDir, platformName, blobName);
       if (File.Exists(sdkPath))
       {
         var actualChecksum = this.GetSHA512Checksum(sdkPath);
@@ -139,11 +133,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <inheritdoc />
     public async Task<bool> RequestSdkAsync(string platformName, string blobName)
     {
-      // Get the expected checksum for the  SDK
+      // Get the expected checksum for the SDK
       var expectedChecksum = await this.GetChecksumForVersionAsync(platformName, blobName);
       if (expectedChecksum == null)
       {
-        this.logger.LogError("Failed to get checksum for blob : platform {platformName}, blobName {blobName}. Cannot download SDK.", platformName, blobName);
+        this.logger.LogError("Failed to get checksum for blob : platform {platformName}, blobName {blobName}. Skipping download of SDK.", platformName, blobName);
         return false;
       }
 
@@ -167,13 +161,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
           if (response && File.Exists(filePath))
           {
-            this.logger.LogInformation(
-                "Successfully requested SDK for platform {platformName}, blobName {blobName}, available at {FilePath}", platformName, blobName, filePath);
+            this.logger.LogInformation("Successfully requested SDK for platform {platformName}, blobName {blobName}, available at {FilePath}", platformName, blobName, filePath);
           }
           else
           {
-            this.logger.LogError(
-                "Failed to get SDK for platform {platformName}, blobName {blobName}", platformName, blobName);
+            this.logger.LogError("Failed to get SDK for platform {platformName}, blobName {blobName}", platformName, blobName);
             return false;
           }
         }
@@ -185,8 +177,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
       }
 
       // Verify checksum
-      var sdkDir = Path.Combine(ExternalSdksStorageDir, platformName);
-      var sdkPath = Path.Combine(sdkDir, blobName);
+      var sdkPath = Path.Combine(ExternalSdksStorageDir, platformName, blobName);
       var actualChecksum = this.GetSHA512Checksum(sdkPath);
       if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
       {
@@ -202,42 +193,46 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
     private async Task<bool> SendRequestAsync(SdkProviderRequest request)
     {
-      this.logger.LogInformation("Sending request to external SDK provider: {PlatformName} , {BlobName}, {Params}", request.PlatformName, request.BlobName, request.UrlParameters?.Count > 0 ? string.Join(", ", request.UrlParameters.Select(kvp => $"Key: {kvp.Key}, Value: {kvp.Value}")) : string.Empty);
-
       using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
-
       try
       {
-        await socket.ConnectAsync(new UnixDomainSocketEndPoint(SocketPath));
+        this.logger.LogInformation("Sending request to external SDK provider: {PlatformName} , {BlobName}, UrlParameters: {UrlParamsJson}", request.PlatformName, request.BlobName, JsonSerializer.Serialize(request.UrlParameters));
 
-        var requestJson = JsonSerializer.Serialize(request);
-
-        // append $ at the end of the string to indicate end of request
-        requestJson += "$";
-        this.logger.LogInformation("Request JSON to external SDK Provider: {requestJson}", requestJson);
-        var requestBytes = Encoding.UTF8.GetBytes(requestJson);
-
-        // Send the request
-        await socket.SendAsync(new ArraySegment<byte>(requestBytes), SocketFlags.None);
-
-        // Receive the response
-        var buffer = new byte[4096];
-        var received = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None);
-
-        this.logger.LogInformation("Received response from external SDK provider: {response}", Encoding.UTF8.GetString(buffer, 0, received));
-        var responseString = Encoding.UTF8.GetString(buffer, 0, received);
-        if (!string.IsNullOrEmpty(responseString) && responseString.EqualsIgnoreCase("Success$"))
+        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(MaxTimeoutForSocketOperationInSeconds)))
         {
-          return true;
-        }
+          await socket.ConnectAsync(new UnixDomainSocketEndPoint(SocketPath), cts.Token);
+          var requestJson = JsonSerializer.Serialize(request);
+          this.logger.LogInformation("Connected to socket {socketPath} and sending request: {requestJson}", SocketPath, requestJson);
 
-        return false;
+          // append $ at the end of the string to indicate end of request
+          requestJson += "$";
+          var requestBytes = Encoding.UTF8.GetBytes(requestJson);
+
+          await socket.SendAsync(new ArraySegment<byte>(requestBytes), SocketFlags.None, cts.Token);
+          var buffer = new byte[4096];
+          var received = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None, cts.Token);
+          var responseString = Encoding.UTF8.GetString(buffer, 0, received);
+          this.logger.LogInformation("Received response from external SDK provider: {response}", responseString);
+          if (!string.IsNullOrEmpty(responseString) && responseString.EqualsIgnoreCase("Success$"))
+          {
+            return true;
+          }
+          else
+          {
+            this.logger.LogError("Request to external SDK provider was unsuccessful. Response: {response}", responseString);
+          }
+        }
+      }
+      catch (OperationCanceledException)
+      {
+        this.logger.LogError("The external SDK provider operation was canceled due to timeout.");
       }
       catch (Exception ex)
       {
-        this.logger.LogError(ex, "Error communicating with external SDK provider socket.");
-        throw;
+        this.logger.LogError(ex, "Error communicating with external SDK provider.");
       }
+
+      return false;
     }
 
     private string GetSHA512Checksum(string filePath)

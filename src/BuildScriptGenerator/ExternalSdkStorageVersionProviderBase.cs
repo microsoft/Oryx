@@ -45,7 +45,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     /// <returns><see cref="PlatformVersionInfo"/> containing supported and default versions</returns>
     protected PlatformVersionInfo GetAvailableVersionsFromExternalProvider(string platformName)
     {
-      this.logger.LogDebug("Getting list of available versions for platform {platformName}. via external sdk provider", platformName);
+      this.logger.LogInformation("Getting list of available versions for platform {platformName}, via external sdk provider", platformName);
       var xdoc = this.externalProvider.GetPlatformMetaDataAsync(platformName).Result;
       var supportedVersions = new List<string>();
 
@@ -86,7 +86,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
           ? SdkStorageConstants.DefaultVersionFileName
           : $"{SdkStorageConstants.DefaultVersionFilePrefix}.{this.commonOptions.DebianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
 
-      this.logger.LogDebug("Getting the default version for platform {platformName} by fetching blob: {defaultFileBlobName}", platformName, defaultFileBlobName);
+      this.logger.LogDebug("Getting the default version for platform {platformName} by fetching blob: {defaultFileBlobName} via external provider", platformName, defaultFileBlobName);
       if (!this.externalProvider.RequestSdkAsync(platformName, defaultFileBlobName).Result)
       {
         throw new InvalidOperationException(

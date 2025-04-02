@@ -29,7 +29,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         private readonly BuildScriptGeneratorOptions cliOptions;
         private readonly ICompatiblePlatformDetector compatiblePlatformDetector;
         private readonly DefaultPlatformsInformationProvider platformsInformationProvider;
-        private readonly IEnumerable<IProgrammingPlatform> platforms;
         private readonly PlatformsInstallationScriptProvider environmentSetupScriptProvider;
         private readonly IEnumerable<IChecker> checkers;
         private readonly ILogger<DefaultBuildScriptGenerator> logger;
@@ -38,7 +37,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public DefaultBuildScriptGenerator(
             DefaultPlatformsInformationProvider platformsInformationProvider,
-            IEnumerable<IProgrammingPlatform> platforms,
             PlatformsInstallationScriptProvider environmentSetupScriptProvider,
             IOptions<BuildScriptGeneratorOptions> cliOptions,
             ICompatiblePlatformDetector compatiblePlatformDetector,
@@ -48,7 +46,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             TelemetryClient telemetryClient)
         {
             this.platformsInformationProvider = platformsInformationProvider;
-            this.platforms = platforms;
             this.environmentSetupScriptProvider = environmentSetupScriptProvider;
             this.cliOptions = cliOptions.Value;
             this.compatiblePlatformDetector = compatiblePlatformDetector;
@@ -78,21 +75,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             var platformInfos = this.platformsInformationProvider.GetPlatformsInfo(context);
             var detectionResults = platformInfos.Select(pi => pi.DetectorResult);
 
-            // try installing via external sdk provider here
-            // if (this.cliOptions.EnableExternalSdkProvider)
-            // {
-            //     foreach (var detectionResult in detectionResults)
-            //     {
-            //         // check if the platform version is already installed
-            //         var platform = this.platforms.Where(p => p.Name == detectionResult.Platform)
-            //         platform.IsVersionAlreadyInstalled
-            //         if (VersionProviderHelper.IsVersionAlreadyInstalled(detectionResult.Platform, detectionResult.PlatformVersion))
-            //         {
-            //             this.logger.LogInformation("Platform {platformName} with version {platformVersion} is already installed", detectionResult.Platform, detectionResult.PlatformVersion);
-            //             continue;
-            //         }
-            //     }
-            // }
             var installationScript = this.environmentSetupScriptProvider.GetBashScriptSnippet(
                 context,
                 detectionResults);
