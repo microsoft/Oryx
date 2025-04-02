@@ -233,7 +233,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 }
 
                 var environmentScriptProvider = serviceProvider.GetRequiredService<PlatformsInstallationScriptProvider>();
-
                 var snippet = environmentScriptProvider.GetBashScriptSnippet(context, detectedPlatforms);
 
                 var scriptBuilder = new StringBuilder()

@@ -98,6 +98,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         /// <param name="detector">The detector of Node.js platform.</param>
         /// <param name="environment">The environment of Node.js platform.</param>
         /// <param name="nodePlatformInstaller">The <see cref="NodePlatformInstaller"/>.</param>
+        /// <param name="externalSdkProvider">The <see cref="ExternalSdkProvider"/>.</param>
         public NodePlatform(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
             IOptions<NodeScriptGeneratorOptions> nodeScriptGeneratorOptions,
@@ -761,18 +762,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
             // Fallback to default version detection
             var versionInfo = this.nodeVersionProvider.GetVersionInfo();
             return versionInfo.DefaultVersion;
-        }
-
-        private string GetBlobNameForVersion(string version)
-        {
-            if (this.commonOptions.DebianFlavor.Equals(OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase))
-            {
-                return $"{this.Name}-{version}.tar.gz";
-            }
-            else
-            {
-                return $"{this.Name}-{this.commonOptions.DebianFlavor}-{version}.tar.gz";
-            }
         }
     }
 }
