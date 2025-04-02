@@ -115,7 +115,6 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
                 checkerMessageSink: null,
                 operationId: null);
 
-            // TODO check if changes needed here as well?
             if (!scriptGenerator.TryGenerateScript(out var generatedScript, out var exception))
             {
                 if (exception != null)

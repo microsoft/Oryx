@@ -514,7 +514,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
 
                         try
                         {
-                            var isExternalFetchSuccess = this.externalSdkProvider.RequestSdkAsync(this.Name, this.GetBlobNameForVersion(detectorResult.PlatformVersion)).Result;
+                            var blobName = BlobNameHelper.GetBlobNameForVersion(this.Name, detectorResult.PlatformVersion, this.commonOptions.DebianFlavor);
+                            var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result;
                             if (isExternalFetchSuccess)
                             {
                                 this.logger.LogDebug(

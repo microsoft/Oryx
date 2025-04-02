@@ -118,9 +118,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
 
-            // TODO
-            // if skipSdkBinaryDownload is true, we will not download the sdk binaries
-            // just verify that the binaries are in place and throw an error if binaries are not in place/sentinal file does not exist
             var versionDirInTemp = directoryToInstall;
             if (string.IsNullOrEmpty(versionDirInTemp))
             {
@@ -132,13 +129,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             snippet
                 .AppendLine()
                 .AppendLine($"if grep -q -e '^cli$' \"/opt/oryx/.imagetype\" -e '^jamstack$' \"/opt/oryx/.imagetype\"; then")
-                .AppendCommonSkeletonDepenendenciesInstallation() // we need to take care of these too, but these are not getting installed in githubactions image
+                .AppendCommonSkeletonDepenendenciesInstallation()
                 .AppendPlatformSpecificSkeletonDepenendenciesInstallation(this)
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_SETUP_START=$SECONDS")
                 .AppendLine("echo")
                 .AppendLine(
-                $"echo \"Downloading and extracting '{platformName}' version '{version}' to '{versionDirInTemp}'...\"")
+                $"echo \"Fetching and extracting '{platformName}' version '{version}' to '{versionDirInTemp}'...\"")
                 .AppendLine($"rm -rf {versionDirInTemp}")
                 .AppendLine($"mkdir -p {versionDirInTemp}")
                 .AppendLine($"cd {versionDirInTemp}")
@@ -148,13 +145,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             if (skipSdkBinaryDownload)
                 {
-                    var tarFileName = this.GetTarBlobNameForVersion(platformName, version);
+                    var tarFileName = BlobNameHelper.GetBlobNameForVersion(platformName, version, this.CommonOptions.DebianFlavor);
                     var tarFilePath = Path.Combine(ExternalSdkProvider.ExternalSdksStorageDir, platformName, tarFileName);
                     snippet.AppendLine($"echo \"Skipping download of {platformName} version {version} as it is available in external sdk provider cache...\"")
                         .AppendLine($"echo \"Extracting contents...\"")
                         .AppendLine($"tar -xzf {tarFilePath} -C .")
                         .AppendLine($"rm -f {tarFileName}");
                 }
+
+            // TODO : use backup domain incase primary domain is not reachable
             else
                 {
                 snippet.AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
@@ -318,18 +317,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             platformBinariesStorageBaseUrl = platformBinariesStorageBaseUrl.TrimEnd('/');
             return platformBinariesStorageBaseUrl;
-        }
-
-        private string GetTarBlobNameForVersion(string platformName, string version)
-        {
-            if (this.CommonOptions.DebianFlavor.Equals(OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase))
-            {
-                return $"{platformName}-{version}.tar.gz";
-            }
-            else
-            {
-                return $"{platformName}-{this.CommonOptions.DebianFlavor}-{version}.tar.gz";
-            }
         }
     }
 }

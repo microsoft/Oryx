@@ -110,20 +110,20 @@ namespace Microsoft.Oryx.BuildScriptGenerator
       }
     }
 
-    public bool CheckLocalCacheForSdk(string platformName, string blobName, string expectedChecksum)
+    public bool CheckLocalCacheForBlob(string platformName, string blobName, string expectedChecksum)
     {
-      var sdkPath = Path.Combine(ExternalSdksStorageDir, platformName, blobName);
-      if (File.Exists(sdkPath))
+      var blobPath = Path.Combine(ExternalSdksStorageDir, platformName, blobName);
+      if (File.Exists(blobPath))
       {
-        var actualChecksum = this.GetSHA512Checksum(sdkPath);
+        var actualChecksum = this.GetSHA512Checksum(blobPath);
         if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
         {
-          this.logger.LogInformation("SDK for platform {platformName}, blobName {blobName} already exists in cache at {sdkPath} and checksum matches", platformName, blobName, sdkPath);
+          this.logger.LogInformation("Blob for platform {platformName}, blobName {blobName} already exists in cache at {blobPath} and checksum matches", platformName, blobName, blobPath);
           return true;
         }
         else
         {
-          this.logger.LogWarning("SDK for platform {platformName}, blobName {blobName} already exists in cache at {sdkPath} but checksum does not match, considering the blob as corrupted", platformName, blobName, sdkPath);
+          this.logger.LogWarning("Blob for platform {platformName}, blobName {blobName} already exists in cache at {sdkPath} but checksum does not match, considering the blob as corrupted", platformName, blobName, blobPath);
         }
       }
 
@@ -131,17 +131,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     }
 
     /// <inheritdoc />
-    public async Task<bool> RequestSdkAsync(string platformName, string blobName)
+    public async Task<bool> RequestBlobAsync(string platformName, string blobName)
     {
       // Get the expected checksum for the SDK
       var expectedChecksum = await this.GetChecksumForVersionAsync(platformName, blobName);
       if (expectedChecksum == null)
       {
-        this.logger.LogError("Failed to get checksum for blob : platform {platformName}, blobName {blobName}. Skipping download of SDK.", platformName, blobName);
+        this.logger.LogError("Failed to get checksum for blob : platform {platformName}, blobName {blobName}. Skipping download of blob.", platformName, blobName);
         return false;
       }
 
-      if (this.CheckLocalCacheForSdk(platformName, blobName, expectedChecksum))
+      if (this.CheckLocalCacheForBlob(platformName, blobName, expectedChecksum))
       {
         return true;
       }
@@ -161,32 +161,32 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
           if (response && File.Exists(filePath))
           {
-            this.logger.LogInformation("Successfully requested SDK for platform {platformName}, blobName {blobName}, available at {FilePath}", platformName, blobName, filePath);
+            this.logger.LogInformation("Successfully requested blob for platform {platformName}, blobName {blobName}, available at {FilePath}", platformName, blobName, filePath);
           }
           else
           {
-            this.logger.LogError("Failed to get SDK for platform {platformName}, blobName {blobName}", platformName, blobName);
+            this.logger.LogError("Failed to get blob for platform {platformName}, blobName {blobName}", platformName, blobName);
             return false;
           }
         }
         catch (Exception ex)
         {
-          this.logger.LogError(ex, "Error requesting SDK for platform {platformName} blobName {blobName} from external provider.", platformName, blobName);
+          this.logger.LogError(ex, "Error requesting blob for platform {platformName} blobName {blobName} from external provider.", platformName, blobName);
           return false;
         }
       }
 
       // Verify checksum
-      var sdkPath = Path.Combine(ExternalSdksStorageDir, platformName, blobName);
-      var actualChecksum = this.GetSHA512Checksum(sdkPath);
+      var blobPath = Path.Combine(ExternalSdksStorageDir, platformName, blobName);
+      var actualChecksum = this.GetSHA512Checksum(blobPath);
       if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
       {
-          this.logger.LogInformation("Downloaded SDK checksum verified successfully for platform {platformName}, blobName {blobName}", platformName, blobName);
+          this.logger.LogInformation("Downloaded blob checksum verified successfully for platform {platformName}, blobName {blobName}", platformName, blobName);
           return true;
       }
       else
       {
-          this.logger.LogError("Checksum verification failed for downloaded SDK: platform {platformName}, blobName {blobName}, actual checksum {actualChecksum} , expected checksum {expectedChecksum}", platformName, blobName, actualChecksum, expectedChecksum);
+          this.logger.LogError("Checksum verification failed for downloaded blob: platform {platformName}, blobName {blobName}, actual checksum {actualChecksum} , expected checksum {expectedChecksum}", platformName, blobName, actualChecksum, expectedChecksum);
           return false;
       }
     }

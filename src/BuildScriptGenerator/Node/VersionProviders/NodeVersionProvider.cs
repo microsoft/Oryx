@@ -3,6 +3,7 @@
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
 
+using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -39,8 +40,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                 {
                     if (this.options.EnableExternalSdkProvider)
                     {
-                        // Todo : try catch?
-                        return this.externalVersionProvider.GetVersionInfo();
+                        try
+                        {
+                            return this.externalVersionProvider.GetVersionInfo();
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.LogError($"Failed to get version info from external SDK provider. Falling back to http based sdkStorageVersionProvider. Ex: {ex}");
+                        }
                     }
 
                     return this.sdkStorageVersionProvider.GetVersionInfo();

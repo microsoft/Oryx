@@ -30,11 +30,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     Task<string> GetChecksumForVersionAsync(string platformName, string version);
 
     /// <summary>
-    /// Requests an SDK to be downloaded to SDKs cache path by the external SDK provider.
+    /// Requests a blob to be downloaded to SDKs cache path by the external SDK provider.
     /// </summary>
     /// <param name="platformName">The name of the platform.</param>
     /// <param name="blobName">The blobName of the SDK.</param>
     /// <returns>Returns true if the download was successful</returns>
-    Task<bool> RequestSdkAsync(string platformName, string blobName);
+    Task<bool> RequestBlobAsync(string platformName, string blobName);
   }
 }

@@ -86,8 +86,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
           ? SdkStorageConstants.DefaultVersionFileName
           : $"{SdkStorageConstants.DefaultVersionFilePrefix}.{this.commonOptions.DebianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
 
-      this.logger.LogDebug("Getting the default version for platform {platformName} by fetching blob: {defaultFileBlobName} via external provider", platformName, defaultFileBlobName);
-      if (!this.externalProvider.RequestSdkAsync(platformName, defaultFileBlobName).Result)
+      this.logger.LogInformation("Getting the default version for platform {platformName} by fetching blob: {defaultFileBlobName} via external provider", platformName, defaultFileBlobName);
+      if (!this.externalProvider.RequestBlobAsync(platformName, defaultFileBlobName).Result)
       {
         throw new InvalidOperationException(
             $"Failed to get the default version for platform {platformName} by fetching blob: {defaultFileBlobName}");

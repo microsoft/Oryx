@@ -74,7 +74,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             // build environment is setup with detected platforms' sdks.
             var platformInfos = this.platformsInformationProvider.GetPlatformsInfo(context);
             var detectionResults = platformInfos.Select(pi => pi.DetectorResult);
-
             var installationScript = this.environmentSetupScriptProvider.GetBashScriptSnippet(
                 context,
                 detectionResults);
