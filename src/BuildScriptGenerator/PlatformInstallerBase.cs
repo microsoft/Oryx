@@ -142,10 +142,22 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"rm -rf {versionDirInTemp}")
                 .AppendLine($"mkdir -p {versionDirInTemp}")
                 .AppendLine($"cd {versionDirInTemp}")
-                .AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine($"platformName=\"{platformName}\"")
                 .AppendLine($"export DEBIAN_FLAVOR={this.CommonOptions.DebianFlavor}")
-                .AppendLine("echo \"Detected image debian flavor: $DEBIAN_FLAVOR.\"")
+                .AppendLine("echo \"Detected image debian flavor: $DEBIAN_FLAVOR.\"");
+
+            if (skipSdkBinaryDownload)
+                {
+                    var tarFileName = this.GetTarBlobNameForVersion(platformName, version);
+                    var tarFilePath = Path.Combine(ExternalSdkProvider.ExternalSdksStorageDir, platformName, tarFileName);
+                    snippet.AppendLine($"echo \"Skipping download of {platformName} version {version} as it is available in external sdk provider cache...\"")
+                        .AppendLine($"echo \"Extracting contents...\"")
+                        .AppendLine($"tar -xzf {tarFilePath} -C .")
+                        .AppendLine($"rm -f {tarFileName}");
+                }
+            else
+                {
+                snippet.AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
                 .AppendLine($"if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")
                 .AppendLine(
                 $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
@@ -178,7 +190,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 .AppendLine($"echo \"performing sha512 checksum for: {platformName}...\"")
                 .AppendLine($"echo \"$checksumValue {version}.tar.gz\" | sha512sum -c - >/dev/null 2>&1")
                 .AppendLine("fi")
-                .AppendLine($"rm -f {tarFile}")
+                .AppendLine($"rm -f {tarFile}");
+                }
+
+            snippet
                 .AppendLine("PLATFORM_SETUP_ELAPSED_TIME=$(($SECONDS - $PLATFORM_SETUP_START))")
                 .AppendLine("echo \"Done in $PLATFORM_SETUP_ELAPSED_TIME sec(s).\"")
                 .AppendLine("echo")
@@ -303,6 +318,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             platformBinariesStorageBaseUrl = platformBinariesStorageBaseUrl.TrimEnd('/');
             return platformBinariesStorageBaseUrl;
+        }
+
+        private string GetTarBlobNameForVersion(string platformName, string version)
+        {
+            if (this.CommonOptions.DebianFlavor.Equals(OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase))
+            {
+                return $"{platformName}-{version}.tar.gz";
+            }
+            else
+            {
+                return $"{platformName}-{this.CommonOptions.DebianFlavor}-{version}.tar.gz";
+            }
         }
     }
 }

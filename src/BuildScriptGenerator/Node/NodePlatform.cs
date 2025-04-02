@@ -5,7 +5,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Formats.Tar;
 using System.IO;
 using System.Linq;
 using Microsoft.ApplicationInsights;
@@ -504,58 +503,55 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
                         "Node version {version} is already installed. So skipping installing it again.",
                         detectorResult.PlatformVersion);
                 }
-
-                if (this.commonOptions.EnableExternalSdkProvider)
+                else
                 {
-                    this.logger.LogDebug(
-                        "Node version {version} is not installed. " +
-                        "External SDK provider is enabled so trying to fetch SDK using it.",
-                        detectorResult.PlatformVersion);
-
-                    // TODO : move this to nodePlatformInstaller?
-                    var isExternalFetchSuccess = this.externalSdkProvider.RequestSdkAsync(this.Name, this.GetBlobNameForVersion(detectorResult.PlatformVersion)).Result;
-                    if (isExternalFetchSuccess)
+                    if (this.commonOptions.EnableExternalSdkProvider)
                     {
-                        this.logger.LogDebug("Node version {version} is fetched successfully using external SDK provider.", detectorResult.PlatformVersion);
+                        this.logger.LogDebug(
+                            "Node version {version} is not installed. " +
+                            "External SDK provider is enabled so trying to fetch SDK using it.",
+                            detectorResult.PlatformVersion);
 
-                        // Extract the fetched sdk to the installation directory and write sentinal file
-                        File.Copy(
-                            Path.Combine(ExternalSdkProvider.ExternalSdksStorageDir, this.GetBlobNameForVersion(detectorResult.PlatformVersion)),
-                            Path.Combine(this.commonOptions.DynamicInstallRootDir, NodeConstants.PlatformName, detectorResult.PlatformVersion));
-
-                        // Extract the .tar.gz file
-                        TarFile.ExtractToDirectory(
-                            Path.Combine(this.commonOptions.DynamicInstallRootDir, NodeConstants.PlatformName, detectorResult.PlatformVersion),
-                            Path.Combine(this.commonOptions.DynamicInstallRootDir, NodeConstants.PlatformName),
-                            overwriteFiles: true);
-
-                        using (File.Create(Path.Combine(this.commonOptions.DynamicInstallRootDir, NodeConstants.PlatformName, detectorResult.PlatformVersion, SdkStorageConstants.SdkDownloadSentinelFileName)))
+                        // TODO : move this to nodePlatformInstaller?
+                        try
                         {
-                            // do nothing
-                        }
+                            var isExternalFetchSuccess = this.externalSdkProvider.RequestSdkAsync(this.Name, this.GetBlobNameForVersion(detectorResult.PlatformVersion)).Result;
+                            if (isExternalFetchSuccess)
+                            {
+                                this.logger.LogDebug(
+                                    "Node version {version} is fetched successfully using external SDK provider. " +
+                                    "So generating an installation script snippet which skips platform binary download.",
+                                    detectorResult.PlatformVersion);
 
-                        installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion, skipSdkBinaryDownload: true);
+                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion, skipSdkBinaryDownload: true);
+                            }
+                            else
+                            {
+                                this.logger.LogDebug(
+                                    "Node version {version} is not fetched successfully using external SDK provider. " +
+                                    "So generating an installation script snippet for it.",
+                                    detectorResult.PlatformVersion);
+
+                                installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
+                                    detectorResult.PlatformVersion);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.LogError(ex, "Error while fetching Node.js version {version} using external SDK provider.", detectorResult.PlatformVersion);
+                            installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(detectorResult.PlatformVersion);
+                        }
                     }
                     else
                     {
                         this.logger.LogDebug(
-                            "Node version {version} is not fetched successfully using external SDK provider. " +
+                            "Node version {version} is not installed. " +
                             "So generating an installation script snippet for it.",
                             detectorResult.PlatformVersion);
 
                         installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
                             detectorResult.PlatformVersion);
                     }
-                }
-                else
-                {
-                    this.logger.LogDebug(
-                        "Node version {version} is not installed. " +
-                        "So generating an installation script snippet for it.",
-                        detectorResult.PlatformVersion);
-
-                    installationScriptSnippet = this.platformInstaller.GetInstallerScriptSnippet(
-                        detectorResult.PlatformVersion);
                 }
             }
             else
@@ -771,11 +767,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         {
             if (this.commonOptions.DebianFlavor.Equals(OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase))
             {
-                return $"{this.Name}/{version}.tar.gz";
+                return $"{this.Name}-{version}.tar.gz";
             }
             else
             {
-                return $"{this.Name}/{this.commonOptions.DebianFlavor}/{version}.tar.gz";
+                return $"{this.Name}-{this.commonOptions.DebianFlavor}-{version}.tar.gz";
             }
         }
     }

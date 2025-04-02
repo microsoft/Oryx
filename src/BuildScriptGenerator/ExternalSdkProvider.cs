@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -24,8 +25,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
   /// </summary>
   public class ExternalSdkProvider : IExternalSdkProvider
   {
-    public const string ExternalSdksStorageDir = "/var/OryxSdksCache";
-    private const string SocketPath = "/var/OryxSdks/oryx-pull-sdk.socket";
+    public const string ExternalSdksStorageDir = "/var/OryxSdks";
+    private const string SocketPath = "/var/sockets/oryx-pull-sdk.socket";
     private readonly BuildScriptGeneratorOptions options;
     private readonly ILogger<ExternalSdkProvider> logger;
 
@@ -51,6 +52,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         var request = new SdkProviderRequest
         {
           PlatformName = platformName,
+          BlobName = null,
           UrlParameters = new Dictionary<string, string>
           {
             { "restype", "container" },
@@ -61,6 +63,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         var response = await this.SendRequestAsync(request);
         var filePath = Path.Combine(ExternalSdksStorageDir, platformName, platformName);
+        this.logger.LogInformation("Received response from external SDK provider: {response}, expected path: {filePath}", response, filePath);
 
         if (response && File.Exists(filePath))
         {
@@ -119,7 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
       if (File.Exists(sdkPath))
       {
         var actualChecksum = this.GetSHA512Checksum(sdkPath);
-        if (expectedChecksum == actualChecksum)
+        if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
         {
           this.logger.LogInformation("SDK for platform {platformName}, blobName {blobName} already exists in cache at {sdkPath} and checksum matches", platformName, blobName, sdkPath);
           return true;
@@ -156,6 +159,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
           {
             PlatformName = platformName,
             BlobName = blobName,
+            UrlParameters = new Dictionary<string, string>(),
           };
 
           var response = await this.SendRequestAsync(request);
@@ -184,21 +188,21 @@ namespace Microsoft.Oryx.BuildScriptGenerator
       var sdkDir = Path.Combine(ExternalSdksStorageDir, platformName);
       var sdkPath = Path.Combine(sdkDir, blobName);
       var actualChecksum = this.GetSHA512Checksum(sdkPath);
-      if (expectedChecksum == actualChecksum)
+      if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
       {
           this.logger.LogInformation("Downloaded SDK checksum verified successfully for platform {platformName}, blobName {blobName}", platformName, blobName);
           return true;
       }
       else
       {
-          this.logger.LogError("Checksum verification failed for downloaded SDK: platform {platformName}, blobName {blobName}", platformName, blobName);
+          this.logger.LogError("Checksum verification failed for downloaded SDK: platform {platformName}, blobName {blobName}, actual checksum {actualChecksum} , expected checksum {expectedChecksum}", platformName, blobName, actualChecksum, expectedChecksum);
           return false;
       }
     }
 
     private async Task<bool> SendRequestAsync(SdkProviderRequest request)
     {
-      this.logger.LogDebug("Sending request to external SDK provider: {request}", request);
+      this.logger.LogInformation("Sending request to external SDK provider: {PlatformName} , {BlobName}, {Params}", request.PlatformName, request.BlobName, request.UrlParameters?.Count > 0 ? string.Join(", ", request.UrlParameters.Select(kvp => $"Key: {kvp.Key}, Value: {kvp.Value}")) : string.Empty);
 
       using var socket = new Socket(AddressFamily.Unix, SocketType.Stream, ProtocolType.Unspecified);
 
@@ -210,6 +214,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         // append $ at the end of the string to indicate end of request
         requestJson += "$";
+        this.logger.LogInformation("Request JSON to external SDK Provider: {requestJson}", requestJson);
         var requestBytes = Encoding.UTF8.GetBytes(requestJson);
 
         // Send the request
@@ -219,8 +224,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         var buffer = new byte[4096];
         var received = await socket.ReceiveAsync(new ArraySegment<byte>(buffer), SocketFlags.None);
 
+        this.logger.LogInformation("Received response from external SDK provider: {response}", Encoding.UTF8.GetString(buffer, 0, received));
         var responseString = Encoding.UTF8.GetString(buffer, 0, received);
-        if (!string.IsNullOrEmpty(responseString) && responseString.EqualsIgnoreCase("Success"))
+        if (!string.IsNullOrEmpty(responseString) && responseString.EqualsIgnoreCase("Success$"))
         {
           return true;
         }
