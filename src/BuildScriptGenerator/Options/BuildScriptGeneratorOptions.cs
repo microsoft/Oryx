@@ -67,6 +67,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public string OryxSdkStorageBaseUrl { get; set; }
 
+        public string OryxSdkStorageBackupBaseUrl { get; set; }
+
         public bool EnableTelemetry { get; set; }
 
         public string PreBuildScriptPath { get; set; }

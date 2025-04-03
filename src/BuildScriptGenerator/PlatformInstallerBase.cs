@@ -117,6 +117,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             bool skipSdkBinaryDownload = false)
         {
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
+            var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
 
             var versionDirInTemp = directoryToInstall;
             if (string.IsNullOrEmpty(versionDirInTemp))
@@ -150,27 +151,35 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                     snippet.AppendLine($"echo \"Skipping download of {platformName} version {version} as it is available in external sdk provider cache...\"")
                         .AppendLine($"echo \"Extracting contents...\"")
                         .AppendLine($"tar -xzf {tarFilePath} -C .")
-                        .AppendLine($"rm -f {tarFileName}");
+                        .AppendLine($"rm -f {tarFileName}")
+                        .AppendLine($"echo \"Successfully extracted {platformName} version {version} from external sdk provider cache...\"");
                 }
-
-            // TODO : use backup domain incase primary domain is not reachable
             else
                 {
                 snippet.AppendLine("PLATFORM_BINARY_DOWNLOAD_START=$SECONDS")
+                .AppendLine("downloaded=1")
                 .AppendLine($"if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")
-                .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" " +
-                $"--output {tarFile} >/dev/null 2>&1")
+                .AppendLine($"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" --output {tarFile} >/dev/null 2>&1 || downloaded=0")
                 .AppendLine("else")
-                .AppendLine(
-                $"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" " +
-                $"--output {tarFile} >/dev/null 2>&1")
+                .AppendLine($"curl -D headers.txt -SL \"{sdkStorageBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" --output {tarFile} >/dev/null 2>&1 || downloaded=0")
+                .AppendLine("fi")
+                .AppendLine($"if [ $downloaded -eq 0 ]; then")
+                .AppendLine($"  if [ -z \"{sdkStorageBackupBaseUrl}\" ]; then")
+                .AppendLine("    echo \"Download using primary SDK storage URL failed and backup storage base url is not provided, exiting.\"")
+                .AppendLine("    exit 1")
+                .AppendLine("  fi")
+                .AppendLine("  echo \"Download using primary SDK storage URL failed, trying backup storage URL...\"")
+                .AppendLine($"  if [ \"$DEBIAN_FLAVOR\" == \"{OsTypes.DebianStretch}\" ]; then")
+                .AppendLine($"    curl -D headers.txt -SL \"{sdkStorageBackupBaseUrl}/{platformName}/{platformName}-{version}.tar.gz\" --output {tarFile} >/dev/null 2>&1")
+                .AppendLine("  else")
+                .AppendLine($"    curl -D headers.txt -SL \"{sdkStorageBackupBaseUrl}/{platformName}/{platformName}-$DEBIAN_FLAVOR-{version}.tar.gz\" --output {tarFile} >/dev/null 2>&1")
+                .AppendLine("  fi")
                 .AppendLine("fi")
                 .AppendLine("PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME=$(($SECONDS - $PLATFORM_BINARY_DOWNLOAD_START))")
-                .AppendLine("echo \"Downloaded in $PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME sec(s).\"")
+                .AppendLine("echo \"Downloaded in $PLATFORM_BINARY_DOWNLOAD_ELAPSED_TIME sec(s).\"");
 
                 // Search header name ignoring case
-                .AppendLine("echo Verifying checksum...")
+                snippet.AppendLine("echo Verifying checksum...")
                 .AppendLine("headerName=\"x-ms-meta-checksum\"")
                 .AppendLine("checksumHeader=$(cat headers.txt | grep -i $headerName: | tr -d '\\r')")
 
@@ -317,6 +326,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
             platformBinariesStorageBaseUrl = platformBinariesStorageBaseUrl.TrimEnd('/');
             return platformBinariesStorageBaseUrl;
+        }
+
+        private string GetPlatformBinariesBackupStorageBaseUrl()
+        {
+            var platformBinariesBackupStorageBaseUrl = this.CommonOptions.OryxSdkStorageBackupBaseUrl;
+            if (string.IsNullOrEmpty(platformBinariesBackupStorageBaseUrl))
+            {
+                this.Logger.LogWarning($"Environment variable '{SdkStorageConstants.SdkStorageBackupBaseUrlKeyName}' for Backup SDK storage base URL is not set.");
+                return null;
+            }
+
+            platformBinariesBackupStorageBaseUrl = platformBinariesBackupStorageBaseUrl.TrimEnd('/');
+            return platformBinariesBackupStorageBaseUrl;
         }
     }
 }

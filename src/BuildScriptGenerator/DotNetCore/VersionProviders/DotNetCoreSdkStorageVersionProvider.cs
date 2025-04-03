@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
     public class DotNetCoreSdkStorageVersionProvider : SdkStorageVersionProviderBase, IDotNetCoreVersionProvider
     {
         private readonly BuildScriptGeneratorOptions commonOptions;
+        private readonly ILogger logger;
         private Dictionary<string, string> versionMap;
         private string defaultRuntimeVersion;
 
@@ -28,6 +29,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             : base(commonOptions, httpClientFactory, loggerFactory)
         {
             this.commonOptions = commonOptions.Value;
+            this.logger = loggerFactory.CreateLogger(this.GetType());
         }
 
         public Dictionary<string, string> SupportedVersionsMap { get; }
@@ -57,7 +59,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 var httpClient = this.HttpClientFactory.CreateClient("general");
                 var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-                var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, DotNetCoreConstants.PlatformName, httpClient);
+                var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
+                XDocument xdoc = null;
+
+                try
+                {
+                    xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, DotNetCoreConstants.PlatformName, httpClient);
+                }
+                catch (AggregateException ex)
+                {
+                    this.logger.LogWarning(ex, "Failed to get list of blobs from primary storage. Trying backup storage.");
+                    xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBackupBaseUrl, DotNetCoreConstants.PlatformName, httpClient);
+                }
 
                 // keys represent runtime version, values represent sdk version
                 var supportedVersions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -107,7 +120,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
 
                 this.versionMap = supportedVersions;
-                this.defaultRuntimeVersion = this.GetDefaultVersion(DotNetCoreConstants.PlatformName, sdkStorageBaseUrl);
+                try
+                {
+                    this.defaultRuntimeVersion = this.GetDefaultVersion(DotNetCoreConstants.PlatformName, sdkStorageBaseUrl);
+                }
+                catch (AggregateException ex)
+                {
+                    this.logger.LogWarning(ex, "Failed to get the default version from primary storage. Trying backup storage.");
+                    if (sdkStorageBackupBaseUrl != null)
+                    {
+                        this.defaultRuntimeVersion = this.GetDefaultVersion(DotNetCoreConstants.PlatformName, sdkStorageBackupBaseUrl);
+                    }
+                }
             }
         }
     }
