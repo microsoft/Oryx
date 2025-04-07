@@ -13,13 +13,13 @@ import (
 )
 
 type RubyStartupScriptGenerator struct {
-	SourcePath                      string
-	UserStartupCommand              string
-	DefaultAppFilePath              string
-	BindPort                        string
-	RailEnv                         string
-	Manifest                        common.BuildManifest
-	Configuration                   Configuration
+	SourcePath         string
+	UserStartupCommand string
+	DefaultAppFilePath string
+	BindPort           string
+	RailEnv            string
+	Manifest           common.BuildManifest
+	Configuration      Configuration
 }
 
 const DefaultBindPort = "8080"
