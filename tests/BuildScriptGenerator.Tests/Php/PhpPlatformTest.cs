@@ -496,6 +496,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             isPhpComposerAlreadyInstalled = isPhpComposerAlreadyInstalled ?? true;
             phpComposerInstallationScript = phpComposerInstallationScript ?? "default-php-composer-installation-script";
             var versionProvider = new TestPhpVersionProvider(supportedPhpVersions, defaultVersion);
+            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
             supportedPhpComposerVersions = supportedPhpComposerVersions ?? new[] { PhpVersions.ComposerDefaultVersion };
             defaultComposerVersion = defaultComposerVersion ?? PhpVersions.ComposerDefaultVersion;
             var composerVersionProvider = new TestPhpComposerVersionProvider(
@@ -519,6 +520,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 detector,
                 phpInstaller,
                 phpComposerInstaller,
+                externalSdkProvider,
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -543,6 +545,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 IPhpPlatformDetector detector,
                 PhpPlatformInstaller phpInstaller,
                 PhpComposerInstaller phpComposerInstaller,
+                IExternalSdkProvider externalSdkProvider,
                 TelemetryClient telemetryClient)
                 : base(
                       phpScriptGeneratorOptions,
@@ -553,6 +556,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                       detector,
                       phpInstaller,
                       phpComposerInstaller,
+                      externalSdkProvider,
                       telemetryClient)
             {
             }
@@ -578,7 +582,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 return _isVersionAlreadyInstalled;
             }
 
-            public override string GetInstallerScriptSnippet(string version)
+            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
             {
                 return _installationScript;
             }
@@ -604,7 +608,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 return _isVersionAlreadyInstalled;
             }
 
-            public override string GetInstallerScriptSnippet(string version)
+            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
             {
                 return _installationScript;
             }

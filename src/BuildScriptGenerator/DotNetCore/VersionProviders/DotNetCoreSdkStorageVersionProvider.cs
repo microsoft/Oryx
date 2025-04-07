@@ -59,7 +59,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             {
                 var httpClient = this.HttpClientFactory.CreateClient("general");
                 var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-                var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
                 XDocument xdoc = null;
 
                 try
@@ -69,6 +68,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 catch (AggregateException ex)
                 {
                     this.logger.LogWarning(ex, "Failed to get list of blobs from primary storage. Trying backup storage.");
+                    var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
                     xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBackupBaseUrl, DotNetCoreConstants.PlatformName, httpClient);
                 }
 
@@ -127,6 +127,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 catch (AggregateException ex)
                 {
                     this.logger.LogWarning(ex, "Failed to get the default version from primary storage. Trying backup storage.");
+                    var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
                     if (sdkStorageBackupBaseUrl != null)
                     {
                         this.defaultRuntimeVersion = this.GetDefaultVersion(DotNetCoreConstants.PlatformName, sdkStorageBackupBaseUrl);

@@ -60,6 +60,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             Assert.True(onDiskVersionProvider.GetVersionInfoCalled);
         }
 
+        private class TestPythonExternalVersionProvider : PythonExternalVersionProvider
+        {
+            public TestPythonExternalVersionProvider(
+                IOptions<BuildScriptGeneratorOptions> commonOptions, IExternalSdkProvider externalProvider, ILoggerFactory loggerFactory)
+                : base(commonOptions, externalProvider, loggerFactory)
+            {
+            }
+
+            public bool GetVersionInfoCalled { get; private set; }
+
+            public override PlatformVersionInfo GetVersionInfo()
+            {
+                GetVersionInfoCalled = true;
+
+                return null;
+            }
+        }
+
         private class TestPythonSdkStorageVersionProvider : PythonSdkStorageVersionProvider
         {
             public TestPythonSdkStorageVersionProvider(
@@ -91,10 +109,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 commonOptions,
                 new TestHttpClientFactory(),
                 NullLoggerFactory.Instance);
+            var externalProvider = new TestPythonExternalVersionProvider(
+                commonOptions,
+                new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance),
+                NullLoggerFactory.Instance);
             var versionProvider = new PythonVersionProvider(
                 commonOptions,
                 onDiskProvider,
                 storageProvider,
+                externalProvider,
                 NullLogger<PythonVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider);
         }

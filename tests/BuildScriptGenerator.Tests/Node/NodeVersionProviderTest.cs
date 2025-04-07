@@ -78,6 +78,23 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             }
         }
 
+        private class TestNodeExternalVersionProvider : NodeExternalVersionProvider
+        {
+            public TestNodeExternalVersionProvider(
+                IOptions<BuildScriptGeneratorOptions> commonOptions, IExternalSdkProvider externalProvider, ILoggerFactory loggerFactory)
+                : base(commonOptions, externalProvider, loggerFactory)
+            {
+            }
+
+            public bool GetVersionInfoCalled { get; private set; }
+
+            public override PlatformVersionInfo GetVersionInfo()
+            {
+                GetVersionInfoCalled = true;
+                return null;
+            }
+        }
+
         private (INodeVersionProvider, TestNodeOnDiskVersionProvider, TestNodeSdkStorageVersionProvider)
             CreateVersionProvider(bool enableDynamicInstall)
         {
@@ -91,10 +108,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 commonOptions,
                 new TestHttpClientFactory(),
                 NullLoggerFactory.Instance);
+            var externalProvider = new TestNodeExternalVersionProvider(
+                commonOptions,
+                new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance),
+                NullLoggerFactory.Instance);
             var versionProvider = new NodeVersionProvider(
                 commonOptions,
                 onDiskProvider,
                 storageProvider,
+                externalProvider,
                 NullLogger<NodeVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider);
         }

@@ -38,6 +38,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var commonOptions = new BuildScriptGeneratorOptions() { EnableDynamicInstall = false };
             var installerScriptSnippet = "##INSTALLER_SCRIPT##";
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
             var platformInstaller = new TestPythonPlatformInstaller(
                 isVersionAlreadyInstalled: false,
                 installerScript: installerScriptSnippet,
@@ -45,6 +46,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 NullLoggerFactory.Instance);
             var platform = CreatePlatform(
                 versionProvider,
+                externalSdkProvider,
                 platformInstaller,
                 commonOptions,
                 pythonScriptGeneratorOptions);
@@ -73,6 +75,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var commonOptions = new BuildScriptGeneratorOptions() { EnableDynamicInstall = true };
             var installerScriptSnippet = "##INSTALLER_SCRIPT##";
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
             var platformInstaller = new TestPythonPlatformInstaller(
                 isVersionAlreadyInstalled: false,
                 installerScript: installerScriptSnippet,
@@ -80,6 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 NullLoggerFactory.Instance);
             var platform = CreatePlatform(
                 versionProvider,
+                externalSdkProvider,
                 platformInstaller,
                 commonOptions,
                 pythonScriptGeneratorOptions);
@@ -109,6 +113,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var commonOptions = new BuildScriptGeneratorOptions() { EnableDynamicInstall = true };
             var installerScriptSnippet = "##INSTALLER_SCRIPT##";
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
             var platformInstaller = new TestPythonPlatformInstaller(
                 isVersionAlreadyInstalled: true,
                 installerScript: installerScriptSnippet,
@@ -116,6 +121,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 NullLoggerFactory.Instance);
             var platform = CreatePlatform(
                 versionProvider,
+                externalSdkProvider,
                 platformInstaller,
                 commonOptions,
                 pythonScriptGeneratorOptions);
@@ -148,6 +154,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             };
             var installerScriptSnippet = "##INSTALLER_SCRIPT##";
             var versionProvider = new TestPythonVersionProvider(new[] { "3.7.5", "3.8.0" }, defaultVersion: "3.7.5");
+            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
             var platformInstaller = new TestPythonPlatformInstaller(
                 isVersionAlreadyInstalled: false,
                 installerScript: installerScriptSnippet,
@@ -155,6 +162,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 NullLoggerFactory.Instance);
             var platform = CreatePlatform(
                 versionProvider,
+                externalSdkProvider,
                 platformInstaller,
                 commonOptions,
                 pythonScriptGeneratorOptions);
@@ -375,6 +383,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
         }
         private PythonPlatform CreatePlatform(
             IPythonVersionProvider pythonVersionProvider,
+            IExternalSdkProvider externalSdkProvider,
             PythonPlatformInstaller platformInstaller,
             BuildScriptGeneratorOptions commonOptions = null,
             PythonScriptGeneratorOptions pythonScriptGeneratorOptions = null)
@@ -388,6 +397,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 NullLogger<PythonPlatform>.Instance,
                 detector: null,
                 platformInstaller,
+                externalSdkProvider,
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -403,6 +413,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
             var versionProvider = new TestPythonVersionProvider(
                 supportedPythonVersions: supportedVersions,
                 defaultVersion: defaultVersion);
+            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             pythonScriptGeneratorOptions = pythonScriptGeneratorOptions ?? new PythonScriptGeneratorOptions();
             var detector = new TestPythonPlatformDetector(detectedVersion: detectedVersion);  
@@ -413,6 +424,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 NullLogger<PythonPlatform>.Instance,
                 detector,
                 new PythonPlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
+                externalSdkProvider,
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -447,7 +459,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 return _isVersionAlreadyInstalled;
             }
 
-            public override string GetInstallerScriptSnippet(string version)
+            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
             {
                 return _installerScript;
             }

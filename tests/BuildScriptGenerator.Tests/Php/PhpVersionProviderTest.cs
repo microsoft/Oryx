@@ -80,6 +80,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             }
         }
 
+        private class TestPhpExternalVersionProvider : PhpExternalVersionProvider
+        {
+            public TestPhpExternalVersionProvider(
+                IOptions<BuildScriptGeneratorOptions> commonOptions, IExternalSdkProvider externalProvider, ILoggerFactory loggerFactory)
+                : base(commonOptions, externalProvider, loggerFactory)
+            {
+            }
+
+            public bool GetVersionInfoCalled { get; private set; }
+
+            public override PlatformVersionInfo GetVersionInfo()
+            {
+                GetVersionInfoCalled = true;
+
+                return null;
+            }
+        }
+
         private (IPhpVersionProvider, TestPhpOnDiskVersionProvider, TestPhpSdkStorageVersionProvider)
             CreateVersionProvider(bool enableDynamicInstall)
         {
@@ -93,10 +111,15 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 commonOptions,
                 new TestHttpClientFactory(),
                 NullLoggerFactory.Instance);
+            var externalProvider = new TestPhpExternalVersionProvider(
+                commonOptions,
+                new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance),
+                NullLoggerFactory.Instance);
             var versionProvider = new PhpVersionProvider(
                 commonOptions,
                 onDiskProvider,
                 storageProvider,
+                externalProvider,
                 NullLogger<PhpVersionProvider>.Instance);
             return (versionProvider, onDiskProvider, storageProvider);
         }

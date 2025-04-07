@@ -971,6 +971,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new[] { "6.11.0", NodeVersions.Node8Version, NodeVersions.Node10Version, NodeVersions.Node12Version },
                 defaultVersion: defaultNodeVersion);
 
+            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
+
             nodeScriptGeneratorOptions = nodeScriptGeneratorOptions ?? new NodeScriptGeneratorOptions();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             return new NodePlatform(
@@ -980,7 +982,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 NullLogger<NodePlatform>.Instance,
                 detector: null,
                 new TestEnvironment(),
-                new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance), TelemetryClientHelper.GetTelemetryClient());
+                new NodePlatformInstaller(Options.Create(commonOptions), NullLoggerFactory.Instance),
+                externalSdkProvider,
+                TelemetryClientHelper.GetTelemetryClient());
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext(ISourceRepo sourceRepo)
