@@ -293,10 +293,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private void InstallPhp(string phpVersion, StringBuilder scriptBuilder)
         {
-            var script = string.Empty;
+            string script = null;
             if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
             {
                 this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
+                return;
             }
             else
             {
@@ -339,7 +340,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private void InstallPhpComposer(string phpComposerVersion, StringBuilder scriptBuilder)
         {
             // Install PHP Composer
-            var script = string.Empty;
+            string script = null;
             if (string.IsNullOrEmpty(phpComposerVersion))
             {
                 phpComposerVersion = PhpVersions.ComposerDefaultVersion;
@@ -347,9 +348,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
             {
-                this.logger.LogDebug(
-                   "PHP Composer version {version} is already installed. So skipping installing it again.",
-                   phpComposerVersion);
+                this.logger.LogDebug("PHP Composer version {version} is already installed. So skipping installing it again.", phpComposerVersion);
+                return;
             }
             else
             {
