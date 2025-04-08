@@ -4,6 +4,7 @@
 // --------------------------------------------------------------------------------------------
 
 using System.Collections.Generic;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Tests.Common;
 using Xunit;
@@ -144,7 +145,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             var platformDetector = new DefaultPlatformsInformationProvider(
                 platforms,
-                new DefaultStandardOutputWriter());
+                new DefaultStandardOutputWriter(),
+                Options.Create(new BuildScriptGeneratorOptions()));
             return new PlatformsInstallationScriptProvider(
                 platforms,
                 platformDetector,

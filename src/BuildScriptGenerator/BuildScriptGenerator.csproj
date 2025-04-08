@@ -13,7 +13,7 @@
     <DelaySign>true</DelaySign>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyVersion>0.2</AssemblyVersion>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <!-- Remove when proper XML documentation is added to the project. -->
     <DisableDocRequirement>true</DisableDocRequirement>
     <NeutralLanguage>en-US</NeutralLanguage>

@@ -128,6 +128,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         {
             var phpVersionProvider = new TestPhpVersionProvider(
                 supportedPhpVersions: new[] { "7.2.15", PhpVersions.Php73Version });
+            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
 
             var phpComposerVersionProvider = new TestPhpComposerVersionProvider(
                 supportedPhpComposerVersions: new[] { "7.2.15", PhpVersions.ComposerDefaultVersion });
@@ -143,6 +144,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 detector: null,
                 phpInstaller: null,
                 phpComposerInstaller: null,
+                externalSdkProvider,
                 TelemetryClientHelper.GetTelemetryClient());
         }
 

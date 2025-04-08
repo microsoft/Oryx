@@ -40,6 +40,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             services.AddSingleton<IRunScriptGenerator, DefaultRunScriptGenerator>();
             services.AddSingleton<DefaultPlatformsInformationProvider>();
             services.AddSingleton<PlatformsInstallationScriptProvider>();
+            services.AddSingleton<IExternalSdkProvider, ExternalSdkProvider>();
             services.AddHttpClient("general", httpClient =>
             {
                 // NOTE: Setting user agent is required to avoid receiving 403 Forbidden response.
