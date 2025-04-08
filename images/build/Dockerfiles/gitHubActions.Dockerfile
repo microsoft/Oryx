@@ -19,7 +19,6 @@ COPY src src
 COPY build/FinalPublicKey.snk build/
 
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
-RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
 
 FROM ${BASE_IMAGE} AS main
 ARG DEBIAN_FLAVOR
