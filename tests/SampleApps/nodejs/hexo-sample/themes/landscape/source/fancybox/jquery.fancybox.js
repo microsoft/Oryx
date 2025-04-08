@@ -1125,14 +1125,16 @@
 				break;
 
 				case 'swf':
+					// CodeQL [SM03892]: This is Legacy Code in Sample Application
 					content = '<object id="fancybox-swf" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="100%" height="100%"><param name="movie" value="' + href + '"></param>';
 					embed   = '';
 
 					$.each(current.swf, function(name, val) {
+						// CodeQL [SM03892]: This is Legacy Code in Sample Application
 						content += '<param name="' + name + '" value="' + val + '"></param>';
 						embed   += ' ' + name + '="' + val + '"';
 					});
-
+					// CodeQL [SM03892]: This is Legacy Code in Sample Application
 					content += '<embed src="' + href + '" type="application/x-shockwave-flash" width="100%" height="100%"' + embed + '></embed></object>';
 				break;
 			}
@@ -1886,6 +1888,7 @@
 				return;
 			}
 
+			// CodeQL [SM03892]: This is Legacy Code in Sample Application
 			title = $('<div class="fancybox-title fancybox-title-' + type + '-wrap">' + text + '</div>');
 
 			switch (type) {
