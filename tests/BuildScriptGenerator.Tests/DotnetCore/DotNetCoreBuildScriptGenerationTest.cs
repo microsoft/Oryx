@@ -11,6 +11,7 @@ using Microsoft.Oryx.Detector.DotNetCore;
 using Xunit;
 using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
+using Microsoft.Oryx.Tests.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
@@ -82,7 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             isDotNetCoreVersionAlreadyInstalled = isDotNetCoreVersionAlreadyInstalled ?? true;
             DotNetCoreInstallationScript = DotNetCoreInstallationScript ?? "default-DotNetCore-installation-script";
             var versionProvider = new TestDotNetCoreVersionProvider(supportedDotNetCoreVersions, defaultVersion);
-            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
+            var externalSdkProvider = new TestExternalSdkProvider();
             var detector = new TestDotNetCorePlatformDetector(detectedVersion: detectedVersion);
             var DotNetCoreInstaller = new TestDotNetCorePlatformInstaller(
                 Options.Create(commonOptions),

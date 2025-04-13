@@ -971,7 +971,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 new[] { "6.11.0", NodeVersions.Node8Version, NodeVersions.Node10Version, NodeVersions.Node12Version },
                 defaultVersion: defaultNodeVersion);
 
-            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
+            var externalSdkProvider = new TestExternalSdkProvider();
 
             nodeScriptGeneratorOptions = nodeScriptGeneratorOptions ?? new NodeScriptGeneratorOptions();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();

@@ -8,6 +8,7 @@ using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.BuildScriptGenerator.Node;
 using Microsoft.Oryx.Detector;
@@ -424,6 +425,31 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.NotNull(buildScriptSnippet);
             Assert.Equal(TestNodePlatformInstaller.InstallerScript, buildScriptSnippet);
+        }
+
+        [Fact]
+        public void BuildScript_UsesExternalProvider_IfDynamicInstallAndExternalProviderEnabled_AndSdkIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var commonOptions = Options.Create(new BuildScriptGeneratorOptions() {
+                 EnableExternalSdkProvider = true,
+                 DebianFlavor = OsTypes.DebianBookworm,
+                });
+            var nodePlatform = CreateNodePlatform(dynamicInstallIsEnabled: true, sdkAlreadyInstalled: false, commonOptions: commonOptions.Value);
+            var repo = new MemorySourceRepo();
+            repo.AddFile(string.Empty, NodeConstants.PackageJsonFileName);
+            var context = CreateContext(repo);
+            var detectorResult = new NodePlatformDetectorResult
+            {
+                Platform = NodeConstants.PlatformName,
+                PlatformVersion = "20.14.0",
+            };
+            // Act
+            var buildScriptSnippet = nodePlatform.GetInstallerScriptSnippet(context, detectorResult);
+
+            // Assert
+            Assert.NotNull(buildScriptSnippet);
+            Assert.Equal(TestNodePlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, buildScriptSnippet);
         }
 
         [Fact]
@@ -984,7 +1010,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             nodeScriptGeneratorOptions = nodeScriptGeneratorOptions ?? new NodeScriptGeneratorOptions();
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             var versionProvider = new TestNodeVersionProvider(supportedNodeVersions, defaultVersion);
-            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
+            var externalSdkProvider = new TestExternalSdkProvider();
             var environment = new TestEnvironment();
             var detector = new TestNodePlatformDetector(detectedVersion: detectedVersion);
             var platformInstaller = new NodePlatformInstaller(
@@ -1011,7 +1037,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             var environment = new TestEnvironment();
 
             var versionProvider = new TestNodeVersionProvider();
-            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
+            var externalSdkProvider = new TestExternalSdkProvider();
             var detector = new TestNodePlatformDetector(detectedVersion: detectedVersion);
         
             return new TestNodePlatform(
@@ -1028,9 +1054,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
         private TestNodePlatform CreateNodePlatform(
             bool dynamicInstallIsEnabled,
-            bool sdkAlreadyInstalled)
+            bool sdkAlreadyInstalled,
+            BuildScriptGeneratorOptions commonOptions = null)
         {
-            var cliOptions = new BuildScriptGeneratorOptions();
+            var cliOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             cliOptions.EnableDynamicInstall = dynamicInstallIsEnabled;
             var environment = new TestEnvironment();
             var installer = new TestNodePlatformInstaller(
@@ -1038,7 +1065,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 sdkAlreadyInstalled,
                 NullLoggerFactory.Instance);
             var versionProvider = new TestNodeVersionProvider();
-            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
+            var externalSdkProvider = new TestExternalSdkProvider();
             var nodeScriptGeneratorOptions = new NodeScriptGeneratorOptions();
             var detector = new TestNodePlatformDetector();
             return new TestNodePlatform(
@@ -1093,6 +1120,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         {
             private readonly bool _sdkIsAlreadyInstalled;
             public static string InstallerScript = "installer-script-snippet";
+            public static string InstallerScriptWithSkipSdkBinaryDownload = "installer-script-snippet-with-skip-sdk-binary-download";
 
             public TestNodePlatformInstaller(
                 IOptions<BuildScriptGeneratorOptions> cliOptions,
@@ -1110,6 +1138,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
             {
+                if (skipSdkBinaryDownload)
+                {
+                    return InstallerScriptWithSkipSdkBinaryDownload;
+                }
                 return InstallerScript;
             }
         }

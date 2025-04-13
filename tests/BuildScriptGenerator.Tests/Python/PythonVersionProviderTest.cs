@@ -111,7 +111,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Python
                 NullLoggerFactory.Instance);
             var externalProvider = new TestPythonExternalVersionProvider(
                 commonOptions,
-                new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance),
+                new TestExternalSdkProvider(),
                 NullLoggerFactory.Instance);
             var versionProvider = new PythonVersionProvider(
                 commonOptions,

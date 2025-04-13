@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Detector.DotNetCore;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
@@ -149,7 +150,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var versionProvider = new TestDotNetCoreVersionProvider(
                 supportedVersions,
                 defaultVersion);
-            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
+            var externalSdkProvider = new TestExternalSdkProvider();
             var commonOptions = new BuildScriptGeneratorOptions();
             var dotNetCoreScriptGeneratorOptions = new DotNetCoreScriptGeneratorOptions();
             dotNetCoreScriptGeneratorOptions.DefaultRuntimeVersion = envVarDefaultVersion;

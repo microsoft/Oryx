@@ -113,7 +113,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 NullLoggerFactory.Instance);
             var externalProvider = new TestPhpExternalVersionProvider(
                 commonOptions,
-                new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance),
+                new TestExternalSdkProvider(),
                 NullLoggerFactory.Instance);
             var versionProvider = new PhpVersionProvider(
                 commonOptions,

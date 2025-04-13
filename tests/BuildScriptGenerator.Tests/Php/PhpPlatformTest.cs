@@ -15,6 +15,7 @@ using Microsoft.Oryx.BuildScriptGenerator.Golang;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Detector;
 using Microsoft.Oryx.Detector.Php;
+using Microsoft.Oryx.Tests.Common;
 using System.Linq;
 using Xunit;
 
@@ -496,7 +497,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             isPhpComposerAlreadyInstalled = isPhpComposerAlreadyInstalled ?? true;
             phpComposerInstallationScript = phpComposerInstallationScript ?? "default-php-composer-installation-script";
             var versionProvider = new TestPhpVersionProvider(supportedPhpVersions, defaultVersion);
-            var externalSdkProvider = new ExternalSdkProvider(NullLogger<ExternalSdkProvider>.Instance);
+            var externalSdkProvider = new TestExternalSdkProvider();
             supportedPhpComposerVersions = supportedPhpComposerVersions ?? new[] { PhpVersions.ComposerDefaultVersion };
             defaultComposerVersion = defaultComposerVersion ?? PhpVersions.ComposerDefaultVersion;
             var composerVersionProvider = new TestPhpComposerVersionProvider(
