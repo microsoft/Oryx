@@ -253,13 +253,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void HasPhpInstallScript_IfDynamicInstallIsEnabled_AndPhpVersionIsNotAlreadyInstalled()
         {
             // Arrange
-            var expectedScript = "test-script";
             var commonOptions = new BuildScriptGeneratorOptions();
             commonOptions.EnableDynamicInstall = true;
             var phpPlatform = CreatePhpPlatform(
                 commonOptions: commonOptions,
-                isPhpVersionAlreadyInstalled: false,
-                phpInstallationScript: expectedScript);
+                isPhpVersionAlreadyInstalled: false);
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
@@ -274,20 +272,49 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(actualScriptSnippet);
-            Assert.Contains(expectedScript, actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScript, actualScriptSnippet);
+        }
+
+        
+
+        [Fact]
+        public void PhpInstallViaExternalProvider_IfDynamicInstallAndExternalProviderIsEnabled_AndPhpVersionIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions() {
+                 EnableDynamicInstall = true,
+                 EnableExternalSdkProvider = true,
+                 DebianFlavor = OsTypes.DebianBookworm,
+                };
+            var phpPlatform = CreatePhpPlatform(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
         }
 
         [Fact]
         public void HasNoPhpInstallScript_IfDynamicInstallIsEnabled_AndPhpVersionIsAlreadyInstalled()
         {
             // Arrange
-            var installationScript = "test-script";
             var commonOptions = new BuildScriptGeneratorOptions();
             commonOptions.EnableDynamicInstall = true;
             var phpPlatform = CreatePhpPlatform(
                 commonOptions: commonOptions,
-                isPhpVersionAlreadyInstalled: true,
-                phpInstallationScript: installationScript);
+                isPhpVersionAlreadyInstalled: true);
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
@@ -308,13 +335,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void DoesNotHavePhpInstallScript_IfDynamicInstallNotEnabled_AndPhpVersionIsNotAlreadyInstalled()
         {
             // Arrange
-            var installationScript = "test-script";
             var commonOptions = new BuildScriptGeneratorOptions();
             commonOptions.EnableDynamicInstall = false;
             var phpPlatform = CreatePhpPlatform(
                 commonOptions: commonOptions,
-                isPhpVersionAlreadyInstalled: false,
-                phpInstallationScript: installationScript);
+                isPhpVersionAlreadyInstalled: false);
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
@@ -335,13 +360,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void HasPhpComposerInstallScript_IfDynamicInstallIsEnabled_AndPhpComposerVersionIsNotAlreadyInstalled()
         {
             // Arrange
-            var expectedScript = "test-script";
             var commonOptions = new BuildScriptGeneratorOptions();
             commonOptions.EnableDynamicInstall = true;
             var phpPlatform = CreatePhpPlatform(
                 commonOptions: commonOptions,
-                isPhpComposerAlreadyInstalled: false,
-                phpComposerInstallationScript: expectedScript);
+                isPhpComposerAlreadyInstalled: false);
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
@@ -356,20 +379,47 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(actualScriptSnippet);
-            Assert.Contains(expectedScript, actualScriptSnippet);
+            Assert.Contains(TestPhpComposerInstaller.InstallerScript, actualScriptSnippet);
+        }    
+
+        [Fact]
+        public void ComposerInstallViaExternalProvider_IfDynamicInstallAndExternalProviderIsEnabled_AndComposerVersionIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions() {
+                 EnableDynamicInstall = true,
+                 EnableExternalSdkProvider = true,
+                 DebianFlavor = OsTypes.DebianBookworm,
+                };
+            var phpPlatform = CreatePhpPlatform(
+                commonOptions: commonOptions,
+                isPhpComposerAlreadyInstalled: false);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpComposerInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
         }
 
         [Fact]
         public void HasNoPhpComposerInstallScript_IfDynamicInstallIsEnabled_AndPhpComposerVersionIsAlreadyInstalled()
         {
             // Arrange
-            var installationScript = "test-script";
             var commonOptions = new BuildScriptGeneratorOptions();
             commonOptions.EnableDynamicInstall = true;
             var phpPlatform = CreatePhpPlatform(
                 commonOptions: commonOptions,
-                isPhpComposerAlreadyInstalled: true,
-                phpComposerInstallationScript: installationScript);
+                isPhpComposerAlreadyInstalled: true);
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
@@ -390,13 +440,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void DoesNotHavePhpComposerInstallScript_IfDynamicInstallNotEnabled_AndPhpComposerVersionIsNotAlreadyInstalled()
         {
             // Arrange
-            var installationScript = "test-script";
             var commonOptions = new BuildScriptGeneratorOptions();
             commonOptions.EnableDynamicInstall = false;
             var phpPlatform = CreatePhpPlatform(
                 commonOptions: commonOptions,
-                isPhpComposerAlreadyInstalled: false,
-                phpComposerInstallationScript: installationScript);
+                isPhpComposerAlreadyInstalled: false);
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
@@ -414,19 +462,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         }
 
         [Fact]
-        public void HasPhpAndComposerInstallScript_IfDynamicInstallIsEnabled_AndPhpAndComposerVersionIsNotAlreadyInstalled()
+        public void ComposerInstallViaExternalProvider_IfDynamicInstallIsEnabled_AndPhpAndComposerVersionIsNotAlreadyInstalled()
         {
             // Arrange
-            var expectedPhpScript = "test-php-installation-script";
-            var expectedPhpComposerScript = "test-php-composer-installation-script";
-            var commonOptions = new BuildScriptGeneratorOptions();
-            commonOptions.EnableDynamicInstall = true;
+            var commonOptions = new BuildScriptGeneratorOptions() {
+                 EnableDynamicInstall = true,
+                 EnableExternalSdkProvider = true,
+                 DebianFlavor = OsTypes.DebianBookworm,
+                };
             var phpPlatform = CreatePhpPlatform(
                 commonOptions: commonOptions,
                 isPhpVersionAlreadyInstalled: false,
-                phpInstallationScript: expectedPhpScript,
-                isPhpComposerAlreadyInstalled: false,
-                phpComposerInstallationScript: expectedPhpComposerScript);
+                isPhpComposerAlreadyInstalled: false);
             var repo = new MemorySourceRepo();
             repo.AddFile("{}", PhpConstants.ComposerFileName);
             var context = CreateContext(repo);
@@ -441,8 +488,36 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.NotNull(actualScriptSnippet);
-            Assert.Contains(expectedPhpScript, actualScriptSnippet);
-            Assert.Contains(expectedPhpComposerScript, actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+            Assert.Contains(TestPhpComposerInstaller.InstallerScriptWithSkipSdkBinaryDownload, actualScriptSnippet);
+        }
+
+        [Fact]
+        public void HasPhpAndComposerInstallScript_IfDynamicInstallIsEnabled_AndPhpAndComposerVersionIsNotAlreadyInstalled()
+        {
+            // Arrange
+            var commonOptions = new BuildScriptGeneratorOptions();
+            commonOptions.EnableDynamicInstall = true;
+            var phpPlatform = CreatePhpPlatform(
+                commonOptions: commonOptions,
+                isPhpVersionAlreadyInstalled: false,
+                isPhpComposerAlreadyInstalled: false);
+            var repo = new MemorySourceRepo();
+            repo.AddFile("{}", PhpConstants.ComposerFileName);
+            var context = CreateContext(repo);
+            var detectedResult = new PhpPlatformDetectorResult
+            {
+                Platform = PhpConstants.PlatformName,
+                PlatformVersion = "7.3.5",
+            };
+
+            // Act
+            var actualScriptSnippet = phpPlatform.GetInstallerScriptSnippet(context, detectedResult);
+
+            // Assert
+            Assert.NotNull(actualScriptSnippet);
+            Assert.Contains(TestPhpPlatformInstaller.InstallerScript, actualScriptSnippet);
+            Assert.Contains(TestPhpComposerInstaller.InstallerScript, actualScriptSnippet);
         }
 
         [Theory]
@@ -486,16 +561,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             BuildScriptGeneratorOptions commonOptions = null,
             PhpScriptGeneratorOptions phpScriptGeneratorOptions = null,
             bool? isPhpVersionAlreadyInstalled = null,
-            string phpInstallationScript = null,
-            bool? isPhpComposerAlreadyInstalled = null,
-            string phpComposerInstallationScript = null)
+            bool? isPhpComposerAlreadyInstalled = null)
         {
             commonOptions = commonOptions ?? new BuildScriptGeneratorOptions();
             phpScriptGeneratorOptions = phpScriptGeneratorOptions ?? new PhpScriptGeneratorOptions();
             isPhpVersionAlreadyInstalled = isPhpVersionAlreadyInstalled ?? true;
-            phpInstallationScript = phpInstallationScript ?? "default-php-installation-script";
             isPhpComposerAlreadyInstalled = isPhpComposerAlreadyInstalled ?? true;
-            phpComposerInstallationScript = phpComposerInstallationScript ?? "default-php-composer-installation-script";
             var versionProvider = new TestPhpVersionProvider(supportedPhpVersions, defaultVersion);
             var externalSdkProvider = new TestExternalSdkProvider();
             supportedPhpComposerVersions = supportedPhpComposerVersions ?? new[] { PhpVersions.ComposerDefaultVersion };
@@ -506,12 +577,10 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             var detector = new TestPhpPlatformDetector(detectedVersion: detectedVersion);
             var phpInstaller = new TestPhpPlatformInstaller(
                 Options.Create(commonOptions),
-                isPhpVersionAlreadyInstalled.Value,
-                phpInstallationScript);
+                isPhpVersionAlreadyInstalled.Value);
             var phpComposerInstaller = new TestPhpComposerInstaller(
                 Options.Create(commonOptions),
-                isPhpComposerAlreadyInstalled.Value,
-                phpComposerInstallationScript);   
+                isPhpComposerAlreadyInstalled.Value);   
             return new TestPhpPlatform(
                 Options.Create(phpScriptGeneratorOptions),
                 Options.Create(commonOptions),
@@ -565,17 +634,16 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
         private class TestPhpPlatformInstaller : PhpPlatformInstaller
         {
+            public static string InstallerScript = "default-php-installation-script";
+            public static string InstallerScriptWithSkipSdkBinaryDownload = "default-php-installation-script-with-skip-sdk-binary-download";
             private readonly bool _isVersionAlreadyInstalled;
-            private readonly string _installationScript;
 
             public TestPhpPlatformInstaller(
                 IOptions<BuildScriptGeneratorOptions> commonOptions,
-                bool isVersionAlreadyInstalled,
-                string installationScript)
+                bool isVersionAlreadyInstalled)
                 : base(commonOptions, NullLoggerFactory.Instance)
             {
                 _isVersionAlreadyInstalled = isVersionAlreadyInstalled;
-                _installationScript = installationScript;
             }
 
             public override bool IsVersionAlreadyInstalled(string version)
@@ -585,23 +653,26 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
             {
-                return _installationScript;
+                if (skipSdkBinaryDownload)
+                {
+                    return InstallerScriptWithSkipSdkBinaryDownload;
+                }
+                return InstallerScript;
             }
         }
 
         private class TestPhpComposerInstaller : PhpComposerInstaller
         {
+            public static string InstallerScript = "default-php-composer-installation-script";
+            public static string InstallerScriptWithSkipSdkBinaryDownload = "default-php-composer-installation-script-with-skip-sdk-binary-download";
             private readonly bool _isVersionAlreadyInstalled;
-            private readonly string _installationScript;
 
             public TestPhpComposerInstaller(
                 IOptions<BuildScriptGeneratorOptions> commonOptions,
-                bool isVersionAlreadyInstalled,
-                string installationScript)
+                bool isVersionAlreadyInstalled)
                 : base(commonOptions, NullLoggerFactory.Instance)
             {
                 _isVersionAlreadyInstalled = isVersionAlreadyInstalled;
-                _installationScript = installationScript;
             }
 
             public override bool IsVersionAlreadyInstalled(string version)
@@ -611,7 +682,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
             {
-                return _installationScript;
+                if (skipSdkBinaryDownload)
+                {
+                    return InstallerScriptWithSkipSdkBinaryDownload;
+                }
+                return InstallerScript;
             }
         }
 

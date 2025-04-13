@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void GetsVersions_FromStorage_WhenDynamicInstall_IsEnabled()
         {
             // Arrange
-            var (versionProvider, onDiskVersionProvider, storageVersionProvider) = CreateVersionProvider(
+            var (versionProvider, onDiskVersionProvider, storageVersionProvider, externalVersionProvider) = CreateVersionProvider(
                 enableDynamicInstall: true);
 
             // Act
@@ -27,6 +27,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.True(storageVersionProvider.GetVersionInfoCalled);
+            Assert.False(externalVersionProvider.GetVersionInfoCalled);
             Assert.False(onDiskVersionProvider.GetVersionInfoCalled);
         }
 
@@ -34,7 +35,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void GetsVersions_DoesNotGetVersionsFromStorage_WhenDynamicInstall_IsFalse()
         {
             // Arrange
-            var (versionProvider, onDiskVersionProvider, storageVersionProvider) = CreateVersionProvider(
+            var (versionProvider, onDiskVersionProvider, storageVersionProvider, externalVersionProvider) = CreateVersionProvider(
                 enableDynamicInstall: false);
 
             // Act
@@ -42,6 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.False(storageVersionProvider.GetVersionInfoCalled);
+            Assert.False(externalVersionProvider.GetVersionInfoCalled);
             Assert.True(onDiskVersionProvider.GetVersionInfoCalled);
         }
 
@@ -49,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         public void GetsVersions_DoesNotGetVersionsFromStorage_ByDefault()
         {
             // Arrange
-            var (versionProvider, onDiskVersionProvider, storageVersionProvider) = CreateVersionProvider(
+            var (versionProvider, onDiskVersionProvider, storageVersionProvider, externalVersionProvider) = CreateVersionProvider(
                 enableDynamicInstall: false);
 
             // Act
@@ -57,7 +59,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
 
             // Assert
             Assert.False(storageVersionProvider.GetVersionInfoCalled);
+            Assert.False(externalVersionProvider.GetVersionInfoCalled);
             Assert.True(onDiskVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_UsesExternalVersionProvider_WhenExternalProviderAndDynamicInstallEnabled()
+        {
+            // Arrange
+            var (versionProvider, onDiskVersionProvider, storageVersionProvider, externalVersionProvider) = CreateVersionProvider(
+                enableDynamicInstall: true, enableExternalSdkProvider: true);
+
+            // Act
+            var versionInfo = versionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(externalVersionProvider.GetVersionInfoCalled);
+            Assert.False(storageVersionProvider.GetVersionInfoCalled);
+            Assert.False(onDiskVersionProvider.GetVersionInfoCalled);
         }
 
         private class TestPhpSdkStorageVersionProvider : PhpSdkStorageVersionProvider
@@ -98,12 +117,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
             }
         }
 
-        private (IPhpVersionProvider, TestPhpOnDiskVersionProvider, TestPhpSdkStorageVersionProvider)
-            CreateVersionProvider(bool enableDynamicInstall)
+        private (IPhpVersionProvider, TestPhpOnDiskVersionProvider, TestPhpSdkStorageVersionProvider, TestPhpExternalVersionProvider)
+            CreateVersionProvider(bool enableDynamicInstall, bool enableExternalSdkProvider = false)
         {
             var commonOptions = Options.Create(new BuildScriptGeneratorOptions()
             {
-                EnableDynamicInstall = enableDynamicInstall
+                EnableDynamicInstall = enableDynamicInstall,
+                EnableExternalSdkProvider = enableExternalSdkProvider,
             });
 
             var onDiskProvider = new TestPhpOnDiskVersionProvider();
@@ -121,7 +141,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 storageProvider,
                 externalProvider,
                 NullLogger<PhpVersionProvider>.Instance);
-            return (versionProvider, onDiskProvider, storageProvider);
+            return (versionProvider, onDiskProvider, storageProvider, externalProvider);
         }
 
         private class TestPhpOnDiskVersionProvider : PhpOnDiskVersionProvider
