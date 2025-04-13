@@ -1,5 +1,5 @@
-ARG DEBIAN_FLAVOR
-FROM oryxdevmcr.azurecr.io/private/oryx/oryx-run-base-${DEBIAN_FLAVOR}
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
 ARG IMAGES_DIR=/tmp/oryx/images
 
 RUN apt-get update \
@@ -15,13 +15,13 @@ RUN apt-get update \
 RUN ${IMAGES_DIR}/receiveGpgKeys.sh \
     6A010C5166006599AA17F08146C2130DFD2497F5
 
-ENV YARN_VERSION 1.17.3
+ARG YARN_VERSION=1.22.15
+ENV YARN_VERSION ${YARN_VERSION}
 
-RUN curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
-  && curl -fsSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz.asc" \
-  && gpg --batch --verify yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz \
-  && mkdir -p /opt \
+COPY images/yarn-v${YARN_VERSION}.tar.gz .
+
+RUN mkdir -p /opt \
   && tar -xzf yarn-v$YARN_VERSION.tar.gz -C /opt/ \
   && ln -s /opt/yarn-v$YARN_VERSION/bin/yarn /usr/local/bin/yarn \
   && ln -s /opt/yarn-v$YARN_VERSION/bin/yarnpkg /usr/local/bin/yarnpkg \
-  && rm yarn-v$YARN_VERSION.tar.gz.asc yarn-v$YARN_VERSION.tar.gz
+  && rm yarn-v$YARN_VERSION.tar.gz

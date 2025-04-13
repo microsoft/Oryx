@@ -1,7 +1,7 @@
 variables:
 - group: Oryx
 - name: ascName
-  value: oryx-automation-service-principal
+  value: oryx-new-service-connection
 - name: acrName
   value: oryxdevmcr.azurecr.io
 - name: skipComponentGovernanceDetection
@@ -18,7 +18,7 @@ jobs:
     imageDebianFlavor: buster
     artifactsFileName: php-runtimeimage-bases-buster.txt
     jobName: Build_Buster_BaseImages
-
+ 
 - template: ../templates/_buildimageBasesJobTemplate.yml
   parameters:
     displayName: Build php runtime bullseye base images
@@ -27,11 +27,21 @@ jobs:
     imageDebianFlavor: bullseye
     artifactsFileName: php-runtimeimage-bases-bullseye.txt
     jobName: Build_Bullseye_BaseImages
+    
+- template: ../templates/_buildimageBasesJobTemplate.yml
+  parameters:
+    displayName: Build php runtime bookworm base images
+    scriptPath: ./build/buildRunTimeImageBases.sh
+    imageDir: php
+    imageDebianFlavor: bookworm
+    artifactsFileName: php-runtimeimage-bases-bookworm.txt
+    jobName: Build_Bookworm_BaseImages
 
 - job: Release_PhpRuntimeBaseImage
   dependsOn: 
     - Build_Buster_BaseImages
-    - Build_Bullseye_BaseImages
+    - Build_Bullseye_BaseImages  
+    - Build_Bookworm_BaseImages  
   displayName: Push images to MCR
   timeoutInMinutes: 250
   pool:

@@ -62,7 +62,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(PhpVersions.Php74Version)]
         [InlineData(PhpVersions.Php73Version)]
         [InlineData(PhpVersions.Php72Version)]
-        [InlineData(PhpVersions.Php70Version)]
         public void GeneratesScript_AndBuilds_TwigExample(string phpVersion)
         {
             // Arrange
@@ -149,7 +148,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(PhpVersions.Php74Version)]
         [InlineData(PhpVersions.Php73Version)]
         [InlineData(PhpVersions.Php72Version)]
-        [InlineData(PhpVersions.Php70Version)]
         public void GeneratesScript_AndBuilds_WithoutComposerFile(string phpVersion)
         {
             // Arrange

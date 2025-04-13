@@ -183,21 +183,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
         /// </summary>
         public ShellScriptBuilder AddDefaultTestEnvironmentVariables()
         {
-            var testStorageAccountUrl = Environment.GetEnvironmentVariable(SdkStorageConstants.TestingSdkStorageUrlKeyName);
-
-            if (string.IsNullOrEmpty(testStorageAccountUrl))
-            {
-                testStorageAccountUrl = SdkStorageConstants.PrivateStagingSdkStorageBaseUrl;
-            }
-
-            this.SetEnvironmentVariable(SdkStorageConstants.SdkStorageBaseUrlKeyName, testStorageAccountUrl);
-            if (testStorageAccountUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
-            {
-                 string stagingStorageSasToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) ??
-                    KeyVaultHelper.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);
-                 this.SetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey, stagingStorageSasToken);
-            }
-
             return this;
         }
 

@@ -1,6 +1,19 @@
 ARG DEBIAN_FLAVOR
+ARG BASE_IMAGE
+
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.19-${DEBIAN_FLAVOR} as startupCmdGen
+# Using 1.20 golang image because golang latest image is not supported for buster, so using 1.20 golang image and then updating it.
+# TODO: Once buster gets deprecated, update the golang base image
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-${DEBIAN_FLAVOR} as startupCmdGen
+
+# Download and install the latest version of Go
+RUN curl -OL https://go.dev/dl/go1.23.1.linux-amd64.tar.gz && \
+    rm -rf /usr/local/go && \
+    tar -C /usr/local -xzf go1.23.1.linux-amd64.tar.gz && \
+    rm go1.23.1.linux-amd64.tar.gz
+ENV PATH=$PATH:/usr/local/go/bin
+# Verify the installation
+RUN go version
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
 COPY src/startupscriptgenerator/src .
@@ -12,13 +25,15 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
 #Bake in client certificate path into image to avoid downloading it
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
-RUN ./build.sh python /opt/startupcmdgen/startupcmdgen
+RUN chmod +x build.sh && ./build.sh python /opt/startupcmdgen/startupcmdgen
 
-FROM oryxdevmcr.azurecr.io/private/oryx/%BASE_TAG% as main
-ARG DEBIAN_FLAVOR
+FROM ${BASE_IMAGE} as main
+
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 ARG SDK_STORAGE_BASE_URL_VALUE
+
+ARG DEBIAN_FLAVOR
 ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
 ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE}
 
@@ -35,10 +50,14 @@ ADD build ${BUILD_DIR}
 RUN find ${IMAGES_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 
-ENV PYTHON_VERSION %PYTHON_FULL_VERSION%
+ARG PYTHON_FULL_VERSION
+ARG PYTHON_VERSION
+ARG PYTHON_MAJOR_VERSION
+
+ENV PYTHON_VERSION ${PYTHON_FULL_VERSION}
 RUN true
-COPY build/__pythonVersions.sh ${BUILD_DIR}
-RUN true
+# COPY build/__pythonVersions.sh ${BUILD_DIR}
+# RUN true
 COPY platforms/__common.sh /tmp/
 RUN true
 COPY platforms/python/prereqs/build.sh /tmp/
@@ -58,17 +77,17 @@ RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
 
 RUN set -ex \
  && cd /opt/python/ \
- && ln -s %PYTHON_FULL_VERSION% %PYTHON_VERSION% \
- && ln -s %PYTHON_VERSION% %PYTHON_MAJOR_VERSION% \
- && echo /opt/python/%PYTHON_MAJOR_VERSION%/lib >> /etc/ld.so.conf.d/python.conf \
+ && ln -s ${PYTHON_FULL_VERSION} ${PYTHON_VERSION} \
+ && ln -s ${PYTHON_VERSION} ${PYTHON_MAJOR_VERSION} \
+ && echo /opt/python/${PYTHON_MAJOR_VERSION}/lib >> /etc/ld.so.conf.d/python.conf \
  && ldconfig \
- && if [ "%PYTHON_MAJOR_VERSION%" = "3" ]; then cd /opt/python/%PYTHON_MAJOR_VERSION%/bin \
+ && if [ "${PYTHON_MAJOR_VERSION}" = "3" ]; then cd /opt/python/${PYTHON_MAJOR_VERSION}/bin \
  && ln -nsf idle3 idle \
  && ln -nsf pydoc3 pydoc \
  && ln -nsf python3-config python-config; fi \
  && rm -rf /var/lib/apt/lists/*
 
-ENV PATH="/opt/python/%PYTHON_MAJOR_VERSION%/bin:${PATH}"
+ENV PATH="/opt/python/${PYTHON_MAJOR_VERSION}/bin:${PATH}"
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_CONNECTION_STRING
@@ -87,8 +106,8 @@ RUN pip install --upgrade pip \
     && pip install viztracer==0.15.6 \
     && pip install vizplugins==0.1.3 \
     # Removing orjson only for 3.12 due to build errors
-    && if [ "%PYTHON_VERSION%" != "3.12" ]; then pip install orjson==3.8.10; fi \
-    && if [ "%PYTHON_VERSION%" = "3.7" ] || [ "%PYTHON_VERSION%" = "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
+    && if [ "${PYTHON_VERSION}" != "3.12" ] && [ "${PYTHON_VERSION}" != "3.7" ]; then pip install orjson==3.10.7; fi \
+    && if [ "${PYTHON_VERSION}" = "3.7" ] || [ "${PYTHON_VERSION}" = "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
     && dpkg -i libffi6_3.2.1-9_amd64.deb \
     && rm libffi6_3.2.1-9_amd64.deb; fi \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \

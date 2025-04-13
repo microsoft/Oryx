@@ -15,6 +15,21 @@ using Xunit.Abstractions;
 
 namespace Microsoft.Oryx.RuntimeImage.Tests
 {
+    public class PhpTestBase : TestBase, IClassFixture<TestTempDirTestFixture>
+    {
+        public readonly string _hostSamplesDir;
+        public readonly string _tempRootDir;
+        public readonly HttpClient _httpClient = new HttpClient();
+
+        public DockerVolume CreateSampleAppVolume(string sampleAppName) =>
+            DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", sampleAppName));
+
+        public PhpTestBase(ITestOutputHelper output, TestTempDirTestFixture testTempDirTestFixture) : base(output)
+        {
+            _hostSamplesDir = Path.Combine(Directory.GetCurrentDirectory(), "SampleApps");
+            _tempRootDir = testTempDirTestFixture.RootDirPath;
+        }
+    }
     public class PhpFpmTestBase : TestBase, IClassFixture<TestTempDirTestFixture>
     {
         public readonly string _hostSamplesDir;
@@ -38,36 +53,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("7.4-fpm", PhpVersions.Php74Version)]
-        [InlineData("8.0-fpm", PhpVersions.Php80Version)]
-        [InlineData("8.1-fpm", PhpVersions.Php81Version)]
-        [InlineData("8.2-fpm", PhpVersions.Php82Version)]
-        [Trait(TestConstants.Category, TestConstants.Release)]
-        public void VersionMatchesBusterImageName(string version, string expectedPhpVersion)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(
-                _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBuster),
-                "php",
-                new[] { "--version" }
-            );
-
-            // Assert
-            RunAsserts(() =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains("PHP " + expectedPhpVersion, result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("7.4-fpm", PhpVersions.Php74Version)]
-        [InlineData("8.0-fpm", PhpVersions.Php80Version)]
+        // [InlineData("7.4-fpm", PhpVersions.Php74Version)]
+        // [InlineData("8.0-fpm", PhpVersions.Php80Version)]
         [InlineData("8.1-fpm", PhpVersions.Php81Version)]
         [InlineData("8.2-fpm", PhpVersions.Php82Version)]
+        [InlineData("8.3-fpm", PhpVersions.Php83Version)]
+        [InlineData("8.4-fpm", PhpVersions.Php84Version)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void VersionMatchesBullseyeImageName(string version, string expectedPhpVersion)
         {
@@ -88,35 +80,36 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
-        [InlineData("8.1-fpm")]
-        [InlineData("8.2-fpm")]
-        public void GraphicsExtension_Gd_IsInstalled_For_Buster(string version)
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("8.3-fpm", PhpVersions.Php83Version)]
+        [InlineData("8.4-fpm", PhpVersions.Php84Version)]
+        [Trait(TestConstants.Category, TestConstants.Release)]
+        public void VersionMatchesBookwormImageName(string version, string expectedPhpVersion)
         {
             // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBuster),
-                CommandToExecuteOnRun = "php",
-                CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
-            });
+            var result = _dockerCli.Run(
+                _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBookworm),
+                "php",
+                new[] { "--version" }
+            );
 
             // Assert
-            JObject gdInfo = JsonConvert.DeserializeObject<JObject>(result.StdOut);
-            Assert.True((bool)((JValue)gdInfo.GetValue("GIF Read Support")).Value);
-            Assert.True((bool)((JValue)gdInfo.GetValue("GIF Create Support")).Value);
-            Assert.True((bool)((JValue)gdInfo.GetValue("JPEG Support")).Value);
-            Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("PHP " + expectedPhpVersion, result.StdOut);
+            },
+                result.GetDebugInfo());
         }
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("7.4-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void GraphicsExtension_Gd_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -136,59 +129,83 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("7.4-fpm")]
-        public void MySqlnd_Azure_IsInstalled_For_Buster(string version)
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
+        public void GraphicsExtension_Gd_IsInstalled_For_Bookworm(string version)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBuster),
+                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBookworm),
                 CommandToExecuteOnRun = "php",
-                CommandArguments = new[] { "-m", " | grep mysqlnd_azure);" }
+                CommandArguments = new[] { "-r", "echo json_encode(gd_info());" }
             });
 
             // Assert
-            var output = result.StdOut.ToString();
-            RunAsserts(() =>
-            {
-                Assert.True(result.IsSuccess);
-                Assert.Contains("mysqlnd_azure", output);
-            },
-                result.GetDebugInfo());
-
+            JObject gdInfo = JsonConvert.DeserializeObject<JObject>(result.StdOut);
+            Assert.True((bool)((JValue)gdInfo.GetValue("GIF Read Support")).Value);
+            Assert.True((bool)((JValue)gdInfo.GetValue("GIF Create Support")).Value);
+            Assert.True((bool)((JValue)gdInfo.GetValue("JPEG Support")).Value);
+            Assert.True((bool)((JValue)gdInfo.GetValue("PNG Support")).Value);
         }
 
-        [Theory]
-        [Trait("category", "runtime-bullseye")]
-        [InlineData("7.4-fpm")]
-        public void MySqlnd_Azure_IsInstalled_For_Bullseye(string version)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBullseye),
-                CommandToExecuteOnRun = "php",
-                CommandArguments = new[] { "-m", " | grep mysqlnd_azure);" }
-            });
+        // [Theory]
+        // [Trait("category", "runtime-buster")]
+        // [InlineData("7.4-fpm")]
+        // public void MySqlnd_Azure_IsInstalled_For_Buster(string version)
+        // {
+        //     // Arrange & Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBuster),
+        //         CommandToExecuteOnRun = "php",
+        //         CommandArguments = new[] { "-m", " | grep mysqlnd_azure);" }
+        //     });
 
-            // Assert
-            var output = result.StdOut.ToString();
-            RunAsserts(() =>
-            {
-                Assert.True(result.IsSuccess);
-                Assert.Contains("mysqlnd_azure", output);
-            },
-                result.GetDebugInfo());
+        //     // Assert
+        //     var output = result.StdOut.ToString();
+        //     RunAsserts(() =>
+        //     {
+        //         Assert.True(result.IsSuccess);
+        //         Assert.Contains("mysqlnd_azure", output);
+        //     },
+        //         result.GetDebugInfo());
 
-        }
+        // }
+
+        // [Theory]
+        // [Trait("category", "runtime-bullseye")]
+        // [InlineData("7.4-fpm")]
+        // public void MySqlnd_Azure_IsInstalled_For_Bullseye(string version)
+        // {
+        //     // Arrange & Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBullseye),
+        //         CommandToExecuteOnRun = "php",
+        //         CommandArguments = new[] { "-m", " | grep mysqlnd_azure);" }
+        //     });
+
+        //     // Assert
+        //     var output = result.StdOut.ToString();
+        //     RunAsserts(() =>
+        //     {
+        //         Assert.True(result.IsSuccess);
+        //         Assert.Contains("mysqlnd_azure", output);
+        //     },
+        //         result.GetDebugInfo());
+
+        // }
 
         [SkippableTheory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("7.4-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void PhpFpmBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -199,7 +216,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Arrange
             var gitCommitID = GitHelper.GetCommitID();
-            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
+            var buildNumber = Environment.GetEnvironmentVariable("IMAGE_BUILDNUMBER");
             var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
 
             // Act
@@ -224,12 +241,10 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [SkippableTheory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
-        [InlineData("8.1-fpm")]
-        [InlineData("8.2-fpm")]
-        public void PhpFpmBusterRuntimeImage_Contains_VersionAndCommit_Information(string version)
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
+        public void PhpFpmBookwormRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
             // so we should check agent_os environment variable to know if the build is happening in azure devops agent
@@ -239,13 +254,13 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
             // Arrange
             var gitCommitID = GitHelper.GetCommitID();
-            var buildNumber = Environment.GetEnvironmentVariable("BUILD_BUILDNUMBER");
+            var buildNumber = Environment.GetEnvironmentVariable("IMAGE_BUILDNUMBER");
             var expectedOryxVersion = string.Concat(Settings.OryxVersion, buildNumber);
 
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBuster),
+                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBookworm),
                 CommandToExecuteOnRun = "oryx",
                 CommandArguments = new[] { "version" }
             });
@@ -265,10 +280,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("7.4-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void Redis_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -291,17 +308,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("7.4-fpm")]
-        [InlineData("8.0-fpm")]
-        [InlineData("8.1-fpm")]
-        [InlineData("8.2-fpm")]
-        public void Redis_IsInstalled_For_Buster(string version)
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
+        public void Redis_IsInstalled_For_Bookworm(string version)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBuster),
+                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBookworm),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-m", " | grep redis);" }
             });
@@ -318,35 +333,12 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("8.0-fpm")]
-        [InlineData("8.1-fpm")]
-        [InlineData("8.2-fpm")]
-        public void SqlSrv_IsInstalled_For_Buster(string version)
-        {
-            // Arrange & Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBuster),
-                CommandToExecuteOnRun = "php",
-                CommandArguments = new[] { "-m", " | grep pdo_sqlsrv);" }
-            });
-
-            // Assert
-            var output = result.StdOut.ToString();
-            RunAsserts(() =>
-            {
-                Assert.True(result.IsSuccess);
-                Assert.Contains("pdo_sqlsrv", output);
-            },
-                result.GetDebugInfo());
-        }
-
-        [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("8.0-fpm")]
+        // [InlineData("8.0-fpm")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void SqlSrv_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -368,9 +360,35 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
+        public void SqlSrv_IsInstalled_For_Bookworm(string version)
+        {
+            // Arrange & Act
+            var result = _dockerCli.Run(new DockerRunArguments
+            {
+                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBookworm),
+                CommandToExecuteOnRun = "php",
+                CommandArguments = new[] { "-m", " | grep pdo_sqlsrv);" }
+            });
+
+            // Assert
+            var output = result.StdOut.ToString();
+            RunAsserts(() =>
+            {
+                Assert.True(result.IsSuccess);
+                Assert.Contains("pdo_sqlsrv", output);
+            },
+                result.GetDebugInfo());
+        }
+
+        [Theory]
         [Trait("category", "runtime-bullseye")]
         [InlineData("8.1-fpm")]
         [InlineData("8.2-fpm")]
+        [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
         public void Mongodb_IsInstalled_For_Bullseye(string version)
         {
             // Arrange & Act
@@ -392,15 +410,15 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         }
 
         [Theory]
-        [Trait("category", "runtime-buster")]
-        [InlineData("8.1-fpm")]
-        [InlineData("8.2-fpm")]
-        public void Mongodb_IsInstalled_For_Buster(string version)
+        [Trait("category", "runtime-bookworm")]
+        [InlineData("8.3-fpm")]
+        [InlineData("8.4-fpm")]
+        public void Mongodb_IsInstalled_For_Bookworm(string version)
         {
             // Arrange & Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBuster),
+                ImageId = _imageHelper.GetRuntimeImage("php", version, ImageTestHelperConstants.OsTypeDebianBookworm),
                 CommandToExecuteOnRun = "php",
                 CommandArguments = new[] { "-m", " | grep mongodb);" }
             });

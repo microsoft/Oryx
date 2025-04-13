@@ -29,7 +29,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         protected const string NetCore6PreviewWebApp = "NetCore6PreviewWebApp";
         protected const string NetCore7PreviewMvcApp = "NetCore7PreviewMvcApp";
         protected const string NetCore8PreviewMvcApp = "NetCore8PreviewMvcApp";
+        protected const string NetCore9PreviewMvcApp = "NetCore9PreviewMvcApp";
         protected const string NetCoreApp70WebApp = "NetCore7WebApp";
+        protected const string NetCoreApp90WebApp = "NetCore9WebApp";
         protected const string DefaultWebApp = "DefaultWebApp";
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
@@ -54,8 +56,20 @@ namespace Microsoft.Oryx.BuildImage.Tests
             string runtimeVersion)
         {
             BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage());
+                appName, runtimeVersion, _imageHelper.GetGitHubActionsBuildImage());
         }
+
+        [Theory, Trait("category", "githubactions")]
+        [InlineData(NetCore9PreviewMvcApp, "9.0")]
+        [InlineData(NetCoreApp90WebApp, "9.0")]
+        public void BuildsApplication_ByDynamicallyInstallingSDKs_GithubActionsBookworm(
+            string appName,
+            string runtimeVersion)
+        {
+            BuildsApplication_ByDynamicallyInstallingSDKs(
+                appName, runtimeVersion, _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
+        }
+
 
         [Theory, Trait("category", "cli-stretch")]
         [InlineData(NetCoreApp21WebApp, "2.1")]
@@ -164,7 +178,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     ""rollForward"": ""Disable""
                 }
             }";
-            var globalJsonSdkVersion = "3.1.201";
+            var globalJsonSdkVersion = "3.1.404";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", globalJsonSdkVersion);
             var sentinelFile = $"{Constants.TemporaryInstallationDirectoryRoot}/{DotNetCoreConstants.PlatformName}/{globalJsonSdkVersion}/" +
                 $"{SdkStorageConstants.SdkDownloadSentinelFileName}";
@@ -212,7 +226,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.201";
+            var expectedSdkVersion = "3.1.404";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -275,7 +289,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.201";
+            var expectedSdkVersion = "3.1.404";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -433,7 +447,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.201";
+            var expectedSdkVersion = "3.1.404";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {

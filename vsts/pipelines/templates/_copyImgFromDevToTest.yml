@@ -1,7 +1,7 @@
 parameters:
   - name: ascName
     type: string
-    default: oryx-automation-service-principal
+    default: oryx-new-service-connection
   - name: acrDevName
     type: string
     default: oryxdevmcr.azurecr.io

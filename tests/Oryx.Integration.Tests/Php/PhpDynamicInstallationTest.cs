@@ -23,70 +23,106 @@ namespace Microsoft.Oryx.Integration.Tests
         // Unique category traits are needed to run each
         // platform-version in it's own pipeline agent. This is
         // because our agents currently a space limit of 10GB.
-        [Fact, Trait("category", "php-8.2")]
+
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task PipelineTestInvocationsPhp84_WithBullseyeEnvironmentAsync()
+        {
+            await CanBuildAndRunAppAsync("8.4", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        public async Task PipelineTestInvocationsPhp84_WithBookwormEnvironmentAsync()
+        {
+            await CanBuildAndRunAppAsync("8.4", ImageTestHelperConstants.OsTypeDebianBookworm, ImageTestHelperConstants.GitHubActionsBookworm);
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-buster")]
+        public async Task PipelineTestInvocationsPhp83_WithBusterEnvironmentAsync()
+        {
+            await CanBuildAndRunAppAsync("8.3", ImageTestHelperConstants.OsTypeDebianBuster, ImageTestHelperConstants.GitHubActionsBuster);
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        public async Task PipelineTestInvocationsPhp83_WithBullseyeEnvironmentAsync()
+        {
+            await CanBuildAndRunAppAsync("8.3", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye);
+        }
+
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        public async Task PipelineTestInvocationsPhp83_WithBookwormEnvironmentAsync()
+        {
+            await CanBuildAndRunAppAsync("8.3", ImageTestHelperConstants.OsTypeDebianBookworm, ImageTestHelperConstants.GitHubActionsBookworm);
+        }
+
+        [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp82_WithBusterEnvironmentAsync()
         {
             await CanBuildAndRunAppAsync("8.2", ImageTestHelperConstants.OsTypeDebianBuster, ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        [Fact, Trait("category", "php-8.2")]
+        [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task PipelineTestInvocationsPhp82_WithBullseyeEnvironmentAsync()
         {
             await CanBuildAndRunAppAsync("8.2", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
-        [Fact, Trait("category", "php-8.2")]
+        [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bookworm")]
         public async Task PipelineTestInvocationsPhp82_WithBookwormEnvironmentAsync()
         {
             await CanBuildAndRunAppAsync("8.2", ImageTestHelperConstants.OsTypeDebianBookworm, ImageTestHelperConstants.GitHubActionsBookworm);
         }
 
-        [Fact, Trait("category", "php-8.1")]
+        [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp81_WithBusterEnvironmentAsync()
         {   
             await CanBuildAndRunAppAsync("8.1", ImageTestHelperConstants.OsTypeDebianBuster, ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        [Fact, Trait("category", "php-8.1")]
+        [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task PipelineTestInvocationsPhp81_WithBullseyeEnvironmentAsync()
         {   
             await CanBuildAndRunAppAsync("8.1", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
-        [Fact, Trait("category", "php-8.1")]
+        [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bookworm")]
         public async Task PipelineTestInvocationsPhp81_WithBookwormEnvironmentAsync()
         {   
             await CanBuildAndRunAppAsync("8.1", ImageTestHelperConstants.OsTypeDebianBookworm, ImageTestHelperConstants.GitHubActionsBookworm);
         }
 
-        [Fact, Trait("category", "php-8.0")]
+        [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp80_WithBusterEnvironmentAsync()
         {   
             await CanBuildAndRunAppAsync("8.0", ImageTestHelperConstants.OsTypeDebianBuster, ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        [Fact, Trait("category", "php-8.0")]
+        [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task PipelineTestInvocationsPhp80_WithBullseyeEnvironmentAsync()
         {   
             await CanBuildAndRunAppAsync("8.0", ImageTestHelperConstants.OsTypeDebianBullseye, ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
-        [Fact, Trait("category", "php-7.4")]
+        [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-buster")]
         public async Task PipelineTestInvocationsPhp74_WithBusterEnvironmentAsync()
         {
             await CanBuildAndRunAppAsync("7.4", ImageTestHelperConstants.OsTypeDebianBuster, ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        [Fact, Trait("category", "php-7.4")]
+        [Fact, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bullseye")]
         public async Task PipelineTestInvocationsPhp74_WithBullseyeEnvironmentAsync()
         {

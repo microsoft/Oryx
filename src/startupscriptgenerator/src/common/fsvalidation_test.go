@@ -35,7 +35,7 @@ func ExampleGetSubPath_twoLevels() {
 	// cde/fghi.abc
 }
 
-//test pathexists with valid path
+// test pathexists with valid path
 func Test_FSValidation_PathExists_PathIsValid(t *testing.T) {
 	testPath := os.TempDir()
 	result := PathExists(testPath)
@@ -43,7 +43,7 @@ func Test_FSValidation_PathExists_PathIsValid(t *testing.T) {
 	assert.Equal(t, result, true)
 }
 
-//test pathexists with invalid path
+// test pathexists with invalid path
 func Test_FSValidation_PathExists_PathIsInvalid(t *testing.T) {
 	testPath := "asdasda"
 	result := PathExists(testPath)
@@ -51,7 +51,7 @@ func Test_FSValidation_PathExists_PathIsInvalid(t *testing.T) {
 	assert.Equal(t, result, false)
 }
 
-//test fileexists when path is a directory
+// test fileexists when path is a directory
 func Test_FSValidation_FileExists_PathIsDirectory(t *testing.T) {
 	filePath := os.TempDir()
 	result := FileExists(filePath)
@@ -59,7 +59,7 @@ func Test_FSValidation_FileExists_PathIsDirectory(t *testing.T) {
 	assert.Equal(t, result, false)
 }
 
-//test fileexists when path is a file
+// test fileexists when path is a file
 func Test_FSValidation_FileExists_PathIsFile(t *testing.T) {
 	tmpfile, _ := ioutil.TempFile(os.TempDir(), "example-")
 	result := FileExists(tmpfile.Name())
@@ -67,7 +67,7 @@ func Test_FSValidation_FileExists_PathIsFile(t *testing.T) {
 	assert.Equal(t, result, true)
 }
 
-//test fileexists when path is invalid
+// test fileexists when path is invalid
 func Test_FSValidation_FileExists_PathIsInvalid(t *testing.T) {
 	filePath := "asdasda"
 	result := FileExists(filePath)

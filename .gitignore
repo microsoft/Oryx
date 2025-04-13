@@ -20,6 +20,7 @@ x86/
 bld/
 [Oo]bj/
 [Ll]og/
+Binaries/
 
 # Visual Studio 2015 cache/options directory
 .vs/
@@ -258,31 +259,6 @@ paket-files/
 # .NET global.json for SDK versioning
 global.json
 
-# Node and .NET Core runtime Dockerfiles, that are auto generated
-images/runtime/node/*/Dockerfile
-images/runtime/node/*/buster.Dockerfile
-images/runtime/node/*/stretch.Dockerfile
-images/runtime/node/*/strech.Dockerfile
-images/runtime/node/*/bullseye.Dockerfile
-images/runtime/dotnetcore/*/Dockerfile
-images/runtime/dotnetcore/*/buster.Dockerfile
-images/runtime/dotnetcore/*/stretch.Dockerfile
-images/runtime/dotnetcore/*/bullseye.Dockerfile
-images/runtime/dotnetcore/*/bookworm.Dockerfile
-images/runtime/python/*/Dockerfile
-images/runtime/python/*/buster.Dockerfile
-images/runtime/python/*/stretch.Dockerfile
-images/runtime/python/*/bullseye.Dockerfile
-images/runtime/php/*/Dockerfile
-images/runtime/php/*/buster.Dockerfile
-images/runtime/php/*/stretch.Dockerfile
-images/runtime/php/*/bullseye.Dockerfile
-images/runtime/php-fpm/*/Dockerfile
-images/runtime/php-fpm/*/buster.Dockerfile
-images/runtime/php-fpm/*/stretch.Dockerfile
-images/runtime/php-fpm/*/bullseye.Dockerfile
-
-
 # Go packages from GitHub
 src/startupscriptgenerator/bin/
 src/startupscriptgenerator/src/github.com/
@@ -294,3 +270,6 @@ src/startupscriptgenerator/src/**/__debug_bin
 src/startupscriptgenerator/src/**/run.sh
 !**/dynamic/Dockerfile
 !**/dynamic/buster.Dockerfile
+
+# needed just for pr description
+Updated_Values.txt

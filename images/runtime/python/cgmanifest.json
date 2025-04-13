@@ -25,7 +25,7 @@
       "Component": {
         "pip": {
           "Name": "orjson",
-          "Version": "3.6.6"
+          "Version": "3.9.15"
         },
         "Type": "pip"
       },

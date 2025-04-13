@@ -9,49 +9,13 @@ set -e
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 
 source $REPO_DIR/platforms/__common.sh
-source $REPO_DIR/build/__pythonVersions.sh
 
 pythonPlatformDir="$REPO_DIR/platforms/python"
-targetDir="$volumeHostDir/python"
+targetDir="/tmp/compressedSdk/python"
 debianFlavor=$1
 sdkStorageAccountUrl="$2"
 mkdir -p "$targetDir"
 
-builtPythonPrereqs=false
-builtPythonHackPrereqs=false
-buildPythonPrereqsImage() {
-    debianType=$debianFlavor
-	# stretch is out of support for python, but we still need to build stretch based
-	# binaries because of static sites, they need to move to buster based jamstack image
-	# before we can remove this hack
-    IFS='.' read -ra SPLIT_VERSION <<< "$version"
-    if [ "$debianFlavor" == "stretch" ] \
-	&& [ "${SPLIT_VERSION[0]}" == "3" ] \
-	&& [ "${SPLIT_VERSION[1]}" -ge "10" ]; then
-		if ! $builtPythonHackPrereqs; then
-			debianType="focal-scm"
-			echo "Building Python hack pre-requisites image..."
-			echo
-			docker build  \
-				--build-arg DEBIAN_FLAVOR=$debianFlavor \
-				--build-arg DEBIAN_HACK_FLAVOR=$debianType \
-				-f "$pythonPlatformDir/prereqs/Dockerfile"  \
-				-t "oryxdevmcr.azurecr.io/private/oryx/python-build-prereqs" $REPO_DIR
-			builtPythonHackPrereqs=true
-			builtPythonPrereqs=false
-		fi
-	elif ! $builtPythonPrereqs; then
-		echo "Building Python pre-requisites image..."
-		echo
-		docker build  \
-			   --build-arg DEBIAN_FLAVOR=$debianFlavor \
-			   --build-arg DEBIAN_HACK_FLAVOR=$debianType \
-			   -f "$pythonPlatformDir/prereqs/Dockerfile"  \
-			   -t "oryxdevmcr.azurecr.io/private/oryx/python-build-prereqs" $REPO_DIR
-		builtPythonPrereqs=true
-		builtPythonHackPrereqs=false
-    fi
-}
 
 buildPython() {
 	local version="$1"
@@ -77,7 +41,6 @@ buildPython() {
 	fi
 
 	if shouldBuildSdk python $pythonSdkFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk python; then
-		buildPythonPrereqsImage
 		
 		echo "Building Python version '$version' in a docker image..."
 		echo
@@ -92,16 +55,14 @@ buildPython() {
 		
 		cat $dockerFile
 
-		docker build \
-			-f "$dockerFile" \
-			--build-arg VERSION_TO_BUILD=$version \
-			--build-arg GPG_KEYS=$gpgKey \
-			--build-arg PIP_VERSION=$PIP_VERSION \
-			-t $imageName \
-			$REPO_DIR
+		rm -rf /usr/src/python
+		mkdir /usr/src/python
+		cd /usr/src/python
+		DEBIAN_FLAVOR=$debianFlavor PYTHON_VERSION=$version GPG_KEY=$gpgKey PIP_VERSION=$PIP_VERSION /tmp/build.sh
+		cd $REPO_DIR
 
-		getSdkFromImage $imageName "$targetDir"
-		
+		rm -r /opt/python/*
+
 		echo "$sdkVersionMetadataName=$version" >> $metadataFile
 		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
 	fi

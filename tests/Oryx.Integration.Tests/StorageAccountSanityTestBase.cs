@@ -29,11 +29,10 @@ namespace Oryx.Integration.Tests
 
         private readonly string _storageUrl;
         private readonly string _repoRootDir;
-        private readonly string _stagingStorageAccountAccessToken;
 
         private readonly string[] _debianFlavors = 
         {
-            OsTypes.DebianBuster, OsTypes.DebianStretch, OsTypes.UbuntuFocalScm, OsTypes.DebianBullseye
+            OsTypes.DebianBuster, OsTypes.DebianStretch, OsTypes.UbuntuFocalScm, OsTypes.DebianBullseye, OsTypes.DebianBookworm
         };
 
         public StorageAccountSanityTestBase(
@@ -45,14 +44,6 @@ namespace Oryx.Integration.Tests
         {
             _storageUrl = storageUrl;
             _repoRootDir = repoRootDirTestFixture.RepoRootDirPath;
-            _stagingStorageAccountAccessToken = string.Empty;
-
-            if (storageUrl == SdkStorageConstants.PrivateStagingSdkStorageBaseUrl)
-            {
-                _stagingStorageAccountAccessToken = Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey) != null
-                    ? Environment.GetEnvironmentVariable(SdkStorageConstants.PrivateStagingStorageSasTokenKey)
-                    : KeyVaultHelper.GetKeyVaultSecretValue(SdkStorageConstants.OryxKeyvaultUri, SdkStorageConstants.StagingStorageSasTokenKeyvaultSecretName);                
-            }
         }
 
         [Fact]
@@ -66,20 +57,6 @@ namespace Oryx.Integration.Tests
         public void DotNetCoreContainer_HasExpectedDefaultVersion()
         {
             var platformName = "dotnet";
-            AssertExpectedDefaultVersion(platformName, platformName);
-        }
-
-        [Fact]
-        public void GolangCoreContainer_HasExpectedListOfBlobs()
-        {
-            var platformName = "golang";
-            AssertExpectedListOfBlobs(platformName, platformName);
-        }
-
-        [Fact]
-        public void GolangContainer_HasExpectedDefaultVersion()
-        {
-            var platformName = "golang";
             AssertExpectedDefaultVersion(platformName, platformName);
         }
 
@@ -141,52 +118,11 @@ namespace Oryx.Integration.Tests
         }
 
         [Fact]
-        public void RubyContainer_HasExpectedListOfBlobs()
-        {
-            var platformName = "ruby";
-            AssertExpectedListOfBlobs(platformName, platformName);
-        }
-
-        [Fact]
-        public void RubyContainer_HasExpectedDefaultVersion()
-        {
-            var platformName = "ruby";
-            AssertExpectedDefaultVersion(platformName, platformName);
-        }
-
-        [Fact]
-        public void JavaContainer_HasExpectedListOfBlobs()
-        {
-            var platformName = "java";
-            AssertExpectedListOfBlobs(platformName, platformName);
-        }
-
-        [Fact]
-        public void JavaContainer_HasExpectedDefaultVersion()
-        {
-            var platformName = "java";
-            AssertExpectedDefaultVersion(platformName, platformName);
-
-        }
-
-        [Fact]
-        public void MavenContainer_HasExpectedListOfBlobs()
-        {
-            AssertExpectedListOfBlobs("maven", "java", "maven");
-        }
-
-        [Fact]
-        public void MavenContainer_HasExpectedDefaultVersion()
-        {
-            AssertExpectedDefaultVersion("maven", "java", "maven");
-        }
-
-        [Fact]
         public void Throws_CorrectHttpErrorMessage()
         {
             // Act
             var error = Assert.Throws<AggregateException>(() => 
-                ListBlobsHelper.GetAllBlobs(_fakeStorageUrl, "dotnet", _httpClient, _stagingStorageAccountAccessToken));
+                ListBlobsHelper.GetAllBlobs(_fakeStorageUrl, "dotnet", _httpClient));
 
             // Assert
             Assert.Contains(Microsoft.Oryx.BuildScriptGenerator.Constants.NetworkConfigurationHelpText, error.Message);
@@ -223,7 +159,7 @@ namespace Oryx.Integration.Tests
 
         private XDocument GetMetadata(string platformName)
         {
-            return ListBlobsHelper.GetAllBlobs(_storageUrl, platformName, _httpClient, _stagingStorageAccountAccessToken);
+            return ListBlobsHelper.GetAllBlobs(_storageUrl, platformName, _httpClient);
         }
 
         private List<string> GetVersionsFromContainer(string debianFlavor, string platformName)
@@ -266,7 +202,7 @@ namespace Oryx.Integration.Tests
                     || string.Equals(debianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
                 ? SdkStorageConstants.DefaultVersionFileName
                 : $"{SdkStorageConstants.DefaultVersionFilePrefix}.{debianFlavor}.{SdkStorageConstants.DefaultVersionFileType}";
-            var defaultVersionUrl = $"{_storageUrl}/{platformName}/{defaultFile}{_stagingStorageAccountAccessToken}";
+            var defaultVersionUrl = $"{_storageUrl}/{platformName}/{defaultFile}";
             var defaultVersionContent = _httpClient.GetStringAsync(defaultVersionUrl).Result;
 
             string defaultVersion = null;

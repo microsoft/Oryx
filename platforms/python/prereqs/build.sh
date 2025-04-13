@@ -59,6 +59,7 @@ if [ "$debianFlavor" == "stretch" ]; then
 
     PIP_VERSION="20.2.3"
 else
+    PIP_VERSION="21.2.4"
 	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
 fi
 
@@ -84,7 +85,6 @@ else
         --enable-shared \
 	--enable-optimizations \
 	--with-lto \
-        --with-system-expat \
         --with-system-ffi \
         --without-ensurepip
 fi
@@ -176,7 +176,7 @@ if [ -n "$pipReqSetPath" ]; then
     sed -i 's|logger\.debug('\''Cleaning up\.\.\.'\'')|logger\.info('\''Cleaning up\.\.\.'\'')|' "$pipReqSetPath"
 fi
 
-compressedSdkDir="/tmp/compressedSdk"
+compressedSdkDir="/tmp/compressedSdk/python"
 mkdir -p $compressedSdkDir
 cd "$INSTALLATION_PREFIX"
 tar -zcf $compressedSdkDir/$pythonSdkFileName .

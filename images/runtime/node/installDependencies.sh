@@ -6,12 +6,15 @@
 
 set -ex
 
-source /tmp/oryx/build/__nodeVersions.sh
+# source /tmp/oryx/build/__nodeVersions.sh
 
 # All users need access to node_modules at the root, as this is the location
 # for packages valid for all apps.
 mkdir -p /node_modules
 chmod 777 /node_modules
+
+# PM2_VERSION=$1
+# NODE_APP_INSIGHTS_SDK_VERSION=$2
 
 # Since older versions of npm cli have security vulnerabilities, we try upgrading it
 # to the latest available version. However latest versions of npm do not work with very
@@ -28,28 +31,13 @@ currentNpmVersion=$(npm --version)
 echo "Version of npm: $currentNpmVersion"
 
 # Upgrade npm to the latest available version
-# if [[ $nodeVersionMajor -ge 10  ]]; then
-#     echo "Upgrading npm..."
-#     npm install npm@$NPM_VERSION -g -loglevel silent
-#     echo "Done upgrading npm."
-#     currentNpmVersion=$(npm --version)
-#     echo "Version of npm after upgrade: $currentNpmVersion"
-# fi
+echo "Upgrading npm..."
+npm install npm@$NPM_VERSION -g -loglevel silent
+echo "Done upgrading npm."
+currentNpmVersion=$(npm --version)
+echo "Version of npm after upgrade: $currentNpmVersion"
 
-currentNodeVersion=$(node --version)
-echo "Current Node version is $currentNodeVersion"
-currentNodeVersion=${currentNodeVersion#?}
-IFS='.' read -ra SPLIT_VERSION <<< "$currentNodeVersion"
-major="${SPLIT_VERSION[0]}"
-
-if [ "$major" -lt "10" ]; then
-    echo "Installing PM2..."
-    # PM2 is supported as an option when running the app,
-    # so we need to make sure it is available in our images.
-    npm install -g pm2@3.5.1 -loglevel silent
-else
-    npm install -g pm2@$PM2_VERSION -loglevel silent
-fi
+npm install -g pm2@$PM2_VERSION -loglevel silent
 
 # Application-Insights is supported as an option for telemetry when running the app,
 # so we need to make sure it is available in our images.

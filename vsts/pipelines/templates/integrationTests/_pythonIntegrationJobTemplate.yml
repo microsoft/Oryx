@@ -6,15 +6,11 @@ parameters:
     type: object
     default:
       - category: '3.7'
-        buildTag: 'debian-stretch'
-      - category: '3.7'
         buildTag: 'github-actions-debian-bullseye'
-      - category: '3.8'
-        buildTag: 'debian-stretch'
       - category: '3.8'
         buildTag: 'github-actions-debian-bullseye'
       - category: '3.9'
-        buildTag: 'debian-stretch'
+        buildTag: 'debian-buster'
       - category: '3.9'
         buildTag: 'github-actions-debian-buster'
       - category: '3.10'

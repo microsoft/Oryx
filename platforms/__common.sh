@@ -17,21 +17,15 @@ blobExists() {
 	local containerName="$1"
 	local blobName="$2"
 	local sdkStorageAccountUrl="$3"
+	local inStorageAccountFile="$REPO_DIR/platforms/${containerName//-//}/versions/inStorageAccount.txt"
 	local exitCode=1
-	sasToken=""
-	if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
-		set +x
-		sasToken=$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN
-		set -x
-	fi
-	curl -I $sdkStorageAccountUrl/$containerName/$blobName$sasToken 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
-	grep "HTTP/1.1 200 OK" /tmp/curlOut.txt &> /dev/null
-	exitCode=$?
-	rm -f /tmp/curlOut.txt
-	rm -f /tmp/curlError.txt
-	if [ $exitCode -eq 0 ]; then
+
+	echo "Checking if blob exists..."
+	if grep "$blobName" "$inStorageAccountFile"; then
+		echo "Exists in storage account"
 		return 0
 	else
+		echo "Does not exist in storage account"
 		return 1
 	fi
 }
@@ -129,8 +123,8 @@ shouldOverwritePlatformSdk() {
 }
 
 isDefaultVersionFile() {
-	$blobName="$1"
-	if [[ "$blobName" == "defaultVersion"* ]]; then
+	blobName="$1"
+	if [[ $blobName == defaultVersion* ]]; then
 		return 0
 	else
 		return 1

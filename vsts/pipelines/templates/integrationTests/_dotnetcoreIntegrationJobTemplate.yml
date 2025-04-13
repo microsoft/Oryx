@@ -5,28 +5,18 @@ parameters:
   - name: testMappings
     type: object
     default:
-      - category: '3.0'
-        buildTag: 'debian-stretch'
-      - category: '3.1'
-        buildTag: 'debian-stretch'
-      - category: '3.1'
-        buildTag: 'github-actions-debian-stretch'
-      - category: '5.0'
-        buildTag: 'debian-stretch'
-      - category: '5.0'
-        buildTag: 'github-actions-debian-stretch'
       - category: '6.0'
-        buildTag: 'debian-stretch'
+        buildTag: 'debian-buster'
       - category: '6.0'
-        buildTag: 'github-actions-debian-stretch'
+        buildTag: 'github-actions-debian-buster'
       - category: '7.0'
         buildTag: 'github-actions-debian-buster'
       - category: '8.0'
         buildTag: 'github-actions-debian-bookworm'
       - category: 'dynamic'
-        buildTag: 'debian-stretch'
+        buildTag: 'debian-buster'
       - category: 'dynamic'
-        buildTag: 'github-actions-debian-stretch'
+        buildTag: 'github-actions-debian-buster'
   
 jobs:
 - ${{ each mapping in parameters.testMappings }}:

@@ -22,6 +22,7 @@ namespace Microsoft.Oryx.Integration.Tests
         }
 
         [Theory]
+        [Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-bookworm")]
         [InlineData(NetCoreApp80MvcApp, "Welcome to ASP.NET Core 8 MVC!")]
         [InlineData(NetCoreApp80WebApp, "Welcome to a .NET 8 Web App!")]

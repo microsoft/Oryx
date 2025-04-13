@@ -1,6 +1,7 @@
-ARG DEBIAN_FLAVOR
+ARG BASE_IMAGE
+
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.19-${DEBIAN_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.1-bookworm as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -11,9 +12,46 @@ ARG RELEASE_TAG_NAME=unspecified
 ENV RELEASE_TAG_NAME=${RELEASE_TAG_NAME}
 ENV GIT_COMMIT=${GIT_COMMIT}
 ENV BUILD_NUMBER=${BUILD_NUMBER}
-RUN ./build.sh node /opt/startupcmdgen/startupcmdgen
+RUN chmod +x build.sh && ./build.sh node /opt/startupcmdgen/startupcmdgen
 
-FROM mcr.microsoft.com/oryx/base:node-20-debian-bookworm-20231025.7
+#FROM oryxdevmcr.azurecr.io/private/oryx/oryx-node-run-base-bookworm:${BUILD_NUMBER}
+FROM ${BASE_IMAGE}
+
+RUN groupadd --gid 1000 node \
+  && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
+
+RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
+  && case "${dpkgArch##*-}" in \
+    amd64) ARCH='x64';; \
+    ppc64el) ARCH='ppc64le';; \
+    s390x) ARCH='s390x';; \
+    arm64) ARCH='arm64';; \
+    armhf) ARCH='armv7l';; \
+    i386) ARCH='x86';; \
+    *) echo "unsupported architecture"; exit 1 ;; \
+  esac
+
+ARG NODE20_VERSION
+ENV NODE_VERSION ${NODE20_VERSION}
+ENV NPM_CONFIG_LOGLEVEL info
+ARG BUILD_DIR=/tmp/oryx/build
+ARG IMAGES_DIR=/tmp/oryx/images
+
+COPY nodejs-bookworm-${NODE20_VERSION}.tar.gz .
+RUN set -e \
+    && mkdir -p /opt/nodejs/${NODE20_VERSION} \
+    && tar -xzf nodejs-bookworm-${NODE20_VERSION}.tar.gz -C /usr/local \
+    && rm nodejs-bookworm-${NODE20_VERSION}.tar.gz \
+    && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+
+ARG NPM_VERSION
+ARG PM2_VERSION
+ARG NODE_APP_INSIGHTS_SDK_VERSION
+
+RUN npm install -g npm@${NPM_VERSION}
+
+RUN PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} ${IMAGES_DIR}/runtime/node/installDependencies.sh
+RUN rm -rf /tmp/oryx
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_CONNECTION_STRING
@@ -37,3 +75,7 @@ RUN ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \
 ENV LANG="C.UTF-8" \
     LANGUAGE="C.UTF-8" \
     LC_ALL="C.UTF-8"
+
+CMD [ "node" ]
+
+

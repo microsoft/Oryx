@@ -28,11 +28,26 @@ if [ -f "$outFilePmeMCR" ]; then
   rm $outFilePmeMCR
 fi
 
+declare -r skipImages=("python:3.7" "dotnetcore:3" "dotnetcore:5" "php:7" "php:8.0" "ruby" "node:14")
+
+# This is a temporary function that will be used to skip unused images and will save some space on the agent.
+should_skip() {
+    local image="$1"
+    local matched=false
+    for word in "${skipImages[@]}"; do
+        if [[ "$image" == *"$word"* ]]; then
+            matched=true
+            break
+        fi
+    done
+    echo "$matched"
+}
+
 echo "Iterating over previously pushed images defined in new '$sourceFile' file..."
 
 while read sourceImage; do
-  # Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
-  if [[ $sourceImage == *:*-* ]]; then
+# Always use specific build number based tag and then use the same tag to create a 'latest' tag and push it
+  if [[ $sourceImage == *:*-* && $(should_skip "$sourceImage") == "false" ]]; then
     echo "Pulling the source image $sourceImage ..."
     docker pull "$sourceImage" | sed 's/^/     /'
 

@@ -6,21 +6,25 @@ parameters:
     type: object
     default:
       - category: '7.4'
-        buildTag: 'debian-stretch'
-      - category: '7.4'
         buildTag: 'github-actions-debian-buster'
       - category: '8.0'
-        buildTag: 'debian-stretch'
+        buildTag: 'github-actions-debian-buster'
       - category: '8.0'
-        buildTag: 'github-actions-debian-buster'
-      - category: '8.1'
-        buildTag: 'debian-stretch'
+        buildTag: 'github-actions-debian-bullseye'
       - category: '8.1'
         buildTag: 'github-actions-debian-buster'
-      - category: '8.2'
-        buildTag: 'debian-stretch'
+      - category: '8.1'
+        buildTag: 'github-actions-debian-bullseye'
       - category: '8.2'
         buildTag: 'github-actions-debian-buster'
+      - category: '8.2'
+        buildTag: 'github-actions-debian-bullseye'
+      - category: '8.3'
+        buildTag: 'github-actions-debian-buster'
+      - category: '8.3'
+        buildTag: 'github-actions-debian-bullseye'
+      - category: '8.3'
+        buildTag: 'github-actions-debian-bookworm'
 
 jobs:
 - ${{ each mapping in parameters.testMappings }}:

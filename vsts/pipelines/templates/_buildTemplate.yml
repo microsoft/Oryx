@@ -1,5 +1,5 @@
 parameters:
-  ascName: oryx-automation-service-principal
+  ascName: oryx-new-service-connection
   acrName: oryxdevmcr.azurecr.io
   imageName: oryxdevmcr.azurecr.io/public/oryx
   imageType: null
@@ -58,6 +58,13 @@ steps:
   displayName: 'Component Detection - OSS Compliance'
   inputs:
     ignoreDirectories: '$(Build.SourcesDirectory)/tests'
+
+- task: Docker@1
+  displayName: Container registry logout
+  inputs:
+    command: logout
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
 
 - task: Docker@1
   displayName: Container registry login
