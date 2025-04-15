@@ -5,6 +5,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
 using Microsoft.Oryx.Detector;
 using Moq;
 using Xunit;
@@ -114,7 +115,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests
         {
             return new DefaultPlatformsInformationProvider(
                 platforms,
-                new DefaultStandardOutputWriter());
+                new DefaultStandardOutputWriter(),
+                Options.Create(new BuildScriptGeneratorOptions()));
         }
 
         private static BuildScriptGeneratorContext CreateScriptGeneratorContext()

@@ -19,7 +19,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GetsVersions_FromStorage_WhenDynamicInstall_IsEnabled()
         {
             // Arrange
-            var (versionProvider, onDiskVersionProvider, storageVersionProvider) = CreateVersionProvider(
+            var (versionProvider, onDiskVersionProvider, storageVersionProvider, externalVersionProvider) = CreateVersionProvider(
                 enableDynamicInstall: true);
 
             // Act
@@ -28,13 +28,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             // Assert
             Assert.True(storageVersionProvider.GetVersionInfoCalled);
             Assert.False(onDiskVersionProvider.GetVersionInfoCalled);
+            Assert.False(externalVersionProvider.GetVersionInfoCalled);
         }
 
         [Fact]
         public void GetsVersions_DoesNotGetVersionsFromStorage_WhenDynamicInstall_IsFalse()
         {
             // Arrange
-            var (versionProvider, onDiskVersionProvider, storageVersionProvider) = CreateVersionProvider(
+            var (versionProvider, onDiskVersionProvider, storageVersionProvider, externalVersionProvider) = CreateVersionProvider(
                 enableDynamicInstall: false);
 
             // Act
@@ -42,6 +43,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.False(storageVersionProvider.GetVersionInfoCalled);
+            Assert.False(externalVersionProvider.GetVersionInfoCalled);
             Assert.True(onDiskVersionProvider.GetVersionInfoCalled);
         }
 
@@ -49,7 +51,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
         public void GetsVersions_DoesNotGetVersionsFromStorage_ByDefault()
         {
             // Arrange
-            var (versionProvider, onDiskVersionProvider, storageVersionProvider) = CreateVersionProvider(
+            var (versionProvider, onDiskVersionProvider, storageVersionProvider, externalVersionProvider) = CreateVersionProvider(
                 enableDynamicInstall: false);
 
             // Act
@@ -57,7 +59,24 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
 
             // Assert
             Assert.False(storageVersionProvider.GetVersionInfoCalled);
+            Assert.False(externalVersionProvider.GetVersionInfoCalled);
             Assert.True(onDiskVersionProvider.GetVersionInfoCalled);
+        }
+
+        [Fact]
+        public void GetsVersions_UsesExternalVersionProvider_WhenExternalProviderAndDynamicInstallEnabled()
+        {
+            // Arrange
+            var (versionProvider, onDiskVersionProvider, storageVersionProvider, externalVersionProvider) = CreateVersionProvider(
+                enableDynamicInstall: true, enableExternalSdkProvider: true);
+
+            // Act
+            var versionInfo = versionProvider.GetVersionInfo();
+
+            // Assert
+            Assert.True(externalVersionProvider.GetVersionInfoCalled);
+            Assert.False(storageVersionProvider.GetVersionInfoCalled);
+            Assert.False(onDiskVersionProvider.GetVersionInfoCalled);
         }
 
         private class TestNodeSdkStorageVersionProvider : NodeSdkStorageVersionProvider
@@ -78,12 +97,30 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
             }
         }
 
-        private (INodeVersionProvider, TestNodeOnDiskVersionProvider, TestNodeSdkStorageVersionProvider)
-            CreateVersionProvider(bool enableDynamicInstall)
+        private class TestNodeExternalVersionProvider : NodeExternalVersionProvider
+        {
+            public TestNodeExternalVersionProvider(
+                IOptions<BuildScriptGeneratorOptions> commonOptions, IExternalSdkProvider externalProvider, ILoggerFactory loggerFactory)
+                : base(commonOptions, externalProvider, loggerFactory)
+            {
+            }
+
+            public bool GetVersionInfoCalled { get; private set; }
+
+            public override PlatformVersionInfo GetVersionInfo()
+            {
+                GetVersionInfoCalled = true;
+                return null;
+            }
+        }
+
+        private (INodeVersionProvider, TestNodeOnDiskVersionProvider, TestNodeSdkStorageVersionProvider, TestNodeExternalVersionProvider)
+            CreateVersionProvider(bool enableDynamicInstall, bool enableExternalSdkProvider = false)
         {
             var commonOptions = Options.Create(new BuildScriptGeneratorOptions()
             {
-                EnableDynamicInstall = enableDynamicInstall
+                EnableDynamicInstall = enableDynamicInstall,
+                EnableExternalSdkProvider = enableExternalSdkProvider,
             });
 
             var onDiskProvider = new TestNodeOnDiskVersionProvider(commonOptions);
@@ -91,12 +128,17 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Node
                 commonOptions,
                 new TestHttpClientFactory(),
                 NullLoggerFactory.Instance);
+            var externalProvider = new TestNodeExternalVersionProvider(
+                commonOptions,
+                new TestExternalSdkProvider(),
+                NullLoggerFactory.Instance);
             var versionProvider = new NodeVersionProvider(
                 commonOptions,
                 onDiskProvider,
                 storageProvider,
+                externalProvider,
                 NullLogger<NodeVersionProvider>.Instance);
-            return (versionProvider, onDiskProvider, storageProvider);
+            return (versionProvider, onDiskProvider, storageProvider, externalProvider);
         }
 
         private class TestNodeOnDiskVersionProvider : NodeOnDiskVersionProvider

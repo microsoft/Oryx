@@ -11,6 +11,7 @@ using Microsoft.Oryx.Detector.DotNetCore;
 using Xunit;
 using System.Collections.Generic;
 using Microsoft.ApplicationInsights;
+using Microsoft.Oryx.Tests.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
 {
@@ -82,6 +83,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             isDotNetCoreVersionAlreadyInstalled = isDotNetCoreVersionAlreadyInstalled ?? true;
             DotNetCoreInstallationScript = DotNetCoreInstallationScript ?? "default-DotNetCore-installation-script";
             var versionProvider = new TestDotNetCoreVersionProvider(supportedDotNetCoreVersions, defaultVersion);
+            var externalSdkProvider = new TestExternalSdkProvider();
             var detector = new TestDotNetCorePlatformDetector(detectedVersion: detectedVersion);
             var DotNetCoreInstaller = new TestDotNetCorePlatformInstaller(
                 Options.Create(commonOptions),
@@ -95,7 +97,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 NullLogger<TestDotNetCorePlatform>.Instance,
                 detector,
                 DotNetCoreInstaller,
-                globalJsonSdkResolver, 
+                globalJsonSdkResolver,
+                externalSdkProvider, 
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -109,6 +112,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 IDotNetCorePlatformDetector detector,
                 DotNetCorePlatformInstaller DotNetCoreInstaller,
                 GlobalJsonSdkResolver globalJsonSdkResolver,
+                IExternalSdkProvider externalSdkProvider,
                 TelemetryClient telemetryClient)
                 : base(
                       DotNetCoreVersionProvider,
@@ -118,6 +122,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                       DotNetCoreScriptGeneratorOptions,
                       DotNetCoreInstaller,
                       globalJsonSdkResolver,
+                      externalSdkProvider,
                       telemetryClient)
             {
             }
@@ -143,7 +148,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 return _isVersionAlreadyInstalled;
             }
 
-            public override string GetInstallerScriptSnippet(string version)
+            public override string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
             {
                 return _installerScript;
             }
