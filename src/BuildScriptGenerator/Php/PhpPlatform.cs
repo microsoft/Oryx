@@ -360,7 +360,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
                     try
                     {
                         var blobName = BlobNameHelper.GetBlobNameForVersion("php-composer", phpComposerVersion, this.commonOptions.DebianFlavor);
-                        var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result;
+                        var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync("php-composer", blobName).Result;
                         if (isExternalFetchSuccess)
                         {
                             this.logger.LogDebug("Php composer version {version} is fetched successfully using external SDK provider. So generating an installation script snippet which skips platform binary download.", phpComposerVersion);
