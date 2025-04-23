@@ -54,6 +54,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
       var sdkVersionMetadataName = isStretch
           ? SdkStorageConstants.LegacySdkVersionMetadataName
           : SdkStorageConstants.SdkVersionMetadataName;
+
       foreach (var metadataElement in xdoc.XPathSelectElements($"//Blobs/Blob/Metadata"))
       {
         var childElements = metadataElement.Elements();
