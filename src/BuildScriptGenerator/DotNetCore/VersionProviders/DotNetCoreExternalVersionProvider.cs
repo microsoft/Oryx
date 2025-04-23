@@ -1,4 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------------------
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 // --------------------------------------------------------------------------------------------
@@ -6,8 +6,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -15,21 +13,21 @@ using Microsoft.Oryx.BuildScriptGenerator.Common;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
-    public class DotNetCoreSdkStorageVersionProvider : SdkStorageVersionProviderBase, IDotNetCoreVersionProvider
+    public class DotNetCoreExternalVersionProvider : ExternalSdkStorageVersionProviderBase, IDotNetCoreVersionProvider
     {
         private readonly BuildScriptGeneratorOptions commonOptions;
-        private readonly ILogger logger;
+        private readonly IExternalSdkProvider externalSdkProvider;
         private Dictionary<string, string> versionMap;
         private string defaultRuntimeVersion;
 
-        public DotNetCoreSdkStorageVersionProvider(
+        public DotNetCoreExternalVersionProvider(
             IOptions<BuildScriptGeneratorOptions> commonOptions,
-            IHttpClientFactory httpClientFactory,
+            IExternalSdkProvider externalSdkProvider,
             ILoggerFactory loggerFactory)
-            : base(commonOptions, httpClientFactory, loggerFactory)
+            : base(commonOptions, externalSdkProvider, loggerFactory)
         {
             this.commonOptions = commonOptions.Value;
-            this.logger = loggerFactory.CreateLogger(this.GetType());
+            this.externalSdkProvider = externalSdkProvider;
         }
 
         public Dictionary<string, string> SupportedVersionsMap { get; }
@@ -47,9 +45,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         }
 
         /// <summary>
-        /// Pulls all files in the dotnet storage container and determines the supported and default versions.
+        /// Gets list of all blobs for dotnet platform and determines the supported and default versions.
         /// -----------
-        /// This works slightly differently than <see cref="SdkStorageVersionProviderBase.GetAvailableVersionsFromStorage"/>,
+        /// This works slightly differently than <see cref="ExternalSdkStorageVersionProviderBase.GetAvailableVersionsFromExternalProvider"/>,
         /// as the dotnet supported versions are a mapping of runtime version -> sdk version. This means that we need to find
         /// both runtime version and sdk version metadata associated with each file.
         /// </summary>
@@ -57,20 +55,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
             if (this.versionMap == null)
             {
-                var httpClient = this.HttpClientFactory.CreateClient("general");
-                var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-                XDocument xdoc = null;
-
-                try
-                {
-                    xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, DotNetCoreConstants.PlatformName, httpClient);
-                }
-                catch (AggregateException ex)
-                {
-                    this.logger.LogWarning(ex, "Failed to get list of blobs from primary storage. Trying backup storage.");
-                    var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
-                    xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBackupBaseUrl, DotNetCoreConstants.PlatformName, httpClient);
-                }
+                var xdoc = this.externalSdkProvider.GetPlatformMetaDataAsync(DotNetCoreConstants.PlatformName).Result;
 
                 // keys represent runtime version, values represent sdk version
                 var supportedVersions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -120,19 +105,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
                 }
 
                 this.versionMap = supportedVersions;
-                try
-                {
-                    this.defaultRuntimeVersion = this.GetDefaultVersion(DotNetCoreConstants.PlatformName, sdkStorageBaseUrl);
-                }
-                catch (AggregateException ex)
-                {
-                    this.logger.LogWarning(ex, "Failed to get the default version from primary storage. Trying backup storage.");
-                    var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
-                    if (sdkStorageBackupBaseUrl != null)
-                    {
-                        this.defaultRuntimeVersion = this.GetDefaultVersion(DotNetCoreConstants.PlatformName, sdkStorageBackupBaseUrl);
-                    }
-                }
+                this.defaultRuntimeVersion = this.GetDefaultVersion(DotNetCoreConstants.PlatformName);
             }
         }
     }

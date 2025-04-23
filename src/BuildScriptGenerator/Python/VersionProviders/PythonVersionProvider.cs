@@ -14,6 +14,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
         private readonly BuildScriptGeneratorOptions options;
         private readonly PythonOnDiskVersionProvider onDiskVersionProvider;
         private readonly PythonSdkStorageVersionProvider sdkStorageVersionProvider;
+        private readonly PythonExternalVersionProvider externalVersionProvider;
         private readonly ILogger<PythonVersionProvider> logger;
         private PlatformVersionInfo versionInfo;
 
@@ -21,11 +22,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             IOptions<BuildScriptGeneratorOptions> options,
             PythonOnDiskVersionProvider onDiskVersionProvider,
             PythonSdkStorageVersionProvider sdkStorageVersionProvider,
+            PythonExternalVersionProvider externalVersionProvider,
             ILogger<PythonVersionProvider> logger)
         {
             this.options = options.Value;
             this.onDiskVersionProvider = onDiskVersionProvider;
             this.sdkStorageVersionProvider = sdkStorageVersionProvider;
+            this.externalVersionProvider = externalVersionProvider;
             this.logger = logger;
         }
 
@@ -35,6 +38,18 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Python
             {
                 if (this.options.EnableDynamicInstall)
                 {
+                    if (this.options.EnableExternalSdkProvider)
+                    {
+                        try
+                        {
+                            return this.externalVersionProvider.GetVersionInfo();
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.LogError($"Failed to get version info from external SDK provider. Falling back to http based sdkStorageVersionProvider. Ex: {ex}");
+                        }
+                    }
+
                     return this.sdkStorageVersionProvider.GetVersionInfo();
                 }
 

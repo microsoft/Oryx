@@ -653,6 +653,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Tests
             // Assert
             Assert.False(options.EnableMultiPlatformBuild);
             Assert.False(options.EnableDynamicInstall);
+            Assert.False(options.EnableExternalSdkProvider);
             Assert.False(options.ScriptOnly);
             Assert.False(options.ShouldPackage);
 
