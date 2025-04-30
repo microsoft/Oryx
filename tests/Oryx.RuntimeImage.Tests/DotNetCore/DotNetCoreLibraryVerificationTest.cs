@@ -17,7 +17,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("6.0")]
         [InlineData("8.0")]
         public void GDIPlusLibrary_IsPresentInTheBullseyeImage(string version)
         {
@@ -73,7 +72,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("6.0")]
         [InlineData("8.0")]
         public void DotnetMonitorTool_IsPresentInTheBullseyeImage(string version)
         {
