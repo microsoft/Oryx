@@ -49,10 +49,6 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _vsoBullseye = ImageTestHelperConstants.VsoBullseye;
         private const string _buildRepository = ImageTestHelperConstants.BuildRepository;
         private const string _packRepository = ImageTestHelperConstants.PackRepository;
-        private const string _cliRepository = ImageTestHelperConstants.CliRepository;
-        private const string _cliStretchTag = ImageTestHelperConstants.CliStretchTag;
-        private const string _cliBusterTag = ImageTestHelperConstants.CliBusterTag;
-        private const string _cliBullseyeTag = ImageTestHelperConstants.CliBullseyeTag;
         private const string _cliBuilderBullseyeTag = ImageTestHelperConstants.CliBuilderBullseyeTag;
         private const string _latestTag = ImageTestHelperConstants.LatestStretchTag;
         private const string _ltsVersionsStretch = ImageTestHelperConstants.LtsVersionsStretch;
@@ -261,18 +257,6 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetAzureFunctionsJamStackBuildImage(_azureFunctionsJamStackBullseye);
             }
-            else if (string.Equals(tag, _cliRepository))
-            {
-                return GetCliImage(_cliRepository);
-            }
-            else if (string.Equals(tag, _cliBusterTag))
-            {
-                return GetCliImage(_cliBusterTag);
-            }
-            else if(string.Equals(tag, _cliBullseyeTag))
-            {
-                return GetCliImage(_cliBullseyeTag);
-            }
             else if(string.Equals(tag, _cliBuilderBullseyeTag))
             {
                 return GetCliBuilderImage(_cliBuilderBullseyeTag);
@@ -415,27 +399,6 @@ namespace Microsoft.Oryx.Tests.Common
         /// base set by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment
         /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
         /// </summary>
-        /// <returns>A 'cli' image that can be pulled for testing.</returns>
-        public string GetCliImage(string buildImageTag = null)
-        {
-            if (!string.IsNullOrEmpty(buildImageTag)
-                && string.Equals(buildImageTag.ToLower(), _cliBusterTag))
-            {
-                return $"{_repoPrefix}/{_cliRepository}:{_cliBusterTag}{_tagSuffix}";
-            }
-            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _cliBullseyeTag))
-            {
-                return $"{_repoPrefix}/{_cliRepository}:{_cliBullseyeTag}{_tagSuffix}";
-            }
-
-            return $"{_repoPrefix}/{_cliRepository}:{_cliStretchTag}{_tagSuffix}";
-        }
-
-        /// <summary>
-        /// Constructs a 'cli' image using either the default image base (oryxdevmcr.azurecr.io/public/oryx), or the
-        /// base set by the ORYX_TEST_IMAGE_BASE environment variable. If a tag suffix was set with the environment
-        /// variable ORYX_TEST_TAG_SUFFIX, it will be used as the tag, otherwise, the 'latest' tag will be used.
-        /// </summary>
         /// <returns>A 'cli builder' image that can be pulled for testing.</returns>
         public string GetCliBuilderImage(string imageTagPrefix = null)
         {
@@ -540,9 +503,6 @@ namespace Microsoft.Oryx.Tests.Common
         public const string BuildRepository = "build";
         public const string PackRepository = "pack";
         public const string CliRepository = "cli";
-        public const string CliStretchTag = "debian-stretch";
-        public const string CliBusterTag = "debian-buster";
-        public const string CliBullseyeTag = "debian-bullseye";
         public const string CliBuilderBullseyeTag = "builder-debian-bullseye";
         public const string LatestStretchTag = "debian-stretch";
         public const string LtsVersionsStretch = "lts-versions-debian-stretch";

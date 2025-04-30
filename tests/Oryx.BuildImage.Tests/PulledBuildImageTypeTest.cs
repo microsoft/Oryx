@@ -58,28 +58,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        [Trait("category", "cli-stretch")]
-        public void PulledCliStretchBuildImages_Contains_BUILDIMAGE_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository), "cli");
-        }
-
-        [Fact]
-        [Trait("category", "cli-buster")]
-        public void PulledCliBusterBuildImages_Contains_BUILDIMAGE_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), "cli");
-        }
-
-        [Fact]
-        [Trait("category", "cli-bullseye")]
-        public void PulledCliBullseyeBuildImages_Contains_BUILDIMAGE_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), "cli");
-        }
-
-
-        [Fact]
         [Trait("category", "jamstack")]
         public void PulledJamstackBullseyeBuildImages_Contains_BUILDIMAGE_TYPE_Info()
         {

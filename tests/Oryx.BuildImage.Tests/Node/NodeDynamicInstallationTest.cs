@@ -35,45 +35,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        public static TheoryData<string, string> ImageNameDataCli
-        {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.12", imageTestHelper.GetCliImage());
-                data.Add(FinalStretchVersions.FinalStretchNode14Version, imageTestHelper.GetCliImage());
-                data.Add(FinalStretchVersions.FinalStretchNode16Version, imageTestHelper.GetCliImage());
-                return data;
-            }
-        }
-
-        public static TheoryData<string, string> ImageNameDataCliBuster
-        {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-                return data;
-            }
-        }
-
-        public static TheoryData<string, string> ImageNameDataCliBullseye
-        {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-                return data;
-            }
-        }
-
         public static TheoryData<string, string> ImageNameDataCliBuilderBullseye
         {
             get
@@ -92,30 +53,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("build-image", "github-actions-debian-stretch")]
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationGithubActions(string version, string buildImageName)
-        {
-            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
-        }
-
-        [Theory, Trait("category", "cli-stretch")]
-        [Trait("build-image", "cli-debian-stretch")]
-        [MemberData(nameof(ImageNameDataCli))]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCli(string version, string buildImageName)
-        {
-            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
-        }
-
-        [Theory, Trait("category", "cli-buster")]
-        [Trait("build-image", "cli-debian-buster")]
-        [MemberData(nameof(ImageNameDataCliBuster))]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBuster(string version, string buildImageName)
-        {
-            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
-        }
-
-        [Theory, Trait("category", "cli-bullseye")]
-        [Trait("build-image", "cli-debian-bullseye")]
-        [MemberData(nameof(ImageNameDataCliBullseye))]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBullseye(string version, string buildImageName)
         {
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }

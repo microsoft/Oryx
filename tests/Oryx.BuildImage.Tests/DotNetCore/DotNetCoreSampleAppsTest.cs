@@ -55,27 +55,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        [Fact, Trait("category", "cli-stretch")]
-        public void PipelineTestInvocationCli()
-        {
-            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliRepository);
-            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage());
-        }
-
-        [Fact, Trait("category", "cli-buster")]
-        public void PipelineTestInvocationCliBuster()
-        {
-            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliBusterTag);
-            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-        }
-
-        [Fact, Trait("category", "cli-bullseye")]
-        public void PipelineTestInvocationCliBullseye()
-        {
-            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.CliBullseyeTag);
-            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-        }
-
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
         [Fact (Skip="NetCore11 is no longer officially supported"), Trait("category", "latest")]

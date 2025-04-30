@@ -70,54 +70,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 appName, runtimeVersion, _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
         }
 
-
-        [Theory, Trait("category", "cli-stretch")]
-        [InlineData(NetCoreApp21WebApp, "2.1")]
-        [InlineData(NetCoreApp31MvcApp, "3.1")]
-        [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_Cli(
-            string appName,
-            string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage());
-        }
-
-        [Theory, Trait("category", "cli-buster")]
-        [InlineData(NetCoreApp21WebApp, "2.1")]
-        [InlineData(NetCoreApp31MvcApp, "3.1")]
-        [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuster(
-            string appName,
-            string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-        }
-
-        [Theory, Trait("category", "cli-bullseye")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBullseye(
-           string appName,
-           string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-        }
-
-        [Theory, Trait("category", "cli-builder-bullseye")]
-        [InlineData(NetCore6PreviewWebApp, "6.0")]
-        [InlineData(NetCoreApp70WebApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuilderBullseye(
-            string appName,
-            string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
-        }
-
         private void BuildsApplication_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion,
@@ -724,32 +676,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains($"Error: Platform '{DotNetCoreConstants.PlatformName}' version '{runtimeVersion}' is unsupported.", result.StdErr);
                 },
                 result.GetDebugInfo());
-        }
-
-        [Theory, Trait("category", "jamstack")]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void ParsesImageTypeFromFile_Jamstack(bool removeImageTypeFile)
-        {
-            
-            var imageHelper = new ImageTestHelper();
-            TestImageTypeResolution(
-                imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye),
-                removeImageTypeFile,
-                "jamstack");
-        }
-
-        [Theory, Trait("category", "cli")]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void ParsesImageTypeFromFile_Cli(bool removeImageTypeFile)
-        {
-            
-            var imageHelper = new ImageTestHelper();
-            TestImageTypeResolution(
-                imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository),
-                removeImageTypeFile,
-                "cli");
         }
 
         [Theory, Trait("category", "githubactions")]

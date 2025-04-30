@@ -56,33 +56,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
-        [Theory, Trait("category", "cli-stretch")]
-        [InlineData(ImageTestHelperConstants.CliRepository)]
-        public void PipelineTestInvocationCli(string imageTag)
-        {
-            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
-            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
-        }
-
-        [Theory, Trait("category", "cli-buster")]
-        [InlineData(ImageTestHelperConstants.CliBusterTag)]
-        public void PipelineTestInvocationCliBuster(string imageTag)
-        {
-            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
-            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
-        }
-
-        [Theory, Trait("category", "cli-bullseye")]
-        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
-        public void PipelineTestInvocationCliBullseye(string imageTag)
-        {
-            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
-            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
-        }
-
         [Theory]
         [InlineData(Settings.BuildImageName)]
         [InlineData(Settings.LtsVersionsBuildImageName)]
