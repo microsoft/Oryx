@@ -62,14 +62,14 @@ variables:
   node18Version: 18.20.7
   node20Version: 20.18.3
   node22Version: 22.14.0
-  php81Version: 8.1.31
-  php81Version_SHA: c4f244d46ba51c72f7d13d4f66ce6a9e9a8d6b669c51be35e01765ba58e7afca
-  php82Version: 8.2.27
-  php82Version_SHA: 3eec91294d8c09b3df80b39ec36d574ed9b05de4c8afcb25fa215d48f9ecbc6b
-  php83Version: 8.3.17
-  php83Version_SHA: 6158ee678e698395da13d72c7679a406d2b7554323432f14d37b60ed87d8ccfb
-  php84Version: 8.4.4
-  php84Version_SHA: 05a6c9a2cc894dd8be719ecab221b311886d5e0c02cb6fac648dd9b3459681ac
+  php81Version: 8.1.32
+  php81Version_SHA: c582ac682a280bbc69bc2186c21eb7e3313cc73099be61a6bc1d2cd337cbf383
+  php82Version: 8.2.28
+  php82Version_SHA: af8c9153153a7f489153b7a74f2f29a5ee36f5cb2c6c6929c98411a577e89c91
+  php83Version: 8.3.20
+  php83Version_SHA: f15914e071b5bddaf1475b5f2ba68107e8b8846655f9e89690fb7cd410b0db6c
+  php84Version: 8.4.6
+  php84Version_SHA: 089b08a5efef02313483325f3bacd8c4fe311cf1e1e56749d5cc7d059e225631
   python310Version: 3.10.16
   python311Version: 3.11.11
   python312Version: 3.12.9
