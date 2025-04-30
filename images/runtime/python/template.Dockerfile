@@ -106,8 +106,7 @@ RUN pip install --upgrade pip \
     && pip install viztracer==0.15.6 \
     && pip install vizplugins==0.1.3 \
     # Removing orjson only for 3.12 due to build errors
-    && if [ "${PYTHON_VERSION}" != "3.12" ] && [ "${PYTHON_VERSION}" != "3.7" ]; then pip install orjson==3.10.7; fi \
-    && if [ "${PYTHON_VERSION}" = "3.7" ] || [ "${PYTHON_VERSION}" = "3.8" ]; then curl -LO http://ftp.de.debian.org/debian/pool/main/libf/libffi/libffi6_3.2.1-9_amd64.deb \
+    && if [ "${PYTHON_VERSION}" != "3.12" ] then pip install orjson==3.10.7; fi \
     && dpkg -i libffi6_3.2.1-9_amd64.deb \
     && rm libffi6_3.2.1-9_amd64.deb; fi \
     && ln -s /opt/startupcmdgen/startupcmdgen /usr/local/bin/oryx \

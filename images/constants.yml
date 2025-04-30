@@ -11,7 +11,6 @@ variables:
   node18DebianFlavors: bullseye
   node20DebianFlavors: bullseye,bookworm
   node22DebianFlavors: bullseye,bookworm
-  python38DebianFlavors: bullseye,buster
   python39DebianFlavors: bullseye,buster
   python310DebianFlavors: bullseye
   python311DebianFlavors: bullseye,bookworm
@@ -44,7 +43,6 @@ variables:
   python311_GPG_keys: A035C8C19219BA821ECEA86B64E628F8D684696D
   python312_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
   python313_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
-  python38_GPG_keys: E3FF2839C048B25C084DEBE9B26995E310250568
   python39_GPG_keys: E3FF2839C048B25C084DEBE9B26995E310250568
   ASPNET_CORE_APP_80: 8.0.14
   ASPNET_CORE_APP_80_SHA: b8cd0640c2a7382330b44be3130327ff0036be87b620f9b8ae5b854fce346b60586dd7bba6a684d7b051dc934025170cb945c41ea3bc92115b30e67eeeafb920
@@ -68,6 +66,5 @@ variables:
   python310Version: 3.10.16
   python311Version: 3.11.11
   python312Version: 3.12.9
-  python38Version: 3.8.20
   python313Version: 3.13.2
   python39Version: 3.9.21
