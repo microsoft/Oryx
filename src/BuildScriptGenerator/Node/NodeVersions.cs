@@ -7,7 +7,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
     public static class NodeVersions
     {
         public const string NodeRuntimeBaseTag = "20240429.6";
-        public const string YarnVersion = "1.22.15";
+        public const string YarnVersion = "1.22.22";
         public const string YarnMinorVersion = "1.22";
         public const string YarnMajorVersion = "1";
         public const string Node6Version = "6.17.1";
@@ -20,8 +20,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Node
         public const string Node20Version = "20.18.3";
         public const string Node22Version = "22.14.0";
         public const string NodeAppInsightsSdkVersion = "1.8.7";
-        public const string Pm2Version = "5.3.1";
-        public const string NpmVersion = "10.8.2";
+        public const string Pm2Version = "6.0.5";
+        public const string NpmVersion = "10.9.2";
         public static readonly List<string> RuntimeVersions = new List<string> { "14-debian-bullseye", "14-debian-buster", "16-debian-bullseye", "16-debian-buster", "18-debian-bullseye", "20-debian-bullseye", "20-debian-bookworm", "22-debian-bullseye", "22-debian-bookworm", "dynamic-debian-buster" };
     }
 }
