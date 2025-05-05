@@ -53,12 +53,12 @@ function copyBlob() {
         echo "Blob '$blobName' does not exist in Prod storage container '$platformName'. Copying it..."
         if [ $dryRun == "False" ]; then
             "$azCopyDir/azcopy" copy \
-                "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" $arg
+                "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_SOURCE_STORAGE_SAS" \
+                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_DESTINATION_STORAGE_SAS" $arg
         else
             "$azCopyDir/azcopy" copy \
-                "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName$PROD_STORAGE_SAS_TOKEN" --dry-run $arg
+                "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_SOURCE_STORAGE_SAS" \
+                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_DESTINATION_STORAGE_SAS" --dry-run $arg
         fi
     fi
 }
