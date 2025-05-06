@@ -58,6 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
             if (this.versionMap == null)
             {
                 var httpClient = this.HttpClientFactory.CreateClient("general");
+                httpClient.Timeout = TimeSpan.FromSeconds(10);
                 var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
                 XDocument xdoc = null;
 

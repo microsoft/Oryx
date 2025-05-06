@@ -50,6 +50,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
+            httpClient.Timeout = TimeSpan.FromSeconds(10);
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
             XDocument xdoc = null;
 
@@ -115,6 +116,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         protected string GetDefaultVersion(string platformName, string sdkStorageBaseUrl)
         {
             var httpClient = this.HttpClientFactory.CreateClient("general");
+            httpClient.Timeout = TimeSpan.FromSeconds(10);
 
             var defaultFile = string.IsNullOrEmpty(this.commonOptions.DebianFlavor)
                     || string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
