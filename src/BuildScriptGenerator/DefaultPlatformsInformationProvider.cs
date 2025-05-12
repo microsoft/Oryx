@@ -37,6 +37,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             var platformInfos = new List<PlatformInfo>();
 
+            this.outputWriter.WriteLine($"Primary SDK Storage URL: {this.commonOptions.OryxSdkStorageBaseUrl}");
+            this.outputWriter.WriteLine($"Backup SDK Storage URL: {this.commonOptions.OryxSdkStorageBackupBaseUrl}");
+
             // Try detecting ALL platforms since in some scenarios this is required.
             // For example, in case of a multi-platform app like ASP.NET Core + NodeJs, we might need to dynamically
             // install both these platforms' sdks before actually using any of their commands. So even though a user
