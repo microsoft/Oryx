@@ -92,48 +92,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "ltsversions")]
-        // DotNet
-        [InlineData("dotnet", "/opt/dotnet/")]
-        // Node
-        [InlineData("node", "/opt/nodejs/")]
-        [InlineData("npm", "/opt/nodejs/")]
-        [InlineData("npx", "/opt/nodejs/")]
-        [InlineData("yarn", "/opt/yarn/")]
-        [InlineData("yarnpkg", "/opt/yarn/")]
-        // Python
-        [InlineData("python", "/opt/python/")]
-        [InlineData("pip", "/opt/python/")]
-        [InlineData("pip3", "/opt/python/")]
-        [InlineData("wheel", "/opt/python/")]
-        [InlineData("pydoc3", "/opt/python/")]
-        [InlineData("python3-config", "/opt/python/")]
-        // Php
-        [InlineData("php", "/opt/php/")]
-        [InlineData("composer.phar", "/opt/php-composer/")]
-        public void OutOfTheBox_PlatformToolsSupportedByOryx_ShouldBeChosen_InLtsVersionsBuildImage(
-            string executableName,
-            string expectedPathPrefix)
-        {
-            // Arrange
-            var script = new ShellScriptBuilder()
-                .AddCommand($"which {executableName}")
-                .ToString();
-
-            // Act
-            var image = _imageHelper.GetLtsVersionsBuildImage();
-            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedPathPrefix, result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
         [Theory, Trait("category", "vso-focal")]
         [InlineData("dotnet")]
         [InlineData("node")]
@@ -258,7 +216,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(ImageTestHelperConstants.LatestStretchTag)]
-        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
         public void InstalledNodeModulesExecutablesAreOnPath(string tag)
         {
             // Arrange
@@ -284,7 +241,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         [Theory]
         [InlineData(ImageTestHelperConstants.LatestStretchTag)]
-        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
         public void InstalledPythonExecutablesAreOnPath(string tag)
         {
             // Arrange

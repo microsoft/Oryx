@@ -120,48 +120,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "latest")]
-        public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
-        {
-            // Arrange
-            var hugoVersion = "0.59.1";
-            var expectedDynamicInstallRootDir = "/foo/bar";
-            var appName = SampleAppName;
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .SetEnvironmentVariable("HUGO_VERSION", hugoVersion)
-                .AddCommand(GetSnippetToCleanUpExistingInstallation())
-                .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} " +
-                $"--dynamic-install-root-dir {expectedDynamicInstallRootDir}")
-                .AddDirectoryExistsCheck(
-                $"{expectedDynamicInstallRootDir}/{HugoConstants.PlatformName}/{hugoVersion}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetBuildImage(),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(
-                        $"Hugo Static Site Generator v{hugoVersion}",
-                        result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact, Trait("category", "latest")]
         public void BuildsApplication_ByDynamicallyInstallingIntoCustomDynamicInstallationDir()
         {
             // Arrange

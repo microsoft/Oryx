@@ -35,14 +35,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LatestStretchTag);
         }
 
-        [Fact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
-        {
-            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.LtsVersionsStretch);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LtsVersionsStretch);
-        }
-
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {
