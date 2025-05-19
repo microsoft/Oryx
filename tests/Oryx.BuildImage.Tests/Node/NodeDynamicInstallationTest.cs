@@ -35,31 +35,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             }
         }
 
-        public static TheoryData<string, string> ImageNameDataCliBuilderBullseye
-        {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
-                data.Add("14.19.1", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
-                data.Add("16.14.2", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
-                return data;
-            }
-        }
-
-
         [Theory, Trait("category", "githubactions")]
         [Trait("build-image", "github-actions-debian-stretch")]
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationGithubActions(string version, string buildImageName)
-        {
-            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
-        }
-
-        [Theory, Trait("category", "cli-builder-bullseye")]
-        [MemberData(nameof(ImageNameDataCliBuilderBullseye))]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBuilderBullseye(string version, string buildImageName)
         {
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }

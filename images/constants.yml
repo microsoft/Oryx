@@ -27,7 +27,6 @@ variables:
   nodejsDebianFlavors: bookworm,bullseye
   phpDebianFlavors: bookworm,bullseye
   pythonDebianFlavors: bookworm,bullseye,buster
-  cliBuilderDebianFlavors: buster,bullseye
   fullDebianFlavors: buster,bullseye
   jamstackDebianFlavors: buster,bullseye
   DotNetCoreAgent_version: 2.8.42
