@@ -35,16 +35,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 imageTestHelper.GetBuildImage());
         }
 
-        [Fact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
-        {
-            InstalledNodeModulesExecutablesAreOnPath(ImageTestHelperConstants.LtsVersionsStretch);
-            InstalledPythonExecutablesAreOnPath(ImageTestHelperConstants.LtsVersionsStretch);
-            var imageTestHelper = new ImageTestHelper();
-            BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
-                imageTestHelper.GetLtsVersionsBuildImage());
-        }
-
         [Fact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {

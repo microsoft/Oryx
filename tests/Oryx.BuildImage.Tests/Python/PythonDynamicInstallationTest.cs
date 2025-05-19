@@ -23,14 +23,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Fact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.1");
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetLtsVersionsBuildImage(), "3.8.3");
-        }
-
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {

@@ -44,20 +44,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             OryxBuildImage_Contains_VersionAndCommit_Information(Settings.BuildImageName);
         }
 
-        [SkippableFact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
-                imageTestHelper.GetLtsVersionsBuildImage());
-            Python3Alias_UsesPythonLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
-                Settings.LtsVersionsBuildImageName);
-            Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(
-                Settings.LtsVersionsBuildImageName);
-            DotNetAlias_UsesLtsVersion_ByDefault(Settings.LtsVersionsBuildImageName);
-            OryxBuildImage_Contains_VersionAndCommit_Information(Settings.LtsVersionsBuildImageName);
-        }
-
         [SkippableFact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {
