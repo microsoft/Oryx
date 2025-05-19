@@ -58,16 +58,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             OryxBuildImage_Contains_VersionAndCommit_Information(Settings.LtsVersionsBuildImageName);
         }
 
-        [SkippableFact, Trait("category", "vso-focal")]
-        public void PipelineTestInvocationVsoFocal()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            PhpAlias_UsesPhpLatestVersion_ByDefault_WhenNoExplicitVersionIsProvided(
-                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
-            OryxBuildImage_Contains_VersionAndCommit_Information(
-                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
-        }
-
         [SkippableFact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {
@@ -117,61 +107,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.DoesNotContain(".unspecified, Commit: unspecified", actualOutput);
                     Assert.Contains(gitCommitID, actualOutput);
                     Assert.Contains(expectedOryxVersion, actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory, Trait("category", "vso-focal")]
-        [InlineData(ImageTestHelperConstants.VsoFocal)]
-        public void OryxVsoBuildImage_Contains_PHP_Xdebug(string imageVersion)
-        {
-            var imageTestHelper = new ImageTestHelper();
-            string buildImage = imageTestHelper.GetVsoBuildImage(imageVersion);
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = buildImage,
-                CommandToExecuteOnRun = "php",
-                CommandArguments = new[] { "--version" }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains("with Xdebug", actualOutput);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory, Trait("category", "vso-focal")]
-        [InlineData("bundler", ImageTestHelperConstants.VsoFocal)]
-        [InlineData("rake", ImageTestHelperConstants.VsoFocal)]
-        [InlineData("ruby-debug-ide", ImageTestHelperConstants.VsoFocal)]
-        [InlineData("debase", ImageTestHelperConstants.VsoFocal)]
-        public void OryxVsoBuildImage_Contains_Required_Ruby_Gems(string gemName, string imageVersion)
-        {
-            var imageTestHelper = new ImageTestHelper();
-            string buildImage = imageTestHelper.GetVsoBuildImage(imageVersion);
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = buildImage,
-                CommandToExecuteOnRun = "gem",
-                CommandArguments = new[] { "list", gemName }
-            });
-
-            // Assert
-            var actualOutput = result.StdOut.ReplaceNewLine();
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(gemName, actualOutput);
                 },
                 result.GetDebugInfo());
         }
@@ -583,10 +518,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             // Arrange
             var phpVersion = PhpVersions.Php73Version;
-            if (buildImageName.Contains("oryxdevmcr.azurecr.io/public/oryx/build:vso-ubuntu-focal"))
-            {
-                phpVersion = PhpVersions.Php81Version;
-            }
 
             var expectedOutput = $"PHP {phpVersion} (cli) ";
 

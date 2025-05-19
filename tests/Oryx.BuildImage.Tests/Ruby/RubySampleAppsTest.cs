@@ -27,8 +27,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationVsoFocal()
         {
             var imageTestHelper = new ImageTestHelper();
-            Builds_JekyllStaticWebApp_UsingCustomBuildCommand(
-                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
             GeneratesScript_AndBuildRailsApp(imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
         }
 

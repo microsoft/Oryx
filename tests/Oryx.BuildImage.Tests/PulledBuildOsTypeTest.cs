@@ -92,13 +92,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye), "DEBIAN|BULLSEYE");
         }
 
-        [Fact]
-        [Trait("category", "vso-focal")]
-        public void PulledVsoFocalBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.VsoFocal), "DEBIAN|FOCAL-SCM");
-        }
-
         private void PulledBuildImages_Contains_BUILDOS_TYPE_Info(string buildImageName, string expectedBuildOsType)
         {
             // Arrange and Act

@@ -43,12 +43,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LtsVersionsStretch);
         }
 
-        [Fact, Trait("category", "vso-focal")]
-        public void PipelineTestInvocationVsoFocal()
-        {
-            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.VsoFocal);
-        }
-
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {

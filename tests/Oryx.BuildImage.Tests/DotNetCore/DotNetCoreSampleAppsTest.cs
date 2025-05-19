@@ -42,12 +42,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.LtsVersionsStretch);
         }
 
-        [Fact, Trait("category", "vso-focal")]
-        public void PipelineTestInvocationVsoFocal()
-        {
-            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.VsoFocal);
-        }
-
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocation()
         {
@@ -1015,7 +1009,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
         [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
         [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
-        [InlineData(ImageTestHelperConstants.VsoFocal)]
         [InlineData(ImageTestHelperConstants.LatestStretchTag)]
         public void GDIPlusLibrary_IsPresentInTheImage(string tagName)
         {

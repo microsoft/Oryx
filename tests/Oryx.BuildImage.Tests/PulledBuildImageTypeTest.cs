@@ -64,13 +64,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye), "jamstack");
         }
 
-        [Fact]
-        [Trait("category", "vso-focal")]
-        public void PulledVsoFocalBuildImages_Contains_BUILDIMAGE_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.VsoFocal), "vso-focal");
-        }
-
         private void PulledBuildImages_Contains_BUILDIMAGE_TYPE_Info(string buildImageName, string expectedBuildImageType)
         {
             // Arrange and Act

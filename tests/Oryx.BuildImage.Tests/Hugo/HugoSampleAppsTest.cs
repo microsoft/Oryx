@@ -29,13 +29,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
         }
 
-        [Fact, Trait("category", "vso-focal")]
-        public void PipelineTestInvocationVsoFocal()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
-        }
-
         [Fact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {

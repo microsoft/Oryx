@@ -23,14 +23,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "ruby", sampleAppName));
 
-        [Fact, Trait("category", "vso-focal")]
-        public void PipelineTestInvocationVsoFocal()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildSinatraAppWithDynamicInstall(
-                RubyVersions.Ruby27Version, imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
-        }
-
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {

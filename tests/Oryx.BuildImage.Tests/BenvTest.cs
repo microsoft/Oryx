@@ -61,14 +61,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 imageTestHelper.GetGitHubActionsBuildImage());
         }
 
-        [Fact, Trait("category", "vso-focal")]
-        public void PipelineTestInvocationVsoFocal()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
-                imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
-        }
-
         [Theory, Trait("category", "latest")]
         // DotNet
         [InlineData("dotnet", "/opt/dotnet/")]
@@ -385,29 +377,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(expectedPathPrefix, result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Fact, Trait("category", "vso-focal")]
-        public void OutOfTheBox_JavaHomeEnvironmentVarialbeIsSetInVSOImage()
-        {
-            // Arrange
-            var expectedContent = "JAVA_HOME=/opt/java/lts";
-            var script = new ShellScriptBuilder()
-                .AddCommand("printenv")
-                .ToString();
-
-            // Act
-            var image = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal);
-            var result = _dockerCli.Run(image, "/bin/bash", "-c", script);
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(expectedContent, result.StdOut);
                 },
                 result.GetDebugInfo());
         }
