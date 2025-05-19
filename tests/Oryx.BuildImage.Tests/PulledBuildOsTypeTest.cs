@@ -77,20 +77,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), "DEBIAN|BULLSEYE");
         }
-        
-        [Fact]
-        [Trait("category", "jamstack")]
-        public void PulledJamstackBusterBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBuster), "DEBIAN|BUSTER");
-        }
-
-        [Fact]
-        [Trait("category", "jamstack")]
-        public void PulledJamstackBullseyeBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye), "DEBIAN|BULLSEYE");
-        }
 
         private void PulledBuildImages_Contains_BUILDOS_TYPE_Info(string buildImageName, string expectedBuildOsType)
         {

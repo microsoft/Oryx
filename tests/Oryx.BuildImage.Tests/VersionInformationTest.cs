@@ -44,14 +44,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             OryxBuildImage_Contains_VersionAndCommit_Information(Settings.BuildImageName);
         }
 
-        [SkippableFact, Trait("category", "jamstack")]
-        public void PipelineTestInvocationJamstack()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            OryxBuildImage_Contains_VersionAndCommit_Information(
-                imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-        }
-
         [SkippableFact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {

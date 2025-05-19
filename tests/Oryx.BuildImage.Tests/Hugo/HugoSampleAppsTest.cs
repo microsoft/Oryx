@@ -17,13 +17,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-
-        [Fact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
-        {
-            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
-        }
-
         [Fact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {

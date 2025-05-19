@@ -30,12 +30,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _tempRootDir = testTempDirTestFixture.RootDirPath;
         }
 
-        [Fact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
-        {
-            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
-        }
-
         [Fact, Trait("category", "jamstack")]
         public void PipelineTestInvocationJamstack()
         {

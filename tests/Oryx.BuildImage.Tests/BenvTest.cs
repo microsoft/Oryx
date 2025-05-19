@@ -35,14 +35,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 imageTestHelper.GetBuildImage());
         }
 
-        [Fact, Trait("category", "jamstack")]
-        public void PipelineTestInvocationJamstack()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            BuildImagesHaveOryxPathsEnvironmentVariableAvailable(
-                imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-        }
-
         [Fact, Trait("category", "githubaction")]
         public void PipelineTestInvocationGithubActions()
         {
