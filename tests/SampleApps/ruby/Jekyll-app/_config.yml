@@ -1,6 +1,0 @@
-
-exclude:
-    - Procfile
-    - config.ru
-    - Gemfile.lock
-    - Gemfile
