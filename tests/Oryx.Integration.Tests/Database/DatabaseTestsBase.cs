@@ -9,7 +9,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.Integration.Tests.Fixtures;
 using Microsoft.Oryx.Tests.Common;
