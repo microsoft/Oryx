@@ -31,6 +31,7 @@ COPY binaries /opt/buildscriptgen/
 COPY src src
 COPY build/FinalPublicKey.snk build/
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
+RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
 
 ARG IMAGES_DIR=/opt/tmp/images
 ARG BUILD_DIR=/opt/tmp/build

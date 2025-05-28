@@ -114,6 +114,35 @@ docker run --detach --rm \
     sh -c 'oryx create-script -appPath /app && /run.sh'
 ```
 
+## Build Server Invocation
+1. Build the Oryx solution
+    1. ![Build Solutionpng](doc/buildServer/buildSolution.png)
+1. Create image with oryx and platform binaries
+    1. `time build/buildBuildImages.sh -t ltsversion`
+1. Run docker to port map, volume mount a directory, specify the image with `oryx build`, and invoke BuildServer
+    1. ```bash
+        docker run -it -p 8086:80 \
+        -v C:\Repo\Oryx\tests\SampleApps\:/tmp/SampleApps \
+        -e "ASPNETCORE_URLS=http://+80" \
+        oryxdevmcr.azurecr.io/public/oryx/build:lts-versions \
+        /opt/buildscriptgen/BuildServer
+        ```
+        ![Start](doc/buildServer/start.png)
+1. Invoke build
+    1.  ![Post](doc/buildServer/post.png)
+        1. Under the hood `oryx build` is invoked
+            ```bash
+            oryx build [sourcePath] \
+                --platform [platform] \
+                --platform-version [version] \
+                --output [outputPath] \
+                --log-file [logPath]
+            ```
+1. Check build status with id `1`
+    1. ![Status](doc/buildServer/status.png)
+1. Check server healthcheck
+    1. ![Health Check](doc/buildServer/healthCheck.png)
+
 # Components
 
 Oryx consists of a build image, a collection of runtime images, a build script generator, and a collection of
