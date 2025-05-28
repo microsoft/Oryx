@@ -11,13 +11,11 @@ variables:
   node18DebianFlavors: bullseye
   node20DebianFlavors: bullseye,bookworm
   node22DebianFlavors: bullseye,bookworm
-  python38DebianFlavors: bullseye,buster
   python39DebianFlavors: bullseye,buster
   python310DebianFlavors: bullseye
   python311DebianFlavors: bullseye,bookworm
   python312DebianFlavors: bullseye,bookworm
   python313DebianFlavors: bullseye,bookworm
-  dotnet60DebianFlavors: bullseye
   dotnet80DebianFlavors: bullseye,bookworm
   dotnet90DebianFlavors: bookworm
   php81DebianFlavors: bullseye
@@ -45,16 +43,11 @@ variables:
   python311_GPG_keys: A035C8C19219BA821ECEA86B64E628F8D684696D
   python312_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
   python313_GPG_keys: 7169605F62C751356D054A26A821E680E5FA6305
-  python38_GPG_keys: E3FF2839C048B25C084DEBE9B26995E310250568
   python39_GPG_keys: E3FF2839C048B25C084DEBE9B26995E310250568
-  ASPNET_CORE_APP_60: 6.0.35
-  ASPNET_CORE_APP_60_SHA: d86da938338a6d97250436d49340e8f114c05b46512ca562aadca6f3e77403d36468d3f34ed5f2d935c070f9e14aedf7299f5a03d2964dbd6576b9a2d3e776e8
   ASPNET_CORE_APP_80: 8.0.15
   ASPNET_CORE_APP_80_SHA: 3ca5669d4aff60f1bf8cecb99de05d6b489db150caa7c184d1a8bcdf085c611533e05ad7bd0c5091c726850611cff6b0477ef9b1dbb192ebe9055c03de1cf6d8
   ASPNET_CORE_APP_90: 9.0.4
   ASPNET_CORE_APP_90_SHA: f3eae8863634a050b90b672b14d466a44c623ca06c6501a3a70efea93e540995e2fa348ae5ef7a3f278110a9ba24043a651150a378e4e5a84c25690b73364132
-  NET_CORE_APP_60: 6.0.35
-  NET_CORE_APP_60_SHA: d8d10d600fb664336949576f8ec0534dbffd573f754b9e741f20812221fafcac5f509a7e1ab44e9e63fc31a7b5dbcb19e4ec1930ffd29312212dc7454977090e
   NET_CORE_APP_80: 8.0.15
   NET_CORE_APP_80_SHA: 833a848541ba6f71c8792168914856e16de6f71cf0a481c5990f3622b0e3f83123e6024bcabf6b955a7c92e8e904181d40d3bd612595a0d8c47a421267a91ca6
   NET_CORE_APP_90: 9.0.4
@@ -70,7 +63,6 @@ variables:
   php83Version_SHA: f15914e071b5bddaf1475b5f2ba68107e8b8846655f9e89690fb7cd410b0db6c
   php84Version: 8.4.6
   php84Version_SHA: 089b08a5efef02313483325f3bacd8c4fe311cf1e1e56749d5cc7d059e225631
-  python38Version: 3.8.20
   python39Version: 3.9.22
   python310Version: 3.10.17
   python311Version: 3.11.12
