@@ -24,7 +24,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
-	<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="7.0.0" />
@@ -44,6 +43,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BuildScriptGenerator\BuildScriptGenerator.csproj" />
+    <ProjectReference Include="..\BuildServer\BuildServer.csproj" />
   </ItemGroup>
 
 </Project>

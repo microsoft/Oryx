@@ -52,6 +52,7 @@ COPY src src
 COPY build/FinalPublicKey.snk build/
 
 RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
+RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
     
 COPY --from=startupScriptGens /opt/startupcmdgen/ /opt/startupcmdgen/
 
