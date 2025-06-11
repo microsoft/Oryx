@@ -20,7 +20,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("6.0")]
         [InlineData("8.0")]
         public void DotNetCoreBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
@@ -98,7 +97,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("6.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
         [InlineData("8.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp80)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_Bullseye_HasExecptedDotNetVersion(string version, string expectedOutput)
