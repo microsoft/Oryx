@@ -184,7 +184,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         }
         catch (Exception ex)
         {
-          this.outputWriter.WriteLine($"Failed to get blob for platform {platformName}, blobName {blobName} from external provider. Exception : {ex}");
+          this.outputWriter.WriteLine($"Failed to get blob for platform {platformName}, blobName {blobName} from external provider. Exception : {ex.Message}");
           this.logger.LogError(ex, "Error requesting blob for platform {platformName} blobName {blobName} from external provider.", platformName, blobName);
           return false;
         }
