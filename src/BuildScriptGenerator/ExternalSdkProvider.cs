@@ -49,11 +49,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
           PlatformName = platformName,
           BlobName = null,
           UrlParameters = new Dictionary<string, string>
-                      {
-                        { "restype", "container" },
-                        { "comp", "list" },
-                        { "include", "metadata" },
-                      },
+          {
+            { "restype", "container" },
+            { "comp", "list" },
+            { "include", "metadata" },
+          },
         };
 
         var filePath = Path.Combine(ExternalSdksStorageDir, platformName, platformName);
