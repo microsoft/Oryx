@@ -167,11 +167,12 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 
 		scriptBuilder.WriteString(
 			fmt.Sprintf("echo 'export VIRTUALENVIRONMENT_PATH=\"%s\"' >> ~/.bashrc\n", virtualEnvDir))
-		scriptBuilder.WriteString(fmt.Sprintf("echo '. %s/bin/activate' >> ~/.bashrc\n", virtualEnvironmentName))
+		
 
 		// If virtual environment was not compressed or if it is compressed but mounted using a zip driver,
 		// we do not want to extract the compressed file
 		if gen.Manifest.CompressedVirtualEnvFile == "" || gen.SkipVirtualEnvExtraction {
+			scriptBuilder.WriteString(fmt.Sprintf("echo '. %s/bin/activate' >> ~/.bashrc\n", virtualEnvironmentName))
 			if common.PathExists(virtualEnvDir) {
 				// We add the virtual env site-packages to PYTHONPATH instead of activating it to be backwards compatible with existing
 				// app service implementation. If we activate the virtual env directly things don't work since it has hardcoded references to
@@ -186,6 +187,7 @@ func (gen *PythonStartupScriptGenerator) getPackageSetupCommand() string {
 				scriptBuilder.WriteString("  echo WARNING: Could not find virtual environment directory '" + virtualEnvDir + "'.\n")
 			}
 		} else {
+			scriptBuilder.WriteString(fmt.Sprintf("echo '. %s/bin/activate' >> ~/.bashrc\n", "/" + virtualEnvironmentName))
 			compressedFile := gen.Manifest.CompressedVirtualEnvFile
 			virtualEnvDir := "/" + virtualEnvironmentName
 			if strings.HasSuffix(compressedFile, ".zip") {
