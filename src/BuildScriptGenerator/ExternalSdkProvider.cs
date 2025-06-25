@@ -6,6 +6,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
@@ -28,11 +29,14 @@ namespace Microsoft.Oryx.BuildScriptGenerator
     private const string SocketPath = "/var/sockets/oryx-pull-sdk.socket";
     private const int MaxTimeoutForSocketOperationInSeconds = 100;
     private readonly ILogger<ExternalSdkProvider> logger;
+    private readonly IStandardOutputWriter outputWriter;
 
     public ExternalSdkProvider(
-        ILogger<ExternalSdkProvider> logger)
+    IStandardOutputWriter outputWriter,
+    ILogger<ExternalSdkProvider> logger)
     {
       this.logger = logger;
+      this.outputWriter = outputWriter;
     }
 
     /// <inheritdoc />
@@ -54,6 +58,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         var filePath = Path.Combine(ExternalSdksStorageDir, platformName, platformName);
         this.logger.LogInformation("Requesting metadata for platform {} from external SDK provider, expected filepath: {filePath}", platformName, filePath);
+        this.outputWriter.WriteLine($"Requesting metadata for platform {platformName} from external SDK provider");
         var response = await this.SendRequestAsync(request);
 
         if (response && File.Exists(filePath))
@@ -75,6 +80,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
       }
       catch (Exception ex)
       {
+        this.outputWriter.WriteLine($"Error getting metadata for platform {platformName} from external provider: {ex.Message}");
         throw new InvalidOperationException($"Error getting metadata for platform {platformName} from external provider.", ex);
       }
     }
@@ -93,7 +99,11 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         else
         {
           var blobElement = xdoc.XPathSelectElement($"//Blobs/Blob[Name='{blobName}']");
-          var checksum = blobElement?.Element("Metadata")?.Element("Checksum")?.Value;
+          var checksum = blobElement?
+            .Element("Metadata")?
+            .Elements()
+            .FirstOrDefault(e => string.Equals(e.Name.LocalName, "Checksum", StringComparison.OrdinalIgnoreCase))
+            ?.Value;
           if (string.IsNullOrEmpty(checksum))
           {
             this.logger.LogError("Checksum not found for platform {platformName}, blobname {blobName} from external provider.", platformName, blobName);
@@ -118,12 +128,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         var actualChecksum = this.GetSHA512Checksum(blobPath);
         if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
         {
-          this.logger.LogInformation("Blob for platform {platformName}, blobName {blobName} already exists in cache at {blobPath} and checksum matches", platformName, blobName, blobPath);
+          this.logger.LogInformation("Blob for platform {platformName}, blobName {blobName} already exists in external provider cache at {blobPath} and checksum matches", platformName, blobName, blobPath);
           return true;
         }
         else
         {
-          this.logger.LogWarning("Blob for platform {platformName}, blobName {blobName} already exists in cache at {sdkPath} but checksum does not match, considering the blob as corrupted", platformName, blobName, blobPath);
+          this.logger.LogWarning("Blob for platform {platformName}, blobName {blobName} already exists in external provider cache at {blobPath} but checksum does not match, considering the blob as corrupted", platformName, blobName, blobPath);
         }
       }
 
@@ -137,6 +147,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator
       var expectedChecksum = await this.GetChecksumForVersionAsync(platformName, blobName);
       if (expectedChecksum == null)
       {
+        this.outputWriter.WriteLine($"Failed to get checksum for platform {platformName}, blobName {blobName}. Skipping download of blob.");
         this.logger.LogError("Failed to get checksum for blob : platform {platformName}, blobName {blobName}. Skipping download of blob.", platformName, blobName);
         return false;
       }
@@ -161,16 +172,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
           if (response && File.Exists(filePath))
           {
+            this.outputWriter.WriteLine($"Successfully requested blob for platform {platformName}, blobName {blobName}, available at {filePath}");
             this.logger.LogInformation("Successfully requested blob for platform {platformName}, blobName {blobName}, available at {FilePath}", platformName, blobName, filePath);
           }
           else
           {
+            this.outputWriter.WriteLine($"Failed to get blob for platform {platformName}, blobName {blobName} from external provider.");
             this.logger.LogError("Failed to get blob for platform {platformName}, blobName {blobName}", platformName, blobName);
             return false;
           }
         }
         catch (Exception ex)
         {
+          this.outputWriter.WriteLine($"Failed to get blob for platform {platformName}, blobName {blobName} from external provider. Exception : {ex.Message}");
           this.logger.LogError(ex, "Error requesting blob for platform {platformName} blobName {blobName} from external provider.", platformName, blobName);
           return false;
         }
@@ -181,13 +195,13 @@ namespace Microsoft.Oryx.BuildScriptGenerator
       var actualChecksum = this.GetSHA512Checksum(blobPath);
       if (string.Equals(actualChecksum, expectedChecksum, StringComparison.OrdinalIgnoreCase))
       {
-          this.logger.LogInformation("Downloaded blob checksum verified successfully for platform {platformName}, blobName {blobName}", platformName, blobName);
-          return true;
+        this.logger.LogInformation("Downloaded blob checksum verified successfully for platform {platformName}, blobName {blobName}", platformName, blobName);
+        return true;
       }
       else
       {
-          this.logger.LogError("Checksum verification failed for downloaded blob: platform {platformName}, blobName {blobName}, actual checksum {actualChecksum} , expected checksum {expectedChecksum}", platformName, blobName, actualChecksum, expectedChecksum);
-          return false;
+        this.logger.LogError("Checksum verification failed for downloaded blob: platform {platformName}, blobName {blobName}, actual checksum {actualChecksum} , expected checksum {expectedChecksum}", platformName, blobName, actualChecksum, expectedChecksum);
+        return false;
       }
     }
 
@@ -225,10 +239,12 @@ namespace Microsoft.Oryx.BuildScriptGenerator
       }
       catch (OperationCanceledException)
       {
+        this.outputWriter.WriteLine("The external SDK provider operation was canceled due to timeout.");
         this.logger.LogError("The external SDK provider operation was canceled due to timeout.");
       }
       catch (Exception ex)
       {
+        this.outputWriter.WriteLine($"Error communicating with external SDK provider: {ex.Message}");
         this.logger.LogError(ex, "Error communicating with external SDK provider.");
       }
 
