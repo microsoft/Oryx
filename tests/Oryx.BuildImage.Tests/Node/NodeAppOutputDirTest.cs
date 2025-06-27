@@ -22,7 +22,7 @@ namespace Oryx.BuildImage.Tests.Node
         {
         }
 
-        [Theory, Trait("category", "jamstack")]
+        [Theory, Trait("category", "githubactions")]
         // Temporarily blocking Angular 14 app: Work item 1565890
         // [InlineData("angular14", "dist")]
         // Temporarily blocking next app as next build is failing accross npm
@@ -53,7 +53,7 @@ namespace Oryx.BuildImage.Tests.Node
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }

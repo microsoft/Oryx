@@ -457,7 +457,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData(NetCoreApp21WebApp, "2.1", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
             string appName,
@@ -493,7 +493,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -578,8 +578,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(SupportedVersionAndImageNameData))]
         public void BuildsApplication_AfterInstallingSupportedSdk(
-            string runtimeVersion, 
-            string sdkVersion, 
+            string runtimeVersion,
+            string sdkVersion,
             string appName,
             string imageName)
         {
@@ -683,7 +683,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(false)]
         public void ParsesImageTypeFromFile_GithubActions(bool removeImageTypeFile)
         {
-            
+
             var imageHelper = new ImageTestHelper();
             TestImageTypeResolution(
                 imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
@@ -728,13 +728,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    
-                    if (removeImageTypeFile) {
+
+                    if (removeImageTypeFile)
+                    {
                         Assert.Contains(MissingImageTypeWarning, result.StdOut);
                         Assert.DoesNotContain(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
                         Assert.DoesNotMatch(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);
-                    } 
-                    else 
+                    }
+                    else
                     {
                         Assert.Contains(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
                         Assert.Matches(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);

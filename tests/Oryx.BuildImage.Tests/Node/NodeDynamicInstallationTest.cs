@@ -36,7 +36,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-stretch")]
         [MemberData(nameof(ImageNameData))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationGithubActions(string version, string buildImageName)
         {
@@ -77,7 +76,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-stretch")]
         [InlineData("14.19.1", "14.19.1")]
         [InlineData("16", "16.20.2")]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation_DefaultEnvVar(string defaultVersion, string expectedVersion)
@@ -112,8 +110,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
-        [Trait("build-image", "lts-versions-debian-stretch")]
+        [Fact, Trait("category", "githubactions")]
         public void DynamicallyInstallsNodeRuntimeAndBuilds()
         {
             // Arrange
@@ -134,7 +131,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _restrictedPermissionsImageHelper.GetLtsVersionsBuildImage(),
+                ImageId = _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -150,7 +147,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-stretch")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange

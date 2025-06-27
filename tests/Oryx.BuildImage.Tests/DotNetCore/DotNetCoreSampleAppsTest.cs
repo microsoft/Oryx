@@ -28,18 +28,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "DotNetCore", sampleAppName));
 
-
-        [Fact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
-        {
-            Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.LtsVersionsBuildImageName);
-            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.LtsVersionsStretch);
-        }
-
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocation()
         {
-            GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsStretch);
+            Builds_NetCore21App_UsingNetCore21_DotNetSdkVersion(Settings.LtsVersionsBuildImageName);
             GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
@@ -482,7 +474,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(
-                    $"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"", 
+                    $"{ManifestFilePropertyKeys.PlatformName}=\"{DotNetCoreConstants.PlatformName}\"",
                     $"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .ToString();
 
