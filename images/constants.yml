@@ -63,8 +63,8 @@ variables:
   php83Version_SHA: 66c86889059bd27ccf460590ca48fcaf3261349cc9bdba2023ac6a265beabf36
   php84Version: 8.4.8
   php84Version_SHA: aa6a4d330b47eacd83e351658ba8c47747a1e4356456219cfb6d75e7838da091
-  python39Version: 3.9.22
-  python310Version: 3.10.17
-  python311Version: 3.11.12
-  python312Version: 3.12.10
-  python313Version: 3.13.3
+  python39Version: 3.9.23
+  python310Version: 3.10.18
+  python311Version: 3.11.13
+  python312Version: 3.12.11
+  python313Version: 3.13.5
