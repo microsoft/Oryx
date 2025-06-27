@@ -40,7 +40,7 @@ docker build -f ./images/runtime/commonbase/Dockerfile -t oryx_run_base_$debian_
 
 case $stack_name in
     "dotnet") 
-        curl -SL --output "DotNetCoreAgent.$DotNetCoreAgent_version.zip" "https://oryxsdksdev-h4a7b3fscnhggycc.b02.azurefd.net/appinsights-agent/DotNetCoreAgent.$DotNetCoreAgent_version.zip"
+        curl -SL --output "DotNetCoreAgent.$DotNetCoreAgent_version.zip" "https://oryxsdksdev.blob.core.windows.net/appinsights-agent/DotNetCoreAgent.$DotNetCoreAgent_version.zip"
        case $stack_version in
             "6.0")
                 docker build -f ./images/runtime/dotnetcore/6.0/$debian_flavor.Dockerfile -t dotnet6_image_$debian_flavor --build-arg NET_CORE_APP_60_SHA=$NET_CORE_APP_60_SHA --build-arg ASPNET_CORE_APP_60_SHA=$ASPNET_CORE_APP_60_SHA --build-arg NET_CORE_APP_60=$NET_CORE_APP_60 --build-arg ASPNET_CORE_APP_60=$ASPNET_CORE_APP_60 --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
@@ -66,19 +66,19 @@ case $stack_name in
         docker build -f ./images/runtime/commonbase/nodeRuntimeBase.Dockerfile -t oryx_node_run_base_$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" .
        case $stack_version in
             "18")
-                curl -SL --output "nodejs-$debian_flavor-$node18Version.tar.gz" "https://oryxsdksdev-h4a7b3fscnhggycc.b02.azurefd.net/nodejs/nodejs-$debian_flavor-$node18Version.tar.gz"
+                curl -SL --output "nodejs-$debian_flavor-$node18Version.tar.gz" "https://oryxsdksdev.blob.core.windows.net/nodejs/nodejs-$debian_flavor-$node18Version.tar.gz"
                 docker build -f ./images/runtime/node/18/$debian_flavor.Dockerfile -t node18_$debian_flavor --build-arg NODE18_VERSION=$node18Version --build-arg BASE_IMAGE="docker.io/library/oryx_node_run_base_$debian_flavor" --build-arg NPM_VERSION=$NPM_VERSION --build-arg PM2_VERSION=$PM2_VERSION --build-arg NODE_APP_INSIGHTS_SDK_VERSION=$NODE_APP_INSIGHTS_SDK_VERSION --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
                 rm -f ./nodejs-$debian_flavor-$node18Version.tar.gz
             ;;
 
             "20")
-                curl -SL --output "nodejs-$debian_flavor-$node20Version.tar.gz" "https://oryxsdksdev-h4a7b3fscnhggycc.b02.azurefd.net/nodejs/nodejs-$debian_flavor-$node20Version.tar.gz"
+                curl -SL --output "nodejs-$debian_flavor-$node20Version.tar.gz" "https://oryxsdksdev.blob.core.windows.net/nodejs/nodejs-$debian_flavor-$node20Version.tar.gz"
                 docker build -f ./images/runtime/node/20/$debian_flavor.Dockerfile -t node20_$debian_flavor --build-arg NODE20_VERSION=$node20Version --build-arg BASE_IMAGE="docker.io/library/oryx_node_run_base_$debian_flavor" --build-arg NPM_VERSION=$NPM_VERSION --build-arg PM2_VERSION=$PM2_VERSION --build-arg NODE_APP_INSIGHTS_SDK_VERSION=$NODE_APP_INSIGHTS_SDK_VERSION --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
                 rm -f ./nodejs-$debian_flavor-$node20Version.tar.gz
             ;;
 
             "22")
-                curl -SL --output "nodejs-$debian_flavor-$node22Version.tar.gz" "https://oryxsdksdev-h4a7b3fscnhggycc.b02.azurefd.net/nodejs/nodejs-$debian_flavor-$node22Version.tar.gz"
+                curl -SL --output "nodejs-$debian_flavor-$node22Version.tar.gz" "https://oryxsdksdev.blob.core.windows.net/nodejs/nodejs-$debian_flavor-$node22Version.tar.gz"
                 docker build -f ./images/runtime/node/22/$debian_flavor.Dockerfile -t node22_$debian_flavor --build-arg NODE22_VERSION=$node22Version --build-arg BASE_IMAGE="docker.io/library/oryx_node_run_base_$debian_flavor" --build-arg NPM_VERSION=$NPM_VERSION --build-arg PM2_VERSION=$PM2_VERSION --build-arg NODE_APP_INSIGHTS_SDK_VERSION=$NODE_APP_INSIGHTS_SDK_VERSION --build-arg USER_DOTNET_AI_VERSION=$USER_DOTNET_AI_VERSION --build-arg AI_CONNECTION_STRING=$AI_CONNECTION_STRING .
                 rm -f ./nodejs-$debian_flavor-$node22Version.tar.gz
             ;;
@@ -109,7 +109,7 @@ case $stack_name in
     "python")
         case $stack_version in
             "3.8")
-                curl -SL --output "python-$debian_flavor-$python38Version.tar.gz" "https://oryxsdksdev-h4a7b3fscnhggycc.b02.azurefd.net/python/python-$debian_flavor-$python38Version.tar.gz"
+                curl -SL --output "python-$debian_flavor-$python38Version.tar.gz" "https://oryxsdksdev.blob.core.windows.net/python/python-$debian_flavor-$python38Version.tar.gz"
                 docker build -f ./images/runtime/python/template.Dockerfile -t python38_image_$debian_flavor --build-arg PYTHON_FULL_VERSION=$python38Version --build-arg PYTHON_VERSION=3.8 --build-arg PYTHON_MAJOR_VERSION=3 --build-arg DEBIAN_FLAVOR=$debian_flavor --build-arg BASE_IMAGE="docker.io/library/oryx_run_base_$debian_flavor" --build-arg SDK_STORAGE_BASE_URL_VALUE=$SDK_STORAGE_BASE_URL_VALUE .
                 rm -f ./python-$debian_flavor-$python38Version.tar.gz
             ;;
