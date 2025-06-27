@@ -18,6 +18,7 @@ variables:
   python313DebianFlavors: bullseye,bookworm
   dotnet80DebianFlavors: bullseye,bookworm
   dotnet90DebianFlavors: bookworm
+  dotnet100DebianFlavors: bookworm
   php81DebianFlavors: bullseye
   php82DebianFlavors: bullseye
   php83DebianFlavors: bullseye,bookworm

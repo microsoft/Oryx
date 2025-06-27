@@ -6,7 +6,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-trace
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-dump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-counters
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
-RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 10.*
+RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 9.*
 
 # Startup script generator
 FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.1-bookworm as startupCmdGen
