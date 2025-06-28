@@ -105,7 +105,7 @@ func (detector *flaskDetector) detect() bool {
 
 	// Warning: the official "flask run" tool only looks for "wsgi.py" or "app.py".
 	// If the user is trying to debug an app with a differene main module name, it will need a custom debug command.
-	filesToSearch := []string{"application.py", "app.py", "run.py", "index.py", "server.py", "wsgi.py"}
+	filesToSearch := []string{"application.py", "app.py", "run.py", "index.py", "server.py", "wsgi.py", "main.py"}
 
 	for _, file := range filesToSearch {
 		// TODO: app code might be under 'src'
