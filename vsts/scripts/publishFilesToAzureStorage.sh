@@ -48,7 +48,7 @@ uploadFiles() {
             --name $fileName \
             --file "$fileToUpload" \
             --container-name $platform \
-            --account-url $storageAccountName \
+            --account-name $storageAccountName \
             --metadata \
                 Buildnumber="$BUILD_BUILDNUMBER" \
                 Commit="$commit" \
@@ -62,7 +62,7 @@ uploadFiles() {
             --name $fileName \
             --file "$fileToUpload" \
             --container-name $platform \
-            --account-url $storageAccountName \
+            --account-name $storageAccountName \
             --metadata \
                 Buildnumber="$BUILD_BUILDNUMBER" \
                 Commit="$commit" \
@@ -72,6 +72,8 @@ uploadFiles() {
         fi
     done
 }
+
+storageAccountUrl="https://$storageAccountName.blob.core.windows.net"
 
 platforms=("nodejs" "python" "dotnet" "php" "php-composer" "ruby" "java" "maven" "golang")
 for platform in "${platforms[@]}"
