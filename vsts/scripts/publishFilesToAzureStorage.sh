@@ -57,7 +57,8 @@ uploadFiles() {
                 Branch="$BUILD_SOURCEBRANCHNAME" \
                 Checksum="$checksum" \
                 $fileMetadata \
-            --overwrite true
+            --overwrite true \
+            --verbose
         else
             echo "running az command without override"
             az storage blob upload \
@@ -71,7 +72,8 @@ uploadFiles() {
                 Commit="$commit" \
                 Branch="$BUILD_SOURCEBRANCHNAME" \
                 Checksum="$checksum" \
-                $fileMetadata
+                $fileMetadata \
+            --verbose
         fi
     done
 }
