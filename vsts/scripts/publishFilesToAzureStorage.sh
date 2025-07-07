@@ -57,6 +57,7 @@ uploadFiles() {
             --permissions "racw" \
             --expiry $expiryDate \
             --auth-mode login \
+            --as-user \
             -o tsv)
 
         if [ -z "$sasToken" ]; then
