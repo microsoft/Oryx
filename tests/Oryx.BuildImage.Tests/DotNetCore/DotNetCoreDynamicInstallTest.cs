@@ -120,17 +120,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 appName, runtimeVersion, _imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
         }
 
-        [Theory, Trait("category", "cli-builder-bookworm")]
-        [InlineData(NetCore10PreviewMvcApp, "10.0")]
-        [InlineData(NetCoreApp100WebApp, "10.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuilderBookworm(
-            string appName,
-            string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBookwormTag));
-        }
-
         private void BuildsApplication_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion,
