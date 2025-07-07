@@ -30,8 +30,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         protected const string NetCore7PreviewMvcApp = "NetCore7PreviewMvcApp";
         protected const string NetCore8PreviewMvcApp = "NetCore8PreviewMvcApp";
         protected const string NetCore9PreviewMvcApp = "NetCore9PreviewMvcApp";
+        protected const string NetCore10PreviewMvcApp = "NetCore10PreviewMvcApp";
         protected const string NetCoreApp70WebApp = "NetCore7WebApp";
         protected const string NetCoreApp90WebApp = "NetCore9WebApp";
+        protected const string NetCoreApp100WebApp = "NetCore10WebApp";
         protected const string DefaultWebApp = "DefaultWebApp";
 
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
@@ -116,6 +118,17 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             BuildsApplication_ByDynamicallyInstallingSDKs(
                 appName, runtimeVersion, _imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
+        }
+
+        [Theory, Trait("category", "cli-builder-bookworm")]
+        [InlineData(NetCore10PreviewMvcApp, "10.0")]
+        [InlineData(NetCoreApp100WebApp, "10.0")]
+        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuilderBookworm(
+            string appName,
+            string runtimeVersion)
+        {
+            BuildsApplication_ByDynamicallyInstallingSDKs(
+                appName, runtimeVersion, _imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBookwormTag));
         }
 
         private void BuildsApplication_ByDynamicallyInstallingSDKs(
@@ -617,6 +630,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     DotNetCoreRunTimeVersions.NetCoreApp80,
                     DotNetCoreSdkVersions.DotNet80SdkVersion,
                     NetCore8PreviewMvcApp,
+                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
+                data.Add(
+                    DotNetCoreRunTimeVersions.NetCoreApp100,
+                    DotNetCoreSdkVersions.DotNet100SdkVersion,
+                    NetCore10PreviewMvcApp,
                     imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
 
                 return data;
