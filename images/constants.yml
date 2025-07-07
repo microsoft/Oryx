@@ -55,14 +55,14 @@ variables:
   node18Version: 18.20.8
   node20Version: 20.19.3
   node22Version: 22.17.0
-  php81Version: 8.1.32
-  php81Version_SHA: c582ac682a280bbc69bc2186c21eb7e3313cc73099be61a6bc1d2cd337cbf383
-  php82Version: 8.2.28
-  php82Version_SHA: af8c9153153a7f489153b7a74f2f29a5ee36f5cb2c6c6929c98411a577e89c91
-  php83Version: 8.3.22
-  php83Version_SHA: 66c86889059bd27ccf460590ca48fcaf3261349cc9bdba2023ac6a265beabf36
-  php84Version: 8.4.8
-  php84Version_SHA: aa6a4d330b47eacd83e351658ba8c47747a1e4356456219cfb6d75e7838da091
+  php81Version: 8.1.33
+  php81Version_SHA: 9db83bf4590375562bc1a10b353cccbcf9fcfc56c58b7c8fb814e6865bb928d1
+  php82Version: 8.2.29
+  php82Version_SHA: 475f991afd2d5b901fb410be407d929bc00c46285d3f439a02c59e8b6fe3589c
+  php83Version: 8.3.23
+  php83Version_SHA: 08be64700f703bca6ff1284bf1fdaffa37ae1b9734b6559f8350248e8960a6db
+  php84Version: 8.4.10
+  php84Version_SHA: 14983a9ef8800e6bc2d920739fd386054402f7976ca9cd7f711509496f0d2632
   python39Version: 3.9.23
   python310Version: 3.10.18
   python311Version: 3.11.13
