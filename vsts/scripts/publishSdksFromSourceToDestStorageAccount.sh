@@ -37,12 +37,12 @@ function blobExistsInProd() {
 function copyBlob() {
     local platformName="$1"
     local blobName="$2"
-    local arg=" --from-to BlobBlob --trusted-microsoft-suffixes *.azurefd.net"
+    local arg=""
 
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName || isDefaultVersionFile $blobName; then
         echo
         echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
-        arg+=" --overwrite true"
+        arg=" --overwrite true"
     fi
 
     if blobExistsInProd $platformName $blobName && [ -z "$arg" ]; then
@@ -54,11 +54,11 @@ function copyBlob() {
         if [ $dryRun == "False" ]; then
             "$azCopyDir/azcopy" copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" $arg
+                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" $arg --from-to BlobBlob --trusted-microsoft-suffixes *.azurefd.net
         else
             "$azCopyDir/azcopy" copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --dry-run $arg
+                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --dry-run $arg --from-to BlobBlob --trusted-microsoft-suffixes *.azurefd.net
         fi
     fi
 }
