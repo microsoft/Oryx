@@ -37,12 +37,12 @@ function blobExistsInProd() {
 function copyBlob() {
     local platformName="$1"
     local blobName="$2"
-    local arg=""
+    local arg=" --from-to BlobBlob --trusted-microsoft-suffixes *.azurefd.net"
 
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName || isDefaultVersionFile $blobName; then
         echo
         echo "Blob '$blobName' exists in Prod storage container '$platformName'. Overwriting it..."
-        arg=" --overwrite true"
+        arg+=" --overwrite true"
     fi
 
     if blobExistsInProd $platformName $blobName && [ -z "$arg" ]; then
@@ -53,12 +53,12 @@ function copyBlob() {
         echo "Blob '$blobName' does not exist in Prod storage container '$platformName'. Copying it..."
         if [ $dryRun == "False" ]; then
             "$azCopyDir/azcopy" copy \
-                "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_SOURCE_STORAGE_SAS" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_DESTINATION_STORAGE_SAS" $arg
+                "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
+                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" $arg
         else
             "$azCopyDir/azcopy" copy \
-                "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_SOURCE_STORAGE_SAS" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName$ORYX_DESTINATION_STORAGE_SAS" --dry-run $arg
+                "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
+                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --dry-run $arg
         fi
     fi
 }
