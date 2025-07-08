@@ -9,8 +9,7 @@ set -e
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
 commit=$GIT_COMMIT
-storageAccountName="$1"
-storageAccountUrl="$2"
+storageAccountUrl="$1"
 
 uploadFiles() {
     local platform="$1"
