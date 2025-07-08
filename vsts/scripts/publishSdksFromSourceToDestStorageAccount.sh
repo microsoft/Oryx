@@ -22,13 +22,12 @@ function blobExistsInProd() {
     local containerName="$1"
     local blobName="$2"
     local statusCode
-
     statusCode=$(curl -s -o /dev/null -w "%{http_code}" -I "$DEST_SDK_STORAGE_BASE_URL/$containerName/$blobName")
-
+    
     if [ "$statusCode" -eq 200 ]; then
-        return 0  # Blob exists
+        return 0
     else
-        return 1  # Blob does not exist or other error
+        return 1
     fi
 }
 
