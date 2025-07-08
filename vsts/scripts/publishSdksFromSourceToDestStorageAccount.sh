@@ -23,7 +23,7 @@ function blobExistsInProd() {
 	local blobName="$2"
 	local exitCode=1
 	curl -I $DEST_SDK_STORAGE_BASE_URL/$containerName/$blobName 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
-	grep "HTTP/1.1 200 OK" /tmp/curlOut.txt &> /dev/null
+	grep "HTTP/2 200" /tmp/curlOut.txt &> /dev/null
 	exitCode=$?
 	rm -f /tmp/curlOut.txt
 	rm -f /tmp/curlError.txt
