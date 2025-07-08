@@ -37,7 +37,7 @@ function blobExistsInProd() {
 function copyBlob() {
     local platformName="$1"
     local blobName="$2"
-    local arg="--from-to BlobBlob --trusted-microsoft-suffixes *.azurefd.net"
+    local arg=" --from-to BlobBlob --trusted-microsoft-suffixes *.azurefd.net"
 
     if shouldOverwriteSdk || shouldOverwritePlatformSdk $platformName || isDefaultVersionFile $blobName; then
         echo
