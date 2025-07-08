@@ -9,7 +9,7 @@ set -e
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && cd .. && pwd )
 source $REPO_DIR/platforms/__common.sh
 commit=$GIT_COMMIT
-storageAccountName="$1"
+storageAccountUrl="$1"
 
 uploadFiles() {
     local platform="$1"
@@ -48,32 +48,35 @@ uploadFiles() {
             --name $fileName \
             --file "$fileToUpload" \
             --container-name $platform \
-            --account-name $storageAccountName \
+            --blob-endpoint $storageAccountUrl \
+            --auth-mode login \
             --metadata \
                 Buildnumber="$BUILD_BUILDNUMBER" \
                 Commit="$commit" \
                 Branch="$BUILD_SOURCEBRANCHNAME" \
                 Checksum="$checksum" \
                 $fileMetadata \
-            --overwrite true
+            --overwrite true \
+            --verbose
         else
             echo "running az command without override"
             az storage blob upload \
             --name $fileName \
             --file "$fileToUpload" \
             --container-name $platform \
-            --account-name $storageAccountName \
+            --blob-endpoint $storageAccountUrl \
+            --auth-mode login \
             --metadata \
                 Buildnumber="$BUILD_BUILDNUMBER" \
                 Commit="$commit" \
                 Branch="$BUILD_SOURCEBRANCHNAME" \
                 Checksum="$checksum" \
-                $fileMetadata
+                $fileMetadata \
+            --verbose
         fi
     done
 }
 
-storageAccountUrl="https://$storageAccountName.blob.core.windows.net"
 
 platforms=("nodejs" "python" "dotnet" "php" "php-composer" "ruby" "java" "maven" "golang")
 for platform in "${platforms[@]}"
