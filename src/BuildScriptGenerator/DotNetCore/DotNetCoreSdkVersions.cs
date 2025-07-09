@@ -18,6 +18,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         public const string DotNet70SdkVersion = "7.0.410";
         public const string DotNet80SdkVersion = "8.0.408";
         public const string DotNet90SdkVersion = "9.0.203";
-        public static readonly List<string> RuntimeVersions = new List<string> { "3.0-debian-buster", "3.1-debian-bullseye", "3.1-debian-buster", "5.0-debian-buster", "6.0-debian-bullseye", "6.0-debian-buster", "7.0-debian-bullseye", "7.0-debian-buster", "8.0-debian-bullseye", "8.0-debian-bookworm", "9.0-debian-bookworm", "dynamic-debian-buster" };
+        public const string DotNet100SdkVersion = "10.0.100-preview.5.25277.114";
+        public static readonly List<string> RuntimeVersions = new List<string> { "3.0-debian-buster", "3.1-debian-bullseye", "3.1-debian-buster", "5.0-debian-buster", "6.0-debian-bullseye", "6.0-debian-buster", "7.0-debian-bullseye", "7.0-debian-buster", "8.0-debian-bullseye", "8.0-debian-bookworm", "9.0-debian-bookworm", "10.0-debian-bookworm", "dynamic-debian-buster" };
     }
 }
