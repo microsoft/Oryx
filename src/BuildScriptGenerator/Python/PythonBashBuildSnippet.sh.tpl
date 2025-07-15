@@ -236,7 +236,7 @@ fi
     set +e
     if [ -e "$SOURCE_DIR/manage.py" ]
     then
-        if grep -iq "Django" "$SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
+        if grep -iq "Django" "$SOURCE_DIR/$REQUIREMENTS_TXT_FILE" || grep -iq "django" "$SOURCE_DIR/pyproject.toml"
         then
             echo
             echo Content in source directory is a Django app
@@ -255,8 +255,8 @@ fi
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             echo "Done in $ELAPSED_TIME sec(s)."
         else
-            output="Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE"
-            recommendation="Add Django to your requirements.txt file."
+            output="Missing Django module in $SOURCE_DIR/$REQUIREMENTS_TXT_FILE or $SOURCE_DIR/pyproject.toml"
+            recommendation="Add Django to your requirements.txt or pyproject.toml file."
             LogWarning "${output} | Exit code: 0 | ${recommendation} | ${moreInformation}"
         fi
     fi
