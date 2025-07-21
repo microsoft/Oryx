@@ -119,7 +119,7 @@ func (gen *NodeStartupScriptGenerator) GenerateEntrypointScript() string {
 		scriptBuilder.WriteString("export NODE_PATH=\"" + targetNodeModulesDir + "\":$NODE_PATH\n")
 		// NPM adds the current directory's node_modules/.bin folder to PATH before it runs, so commands in
 		// "npm start" can files there. Since we move node_modules, we have to add it to the path ourselves.
-		scriptBuilder.WriteString("export PATH=" + targetNodeModulesDir + "/.bin:$PATH\n")
+		scriptBuilder.WriteString("export PATH=" + "$PATH:" + targetNodeModulesDir + "/.bin\n")
 		// To avoid having older versions of packages available, we rename existing node_modules folder.
 		// We move the directory/link first to prevent node from start using it
 		scriptBuilder.WriteString("if [ -d node_modules ]; then\n")
