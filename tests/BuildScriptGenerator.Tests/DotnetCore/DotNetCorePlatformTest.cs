@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.DotNetCore;
 using Microsoft.Oryx.BuildScriptGenerator.Exceptions;
 using Microsoft.Oryx.Detector.DotNetCore;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
@@ -149,6 +150,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
             var versionProvider = new TestDotNetCoreVersionProvider(
                 supportedVersions,
                 defaultVersion);
+            var externalSdkProvider = new TestExternalSdkProvider();
             var commonOptions = new BuildScriptGeneratorOptions();
             var dotNetCoreScriptGeneratorOptions = new DotNetCoreScriptGeneratorOptions();
             dotNetCoreScriptGeneratorOptions.DefaultRuntimeVersion = envVarDefaultVersion;
@@ -163,6 +165,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 Options.Create(dotNetCoreScriptGeneratorOptions),
                 installer,
                 globalJsonSdkResolver,
+                externalSdkProvider,
                 TelemetryClientHelper.GetTelemetryClient());
         }
 
@@ -175,6 +178,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                 IOptions<DotNetCoreScriptGeneratorOptions> dotNetCoreScriptGeneratorOptions,
                 DotNetCorePlatformInstaller platformInstaller,
                 GlobalJsonSdkResolver globalJsonSdkResolver,
+                IExternalSdkProvider externalSdkProvider,
                 TelemetryClient telemetryClient)
                 : base(
                       versionProvider,
@@ -184,6 +188,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.DotNetCore
                       dotNetCoreScriptGeneratorOptions,
                       platformInstaller,
                       globalJsonSdkResolver,
+                      externalSdkProvider,
                       telemetryClient)
             {
             }

@@ -811,8 +811,8 @@ $.extend( $.validator, {
 				} else if ( error.parents( "label[for='" + elementID + "']" ).length === 0 ) {
 					// If the element is not a child of an associated label, then it's necessary
 					// to explicitly apply aria-describedby
-
-					errorID = error.attr( "id" ).replace( /(:|\.|\[|\]|\$)/g, "\\$1");
+					// CodeQL [SM02383] This is Legacy Code in Sample Application
+					errorID = error.attr("id").replace(/(?:\:|\.|\[|\]|\$)/g, "\\$&");
 					// Respect existing non-error aria-describedby
 					if ( !describedBy ) {
 						describedBy = errorID;

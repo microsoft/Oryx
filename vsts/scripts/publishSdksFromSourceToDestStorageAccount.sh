@@ -19,19 +19,16 @@ export AZCOPY_AUTO_LOGIN_TYPE=AZCLI
 export AZCOPY_TENANT_ID=$tenantId
 
 function blobExistsInProd() {
-	local containerName="$1"
-	local blobName="$2"
-	local exitCode=1
-	curl -I $DEST_SDK_STORAGE_BASE_URL/$containerName/$blobName 2> /tmp/curlError.txt 1> /tmp/curlOut.txt
-	grep "HTTP/1.1 200 OK" /tmp/curlOut.txt &> /dev/null
-	exitCode=$?
-	rm -f /tmp/curlOut.txt
-	rm -f /tmp/curlError.txt
-	if [ $exitCode -eq 0 ]; then
-		return 0
-	else
+    local containerName="$1"
+    local blobName="$2"
+    local statusCode
+    statusCode=$(curl -s -o /dev/null -w "%{http_code}" -I "$DEST_SDK_STORAGE_BASE_URL/$containerName/$blobName")
+    
+    if [ "$statusCode" -eq 200 ]; then
+        return 0
+    else
         return 1
-	fi
+    fi
 }
 
 function copyBlob() {
@@ -54,11 +51,11 @@ function copyBlob() {
         if [ $dryRun == "False" ]; then
             "$azCopyDir/azcopy" copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" $arg
+                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" $arg --from-to BlobBlob --trusted-microsoft-suffixes *.azurefd.net
         else
             "$azCopyDir/azcopy" copy \
                 "$SOURCE_SDK_STORAGE_BASE_URL/$platformName/$blobName" \
-                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --dry-run $arg
+                "$DEST_SDK_STORAGE_BASE_URL/$platformName/$blobName" --dry-run $arg --from-to BlobBlob --trusted-microsoft-suffixes *.azurefd.net
         fi
     fi
 }

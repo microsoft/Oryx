@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Oryx.BuildScriptGenerator.Common;
 using Microsoft.Oryx.BuildScriptGenerator.Php;
 using Microsoft.Oryx.Detector.Php;
+using Microsoft.Oryx.Tests.Common;
 using Xunit;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
@@ -128,6 +129,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
         {
             var phpVersionProvider = new TestPhpVersionProvider(
                 supportedPhpVersions: new[] { "7.2.15", PhpVersions.Php73Version });
+            var externalSdkProvider = new TestExternalSdkProvider();
 
             var phpComposerVersionProvider = new TestPhpComposerVersionProvider(
                 supportedPhpComposerVersions: new[] { "7.2.15", PhpVersions.ComposerDefaultVersion });
@@ -143,6 +145,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Tests.Php
                 detector: null,
                 phpInstaller: null,
                 phpComposerInstaller: null,
+                externalSdkProvider,
                 TelemetryClientHelper.GetTelemetryClient());
         }
 

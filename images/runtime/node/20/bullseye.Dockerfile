@@ -1,7 +1,7 @@
 ARG BASE_IMAGE
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.1-bullseye as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.8-bullseye as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -49,7 +49,7 @@ ARG PM2_VERSION
 ARG NODE_APP_INSIGHTS_SDK_VERSION
 
 RUN npm install -g npm@${NPM_VERSION}
-RUN PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} ${IMAGES_DIR}/runtime/node/installDependencies.sh 
+RUN NPM_VERSION=${NPM_VERSION} PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} ${IMAGES_DIR}/runtime/node/installDependencies.sh 
 RUN rm -rf /tmp/oryx
 
 # Bake Application Insights key from pipeline variable into final image

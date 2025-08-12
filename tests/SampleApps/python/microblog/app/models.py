@@ -1,6 +1,6 @@
 import base64
 from datetime import datetime, timedelta
-from hashlib import md5
+from hashlib import SHA256
 import json
 import os
 from time import time
@@ -124,7 +124,7 @@ class User(UserMixin, PaginatedAPIMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def avatar(self, size):
-        digest = md5(self.email.lower().encode('utf-8')).hexdigest()
+        digest = SHA256(self.email.lower().encode('utf-8')).hexdigest()
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(
             digest, size)
 

@@ -7,7 +7,6 @@ using System.IO;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Oryx.BuildScriptGenerator.Php;
 
 namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
 {
@@ -20,9 +19,9 @@ namespace Microsoft.Oryx.BuildScriptGenerator.DotNetCore
         {
         }
 
-        public virtual string GetInstallerScriptSnippet(string version)
+        public virtual string GetInstallerScriptSnippet(string version, bool skipSdkBinaryDownload = false)
         {
-            return this.GetInstallerScriptSnippet(DotNetCoreConstants.PlatformName, version);
+            return this.GetInstallerScriptSnippet(DotNetCoreConstants.PlatformName, version, skipSdkBinaryDownload: skipSdkBinaryDownload);
         }
 
         public virtual bool IsVersionAlreadyInstalled(string version)

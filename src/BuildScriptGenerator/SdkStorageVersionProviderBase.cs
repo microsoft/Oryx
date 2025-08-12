@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Xml.Linq;
 using System.Xml.XPath;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -49,10 +50,25 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         {
             this.logger.LogDebug("Getting list of available versions for platform {platformName}.", platformName);
             var httpClient = this.HttpClientFactory.CreateClient("general");
+            httpClient.Timeout = TimeSpan.FromSeconds(10);
             var sdkStorageBaseUrl = this.GetPlatformBinariesStorageBaseUrl();
-            var xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient);
-            var supportedVersions = new List<string>();
+            XDocument xdoc = null;
 
+            try
+            {
+              xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBaseUrl, platformName, httpClient);
+            }
+            catch (AggregateException ex)
+            {
+                this.logger.LogWarning("Failed to get blobs from primary storage URL. Trying backup storage URL. Exception: {ex}", ex);
+                var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
+                if (sdkStorageBackupBaseUrl != null)
+                {
+                    xdoc = ListBlobsHelper.GetAllBlobs(sdkStorageBackupBaseUrl, platformName, httpClient);
+                }
+            }
+
+            var supportedVersions = new List<string>();
             var isStretch = string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase);
 
             var sdkVersionMetadataName = isStretch
@@ -79,13 +95,28 @@ namespace Microsoft.Oryx.BuildScriptGenerator
                 }
             }
 
-            var defaultVersion = this.GetDefaultVersion(platformName, sdkStorageBaseUrl);
+            string defaultVersion = null;
+            try
+            {
+                defaultVersion = this.GetDefaultVersion(platformName, sdkStorageBaseUrl);
+            }
+            catch (AggregateException ex)
+            {
+                this.logger.LogWarning("Failed to get the default version fron primary storage URL, Retrying with backup storage URL . Exception: {ex}", ex);
+                var sdkStorageBackupBaseUrl = this.GetPlatformBinariesBackupStorageBaseUrl();
+                if (sdkStorageBackupBaseUrl != null)
+                {
+                    defaultVersion = this.GetDefaultVersion(platformName, sdkStorageBackupBaseUrl);
+                }
+            }
+
             return PlatformVersionInfo.CreateAvailableOnWebVersionInfo(supportedVersions, defaultVersion);
         }
 
         protected string GetDefaultVersion(string platformName, string sdkStorageBaseUrl)
         {
             var httpClient = this.HttpClientFactory.CreateClient("general");
+            httpClient.Timeout = TimeSpan.FromSeconds(10);
 
             var defaultFile = string.IsNullOrEmpty(this.commonOptions.DebianFlavor)
                     || string.Equals(this.commonOptions.DebianFlavor, OsTypes.DebianStretch, StringComparison.OrdinalIgnoreCase)
@@ -157,6 +188,19 @@ namespace Microsoft.Oryx.BuildScriptGenerator
             this.logger.LogDebug("Using the Sdk storage url {sdkStorageUrl}.", platformBinariesStorageBaseUrl);
             platformBinariesStorageBaseUrl = platformBinariesStorageBaseUrl.TrimEnd('/');
             return platformBinariesStorageBaseUrl;
+        }
+
+        protected string GetPlatformBinariesBackupStorageBaseUrl()
+        {
+            var platformBinariesBackupStorageBaseUrl = this.commonOptions.OryxSdkStorageBackupBaseUrl;
+            if (string.IsNullOrEmpty(platformBinariesBackupStorageBaseUrl))
+            {
+                this.logger.LogWarning($"Environment variable '{SdkStorageConstants.SdkStorageBackupBaseUrlKeyName}' for Backup SDK storage base URL is not set.");
+                return null;
+            }
+
+            platformBinariesBackupStorageBaseUrl = platformBinariesBackupStorageBaseUrl.TrimEnd('/');
+            return platformBinariesBackupStorageBaseUrl;
         }
     }
 }

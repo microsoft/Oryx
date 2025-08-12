@@ -27,20 +27,10 @@ buildPhp() {
 	local sdkVersionMetadataName=""
 
 	mkdir -p "$targetDir"
-	
-	if [ "$debianFlavor" == "stretch" ]; then
-		# Use default php sdk file name
-		phpSdkFileName=php-$version.tar.gz
-		metadataFile="$targetDir/php-$version-metadata.txt"
-		# Continue adding the version metadata with the name of Version
-		# which is what our legacy CLI will use
-		sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
-		cp "$phpPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.txt"
-	else
-		phpSdkFileName=php-$debianFlavor-$version.tar.gz
-		metadataFile="$targetDir/php-$debianFlavor-$version-metadata.txt"
-		sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
-	fi
+
+	phpSdkFileName=php-$debianFlavor-$version.tar.gz
+	metadataFile="$targetDir/php-$debianFlavor-$version-metadata.txt"
+	sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 
 	cp "$phpPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
 
@@ -78,26 +68,16 @@ buildPhpComposer() {
 
 	cp "$phpPlatformDir/composer/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
 
-	if [ "$debianFlavor" == "stretch" ]; then
-		# Use default php sdk file name
-		composerSdkFileName=php-composer-$version.tar.gz
-		metadataFile="$targetDir/php-composer-$version-metadata.txt"
-		# Continue adding the version metadata with the name of Version
-		# which is what our legacy CLI will use
-		sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
-		cp "$phpPlatformDir/composer/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.txt"
-	else
-		composerSdkFileName=php-composer-$debianFlavor-$version.tar.gz
-		metadataFile="$targetDir/php-composer-$debianFlavor-$version-metadata.txt"
-		sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
-	fi
+	composerSdkFileName=php-composer-$debianFlavor-$version.tar.gz
+	metadataFile="$targetDir/php-composer-$debianFlavor-$version-metadata.txt"
+	sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 
 	if shouldBuildSdk php-composer $composerSdkFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk php-composer; then
 
 		echo "Php composer version '$version' not present in blob storage. Building it in a docker image..."
 		echo
 
-		PHP_VERSION=$PHP81_VERSION GPG_KEYS=$PHP81_KEYS PHP_SHA256=$PHP81_TAR_SHA256 /php/build.sh
+		PHP_VERSION=$PHP_VERSION GPG_KEYS=$GPG_KEYS PHP_SHA256=$PHP_SHA256 /php/build.sh
 
 		# Installing PHP composer requires having PHP installed in an first image first, so we try installing
 		# a version here.
@@ -122,12 +102,9 @@ buildPhpComposer() {
 		cd "$composerDir"
 		echo 'debian flavor is: $debianFlavor' 
 		composerSdkFile="php-composer-$debianFlavor-$version.tar.gz"
-		if [ "$debianFlavor" = "stretch" ]; then
-			echo 'somehow debian flavor is: $debianFlavor'
-			composerSdkFile="php-composer-$version.tar.gz" 
-		fi;
 		tar -zcf "$compressedSdkDir/$composerSdkFile" .
-
+        # Removing php sdk that is generated as part of composer build
+		rm -r /tmp/compressedSdk/php/php-$debianFlavor-$PHP_VERSION.tar.gz
 		rm -r ./*
 		rm -r /opt/php/*
 

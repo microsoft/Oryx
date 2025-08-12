@@ -33,6 +33,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private readonly IPhpPlatformDetector detector;
         private readonly PhpPlatformInstaller phpInstaller;
         private readonly PhpComposerInstaller phpComposerInstaller;
+        private readonly IExternalSdkProvider externalSdkProvider;
         private readonly TelemetryClient telemetryClient;
 
         /// <summary>
@@ -55,6 +56,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             IPhpPlatformDetector detector,
             PhpPlatformInstaller phpInstaller,
             PhpComposerInstaller phpComposerInstaller,
+            IExternalSdkProvider externalSdkProvider,
             TelemetryClient telemetryClient)
         {
             this.phpScriptGeneratorOptions = phpScriptGeneratorOptions.Value;
@@ -65,6 +67,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
             this.detector = detector;
             this.phpInstaller = phpInstaller;
             this.phpComposerInstaller = phpComposerInstaller;
+            this.externalSdkProvider = externalSdkProvider;
             this.telemetryClient = telemetryClient;
         }
 
@@ -290,20 +293,46 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
         private void InstallPhp(string phpVersion, StringBuilder scriptBuilder)
         {
+            string script = null;
             if (this.phpInstaller.IsVersionAlreadyInstalled(phpVersion))
             {
-                this.logger.LogDebug(
-                   "PHP version {version} is already installed. So skipping installing it again.",
-                   phpVersion);
+                this.logger.LogDebug("PHP version {version} is already installed. So skipping installing it again.", phpVersion);
+                return;
             }
             else
             {
-                this.logger.LogDebug(
-                    "PHP version {version} is not installed. " +
-                    "So generating an installation script snippet for it.",
-                    phpVersion);
+                if (this.commonOptions.EnableExternalSdkProvider)
+                {
+                    this.logger.LogDebug("Php version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.", phpVersion);
 
-                var script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
+                    try
+                    {
+                        var blobName = BlobNameHelper.GetBlobNameForVersion("php", phpVersion, this.commonOptions.DebianFlavor);
+                        var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync(this.Name, blobName).Result;
+                        if (isExternalFetchSuccess)
+                        {
+                            this.logger.LogDebug("Php version {version} is fetched successfully using external SDK provider. So generating an installation script snippet which skips platform binary download.", phpVersion);
+
+                            script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion, skipSdkBinaryDownload: true);
+                        }
+                        else
+                        {
+                            this.logger.LogDebug("Php version {version} is not fetched successfully using external SDK provider. So generating an installation script snippet for it.", phpVersion);
+                            script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        this.logger.LogError(ex, "Error while fetching php version {version} using external SDK provider.", phpVersion);
+                        script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
+                    }
+                }
+                else
+                {
+                    this.logger.LogDebug("Php version {version} is not installed. So generating an installation script snippet for it.", phpVersion);
+                    script = this.phpInstaller.GetInstallerScriptSnippet(phpVersion);
+                }
+
                 scriptBuilder.AppendLine(script);
             }
         }
@@ -311,6 +340,7 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
         private void InstallPhpComposer(string phpComposerVersion, StringBuilder scriptBuilder)
         {
             // Install PHP Composer
+            string script = null;
             if (string.IsNullOrEmpty(phpComposerVersion))
             {
                 phpComposerVersion = PhpVersions.ComposerDefaultVersion;
@@ -318,20 +348,45 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Php
 
             if (this.phpComposerInstaller.IsVersionAlreadyInstalled(phpComposerVersion))
             {
-                this.logger.LogDebug(
-                   "PHP Composer version {version} is already installed. So skipping installing it again.",
-                   phpComposerVersion);
+                this.logger.LogDebug("PHP Composer version {version} is already installed. So skipping installing it again.", phpComposerVersion);
+                return;
             }
             else
             {
-                this.logger.LogDebug(
-                    "PHP Composer version {version} is not installed. " +
-                    "So generating an installation script snippet for it.",
-                    phpComposerVersion);
+                if (this.commonOptions.EnableExternalSdkProvider)
+                {
+                    this.logger.LogDebug("Php Composer version {version} is not installed. External SDK provider is enabled so trying to fetch SDK using it.", phpComposerVersion);
 
-                var script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
-                scriptBuilder.AppendLine(script);
+                    try
+                    {
+                        var blobName = BlobNameHelper.GetBlobNameForVersion("php-composer", phpComposerVersion, this.commonOptions.DebianFlavor);
+                        var isExternalFetchSuccess = this.externalSdkProvider.RequestBlobAsync("php-composer", blobName).Result;
+                        if (isExternalFetchSuccess)
+                        {
+                            this.logger.LogDebug("Php composer version {version} is fetched successfully using external SDK provider. So generating an installation script snippet which skips platform binary download.", phpComposerVersion);
+
+                            script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion, skipSdkBinaryDownload: true);
+                        }
+                        else
+                        {
+                            this.logger.LogDebug("Php comose version {version} is not fetched successfully using external SDK provider. So generating an installation script snippet for it.", phpComposerVersion);
+                            script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        this.logger.LogError(ex, "Error while fetching php composer version {version} using external SDK provider.", phpComposerVersion);
+                        script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
+                    }
+                }
+                else
+                {
+                    this.logger.LogDebug("Php composer version {version} is not installed. So generating an installation script snippet for it.", phpComposerVersion);
+                    script = this.phpComposerInstaller.GetInstallerScriptSnippet(phpComposerVersion);
+                }
             }
+
+            scriptBuilder.AppendLine(script);
         }
 
         private void ResolveVersionsUsingHierarchicalRules(PhpPlatformDetectorResult detectorResult)

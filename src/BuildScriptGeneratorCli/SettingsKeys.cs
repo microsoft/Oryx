@@ -17,6 +17,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string CreatePackage = "CREATE_PACKAGE";
         public const string CompressDestinationDir = "COMPRESS_DESTINATION_DIR";
         public const string EnableDynamicInstall = "ENABLE_DYNAMIC_INSTALL";
+        public const string EnableExternalSdkProvider = "ORYX_ENABLE_EXTERNAL_SDK_PROVIDER";
         public const string DisableCheckers = "DISABLE_CHECKERS";
         public const string DisableDotNetCoreBuild = "DISABLE_DOTNETCORE_BUILD";
         public const string DisableGolangBuild = "DISABLE_GOLANG_BUILD";
@@ -64,6 +65,7 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string YarnTimeOutConfig = "YARN_TIMEOUT_CONFIG";
         public const string PythonVirtualEnvironmentName = "VIRTUALENV_NAME";
         public const string OryxSdkStorageBaseUrl = "ORYX_SDK_STORAGE_BASE_URL";
+        public const string OryxSdkStorageBackupBaseUrl = "ORYX_SDK_STORAGE_BACKUP_BASE_URL";
         public const string AppType = "ORYX_APP_TYPE";
         public const string BuildCommandsFileName = "BUILDCOMMANDS_FILE";
         public const string DynamicInstallRootDir = "DYNAMIC_INSTALL_ROOT_DIR";

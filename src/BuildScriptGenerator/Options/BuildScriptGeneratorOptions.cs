@@ -41,6 +41,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
 
         public bool EnableDynamicInstall { get; set; }
 
+        public bool EnableExternalSdkProvider { get; set; }
+
         public string DynamicInstallRootDir { get; set; }
 
         public bool EnableCheckers { get; set; }
@@ -64,6 +66,8 @@ namespace Microsoft.Oryx.BuildScriptGenerator
         public bool EnableMultiPlatformBuild { get; set; }
 
         public string OryxSdkStorageBaseUrl { get; set; }
+
+        public string OryxSdkStorageBackupBaseUrl { get; set; }
 
         public bool EnableTelemetry { get; set; }
 

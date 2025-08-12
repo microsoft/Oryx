@@ -20,7 +20,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("6.0")]
         [InlineData("8.0")]
         public void DotNetCoreBullseyeRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
@@ -61,6 +60,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Trait("category", "runtime-bookworm")]
         [InlineData("8.0")]
         [InlineData("9.0")]
+        [InlineData("10.0")]
         public void DotNetCoreBookwormRuntimeImage_Contains_VersionAndCommit_Information(string version)
         {
             // we cant always rely on gitcommitid as env variable in case build context is not correctly passed
@@ -98,7 +98,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
 
         [Theory]
         [Trait("category", "runtime-bullseye")]
-        [InlineData("6.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp60)]
         [InlineData("8.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp80)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_Bullseye_HasExecptedDotNetVersion(string version, string expectedOutput)
@@ -126,6 +125,7 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         [Trait("category", "runtime-bookworm")]
         [InlineData("8.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp80)]
         [InlineData("9.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp90)]
+        [InlineData("10.0", "Version: " + DotNetCoreRunTimeVersions.NetCoreApp100)]
         [Trait(TestConstants.Category, TestConstants.Release)]
         public void RuntimeImage_Bookworm_HasExecptedDotNetVersion(string version, string expectedOutput)
         {
