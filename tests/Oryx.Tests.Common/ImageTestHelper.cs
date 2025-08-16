@@ -229,14 +229,6 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetVsoBuildImage(_vsoBullseye);
             }
-            else if (string.Equals(tag, _gitHubActionsStretch))
-            {
-                return GetGitHubActionsBuildImage();
-            }
-            else if (string.Equals(tag, _gitHubActionsBuster))
-            {
-                return GetGitHubActionsBuildImage(_gitHubActionsBuster);
-            }
             else if (string.Equals(tag, _gitHubActionsBullseye))
             {
                 return GetGitHubActionsBuildImage(_gitHubActionsBullseye);

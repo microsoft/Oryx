@@ -72,54 +72,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 appName, runtimeVersion, _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
         }
 
-
-        [Theory, Trait("category", "cli-stretch")]
-        [InlineData(NetCoreApp21WebApp, "2.1")]
-        [InlineData(NetCoreApp31MvcApp, "3.1")]
-        [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_Cli(
-            string appName,
-            string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage());
-        }
-
-        [Theory, Trait("category", "cli-buster")]
-        [InlineData(NetCoreApp21WebApp, "2.1")]
-        [InlineData(NetCoreApp31MvcApp, "3.1")]
-        [InlineData(NetCoreApp50MvcApp, "5.0")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuster(
-            string appName,
-            string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-        }
-
-        [Theory, Trait("category", "cli-bullseye")]
-        [InlineData(NetCore7PreviewMvcApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBullseye(
-           string appName,
-           string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-        }
-
-        [Theory, Trait("category", "cli-builder-bullseye")]
-        [InlineData(NetCore6PreviewWebApp, "6.0")]
-        [InlineData(NetCoreApp70WebApp, "7.0")]
-        public void BuildsApplication_ByDynamicallyInstallingSDKs_CliBuilderBullseye(
-            string appName,
-            string runtimeVersion)
-        {
-            BuildsApplication_ByDynamicallyInstallingSDKs(
-                appName, runtimeVersion, _imageHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
-        }
-
         private void BuildsApplication_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion,
@@ -507,7 +459,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData(NetCoreApp21WebApp, "2.1", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
         public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
             string appName,
@@ -543,7 +495,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -633,8 +585,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(SupportedVersionAndImageNameData))]
         public void BuildsApplication_AfterInstallingSupportedSdk(
-            string runtimeVersion, 
-            string sdkVersion, 
+            string runtimeVersion,
+            string sdkVersion,
             string appName,
             string imageName)
         {
@@ -733,45 +685,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "jamstack")]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void ParsesImageTypeFromFile_Jamstack(bool removeImageTypeFile)
-        {
-            
-            var imageHelper = new ImageTestHelper();
-            TestImageTypeResolution(
-                imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye),
-                removeImageTypeFile,
-                "jamstack");
-        }
-
-        [Theory, Trait("category", "cli")]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void ParsesImageTypeFromFile_Cli(bool removeImageTypeFile)
-        {
-            
-            var imageHelper = new ImageTestHelper();
-            TestImageTypeResolution(
-                imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository),
-                removeImageTypeFile,
-                "cli");
-        }
-
         [Theory, Trait("category", "githubactions")]
         [InlineData(true)]
         [InlineData(false)]
         public void ParsesImageTypeFromFile_GithubActions(bool removeImageTypeFile)
         {
-            
+
             var imageHelper = new ImageTestHelper();
             TestImageTypeResolution(
                 imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 removeImageTypeFile,
                 "githubactions");
         }
-
 
         private void TestImageTypeResolution(
             string imageName,
@@ -809,13 +734,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    
-                    if (removeImageTypeFile) {
+
+                    if (removeImageTypeFile)
+                    {
                         Assert.Contains(MissingImageTypeWarning, result.StdOut);
                         Assert.DoesNotContain(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
                         Assert.DoesNotMatch(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);
-                    } 
-                    else 
+                    }
+                    else
                     {
                         Assert.Contains(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
                         Assert.Matches(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);
