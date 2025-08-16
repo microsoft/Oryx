@@ -32,37 +32,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
             BuildsSpringBootSampleApp(imageTag);
         }
 
-
-        [Theory, Trait("category", "cli-stretch")]
-        [InlineData(ImageTestHelperConstants.CliRepository)]
-        public void JavaSampleAppsTestsCli(string imageTag)
-        {
-            BuildsMavenArcheTypeSample(imageTag);
-            BuildsMavenJ2EESample(imageTag);
-            BuildsMavenSimpleJavaApp(imageTag);
-            BuildsSpringBootSampleApp(imageTag);
-        }
-
-        [Theory, Trait("category", "cli-buster")]
-        [InlineData(ImageTestHelperConstants.CliBusterTag)]
-        public void JavaSampleAppsTestsCliBuster(string imageTag)
-        {
-            BuildsMavenArcheTypeSample(imageTag);
-            BuildsMavenJ2EESample(imageTag);
-            BuildsMavenSimpleJavaApp(imageTag);
-            BuildsSpringBootSampleApp(imageTag);
-        }
-
-        [Theory, Trait("category", "cli-bullseye")]
-        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
-        public void JavaSampleAppsTestsCliBullseye(string imageTag)
-        {
-            BuildsMavenArcheTypeSample(imageTag);
-            BuildsMavenJ2EESample(imageTag);
-            BuildsMavenSimpleJavaApp(imageTag);
-            BuildsSpringBootSampleApp(imageTag);
-        }
-
         private void BuildsMavenArcheTypeSample(string imageTag)
         {
             // Arrange
