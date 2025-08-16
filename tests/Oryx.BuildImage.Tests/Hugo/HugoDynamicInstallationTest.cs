@@ -22,46 +22,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Fact, Trait("category", "jamstack")]
-        public void PipelineTestInvocationJamstack()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-        }
-
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubactions()
         {
             var imageTestHelper = new ImageTestHelper();
             InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetGitHubActionsBuildImage());
-        }
-
-        [Fact, Trait("category", "cli-stretch")]
-        public void PipelineTestInvocationCli()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliRepository));
-        }
-
-        [Fact, Trait("category", "cli-buster")]
-        public void PipelineTestInvocationCliBuster()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-        }
-
-        [Fact, Trait("category", "cli-bullseye")]
-        public void PipelineTestInvocationCliBullseye()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-        }
-
-        [Fact, Trait("category", "cli-builder-bullseye")]
-        public void PipelineTestInvocationCliBuilderBullseye()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
         }
 
         private void InstallsHugoVersionDynamically_UsingEnvironmentVariable_AndBuildsApp(string imageName)
@@ -147,7 +112,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange
@@ -170,7 +135,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -189,7 +154,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_ByDynamicallyInstallingIntoCustomDynamicInstallationDir()
         {
             // Arrange
@@ -209,7 +174,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -230,8 +195,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             return $"rm -rf {DefaultInstallationRootDir}; mkdir -p {DefaultInstallationRootDir}";
         }
 
-        [Fact, Trait("category", "jamstack")]
-        public void JamStackImageHasGoLangInstalled()
+        [Fact, Trait("category", "githubactions")]
+        public void GithubActionsImageHasGoLangInstalled()
         {
             // Arrange
             var expectedText = GoVersions.GoVersion;
@@ -245,7 +210,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var imageName = _imageHelper.GetAzureFunctionsJamStackBuildImage();
+            var imageName = _imageHelper.GetGithubActionsBuildImage();
             var result = _dockerCli.Run(new DockerRunArguments
             {
                 ImageId = imageName,
