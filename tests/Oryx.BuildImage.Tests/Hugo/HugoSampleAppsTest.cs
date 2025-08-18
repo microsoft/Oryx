@@ -20,7 +20,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationGithubactions()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuilds(imageTestHelper.GetGithubActionsBuildImage());
+            GeneratesScript_AndBuilds(imageTestHelper.GetGitHubActionsBuildImage());
         }
 
         private void GeneratesScript_AndBuilds(string buildImageName)

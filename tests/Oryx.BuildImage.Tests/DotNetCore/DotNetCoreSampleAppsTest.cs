@@ -33,49 +33,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
             GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsBullseye);
             GDIPlusLibrary_IsPresentInTheImage(ImageTestHelperConstants.GitHubActionsBookworm);
-            Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(_imageHelper.GetGitHubActionsBuildImage());
         }
 
         private readonly string SdkVersionMessageFormat = "Using .NET Core SDK Version: {0}";
 
         [Fact, Trait("category", "githubactions")]
-        public void Builds_NetCore11App_UsingNetCore11_DotNetSdkVersion()
-        {
-            // Arrange
-            var appName = "NetCoreApp11WebApp";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/NetCoreApp11WebApp-output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir}")
-                .AddFileExistsCheck($"{appOutputDir}/{appName}.dll")
-                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
-                .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "1.1.14"), result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory, Trait("category", "githubactions")]
-        [InlineData(_imageHelper.GetGitHubActionsBuildImage())]
-        public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion(string imageName)
+        public void Builds_NetCore31App_UsingNetCore31_DotNetSdkVersion()
         {
             // Arrange
             var appName = "NetCoreApp31.MvcApp";
@@ -92,7 +55,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = imageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -188,7 +151,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
         {
             // Arrange
-            var appName = "NetCoreApp21WebApp";
+            var appName = "NetCoreApp8WebApp";
             var volume = CreateSampleAppVolume(appName);
             using (var sw = File.AppendText(
                 Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
@@ -223,7 +186,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
                 $"{appDir} --platform {DotNetCoreConstants.PlatformName} " +
-                $"--platform-version 2.1.22")
+                $"--platform-version 8.0.412")
                 .ToString();
 
             // Act
@@ -241,7 +204,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    var dotnetExecutable = $"{Constants.TemporaryInstallationDirectoryRoot}/dotnet/2.1.810/dotnet";
+                    var dotnetExecutable = $"{Constants.TemporaryInstallationDirectoryRoot}/dotnet/8.0.412/dotnet";
                     Assert.Matches($"Pre-build script: {dotnetExecutable}", result.StdOut);
                     Assert.Matches($"Post-build script: {dotnetExecutable}", result.StdOut);
                 },
@@ -255,7 +218,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // source and destination directory environment variables.
 
             // Arrange
-            var appName = "NetCoreApp21WebApp";
+            var appName = "NetCoreApp8WebApp";
             var volume = CreateSampleAppVolume(appName);
             using (var sw = File.AppendText(
                 Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
@@ -290,7 +253,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var tempOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {tempOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1")
+                .AddBuildCommand($"{appDir} -o {tempOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 8.0")
                 .AddFileExistsCheck($"{tempOutputDir}/pre-{fileName}")
                 .AddFileExistsCheck($"{tempOutputDir}/post-{fileName}")
                 .ToString();
@@ -318,7 +281,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_Executes_InlinePreAndPostBuildCommands()
         {
             // Arrange
-            var appName = "NetCoreApp21WebApp";
+            var appName = "NetCoreApp8WebApp";
             var volume = CreateSampleAppVolume(appName);
             using (var sw = File.AppendText(
                 Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
@@ -331,7 +294,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var tempOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {tempOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 2.1")
+                .AddBuildCommand($"{appDir} -o {tempOutputDir} --platform {DotNetCoreConstants.PlatformName} --platform-version 8.0")
                 .ToString();
 
             // Act
@@ -474,7 +437,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/AzureFunctionsHttpTriggerApp-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 2.1.22")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 8.0.412")
                 .AddFileExistsCheck($"{appOutputDir}/bin/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
@@ -498,7 +461,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "2.1.810"), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "8.0.412"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -668,7 +631,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [InlineData(DotNetCoreSdkVersions.DotNetCore80SdkVersion)]
+        [InlineData(DotNetCoreSdkVersions.DotNet80SdkVersion)]
         public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
         {
             // Arrange

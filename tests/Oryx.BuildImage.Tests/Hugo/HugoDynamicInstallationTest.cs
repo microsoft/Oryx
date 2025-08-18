@@ -210,10 +210,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .ToString();
 
             // Act
-            var imageName = _imageHelper.GetGithubActionsBuildImage();
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = imageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

@@ -29,6 +29,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         protected const string NetCore6PreviewWebApp = "NetCore6PreviewWebApp";
         protected const string NetCore7PreviewMvcApp = "NetCore7PreviewMvcApp";
         protected const string NetCore8PreviewMvcApp = "NetCore8PreviewMvcApp";
+        protected const string NetCore8WebApp = "NetCore8WebApp";
         protected const string NetCore9PreviewMvcApp = "NetCore9PreviewMvcApp";
         protected const string NetCore10PreviewMvcApp = "NetCore10PreviewMvcApp";
         protected const string NetCoreApp70WebApp = "NetCore7WebApp";
@@ -49,9 +50,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [InlineData(NetCoreApp21WebApp, "2.1")]
         [InlineData(NetCoreApp31MvcApp, "3.1")]
-        [InlineData(NetCoreApp50MvcApp, "5.0")]
         [InlineData(NetCore7PreviewMvcApp, "7.0")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_GithubActions(
             string appName,
@@ -177,10 +176,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresExplicitRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
-            // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
+            // Here we are testing building a 8.0 runtime version app with a 9.0.302 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.404";
+            var expectedSdkVersion = "9.0.302";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -189,8 +188,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 }
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
-            var appName = NetCoreApp21WebApp;
-            var runtimeVersion = "2.1";
+            var appName = NetCore8WebApp;
+            var runtimeVersion = "8.0";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -240,10 +239,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_IgnoresRuntimeVersionBasedSdkVersion_AndUsesSdkVersionSpecifiedInGlobalJson()
         {
-            // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
+            // Here we are testing building a 8.0 runtime version app with a 9.0.302 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.404";
+            var expectedSdkVersion = "9.0.302";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -252,8 +251,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 }
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
-            var appName = NetCoreApp21WebApp;
-            var runtimeVersion = "2.1";
+            var appName = NetCore8WebApp;
+            var runtimeVersion = "8.0";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -398,10 +397,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_ByDynamicallyInstallingSDKs_IntoCustomDynamicInstallationDir()
         {
-            // Here we are testing building a 2.1 runtime version app with a 3.1 sdk version
+            // Here we are testing building a 8.0 runtime version app with a 9.0.302 sdk version
 
             // Arrange
-            var expectedSdkVersion = "3.1.404";
+            var expectedSdkVersion = "9.0.302";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -410,8 +409,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 }
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
-            var appName = NetCoreApp21WebApp;
-            var runtimeVersion = "2.1";
+            var appName = NetCore8WebApp;
+            var runtimeVersion = "8.0";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
@@ -460,7 +459,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [InlineData(NetCoreApp21WebApp, "2.1", DotNetCoreSdkVersions.DotNetCore21SdkVersion)]
+        [InlineData(NetCore8WebApp, "6.0", DotNetCoreSdkVersions.DotNet60SdkVersion)]
         public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion,

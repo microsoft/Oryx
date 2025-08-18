@@ -22,107 +22,42 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        public static TheoryData<string, string> ImageNameData
+        public static TheoryData<string, string> ImageNameDataGithubactionsBookworm
         {
             get
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("17.1.0", imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add(FinalStretchVersions.FinalStretchNode14Version, imageTestHelper.GetGitHubActionsBuildImage());
-                data.Add(FinalStretchVersions.FinalStretchNode16Version, imageTestHelper.GetGitHubActionsBuildImage());
+                data.Add("20.19.3", imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
+                data.Add("22.17.0", imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
                 return data;
             }
         }
 
-        public static TheoryData<string, string> ImageNameDataCli
+        public static TheoryData<string, string> ImageNameDataGithubactionsBullseye
         {
             get
             {
                 var data = new TheoryData<string, string>();
                 var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.12", imageTestHelper.GetCliImage());
-                data.Add(FinalStretchVersions.FinalStretchNode14Version, imageTestHelper.GetCliImage());
-                data.Add(FinalStretchVersions.FinalStretchNode16Version, imageTestHelper.GetCliImage());
+                data.Add("16.20.2", imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
+                data.Add("18.20.8", imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
                 return data;
             }
         }
-
-        public static TheoryData<string, string> ImageNameDataCliBuster
-        {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag));
-                return data;
-            }
-        }
-
-        public static TheoryData<string, string> ImageNameDataCliBullseye
-        {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-                data.Add("14.19.1", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-                data.Add("16.14.2", imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag));
-                return data;
-            }
-        }
-
-        public static TheoryData<string, string> ImageNameDataCliBuilderBullseye
-        {
-            get
-            {
-                var data = new TheoryData<string, string>();
-                var imageTestHelper = new ImageTestHelper();
-                data.Add("12.22.11", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
-                data.Add("14.19.1", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
-                data.Add("16.14.2", imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag));
-                return data;
-            }
-        }
-
 
         [Theory, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-stretch")]
-        [MemberData(nameof(ImageNameData))]
+        [Trait("build-image", "github-actions-debian-bookworm")]
+        [MemberData(nameof(ImageNameDataGithubactionsBookworm))]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationGithubActions(string version, string buildImageName)
         {
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }
 
-        [Theory, Trait("category", "cli-stretch")]
-        [Trait("build-image", "cli-debian-stretch")]
-        [MemberData(nameof(ImageNameDataCli))]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCli(string version, string buildImageName)
-        {
-            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
-        }
-
-        [Theory, Trait("category", "cli-buster")]
-        [Trait("build-image", "cli-debian-buster")]
-        [MemberData(nameof(ImageNameDataCliBuster))]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBuster(string version, string buildImageName)
-        {
-            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
-        }
-
-        [Theory, Trait("category", "cli-bullseye")]
-        [Trait("build-image", "cli-debian-bullseye")]
-        [MemberData(nameof(ImageNameDataCliBullseye))]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBullseye(string version, string buildImageName)
-        {
-            GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
-        }
-
-        [Theory, Trait("category", "cli-builder-bullseye")]
-        [MemberData(nameof(ImageNameDataCliBuilderBullseye))]
-        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationCliBuilderBullseye(string version, string buildImageName)
+        [Theory, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
+        [MemberData(nameof(ImageNameDataGithubactionsBullseye))]
+        public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallationGithubActionsBullseye(string version, string buildImageName)
         {
             GeneratesScript_AndBuildNodeAppsWithDynamicInstallation(version, buildImageName);
         }
@@ -161,7 +96,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-stretch")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         [InlineData("14.19.1", "14.19.1")]
         [InlineData("16", "16.20.2")]
         public void GeneratesScript_AndBuildNodeAppsWithDynamicInstallation_DefaultEnvVar(string defaultVersion, string expectedVersion)
@@ -196,8 +131,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
-        [Trait("build-image", "lts-versions-debian-stretch")]
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         public void DynamicallyInstallsNodeRuntimeAndBuilds()
         {
             // Arrange
@@ -218,7 +153,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _restrictedPermissionsImageHelper.GetLtsVersionsBuildImage(),
+                ImageId = _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -234,7 +169,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-stretch")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         public void DynamicInstall_ReInstallsSdk_IfSentinelFileIsNotPresent()
         {
             // Arrange
@@ -277,8 +212,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         }
 
-        [Fact, Trait("category", "latest")]
-        [Trait("build-image", "debian-stretch")]
+        [Fact, Trait("category", "githubactions")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange
@@ -300,7 +235,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -316,7 +251,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-buster")]
+        [Trait("build-image", "github-actions-debian-bullseye")]
         public void BuildNodeApp_AfterInstallingBusterSpecificSdk()
         {
             // Arrange
@@ -350,13 +285,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                 },
                 result.GetDebugInfo());
-        }
-
-        [Fact, Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-debian-buster")]
-        public void NodeFails_ToInstallStretchSdk_OnBusterImage()
-        {
-            Run_NodeFails_ToInstallStretchSdk_OnNonStretchImage(ImageTestHelperConstants.GitHubActionsBuster);
         }
 
         [Fact, Trait("category", "githubactions")]

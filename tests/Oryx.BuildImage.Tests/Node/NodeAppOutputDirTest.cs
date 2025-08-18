@@ -22,7 +22,7 @@ namespace Oryx.BuildImage.Tests.Node
         {
         }
 
-        [Theory, Trait("category", "jamstack")]
+        [Theory, Trait("category", "githubactions")]
         // Temporarily blocking Angular 14 app: Work item 1565890
         // [InlineData("angular14", "dist")]
         // Temporarily blocking next app as next build is failing accross npm
@@ -42,7 +42,6 @@ namespace Oryx.BuildImage.Tests.Node
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
             var script = new ShellScriptBuilder()
-                .AddCommand("node -v")
                 .AddBuildCommand($"{appDir} -i /tmp/int -o {appOutputDir} --platform {NodeConstants.PlatformName} --platform-version {version}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
                 .AddStringExistsInFileCheck(
