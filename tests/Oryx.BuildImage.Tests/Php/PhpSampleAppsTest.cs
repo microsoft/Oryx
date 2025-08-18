@@ -23,12 +23,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", sampleAppName));
 
-        [Fact, Trait("category", "ltsversions")]
-        public void GeneratesScript_AndBuilds_TwigExample_InLtsVersionsBuildImage()
+        [Fact, Trait("category", "githubactions")]
+        public void GeneratesScript_AndBuilds_TwigExample_InGitHubActionsBuildImage()
         {
             // Arrange
-            var phpVersion = PhpVersions.Php73Version;
-            var buildImageName = _imageHelper.GetLtsVersionsBuildImage();
+            var phpVersion = PhpVersions.Php74Version;
             var appName = "twig-example";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -41,7 +40,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = buildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -58,10 +57,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
             result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "latest")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData(PhpVersions.Php74Version)]
-        [InlineData(PhpVersions.Php73Version)]
-        [InlineData(PhpVersions.Php72Version)]
+        [InlineData(PhpVersions.Php80Version)]
+        [InlineData(PhpVersions.Php82Version)]
         public void GeneratesScript_AndBuilds_TwigExample(string phpVersion)
         {
             // Arrange
@@ -76,7 +75,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -93,9 +92,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "cli-bullseye")]
-        [InlineData(PhpVersions.Php80Version, ImageTestHelperConstants.CliBullseyeTag)]
-        public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_CliBullseye(string phpVersion, string imageTag)
+        [Theory, Trait("category", "githubactions")]
+        [InlineData(PhpVersions.Php80Version, ImageTestHelperConstants.GitHubActionsBullseye)]
+        public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_GithubActions(string phpVersion, string imageTag)
         {
             GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(phpVersion, imageTag);
         }
@@ -131,10 +130,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "ltsversions")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData(PhpVersions.Php74Version)]
-        [InlineData(PhpVersions.Php73Version)]
-        [InlineData(PhpVersions.Php72Version)]
+        [InlineData(PhpVersions.Php80Version)]
+        [InlineData(PhpVersions.Php82Version)]
         public void GeneratesScript_AndBuilds_WithoutComposerFile(string phpVersion)
         {
             // Arrange
@@ -155,7 +154,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -170,39 +169,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                        $"{ManifestFilePropertyKeys.PhpVersion}=\"{phpVersion}\"",
                        result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory, Trait("category", "ltsversions")]
-        [InlineData(PhpVersions.Php80Version)]
-        public void GeneratesScript_AndBuilds_TwigExample_InLtsVersionsBusterImage(string phpVersion)
-        {
-            // Arrange
-            var appName = "twig-example";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetBuildImage(ImageTestHelperConstants.LtsVersionsBuster),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(() =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
-                    Assert.Contains($"Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
                 },
                 result.GetDebugInfo());
         }
