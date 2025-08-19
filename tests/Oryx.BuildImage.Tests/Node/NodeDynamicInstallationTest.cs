@@ -153,7 +153,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _restrictedPermissionsImageHelper.GetGitHubActionsBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -217,7 +217,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange
-            var version = "14.0.0"; //NOTE: use the full version so that we know the install directory path
+            var version = "20.18.3"; //NOTE: use the full version so that we know the install directory path
             var expectedDynamicInstallRootDir = "/foo/bar";
             var volume = CreateWebFrontEndVolume();
             var appDir = volume.ContainerDir;

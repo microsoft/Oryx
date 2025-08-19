@@ -31,7 +31,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact, Trait("category", "githubactions")]
-        public void PipelineTestInvocationJamstack()
+        public void PipelineTestInvocationGithubactions()
         {
             var imageTestHelper = new ImageTestHelper();
             GeneratesScript_AndBuilds(imageTestHelper.GetGitHubActionsBuildImage());
