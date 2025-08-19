@@ -27,65 +27,18 @@ namespace Microsoft.Oryx.BuildImage.Tests
             _tempDirRootPath = testFixture.RootDirPath;
         }
 
-        [Fact, Trait("category", "latest")]
-        public void PipelineTestInvocationLatest()
-        {
-            GeneratesScript_AndBuilds(Settings.BuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.LatestStretchTag);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LatestStretchTag);
-        }
-
-        [Fact, Trait("category", "ltsversions")]
-        public void PipelineTestInvocationLtsVersions()
-        {
-            GeneratesScript_AndBuilds(Settings.LtsVersionsBuildImageName);
-            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.LtsVersionsStretch);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.LtsVersionsStretch);
-        }
-
-        [Fact, Trait("category", "vso-focal")]
-        public void PipelineTestInvocationVsoFocal()
-        {
-            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.VsoFocal);
-        }
-
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsStretch);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsBuster);
+            GeneratesScript_AndBuilds(_imageHelper.GetGitHubActionsBuildImage());
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.GitHubActionsBookworm);
+            JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.GitHubActionsBullseye);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsBullseye);
+            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsBookworm);
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBookworm);
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBullseye);
         }
 
-        [Theory, Trait("category", "cli-stretch")]
-        [InlineData(ImageTestHelperConstants.CliRepository)]
-        public void PipelineTestInvocationCli(string imageTag)
-        {
-            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
-            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
-        }
-
-        [Theory, Trait("category", "cli-buster")]
-        [InlineData(ImageTestHelperConstants.CliBusterTag)]
-        public void PipelineTestInvocationCliBuster(string imageTag)
-        {
-            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
-            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
-        }
-
-        [Theory, Trait("category", "cli-bullseye")]
-        [InlineData(ImageTestHelperConstants.CliBullseyeTag)]
-        public void PipelineTestInvocationCliBullseye(string imageTag)
-        {
-            GeneratesScript_AndBuilds(_imageHelper.GetCliImage(imageTag));
-            JamSpell_CanBe_Installed_In_The_BuildImage(imageTag);
-            DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(imageTag);
-        }
-
-        [Theory]
-        [InlineData(Settings.BuildImageName)]
-        [InlineData(Settings.LtsVersionsBuildImageName)]
         public void GeneratesScript_AndBuilds(string buildImageName)
         {
             // Arrange
@@ -120,17 +73,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        [Trait("category", "latest")]
-        public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt_WithLatestBuildImage()
+        [Trait("category", "githubactions")]
+        public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt_WithGithubActionsBuildImage()
         {
-            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(Settings.BuildImageName);
-        }
-
-        [Fact]
-        [Trait("category", "ltsversions")]
-        public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt_WithLtsVersionsBuildImage()
-        {
-            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(Settings.LtsVersionsBuildImageName);
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBullseye);
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBookworm);
         }
 
         private void GeneratesScript_AndBuilds_WithCustomRequirementsTxt(string buildImageName)
@@ -174,17 +121,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
 
         [Fact]
-        [Trait("category", "latest")]
-        public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithLatestBuildImage()
+        [Trait("category", "githubactions")]
+        public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithGithubActionsBuildImage()
         {
-            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(Settings.BuildImageName);
-        }
-
-        [Fact]
-        [Trait("category", "ltsversions")]
-        public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithLtsVersionsBuildImage()
-        {
-            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(Settings.LtsVersionsBuildImageName);
+            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBullseye);
+            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBookworm);
         }
 
         private void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(string buildImageName)
@@ -222,7 +163,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndLoggerFormatCheck()
         {
             // Arrange  
@@ -246,7 +187,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
                 CommandArguments = new[] { "-c", script }
@@ -263,7 +204,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_WithPackageDir()
         {
             // Arrange
@@ -279,7 +220,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -301,10 +242,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(ImageTestHelperConstants.GitHubActionsStretch)]
-        [InlineData(ImageTestHelperConstants.GitHubActionsBuster)]
-        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
-        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBullseye)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBookworm)]
         public void DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(string imageTag)
         {
             // Arrange
@@ -336,7 +275,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void Builds_AndCopiesContentToOutputDirectory_Recursively()
         {
             // Arrange
@@ -358,7 +297,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -374,7 +313,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void Build_CopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -393,7 +332,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -409,7 +348,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void SubsequentBuilds_CopyOutput_ToOutputDirectory_NestedUnderSourceDirectory()
         {
             // Arrange
@@ -431,7 +370,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -447,7 +386,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScriptAndBuilds_WhenSourceAndDestinationFolders_AreSame()
         {
             // Arrange
@@ -463,7 +402,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -479,7 +418,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScriptAndBuilds_WhenDestination_IsSubDirectoryOfSource()
         {
             // Arrange
@@ -496,7 +435,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -512,7 +451,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void Build_DoestNotCleanDestinationDir()
         {
             // Arrange
@@ -536,7 +475,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -552,7 +491,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void ErrorDuringBuild_ResultsIn_NonSuccessfulExitCode()
         {
             // Try building a Python 2.7 app with 3.7 version. This should fail as there are major
@@ -578,7 +517,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -595,7 +534,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_WhenExplicitPlatformAndVersion_AreProvided()
         {
             // Arrange
@@ -616,7 +555,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -643,7 +582,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         // This is to test if we can build an app when there is no requirement.txt
         // but setup.py is provided at root level
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_WhenSetupDotPy_File_isProvided()
         {
             // Arrange
@@ -664,7 +603,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -688,7 +627,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
         // This is to test if we can build an app when both the files requirement.txt
         // and setup.py are provided, we tend to prioritize the root level requirement.txt
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_With_Both_Files_areProvided()
         {
             // Arrange
@@ -709,7 +648,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -850,7 +789,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_UsingSuppliedIntermediateDir()
         {
             // Arrange
@@ -872,7 +811,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -891,7 +830,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-focal")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData("flask-app", "foo.txt")]
         [InlineData("django-realworld-example-app", FilePaths.BuildCommandsFileName)]
         public void BuildPythonApps_Prints_BuildCommands_In_File(string appName, string buildCommandsFileName)
@@ -911,7 +850,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -927,7 +866,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "vso-bullseye")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData("flask-app")]
         [InlineData("django-realworld-example-app")]
         public void BuildPythonApps_AndHasLzmaModule(string appName)
@@ -945,7 +884,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetVsoBuildImage("vso-debian-bullseye"),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -961,7 +900,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void Build_VirtualEnv_Unzipped_ByDefault()
         {
             // Arrange
@@ -979,7 +918,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -998,7 +937,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "latest")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData(null)]
         [InlineData("tar-gz")]
         public void Build_CompressesVirtualEnv_InTargGzFormat(string compressionFormat)
@@ -1020,7 +959,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -1039,7 +978,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void Build_CompressesVirtualEnv_InZipFormat()
         {
             // Arrange
@@ -1059,7 +998,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -1079,7 +1018,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void Build_InstallsVirtualEnvironment_AndPackagesInIt()
         {
             // Arrange
@@ -1097,7 +1036,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -1116,7 +1055,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void Build_InstallsVirtualEnvironment_AndPackagesInIt_From_File_Setup_Py()
         {
             // Arrange
@@ -1133,7 +1072,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -1153,7 +1092,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void Build_ExecutesPreAndPostBuildScripts_UsingBuildEnvironmentFile()
         {
             // Arrange
@@ -1196,7 +1135,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -1218,7 +1157,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void Build_ExecutesPreAndPostBuildScripts_UsingEnvironmentVariables()
         {
             // Arrange
@@ -1254,7 +1193,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable>
                 {
                     CreateAppNameEnvVar(appName),
@@ -1281,7 +1220,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void PreAndPostBuildScripts_HaveAccessToSourceAndDestinationDirectoryVariables()
         {
             // Arrange
@@ -1317,7 +1256,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable>
                 {
                     CreateAppNameEnvVar(appName),
@@ -1340,7 +1279,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void Build_Executes_InlinePreAndPostBuildCommands()
         {
             // Arrange
@@ -1362,7 +1301,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable>
                 {
                     CreateAppNameEnvVar(appName),
@@ -1383,7 +1322,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void Django_CollectStaticFailure_DoesNotFailBuild()
         {
             // Arrange
@@ -1399,7 +1338,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable>
                 {
                     CreateAppNameEnvVar(appName),
@@ -1425,9 +1364,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "latest")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData(PythonVersions.Python38Version)]
-        [InlineData(PythonVersions.Python27Version)]
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext(string version)
         {
             // Arrange
@@ -1473,7 +1411,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable>
                 {
                     CreateAppNameEnvVar(appName),
@@ -1498,7 +1436,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "ltsversions")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsAppSuccessfully_EvenIfRequirementsTxtOrSetupPyFileDoNotExist()
         {
             // Arrange
@@ -1517,7 +1455,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetLtsVersionsBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -1586,9 +1524,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory]
-        [InlineData(ImageTestHelperConstants.LtsVersionsStretch)]
-        [InlineData(ImageTestHelperConstants.VsoFocal)]
-        [InlineData(ImageTestHelperConstants.LatestStretchTag)]
+        [InlineData(ImageTestHelperConstants.GitHubActionsBookworm)]
         public void JamSpell_CanBe_Installed_In_The_BuildImage(string tagName)
         {
             // Arrange
@@ -1629,13 +1565,14 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 .AddDirectoryExistsCheck($"{appOutputDir}/{PackagesDirectory}")
                 .ToString();
             var pipUpgradeCommand = "";
-            if (pipUpgradeFlag == "false") {
+            if (pipUpgradeFlag == "false")
+            {
                 pipUpgradeCommand = "--upgrade";
             }
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName), new EnvironmentVariable("ORYX_DISABLE_PIP_UPGRADE", pipUpgradeFlag) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
