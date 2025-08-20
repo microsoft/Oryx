@@ -322,10 +322,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_DoesNotClean_DestinationDirectory_ByDefault()
         {
             // Arrange
-            var appName = "NetCoreApp21WebApp";
+            var appName = "NetCore8WebApp";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/NetCoreApp21WebApp-output";
+            var appOutputDir = "/tmp/NetCore8WebApp-output";
             var extraFile = $"{Guid.NewGuid().ToString("N")}.txt";
             var script = new ShellScriptBuilder()
                 .CreateDirectory($"{appOutputDir}")
@@ -358,10 +358,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsApplication_InIntermediateDirectory_WhenIntermediateDirectorySwitchIsUsed()
         {
             // Arrange
-            var appName = "NetCoreApp21WebApp";
+            var appName = "NetCore8WebApp";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/NetCoreApp21WebApp-output";
+            var appOutputDir = "/tmp/NetCore8WebApp-output";
             var intermediateDir = "/tmp/int";
             var script = new ShellScriptBuilder()
                 .AddCommand($"rm -rf {appDir}/bin")
@@ -437,7 +437,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/AzureFunctionsHttpTriggerApp-output";
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 8.0.412")
+                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform dotnet --platform-version 6.0.35")
                 .AddFileExistsCheck($"{appOutputDir}/bin/{appName}.dll")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.BuildManifestFileName}")
                 .AddFileExistsCheck($"{appOutputDir}/{FilePaths.OsTypeFileName}")
@@ -461,7 +461,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "8.0.412"), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "6.0.427"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }

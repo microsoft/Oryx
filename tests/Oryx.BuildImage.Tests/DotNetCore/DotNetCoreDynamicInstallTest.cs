@@ -301,7 +301,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void BuildsApplication_UsingPreviewVersionOfSdk()
         {
             // Arrange
-            var expectedSdkVersion = "7.0.100-preview.1.22110.4";
+            var expectedSdkVersion = "10.0.100-preview.5.25277.114";
             var globalJsonTemplate = @"
             {
                 ""sdk"": {
@@ -310,8 +310,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 }
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
-            var appName = NetCoreApp50MvcApp;
-            var runtimeVersion = "5.0";
+            var appName = NetCore10WebApp;
+            var runtimeVersion = "10.0";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var appOutputDir = "/tmp/output";
