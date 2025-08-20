@@ -459,7 +459,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Theory, Trait("category", "githubactions")]
-        [InlineData(NetCore8WebApp, "6.0", DotNetCoreSdkVersions.DotNet60SdkVersion)]
+        [InlineData(NetCore8WebApp, "8.0", DotNetCoreSdkVersions.DotNet80SdkVersion)]
         public void BuildsApplication_SetLinksCorrectly_ByDynamicallyInstallingSDKs(
             string appName,
             string runtimeVersion,

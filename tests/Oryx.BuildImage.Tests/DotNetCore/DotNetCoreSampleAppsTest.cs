@@ -708,7 +708,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appDir = volume.ContainerDir;
             // NOTE: we want to make sure that even after subsequent builds(like in case of AppService),
             // the output structure is like what we expect.
-            var platformNameAndVersion = "--platform dotnet --platform-version 3.1.8";
+            var platformNameAndVersion = "--platform dotnet --platform-version 3.1.32";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appDir}/output {platformNameAndVersion}")
                 .AddBuildCommand($"{appDir} -o {appDir}/output {platformNameAndVersion}")
@@ -732,7 +732,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.426"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
