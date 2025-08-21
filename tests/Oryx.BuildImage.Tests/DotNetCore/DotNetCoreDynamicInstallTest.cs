@@ -310,7 +310,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 }
             }";
             var globalJsonContent = globalJsonTemplate.Replace("#version#", expectedSdkVersion);
-            var appName = NetCore10WebApp;
+            var appName = NetCoreApp100WebApp;
             var runtimeVersion = "10.0";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
