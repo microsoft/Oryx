@@ -188,10 +188,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(PythonVersions.Python311Version)]
         [InlineData(PythonVersions.Python312Version)]
         [InlineData(PythonVersions.Python313Version)]
-        public void GeneratesScript_AndBuildsPython_JamstackBuildImage(string version)
+        public void GeneratesScript_AndBuildsPython(string version)
         {
             // Arrange
-            var installationDir = "/opt/" + $"python/{version}";
+            var installationDir = "/tmp/oryx/platforms/" + $"python/{version}";
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;

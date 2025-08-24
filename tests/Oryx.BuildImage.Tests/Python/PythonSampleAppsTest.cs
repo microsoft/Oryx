@@ -30,7 +30,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Fact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {
-            GeneratesScript_AndBuilds(_imageHelper.GetGitHubActionsBuildImage());
+            var imageHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
+            GeneratesScript_AndBuilds(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
             JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.GitHubActionsBookworm);
             JamSpell_CanBe_Installed_In_The_BuildImage(ImageTestHelperConstants.GitHubActionsBullseye);
             DoesNotGenerateCondaBuildScript_IfImageDoesNotHaveCondaInstalledInIt(ImageTestHelperConstants.GitHubActionsBullseye);
@@ -125,8 +127,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("category", "githubactions")]
         public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithGithubActionsBuildImage()
         {
-            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBullseye);
-            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBookworm);
+            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
+            ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
         }
 
         private void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(string buildImageName)
@@ -548,7 +550,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
-                $"--platform-version {PythonVersions.Python36Version}")
+                $"--platform-version {PythonVersions.Python38Version}")
                 .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
@@ -569,10 +571,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /tmp/oryx/platforms/python/{PythonVersions.Python36Version}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonVersions.Python38Version}/bin/python3",
                         result.StdOut);
                     Assert.Contains(
-                       $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python36Version}\"",
+                       $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python38Version}\"",
                        result.StdOut);
                     Assert.Contains(
                        $"{ManifestFilePropertyKeys.SourceDirectoryInBuildContainer}=\"{appDir}\"",

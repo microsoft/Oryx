@@ -151,7 +151,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_ExecutesPreAndPostBuildScripts_WithinBenvContext()
         {
             // Arrange
-            var appName = "NetCoreApp8WebApp";
+            var appName = "NetCore8WebApp";
             var volume = CreateSampleAppVolume(appName);
             using (var sw = File.AppendText(
                 Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
@@ -218,7 +218,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // source and destination directory environment variables.
 
             // Arrange
-            var appName = "NetCoreApp8WebApp";
+            var appName = "NetCore8WebApp";
             var volume = CreateSampleAppVolume(appName);
             using (var sw = File.AppendText(
                 Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
@@ -281,7 +281,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Build_Executes_InlinePreAndPostBuildCommands()
         {
             // Arrange
-            var appName = "NetCoreApp8WebApp";
+            var appName = "NetCore8WebApp";
             var volume = CreateSampleAppVolume(appName);
             using (var sw = File.AppendText(
                 Path.Combine(volume.MountedHostDir, BuildScriptGeneratorCli.Constants.BuildEnvironmentFileName)))
@@ -630,41 +630,42 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "githubactions")]
-        [InlineData(DotNetCoreSdkVersions.DotNet80SdkVersion)]
-        public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
-        {
-            // Arrange
-            var appDir = "/tmp/app1";
-            var flattenedDotNetInstallDir = "/opt/dotnet/all";
-            var script = new ShellScriptBuilder()
-                .AddCommand($"mkdir -p {appDir} && cd {appDir}")
-                .AddCommand($"dotnet new globaljson --sdk-version {sdkversion}")
-                .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH", true)
-                .AddCommand("dotnet --version")
-                .AddCommand("which dotnet")
-                .ToString();
+        // <------------to verify that the .NET muxer can choose the appropriate SDK version when multiple SDKs are pre-installed in a flattened directory structure, which is only available in VSO images, not GitHub Actions images.-------->
+        // [Theory, Trait("category", "githubactions")]
+        // [InlineData(DotNetCoreSdkVersions.DotNet80SdkVersion)]
+        // public void DotNetCore_Muxer_ChoosesAppropriateSDKVersion(string sdkversion)
+        // {
+        //     // Arrange
+        //     var appDir = "/tmp/app1";
+        //     var flattenedDotNetInstallDir = "/opt/dotnet/all";
+        //     var script = new ShellScriptBuilder()
+        //         .AddCommand($"mkdir -p {appDir} && cd {appDir}")
+        //         .AddCommand($"dotnet new globaljson --sdk-version {sdkversion}")
+        //         .SetEnvironmentVariable("PATH", $"{flattenedDotNetInstallDir}:$PATH", true)
+        //         .AddCommand("dotnet --version")
+        //         .AddCommand("which dotnet")
+        //         .ToString();
 
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-                EnvironmentVariables = new List<EnvironmentVariable>(),
-                Volumes = Enumerable.Empty<DockerVolume>(),
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
+        //     // Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+        //         EnvironmentVariables = new List<EnvironmentVariable>(),
+        //         Volumes = Enumerable.Empty<DockerVolume>(),
+        //         CommandToExecuteOnRun = "/bin/bash",
+        //         CommandArguments = new[] { "-c", script }
+        //     });
 
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains(sdkversion, result.StdOut);
-                    Assert.Contains($"{flattenedDotNetInstallDir}/dotnet", result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
+        //     // Assert
+        //     RunAsserts(
+        //         () =>
+        //         {
+        //             Assert.True(result.IsSuccess);
+        //             Assert.Contains(sdkversion, result.StdOut);
+        //             Assert.Contains($"{flattenedDotNetInstallDir}/dotnet", result.StdOut);
+        //         },
+        //         result.GetDebugInfo());
+        // }
 
         [Fact, Trait("category", "githubactions")]
         public void Builds_AndCopiesOutput_ToOutputDirectory_NestedUnderSourceDirectory()
@@ -674,7 +675,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
             var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appDir}/output --platform dotnet --platform-version 3.1.8")
+                .AddBuildCommand($"{appDir} -o {appDir}/output --platform dotnet --platform-version 3.1.32")
                 .AddFileExistsCheck($"{appDir}/output/{appName}.dll")
                 .AddDirectoryDoesNotExistCheck($"{appDir}/output/output")
                 .ToString();
