@@ -127,7 +127,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("category", "githubactions")]
         public void ErrorDuringBuild_WithNonExistentCustomRequirementsTxt_WithGithubActionsBuildImage()
         {
-            imageHelper = new ImageTestHelper();
+            var imageHelper = new ImageTestHelper();
             ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
             ErrorDuringBuild_WithNonExistentCustomRequirementsTxt(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
         }
