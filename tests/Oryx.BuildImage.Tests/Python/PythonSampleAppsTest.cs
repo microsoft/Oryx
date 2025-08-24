@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -76,8 +76,9 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Trait("category", "githubactions")]
         public void GeneratesScript_AndBuilds_WithCustomRequirementsTxt_WithGithubActionsBuildImage()
         {
-            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBullseye);
-            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(ImageTestHelperConstants.GitHubActionsBookworm);
+            var imageHelper = new ImageTestHelper();
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye));
+            GeneratesScript_AndBuilds_WithCustomRequirementsTxt(imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
         }
 
         private void GeneratesScript_AndBuilds_WithCustomRequirementsTxt(string buildImageName)
@@ -112,7 +113,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                     Assert.Contains($"REQUIREMENTS_TXT_FILE=\"{subdirCustomRequirementsTxtPath}\"", result.StdOut);
                 },
@@ -233,7 +234,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                     Assert.Contains("Running pip install", result.StdOut);
                     Assert.Contains("Collecting Flask", result.StdOut);
@@ -568,7 +569,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python36Version}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonVersions.Python36Version}/bin/python3",
                         result.StdOut);
                     Assert.Contains(
                        $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python36Version}\"",
@@ -595,7 +596,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
                 $"{appDir} -o {appOutputDir} --platform {PythonConstants.PlatformName} " +
-                $"--platform-version {PythonVersions.Python36Version}")
+                $"--platform-version {PythonVersions.Python38Version}")
                 .AddFileExistsCheck(osTypeFile)
                 .AddCommand($"cat {manifestFile}")
                 .ToString();
@@ -616,10 +617,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python36Version}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonVersions.Python38Version}/bin/python3",
                         result.StdOut);
                     Assert.Contains(
-                       $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python36Version}\"",
+                       $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python38Version}\"",
                        result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -661,7 +662,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonVersions.Python37Version}/bin/python3",
                         result.StdOut);
                     Assert.Contains(
                        $"{ManifestFilePropertyKeys.PythonVersion}=\"{PythonVersions.Python37Version}\"",
@@ -830,41 +831,42 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "githubactions")]
-        [InlineData("flask-app", "foo.txt")]
-        [InlineData("django-realworld-example-app", FilePaths.BuildCommandsFileName)]
-        public void BuildPythonApps_Prints_BuildCommands_In_File(string appName, string buildCommandsFileName)
-        {
-            // Arrange
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app1-output";
-            var commandListFile = $"{appOutputDir}/{buildCommandsFileName}";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --buildcommands-file {buildCommandsFileName}")
-                .AddFileExistsCheck($"{commandListFile}")
-                .AddStringExistsInFileCheck("PlatformWithVersion=", $"{commandListFile}")
-                .AddStringExistsInFileCheck("BuildCommands=", $"{commandListFile}")
-                .ToString();
+        // Not applicable as build commands file is not created for githubactions
+        // [Theory, Trait("category", "githubactions")]
+        // [InlineData("flask-app", "foo.txt")]
+        // [InlineData("django-realworld-example-app", FilePaths.BuildCommandsFileName)]
+        // public void BuildPythonApps_Prints_BuildCommands_In_File(string appName, string buildCommandsFileName)
+        // {
+        //     // Arrange
+        //     var volume = CreateSampleAppVolume(appName);
+        //     var appDir = volume.ContainerDir;
+        //     var appOutputDir = "/tmp/app1-output";
+        //     var commandListFile = $"{appOutputDir}/{buildCommandsFileName}";
+        //     var script = new ShellScriptBuilder()
+        //         .AddBuildCommand($"{appDir} -o {appOutputDir} --buildcommands-file {buildCommandsFileName}")
+        //         .AddFileExistsCheck($"{commandListFile}")
+        //         .AddStringExistsInFileCheck("PlatformWithVersion=", $"{commandListFile}")
+        //         .AddStringExistsInFileCheck("BuildCommands=", $"{commandListFile}")
+        //         .ToString();
 
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
+        //     // Act
+        //     var result = _dockerCli.Run(new DockerRunArguments
+        //     {
+        //         ImageId = _imageHelper.GetGitHubActionsBuildImage(),
+        //         EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
+        //         Volumes = new List<DockerVolume> { volume },
+        //         CommandToExecuteOnRun = "/bin/bash",
+        //         CommandArguments = new[] { "-c", script }
+        //     });
 
-            // Assert
-            RunAsserts(
-                () =>
-                {
-                    Assert.True(result.IsSuccess);
-                },
-                result.GetDebugInfo());
-        }
+        //     // Assert
+        //     RunAsserts(
+        //         () =>
+        //         {
+        //             Assert.True(result.IsSuccess);
+        //         },
+        //         result.GetDebugInfo());
+        // }
 
         [Theory, Trait("category", "githubactions")]
         [InlineData("flask-app")]
@@ -877,8 +879,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var appOutputDir = "/tmp/app1-output";
             var script = new ShellScriptBuilder()
                 .AddBuildCommand($"{appDir} -o {appOutputDir} --platform python --platform-version {PythonVersions.Python310Version}")
-                .AddCommand($"python -V")
-                .AddCommand($"python -c \"import lzma\"")
+                .AddCommand($"/tmp/oryx/platforms/python/{PythonVersions.Python310Version}/bin/python3.10 -V")
+                .AddCommand($"/tmp/oryx/platforms/python/{PythonVersions.Python310Version}/bin/python3.10 -c \"import lzma\"")
                 .ToString();
 
             // Act
@@ -931,7 +933,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -972,7 +974,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1011,7 +1013,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1049,7 +1051,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonVersions.Python37Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1085,7 +1087,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonVersions.Python37Version}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonVersions.Python37Version}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
@@ -1428,10 +1430,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.True(result.IsSuccess);
                     var semVer = new SemanticVersioning.Version(version);
                     var virtualEnvSuffix = $"{semVer.Major}.{semVer.Minor}";
-                    Assert.Matches($"Pre-build script: /opt/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
-                    Assert.Matches($"Pre-build script: /opt/python/{version}/bin/pip", result.StdOut);
-                    Assert.Matches($"Post-build script: /opt/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
-                    Assert.Matches($"Post-build script: /opt/python/{version}/bin/pip", result.StdOut);
+                    Assert.Matches($"Pre-build script: /tmp/oryx/platforms/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
+                    Assert.Matches($"Pre-build script: /tmp/oryx/platforms/python/{version}/bin/pip", result.StdOut);
+                    Assert.Matches($"Post-build script: /tmp/oryx/platforms/python/{version}/bin/python{virtualEnvSuffix}", result.StdOut);
+                    Assert.Matches($"Post-build script: /tmp/oryx/platforms/python/{version}/bin/pip", result.StdOut);
                 },
                 result.GetDebugInfo());
         }
@@ -1468,7 +1470,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 {
                     Assert.True(result.IsSuccess);
                     Assert.Contains(
-                        $"Python Version: /opt/python/{PythonConstants.PythonLtsVersion}/bin/python3",
+                        $"Python Version: /tmp/oryx/platforms/python/{PythonConstants.PythonLtsVersion}/bin/python3",
                         result.StdOut);
                 },
                 result.GetDebugInfo());
