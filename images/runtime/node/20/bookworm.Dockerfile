@@ -53,10 +53,6 @@ RUN npm install -g npm@${NPM_VERSION}
 RUN PM2_VERSION=${PM2_VERSION} NODE_APP_INSIGHTS_SDK_VERSION=${NODE_APP_INSIGHTS_SDK_VERSION} ${IMAGES_DIR}/runtime/node/installDependencies.sh
 RUN rm -rf /tmp/oryx
 
-ARG YARN_VERSION="1.22.15"
-# Enable Corepack to manage Yarn and other package managers, Also Pre-cache and activate the specified Yarn version
-RUN corepack enable && corepack prepare yarn@${YARN_VERSION} --activate
-
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_CONNECTION_STRING
 ENV ORYX_AI_CONNECTION_STRING=${AI_CONNECTION_STRING}
