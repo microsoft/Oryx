@@ -29,13 +29,10 @@
     "node": ">=8.0"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.13.6",
-    "http-proxy-middleware": "3.0.3",
     "nuxt": "^3.15.0"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^12.0.0",
-    "@nuxtjs/pwa": "3.3.5",
     "babel-eslint": "^10.1.0",
     "eslint": "^9.17.0",
     "eslint-config-standard": "^17.1.0",
