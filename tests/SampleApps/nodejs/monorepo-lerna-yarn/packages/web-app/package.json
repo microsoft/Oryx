@@ -1,0 +1,15 @@
+{
+    "name": "@monorepo/web-app",
+    "version": "1.0.0",
+    "description": "Web application package",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "build": "echo 'Building web-app...'",
+        "test": "echo 'Testing web-app...'"
+    },
+    "dependencies": {
+        "express": "^4.21.2",
+        "@monorepo/shared-utils": "1.0.0"
+    }
+}
