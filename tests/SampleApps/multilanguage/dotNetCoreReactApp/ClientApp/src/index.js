@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
@@ -8,11 +8,11 @@ import registerServiceWorker from './registerServiceWorker';
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href');
 const rootElement = document.getElementById('root');
 
-ReactDOM.render(
+const root = createRoot(rootElement);
+root.render(
   <BrowserRouter basename={baseUrl}>
     <App />
-  </BrowserRouter>,
-  rootElement);
+  </BrowserRouter>
+);
 
 registerServiceWorker();
-

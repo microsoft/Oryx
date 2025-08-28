@@ -9,32 +9,31 @@ import { siteMeta } from '../blog.config'
 
 const Blog = ({ router, page = 1 }) => {
   const paginator = new pagination.SearchPaginator({
-    prelink: '/',
+    prelink: '/blog',
     current: page,
     rowsPerPage: siteMeta.postsPerPage,
     totalResult: blogposts.length
   })
 
   const {
+    next,
     previous,
     range,
-    next,
     fromResult,
     toResult
   } = paginator.getPaginationData()
-  const results = _range(fromResult - 1, toResult)
+  const results = blogposts.slice(fromResult - 1, toResult)
 
   return (
-    <Layout pageTitle='Blog' path={router.pathname}>
+    <Layout>
       <header>
-        <h1>Blog</h1>
+        <h1>{siteMeta.title}</h1>
+        <h2>{siteMeta.description}</h2>
       </header>
-
-      {blogposts
-        .filter((_post, index) => results.indexOf(index) > -1)
-        .map((post, index) => (
+      {results
+        .map(post => (
           <Post
-            key={index}
+            key={post.title}
             title={post.title}
             summary={post.summary}
             date={post.publishedAt}
@@ -45,23 +44,17 @@ const Blog = ({ router, page = 1 }) => {
       <ul>
         {previous && (
           <li>
-            <Link href={`/blog?page=${previous}`} as={`/blog/${previous}`}>
-              <a>Previous</a>
-            </Link>
+            <Link href={`/blog/${previous}`}>Previous</Link>
           </li>
         )}
         {range.map((page, index) => (
           <li key={index}>
-            <Link key={index} href={`/blog?page=${page}`} as={`/blog/${page}`}>
-              <a>{page}</a>
-            </Link>
+            <Link href={`/blog/${page}`}>{page}</Link>
           </li>
         ))}
         {next && (
           <li>
-            <Link href={`/blog?page=${next}`} as={`/blog/${next}`}>
-              <a>Next</a>
-            </Link>
+            <Link href={`/blog/${next}`}>Next</Link>
           </li>
         )}
       </ul>
@@ -69,13 +62,29 @@ const Blog = ({ router, page = 1 }) => {
         header {
           margin-bottom: 3em;
         }
+
+        h1 {
+          font-size: 2em;
+        }
+
+        h2 {
+          font-weight: 300;
+          color: #666;
+        }
+
+        ul {
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          display: flex;
+        }
+
+        li {
+          margin-right: 1em;
+        }
       `}</style>
     </Layout>
   )
-}
-
-Blog.getInitialProps = async ({ query }) => {
-  return query ? { page: query.page } : {}
 }
 
 export default withRouter(Blog)

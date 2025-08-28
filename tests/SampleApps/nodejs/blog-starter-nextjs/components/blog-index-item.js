@@ -5,9 +5,7 @@ const Post = ({ title, summary, date, path }) => (
   <article>
     <header>
       <h2>
-        <Link href={path}>
-          <a>{title}</a>
-        </Link>
+        <Link href={path}>{title}</Link>
       </h2>
 
       <PublishedAt link={path} date={date} />

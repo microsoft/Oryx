@@ -17,25 +17,25 @@
       </p>
     </div>
     <div class="item-view-comments">
-      <lazy-wrapper :loading="item.loading">
+      <loading-wrapper :loading="item.loading">
         <p class="item-view-comments-header">
           {{ item.comments ? item.comments.length + ' comments' : 'No comments yet.' }}
         </p>
         <ul class="comment-children">
           <comment v-for="comment in item.comments" :key="comment.id" :comment="comment" />
         </ul>
-      </lazy-wrapper>
+      </loading-wrapper>
     </div>
   </div>
 </template>
 
 <script>
 import Comment from '~/components/Comment'
-import LazyWrapper from '~/components/LazyWrapper'
+import LoadingWrapper from '~/components/LoadingWrapper'
 
 export default {
   name: 'ItemView',
-  components: { Comment, LazyWrapper },
+  components: { Comment, LoadingWrapper },
 
   head() {
     return {

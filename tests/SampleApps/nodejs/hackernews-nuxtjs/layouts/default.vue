@@ -2,18 +2,18 @@
   <div id="app">
     <header class="header">
       <nav class="inner" role="navigation">
-        <router-link to="/" exact>
+        <NuxtLink to="/" exact>
           <img class="logo" src="~/assets/logo.svg" alt="logo">
-        </router-link>
-        <router-link v-for="(list, key) in feeds" :key="key" :to="`/${key}`">
+        </NuxtLink>
+        <NuxtLink v-for="(list, key) in feeds" :key="key" :to="`/${key}`">
           {{ list.title }}
-        </router-link>
+        </NuxtLink>
         <a class="github" href="https://github.com/nuxt/hackernews" target="_blank" rel="noopener banner">
           Built with Nuxt.js
         </a>
       </nav>
     </header>
-    <nuxt nuxt-child-key="none" role="main" />
+    <NuxtPage nuxt-child-key="none" role="main" />
   </div>
 </template>
 

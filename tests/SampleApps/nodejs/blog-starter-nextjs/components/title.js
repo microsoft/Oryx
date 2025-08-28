@@ -9,9 +9,7 @@ const Title = ({ path }) => (
       </h1>
     ) : (
       <p>
-        <Link href='/'>
-          <a rel='me'>{siteMeta.title}</a>
-        </Link>
+        <Link href='/' rel='me'>{siteMeta.title}</Link>
       </p>
     )}
     <style jsx>{`
@@ -19,14 +17,19 @@ const Title = ({ path }) => (
         margin-top: 0;
       }
 
+      p {
+        font-size: 1.2em;
+        margin-top: 0;
+        font-weight: 500;
+      }
+
       a {
-        color: #333;
+        color: inherit;
         text-decoration: none;
       }
 
-      p {
-        font-size: 1.3em;
-        font-weight: bold;
+      a:hover {
+        text-decoration: underline;
       }
     `}</style>
   </>
