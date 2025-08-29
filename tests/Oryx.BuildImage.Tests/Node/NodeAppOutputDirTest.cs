@@ -23,13 +23,10 @@ namespace Oryx.BuildImage.Tests.Node
         }
 
         [Theory, Trait("category", "githubactions")]
-        // Temporarily blocking Angular 14 app: Work item 1565890
-        // [InlineData("angular14", "dist")]
-        // Temporarily blocking next app as next build is failing accross npm
-        // [InlineData("blog-starter-nextjs", ".next")]
-        // [InlineData("hackernews-nuxtjs", ".nuxt")]
-        // Temporarily blocking gastbysample app after node default version bumped to 16: #1715134
-        // [InlineData("gatsbysample", "public")]
+        [InlineData("angular14", "dist")]
+        [InlineData("blog-starter-nextjs", ".next")]
+        [InlineData("hackernews-nuxtjs", ".nuxt")]
+        [InlineData("gatsbysample", "public")]
         [InlineData("vue-sample", "dist")]
         [InlineData("create-react-app-sample", "build")]
         [InlineData("hexo-sample", "public")]
