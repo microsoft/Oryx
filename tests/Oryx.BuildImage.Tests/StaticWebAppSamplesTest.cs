@@ -66,7 +66,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act2
             result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
