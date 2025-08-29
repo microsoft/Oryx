@@ -1,0 +1,15 @@
+{
+    "name": "@monorepo/api-service",
+    "version": "1.0.0",
+    "description": "API service package",
+    "main": "api.js",
+    "scripts": {
+        "start": "node api.js",
+        "build": "echo 'Building api-service...'",
+        "test": "echo 'Testing api-service...'"
+    },
+    "dependencies": {
+        "express": "^4.21.2",
+        "@monorepo/shared-utils": "1.0.0"
+    }
+}

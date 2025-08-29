@@ -76,8 +76,8 @@ export const actions = {
         commit('SET_ITEMS', { items })
       },
       () =>
-        this.$axios.$get(`/${feed}?page=${page}`, {
-          cancelToken: this.feedCancelSource && this.feedCancelSource.token
+        $fetch(`/${feed}?page=${page}`, {
+          baseURL: 'https://api.hackerwebapp.com'
         }),
       (state.feeds[feed][page] || []).map(id => state.items[id])
     )
@@ -86,7 +86,9 @@ export const actions = {
   FETCH_ITEM({ commit, state }, { id }) {
     return lazy(
       item => commit('SET_ITEM', { item }),
-      () => this.$axios.$get(`/item/${id}`),
+      () => $fetch(`/item/${id}`, {
+        baseURL: 'https://api.hackerwebapp.com'
+      }),
       Object.assign({ id, loading: true, comments: [] }, state.items[id])
     )
   },
@@ -94,7 +96,9 @@ export const actions = {
   FETCH_USER({ state, commit }, { id }) {
     return lazy(
       user => commit('SET_USER', { id, user }),
-      () => this.$axios.$get(`/user/${id}`),
+      () => $fetch(`/user/${id}`, {
+        baseURL: 'https://api.hackerwebapp.com'
+      }),
       Object.assign({ id, loading: true }, state.users[id])
     )
   }
