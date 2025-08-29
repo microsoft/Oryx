@@ -186,7 +186,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             var script = new ShellScriptBuilder()
                 .AddBuildCommand(
                 $"{appDir} --platform {DotNetCoreConstants.PlatformName} " +
-                $"--platform-version 8.0.412")
+                $"--platform-version 8.0.18")
                 .ToString();
 
             // Act
@@ -695,7 +695,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.402"), result.StdOut);
+                    Assert.Contains(string.Format(SdkVersionMessageFormat, "3.1.426"), result.StdOut);
                 },
                 result.GetDebugInfo());
         }
