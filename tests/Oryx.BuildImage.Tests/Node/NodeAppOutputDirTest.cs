@@ -23,7 +23,7 @@ namespace Oryx.BuildImage.Tests.Node
         }
 
         [Theory, Trait("category", "githubactions")]
-        [InlineData("angular14", "dist")]
+        [InlineData("angular14app", "dist")]
         [InlineData("blog-starter-nextjs", ".next")]
         [InlineData("hackernews-nuxtjs", ".nuxt")]
         [InlineData("gatsbysample", "public")]
@@ -33,7 +33,7 @@ namespace Oryx.BuildImage.Tests.Node
         public void BuildsApp_AndAddsOutputDirToManifestFile(string appName, string expectedOutputDirPath)
         {
             // Arrange
-            var version = "20.11.0";
+            var version = "20.19.3";
             var volume = DockerVolume.CreateMirror(
                 Path.Combine(_hostSamplesDir, "nodejs", appName));
             var appDir = volume.ContainerDir;
