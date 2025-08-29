@@ -68,14 +68,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 imageTestHelper.GetVsoBuildImage(ImageTestHelperConstants.VsoFocal));
         }
 
-        [SkippableFact, Trait("category", "jamstack")]
-        public void PipelineTestInvocationJamstack()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            OryxBuildImage_Contains_VersionAndCommit_Information(
-                imageTestHelper.GetAzureFunctionsJamStackBuildImage());
-        }
-
         [SkippableFact, Trait("category", "githubactions")]
         public void PipelineTestInvocationGithubActions()
         {
@@ -240,8 +232,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void Node_UsesLTSVersion_ByDefault_WhenNoExplicitVersionIsProvided(string buildImageName)
         {
             // Arrange
-            var expectedOutput = "v" + (buildImageName.Contains("stretch") 
-                ? FinalStretchVersions.FinalStretchNode14Version 
+            var expectedOutput = "v" + (buildImageName.Contains("stretch")
+                ? FinalStretchVersions.FinalStretchNode14Version
                 : NodeConstants.NodeLtsVersion);
 
             // Act

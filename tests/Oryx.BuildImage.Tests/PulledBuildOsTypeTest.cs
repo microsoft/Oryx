@@ -37,38 +37,10 @@ namespace Microsoft.Oryx.BuildImage.Tests
         }
 
         [Fact]
-        [Trait("category", "latest")]
-        public void PulledLatestStretchBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.LatestStretchTag), "DEBIAN|STRETCH");
-        }
-
-        [Fact]
-        [Trait("category", "ltsversions")]
-        public void PulledLtsVersionsStretchBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.LtsVersionsStretch), "DEBIAN|STRETCH");
-        }
-
-        [Fact]
-        [Trait("category", "ltsversions")]
-        public void PulledLtsVersionsBusterBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.LtsVersionsBuster), "DEBIAN|BUSTER");
-        }
-
-        // [Fact]
-        // [Trait("category", "githubactions")]
-        // public void PulledGitHubActionsStretchBuildImages_Contains_BUILDOS_TYPE_Info()
-        // {
-        //     PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsStretch), "DEBIAN|STRETCH");
-        // }
-
-        [Fact]
         [Trait("category", "githubactions")]
         public void PulledGitHubActionsBusterBuildImages_Contains_BUILDOS_TYPE_Info()
         {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsBuster), "DEBIAN|BUSTER");
+            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsBookworm), "DEBIAN|BOOKWORM");
         }
 
         [Fact]
@@ -76,48 +48,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PulledGitHubActionsBullseyeBuildImages_Contains_BUILDOS_TYPE_Info()
         {
             PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), "DEBIAN|BULLSEYE");
-        }
-
-        [Fact]
-        [Trait("category", "cli-stretch")]
-        public void PulledCliStretchBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository), "DEBIAN|STRETCH");
-        }
-
-        [Fact]
-        [Trait("category", "cli-buster")]
-        public void PulledCliBusterBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), "DEBIAN|BUSTER");
-        }
-
-        [Fact]
-        [Trait("category", "cli-bullseye")]
-        public void PulledCliBullseyeBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), "DEBIAN|BULLSEYE");
-        }
-
-        [Fact]
-        [Trait("category", "jamstack")]
-        public void PulledJamstackBusterBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBuster), "DEBIAN|BUSTER");
-        }
-
-        [Fact]
-        [Trait("category", "jamstack")]
-        public void PulledJamstackBullseyeBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye), "DEBIAN|BULLSEYE");
-        }
-
-        [Fact]
-        [Trait("category", "vso-focal")]
-        public void PulledVsoFocalBuildImages_Contains_BUILDOS_TYPE_Info()
-        {
-            PulledBuildImages_Contains_BUILDOS_TYPE_Info(_imageHelper.GetBuildImage(ImageTestHelperConstants.VsoFocal), "DEBIAN|FOCAL-SCM");
         }
 
         private void PulledBuildImages_Contains_BUILDOS_TYPE_Info(string buildImageName, string expectedBuildOsType)

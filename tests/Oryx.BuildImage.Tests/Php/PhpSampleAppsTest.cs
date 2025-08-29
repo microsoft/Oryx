@@ -23,46 +23,12 @@ namespace Microsoft.Oryx.BuildImage.Tests
         private DockerVolume CreateSampleAppVolume(string sampleAppName) =>
             DockerVolume.CreateMirror(Path.Combine(_hostSamplesDir, "php", sampleAppName));
 
-        [Fact, Trait("category", "ltsversions")]
-        public void GeneratesScript_AndBuilds_TwigExample_InLtsVersionsBuildImage()
-        {
-            // Arrange
-            var phpVersion = PhpVersions.Php73Version;
-            var buildImageName = _imageHelper.GetLtsVersionsBuildImage();
-            var appName = "twig-example";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand(
-                $"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = buildImageName,
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(() =>
-            {
-                Assert.True(result.IsSuccess);
-                Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
-                Assert.Contains($"Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
-            },
-            result.GetDebugInfo());
-        }
-
-        [Theory, Trait("category", "latest")]
-        [InlineData(PhpVersions.Php74Version)]
-        [InlineData(PhpVersions.Php73Version)]
-        [InlineData(PhpVersions.Php72Version)]
-        public void GeneratesScript_AndBuilds_TwigExample(string phpVersion)
+        [Theory, Trait("category", "githubactions")]
+        [InlineData(PhpVersions.Php81Version)]
+        [InlineData(PhpVersions.Php82Version)]
+        [InlineData(PhpVersions.Php83Version)]
+        [InlineData(PhpVersions.Php84Version)]
+        public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(string phpVersion)
         {
             // Arrange
             var appName = "twig-example";
@@ -76,7 +42,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -87,67 +53,16 @@ namespace Microsoft.Oryx.BuildImage.Tests
             RunAsserts(() =>
                 {
                     Assert.True(result.IsSuccess);
-                    Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
+                    Assert.Contains($"PHP executable: /tmp/oryx/platforms/php/{phpVersion}/bin/php", result.StdOut);
                     Assert.Contains($"Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
                 },
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "cli-stretch")]
-        [InlineData(PhpVersions.Php74Version, ImageTestHelperConstants.CliRepository)]
-        [InlineData(PhpVersions.Php73Version, ImageTestHelperConstants.CliRepository)]
-        public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_Cli(string phpVersion, string imageTag) {
-            GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(phpVersion, imageTag);
-        }
-
-        [Theory, Trait("category", "cli-buster")]
-        [InlineData(PhpVersions.Php80Version, ImageTestHelperConstants.CliBusterTag)]
-        public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_CliBuster(string phpVersion, string imageTag) {
-            GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(phpVersion, imageTag);
-        }
-
-        [Theory, Trait("category", "cli-bullseye")]
-        [InlineData(PhpVersions.Php80Version, ImageTestHelperConstants.CliBullseyeTag)]
-        public void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation_CliBullseye(string phpVersion, string imageTag)
-        {
-            GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(phpVersion, imageTag);
-        }
-
-        private void GeneratesScript_AndBuilds_TwigExample_WithDynamicInstallation(string phpVersion, string imageTag)
-        {
-            // Arrange
-            var appName = "twig-example";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetBuildImage(imageTag),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(() =>
-            {
-                Assert.True(result.IsSuccess);
-                Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
-                Assert.Contains($"Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
-            },
-                result.GetDebugInfo());
-        }
-
-        [Theory, Trait("category", "ltsversions")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData(PhpVersions.Php74Version)]
-        [InlineData(PhpVersions.Php73Version)]
-        [InlineData(PhpVersions.Php72Version)]
+        [InlineData(PhpVersions.Php80Version)]
+        [InlineData(PhpVersions.Php82Version)]
         public void GeneratesScript_AndBuilds_WithoutComposerFile(string phpVersion)
         {
             // Arrange
@@ -168,7 +83,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.LtsVersionsBuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -183,39 +98,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     Assert.Contains(
                        $"{ManifestFilePropertyKeys.PhpVersion}=\"{phpVersion}\"",
                        result.StdOut);
-                },
-                result.GetDebugInfo());
-        }
-
-        [Theory, Trait("category", "ltsversions")]
-        [InlineData(PhpVersions.Php80Version)]
-        public void GeneratesScript_AndBuilds_TwigExample_InLtsVersionsBusterImage(string phpVersion)
-        {
-            // Arrange
-            var appName = "twig-example";
-            var volume = CreateSampleAppVolume(appName);
-            var appDir = volume.ContainerDir;
-            var appOutputDir = "/tmp/app-output";
-            var script = new ShellScriptBuilder()
-                .AddBuildCommand($"{appDir} -o {appOutputDir} --platform {PhpConstants.PlatformName} --platform-version {phpVersion}")
-                .ToString();
-
-            // Act
-            var result = _dockerCli.Run(new DockerRunArguments
-            {
-                ImageId = _imageHelper.GetBuildImage(ImageTestHelperConstants.LtsVersionsBuster),
-                EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
-                Volumes = new List<DockerVolume> { volume },
-                CommandToExecuteOnRun = "/bin/bash",
-                CommandArguments = new[] { "-c", script }
-            });
-
-            // Assert
-            RunAsserts(() =>
-                {
-                    Assert.True(result.IsSuccess);
-                    Assert.Contains($"PHP executable: /opt/php/{phpVersion}/bin/php", result.StdOut);
-                    Assert.Contains($"Installing twig/twig", result.StdErr); // Composer prints its messages to STDERR
                 },
                 result.GetDebugInfo());
         }

@@ -229,14 +229,6 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetVsoBuildImage(_vsoBullseye);
             }
-            else if (string.Equals(tag, _gitHubActionsStretch))
-            {
-                return GetGitHubActionsBuildImage();
-            }
-            else if (string.Equals(tag, _gitHubActionsBuster))
-            {
-                return GetGitHubActionsBuildImage(_gitHubActionsBuster);
-            }
             else if (string.Equals(tag, _gitHubActionsBullseye))
             {
                 return GetGitHubActionsBuildImage(_gitHubActionsBullseye);
@@ -269,11 +261,11 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetCliImage(_cliBusterTag);
             }
-            else if(string.Equals(tag, _cliBullseyeTag))
+            else if (string.Equals(tag, _cliBullseyeTag))
             {
                 return GetCliImage(_cliBullseyeTag);
             }
-            else if(string.Equals(tag, _cliBuilderBullseyeTag))
+            else if (string.Equals(tag, _cliBuilderBullseyeTag))
             {
                 return GetCliBuilderImage(_cliBuilderBullseyeTag);
             }
@@ -328,13 +320,9 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBookworm}{_tagSuffix}";
             }
-            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBullseye))
-            {
-                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
-            }
             else
             {
-                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBuster}{_tagSuffix}";
+                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
             }
         }
 
