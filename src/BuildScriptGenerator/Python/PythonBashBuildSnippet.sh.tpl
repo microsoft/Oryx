@@ -96,13 +96,13 @@ fi
     then
         set +e
         echo "Running pip install poetry..."
-        InstallPipCommand="pip install poetry==1.8.5"
+        InstallPipCommand="pip install poetry"
         printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
-        pip install poetry==1.8.5
+        pip install poetry
         echo "Running poetry install..."
-        InstallPoetryCommand="poetry install --no-dev"
+        InstallPoetryCommand="poetry install --only main"
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1)
+        output=$( ( poetry install --only main; exit ${PIPESTATUS[0]} ) 2>&1)
         pythonBuildExitCode=${PIPESTATUS[0]}
         set -e
         echo "${output}"
@@ -171,9 +171,9 @@ fi
         pip install poetry
         START_TIME=$SECONDS
         echo "Running poetry install..."
-        InstallPoetryCommand="poetry install --no-dev"
+        InstallPoetryCommand="poetry install --only main"
         printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1 )
+        output=$( ( poetry install --only main; exit ${PIPESTATUS[0]} ) 2>&1 )
         pythonBuildExitCode=${PIPESTATUS[0]}
         ELAPSED_TIME=$(($SECONDS - $START_TIME))
         echo "Done in $ELAPSED_TIME sec(s)."
