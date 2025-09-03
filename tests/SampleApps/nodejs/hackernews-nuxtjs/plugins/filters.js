@@ -1,5 +1,3 @@
-import Vue from 'vue'
-
 export function host(url) {
   const host = url.replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace('?id=', '/')
   const parts = host.split('.').slice(-3)
@@ -29,8 +27,9 @@ const filters = {
   host,
   timeAgo
 }
-export default filters
 
-Object.keys(filters).forEach((key) => {
-  Vue.filter(key, filters[key])
+export default defineNuxtPlugin((nuxtApp) => {
+  Object.keys(filters).forEach((key) => {
+    nuxtApp.vueApp.config.globalProperties[`$${key}`] = filters[key]
+  })
 })

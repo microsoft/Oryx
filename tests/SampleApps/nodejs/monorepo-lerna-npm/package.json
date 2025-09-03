@@ -1,9 +1,17 @@
 {
   "name": "lerna-monorepo-post",
   "version": "1.0.0",
-  "description": "Sample how to use lerna to make a monorepo",
+  "description": "Sample how to use lerna to make a monorepo with Yarn workspaces",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "lerna run start",
+    "build": "lerna run build",
+    "test": "lerna run test",
+    "bootstrap": "lerna bootstrap",
+    "clean": "lerna clean"
   },
   "repository": {
     "type": "git",

@@ -24,7 +24,7 @@ namespace Microsoft.Oryx.Integration.Tests
             : base(output, testTempDirTestFixture)
         {
         }
-        
+
 
         [Fact]
         [Trait("category", "node-14-stretch-4")]
@@ -561,8 +561,8 @@ namespace Microsoft.Oryx.Integration.Tests
         public async Task Node_SoundCloudNgrxAppAsync()
         {
             // Arrange
-            var appName = "soundcloud-ngrx";
-            var nodeVersion = "8.11";
+            var appName = "soundcloud-ng18";
+            var nodeVersion = "18.20.8";
             var osType = ImageTestHelperConstants.OsTypeDebianBullseye;
             var volume = CreateAppVolume(appName);
             var appDir = volume.ContainerDir;
