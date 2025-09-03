@@ -191,7 +191,6 @@ RUN apt-get update \
         curl \
         xz-utils \
         libsodium-dev \
-        libncurses5 \
     --no-install-recommends && rm -r /var/lib/apt/lists/* ;
     
 
@@ -230,12 +229,28 @@ RUN tmpDir="/opt/tmp" \
     # causing php-composer to fail
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        libargon2-0 \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f /etc/apt/sources.list.d/buster.list \
     && echo "githubactions" > /opt/oryx/.imagetype \
     && echo "UBUNTU|${UBUNTU_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+
+
+RUN if [ "${UBUNTU_FLAVOR}" = "jammy" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu70 \
+            libncurses5 \
+            libargon2-0 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    elif [ "${UBUNTU_FLAVOR}" = "noble" ]; then \
+        apt-get update \
+        && apt-get install -y --no-install-recommends \
+            libicu74 \
+            libncurses6 \
+            libargon2-1 \
+        && rm -rf /var/lib/apt/lists/* ; \
+    fi
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
 # For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 
