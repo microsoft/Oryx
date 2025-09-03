@@ -83,7 +83,6 @@ RUN apt-get update \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        libicu72 \
         libcurl4 \
         libssl3 \
         libyaml-dev \
