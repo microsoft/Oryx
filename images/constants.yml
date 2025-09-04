@@ -73,3 +73,4 @@ variables:
   python311Version: 3.11.13
   python312Version: 3.12.11
   python313Version: 3.13.5
+  python314Version: 3.14.0rc2

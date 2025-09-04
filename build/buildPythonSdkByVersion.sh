@@ -62,10 +62,10 @@ buildPythonfromSource()
             zlib1g-dev \
 
     # Try getting the keys 5 times at most
-    /tmp/receiveGpgKeys.sh $gpgKey
+    # /tmp/receiveGpgKeys.sh $gpgKey
 
-    gpg --batch --verify /tmpFiles/python.tar.xz.asc /tmpFiles/python.tar.xz
-    tar -xJf /tmpFiles/python.tar.xz --strip-components=1 -C .
+    # gpg --batch --verify /tmpFiles/python.tar.xz.asc /tmpFiles/python.tar.xz
+    #tar -xJf /tmpFiles/python.tar.xz --strip-components=1 -C .
 
     INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 

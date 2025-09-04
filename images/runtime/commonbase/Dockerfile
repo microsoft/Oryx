@@ -1,5 +1,5 @@
 ARG DEBIAN_FLAVOR
-FROM mcr.microsoft.com/mirror/docker/library/debian:${DEBIAN_FLAVOR}
+FROM mcr.microsoft.com/mirror/docker/library/ubuntu:noble
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 
