@@ -159,6 +159,7 @@
     python310-version: 3.10.14
     python311-version: 3.11.8
     python312-version: 3.12.2
+    python313-version: 3.13.7
     runtime-versions:
     - 3.7-debian-bullseye
     - 3.7-debian-buster
@@ -175,6 +176,8 @@
     - 3.11-debian-bullseye
     - 3.12-debian-bookworm
     - 3.12-debian-bullseye
+    - 3.13-debian-bookworm
+    - 3.13-debian-bullseye
     - dynamic-debian-buster
   outputs:
   - type: csharp
