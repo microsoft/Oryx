@@ -67,7 +67,7 @@ fi
 # /tmp/receiveGpgKeys.sh $gpgKey
 
 # gpg --batch --verify /python.tar.xz.asc /python.tar.xz
-# tar -xJf /python.tar.xz --strip-components=1 -C .
+tar -xJf /python.tar.xz --strip-components=1 -C .
 
 INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 

@@ -65,7 +65,7 @@ buildPythonfromSource()
     # /tmp/receiveGpgKeys.sh $gpgKey
 
     # gpg --batch --verify /tmpFiles/python.tar.xz.asc /tmpFiles/python.tar.xz
-    #tar -xJf /tmpFiles/python.tar.xz --strip-components=1 -C .
+    tar -xJf /tmpFiles/python.tar.xz --strip-components=1 -C .
 
     INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 
