@@ -29,7 +29,7 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
         libsqlite3-dev \
         libreadline-dev \
         libbz2-dev \
-        libgdm-dev \
+        # libgdm-dev (not available in noble) \
         libbluetooth-dev \
         tk-dev \
         uuid-dev \
@@ -40,8 +40,8 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
         libffi-dev \
         libgdbm-dev \
         liblzma-dev \
-        libsqlite3-dev \
-        lzma \
+        # libsqlite3-dev (duplicate) \
+        # lzma (not needed, use liblzma-dev) \
         lzma-dev \
         zlib1g-dev
 

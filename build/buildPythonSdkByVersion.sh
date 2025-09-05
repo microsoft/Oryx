@@ -44,15 +44,15 @@ buildPythonfromSource()
             libbz2-dev \
             libffi-dev \
             libgdbm-dev \
-            libgdm-dev \
+            # libgdm-dev (not available in noble) \
             libgeos-dev \
             liblzma-dev \
             libncurses5-dev \
             libreadline-dev \
-            libreadline6-dev \
+            # libreadline6-dev (deprecated in noble) \
             libsqlite3-dev \
             libssl-dev \
-            lzma \
+            # lzma (not needed, use liblzma-dev) \
             lzma-dev \
             pkg-config \
             python3-dev \
