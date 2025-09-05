@@ -6,7 +6,6 @@ namespace Microsoft.Oryx.BuildScriptGenerator.Common
     {
         public const string EnableDynamicInstallKey = "ENABLE_DYNAMIC_INSTALL";
         public const string SdkStorageBaseUrlKeyName = "ORYX_SDK_STORAGE_BASE_URL";
-        public const string SdkStorageBackupBaseUrlKeyName = "ORYX_SDK_STORAGE_BACKUP_BASE_URL";
         public const string ProdSdkStorageBaseUrl = "https://oryxsdksprod.blob.core.windows.net";
         public const string ProdBackupSdkStorageBaseUrl = "https://oryxsdksprodbackup.blob.core.windows.net";
         public const string ProdSdkCdnStorageBaseUrl = "https://oryx-cdn.microsoft.io";
