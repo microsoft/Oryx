@@ -9,7 +9,7 @@ set -ex
 pythonVersion=$PYTHON_VERSION 
 
 wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /python.tar.xz
-wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /python.tar.xz.asc
+# wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /python.tar.xz.asc
 
 debianFlavor=$DEBIAN_FLAVOR
 debianHackFlavor=$DEBIAN_HACK_FLAVOR
