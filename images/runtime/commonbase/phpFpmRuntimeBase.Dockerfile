@@ -54,7 +54,7 @@ RUN set -eux; \
 		libedit-dev \
 		libsodium-dev \
 		libfreetype6-dev \
-		libjpeg62-turbo-dev \
+		# libjpeg62-turbo-dev \
 		libonig-dev \
 		libcurl4-openssl-dev \
 		libldap2-dev \
