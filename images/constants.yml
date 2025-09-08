@@ -24,7 +24,7 @@ variables:
   php82DebianFlavors: bullseye
   php83DebianFlavors: bullseye,bookworm
   php84DebianFlavors: bullseye,bookworm
-  debianFlavors: bullseye,bookworm, noble
+  debianFlavors: bullseye,bookworm,noble
   dotnetDebianFlavors: bookworm,bullseye
   nodejsDebianFlavors: bookworm,bullseye
   phpDebianFlavors: bookworm,bullseye
