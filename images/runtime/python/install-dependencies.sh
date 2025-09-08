@@ -10,15 +10,23 @@ debianFlavor=$DEBIAN_FLAVOR
 
 # libpq-dev is for PostgreSQL
 apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install -y --no-install-recommends \
+    && apt-get upgrade -y
+
+# Install ODBC library based on Debian flavor
+if [ "$debianFlavor" == "noble" ]; then
+    odbcPackage="libodbc2"
+else
+    odbcPackage="libodbc1"
+fi
+
+apt-get install -y --no-install-recommends \
         libexpat1 \
         curl \
         gnupg \
         libpq-dev \
         default-libmysqlclient-dev \
         unzip \
-        libodbc2 \
+        $odbcPackage \
         apt-transport-https \
         swig \
         # GIS libraries for GeoDjango (https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/)
