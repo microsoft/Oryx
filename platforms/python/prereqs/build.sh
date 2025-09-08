@@ -9,11 +9,21 @@ set -ex
 pythonVersion=$PYTHON_VERSION 
 
 wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /python.tar.xz
-wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /python.tar.xz.asc
+
+IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
+if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -le "13" ]
+then
+  gpgKey=$GPG_KEY
+  wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /python.tar.xz.asc
+
+  # Try getting the keys 5 times at most
+  /tmp/receiveGpgKeys.sh $gpgKey
+  gpg --batch --verify /python.tar.xz.asc /python.tar.xz
+fi
+
 
 debianFlavor=$DEBIAN_FLAVOR
 debianHackFlavor=$DEBIAN_HACK_FLAVOR
-gpgKey=$GPG_KEY
 
 pythonSdkFileName=""
 PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2da64da38f516078c7/public/get-pip.py"
@@ -63,10 +73,7 @@ else
 	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
 fi
 
-# Try getting the keys 5 times at most
-/tmp/receiveGpgKeys.sh $gpgKey
 
-gpg --batch --verify /python.tar.xz.asc /python.tar.xz
 tar -xJf /python.tar.xz --strip-components=1 -C .
 
 INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
