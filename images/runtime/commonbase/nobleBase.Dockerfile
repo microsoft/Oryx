@@ -1,6 +1,4 @@
-ARG DEBIAN_FLAVOR
-ARG OS_NAME=debian
-FROM mcr.microsoft.com/mirror/docker/library/${OS_NAME}:${DEBIAN_FLAVOR}
+FROM mcr.microsoft.com/mirror/docker/library/ubuntu:noble
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 
@@ -13,11 +11,6 @@ RUN apt-get update \
 		gnupg \
 		netbase \
 		wget
-
-ARG DEBIAN_FLAVOR
-RUN if [ "${DEBIAN_FLAVOR}" = "bookworm" ] ; then \
-    apt-get update && apt-get install -y --no-install-recommends sq ; \
-    fi
 
 RUN  rm -rf /var/lib/apt/lists/*
 

@@ -18,7 +18,7 @@ apt-get update \
         libpq-dev \
         default-libmysqlclient-dev \
         unzip \
-        libodbc1 \
+        libodbc2 \
         apt-transport-https \
         swig \
         # GIS libraries for GeoDjango (https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/)
