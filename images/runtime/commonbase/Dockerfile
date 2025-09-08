@@ -1,6 +1,6 @@
-ARG DEBIAN_FLAVOR
+ARG OS_FLAVOR
 ARG OS_NAME=debian
-FROM mcr.microsoft.com/mirror/docker/library/${OS_NAME}:${DEBIAN_FLAVOR}
+FROM mcr.microsoft.com/mirror/docker/library/${OS_NAME}:${OS_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 
@@ -14,8 +14,8 @@ RUN apt-get update \
 		netbase \
 		wget
 
-ARG DEBIAN_FLAVOR
-RUN if [ "${DEBIAN_FLAVOR}" = "bookworm" ] ; then \
+ARG OS_FLAVOR
+RUN if [ "${OS_FLAVOR}" = "bookworm" ] ; then \
     apt-get update && apt-get install -y --no-install-recommends sq ; \
     fi
 
