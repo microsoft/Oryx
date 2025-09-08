@@ -33,11 +33,14 @@ echo
 echo "Installing .NET Core SDK $DOTNET_SDK_VER from $sdkStorageAccountUrl ..."
 echo
 
+osFlavor=$OS_FLAVOR
 debianFlavor="$DEBIAN_FLAVOR"
 
 fileName="dotnet.tar.gz"
 
-if [ -z "$debianFlavor" ]; then
+if [ -n "$osFlavor" ]; then
+    fileName="dotnet-$osFlavor-$DOTNET_SDK_VER.tar.gz"
+elif [ -z "$debianFlavor" ]; then
     # Use default sdk file name
     fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 elif [ "$debianFlavor" == "stretch" ]; then

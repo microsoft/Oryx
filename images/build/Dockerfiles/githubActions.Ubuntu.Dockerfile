@@ -22,19 +22,10 @@ RUN chmod a+x /opt/buildscriptgen/GenerateBuildScript
 RUN chmod a+x /opt/buildscriptgen/Microsoft.Oryx.BuildServer
 
 FROM ${BASE_IMAGE} AS main
-ARG DEBIAN_FLAVOR
 ARG OS_TYPE
 ARG OS_FLAVOR
 ENV OS_TYPE=$OS_TYPE
 ENV OS_FLAVOR=$OS_FLAVOR
-ENV DEBIAN_FLAVOR=$DEBIAN_FLAVOR
-
-# stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror
-RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
-        sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
-        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
-        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
-    fi
 
 # Install basic build tools
 RUN apt-get update \
@@ -84,47 +75,15 @@ RUN apt-get update \
     # This is the folder containing 'links' to benv and build script generator
     && mkdir -p /opt/oryx
 
-RUN if [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
-        apt-get update \
-        && apt-get install -y --no-install-recommends \
-            libicu72 \
-            libcurl4 \
-            libssl3 \
-            libyaml-dev \
-            libxml2 \
-        && rm -rf /var/lib/apt/lists/* ; \
-    elif [ "${DEBIAN_FLAVOR}" = "bullseye" ]; then \
-        apt-get update \
-        && apt-get install -y --no-install-recommends \
-            libicu67 \
-            libcurl4 \
-            libssl1.1 \
-            libyaml-dev \
-            libxml2 \
-            # Adding lxml depended packages to avoid build failures
-            # https://lxml.de/installation.html#requirements
-            libxml2-dev \
-            libxslt-dev \
-            python3-dev \
-            python3-setuptools \
-            python3-wheel \
-        && rm -rf /var/lib/apt/lists/* ; \
-    elif [ "${DEBIAN_FLAVOR}" = "buster" ]; then \
-        apt-get update \
-        && apt-get install -y --no-install-recommends \
-            libicu63 \
-            libcurl4 \
-            libssl1.1 \
-        && rm -rf /var/lib/apt/lists/* ; \
-    else \
-        apt-get update \
-        && apt-get install -y --no-install-recommends \
-            libcurl3 \
-            libicu57 \
-            liblttng-ust0 \
-            libssl1.0.2 \
-        && rm -rf /var/lib/apt/lists/* ; \
-    fi
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libicu74 \
+        libcurl4 \
+        libssl3 \
+        libyaml-dev \
+        libxml2 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Yarn, HUGO
 FROM main AS intermediate
@@ -161,6 +120,7 @@ RUN set -ex \
  && ln -s $YARN_VERSION /opt/yarn/latest \
  && ln -s $YARN_VERSION /opt/yarn/$YARN_MINOR_VERSION \
  && ln -s $YARN_MINOR_VERSION /opt/yarn/$YARN_MAJOR_VERSION
+
 RUN set -ex \
  && mkdir -p /links \
  && cp -s /opt/yarn/stable/bin/yarn /opt/yarn/stable/bin/yarnpkg /links
@@ -175,11 +135,10 @@ COPY --from=intermediate /opt /opt
 # as per solution 2 https://stackoverflow.com/questions/65921037/nuget-restore-stopped-working-inside-docker-container
 RUN ${IMAGES_DIR}/retry.sh "curl -o /usr/local/share/ca-certificates/verisign.crt -SsL https://crt.sh/?d=1039083" \
     && update-ca-certificates \
-    && echo "value of DEBIAN_FLAVOR is ${DEBIAN_FLAVOR}"
+    && echo "value of OS_FLAVOR is ${OS_FLAVOR}"
 
-# Install PHP pre-reqs	# Install PHP pre-reqs
-RUN if [ "${DEBIAN_FLAVOR}" = "buster" ] || [ "${DEBIAN_FLAVOR}" = "bullseye" ] || [ "${DEBIAN_FLAVOR}" = "bookworm" ]; then \
-    apt-get update \
+# Install PHP pre-reqs
+RUN apt-get update \
     && apt-get upgrade -y \
     && apt-get install -y \
         $PHPIZE_DEPS \
@@ -187,11 +146,9 @@ RUN if [ "${DEBIAN_FLAVOR}" = "buster" ] || [ "${DEBIAN_FLAVOR}" = "bullseye" ] 
         curl \
         xz-utils \
         libsodium-dev \
-        libncurses5 \
-    --no-install-recommends && rm -r /var/lib/apt/lists/* ; \
-    else \
-        .${IMAGES_DIR}/build/php/prereqs/installPrereqs.sh ; \
-    fi 
+        libncurses6 \
+    --no-install-recommends && rm -r /var/lib/apt/lists/* ;
+
 
 RUN tmpDir="/opt/tmp" \
     && cp -f $tmpDir/images/build/benv.sh /opt/oryx/benv \
@@ -212,12 +169,13 @@ RUN tmpDir="/opt/tmp" \
     # causing php-composer to fail
     && apt-get update \
     && apt-get install -y --no-install-recommends \
-        libargon2-0 \
+        libargon2-1 \
         libonig-dev \
     && rm -rf /var/lib/apt/lists/* \
     && rm -f /etc/apt/sources.list.d/buster.list \
     && echo "githubactions" > /opt/oryx/.imagetype \
     && echo "${OS_TYPE}|${OS_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
 # For example here the $LASTNAME in the following example does not expand to JORDAN but instead is empty: 

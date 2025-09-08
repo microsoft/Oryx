@@ -42,6 +42,7 @@ PLATFORM_NAME="$1"
 VERSION="$2"
 IS_FROM_DYNAMIC_INSTALLATION="${3:-false}"
 
+osFlavor=$OS_FLAVOR
 debianFlavor=$DEBIAN_FLAVOR
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 
@@ -69,7 +70,10 @@ if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
     
     echo $sasToken
 fi
-if [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
+if [ -n "$osFlavor" ]; then
+  # Use OS flavor in filename if set
+  fileName="$PLATFORM_NAME-$osFlavor-$VERSION.tar.gz"
+elif [ -z "$debianFlavor" ] || [ "$debianFlavor" == "stretch" ]; then
   # Use default sdk file name
 	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 else
