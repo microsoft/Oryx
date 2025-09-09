@@ -117,7 +117,6 @@ buildPythonfromSource()
 }
 
 echo
-# TODO: Determine if we need to continue building newer versions of Python from scratch
 echo "Building python 3.14 or newer from source code..."
 
 IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"

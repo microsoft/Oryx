@@ -1,4 +1,4 @@
-ARG DEBIAN_FLAVOR=bookworm
+ARG OS_FLAVOR
 ARG BASE_IMAGE
 
 # Startup script generator
@@ -37,6 +37,9 @@ FROM ${BASE_IMAGE} as main
 
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
+
+ARG OS_FLAVOR
+ENV OS_FLAVOR=${OS_FLAVOR}
 
 RUN apt-get update \
     && apt-get upgrade -y \
