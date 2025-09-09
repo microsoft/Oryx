@@ -35,14 +35,4 @@ docker build \
 echo
 echo
 
-echo "Building noble based GitHub Action image for tests..."
-docker build \
-    -t "$ORYXTESTS_BUILDIMAGE_REPO:github-actions-ubuntu-noble" \
-    --build-arg PARENT_IMAGE_BASE=$ORYX_TEST_IMAGE_BASE:github-actions-ubuntu-noble-$IMAGE_BUILDNUMBER \
-    -f "$ORYXTESTS_GITHUB_ACTIONS_BUILDIMAGE_DOCKERFILE" \
-    .
-    
-echo
-echo
-
 dockerCleanupIfRequested
