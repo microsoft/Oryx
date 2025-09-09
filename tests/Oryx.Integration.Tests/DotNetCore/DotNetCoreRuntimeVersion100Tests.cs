@@ -23,7 +23,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-ubuntu-noble")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
         [InlineData(NetCoreApp100MvcApp, "Welcome to ASP.NET Core 10 MVC!")]
         [InlineData(NetCoreApp100WebApp, "Welcome to a .NET 10 Web App!")]
         public async Task CanBuildAndRun_NetCore100AppAsync(string sampleApp, string webpageMessage)
@@ -50,14 +50,14 @@ namespace Microsoft.Oryx.Integration.Tests
                 sampleApp,
                 _output,
                 new DockerVolume[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsNoble),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "10.0", ImageTestHelperConstants.OsTypeUbuntuNoble),
+                _imageHelper.GetRuntimeImage("dotnetcore", "10.0", ImageTestHelperConstants.OsTypeDebianBookworm),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -74,7 +74,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-ubuntu-noble")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
         [InlineData(NetCoreApp100MvcApp)]
         [InlineData(NetCoreApp100WebApp)]
         public async Task CanBuildAndRun_NetCore100AppWithExplicitPackageReferences_Async(string sampleApp)
@@ -101,14 +101,14 @@ namespace Microsoft.Oryx.Integration.Tests
                 sampleApp,
                 _output,
                 new DockerVolume[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsNoble),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "10.0", ImageTestHelperConstants.OsTypeUbuntuNoble),
+                _imageHelper.GetRuntimeImage("dotnetcore", "10.0", ImageTestHelperConstants.OsTypeDebianBookworm),
                 ContainerPort,
                 "/bin/sh",
                 new[]
@@ -125,7 +125,7 @@ namespace Microsoft.Oryx.Integration.Tests
 
         [Theory]
         [Trait("category", "githubactions")]
-        [Trait("build-image", "github-actions-ubuntu-noble")]
+        [Trait("build-image", "github-actions-debian-bookworm")]
         [InlineData(NetCoreApp100MvcApp)]
         public async Task CanBuildAndRun_NetCore100App_WhenUsingExplicitStartupCommand_Async(string sampleApp)
         {
@@ -150,14 +150,14 @@ namespace Microsoft.Oryx.Integration.Tests
                 sampleApp,
                 _output,
                 new DockerVolume[] { volume, appOutputDirVolume },
-                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsNoble),
+                _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm),
                 "/bin/sh",
                 new[]
                 {
                     "-c",
                     buildImageScript
                 },
-                _imageHelper.GetRuntimeImage("dotnetcore", "10.0", ImageTestHelperConstants.OsTypeUbuntuNoble),
+                _imageHelper.GetRuntimeImage("dotnetcore", "10.0", ImageTestHelperConstants.OsTypeDebianBookworm),
                 ContainerPort,
                 "/bin/sh",
                 new[]

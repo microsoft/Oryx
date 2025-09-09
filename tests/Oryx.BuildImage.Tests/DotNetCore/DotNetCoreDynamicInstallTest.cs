@@ -624,7 +624,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
                     DotNetCoreRunTimeVersions.NetCoreApp100,
                     DotNetCoreSdkVersions.DotNet100SdkVersion,
                     NetCore10PreviewMvcApp,
-                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsNoble));
+                    imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
 
                 return data;
             }
@@ -633,8 +633,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(SupportedVersionAndImageNameData))]
         public void BuildsApplication_AfterInstallingSupportedSdk(
-            string runtimeVersion,
-            string sdkVersion,
+            string runtimeVersion, 
+            string sdkVersion, 
             string appName,
             string imageName)
         {
@@ -738,7 +738,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(false)]
         public void ParsesImageTypeFromFile_Jamstack(bool removeImageTypeFile)
         {
-
+            
             var imageHelper = new ImageTestHelper();
             TestImageTypeResolution(
                 imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye),
@@ -751,7 +751,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(false)]
         public void ParsesImageTypeFromFile_Cli(bool removeImageTypeFile)
         {
-
+            
             var imageHelper = new ImageTestHelper();
             TestImageTypeResolution(
                 imageHelper.GetCliImage(ImageTestHelperConstants.CliRepository),
@@ -764,7 +764,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         [InlineData(false)]
         public void ParsesImageTypeFromFile_GithubActions(bool removeImageTypeFile)
         {
-
+            
             var imageHelper = new ImageTestHelper();
             TestImageTypeResolution(
                 imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
@@ -809,14 +809,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 () =>
                 {
                     Assert.True(result.IsSuccess);
-
-                    if (removeImageTypeFile)
-                    {
+                    
+                    if (removeImageTypeFile) {
                         Assert.Contains(MissingImageTypeWarning, result.StdOut);
                         Assert.DoesNotContain(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
                         Assert.DoesNotMatch(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);
-                    }
-                    else
+                    } 
+                    else 
                     {
                         Assert.Contains(string.Format(ImageResolverMessage, FilePaths.ImageTypeFileName, expectedImageType), result.StdOut);
                         Assert.Matches(string.Format(ImageDetectedMessage, expectedImageType), result.StdOut);
