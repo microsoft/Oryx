@@ -8,10 +8,6 @@ set -ex
 
 osFlavor=${DEBIAN_FLAVOR:-$OS_FLAVOR}
 
-# libpq-dev is for PostgreSQL
-apt-get update \
-    && apt-get upgrade -y
-
 # Install ODBC library based on Debian flavor
 if [ "$osFlavor" == "noble" ]; then
     odbcPackage="libodbc2"
@@ -19,7 +15,10 @@ else
     odbcPackage="libodbc1"
 fi
 
-apt-get install -y --no-install-recommends \
+# libpq-dev is for PostgreSQL
+apt-get update \
+    && apt-get upgrade -y \
+    && apt-get install -y --no-install-recommends \
         libexpat1 \
         curl \
         gnupg \
