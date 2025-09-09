@@ -527,7 +527,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string OsTypeDebianBuster = "debian-buster";
         public const string OsTypeDebianBullseye = "debian-bullseye";
         public const string OsTypeDebianBookworm = "debian-bookworm";
-        public const string OsTypeUbuntuNoble = "debian-noble";
+        public const string OsTypeUbuntuNoble = "ubuntu-noble";
 
         public const string AzureFunctionsJamStackStretch = "azfunc-jamstack-debian-stretch";
         public const string AzureFunctionsJamStackBuster = "azfunc-jamstack-debian-buster";
