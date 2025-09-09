@@ -36,7 +36,6 @@ namespace Microsoft.Oryx.Tests.Common
         private const string _gitHubActionsBuster = ImageTestHelperConstants.GitHubActionsBuster;
         private const string _gitHubActionsBullseye = ImageTestHelperConstants.GitHubActionsBullseye;
         private const string _gitHubActionsBookworm = ImageTestHelperConstants.GitHubActionsBookworm;
-        private const string _gitHubActionsNoble = ImageTestHelperConstants.GitHubActionsNoble;
         private const string _gitHubActionsStretchBase = ImageTestHelperConstants.GitHubActionsStretchBase;
         private const string _gitHubActionsBusterBase = ImageTestHelperConstants.GitHubActionsBusterBase;
         private const string _gitHubActionsBullseyeBase = ImageTestHelperConstants.GitHubActionsBullseyeBase;
@@ -246,10 +245,6 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetGitHubActionsBuildImage(_gitHubActionsBookworm);
             }
-            else if (string.Equals(tag, _gitHubActionsNoble))
-            {
-                return GetGitHubActionsBuildImage(_gitHubActionsNoble);
-            }
             else if (string.Equals(tag, _ltsVersionsBuster))
             {
                 return GetLtsVersionsBuildImage(_ltsVersionsBuster);
@@ -336,10 +331,6 @@ namespace Microsoft.Oryx.Tests.Common
             else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsBullseye))
             {
                 return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsBullseye}{_tagSuffix}";
-            }
-            else if (!string.IsNullOrEmpty(buildImageTag) && string.Equals(buildImageTag.ToLower(), _gitHubActionsNoble))
-            {
-                return $"{_repoPrefix}/{_buildRepository}:{_gitHubActionsNoble}{_tagSuffix}";
             }
             else
             {
@@ -536,7 +527,6 @@ namespace Microsoft.Oryx.Tests.Common
         public const string GitHubActionsBuster = "github-actions-debian-buster";
         public const string GitHubActionsBullseye = "github-actions-debian-bullseye";
         public const string GitHubActionsBookworm = "github-actions-debian-bookworm";
-        public const string GitHubActionsNoble = "github-actions-ubuntu-noble";
         public const string GitHubActionsStretchBase = "github-actions-debian-stretch-base";
         public const string GitHubActionsBusterBase = "github-actions-debian-buster-base";
         public const string GitHubActionsBullseyeBase = "github-actions-debian-bullseye-base";
