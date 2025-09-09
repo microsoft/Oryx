@@ -78,6 +78,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli.Options
                 options.DynamicInstallRootDir = dynamicInstallRootDir;
             }
 
+            options.OsType = this.GetStringValue(SettingsKeys.OsType);
+            options.OsFlavor = this.GetStringValue(SettingsKeys.OsFlavor);
             options.DebianFlavor = this.GetStringValue(SettingsKeys.DebianFlavor);
         }
     }

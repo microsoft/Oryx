@@ -71,6 +71,8 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
         public const string DynamicInstallRootDir = "DYNAMIC_INSTALL_ROOT_DIR";
         public const string DisableRecursiveLookUp = "DISABLE_RECURSIVE_LOOKUP";
         public const string CustomRequirementsTxtPath = "CUSTOM_REQUIREMENTSTXT_PATH";
+        public const string OsType = "OS_TYPE";
+        public const string OsFlavor = "OS_FLAVOR";
         public const string DebianFlavor = "DEBIAN_FLAVOR";
         public const string CallerId = "CALLER_ID";
         public const string OryxDisablePipUpgrade = "ORYX_DISABLE_PIP_UPGRADE";
