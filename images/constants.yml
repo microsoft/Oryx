@@ -24,7 +24,7 @@ variables:
   php83OSFlavors: bullseye,bookworm
   php84OSFlavors: bullseye,bookworm
   osFlavors: bullseye,bookworm,noble
-  dotnetOSFlavors: bookworm,bullseye, noble
+  dotnetOSFlavors: bookworm,bullseye,noble
   nodejsOSFlavors: bookworm,bullseye
   phpOSFlavors: bookworm,bullseye
   pythonOSFlavors: bookworm,bullseye,noble
