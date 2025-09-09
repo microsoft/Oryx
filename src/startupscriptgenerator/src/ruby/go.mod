@@ -6,7 +6,7 @@ require (
 	code.cloudfoundry.org/clock v1.32.0 // indirect
 	github.com/BurntSushi/toml v1.5.0 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
-	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
+	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/microsoft/ApplicationInsights-Go v0.4.4 // indirect
