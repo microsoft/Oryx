@@ -66,7 +66,7 @@ COPY platforms/python/prereqs/build.sh /tmp/
 # RUN chmod +x /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/build.sh
 
-RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION noble
+RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $OS_FLAVOR
 
 RUN set -ex \
  && cd /opt/python/ \

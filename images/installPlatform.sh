@@ -42,7 +42,7 @@ PLATFORM_NAME="$1"
 VERSION="$2"
 IS_FROM_DYNAMIC_INSTALLATION="${3:-false}"
 
-osFlavor=$OS_FLAVOR
+osFlavor=${DEBIAN_FLAVOR:-$OS_FLAVOR}
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 
 sdkStorageAccountUrl="$ORYX_SDK_STORAGE_BASE_URL"
@@ -69,6 +69,7 @@ if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
     
     echo $sasToken
 fi
+
 if [ -z "$osFlavor" ] || [ "$osFlavor" == "stretch" ]; then
   # Use default sdk file name
 	fileName="$PLATFORM_NAME-$VERSION.tar.gz"

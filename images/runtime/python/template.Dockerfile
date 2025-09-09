@@ -1,10 +1,10 @@
-ARG OS_FLAVOR
+ARG DEBIAN_FLAVOR
 ARG BASE_IMAGE
 
 # Startup script generator
 # Using 1.20 golang image because golang latest image is not supported for buster, so using 1.20 golang image and then updating it.
 # TODO: Once buster gets deprecated, update the golang base image
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-${OS_FLAVOR} as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.20-${DEBIAN_FLAVOR} as startupCmdGen
 
 # Download and install the latest version of Go
 RUN curl -OL https://go.dev/dl/go1.23.8.linux-amd64.tar.gz && \
@@ -33,8 +33,8 @@ ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 ARG SDK_STORAGE_BASE_URL_VALUE
 
-ARG OS_FLAVOR
-ENV OS_FLAVOR=${OS_FLAVOR}
+ARG DEBIAN_FLAVOR
+ENV DEBIAN_FLAVOR=${DEBIAN_FLAVOR}
 ENV ORYX_SDK_STORAGE_BASE_URL=${SDK_STORAGE_BASE_URL_VALUE}
 
 RUN apt-get update \
@@ -62,7 +62,7 @@ COPY platforms/__common.sh /tmp/
 RUN true
 COPY platforms/python/prereqs/build.sh /tmp/
 RUN true
-COPY platforms/python/versions/${OS_FLAVOR}/versionsToBuild.txt /tmp/
+COPY platforms/python/versions/${DEBIAN_FLAVOR}/versionsToBuild.txt /tmp/
 RUN true
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN true
@@ -73,7 +73,7 @@ RUN chmod +x /tmp/build.sh
 RUN --mount=type=secret,id=oryx_sdk_storage_account_access_token \
     set -e \
     && export ORYX_SDK_STORAGE_ACCOUNT_ACCESS_TOKEN_PATH="/run/secrets/oryx_sdk_storage_account_access_token" \
-    && ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $OS_FLAVOR
+    && ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $DEBIAN_FLAVOR
 
 RUN set -ex \
  && cd /opt/python/ \

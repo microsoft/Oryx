@@ -6,7 +6,7 @@
 
 set -ex
 
-osFlavor=$OS_FLAVOR
+osFlavor=${DEBIAN_FLAVOR:-$OS_FLAVOR}
 
 # libpq-dev is for PostgreSQL
 apt-get update \
