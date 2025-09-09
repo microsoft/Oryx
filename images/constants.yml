@@ -23,11 +23,11 @@ variables:
   php82OSFlavors: bullseye
   php83OSFlavors: bullseye,bookworm
   php84OSFlavors: bullseye,bookworm
-  osFlavors: bullseye,bookworm,noble
+  debianFlavors: bullseye,bookworm
   dotnetOSFlavors: bookworm,bullseye,noble
   nodejsOSFlavors: bookworm,bullseye
   phpOSFlavors: bookworm,bullseye
-  pythonOSFlavors: bookworm,bullseye,noble
+  pythonOSFlavors: bookworm,bullseye
   cliDebianFlavors: bullseye
   cliBuilderDebianFlavors: bullseye
   fullDebianFlavors: bullseye
