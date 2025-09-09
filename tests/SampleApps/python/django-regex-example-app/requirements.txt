@@ -102,7 +102,7 @@ tblib==1.7.0
 trio==0.19.0
 trio-websocket==0.9.2
 tzlocal==2.1
-urllib3==1.26.6
+urllib3==2.5.0
 vine==5.0.0
 wcwidth==0.2.5
 whitenoise==6.3.0
