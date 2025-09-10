@@ -18,7 +18,7 @@
     "@angular/forms": "^18.2.0",
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
-    "@angular/platform-server": "^18.2.0",
+    "@angular/platform-server": "^18.2.14",
     "@angular/router": "^18.2.0",
     "@angular/ssr": "^18.2.20",
     "@ngrx/effects": "^18.1.1",
