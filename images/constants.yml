@@ -8,26 +8,26 @@ variables:
   USER_DOTNET_AI_VERSION: 2.8.42
   AI_CONNECTION_STRING: 1234(RANDOMVALUE)
   SDK_STORAGE_BASE_URL_VALUE: https://oryxsdksdev.blob.core.windows.net
-  node18DebianFlavors: bullseye
-  node20DebianFlavors: bullseye,bookworm
-  node22DebianFlavors: bullseye,bookworm
-  python39DebianFlavors: bullseye
-  python310DebianFlavors: bullseye
-  python311DebianFlavors: bullseye,bookworm
-  python312DebianFlavors: bullseye,bookworm
-  python313DebianFlavors: bullseye,bookworm
-  dotnet80DebianFlavors: bullseye,bookworm
-  dotnet90DebianFlavors: bookworm
-  dotnet100DebianFlavors: bookworm
-  php81DebianFlavors: bullseye
-  php82DebianFlavors: bullseye
-  php83DebianFlavors: bullseye,bookworm
-  php84DebianFlavors: bullseye,bookworm
-  debianFlavors: bullseye,bookworm
-  dotnetDebianFlavors: bookworm,bullseye
-  nodejsDebianFlavors: bookworm,bullseye
-  phpDebianFlavors: bookworm,bullseye
-  pythonDebianFlavors: bookworm,bullseye
+  node18osFlavors: bullseye
+  node20osFlavors: bullseye,bookworm
+  node22osFlavors: bullseye,bookworm
+  python39osFlavors: bullseye
+  python310osFlavors: bullseye
+  python311osFlavors: bullseye,bookworm
+  python312osFlavors: bullseye,bookworm
+  python313osFlavors: bullseye,bookworm
+  dotnet80osFlavors: bullseye,bookworm
+  dotnet90osFlavors: bookworm
+  dotnet100osFlavors: noble
+  php81osFlavors: bullseye
+  php82osFlavors: bullseye
+  php83osFlavors: bullseye,bookworm
+  php84osFlavors: bullseye,bookworm
+  osFlavors: bullseye,bookworm
+  dotnetosFlavors: bookworm,bullseye,noble
+  nodejsosFlavors: bookworm,bullseye
+  phposFlavors: bookworm,bullseye
+  pythonosFlavors: bookworm,bullseye
   cliDebianFlavors: bullseye
   cliBuilderDebianFlavors: bullseye
   fullDebianFlavors: bullseye
@@ -50,13 +50,11 @@ variables:
   ASPNET_CORE_APP_90: 9.0.7
   ASPNET_CORE_APP_90_SHA: b175d4d0578f9f5d735d59def3f44459462ef36b4bd07d9ca0ed9853bf42d90c7bace195ff264a9dcf6dd4d6d452c87059085146268fce3540ed58eaf39629eb
   ASPNET_CORE_APP_100: "10.0.0-preview.6.25358.103"
-  ASPNET_CORE_APP_100_SHA: 15ccea434f5e33b4af872bda00d30d3fee4494113a1e5d7b1e8ce206ab0a2e09384fa5a223afdde4b94ea3b7e12b796c1a45138be833288bd68741ae843fb6c8
   NET_CORE_APP_80: 8.0.18
   NET_CORE_APP_80_SHA: 15d754a01c93183ea98bd608f2691193c86f284ec7feddfc810fad919e2f7ba20d41e1de45789fc1d9ac9fcd8be82d49cb8fe4c471dec892f91272fea2e53f08
   NET_CORE_APP_90: 9.0.7
   NET_CORE_APP_90_SHA: e273b592ae9e1c75e91ce3be6f4f2d23143276900141e29c673d46490118d0115f6d1968ae6cfed598ca300fe889ba20fa060787ebb540308433580a3c6c5cd8
   NET_CORE_APP_100: "10.0.0-preview.6.25358.103"
-  NET_CORE_APP_100_SHA: 7feacaa8655e14521db6ba9a786072377f063864e418c5e4f5ea79923a29f4724ef6ed160745459ee028f19279afa1c0fede9ab693372208909eef8733ca0364
   node18Version: 18.20.8
   node20Version: 20.19.3
   node22Version: 22.17.0
