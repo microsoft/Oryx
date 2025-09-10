@@ -269,11 +269,11 @@ namespace Microsoft.Oryx.Tests.Common
             {
                 return GetCliImage(_cliBusterTag);
             }
-            else if(string.Equals(tag, _cliBullseyeTag))
+            else if (string.Equals(tag, _cliBullseyeTag))
             {
                 return GetCliImage(_cliBullseyeTag);
             }
-            else if(string.Equals(tag, _cliBuilderBullseyeTag))
+            else if (string.Equals(tag, _cliBuilderBullseyeTag))
             {
                 return GetCliBuilderImage(_cliBuilderBullseyeTag);
             }
@@ -518,6 +518,7 @@ namespace Microsoft.Oryx.Tests.Common
         public const string OsTypeDebianBuster = "debian-buster";
         public const string OsTypeDebianBullseye = "debian-bullseye";
         public const string OsTypeDebianBookworm = "debian-bookworm";
+        public const string OsTypeUbuntuNoble = "ubuntu-noble";
 
         public const string AzureFunctionsJamStackStretch = "azfunc-jamstack-debian-stretch";
         public const string AzureFunctionsJamStackBuster = "azfunc-jamstack-debian-buster";

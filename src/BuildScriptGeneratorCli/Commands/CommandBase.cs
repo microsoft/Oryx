@@ -190,6 +190,14 @@ namespace Microsoft.Oryx.BuildScriptGeneratorCli
             // FilePaths.OsTypeFileName file for the correct flavor
             if (string.IsNullOrWhiteSpace(options.DebianFlavor))
             {
+                // lots of oryx code seems to be using debianFlavor as variable
+                // so we keep the variable name as is, even though it is more of an os flavor
+                // this would also help avoid a lot of code changes to generate images in Ubuntu flavors as well
+                if (!string.IsNullOrWhiteSpace(options.OsFlavor))
+                {
+                    return options.OsFlavor.ToLowerInvariant();
+                }
+
                 var parsedOsType = ParseOsTypeFile();
                 if (parsedOsType != null)
                 {

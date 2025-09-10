@@ -43,6 +43,7 @@ VERSION="$2"
 IS_FROM_DYNAMIC_INSTALLATION="${3:-false}"
 
 osFlavor=${DEBIAN_FLAVOR:-$OS_FLAVOR}
+debianFlavor=$DEBIAN_FLAVOR
 fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 
 sdkStorageAccountUrl="$ORYX_SDK_STORAGE_BASE_URL"
@@ -69,10 +70,13 @@ if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
     
     echo $sasToken
 fi
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7159f037dd16882698f4567cedc78d2860f9a54e
 if [ -z "$osFlavor" ] || [ "$osFlavor" == "stretch" ]; then
   # Use default sdk file name
-	fileName="$PLATFORM_NAME-$VERSION.tar.gz"
+  fileName="$PLATFORM_NAME-$VERSION.tar.gz"
 else
   fileName="$PLATFORM_NAME-$osFlavor-$VERSION.tar.gz"
 fi
