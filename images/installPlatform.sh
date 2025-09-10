@@ -70,10 +70,6 @@ if [ "$sdkStorageAccountUrl" == "$PRIVATE_STAGING_SDK_STORAGE_BASE_URL" ]; then
     
     echo $sasToken
 fi
-<<<<<<< HEAD
-
-=======
->>>>>>> 7159f037dd16882698f4567cedc78d2860f9a54e
 if [ -z "$osFlavor" ] || [ "$osFlavor" == "stretch" ]; then
   # Use default sdk file name
   fileName="$PLATFORM_NAME-$VERSION.tar.gz"
