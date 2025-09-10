@@ -1,6 +1,6 @@
 ARG OS_FLAVOR
-ARG OS_NAME=debian
-FROM mcr.microsoft.com/mirror/docker/library/${OS_NAME}:${OS_FLAVOR}
+ARG OS_TYPE
+FROM mcr.microsoft.com/mirror/docker/library/${OS_TYPE}:${OS_FLAVOR}
 ARG IMAGES_DIR=/tmp/oryx/images
 ARG BUILD_DIR=/tmp/oryx/build
 
