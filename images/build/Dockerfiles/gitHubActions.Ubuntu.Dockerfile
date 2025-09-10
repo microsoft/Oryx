@@ -3,9 +3,7 @@ ARG BASE_IMAGE
 # =================== MAIN BASE IMAGE ====================
 # This stage sets up the base Ubuntu image with essential build tools
 FROM ${BASE_IMAGE} AS main
-ARG OS_TYPE
 ARG OS_FLAVOR
-ENV OS_TYPE=$OS_TYPE
 ENV OS_FLAVOR=$OS_FLAVOR
 
 COPY binaries /opt/buildscriptgen/
@@ -141,7 +139,8 @@ RUN tmpDir="/opt/tmp" \
     && chmod a+rw /var/nuget \
     && ln -s /opt/buildscriptgen/GenerateBuildScript /opt/oryx/oryx \
     && echo "githubactions" > /opt/oryx/.imagetype \
-    && echo "${OS_TYPE}|${OS_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
+    && rm -rf ${tmpDir} \
+    && echo "${UBUNTU}|${OS_FLAVOR}" | tr '[a-z]' '[A-Z]' > /opt/oryx/.ostype
 
 
 # Docker has an issue with variable expansion when all are used in a single ENV command.
