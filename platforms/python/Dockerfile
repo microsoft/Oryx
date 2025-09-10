@@ -10,13 +10,6 @@ COPY platforms/python/prereqs/build.sh /tmp/
 COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/receiveGpgKeys.sh
 
-# stretch was removed from security.debian.org and deb.debian.org, so update the sources to point to the archived mirror
-RUN if [ "${DEBIAN_FLAVOR}" = "stretch" ]; then \
-        sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch-updates/# deb http:\/\/deb.debian.org\/debian stretch-updates/g' /etc/apt/sources.list  \
-        && sed -i 's/^deb http:\/\/security.debian.org\/debian-security stretch/deb http:\/\/archive.debian.org\/debian-security stretch/g' /etc/apt/sources.list \
-        && sed -i 's/^deb http:\/\/deb.debian.org\/debian stretch/deb http:\/\/archive.debian.org\/debian stretch/g' /etc/apt/sources.list ; \
-    fi
-
 RUN chmod +x /tmp/build.sh && \
 	apt-get update && \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -31,8 +24,3 @@ RUN chmod +x /tmp/platforms/**/*.sh
 RUN chmod +x /tmp/build/**/*.sh
 RUN mkdir /tmp/sdk
 RUN /tmp/platforms/python/buildPython.sh ${DEBIAN_FLAVOR} ""
-
-# RUN PYTHON_VERSION=$VERSION_TO_BUILD \
-#     GPG_KEY=$GPG_KEYS \
-#     PIP_VERSION=$PIP_VERSION \
-#     /tmp/build.sh

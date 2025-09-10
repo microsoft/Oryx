@@ -20,45 +20,21 @@ mkdir -p "$targetDir"
 buildPython() {
 	local version="$1"
 	local gpgKey="$2"
-	local dockerFile="$3"
+	local python_sha="$3"
 	local imageName="oryx/python"
-	local pythonSdkFileName=""
-	local metadataFile=""
-	local sdkVersionMetadataName=""
 
-	if [ "$debianFlavor" == "stretch" ]; then
-			# Use default python sdk file name
-			pythonSdkFileName=python-$version.tar.gz
-			metadataFile="$targetDir/python-$version-metadata.txt"
-			# Continue adding the version metadata with the name of Version
-			# which is what our legacy CLI will use
-			sdkVersionMetadataName="$LEGACY_SDK_VERSION_METADATA_NAME"
-			cp "$pythonPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.txt"
-	else
-			pythonSdkFileName=python-$debianFlavor-$version.tar.gz
-			metadataFile="$targetDir/python-$debianFlavor-$version-metadata.txt"
-			sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
-	fi
+	local pythonSdkFileName="python-$debianFlavor-$version.tar.gz"
+	local metadataFile="$targetDir/python-$debianFlavor-$version-metadata.txt"
+	local sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 
 	if shouldBuildSdk python $pythonSdkFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk python; then
 		
 		echo "Building Python version '$version' in a docker image..."
-		echo
-
-        echo "dockerfile is : $pythonPlatformDir/$dockerFile"
-		if [ -z "$dockerFile" ]; then
-			# Use common docker file
-			dockerFile="$pythonPlatformDir/Dockerfile"
-		else
-			dockerFile="$pythonPlatformDir/$dockerFile"
-		fi
-		
-		cat $dockerFile
 
 		rm -rf /usr/src/python
 		mkdir /usr/src/python
 		cd /usr/src/python
-		DEBIAN_FLAVOR=$debianFlavor PYTHON_VERSION=$version GPG_KEY=$gpgKey PIP_VERSION=$PIP_VERSION /tmp/build.sh
+		DEBIAN_FLAVOR=$debianFlavor PYTHON_VERSION=$version GPG_KEY=$gpgKey PIP_VERSION=$PIP_VERSION PYTHON_SHA256=$python_sha /tmp/build.sh
 		cd $REPO_DIR
 
 		rm -r /opt/python/*

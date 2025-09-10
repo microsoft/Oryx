@@ -8,11 +8,12 @@ set -ex
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 version="$1"
+python_sha="$3"
 
 buildPythonfromSource()
 {
     pythonVersion=$PYTHON_VERSION
-    
+
     if [ ! -z "$1" ]; then
        echo "$1"
        pythonVersion=$1
@@ -20,6 +21,24 @@ buildPythonfromSource()
 
     mkdir -p "tmpFiles"
     wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /tmpFiles/python.tar.xz
+
+    if [ -n "$python_sha" ]; then
+        echo "Verifying Python source code using SHA256 checksum..."
+        echo "$python_sha /tmpFiles/python.tar.xz" | sha256sum -c -
+        echo "SHA256 verification successful!"
+    fi
+
+    IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
+
+    if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -le "13" ]
+    then
+        gpgKey=$GPG_KEY
+        wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /tmpFiles/python.tar.xz.asc
+
+        # Try getting the keys 5 times at most
+        /tmp/receiveGpgKeys.sh $gpgKey
+        gpg --batch --verify /tmpFiles/python.tar.xz.asc /tmpFiles/python.tar.xz
+    fi
 
     PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 

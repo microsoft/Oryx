@@ -46,10 +46,6 @@ if [ "$osFlavor" == "bookworm" ]; then \
     curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg
 elif [ "$osFlavor" == "bullseye" ]; then \
     curl https://packages.microsoft.com/config/debian/11/prod.list > /etc/apt/sources.list.d/mssql-release.list
-elif [ "$osFlavor" == "buster" ]; then \
-    curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
-elif [ "$osFlavor" == "stretch" ]; then \
-    curl https://packages.microsoft.com/config/debian/9/prod.list > /etc/apt/sources.list.d/mssql-release.list
 fi
 
 apt-get update \
