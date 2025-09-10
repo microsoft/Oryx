@@ -8,26 +8,26 @@ variables:
   USER_DOTNET_AI_VERSION: 2.8.42
   AI_CONNECTION_STRING: 1234(RANDOMVALUE)
   SDK_STORAGE_BASE_URL_VALUE: https://oryxsdksdev.blob.core.windows.net
-  node18OSFlavors: bullseye
-  node20OSFlavors: bullseye,bookworm
-  node22OSFlavors: bullseye,bookworm
-  python39OSFlavors: bullseye
-  python310OSFlavors: bullseye
-  python311OSFlavors: bullseye,bookworm
-  python312OSFlavors: bullseye,bookworm
-  python313OSFlavors: bullseye,bookworm
-  dotnet80OSFlavors: bullseye,bookworm
-  dotnet90OSFlavors: bookworm
-  dotnet100OSFlavors: noble
-  php81OSFlavors: bullseye
-  php82OSFlavors: bullseye
-  php83OSFlavors: bullseye,bookworm
-  php84OSFlavors: bullseye,bookworm
+  node18osFlavors: bullseye
+  node20osFlavors: bullseye,bookworm
+  node22osFlavors: bullseye,bookworm
+  python39osFlavors: bullseye
+  python310osFlavors: bullseye
+  python311osFlavors: bullseye,bookworm
+  python312osFlavors: bullseye,bookworm
+  python313osFlavors: bullseye,bookworm
+  dotnet80osFlavors: bullseye,bookworm
+  dotnet90osFlavors: bookworm
+  dotnet100osFlavors: noble
+  php81osFlavors: bullseye
+  php82osFlavors: bullseye
+  php83osFlavors: bullseye,bookworm
+  php84osFlavors: bullseye,bookworm
   osFlavors: bullseye,bookworm
-  dotnetOSFlavors: bookworm,bullseye,noble
-  nodejsOSFlavors: bookworm,bullseye
-  phpOSFlavors: bookworm,bullseye
-  pythonOSFlavors: bookworm,bullseye
+  dotnetosFlavors: bookworm,bullseye,noble
+  nodejsosFlavors: bookworm,bullseye
+  phposFlavors: bookworm,bullseye
+  pythonosFlavors: bookworm,bullseye
   cliDebianFlavors: bullseye
   cliBuilderDebianFlavors: bullseye
   fullDebianFlavors: bullseye
