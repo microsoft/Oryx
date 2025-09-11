@@ -16,20 +16,27 @@ buildPythonfromSource()
 {
     pythonVersion=$PYTHON_VERSION
 
-    if [ ! -z "$1" ]; then
-       echo "$1"
-       pythonVersion=$1
-    fi
-
-    if [ ! -z "$2" ]; then
-       echo "$2"
-       gpgKey=$2
-    fi
-
-    if [ ! -z "$3" ]; then
-       echo "$3"
-       python_sha=$3
-    fi
+    # Parse named parameters
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            version=*)
+                pythonVersion="${1#*=}"
+                shift
+                ;;
+            gpg=*)
+                gpgKey="${1#*=}"
+                shift
+                ;;
+            python_sha=*)
+                python_sha="${1#*=}"
+                shift
+                ;;
+            *)
+                echo "Unknown parameter: $1"
+                shift
+                ;;
+        esac
+    done
 
     mkdir -p "tmpFiles"
     wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /tmpFiles/python.tar.xz
@@ -171,11 +178,12 @@ echo
 echo "Building python 3.14 or newer from source code..."
 
 getPythonGpgAndShaByVersion "/tmp/versionsToBuild.txt" $version
-IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
+IFS='.' read -ra SPLIT_VERSION <<< "$version"
 
 if  [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "14" ]
 then
-    buildPythonfromSource $version $pythonVersionGPG $python_sha
+    echo "version=$version, gpg='$pythonVersionGPG', sha='$python_sha'"
+    buildPythonfromSource version=$version gpg="$pythonVersionGPG" python_sha="$python_sha"
 else
     source /tmp/oryx/images/installPlatform.sh python $version --dir /opt/python/$version --links false
 fi
