@@ -41,17 +41,15 @@ RUN find ${BUILD_DIR} -type f -iname "*.sh" -exec chmod +x {} \;
 ARG PYTHON_FULL_VERSION
 ARG PYTHON_VERSION
 ARG PYTHON_MAJOR_VERSION
-ARG PYTHON_SHA256
 
 ENV PYTHON_VERSION ${PYTHON_FULL_VERSION}
 COPY platforms/__common.sh /tmp/
 COPY platforms/python/prereqs/build.sh /tmp/
-# COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
+COPY platforms/python/versions/${OS_FLAVOR}/versionsToBuild.txt /tmp/
+COPY images/receiveGpgKeys.sh /tmp/receiveGpgKeys.sh
 
-# RUN chmod +x /tmp/receiveGpgKeys.sh
 RUN chmod +x /tmp/build.sh
-
-RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $OS_FLAVOR $PYTHON_SHA256
+RUN ${BUILD_DIR}/buildPythonSdkByVersion.sh $PYTHON_VERSION $OS_FLAVOR
 
 RUN set -ex \
  && cd /opt/python/ \

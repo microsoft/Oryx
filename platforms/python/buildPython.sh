@@ -12,7 +12,7 @@ source $REPO_DIR/platforms/__common.sh
 
 pythonPlatformDir="$REPO_DIR/platforms/python"
 targetDir="/tmp/compressedSdk/python"
-debianFlavor=$1
+osFlavor=$1
 sdkStorageAccountUrl="$2"
 mkdir -p "$targetDir"
 
@@ -23,8 +23,8 @@ buildPython() {
 	local python_sha="$3"
 	local imageName="oryx/python"
 
-	local pythonSdkFileName="python-$debianFlavor-$version.tar.gz"
-	local metadataFile="$targetDir/python-$debianFlavor-$version-metadata.txt"
+	local pythonSdkFileName="python-$osFlavor-$version.tar.gz"
+	local metadataFile="$targetDir/python-$osFlavor-$version-metadata.txt"
 	local sdkVersionMetadataName="$SDK_VERSION_METADATA_NAME"
 
 	if shouldBuildSdk python $pythonSdkFileName $sdkStorageAccountUrl || shouldOverwriteSdk || shouldOverwritePlatformSdk python; then
@@ -34,19 +34,19 @@ buildPython() {
 		rm -rf /usr/src/python
 		mkdir /usr/src/python
 		cd /usr/src/python
-		DEBIAN_FLAVOR=$debianFlavor PYTHON_VERSION=$version GPG_KEY=$gpgKey PIP_VERSION=$PIP_VERSION PYTHON_SHA256=$python_sha /tmp/build.sh
+		OS_FLAVOR=$osFlavor PYTHON_VERSION=$version GPG_KEY=$gpgKey PIP_VERSION=$PIP_VERSION PYTHON_SHA256=$python_sha /tmp/build.sh
 		cd $REPO_DIR
 
 		rm -r /opt/python/*
 
 		echo "$sdkVersionMetadataName=$version" >> $metadataFile
-		echo "$OS_TYPE_METADATA_NAME=$debianFlavor" >> $metadataFile
+		echo "$OS_TYPE_METADATA_NAME=$osFlavor" >> $metadataFile
 	fi
 }
 
 echo "Building Python..."
 echo
-buildPlatform "$pythonPlatformDir/versions/$debianFlavor/versionsToBuild.txt" buildPython
+buildPlatform "$pythonPlatformDir/versions/$osFlavor/versionsToBuild.txt" buildPython
 
 # Write the default version
-cp "$pythonPlatformDir/versions/$debianFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$debianFlavor.txt"
+cp "$pythonPlatformDir/versions/$osFlavor/defaultVersion.txt" "$targetDir/defaultVersion.$osFlavor.txt"

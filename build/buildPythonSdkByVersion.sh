@@ -7,8 +7,10 @@
 set -ex
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
+pythonVersionGPG=''
+python_sha=''
+
 version="$1"
-python_sha="$3"
 
 buildPythonfromSource()
 {
@@ -17,6 +19,16 @@ buildPythonfromSource()
     if [ ! -z "$1" ]; then
        echo "$1"
        pythonVersion=$1
+    fi
+
+    if [ ! -z "$2" ]; then
+       echo "$2"
+       gpgKey=$2
+    fi
+
+    if [ ! -z "$3" ]; then
+       echo "$3"
+       python_sha=$3
     fi
 
     mkdir -p "tmpFiles"
@@ -30,9 +42,8 @@ buildPythonfromSource()
 
     IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
 
-    if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -le "13" ]
+    if [ -n "$gpgKey" ]
     then
-        gpgKey=$GPG_KEY
         wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /tmpFiles/python.tar.xz.asc
 
         # Try getting the keys 5 times at most
@@ -135,14 +146,38 @@ buildPythonfromSource()
     rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
 }
 
+getPythonGpgAndShaByVersion() {
+    local versionFile="$1"
+    local versionPython="$2"
+
+    while IFS= read -ra VERSION_INFO || [[ -n $VERSION_INFO ]]
+    do
+        # Ignore whitespace and comments
+        if [ -z "$VERSION_INFO" ] || [[ $VERSION_INFO = \#* ]] ; then
+            continue
+        fi
+
+        arg="$(echo -e "${VERSION_INFO}" | sed -e 's/^[[:space:]]*//')"
+        test1=$(echo $arg | cut -d',' -f 1)
+        test2=$(echo $arg | cut -d',' -f 2)
+        test3=$(echo $arg | cut -d',' -f 3)
+
+        if [ "$versionPython" == "$test1" ];then
+            pythonVersionGPG="$test2"
+            python_sha="$test3"
+        fi
+    done < "$versionFile"
+}
+
 echo
 echo "Building python 3.14 or newer from source code..."
 
+getPythonGpgAndShaByVersion "/tmp/versionsToBuild.txt" $version
 IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
 
 if  [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "14" ]
 then
-    buildPythonfromSource $version
+    buildPythonfromSource $version $pythonVersionGPG $python_sha
 else
     source /tmp/oryx/images/installPlatform.sh python $version --dir /opt/python/$version --links false
 fi

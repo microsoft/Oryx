@@ -7,8 +7,9 @@
 set -ex
 
 pythonVersion=$PYTHON_VERSION 
-debianFlavor=$DEBIAN_FLAVOR
+osFlavor=$OS_FLAVOR
 python_sha=$PYTHON_SHA256
+gpgKey=$GPG_KEY
 
 wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /python.tar.xz
 
@@ -18,10 +19,7 @@ if [ -n "$python_sha" ]; then
     echo "SHA256 verification successful!"
 fi
 
-IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
-if [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -le "13" ]
-then
-  gpgKey=$GPG_KEY
+if [ -n "$gpgKey" ]; then
   wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /python.tar.xz.asc
 
   # Try getting the keys 5 times at most
@@ -60,7 +58,7 @@ fi
 PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 
 PIP_VERSION="21.2.4"
-pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
+pythonSdkFileName=python-$osFlavor-$PYTHON_VERSION.tar.gz
 
 tar -xJf /python.tar.xz --strip-components=1 -C .
 
