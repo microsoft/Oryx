@@ -18,7 +18,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
         {
         }
 
-        [Theory, Trait("category", "latest")]
+        [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(TestValueGenerator.GetPythonVersions), MemberType = typeof(TestValueGenerator))]
         public void GeneratesScript_AndBuilds_Shapely_With_Python(string version, string osType)
         {
@@ -34,7 +34,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = Settings.BuildImageName,
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",

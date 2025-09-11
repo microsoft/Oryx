@@ -21,33 +21,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
         {
         }
 
-        // [Theory]
-        // [Trait("category", "runtime-buster")]
-        // [InlineData("14", NodeVersions.Node14Version)]
-        // [InlineData("16", NodeVersions.Node16Version)]
-        // [Trait(TestConstants.Category, TestConstants.Release)]
-        // public void NodeVersionMatchesBusterImageName(string version, string nodeVersion)
-        // {
-        //     // Arrange & Act
-        //     var expectedNodeVersion = "v" + nodeVersion;
-        //     var result = _dockerCli.Run(new DockerRunArguments
-        //     {
-        //         ImageId = _imageHelper.GetRuntimeImage("node", version, ImageTestHelperConstants.OsTypeDebianBuster),
-        //         CommandToExecuteOnRun = "node",
-        //         CommandArguments = new[] { "--version" }
-        //     });
-
-        //     // Assert
-        //     var actualOutput = result.StdOut.ReplaceNewLine();
-        //     RunAsserts(
-        //         () =>
-        //         {
-        //             Assert.True(result.IsSuccess);
-        //             Assert.Equal(expectedNodeVersion, actualOutput);
-        //         },
-        //         result.GetDebugInfo());
-        // }
-
         [Theory]
         [Trait("category", "runtime-bullseye")]
         [InlineData("18", NodeVersions.Node18Version)]
@@ -162,7 +135,6 @@ namespace Microsoft.Oryx.RuntimeImage.Tests
                 },
                 result.GetDebugInfo());
         }
-
 
         [Fact]
         [Trait("category", "runtime-bullseye")]

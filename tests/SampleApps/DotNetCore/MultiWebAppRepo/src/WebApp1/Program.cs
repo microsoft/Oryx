@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿var builder = WebApplication.CreateBuilder(args);
 
-namespace WebApp1
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
-
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
-    }
+    app.UseDeveloperExceptionPage();
 }
+
+app.Map("/appDllLocation", async (HttpContext context) =>
+{
+    await context.Response.WriteAsync("Location: " + typeof(Program).Assembly.Location);
+});
+
+app.MapGet("/", async (HttpContext context) =>
+{
+    await context.Response.WriteAsync(Greeter.Greeting.Get() + " from WebApp1");
+});
+
+app.Run();

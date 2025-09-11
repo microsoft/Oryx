@@ -35,9 +35,8 @@ namespace Microsoft.Oryx.BuildImage.Tests
         public void PipelineTestInvocationGithubActions()
         {
             var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(), PythonVersions.Python37Version);
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(), PythonVersions.Python38Version);
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PythonVersions.Python39Version);
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python37Version);
+            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python38Version);
             GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python310Version);
             GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python311Version);
             GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python312Version);
@@ -46,7 +45,6 @@ namespace Microsoft.Oryx.BuildImage.Tests
 
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python37Version);
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python38Version);
-            GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBuster), PythonVersions.Python39Version);
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python310Version);
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python311Version);
             GeneratesScript_AndBuildsPython_PyodbcApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python312Version);
@@ -55,45 +53,13 @@ namespace Microsoft.Oryx.BuildImage.Tests
             GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python310Version);
             GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python311Version);
             GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python312Version);
-            GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python313Version);   
+            GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye), PythonVersions.Python313Version);
             GeneratesScript_AndBuildsPython_DjangoRegexApp(imageTestHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm), PythonVersions.Python313Version);
         }
 
-        [Fact, Trait("category", "cli-stretch")]
-        public void PipelineTestInvocationCli()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(), "3.8.1", "/opt");
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(), "3.8.3", "/opt");
-        }
-
-        [Fact, Trait("category", "cli-buster")]
-        public void PipelineTestInvocationCliBuster()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBusterTag), "3.9.0", "/opt");
-        }
-
-        [Fact, Trait("category", "cli-bullseye")]
-        public void PipelineTestInvocationCliBullseye()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython_FlaskApp(imageTestHelper.GetCliImage(ImageTestHelperConstants.CliBullseyeTag), "3.9.0", "/opt");
-        }
-
-        [Fact, Trait("category", "cli-builder-bullseye")]
-        public void PipelineTestInvocationCliBuilderBullseye()
-        {
-            var imageTestHelper = new ImageTestHelper();
-            GeneratesScript_AndBuildsPython_FlaskApp(
-                imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PythonVersions.Python39Version, "/opt");
-            GeneratesScript_AndBuildsPython_FlaskApp(
-                imageTestHelper.GetCliBuilderImage(ImageTestHelperConstants.CliBuilderBullseyeTag), PythonVersions.Python310Version, "/opt");
-        }
-
         private void GeneratesScript_AndBuildsPython_FlaskApp(
-            string imageName, 
-            string version, 
+            string imageName,
+            string version,
             string installationRoot = BuildScriptGenerator.Constants.TemporaryInstallationDirectoryRoot)
         {
             // Please note:
@@ -217,15 +183,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Theory, Trait("category", "jamstack")]
+        [Theory, Trait("category", "githubactions")]
         [InlineData(PythonVersions.Python310Version)]
         [InlineData(PythonVersions.Python311Version)]
         [InlineData(PythonVersions.Python312Version)]
         [InlineData(PythonVersions.Python313Version)]
-        public void GeneratesScript_AndBuildsPython_JamstackBuildImage(string version)
+        public void GeneratesScript_AndBuildsPython(string version)
         {
             // Arrange
-            var installationDir = "/opt/" + $"python/{version}";
+            var installationDir = "/tmp/oryx/platforms/" + $"python/{version}";
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -239,7 +205,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBullseye),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -378,11 +344,11 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 result.GetDebugInfo());
         }
 
-        [Fact, Trait("category", "latest")]
+        [Fact, Trait("category", "githubactions")]
         public void BuildsApplication_ByDynamicallyInstalling_IntoCustomDynamicInstallationDir()
         {
             // Arrange
-            var version = "3.6.9";
+            var version = "3.10.18";
             var appName = "flask-app";
             var volume = CreateSampleAppVolume(appName);
             var appDir = volume.ContainerDir;
@@ -399,7 +365,7 @@ namespace Microsoft.Oryx.BuildImage.Tests
             // Act
             var result = _dockerCli.Run(new DockerRunArguments
             {
-                ImageId = _imageHelper.GetBuildImage(),
+                ImageId = _imageHelper.GetGitHubActionsBuildImage(),
                 EnvironmentVariables = new List<EnvironmentVariable> { CreateAppNameEnvVar(appName) },
                 Volumes = new List<DockerVolume> { volume },
                 CommandToExecuteOnRun = "/bin/bash",
@@ -467,31 +433,25 @@ namespace Microsoft.Oryx.BuildImage.Tests
                 var data = new TheoryData<string, string>();
                 var imageHelper = new ImageTestHelper();
 
-                // stretch
-                // data.Add(PythonVersions.Python27Version, imageHelper.GetAzureFunctionsJamStackBuildImage());
-
-                //buster
-                data.Add(PythonVersions.Python36Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBuster));
-                data.Add(PythonVersions.Python37Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBuster));
-                data.Add(PythonVersions.Python38Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBuster));
-                data.Add(PythonVersions.Python39Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBuster));
-
+                // GitHub Actions images
                 //bullseye
-                data.Add(PythonVersions.Python37Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye));
-                data.Add(PythonVersions.Python38Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye));
-                data.Add(PythonVersions.Python39Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye));
-                data.Add(PythonVersions.Python310Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye));
-                data.Add(PythonVersions.Python311Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye));
-                data.Add(PythonVersions.Python312Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye));
-                data.Add(PythonVersions.Python313Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye));
-                
+                data.Add(PythonVersions.Python37Version, imageHelper.GetGitHubActionsBuildImage());
+                data.Add(PythonVersions.Python38Version, imageHelper.GetGitHubActionsBuildImage());
+                data.Add(PythonVersions.Python39Version, imageHelper.GetGitHubActionsBuildImage());
+                data.Add(PythonVersions.Python310Version, imageHelper.GetGitHubActionsBuildImage());
+                data.Add(PythonVersions.Python311Version, imageHelper.GetGitHubActionsBuildImage());
+                data.Add(PythonVersions.Python312Version, imageHelper.GetGitHubActionsBuildImage());
+
+                //bookworm
+                data.Add(PythonVersions.Python312Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
+                data.Add(PythonVersions.Python313Version, imageHelper.GetGitHubActionsBuildImage(ImageTestHelperConstants.GitHubActionsBookworm));
                 return data;
             }
         }
 
 
 
-        [Theory, Trait("category", "jamstack")]
+        [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(SupportedVersionAndImageNameData))]
         public void BuildsPython_AfterInstallingSupportedSdk(string version, string imageName)
         {
@@ -539,15 +499,15 @@ namespace Microsoft.Oryx.BuildImage.Tests
             {
                 var data = new TheoryData<string, string>();
                 var imageHelper = new ImageTestHelper();
-                data.Add(PythonVersions.Python27Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBuster));
+                data.Add(PythonVersions.Python27Version, imageHelper.GetGitHubActionsBuildImage());
 
-                data.Add(PythonVersions.Python27Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye));
-                data.Add(PythonVersions.Python36Version, imageHelper.GetAzureFunctionsJamStackBuildImage(ImageTestHelperConstants.AzureFunctionsJamStackBullseye));
+                data.Add(PythonVersions.Python27Version, imageHelper.GetGitHubActionsBuildImage());
+                data.Add(PythonVersions.Python36Version, imageHelper.GetGitHubActionsBuildImage());
                 return data;
             }
         }
 
-        [Theory, Trait("category", "jamstack")]
+        [Theory, Trait("category", "githubactions")]
         [MemberData(nameof(UnsupportedVersionAndImageNameData))]
         public void PythonFails_ToInstallUnsupportedSdk(string version, string imageName)
         {
