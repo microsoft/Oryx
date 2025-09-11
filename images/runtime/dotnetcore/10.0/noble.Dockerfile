@@ -9,7 +9,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
 RUN DOTNET_ROLL_FORWARD=LatestMajor dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.8-bookworm as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.25.1-bookworm as startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -24,8 +24,7 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN chmod +x build.sh && ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
-
-FROM mcr.microsoft.com/mirror/docker/library/debian:bookworm-slim
+FROM mcr.microsoft.com/mirror/docker/library/ubuntu:noble
 ARG BUILD_DIR=/tmp/oryx/build
 ADD build ${BUILD_DIR}
 
@@ -35,13 +34,13 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         # .NET Core dependencies
         libc6 \
-        libgcc1 \
+        libgcc-s1 \
         libgssapi-krb5-2 \
-        libicu72 \
+        libicu74 \
         libssl3 \
         libstdc++6 \
         zlib1g \
-        lldb \
+        lldb-18 \
         curl \
         file \
         libgdiplus \
@@ -56,8 +55,6 @@ ENV ASPNETCORE_URLS=http://+:80 \
 
 COPY --from=tools-install /dotnetcore-tools /opt/dotnetcore-tools
 
-ARG NET_CORE_APP_100_SHA
-ARG ASPNET_CORE_APP_100_SHA
 ARG NET_CORE_APP_100
 ARG ASPNET_CORE_APP_100
 
@@ -68,18 +65,24 @@ RUN set -ex \
     && apt-get purge ca-certificates -y \
     && apt-get update \
     && apt-get install -f ca-certificates -y --no-install-recommends \
-    && curl -SL --output dotnet.tar.gz https://builds.dotnet.microsoft.com/dotnet/Runtime/$NET_CORE_APP_100/dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz \
-    && echo "$NET_CORE_APP_100_SHA dotnet.tar.gz" | sha512sum -c - \
+    && curl --fail --show-error --location \
+        --remote-name https://builds.dotnet.microsoft.com/dotnet/Runtime/$NET_CORE_APP_100/dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz \
+        --remote-name https://builds.dotnet.microsoft.com/dotnet/Runtime/$NET_CORE_APP_100/dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz.sha512 \
+    && sha512sum -c dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz.sha512 \
     && mkdir -p /usr/share/dotnet \
-    && tar -zxf dotnet.tar.gz -C /usr/share/dotnet \
-    && rm dotnet.tar.gz \
+    && tar -zxf dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz -C /usr/share/dotnet \
+    && rm dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz \
+    && rm dotnet-runtime-$NET_CORE_APP_100-linux-x64.tar.gz.sha512 \
     && ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet \
     # Install ASP.NET Core
-    && curl -SL --output aspnetcore.tar.gz https://builds.dotnet.microsoft.com/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_100/aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz \
-    && echo "$ASPNET_CORE_APP_100_SHA aspnetcore.tar.gz" | sha512sum -c - \
+    && curl --fail --show-error --location \
+        --remote-name https://builds.dotnet.microsoft.com/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_100/aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz \
+        --remote-name https://builds.dotnet.microsoft.com/dotnet/aspnetcore/Runtime/$ASPNET_CORE_APP_100/aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz.sha512 \
+    && sha512sum -c aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz.sha512 \
     && mkdir -p /usr/share/dotnet \
-    && tar -zxf aspnetcore.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
-    && rm aspnetcore.tar.gz \
+    && tar -zxf aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz -C /usr/share/dotnet ./shared/Microsoft.AspNetCore.App \
+    && rm aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz \
+    && rm aspnetcore-runtime-$ASPNET_CORE_APP_100-linux-x64.tar.gz.sha512 \
     && dotnet-sos install \
     && rm -rf ${BUILD_DIR}
 
