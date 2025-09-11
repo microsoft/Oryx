@@ -40,8 +40,6 @@ buildPythonfromSource()
         echo "SHA256 verification successful!"
     fi
 
-    IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
-
     if [ -n "$gpgKey" ]
     then
         wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /tmpFiles/python.tar.xz.asc
