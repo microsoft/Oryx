@@ -1,5 +1,5 @@
 # NOTE: Make sure to set the default version in 'defaultVersion.txt' file
-# version, gpg keys, dockerfile
+# version, gpg keys, SHA256
 3.8.18, E3FF2839C048B25C084DEBE9B26995E310250568,
 3.9.18, E3FF2839C048B25C084DEBE9B26995E310250568,
 3.10.13, A035C8C19219BA821ECEA86B64E628F8D684696D,
