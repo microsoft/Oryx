@@ -16,6 +16,7 @@ variables:
   python311osFlavors: bullseye,bookworm
   python312osFlavors: bullseye,bookworm
   python313osFlavors: bullseye,bookworm
+  python314osFlavors: noble
   dotnet80osFlavors: bullseye,bookworm
   dotnet90osFlavors: bookworm
   dotnet100osFlavors: noble
@@ -23,11 +24,11 @@ variables:
   php82osFlavors: bullseye
   php83osFlavors: bullseye,bookworm
   php84osFlavors: bullseye,bookworm
-  osFlavors: bullseye,bookworm
+  osFlavors: bullseye,bookworm,noble
   dotnetosFlavors: bookworm,bullseye,noble
   nodejsosFlavors: bookworm,bullseye
   phposFlavors: bookworm,bullseye
-  pythonosFlavors: bookworm,bullseye
+  pythonosFlavors: bookworm,bullseye,noble
   cliDebianFlavors: bullseye
   cliBuilderDebianFlavors: bullseye
   fullDebianFlavors: bullseye
@@ -71,3 +72,4 @@ variables:
   python311Version: 3.11.13
   python312Version: 3.12.11
   python313Version: 3.13.5
+  python314Version: 3.14.0rc2

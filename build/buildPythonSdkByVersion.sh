@@ -8,88 +8,103 @@ set -ex
 declare -r REPO_DIR=$( cd $( dirname "$0" ) && cd .. && pwd )
 
 pythonVersionGPG=''
+python_sha=''
 
 version="$1"
 
 buildPythonfromSource()
 {
     pythonVersion=$PYTHON_VERSION
-    
-    if [ ! -z "$1" ]; then
-       echo "$1"
-       pythonVersion=$1
-    fi
 
-    if [ ! -z "$2" ]; then
-       echo "$2"
-       gpgKey=$2
-    fi
+    # Parse named parameters
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            version=*)
+                pythonVersion="${1#*=}"
+                shift
+                ;;
+            gpg=*)
+                gpgKey="${1#*=}"
+                shift
+                ;;
+            python_sha=*)
+                python_sha="${1#*=}"
+                shift
+                ;;
+            *)
+                echo "Unknown parameter: $1"
+                shift
+                ;;
+        esac
+    done
 
     mkdir -p "tmpFiles"
     wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /tmpFiles/python.tar.xz
-    wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /tmpFiles/python.tar.xz.asc
+
+    if [ -n "$python_sha" ]; then
+        echo "Verifying Python source code using SHA256 checksum..."
+        echo "$python_sha /tmpFiles/python.tar.xz" | sha256sum -c -
+        echo "SHA256 verification successful!"
+    fi
+
+    if [ -n "$gpgKey" ]
+    then
+        wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /tmpFiles/python.tar.xz.asc
+
+        # Try getting the keys 5 times at most
+        /tmp/receiveGpgKeys.sh $gpgKey
+        gpg --batch --verify /tmpFiles/python.tar.xz.asc /tmpFiles/python.tar.xz
+    fi
 
     PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 
     # for buster and ubuntu we would need following libraries
-        apt-get update && \
-        apt-get upgrade -y && \
-        DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-            # Adding additional python packages to support all optional python modules:
-            # https://devguide.python.org/getting-started/setup-building/index.html#install-dependencies
-            build-essential \
-            gdb \
-            lcov \
-            libbluetooth-dev \
-            libbz2-dev \
-            libffi-dev \
-            libgdbm-dev \
-            libgdm-dev \
-            libgeos-dev \
-            liblzma-dev \
-            libncurses5-dev \
-            libreadline-dev \
-            libreadline6-dev \
-            libsqlite3-dev \
-            libssl-dev \
-            lzma \
-            lzma-dev \
-            pkg-config \
-            python3-dev \
-            tk-dev \
-            uuid-dev
-            uuid-dev \
-            zlib1g-dev \
+    apt-get update && \
+    apt-get upgrade -y && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+        build-essential \
+        gdb \
+        lcov \
+        libbluetooth-dev \
+        libbz2-dev \
+        libffi-dev \
+        libgdbm-dev \
+        libgdm-dev \
+        libgeos-dev \
+        liblzma-dev \
+        libncurses5-dev \
+        libreadline-dev \
+        libreadline6-dev \
+        libsqlite3-dev \
+        libssl-dev \
+        lzma \
+        lzma-dev \
+        pkg-config \
+        python3-dev \
+        tk-dev \
+        uuid-dev \
+        zlib1g-dev
 
-    # Try getting the keys 5 times at most
-    /tmp/receiveGpgKeys.sh $gpgKey
-
-    gpg --batch --verify /tmpFiles/python.tar.xz.asc /tmpFiles/python.tar.xz
     tar -xJf /tmpFiles/python.tar.xz --strip-components=1 -C .
 
     INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 
-    if [ "${PYTHON_VERSION::1}" == "2" ]; then
-        ./configure \
-            --prefix=$INSTALLATION_PREFIX \
-            --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
-            --enable-shared \
-            --enable-unicode=ucs4
-    else
-        ./configure \
-            --prefix=$INSTALLATION_PREFIX \
-            --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
-            --enable-loadable-sqlite-extensions \
-            --enable-shared \
-            --with-system-expat \
-            --with-system-ffi \
-            --without-ensurepip
-    fi
+
+    ./configure \
+        --prefix=$INSTALLATION_PREFIX \
+        --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
+        --enable-loadable-sqlite-extensions \
+        --enable-shared \
+        --with-system-expat \
+        --with-system-ffi \
+        --without-ensurepip
 
     make -j $(nproc)
 
     make install
 
+    export LD_LIBRARY_PATH="/opt/python/$PYTHON_VERSION/lib/"
+    $INSTALLATION_PREFIX/bin/python3 --version
     rm -rf /usr/src/python
     find /usr/local -depth \
         \( \
@@ -98,21 +113,18 @@ buildPythonfromSource()
         \) -exec rm -rf '{}' + \
 
     ldconfig
-    python3 --version
 
-    # make some useful symlinks that are expected to exist
-    cd /usr/local/bin
+    # make some useful symlinks that are expected to exist in the installation prefix
+    cd $INSTALLATION_PREFIX/bin
     ln -s idle3 idle
     ln -s pydoc3 pydoc
     ln -s python3 python
     ln -s python3-config python-config
 
-    PYTHON_GET_PIP_SHA256="c518250e91a70d7b20cceb15272209a4ded2a0c263ae5776f129e0d9b5674309"
-
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O /tmpFiles/get-pip.py
 
-    python3 /tmpFiles/get-pip.py \
+    $INSTALLATION_PREFIX/bin/python3 /tmpFiles/get-pip.py \
         --trusted-host pypi.python.org \
         --trusted-host pypi.org \
         --trusted-host files.pythonhosted.org \
@@ -139,7 +151,7 @@ buildPythonfromSource()
     rm -rf /Python /PCbuild /Grammar /python /Objects /Parser /Misc /Tools /Programs /Modules /Include /Mac /Doc /PC /Lib 
 }
 
-getPythonGpgByVersion() {
+getPythonGpgAndShaByVersion() {
     local versionFile="$1"
     local versionPython="$2"
 
@@ -153,24 +165,25 @@ getPythonGpgByVersion() {
         arg="$(echo -e "${VERSION_INFO}" | sed -e 's/^[[:space:]]*//')"
         test1=$(echo $arg | cut -d',' -f 1)
         test2=$(echo $arg | cut -d',' -f 2)
+        test3=$(echo $arg | cut -d',' -f 3)
 
         if [ "$versionPython" == "$test1" ];then
             pythonVersionGPG="$test2"
+            python_sha="$test3"
         fi
     done < "$versionFile"
 }
 
-
 echo
-# TODO: Determine if we need to continue building newer versions of Python from scratch
 echo "Building python 3.14 or newer from source code..."
 
-getPythonGpgByVersion "/tmp/versionsToBuild.txt" $version
-IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
+getPythonGpgAndShaByVersion "/tmp/versionsToBuild.txt" $version
+IFS='.' read -ra SPLIT_VERSION <<< "$version"
 
 if  [ "${SPLIT_VERSION[0]}" == "3" ] && [ "${SPLIT_VERSION[1]}" -ge "14" ]
 then
-    buildPythonfromSource $version $pythonVersionGPG
+    echo "version=$version, gpg='$pythonVersionGPG', sha='$python_sha'"
+    buildPythonfromSource version=$version gpg="$pythonVersionGPG" python_sha="$python_sha"
 else
     source /tmp/oryx/images/installPlatform.sh python $version --dir /opt/python/$version --links false
 fi

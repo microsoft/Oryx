@@ -7,16 +7,26 @@
 set -ex
 
 pythonVersion=$PYTHON_VERSION 
-
-wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /python.tar.xz
-wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /python.tar.xz.asc
-
-debianFlavor=$DEBIAN_FLAVOR
-debianHackFlavor=$DEBIAN_HACK_FLAVOR
+osFlavor=$OS_FLAVOR
+python_sha=$PYTHON_SHA256
 gpgKey=$GPG_KEY
 
-pythonSdkFileName=""
-PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2da64da38f516078c7/public/get-pip.py"
+wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz -O /python.tar.xz
+
+if [ -n "$python_sha" ]; then
+    echo "Verifying Python source code using SHA256 checksum..."
+    echo "$python_sha /python.tar.xz" | sha256sum -c -
+    echo "SHA256 verification successful!"
+fi
+
+if [ -n "$gpgKey" ]; then
+  wget https://www.python.org/ftp/python/${pythonVersion%%[a-z]*}/Python-$pythonVersion.tar.xz.asc -O /python.tar.xz.asc
+
+  # Try getting the keys 5 times at most
+  /tmp/receiveGpgKeys.sh $gpgKey
+  gpg --batch --verify /python.tar.xz.asc /python.tar.xz
+fi
+
 
 # For buster and ubuntu we would need following libraries.
 # We also add all optional python modules:
@@ -47,47 +57,22 @@ PYTHON_GET_PIP_URL="https://github.com/pypa/get-pip/raw/3cb8888cc2869620f57d5d2d
 
 PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/get-pip.py"
 
-if [ "$debianFlavor" == "stretch" ]; then
-	# Use default python sdk file name
-    echo "Hack flavor is: "$debianHackFlavor
+PIP_VERSION="21.2.4"
+pythonSdkFileName=python-$osFlavor-$PYTHON_VERSION.tar.gz
 
-    pythonSdkFileName=python-$PYTHON_VERSION.tar.gz
-    
-    if [[ $PYTHON_VERSION == 3.6* ]]; then
-        PYTHON_GET_PIP_URL="https://bootstrap.pypa.io/pip/3.6/get-pip.py"
-    fi
-
-    PIP_VERSION="20.2.3"
-else
-    PIP_VERSION="21.2.4"
-	pythonSdkFileName=python-$debianFlavor-$PYTHON_VERSION.tar.gz
-fi
-
-# Try getting the keys 5 times at most
-/tmp/receiveGpgKeys.sh $gpgKey
-
-gpg --batch --verify /python.tar.xz.asc /python.tar.xz
 tar -xJf /python.tar.xz --strip-components=1 -C .
 
 INSTALLATION_PREFIX=/opt/python/$PYTHON_VERSION
 
-if [ "${PYTHON_VERSION::1}" == "2" ]; then
-    ./configure \
-        --prefix=$INSTALLATION_PREFIX \
-        --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
-        --enable-shared \
-        --enable-unicode=ucs4
-else
-    ./configure \
-        --prefix=$INSTALLATION_PREFIX \
-        --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
-        --enable-loadable-sqlite-extensions \
-        --enable-shared \
-	--enable-optimizations \
-	--with-lto \
-        --with-system-ffi \
-        --without-ensurepip
-fi
+./configure \
+    --prefix=$INSTALLATION_PREFIX \
+    --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
+    --enable-loadable-sqlite-extensions \
+    --enable-shared \
+    --enable-optimizations \
+    --with-lto \
+    --with-system-ffi \
+    --without-ensurepip
 
 make -j $(nproc)
 
@@ -114,7 +99,6 @@ then
     ln -s pydoc3 pydoc
     ln -s python3 python
     ln -s python3-config python-config
-    PYTHON_GET_PIP_SHA256="c518250e91a70d7b20cceb15272209a4ded2a0c263ae5776f129e0d9b5674309"
 
     # Install pip
     wget "$PYTHON_GET_PIP_URL" -O get-pip.py
@@ -144,11 +128,6 @@ else
         --no-cache-dir \
         --no-warn-script-location \
         pip==$PIP_VERSION
-
-    if [ "${PYTHON_VERSION::1}" == "2" ]; then
-        LD_LIBRARY_PATH=$INSTALLATION_PREFIX/lib \
-        $INSTALLATION_PREFIX/bin/pip install --no-cache-dir virtualenv
-    fi
 fi
 
 # Currently only for version '2' of Python, the alias 'python' exists in the 'bin'
