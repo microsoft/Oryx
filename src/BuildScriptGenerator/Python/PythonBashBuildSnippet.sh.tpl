@@ -94,23 +94,40 @@ fi
         fi
     elif [ -e "pyproject.toml" ]
     then
-        set +e
-        echo "Running pip install poetry..."
-        InstallPipCommand="pip install poetry==1.8.5"
-        printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
-        pip install poetry==1.8.5
-        echo "Running poetry install..."
-        InstallPoetryCommand="poetry install --no-dev"
-        printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1)
-        pythonBuildExitCode=${PIPESTATUS[0]}
-        set -e
-        echo "${output}"
-        if [[ $pythonBuildExitCode != 0 ]]
+        if [ -e "uv.lock" ] && [ ! -e "$REQUIREMENTS_TXT_FILE" ];
         then
-            LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
-            exit $pythonBuildExitCode
-        fi
+            # Install using uv
+            set +e
+            echo "Detected uv.lock. Installing dependencies with uv..."
+            InstallUvCommand="uv pip install -r uv.lock"
+            printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
+            uvExitCode=${PIPESTATUS[0]}
+            set -e
+            echo "${output}"
+            if [[ $uvExitCode != 0 ]]; then
+                LogError "${output} | Exit code: ${uvExitCode} | Please review your uv.lock | ${moreInformation}"
+                exit $uvExitCode
+            fi
+        else
+            # Fallback to poetry
+            set +e
+            echo "Running pip install poetry..."
+            InstallPipCommand="pip install poetry==1.8.5"
+            printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
+            pip install poetry==1.8.5
+            echo "Running poetry install..."
+            InstallPoetryCommand="poetry install --no-dev"
+            printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1)
+            pythonBuildExitCode=${PIPESTATUS[0]}
+            set -e
+            echo "${output}"
+            if [[ $pythonBuildExitCode != 0 ]]
+            then
+                LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
+                exit $pythonBuildExitCode
+            fi
     else
         echo $REQS_NOT_FOUND_MSG
     fi
@@ -164,26 +181,47 @@ fi
         fi
     elif [ -e "pyproject.toml" ]
     then
-        set +e
-        echo "Running pip install poetry..."
-        InstallPipCommand="pip install poetry"
-        printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
-        pip install poetry
-        START_TIME=$SECONDS
-        echo "Running poetry install..."
-        InstallPoetryCommand="poetry install --no-dev"
-        printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
-        output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1 )
-        pythonBuildExitCode=${PIPESTATUS[0]}
-        ELAPSED_TIME=$(($SECONDS - $START_TIME))
-        echo "Done in $ELAPSED_TIME sec(s)."
-        set -e
-        echo "${output}"
-        if [[ $pythonBuildExitCode != 0 ]]
+        if [ -e "uv.lock" ] && [ ! -e "$REQUIREMENTS_TXT_FILE" ];
         then
-            LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
-            exit $pythonBuildExitCode
-        fi
+            # Install using uv
+            set +e
+            echo "Detected uv.lock. Installing dependencies with uv..."
+            START_TIME=$SECONDS
+            SITE_PACKAGES_PATH="{{ PackagesDirectory }}"
+            InstallUvCommand="uv pip install --target $SITE_PACKAGES_PATH -r uv.lock"
+            printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
+            uvExitCode=${PIPESTATUS[0]}
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "Done in $ELAPSED_TIME sec(s)."
+            set -e
+            echo "${output}"
+            if [[ $uvExitCode != 0 ]]; then
+                LogError "${output} | Exit code: ${uvExitCode} | Please review your uv.lock | ${moreInformation}"
+                exit $uvExitCode
+            fi
+        else
+            # Fallback to poetry
+            set +e
+            echo "Running pip install poetry..."
+            InstallPipCommand="pip install poetry"
+            printf %s " , $InstallPipCommand" >> "$COMMAND_MANIFEST_FILE"
+            pip install poetry
+            START_TIME=$SECONDS
+            echo "Running poetry install..."
+            InstallPoetryCommand="poetry install --no-dev"
+            printf %s " , $InstallPoetryCommand" >> "$COMMAND_MANIFEST_FILE"
+            output=$( ( poetry install --no-dev; exit ${PIPESTATUS[0]} ) 2>&1 )
+            pythonBuildExitCode=${PIPESTATUS[0]}
+            ELAPSED_TIME=$(($SECONDS - $START_TIME))
+            echo "Done in $ELAPSED_TIME sec(s)."
+            set -e
+            echo "${output}"
+            if [[ $pythonBuildExitCode != 0 ]]
+            then
+                LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
+                exit $pythonBuildExitCode
+            fi
     else
         echo $REQS_NOT_FOUND_MSG
     fi

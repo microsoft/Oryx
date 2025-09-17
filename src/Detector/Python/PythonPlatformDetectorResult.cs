@@ -30,5 +30,10 @@ namespace Microsoft.Oryx.Detector.Python
         /// Gets or sets a value indicating whether a 'pyproject.toml' file exists at the root of the repo.
         /// </summary>
         public bool HasPyprojectTomlFile { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating if 'uv.lock' file exists at the root of the repo.
+        /// </summary>
+        public bool HasUvLockFile { get; set; }
     }
 }
