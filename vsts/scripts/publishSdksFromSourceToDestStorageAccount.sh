@@ -62,53 +62,62 @@ function copyBlob() {
 
 function copyPlatformBlobsToProd() {
     local platformName="$1"
-    copyPlatformBlobsToProdForDebianFlavor "$platformName" "stretch"
-    copyPlatformBlobsToProdForDebianFlavor "$platformName" "buster"
-    copyPlatformBlobsToProdForDebianFlavor "$platformName" "bullseye"
-    copyPlatformBlobsToProdForDebianFlavor "$platformName" "bookworm"
-    copyPlatformBlobsToProdForDebianFlavor "$platformName" "focal-scm"
+    copyPlatformBlobsToProdForOsFlavor "$platformName" "stretch"
+    copyPlatformBlobsToProdForOsFlavor "$platformName" "buster"
+    copyPlatformBlobsToProdForOsFlavor "$platformName" "bullseye"
+    copyPlatformBlobsToProdForOsFlavor "$platformName" "bookworm"
+    copyPlatformBlobsToProdForOsFlavor "$platformName" "focal-scm"
+    copyPlatformBlobsToProdForOsFlavor "$platformName" "noble"
 }
 
-function copyPlatformBlobsToProdForDebianFlavor() {
+function copyPlatformBlobsToProdForOsFlavor() {
     local platformName="$1"
-    local debianFlavor="$2"
-    local versionsFile="$REPO_DIR/platforms/$platformName/versions/$debianFlavor/versionsToBuild.txt"
+    local osFlavor="$2"
+    local versionsFile="$REPO_DIR/platforms/$platformName/versions/$osFlavor/versionsToBuild.txt"
     local defaultFile=""
     local binaryPrefix=""
 
     if [ "$platformName" == "php-composer" ]; then
-        versionsFile="$REPO_DIR/platforms/php/composer/versions/$debianFlavor/versionsToBuild.txt"
+        versionsFile="$REPO_DIR/platforms/php/composer/versions/$osFlavor/versionsToBuild.txt"
     elif [ "$platformName" == "maven" ]; then
-        versionsFile="$REPO_DIR/platforms/java/maven/versions/$debianFlavor/versionsToBuild.txt"
+        versionsFile="$REPO_DIR/platforms/java/maven/versions/$osFlavor/versionsToBuild.txt"
     fi
 
-    if [ "$debianFlavor" == "stretch" ]; then
+    if [ "$osFlavor" == "stretch" ]; then
         defaultFile="defaultVersion.txt"
         copyBlob "$platformName" "$defaultFile"
         binaryPrefix="$platformName"
     else
-        binaryPrefix="$platformName-$debianFlavor"
+        binaryPrefix="$platformName-$osFlavor"
     fi
 
-    # Function to copy platform blobs to production for a specific Debian flavor
+    # Function to copy platform blobs to production for a specific Os flavor
     # Dotnet, nodejs, php and python platforms are currently supporting bookworm.
     # Allowed combinations: 
-    # - platformName=dotnet and debianFlavor=bookworm
-    # - platformName=nodejs and debianFlavor=bookworm
-    # - platformName=php and debianFlavor=bookworm
-    # - platformName=python and debianFlavor=bookworm
+    # - platformName=dotnet and osFlavor=bookworm
+    # - platformName=nodejs and osFlavor=bookworm
+    # - platformName=php and osFlavor=bookworm
+    # - platformName=python and osFlavor=bookworm
+    # - platformName=dotnet and osFlavor=noble
+    # - platformName=python and osFlavor=noble
     # Not allowed combinations:
-    # - Any platformName other than dotnet, node js, python and php with debianFlavor=bookworm
-    if [ "$debianFlavor" == "bookworm" ] && \
+    # - Any platformName other than dotnet, node js, python and php with osFlavor=bookworm
+    # - Any platformName other than dotnet and python with osFlavor=noble
+    if [ "$osFlavor" == "bookworm" ] && \
        [ "$platformName" != "dotnet" ] && \
        [ "$platformName" != "nodejs" ] && \
        [ "$platformName" != "php" ] && \
        [ "$platformName" != "php-composer" ] && \
        [ "$platformName" != "python" ]; then
         # Do not copy blobs
-        echo "Copying blobs for platformName=$platformName and debianFlavor=$debianFlavor is not supported yet."
+        echo "Copying blobs for platformName=$platformName and osFlavor=$osFlavor is not supported yet."
+    elif [ "$osFlavor" == "noble" ] && \
+         [ "$platformName" != "dotnet" ] && \
+         [ "$platformName" != "python" ]; then
+        # Do not copy blobs
+        echo "Copying blobs for platformName=$platformName and osFlavor=$osFlavor is not supported yet."
     else
-        defaultFile="defaultVersion.$debianFlavor.txt"
+        defaultFile="defaultVersion.$osFlavor.txt"
         copyBlob "$platformName" "$defaultFile"
         
         # Here '3' is a file descriptor which is specifically used to read the versions file.
