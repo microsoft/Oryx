@@ -44,17 +44,28 @@ fi
 
     echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
 
-    if [ -e "$REQUIREMENTS_TXT_FILE" ]; then
-        VIRTUALENVIRONMENTOPTIONS="$VIRTUALENVIRONMENTOPTIONS --system-site-packages"
+    if [ -e "pyproject.toml" ] && [ -e "uv.lock" ]; then
+        echo "Detected uv.lock; creating virtual environment with uv..."
+        echo "Install uv first..."
+        InstallUv="pip install uv"
+        printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
+        pip install uv
+        CreateVenvCommand="uv venv --link-mode=clone --system-site-packages $VIRTUALENVIRONMENTNAME"
+    else
+        if [ -e "$REQUIREMENTS_TXT_FILE" ]; then
+            VIRTUALENVIRONMENTOPTIONS="$VIRTUALENVIRONMENTOPTIONS --system-site-packages"
+        fi
+        CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
     fi
 
     echo Creating virtual environment...
-
-    CreateVenvCommand="$python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS"
+    
     echo "BuildCommands=$CreateVenvCommand" >> "$COMMAND_MANIFEST_FILE"
-
-    $python -m $VIRTUALENVIRONMENTMODULE $VIRTUALENVIRONMENTNAME $VIRTUALENVIRONMENTOPTIONS
-
+    
+    # Execute the resolved CreateVenvCommand
+    echo "Executing: $CreateVenvCommand"
+    $CreateVenvCommand
+    
     echo Activating virtual environment...
     printf %s " , $ActivateVenvCommand" >> "$COMMAND_MANIFEST_FILE"
     ActivateVenvCommand="source $VIRTUALENVIRONMENTNAME/bin/activate"
@@ -99,11 +110,6 @@ fi
             # Install using uv
             set +e
             echo "Detected uv.lock. Installing dependencies with uv..."
-            echo "Install uv first..."
-            InstallUv="pip install uv"
-            printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
-            pip install uv
-            echo "Install requirements with uv..."
             InstallUvCommand="uv sync --active"
             printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
@@ -198,8 +204,12 @@ fi
             InstallUv="pip install uv"
             printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
             pip install uv
+
+            echo "Generate uv-requirements.txt from uv..."
+            uv export --locked --format requirements-txt > uv-requirements.txt
+
             echo "Install requirements with uv..."
-            InstallUvCommand="uv sync"
+            InstallUvCommand="uv pip install --target $SITE_PACKAGES_PATH -r uv-requirements.txt"
             printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
             uvExitCode=${PIPESTATUS[0]}
