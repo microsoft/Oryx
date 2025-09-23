@@ -105,10 +105,15 @@ namespace Microsoft.Oryx.Detector.Python
             {
                 this.logger.LogError($"Missing {PythonConstants.SetupDotPyFileName} at the root of the repo. More information: https://aka.ms/requirements-not-found");
             }
+
             if (sourceRepo.FileExists(PythonConstants.UvLockFileName))
             {
                 this.logger.LogInformation($"Found {PythonConstants.UvLockFileName} at the root of the repo.");
                 hasUvLockFile = true;
+            }
+            else
+            {
+                this.logger.LogError($"Missing {PythonConstants.UvLockFileName} at the root of the repo. More information: https://aka.ms/requirements-not-found");
             }
 
             var hasCondaEnvironmentYmlFile = false;

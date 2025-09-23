@@ -44,13 +44,13 @@ fi
 
     echo "Python Virtual Environment: $VIRTUALENVIRONMENTNAME"
 
-    if [ -e "pyproject.toml" ] && [ -e "uv.lock" ]; then
-        echo "Detected uv.lock; creating virtual environment with uv..."
+    if [ -e "pyproject.toml" ] && [ -e "uv.lock" ] && [ ! -e "$REQUIREMENTS_TXT_FILE" ]; then
+        echo "Detected uv.lock (and no $REQUIREMENTS_TXT_FILE); creating virtual environment with uv..."
         echo "Install uv first..."
         InstallUv="pip install uv"
         printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
         pip install uv
-        CreateVenvCommand="uv venv --link-mode=clone --system-site-packages $VIRTUALENVIRONMENTNAME"
+        CreateVenvCommand="uv venv --link-mode=copy --system-site-packages $VIRTUALENVIRONMENTNAME"
     else
         if [ -e "$REQUIREMENTS_TXT_FILE" ]; then
             VIRTUALENVIRONMENTOPTIONS="$VIRTUALENVIRONMENTOPTIONS --system-site-packages"
@@ -110,7 +110,7 @@ fi
             # Install using uv
             set +e
             echo "Detected uv.lock. Installing dependencies with uv..."
-            InstallUvCommand="uv sync --active"
+            InstallUvCommand="uv sync --active --link-mode copy"
             printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
             uvExitCode=${PIPESTATUS[0]}
@@ -205,13 +205,11 @@ fi
             printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
             pip install uv
 
-            echo "Generate uv-requirements.txt from uv..."
-            uv export --locked --format requirements-txt > uv-requirements.txt
-
-            echo "Install requirements with uv..."
-            InstallUvCommand="uv pip install --target $SITE_PACKAGES_PATH -r uv-requirements.txt"
+            echo "Installing dependencies..."
+            # Stream the export directly into uv pip install using process substitution
+            InstallUvCommand="uv export --locked | uv pip install --link-mode copy --target $SITE_PACKAGES_PATH -r -"
             printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
-            output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
+            output=$( ( eval $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
             uvExitCode=${PIPESTATUS[0]}
             ELAPSED_TIME=$(($SECONDS - $START_TIME))
             echo "Done in $ELAPSED_TIME sec(s)."
