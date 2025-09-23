@@ -94,12 +94,17 @@ fi
         fi
     elif [ -e "pyproject.toml" ]
     then
-        if [ -e "uv.lock" ] && [ ! -e "$REQUIREMENTS_TXT_FILE" ];
+        if [ -e "uv.lock" ];
         then
             # Install using uv
             set +e
             echo "Detected uv.lock. Installing dependencies with uv..."
-            InstallUvCommand="uv pip install -r uv.lock"
+            echo "Install uv first..."
+            InstallUv="pip install uv"
+            printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
+            pip install uv
+            echo "Install requirements with uv..."
+            InstallUvCommand="uv sync --active"
             printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
             uvExitCode=${PIPESTATUS[0]}
@@ -128,6 +133,7 @@ fi
                 LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
                 exit $pythonBuildExitCode
             fi
+        fi
     else
         echo $REQS_NOT_FOUND_MSG
     fi
@@ -181,14 +187,19 @@ fi
         fi
     elif [ -e "pyproject.toml" ]
     then
-        if [ -e "uv.lock" ] && [ ! -e "$REQUIREMENTS_TXT_FILE" ];
+        if [ -e "uv.lock" ];
         then
             # Install using uv
             set +e
             echo "Detected uv.lock. Installing dependencies with uv..."
             START_TIME=$SECONDS
             SITE_PACKAGES_PATH="{{ PackagesDirectory }}"
-            InstallUvCommand="uv pip install --target $SITE_PACKAGES_PATH -r uv.lock"
+            echo "Install uv first..."
+            InstallUv="pip install uv"
+            printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
+            pip install uv
+            echo "Install requirements with uv..."
+            InstallUvCommand="uv sync"
             printf %s " , $InstallUvCommand" >> "$COMMAND_MANIFEST_FILE"
             output=$( ( $InstallUvCommand; exit ${PIPESTATUS[0]} ) 2>&1 )
             uvExitCode=${PIPESTATUS[0]}
@@ -222,6 +233,7 @@ fi
                 LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
                 exit $pythonBuildExitCode
             fi
+        fi
     else
         echo $REQS_NOT_FOUND_MSG
     fi
