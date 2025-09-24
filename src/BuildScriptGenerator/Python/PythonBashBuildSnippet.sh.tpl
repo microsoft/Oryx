@@ -47,9 +47,9 @@ fi
     if [ -e "pyproject.toml" ] && [ -e "uv.lock" ] && [ ! -e "$REQUIREMENTS_TXT_FILE" ]; then
         echo "Detected uv.lock (and no $REQUIREMENTS_TXT_FILE); creating virtual environment with uv..."
         echo "Install uv first..."
-        InstallUv="pip install uv"
+        InstallUv="python -m pip install uv"
         printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
-        pip install uv
+        python -m pip install uv
         CreateVenvCommand="uv venv --link-mode=copy --system-site-packages $VIRTUALENVIRONMENTNAME"
     else
         if [ -e "$REQUIREMENTS_TXT_FILE" ]; then
@@ -136,7 +136,7 @@ fi
             echo "${output}"
             if [[ $pythonBuildExitCode != 0 ]]
             then
-                LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
+                LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
                 exit $pythonBuildExitCode
             fi
         fi
@@ -196,15 +196,15 @@ fi
         if [ -e "uv.lock" ];
         then
             # Install using uv
-            set +e
             echo "Detected uv.lock. Installing dependencies with uv..."
             START_TIME=$SECONDS
-            SITE_PACKAGES_PATH="{{ PackagesDirectory }}"
             echo "Install uv first..."
-            InstallUv="pip install uv"
+            InstallUv="python -m pip install uv"
             printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
-            pip install uv
-
+            python -m pip install uv
+            
+            set +e
+            SITE_PACKAGES_PATH="{{ PackagesDirectory }}"
             echo "Installing dependencies..."
             # Stream the export directly into uv pip install using process substitution
             InstallUvCommand="uv export --locked | uv pip install --link-mode copy --target $SITE_PACKAGES_PATH -r -"
@@ -238,7 +238,7 @@ fi
             echo "${output}"
             if [[ $pythonBuildExitCode != 0 ]]
             then
-                LogWarning "${output} | Exit code: {pythonBuildExitCode} | Please review message | ${moreInformation}"
+                LogWarning "${output} | Exit code: ${pythonBuildExitCode} | Please review message | ${moreInformation}"
                 exit $pythonBuildExitCode
             fi
         fi
