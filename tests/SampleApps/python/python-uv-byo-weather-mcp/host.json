@@ -1,0 +1,16 @@
+{
+    "version": "2.0",
+    "extensions": {
+        "http": {
+            "routePrefix": ""
+        }
+    },
+    "customHandler": {
+        "description": {
+            "defaultExecutablePath": "uv",
+            "workingDirectory": "",
+            "arguments": ["run", "weather.py"]
+        },
+        "enableProxyingHttpRequest": true
+    }
+}
