@@ -7,7 +7,7 @@ ARG INCLUDE_AZURELINUX_CERTS=true
 # Debian images (especially slim variants) can lag in ca-certificates updates; we optionally add Azure Linux certs.
 FROM mcr.microsoft.com/azurelinux/base/core:${AZURE_LINUX_VERSION} AS azurelinux-core
 ARG INCLUDE_AZURELINUX_CERTS
-RUN if [ "$INCLUDE_AZURELINUX_CERTS" = "true" ]; then \
+RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
 		set -eux; \
 		tdnf makecache; \
 		tdnf install -y ca-certificates; \
@@ -46,7 +46,7 @@ COPY images/runtime/scripts/install-azurelinux-certs.sh /usr/local/bin/install-a
 
 # Add Azure Linux certs to Debian's CA store if the flag is set to true
 RUN set -e; \
-    if [ "$INCLUDE_AZURELINUX_CERTS" = "true" ]; then \
+    if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
         chmod +x /usr/local/bin/install-azurelinux-certs.sh; \
         /usr/local/bin/install-azurelinux-certs.sh /tmp/azurelinux-ca-certs /tmp/azurelinux-ca-certs/tls-ca-bundle.pem; \
     fi;
