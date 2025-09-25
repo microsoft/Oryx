@@ -105,7 +105,9 @@ process_certificate() {
     [ -z "$filename" ] && filename="cert_${idx}"
 
     local dest="$dest_dir/azl_${filename}.crt"
+
     if [ -e "$dest" ]; then
+        # warn because this is not expected, but we can continue processing other certs
         warn "Name collision, skipping: $dest"
         return 1
     fi
@@ -137,20 +139,22 @@ main() {
     fi
 
     if [ ! -d "$TMP_CERTS_DIR" ]; then
-        err "Temp directory does not exist: $TMP_CERTS_DIR"
+        err "Temp directory does not exist: $TMP_CERTS_DIR."
         return 1
     fi
 
     if [ ! -f "$BUNDLE_PATH" ]; then
-        warn "Bundle not present: $BUNDLE_PATH (nothing to do)"
+        err "Bundle not present: $BUNDLE_PATH."
         return 1
     fi
+
     if [ ! -s "$BUNDLE_PATH" ]; then
-        warn "Bundle empty: $BUNDLE_PATH"
+        err "Bundle empty: $BUNDLE_PATH. This is unexpected."
         return 1
     fi
 
     install_prereqs || true
+
     if ! require_tools; then
         err "Prerequisite tools not available after attempted install. Aborting."
         return 1
@@ -173,6 +177,7 @@ main() {
     for pem in "$TMP_CERTS_DIR"/cert-*.pem; do
         [ -f "$pem" ] || continue
         idx=$((idx+1))
+
         if process_certificate "$pem" "$DEST_DIR" "$idx"; then
             count=$((count+1))
         fi
@@ -180,7 +185,7 @@ main() {
 
     if [ "$count" -gt 0 ]; then
         if ! update-ca-certificates --fresh >/dev/null 2>&1 && ! update-ca-certificates >/dev/null 2>&1; then
-            err "Failed to refresh CA certificates after importing Azure Linux CAs"
+            err "Failed to refresh CA certificates after importing Azure Linux CAs."
             return 1
         fi
         info "Imported $count Azure Linux certificate(s)."
