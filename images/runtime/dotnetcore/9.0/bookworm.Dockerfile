@@ -98,7 +98,7 @@ RUN set -ex \
     && dotnet-sos install \
     && rm -rf ${BUILD_DIR}
 
-    # Copy Azure linux certs to a temporary location
+# Copy Azure linux certs to a temporary location
 RUN mkdir -p /tmp/azurelinux-ca-certs && \
 	chmod 755 /tmp/azurelinux-ca-certs;
 COPY --from=azurelinux-core /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /tmp/azurelinux-ca-certs/tls-ca-bundle.pem
