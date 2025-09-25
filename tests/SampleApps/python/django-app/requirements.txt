@@ -1,4 +1,4 @@
-Django==2.2.28
+Django==4.2.24
 pytz==2018.7
 django-utils-six==2.0
 whitenoise==4.1.1
