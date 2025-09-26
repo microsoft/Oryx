@@ -46,7 +46,7 @@ fi
 
     if [ -e "pyproject.toml" ] && [ -e "uv.lock" ] && [ ! -e "$REQUIREMENTS_TXT_FILE" ]; then
         echo "Detected uv.lock (and no $REQUIREMENTS_TXT_FILE); creating virtual environment with uv..."
-        echo "Install uv first..."
+        echo "Installing uv..."
         InstallUv="python -m pip install uv"
         printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
         python -m pip install uv
@@ -198,7 +198,7 @@ fi
             # Install using uv
             echo "Detected uv.lock. Installing dependencies with uv..."
             START_TIME=$SECONDS
-            echo "Install uv first..."
+            echo "Installing uv..."
             InstallUv="python -m pip install uv"
             printf %s " , $InstallUv" >> "$COMMAND_MANIFEST_FILE"
             python -m pip install uv
