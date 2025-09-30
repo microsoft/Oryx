@@ -1,3 +1,5 @@
+ARG INCLUDE_AZURELINUX_CERTS=true
+
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
 # and copy them to our final runtime image
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS tools-install
@@ -9,7 +11,7 @@ RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-gcdump
 RUN dotnet tool install --tool-path /dotnetcore-tools dotnet-monitor --version 8.*
 
 # Startup script generator
-FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.8-bookworm as startupCmdGen
+FROM mcr.microsoft.com/oss/go/microsoft/golang:1.23.8-bookworm AS startupCmdGen
 
 # GOPATH is set to "/go" in the base image
 WORKDIR /go/src
@@ -24,9 +26,21 @@ ENV BUILD_NUMBER=${BUILD_NUMBER}
 ENV PATH_CA_CERTIFICATE="/etc/ssl/certs/ca-certificate.crt"
 RUN chmod +x build.sh && ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
+# Stage: (optional) pull Azure Linux CA certificates so we can merge them into BaseOS trust store
+# Debian images (especially slim variants) can lag in ca-certificates updates; we optionally add Azure Linux certs.
+FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS azurelinux-core
+ARG INCLUDE_AZURELINUX_CERTS
+RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+		set -eux; \
+		tdnf makecache; \
+		tdnf install -y ca-certificates; \
+		update-ca-trust extract; \
+		tdnf clean all; \
+	fi
 
 FROM mcr.microsoft.com/mirror/docker/library/debian:bookworm-slim
 ARG BUILD_DIR=/tmp/oryx/build
+ARG INCLUDE_AZURELINUX_CERTS
 ADD build ${BUILD_DIR}
 
 RUN apt-get update \
@@ -80,6 +94,24 @@ RUN set -ex \
     && rm aspnetcore.tar.gz \
     && dotnet-sos install \
     && rm -rf ${BUILD_DIR}
+
+# Copy Azure linux certs to a temporary location
+RUN mkdir -p /tmp/azurelinux-ca-certs && \
+	chmod 755 /tmp/azurelinux-ca-certs;
+COPY --from=azurelinux-core /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem* /tmp/azurelinux-ca-certs/tls-ca-bundle.pem
+
+COPY images/runtime/scripts/install-azurelinux-certs.sh /usr/local/bin/install-azurelinux-certs.sh
+
+# Add Azure Linux certs to Debian's CA store if the flag is set to true
+RUN set -e; \
+    if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
+        chmod +x /usr/local/bin/install-azurelinux-certs.sh; \
+        /usr/local/bin/install-azurelinux-certs.sh /tmp/azurelinux-ca-certs /tmp/azurelinux-ca-certs/tls-ca-bundle.pem; \
+    fi;
+    
+# Cleanup script and temporary files
+RUN	rm -f /usr/local/bin/install-azurelinux-certs.sh; \
+	rm -rf /tmp/azurelinux-ca-certs;
 
 # Bake Application Insights key from pipeline variable into final image
 ARG AI_CONNECTION_STRING
