@@ -1,4 +1,3 @@
-ARG AZURE_LINUX_VERSION=3.0
 ARG INCLUDE_AZURELINUX_CERTS=true
 
 # dotnet tools are currently available as part of SDK so we need to create them in an sdk image
@@ -29,7 +28,7 @@ RUN chmod +x build.sh && ./build.sh dotnetcore /opt/startupcmdgen/startupcmdgen
 
 # Stage: (optional) pull Azure Linux CA certificates so we can merge them into BaseOS trust store
 # Debian images (especially slim variants) can lag in ca-certificates updates; we optionally add Azure Linux certs.
-FROM mcr.microsoft.com/azurelinux/base/core:${AZURE_LINUX_VERSION} AS azurelinux-core
+FROM mcr.microsoft.com/azurelinux/base/core:3.0 AS azurelinux-core
 ARG INCLUDE_AZURELINUX_CERTS
 RUN if [ "$(printf '%s' "$INCLUDE_AZURELINUX_CERTS" | tr '[:upper:]' '[:lower:]')" = "true" ]; then \
 		set -eux; \
@@ -99,7 +98,7 @@ RUN set -ex \
 # Copy Azure linux certs to a temporary location
 RUN mkdir -p /tmp/azurelinux-ca-certs && \
 	chmod 755 /tmp/azurelinux-ca-certs;
-COPY --from=azurelinux-core /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /tmp/azurelinux-ca-certs/tls-ca-bundle.pem
+COPY --from=azurelinux-core /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem* /tmp/azurelinux-ca-certs/tls-ca-bundle.pem
 
 COPY images/runtime/scripts/install-azurelinux-certs.sh /usr/local/bin/install-azurelinux-certs.sh
 
