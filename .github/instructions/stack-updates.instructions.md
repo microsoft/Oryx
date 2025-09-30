@@ -248,8 +248,8 @@ cp platforms/nodejs/versions/bookworm/versionsToBuild.txt platforms/nodejs/versi
 
 ### Common Issues
 1. **Format Mismatch**: Each stack expects a specific format in versionsToBuild.txt
-2. **Missing Hashes**: PHP, Python may require SHA256 hashes
-3. **GPG Key Issues**: PHP builds may fail with invalid or missing GPG keys
+2. **Missing Hashes**: PHP, DotNet require SHA256 hashes
+3. **GPG Key Issues**: PHP, Python builds may fail with invalid or missing GPG keys
 
 ### Verification Steps
 1. **File Format**: Ensure versionsToBuild.txt follows the exact format for each stack
